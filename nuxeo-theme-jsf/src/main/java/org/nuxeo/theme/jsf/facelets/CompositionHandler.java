@@ -28,6 +28,7 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,8 +52,8 @@ import com.sun.facelets.tag.ui.ParamHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.15 2009/02/02 22:58:59 driscoll Exp
- *          $
+ * @version $Id: CompositionHandler.java,v 1.15 2009/02/02 22:58:59 driscoll
+ *          Exp $
  */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
@@ -104,7 +105,6 @@ public final class CompositionHandler extends TagHandler implements
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
      * javax.faces.component.UIComponent)
@@ -150,7 +150,7 @@ public final class CompositionHandler extends TagHandler implements
             if (strategyAttribute != null) {
                 strategy = strategyAttribute.getValue(ctx);
             }
-            String contextPath = BaseURL.getContextPath() + "/site";
+            String contextPath = BaseURL.getContextPath();
             if (strategy == null) {
                 log.error("Could not obtain the negotiation strategy for "
                         + root);
@@ -160,7 +160,8 @@ public final class CompositionHandler extends TagHandler implements
             } else {
                 try {
                     final String spec = new JSFNegotiator(strategy,
-                            facesContext).getSpec();
+                            facesContext,
+                            (HttpServletRequest) external.getRequest()).getSpec();
                     final URL themeUrl = new URL(spec);
                     requestMap.put("org.nuxeo.theme.url", themeUrl);
                     ctx.includeFacelet(parent, themeUrl);
