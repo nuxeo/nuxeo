@@ -204,7 +204,7 @@
       <artifactId>nuxeo-theme-bank</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
+      <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-styling</artifactId>
     </dependency>
     <dependency>
