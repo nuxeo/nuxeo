@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-multi-tenant-bundle
+Bundle-SymbolicName: org.nuxeo.multi.tenant;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/multi-tenant-ecm-types-contrib.xml,
+ OSGI-INF/multi-tenant-layout-contrib.xml,
+ OSGI-INF/multi-tenant-core-types-contrib.xml
