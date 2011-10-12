@@ -35,7 +35,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 /**
  * The operation registry is thread safe and optimized for modifications at
  * startup and lookups at runtime.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationServiceImpl implements AutomationService {
@@ -110,16 +110,16 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     /**
-     * TODO avoid creating a temporary chain and then compile it.
-     *  try to find a way to execute the single operation without compiling it. (for optimization)
+     * TODO avoid creating a temporary chain and then compile it. try to find a
+     * way to execute the single operation without compiling it. (for
+     * optimization)
      */
     @Override
     public Object run(OperationContext ctx, String id,
             Map<String, Object> params) throws OperationException,
             InvalidChainException, Exception {
         OperationChain chain = new OperationChain("operation");
-        OperationParameters oparams = new OperationParameters(id,
-                params);
+        OperationParameters oparams = new OperationParameters(id, params);
         chain.add(oparams);
         return run(ctx, chain);
     }
@@ -170,6 +170,13 @@ public class OperationServiceImpl implements AutomationService {
             throw new OperationException("No such chain was registered: " + id);
         }
         return chain;
+    }
+
+    public synchronized void flushCompiledChains() {
+        for (ChainEntry entry : chains.values()) {
+            entry.cchain = null;
+        }
+        chainLookup = null;
     }
 
     public void putOperation(Class<?> type) throws OperationException {
@@ -286,8 +293,9 @@ public class OperationServiceImpl implements AutomationService {
         }
         TypeAdapter adapter = getTypeAdapter(toAdaptClass, targetType);
         if (adapter == null) {
-            throw new AdapterNotFoundException("No type adapter found for input: "
-                    + toAdapt.getClass() + " and output " + targetType, ctx);
+            throw new AdapterNotFoundException(
+                    "No type adapter found for input: " + toAdapt.getClass()
+                            + " and output " + targetType, ctx);
         }
         return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }
