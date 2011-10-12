@@ -656,6 +656,9 @@ public class ThemeService extends DefaultComponent implements Reloadable {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         ThemeManager themeManager = (ThemeManager) getRegistry("themes");
+        if (typeRegistry == null || themeManager == null) {
+            return;
+        }
         RuntimeContext extensionContext = extension.getContext();
         for (Object contrib : contribs) {
             if (contrib instanceof ResourceType) {
