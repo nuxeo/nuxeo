@@ -45,7 +45,8 @@ public class RepositoryReloader implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        if ("reloadRepositories".equals(event.getId())) {
+        final String id = event.getId();
+        if ("reloadRepositories".equals(id) || "flush".equals(id)) {
             try {
                 reloadRepositories();
             } catch (Exception e) {
