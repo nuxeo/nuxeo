@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.jsf.filters.widgets;
 
+import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.models.Region;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.views.AbstractView;
@@ -25,12 +26,21 @@ public final class FaceletRegionView extends AbstractView {
         final Region region = (Region) info.getModel();
         final StringBuilder s = new StringBuilder();
 
+        final Element element = info.getElement();
+        String className = element.getClassName();
+
         if ("".equals(region.name)) {
-            s.append("<div class=\"nxthemesRegionNotSet\">").append(
+            if (className == null) {
+                className = "nxthemesRegionNotSet";
+            }
+            s.append("<div class=\"").append(className).append("\">").append(
                     "No facelet region name is set...").append("</div>");
         } else {
-            s.append("<div xmlns:ui=\"http://java.sun.com/jsf/facelets\""
-                    + " class=\"themeRegion\">");
+            if (className == null) {
+                className = "themeRegion";
+            }
+            s.append("<div xmlns:ui=\"http://java.sun.com/jsf/facelets\"").append(
+                    " class=\"").append(className).append("\">");
             s.append("<ui:insert name=\"").append(region.name).append("\">");
             if ("".equals(region.defaultSrc)) {
                 s.append(region.defaultBody);
@@ -43,5 +53,4 @@ public final class FaceletRegionView extends AbstractView {
         }
         return s.toString();
     }
-
 }
