@@ -512,7 +512,7 @@ public final class FileUtils {
         for (File file : files) {
             result.add(file);
             if (file.isDirectory()) {
-                collectFiles(root, result);
+                collectFiles(file, result);
             }
         }
     }
