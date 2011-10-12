@@ -1,6 +1,8 @@
 package org.nuxeo.runtime.tomcat.dev;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Enumeration;
 
 /*
  * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
@@ -54,5 +56,15 @@ public class LocalURLClassLoader extends URLClassLoader implements
         }
 
         return clazz;
+    }
+
+    @Override
+    public URL getLocalResource(String name) {
+        return findResource(name);
+    }
+
+    @Override
+    public Enumeration<URL> getLocalResources(String name) throws IOException {
+        return findResources(name);
     }
 }

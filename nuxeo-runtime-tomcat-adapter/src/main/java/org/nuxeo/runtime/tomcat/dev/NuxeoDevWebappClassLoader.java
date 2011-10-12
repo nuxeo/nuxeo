@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +44,9 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         addChildren(cl);
         return cl;
     }
-    
+
     protected File webinf;
-    
+
     protected List<LocalClassLoader> children;
 
     protected volatile LocalClassLoader[] _children;
@@ -59,7 +61,7 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     }
 
     public void setHome(File dir) {
-        webinf= new File(dir, "WEB-INF");
+        webinf = new File(dir, "WEB-INF");
     }
 
     public synchronized void addChildren(LocalClassLoader loader) {
@@ -115,6 +117,36 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     }
 
     @Override
+    public URL getResource(String name) {
+        URL url = super.getResource(name);
+        if (url != null) {
+            return url;
+        }
+        for (LocalClassLoader cl : getChildren()) {
+            url = cl.getLocalResource(name);
+            if (url != null) {
+                return url;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        Enumeration<URL> urls = super.getResources(name);
+        if (urls.hasMoreElements()) {
+            return urls;
+        }
+        for (LocalClassLoader cl : getChildren()) {
+            urls = cl.getLocalResources(name);
+            if (urls.hasMoreElements()) {
+                return urls;
+            }
+        }
+        return urls;
+    }
+    
+    @Override
     public void addURL(URL url) {
         super.addURL(url);
     }
@@ -136,29 +168,29 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     public void installSeamClasses(File[] dirs) throws IOException {
         File seamdev = new File(webinf, "dev");
         if (seamdev.exists()) {
-            IOUtils.deleteTree(seamdev);            
+            IOUtils.deleteTree(seamdev);
         }
         seamdev.mkdirs();
-        for(File dir:dirs) {
+        for (File dir : dirs) {
             IOUtils.copyTree(dir, new File(seamdev, dir.getName()));
         }
     }
-    
-    public void installResourceBundleFragments(
-            List<File> files) throws IOException {
+
+    public void installResourceBundleFragments(List<File> files)
+            throws IOException {
         File webClasses = new File(webinf, "classes");
-        Map<String,List<File>> fragments = 
-                new HashMap<String,List<File>>();
-                
-        for (File file:files) {
+        Map<String, List<File>> fragments = new HashMap<String, List<File>>();
+
+        for (File file : files) {
             String name = resourceBundleName(file);
             if (!fragments.containsKey(name)) {
                 fragments.put(name, new ArrayList<File>());
             }
             fragments.get(name).add(file);
         }
-        for (String name:fragments.keySet()) {
-            IOUtils.appendResourceBundleFragments(name, fragments.get(name), webClasses);
+        for (String name : fragments.keySet()) {
+            IOUtils.appendResourceBundleFragments(name, fragments.get(name),
+                    webClasses);
         }
     }
 
