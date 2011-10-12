@@ -23,8 +23,9 @@
   <!-- themes -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
-    <theme name="galaxy">
+    <theme>
       <src>themes/theme-galaxy.xml</src>
+      <!--<src>themes/theme-galaxy-new.xml</src>-->
     </theme>
 
   </extension>
@@ -169,21 +170,21 @@
   </extension>
 
   <!-- mapping between theme pages and resources -->
+  <!-- 
   <extension target="org.nuxeo.theme.styling.service" point="pages">
     <themePage name="galaxy/default">
       <defaultFlavour>galaxy</defaultFlavour>
-      <!-- useless for now -->
       <flavours append="true">
         <flavour>galaxy</flavour>
         <flavour>galaxy2</flavour>
       </flavours>
       <styles append="true">
         <style>nuxeo_dm_default</style>
-        <!-- test merge and cascading -->
         <style>nuxeo_dm_default2</style>
       </styles>
     </themePage>
   </extension>
+  -->
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dm_default">
