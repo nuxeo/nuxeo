@@ -33,4 +33,6 @@ public interface DevBundlesManager {
     String getDevBundlesLocation();
     void resetDevBundles(String location);
     DevBundle[] getDevBundles();
+    void toggleTimer();
+    boolean isTimerRunning();
 }

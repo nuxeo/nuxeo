@@ -92,21 +92,22 @@ public class NuxeoLauncher implements LifecycleListener {
 
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
         try {
-            ClassLoader cl = loader.getClassLoader();
+            MutableClassLoader cl = (MutableClassLoader)loader.getClassLoader();
             boolean devMode = cl instanceof NuxeoDevWebappClassLoader;
             String type = event.getType();
             if (type == Lifecycle.START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
                 if (devMode) {
                     bootstrap = new DevFrameworkBootstrap(
-                            (MutableClassLoader) cl, homeDir);
+                            cl,
+                            homeDir);
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.registerMBean(bootstrap, new ObjectName(
-                            DEV_BUNDLES_NAME));
+                    server.registerMBean(bootstrap, new ObjectName(DEV_BUNDLES_NAME));
                     server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
-                    ((NuxeoDevWebappClassLoader) cl).setBootstrap((DevFrameworkBootstrap) bootstrap);
+                    ((NuxeoDevWebappClassLoader) cl).setBootstrap((DevFrameworkBootstrap)bootstrap);
                 } else {
-                    bootstrap = new FrameworkBootstrap((MutableClassLoader) cl,
+                    bootstrap = new FrameworkBootstrap(
+                            cl,
                             homeDir);
                 }
                 bootstrap.setHostName("Tomcat");
@@ -119,7 +120,7 @@ public class NuxeoLauncher implements LifecycleListener {
                 if (devMode) {
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                     server.unregisterMBean(new ObjectName(DEV_BUNDLES_NAME));
-                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));
+                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));                   
                 }
             }
         } catch (Throwable e) {

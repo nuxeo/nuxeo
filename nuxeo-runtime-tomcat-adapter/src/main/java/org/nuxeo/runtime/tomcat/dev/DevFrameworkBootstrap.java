@@ -24,7 +24,9 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,8 +40,6 @@ import org.nuxeo.osgi.application.MutableClassLoader;
 public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         DevBundlesManager {
 
-    protected File devBundlesFile;
-
     protected DevBundle[] devBundles;
 
     protected Timer bundlesCheck;
@@ -48,14 +48,18 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
 
     protected ReloadServiceInvoker reloadServiceInvoker;
 
-    public DevFrameworkBootstrap(ClassLoader cl, File home) throws IOException {
-        super(cl, home);
-    }
+    protected File devBundlesFile;
+
+    protected final File seamdev;
+
+    protected final File webclasses;
 
     public DevFrameworkBootstrap(MutableClassLoader cl, File home)
             throws IOException {
         super(cl, home);
         devBundlesFile = new File(home, "dev.bundles");
+        seamdev = new File(home, "nuxeo.war/WEB-INF/dev");
+        webclasses = new File(home, "nuxeo.war/WEB-INF/classes");
     }
 
     @Override
@@ -68,27 +72,35 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         reloadServiceInvoker = new ReloadServiceInvoker((ClassLoader) loader);
         writeComponentIndex();
         postloadDevBundles(); // start dev bundles if any
-        installLoaderTimer();
+        String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
+        if (installReloadTimerOption != null
+                && Boolean.parseBoolean(installReloadTimerOption) == Boolean.TRUE) {
+            toggleTimer();
+        }
     }
 
-    public void installLoaderTimer() {
-        String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
-        if (installReloadTimerOption == null
-                || Boolean.parseBoolean(installReloadTimerOption) == Boolean.FALSE) {
-            return;
-        }
+    public void toggleTimer() {
         // start reload timer
-        bundlesCheck = new Timer("Dev Bundles Loader");
-        bundlesCheck.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    loadDevBundles();
-                } catch (Throwable t) {
-                    log.error("Error running dev mode timer", t);
+        if (bundlesCheck != null) {
+            bundlesCheck.cancel();
+            bundlesCheck = null;
+        } else {
+            bundlesCheck = new Timer("Dev Bundles Loader");
+            bundlesCheck.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        loadDevBundles();
+                    } catch (Throwable t) {
+                        log.error("Error running dev mode timer", t);
+                    }
                 }
-            }
-        }, 2000, 2000);
+            }, 2000, 2000);
+        }
+    }
+
+    public boolean isTimerRunning() {
+        return bundlesCheck != null;
     }
 
     @Override
@@ -142,14 +154,11 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
         lastModified = tm;
         try {
-            reloadDevBundles();
+            reloadDevBundles(DevBundle.parseDevBundleLines(new FileInputStream(
+                    devBundlesFile)));
         } catch (Exception e) {
-            log.error("Faied to deploy dev bundles", e);
+            log.error("Failed to deploy dev bundles", e);
         }
-    }
-
-    public void reloadDevBundles() throws Exception {
-        DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile));
     }
 
     public void resetDevBundles(String path) {
@@ -188,8 +197,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
             }
         }
         devLoader.createLocalClassLoader(jarUrls.toArray(new URL[jarUrls.size()]));
-        devLoader.installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
-        devLoader.installResourceBundleFragments(resourceBundleFragments);
+        installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
+        installResourceBundleFragments(resourceBundleFragments);
         // deploy last bundles
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
@@ -218,9 +227,46 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
                 try {
                     writer.close();
                 } catch (IOException e) {
+                    ;
                 }
             }
         }
+    }
+
+    public void installSeamClasses(File[] dirs) throws IOException {
+        if (seamdev.exists()) {
+            IOUtils.deleteTree(seamdev);
+        }
+        seamdev.mkdirs();
+        for (File dir : dirs) {
+            IOUtils.copyTree(dir, seamdev);
+        }
+    }
+
+    public void installResourceBundleFragments(List<File> files)
+            throws IOException {
+        Map<String, List<File>> fragments = new HashMap<String, List<File>>();
+
+        for (File file : files) {
+            String name = resourceBundleName(file);
+            if (!fragments.containsKey(name)) {
+                fragments.put(name, new ArrayList<File>());
+            }
+            fragments.get(name).add(file);
+        }
+        for (String name : fragments.keySet()) {
+            IOUtils.appendResourceBundleFragments(name, fragments.get(name),
+                    webclasses);
+        }
+    }
+
+    protected static String resourceBundleName(File file) {
+        String name = file.getName();
+        int lastDotIdx = name.lastIndexOf('.');
+        if (lastDotIdx == -1) {
+            lastDotIdx = 0;
+        }
+        return name.substring(lastDotIdx);
     }
 
 }
