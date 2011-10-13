@@ -17,11 +17,17 @@
 package org.nuxeo.ecm.webapp.seam;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.StringTokenizer;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.MXBean;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +42,7 @@ import org.nuxeo.runtime.services.event.EventListener;
 public class NuxeoSeamFlusher implements EventListener {
 
     protected Log log = LogFactory.getLog(NuxeoSeamFlusher.class);
-        
+
     @Override
     public boolean aboutToHandleEvent(Event event) {
         return true;
@@ -54,17 +60,47 @@ public class NuxeoSeamFlusher implements EventListener {
                     log.error("Cannot post hot-reload seam components on loopback url");
                 }
             } catch (IOException e) {
-               log.error("Cannot hot-reload seam components", e);
+                log.error("Cannot hot-reload seam components", e);
+            }
+            try {
+                invalidateWebSessions();
+            } catch (Exception e) {
+                log.error("Cannot invalidate seam web sessions", e);
             }
         }
+        log.info("zoo");
     }
 
     protected boolean postSeamReload() throws IOException {
         String loopbackURL = Framework.getProperty("nuxeo.loopback.url");
         URL location = new URL(loopbackURL + "/restAPI/seamReload");
-        HttpURLConnection uc = (HttpURLConnection)location.openConnection();
+        HttpURLConnection uc = (HttpURLConnection) location.openConnection();
         uc.setRequestMethod("POST");
         return uc.getResponseCode() == HttpURLConnection.HTTP_OK;
     }
-    
+
+    @MXBean
+    public interface WebSessionFlusher {
+
+        String listSessionIds();
+
+        void expireSession(String id);
+
+    }
+
+    protected void invalidateWebSessions() throws IOException,
+            MalformedObjectNameException {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        for (ObjectInstance oi : mbs.queryMBeans(new ObjectName(
+                "Catalina:type=Manager,path=/nuxeo,host=*"), null)) {
+            WebSessionFlusher flusher = JMX.newMBeanProxy(mbs,
+                    oi.getObjectName(), WebSessionFlusher.class);
+            StringTokenizer tokenizer = new StringTokenizer(flusher.listSessionIds(), " ");
+            while (tokenizer.hasMoreTokens()) {
+                String id = tokenizer.nextToken();
+                flusher.expireSession(id);
+            }
+        }
+    }
+
 }
