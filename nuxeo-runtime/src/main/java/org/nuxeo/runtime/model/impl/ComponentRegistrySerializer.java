@@ -60,6 +60,10 @@ public class ComponentRegistrySerializer {
 
             Element comp = doc.createElement("component");
             comp.setAttribute("name", name.getName());
+            String impl = ri.getImplementation();
+            if (impl != null && impl.length() > 0) {
+                comp.setAttribute("class", impl);
+            }
             String bundle = ri.getBundle();
             if (bundle == null) {
                 bundle = ri.getContext().getBundle().getSymbolicName();
