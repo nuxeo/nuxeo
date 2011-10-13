@@ -39,13 +39,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper to render the GadgetSpec via FreeMarker
- * 
- * Using FreeMarker for that allow to have some dynamic computations : - OAUth
- * urls (that may be different depending on the IP the client uses) - resources
- * urls - requests urls - ...
- * 
+ * <ul>
+ * Using FreeMarker for that allows to have some dynamic computations:
+ * <li>OAUth urls (that may be different depending on the IP the client uses)</li>
+ * <li>resources urls</li>
+ * <li>requests urls</li>
+ * <li>...</li>
+ * </ul>
+ *
  * @author tiry
- * 
  */
 public class GadgetSpecView {
 
@@ -57,11 +59,14 @@ public class GadgetSpecView {
 
     protected static List<String> getTrustedHosts() {
         if (trustedHosts == null) {
-            trustedHosts = new ArrayList<String>();
+            // initialize a temp list to avoid concurrent modification
+            // exception
+            List<String> tempTrustedHosts = new ArrayList<String>();
             OpenSocialService os = Framework.getLocalService(OpenSocialService.class);
             for (String host : os.getTrustedHosts()) {
-                trustedHosts.add(host);
+                tempTrustedHosts.add(host);
             }
+            trustedHosts = tempTrustedHosts;
         }
         return trustedHosts;
     }
