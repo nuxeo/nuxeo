@@ -121,29 +121,22 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
      * starting the framework.
      */
     protected void preloadDevBundles() throws IOException {
-        if (devBundlesFile.isFile()) {
-            lastModified = devBundlesFile.lastModified();
-            devBundles = DevBundle.parseDevBundleLines(new FileInputStream(
-                    devBundlesFile));
-            if (devBundles.length == 0) {
-                devBundles = null;
-                return;
-            }
-            // clear dev classloader
-            NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
-            devLoader.clear();
-            URL[] urls = new URL[devBundles.length];
-            for (int i = 0; i < devBundles.length; i++) {
-                urls[i] = devBundles[i].url();
-            }
-            devLoader.createLocalClassLoader(urls);
+        if (!devBundlesFile.isFile()) {
+            return;
         }
+        lastModified = devBundlesFile.lastModified();
+        devBundles = DevBundle.parseDevBundleLines(new FileInputStream(
+                devBundlesFile));
+        if (devBundles.length == 0) {
+            devBundles = null;
+            return;
+        }
+        installNewLoader(devBundles);
     }
 
     protected void postloadDevBundles() throws Exception {
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
-            reloadServiceInvoker.flush();
         }
     }
 
@@ -180,16 +173,30 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
         devBundles = bundles;
 
+        // deploy last bundles
+        if (devBundles != null) {
+            reloadServiceInvoker.hotDeployBundles(devBundles);
+        }
+        reloadServiceInvoker.flush();
+    }
+
+    protected void installNewLoader(DevBundle[] bundles) {
         // flush and reset class loader
         NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.clear();
         System.gc();
+
+        // configure new loader
         List<URL> jarUrls = new ArrayList<URL>();
         List<File> seamDirs = new ArrayList<File>();
         List<File> resourceBundleFragments = new ArrayList<File>();
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType.isJar) {
-                jarUrls.add(bundle.url());
+                try {
+                    jarUrls.add(bundle.url());
+                } catch (IOException e) {
+                    log.error("Cannot install " + bundle);
+                }
             } else if (bundle.devBundleType == DevBundleType.Seam) {
                 seamDirs.add(bundle.file());
             } else if (bundle.devBundleType == DevBundleType.ResourceBundleFragment) {
@@ -197,13 +204,20 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
             }
         }
         devLoader.createLocalClassLoader(jarUrls.toArray(new URL[jarUrls.size()]));
-        installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
-        installResourceBundleFragments(resourceBundleFragments);
-        // deploy last bundles
-        if (devBundles != null) {
-            reloadServiceInvoker.hotDeployBundles(devBundles);
+
+        // install seam classes in hot sync folder
+        try {
+            installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
+        } catch (IOException e) {
+            log.error("Cannot install seam classes in hotsync folder", e);
         }
-        reloadServiceInvoker.flush();
+
+        // install l10n resources
+        try {
+            installResourceBundleFragments(resourceBundleFragments);
+        } catch (IOException e) {
+            log.error("Cannot install l10n resources", e);
+        }
     }
 
     public void writeComponentIndex() {
