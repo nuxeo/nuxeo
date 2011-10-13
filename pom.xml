@@ -2707,7 +2707,17 @@
       <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>pdfbox</artifactId>
-        <version>1.5.0</version>
+        <version>1.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>fontbox</artifactId>
+        <version>1.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>jempbox</artifactId>
+        <version>1.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
@@ -2718,16 +2728,6 @@
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15</artifactId>
         <version>1.45</version>
-      </dependency>
-      <dependency>
-        <groupId>org.fontbox</groupId>
-        <artifactId>fontbox</artifactId>
-        <version>0.1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jempbox</groupId>
-        <artifactId>jempbox</artifactId>
-        <version>0.2.0</version>
       </dependency>
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
