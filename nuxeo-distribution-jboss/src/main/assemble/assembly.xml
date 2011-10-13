@@ -33,7 +33,6 @@
       <excludes>
         <artifact artifactId="*-test" />
         <artifact artifactId="ejb-api" />
-        <artifact artifactId="jboss-ejb3-ext-api" />
         <artifact artifactId="nuxeo-runtime-remoting" />
         <artifact artifactId="jboss-remoting" />
         <artifact artifactId="jboss-as-system" />
@@ -269,7 +268,6 @@ org.nuxeo.ecm.product.name=Nuxeo DM
         <include name="nuxeo-core-storage-sql-ra-*.jar" />
         <include name="nuxeo-runtime-jetty-*" />
         <include name="nuxeo-runtime-jtajca*" />
-        <include name="nuxeo-platform-login-default*" />
       </fileset>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
         <include name="jboss-cache*" />

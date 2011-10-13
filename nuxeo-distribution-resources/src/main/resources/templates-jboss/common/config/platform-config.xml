@@ -21,62 +21,12 @@
     @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
 
-  <extension target="org.nuxeo.ecm.platform.api.PlatformService"
-    point="servers">
-    <documentation>The default platform layout</documentation>
-
-    <server name="default" host="${org.nuxeo.ecm.instance.host}" port="1099">
-
-      <service class="org.nuxeo.ecm.core.api.CoreSession" />
-      <service class="org.nuxeo.ecm.platform.types.TypeManager" />
-
-      <repository name="default" class="org.nuxeo.ecm.core.api.CoreSession"
-        description="Default Repository" />
-
-    </server>
-
-  </extension>
 
   <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
     point="repositories">
     <documentation>The default repository</documentation>
 
     <repository name="default" label="Default Repository" />
-
-  </extension>
-
-
-  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="servers">
-
-    <server class="org.nuxeo.runtime.api.JBossServiceLocator">
-      <group>*</group>
-      <!-- you should not specify here any properties for local server
-    to avoid doing socket calls for EJB lookups.
-    In order to define JNDI props for clients edit the nuxeo.properties file
-    and add nuxeo-client-jndi. prefixed props.
-    Anyway you can still use jndi properties here if you want to force the server itself to use them
-    when looking up in jndi. (this will also override nuxeo.properties jndi properties)
-
-    <property name="java.naming.factory.initial">
-      org.jnp.interfaces.NamingContextFactory
-    </property>
-    <property name="java.naming.factory.url.pkgs">
-      org.jboss.naming:org.jnp.interfaces
-    </property>
-    <property name="java.naming.provider.url">jnp://${org.nuxeo.ecm.instance.host}:1099</property>
-      -->
-    </server>
-
-  </extension>
-
-  <extension target="org.nuxeo.runtime.api.ServiceManagement"
-    point="services">
-
-    <service class="org.nuxeo.ecm.core.api.CoreSession" name="default"
-      group="core">
-      <!--adapter>org.nuxeo.ecm.core.api.CoreSessionAdapter</adapter-->
-      <locator>%DocumentManagerBean</locator>
-    </service>
 
   </extension>
 
