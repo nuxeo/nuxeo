@@ -204,6 +204,15 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
+     * Deletes a task instance (attached to a process or not)
+     * 
+     * @param principal the canceller.
+     * @Since 5.4.3
+     */
+    void deleteTaskInstance(NuxeoPrincipal principal, Long taskId)
+            throws NuxeoJbpmException;
+
+    /**
      * Returns a list of all current process instances this user has started.
      *
      * @param principal

@@ -811,6 +811,26 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
+    public void deleteTaskInstance(final NuxeoPrincipal principal,
+            final Long taskId) throws NuxeoJbpmException {
+        executeJbpmOperation(new JbpmOperation() {
+            private static final long serialVersionUID = 1L;
+
+            @SuppressWarnings("unchecked")
+            public Serializable run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                if (principal != null) {
+                    context.setActorId(principal.getName());
+                }
+                TaskInstance taskInstance = context.getTaskInstance(taskId.longValue());
+                List<TaskInstance> toRemove = new ArrayList<TaskInstance>();
+                toRemove.add(taskInstance);
+                context.getSession().delete(taskInstance);
+                return null;
+            }
+        });
+    }
+
     public ProcessDefinition getProcessDefinitionByName(final String name)
             throws NuxeoJbpmException {
         return (ProcessDefinition) executeJbpmOperation(new JbpmOperation() {

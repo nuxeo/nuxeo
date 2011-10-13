@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.jbpm.core.listener;
 import java.util.List;
 
 import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,9 +32,10 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener that delete process instance and related tasks when the process is
- * attached to a document that is being deleted.
- *
+ * Listener that deletes process instance and related tasks when the process is
+ * attached to a document that is being deleted. It also deletes related tasks
+ * of the document out of process.
+ * 
  * @author arussel
  */
 public class DeleteProcessForDeletedDocumentListener implements EventListener {
@@ -58,9 +60,19 @@ public class DeleteProcessForDeletedDocumentListener implements EventListener {
             NuxeoPrincipal principal = (NuxeoPrincipal) context.getPrincipal();
             List<ProcessInstance> processes = getJbpmService().getProcessInstances(
                     dm, principal, null);
-            for (ProcessInstance process : processes) {
-                getJbpmService().deleteProcessInstance(principal,
-                        Long.valueOf(process.getId()));
+            if(!processes.isEmpty()){
+                for (ProcessInstance process : processes) {
+                    getJbpmService().deleteProcessInstance(principal,
+                            Long.valueOf(process.getId()));
+                }
+            }
+            List<TaskInstance> tasks = getJbpmService().getTaskInstances(dm,
+                    principal, null);
+            if (!tasks.isEmpty()) {
+                for (TaskInstance task : tasks) {
+                    getJbpmService().deleteTaskInstance(principal,
+                            Long.valueOf(task.getId()));
+                }
             }
         }
     }
