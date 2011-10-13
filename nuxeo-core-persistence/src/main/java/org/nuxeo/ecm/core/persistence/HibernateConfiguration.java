@@ -137,7 +137,29 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         if (txType.equals(RESOURCE_LOCAL)) {
             cfg.getProperties().remove(Environment.DATASOURCE);
         }
-        return cfg.createEntityManagerFactory(properties);
+        return createEntityManagerFactory(properties);
+    }
+
+    // this must be executed always outside a transaction
+    // because SchemaUpdate tries to setAutoCommit(true)
+    // so we use a new thread
+    protected EntityManagerFactory createEntityManagerFactory(
+            final Map<String, String> properties) {
+        final EntityManagerFactory[] emf = new EntityManagerFactory[1];
+        Thread t = new Thread() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void run() {
+                emf[0] = cfg.createEntityManagerFactory(properties);
+            };
+        };
+        try {
+            t.start();
+            t.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return emf[0];
     }
 
     /**

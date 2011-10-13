@@ -4,7 +4,6 @@
     <extension target="org.nuxeo.runtime.EventService" point="listeners">
         <listener class="org.nuxeo.ecm.core.storage.sql.reload.RepositoryReloader">
             <topic>org.nuxeo.runtime.reload</topic>
-            <topic>reloadRepositories</topic>
         </listener>
     </extension>
 

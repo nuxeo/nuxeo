@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="test-listener2">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener async="true" postCommit="true" script="script/postCommitListener.groovy" name="testPostCommit">
+      <event>test</event>
+      <event>test1</event>
+    </listener>
+  </extension>
+
+</component>

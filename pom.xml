@@ -36,7 +36,6 @@
     <module>nuxeo-core-management</module>
     <module>nuxeo-core-management-jtajca</module>
     <module>nuxeo-core-management-test</module>
-    <module>nuxeo-core-facade</module>
     <module>nuxeo-core-test</module>
   </modules>
 
