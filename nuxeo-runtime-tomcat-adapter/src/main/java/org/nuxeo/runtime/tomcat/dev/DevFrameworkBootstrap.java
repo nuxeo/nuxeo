@@ -131,7 +131,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
             devBundles = null;
             return;
         }
-        installNewLoader(devBundles);
+        installNewClassLoader(devBundles);
     }
 
     protected void postloadDevBundles() throws Exception {
@@ -173,6 +173,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
         devBundles = bundles;
 
+        installNewClassLoader(devBundles);
+        
         // deploy last bundles
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
@@ -180,7 +182,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         reloadServiceInvoker.flush();
     }
 
-    protected void installNewLoader(DevBundle[] bundles) {
+    protected void installNewClassLoader(DevBundle[] bundles) {
         // flush and reset class loader
         NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.clear();
@@ -276,7 +278,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
 
     protected static String resourceBundleName(File file) {
         String name = file.getName();
-        int lastDotIdx = name.lastIndexOf('.');
+        int lastDotIdx = name.lastIndexOf('-');
         if (lastDotIdx == -1) {
             lastDotIdx = 0;
         }

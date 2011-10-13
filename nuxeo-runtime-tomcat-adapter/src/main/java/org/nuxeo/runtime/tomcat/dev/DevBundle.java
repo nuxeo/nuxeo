@@ -68,7 +68,7 @@ public class DevBundle implements Serializable {
             throws MalformedURLException {
         int index = line.indexOf(':');
         String typename = line.substring(0, index);
-        typename = typename.substring(0,1).toUpperCase() + typename.substring(1).toLowerCase();
+        typename = typename.substring(0,1).toUpperCase() + typename.substring(1);
         String path = line.substring(index + 1);
         return new DevBundle(path,
                 DevBundleType.valueOf(typename));

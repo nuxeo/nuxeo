@@ -43,18 +43,18 @@ public class IOUtils {
     
     public static void appendResourceBundleFragments(String name,
             List<File> files, File target) throws IOException {
-        File i18n = new File(target, name);
+        File l10n = new File(target, name);
         File backup = new File(target, name + "~bak");
         if (!backup.exists()) {
             backup.createNewFile();
-            IOUtils.copyContent(new FileInputStream(i18n),
+            IOUtils.copyContent(new FileInputStream(l10n),
                     new FileOutputStream(backup));
         }
         IOUtils.copyContent(new FileInputStream(backup), new FileOutputStream(
-                i18n));
+                l10n));
         for (File file : files) {
             InputStream in = new FileInputStream(file);
-            OutputStream out = new FileOutputStream(file, true);
+            OutputStream out = new FileOutputStream(l10n, true);
             IOUtils.copyContent(in, out);
         }
     }
