@@ -862,10 +862,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
                     idToTypes).entrySet()) {
                 String tableName = entry.getKey();
-                // TODO move ACL skip logic higher
-                if (tableName.equals(model.ACL_TABLE_NAME)) {
-                    continue;
-                }
                 Set<Serializable> ids = entry.getValue();
                 // boolean overwrite = overwriteId != null
                 // && !tableName.equals(model.hierTableName);
