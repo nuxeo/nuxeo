@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -59,14 +60,9 @@ public class GadgetSpecView {
 
     protected static List<String> getTrustedHosts() {
         if (trustedHosts == null) {
-            // initialize a temp list to avoid concurrent modification
-            // exception
-            List<String> tempTrustedHosts = new ArrayList<String>();
             OpenSocialService os = Framework.getLocalService(OpenSocialService.class);
-            for (String host : os.getTrustedHosts()) {
-                tempTrustedHosts.add(host);
-            }
-            trustedHosts = tempTrustedHosts;
+            trustedHosts = new ArrayList<String>(
+                    Arrays.asList(os.getTrustedHosts()));
         }
         return trustedHosts;
     }
