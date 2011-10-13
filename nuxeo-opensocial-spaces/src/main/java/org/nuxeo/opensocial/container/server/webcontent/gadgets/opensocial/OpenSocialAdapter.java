@@ -81,7 +81,7 @@ public class OpenSocialAdapter extends
         setGadgetName(data.getGadgetName());
 
         Map<String, Map<String, Serializable>> tmpMap = new LinkedHashMap<String, Map<String, Serializable>>();
-        
+
         List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
 
         for (Map<String, Serializable> entry : savedUserPrefs) {
@@ -206,9 +206,7 @@ public class OpenSocialAdapter extends
             NXGadgetContext context = new NXGadgetContext(data.getGadgetDef());
             return gadgetSpecFactory.getGadgetSpec(context);
         } catch (Exception e) {
-            log.warn("Unable to get gadget spec for " + data.getName() + ": "
-                    + e.getMessage());
-            log.debug(e, e);
+            log.error("Unable to get gadget spec for " + data.getName(), e);
             return null;
         }
     }
