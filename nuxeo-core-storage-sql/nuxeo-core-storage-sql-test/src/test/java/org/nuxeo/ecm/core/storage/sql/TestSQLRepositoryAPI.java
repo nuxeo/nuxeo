@@ -61,6 +61,11 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.EventConstants;
@@ -1510,6 +1515,53 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.exists(returnedChildDocs.get(2).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(3).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(4).getRef()));
+    }
+
+    public void testRemoveDocumentTreeWithSecurity() throws Exception {
+        ACP acp;
+        ACL acl;
+        DocumentModelList dml;
+
+        DocumentModel root = session.getRootDocument();
+        DocumentModel f1 = session.createDocumentModel("/", "f1", "Folder");
+        f1 = session.createDocument(f1);
+        DocumentModel doc1 = session.createDocumentModel("/f1", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/f1", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        // set ACP on root
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Everything", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+        // set ACP on doc1 to block bob
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("bob", "Everything", false));
+        acp.addACL(acl);
+        doc1.setACP(acp, true);
+        session.save();
+
+        // check admin sees doc1 and doc2
+        dml = session.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f1'");
+        assertEquals(2, dml.size());
+
+        // as bob
+        closeSession();
+        session = openSessionAs("bob");
+
+        // check bob doesn't see doc1
+        dml = session.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f1'");
+        assertEquals(1, dml.size());
+
+        // do copy
+        session.copy(f1.getRef(), root.getRef(), "f2");
+
+        // check bob doesn't see doc1's copy
+        dml = session.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f2'");
+        assertEquals(1, dml.size());
     }
 
     public void testSave() throws ClientException {
