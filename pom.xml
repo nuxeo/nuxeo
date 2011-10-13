@@ -14,10 +14,6 @@
 
   <dependencies>
     <dependency>
-      <artifactId>nuxeo-core-facade</artifactId>
-      <groupId>org.nuxeo.ecm.core</groupId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-login-shibboleth</artifactId>
     </dependency>
