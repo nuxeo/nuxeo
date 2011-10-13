@@ -109,7 +109,7 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertNotNull(result);
         String textContent = result.getBlob().getString().trim();
 
-        // test that the first word is 'internet' in arabic
+        // test that the first word is 'internet' in Arabic
         assertTrue(textContent.startsWith("\u0625\u0646\u062a\u0631\u0646\u062a"));
 
         // other words that occur in the document
@@ -121,7 +121,6 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertTrue(textContent.contains("\u062c\u0632\u0621"));
         assertTrue(textContent.contains("\u0628\u0633\u064a\u0637"));
         assertTrue(textContent.contains("\u0645\u0646"));
-        assertTrue(textContent.contains("\u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a"));
         assertTrue(textContent.contains("FTP"));
     }
 

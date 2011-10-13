@@ -36,7 +36,6 @@ public class PDFEncodingWarn {
 
     @Test
     public void extract() throws IOException {
-        log.info("Pfff");
         URL url = getClass().getResource("/test-docs/nutcracker.pdf");
         PDDocument doc = PDDocument.load(url);
         PDFTextStripper stripper = new PDF2TextConverter.PatchedPDFTextStripper();
