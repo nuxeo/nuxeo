@@ -48,8 +48,6 @@
     <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-login-default</module>
-    <module>nuxeo-platform-login-jboss</module>
-    <module>nuxeo-platform-auth-web-jboss</module>
     <module>nuxeo-platform-placeful-api</module>
     <module>nuxeo-platform-placeful-core</module>
     <module>nuxeo-platform-uidgen-core</module>
