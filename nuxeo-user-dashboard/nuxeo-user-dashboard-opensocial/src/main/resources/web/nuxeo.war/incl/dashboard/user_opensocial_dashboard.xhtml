@@ -15,10 +15,6 @@
 
     <ui:decorate template="/incl/opensocial_container_template.xhtml">
 
-      <ui:define name="opensocial_container_title">
-        <h1>#{messages['label.user.dashboard']}</h1>
-      </ui:define>
-
       <ui:define name="opensocial_container_actions">
         <c:if test="#{not currentUser.anonymous}">
           <div class="opensocial_buttons">
