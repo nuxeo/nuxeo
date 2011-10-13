@@ -24,9 +24,11 @@ import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
@@ -71,6 +73,11 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
 
     @Override
     public void tearDown() throws Exception {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        if (coreSession != null) {
+            CoreInstance.getInstance().close(coreSession);
+            coreSession = null;
+        }
         service = null;
         root = null;
 
@@ -169,48 +176,48 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertNotNull(doc.getProperty("file", "content"));
     }
 
-    protected static final String NOTE_XML_CONTENT
-            = "<?xml version=\"1.0\"?>\n<foo>\n  <bar>Hello from XML document</bar>\n</foo>\n";
+    protected static final String NOTE_HTML_CONTENT
+            = "<html>\n<body>\n  <p>Hello from HTML document</p>\n</body>\n</html>";
 
     public void testCreateNote() throws Exception {
-        File file = getTestFile("test-data/hello.xml");
+        File file = getTestFile("test-data/hello.html");
 
         byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/xml");
+        ByteArrayBlob input = new ByteArrayBlob(content, "text/html");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.xml");
+                workspace.getPathAsString(), true, "test-data/hello.html");
         assertNotNull(doc);
-        assertEquals("hello.xml", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
+        assertEquals("hello.html", doc.getProperty("dublincore", "title"));
+        assertEquals(NOTE_HTML_CONTENT, doc.getProperty("note", "note"));
     }
 
     public void testCreateNoteTwiceFromSameBlob() throws Exception {
         // create doc
-        File file = getTestFile("test-data/hello.xml");
+        File file = getTestFile("test-data/hello.html");
 
         byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/xml");
+        ByteArrayBlob input = new ByteArrayBlob(content, "text/html");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.xml");
+                workspace.getPathAsString(), true, "test-data/hello.html");
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
-        assertEquals("hello.xml", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
+        assertEquals("hello.html", doc.getProperty("dublincore", "title"));
+        assertEquals(NOTE_HTML_CONTENT, doc.getProperty("note", "note"));
 
         List<DocumentModel> versions = coreSession.getVersions(docRef);
         assertEquals(0, versions.size());
 
         // create again with same file
         doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.xml");
+                workspace.getPathAsString(), true, "test-data/hello.html");
         assertNotNull(doc);
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
-        assertEquals("hello.xml", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
+        assertEquals("hello.html", doc.getProperty("dublincore", "title"));
+        assertEquals(NOTE_HTML_CONTENT, doc.getProperty("note", "note"));
 
         versions = coreSession.getVersions(docRef);
         assertEquals(1, versions.size());

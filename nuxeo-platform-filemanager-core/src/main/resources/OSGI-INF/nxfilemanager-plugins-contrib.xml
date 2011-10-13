@@ -20,8 +20,6 @@
       <filter>text/plain</filter>
       <filter>text/html</filter>
       <filter>application/xhtml+xml</filter>
-      <filter>application/xml</filter>
-      <filter>text/xml</filter>
     </plugin>
 
     <plugin name="DefaultFileImporter"
