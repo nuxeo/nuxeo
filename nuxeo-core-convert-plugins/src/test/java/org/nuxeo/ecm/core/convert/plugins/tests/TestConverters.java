@@ -96,10 +96,9 @@ public class TestConverters extends BaseConverterTest {
         assertTrue(textContent.contains("d\u00e9j\u00e0"));
     }
 
-    // disabled: need to upgrade to version > 0.7.3 version of PDFBox with fix for:
-    // https://issues.apache.org/jira/browse/PDFBOX-377
-    public void disabledTestPDFArabicConverter() throws Exception {
-        doTestArabicTextConverter("application/pdf", "pdf2text", "wikipedia-internet-ar.pdf");
+    public void testPDFArabicConverter() throws Exception {
+        doTestArabicTextConverter("application/pdf", "pdf2text",
+                "wikipedia-internet-ar.pdf");
     }
 
     public void testAnyToTextConverter() throws Exception {

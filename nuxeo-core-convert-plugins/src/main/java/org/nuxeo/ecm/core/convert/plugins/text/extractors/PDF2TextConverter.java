@@ -33,8 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.encryption.PDEncryptionDictionary;
-import org.apache.pdfbox.pdmodel.encryption.PDStandardEncryption;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.PDFTextStripper;
@@ -47,13 +46,16 @@ import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
-@SuppressWarnings("deprecation")
 public class PDF2TextConverter implements Converter {
 
     public static class PatchedPDFTextStripper extends PDFTextStripper {
 
         public PatchedPDFTextStripper() throws IOException {
             super();
+            // platform independent line and paragraph separators
+            setLineSeparator("\n");
+            setParagraphEnd("\n\n");
+            setArticleEnd("\n\n");
         }
 
         protected Object unrestrictedAccess(String name) {
@@ -122,24 +124,24 @@ public class PDF2TextConverter implements Converter {
         OutputStream fas = null;
         try {
             document = PDDocument.load(blobHolder.getBlob().getStream());
-
             // NXP-1556: if document is protected an IOException will be raised
             // Instead of catching the exception based on its message string
             // lets avoid sending messages that will generate this error
             // code taken from PDFTextStripper.writeText source.
-            Boolean isReadable = true;
-            PDEncryptionDictionary encDictionary = document.getEncryptionDictionary();
             // only care about standard encryption and if it was decrypted with
-            // the
-            // user password
-            if (encDictionary instanceof PDStandardEncryption
-                    && !document.wasDecryptedWithOwnerPassword()) {
-                PDStandardEncryption stdEncryption = (PDStandardEncryption) encDictionary;
-                isReadable = stdEncryption.canExtractContent();
-            }
-            if (isReadable) {
-                String text = new PatchedPDFTextStripper().getText(document);
-                text = text.replace("\u00a0", " ");
+            // the user password
+            AccessPermission permission = document.getCurrentAccessPermission();
+            if (permission.canExtractContent()) {
+                PatchedPDFTextStripper textStripper = new PatchedPDFTextStripper();
+
+                // use the position information to heuristically organize the
+                // extracted paragraphs. This is also important for
+                // right-to-left languages.
+                textStripper.setSortByPosition(true);
+
+                String text = textStripper.getText(document);
+                // replace non breaking space by regular spaces (why?)
+                // text = text.replace("\u00a0", " ");
                 f = File.createTempFile("pdfboplugin", ".txt");
                 fas = new FileOutputStream(f);
                 fas.write(text.getBytes("UTF-8"));
