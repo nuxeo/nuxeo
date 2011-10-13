@@ -530,7 +530,7 @@
             <field>data.ref</field>
             <field>data.dc.description</field>
             <field>data.file.content</field>
-            <field>data.file.filename</field>
+            <field>data.file.content.filename</field>
           </defaultConfiguration>
         </fields>
         <categories>
@@ -894,7 +894,7 @@
         <field>data.ref</field>
         <field>data.dc.description</field>
         <field>data.file.content</field>
-        <field>data.file.filename</field>
+        <field>data.file.content.filename</field>
       </fields>
       <properties mode="any">
         <property name="file_property_name">file:content</property>
