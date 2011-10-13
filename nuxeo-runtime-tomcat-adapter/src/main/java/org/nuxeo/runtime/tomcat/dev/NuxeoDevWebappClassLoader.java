@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +44,8 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         return cl;
     }
 
+    protected DevFrameworkBootstrap bootstrap;
+
     protected File webinf;
 
     protected List<LocalClassLoader> children;
@@ -60,8 +61,13 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         this.children = new ArrayList<LocalClassLoader>();
     }
 
-    public void setHome(File dir) {
-        webinf = new File(dir, "WEB-INF");
+    public void setBootstrap(DevFrameworkBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
+        webinf = new File(new File(bootstrap.getHome(), "nuxeo.war"), "WEB-INF");
+    }
+
+    public DevFrameworkBootstrap getBootstrap() {
+        return bootstrap;
     }
 
     public synchronized void addChildren(LocalClassLoader loader) {
@@ -145,7 +151,7 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         }
         return urls;
     }
-    
+
     @Override
     public void addURL(URL url) {
         super.addURL(url);

@@ -142,11 +142,14 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
         lastModified = tm;
         try {
-            reloadDevBundles(DevBundle.parseDevBundleLines(new FileInputStream(
-                    devBundlesFile)));
+            reloadDevBundles();
         } catch (Exception e) {
             log.error("Faied to deploy dev bundles", e);
         }
+    }
+
+    public void reloadDevBundles() throws Exception {
+        DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile));
     }
 
     public void resetDevBundles(String path) {

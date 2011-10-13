@@ -42,8 +42,9 @@ import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
 public class NuxeoLauncher implements LifecycleListener {
 
     public static final String DEV_BUNDLES_NAME = "org.nuxeo:type=sdk,name=dev-bundles";
+
     public static final String WEB_RESOURCES_NAME = "org.nuxeo:type=sdk,name=web-resources";
-            
+
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
     protected boolean shared; // TODO
@@ -98,15 +99,14 @@ public class NuxeoLauncher implements LifecycleListener {
                 File homeDir = resolveHomeDirectory(loader);
                 if (devMode) {
                     bootstrap = new DevFrameworkBootstrap(
-                            (MutableClassLoader) cl,
-                            homeDir);
+                            (MutableClassLoader) cl, homeDir);
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.registerMBean(bootstrap, new ObjectName(DEV_BUNDLES_NAME));
+                    server.registerMBean(bootstrap, new ObjectName(
+                            DEV_BUNDLES_NAME));
                     server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
-                    ( (NuxeoDevWebappClassLoader)cl).setHome(new File(getHome()));
+                    ((NuxeoDevWebappClassLoader) cl).setBootstrap((DevFrameworkBootstrap) bootstrap);
                 } else {
-                    bootstrap = new FrameworkBootstrap(
-                            (MutableClassLoader) cl,
+                    bootstrap = new FrameworkBootstrap((MutableClassLoader) cl,
                             homeDir);
                 }
                 bootstrap.setHostName("Tomcat");
@@ -119,7 +119,7 @@ public class NuxeoLauncher implements LifecycleListener {
                 if (devMode) {
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                     server.unregisterMBean(new ObjectName(DEV_BUNDLES_NAME));
-                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));                   
+                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));
                 }
             }
         } catch (Throwable e) {
