@@ -326,11 +326,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-facade</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-io</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
@@ -442,11 +437,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-auth-web-jboss</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-commandline-executor</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -538,11 +528,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login-default</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-jboss</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
@@ -2228,21 +2213,6 @@
         <version>2.2</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.ejb3</groupId>
-        <artifactId>jboss-ejb3-ext-api</artifactId>
-        <version>1.0.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jboss.javaee</groupId>
-            <artifactId>jboss-ejb-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.metadata</groupId>
-            <artifactId>jboss-metadata</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.remoting</groupId>
         <artifactId>jboss-remoting</artifactId>
         <version>2.5.1</version>
@@ -2320,23 +2290,8 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.security</groupId>
-        <artifactId>jboss-security-spi</artifactId>
-        <version>2.0.3.SP1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.security</groupId>
         <artifactId>jbosssx</artifactId>
         <version>2.0.3.SP1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.security</groupId>
-        <artifactId>jbosssx-client</artifactId>
-        <version>2.0.3.SP1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-security</artifactId>
-        <version>${version.org.jboss.integration}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
