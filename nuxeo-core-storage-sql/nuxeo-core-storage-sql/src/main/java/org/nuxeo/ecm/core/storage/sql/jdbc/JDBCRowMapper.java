@@ -835,10 +835,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     // restore must not copy versions either
                     continue;
                 }
-                // TODO move ACL skip logic higher
-                if (tableName.equals(model.ACL_TABLE_NAME)) {
-                    continue;
-                }
                 Set<Serializable> ids = entry.getValue();
                 if (tableName.equals(model.PROXY_TABLE_NAME)) {
                     for (Serializable id : ids) {
