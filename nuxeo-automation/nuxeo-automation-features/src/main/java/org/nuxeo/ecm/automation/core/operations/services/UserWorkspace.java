@@ -30,7 +30,7 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = UserWorkspace.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Home", description = "Retrieve user's personal workspace.")
 public class UserWorkspace {
 
-    public static final String ID = "Userworkspace.Get";
+    public static final String ID = "UserWorkspace.Get";
 
     @Context
     protected CoreSession session;
