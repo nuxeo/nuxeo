@@ -205,7 +205,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Gets a list of rows for {@link SimpleFragment}s from the database, given
      * the table name and the ids.
-     * 
+     *
      * @param tableName the table name
      * @param ids the ids
      * @return the list of rows, without the missing ones
@@ -224,7 +224,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     /**
      * Reads several collection rows, given a table name and the ids.
-     * 
+     *
      * @param tableName the table name
      * @param ids the ids
      */
@@ -916,7 +916,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * (source) fragment.
      * <p>
      * TODO: this should be optimized to use a stored procedure.
-     * 
+     *
      * @param overwriteId when not {@code null}, the copy is done onto this
      *            existing node (skipped)
      * @return the new root id
@@ -949,7 +949,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * {@code idMap} is filled with info about the correspondence between
      * original and copied ids. {@code idType} is filled with the type of each
      * (source) fragment.
-     * 
+     *
      * @return the new id
      */
     protected Serializable copyHier(Serializable id, Serializable parentId,
@@ -1070,7 +1070,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * given by idMap.
      * <p>
      * A new row with id {@code overwriteId} is first deleted.
-     * 
+     *
      * @return {@link Boolean#TRUE} for a modification or creation,
      *         {@link Boolean#FALSE} for a deletion, {@code null} otherwise
      *         (still absent)
