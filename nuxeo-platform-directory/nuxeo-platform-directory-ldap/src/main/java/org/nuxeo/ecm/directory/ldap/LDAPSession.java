@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,11 +55,13 @@ import javax.naming.directory.SearchResult;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -544,9 +547,15 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 currentFilter.append(")");
                 filters[index] = currentFilter.toString();
                 if (fieldValue != null && !"".equals(fieldValue)) {
-                    // XXX: what kind of Objects can we get here? Is toString()
-                    // enough?
-                    filterArgs[index] = fieldValue.toString();
+                    if (fieldValue instanceof Blob) {
+                        // filter arg could be a sequence of \xx where xx is the
+                        // hexadecimal value of the byte
+                        log.warn("Binary search is not supported");
+                    } else {
+                        // XXX: what kind of Objects can we get here? Is
+                        // toString() enough?
+                        filterArgs[index] = fieldValue.toString();
+                    }
                 }
                 index++;
             }
@@ -757,6 +766,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         fieldName, typeName, trimmedValue));
                 return defaultValue;
             }
+        } else if ("content".equals(typeName)) {
+            return new ByteArrayBlob((byte[]) value);
         } else {
             throw new DirectoryException(
                     "Field type not supported in directories: " + typeName);
@@ -796,6 +807,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     "yyyyMMddHHmmss'Z'");
             dateFormat.setTimeZone(new SimpleTimeZone(0, "Z"));
             attribute.add(dateFormat.format(date));
+        } else if ("content".equals(typeName)) {
+            try {
+                attribute.add(((Blob) value).getByteArray());
+            } catch (IOException e) {
+                throw new DirectoryException("Failed to get ByteArray value", e);
+            }
         } else {
             throw new DirectoryException(
                     "Field type not supported in directories: " + typeName);

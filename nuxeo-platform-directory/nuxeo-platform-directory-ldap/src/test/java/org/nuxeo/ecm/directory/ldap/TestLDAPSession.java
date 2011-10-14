@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,9 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -112,6 +117,13 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                     assertEquals(Arrays.asList("members", "subgroup"),
                             entry2.getProperty(USER_SCHEMANAME, "groups"));
                 }
+
+                Blob avatar = (Blob) entry2.getProperty(USER_SCHEMANAME, "avatar");
+                assertNotNull(avatar);
+                File file = FileUtils.getResourceFileFromContext("sample.jpg");
+                assertNotNull(file);
+                FileBlob expectedBlob = new FileBlob(file);
+                assertTrue(Arrays.equals(expectedBlob.getByteArray(), avatar.getByteArray()));
             }
 
             DocumentModel entry3 = session.getEntry("UnexistingEntry");
@@ -559,7 +571,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
-    public void testCreateEntry3() throws ClientException {
+    public void testCreateEntry3() throws Exception {
         Session session = null;
 
         try {
@@ -593,10 +605,15 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
                 map.put("employeeType", Collections.<String>emptyList());
 
+                Blob cert = new ByteArrayBlob("Hello world!".getBytes());
+                map.put("certificate", cert);
+
                 user = session.getEntry(session.createEntry(map).getId());
                 assertNotNull(user);
                 assertEquals(Collections.<String> emptyList(),
                         user.getProperty(USER_SCHEMANAME, "employeeType"));
+                cert = (Blob) user.getProperty(USER_SCHEMANAME, "certificate");
+                assertEquals("Hello world!", new String(cert.getByteArray()));
             }
         } finally {
             if (session != null) {
