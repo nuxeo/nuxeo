@@ -116,7 +116,7 @@ public class BasicManagedDataSourceFactory implements ObjectFactory {
 
     public static final String PROP_XADATASOURCE = "xaDataSource";
 
-    private static final String[] ALL_PROPERTIES = { //
+    protected static final String[] ALL_PROPERTIES = { //
     PROP_DEFAULTAUTOCOMMIT, //
             PROP_DEFAULTREADONLY, //
             PROP_DEFAULTTRANSACTIONISOLATION, //

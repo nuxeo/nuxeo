@@ -46,8 +46,8 @@ public class TestDataSourceDescriptor extends TestCase {
         Reference ref = descr.getReference();
         Map<String, String> expected = new HashMap<String, String>();
         expected.put("maxIdle", "123");
-        expected.put("property.bar", "gee");
-        expected.put("property.baz", "moo");
+        expected.put("bar", "gee");
+        expected.put("baz", "moo");
         Map<String, String> actual = new HashMap<String, String>();
         for (RefAddr addr : Collections.list(ref.getAll())) {
             actual.put(addr.getType(), (String) addr.getContent());
