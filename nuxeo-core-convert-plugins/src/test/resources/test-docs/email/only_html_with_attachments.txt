@@ -18,143 +18,130 @@ inquit viri fortes mihi periclitanti vobiscum.
 
 --
 Anahide Tchertchian, Nuxeo
-Mail: at@nuxeo.com <mailto:at@nuxeo.com> - Tel: +33 (0)1 40 33 79 87
-http://www.nuxeo.com <http://www.nuxeo.com> - http://www.nuxeo.org
-<http://www.nuxeo.org> before.jpg  after.jpg  Nuxeo: open source ECM - Enterprise Content Management.html * Community <http://www.nuxeo.org>
-    * Forums <http://www.nuxeo.org/discussions/index.jspa>
-    * Blogs <http://blogs.nuxeo.com>
-    * Corporate <>
-  [Nuxeo] </>
+Mail: at@nuxeo.com - Tel: +33 (0)1 40 33 79 87
+http://www.nuxeo.com - http://www.nuxeo.org before.jpg  after.jpg  Nuxeo: open source ECM - Enterprise Content Management.html * Community
+    * Forums
+    * Blogs
+    * Corporate
+  [Nuxeo]
 
-    * Société </nuxeo/>
-    * Actualités </news/>
-    * Produits </produits/>
-    * Services </offre/>
-    * Clients </clients/>
-    * Partenaires </nuxeo/partenaires/>
-    * Presse </presse/>
-    * Télécharger </downloads/>
-    * Contact </nuxeo/contact/>
+    * Société
+    * Actualités
+    * Produits
+    * Services
+    * Clients
+    * Partenaires
+    * Presse
+    * Télécharger
+    * Contact
 
-[English version] </en/>
+[English version]
 
     Éditeur ECM open source
 
     Depuis sa création en 2000, Nuxeo propose, aux organisations les plus
     exigeantes, une plateforme d'ECM (Entreprise Content Management) open
-    source robuste et extensible. Nuxeo Platform </produits/platform/> et
-    les produits de la suite Nuxeo Galaxy </produits/> apportent une
-    réponse souple, à un coût maîtrisé et sans coûts de licence, aux
-    nouveaux enjeux de la gestion de l'information. » en savoir plus
-    </nuxeo/>
+    source robuste et extensible. Nuxeo Platform et les produits de la
+    suite Nuxeo Galaxy apportent une réponse souple, à un coût maîtrisé et
+    sans coûts de licence, aux nouveaux enjeux de la gestion de
+    l'information. » en savoir plus
 
-» Plus <http://www.nuxeo.com/events/>
+» Plus
 
 Événements à venir
 
 Dec
 1
-Premier «Nuxeo Developer Day» <http://www.nuxeo.com/events/nuxeo-devday/>
+Premier «Nuxeo Developer Day»
 
 Maison de la Chimie, Paris 7e
 
 Dec
 9
 Présentation de Nuxeo Courrier
-<http://www.nuxeo.com/events/nuxeo-courrier/>
 
 Salon Dématerialiser
 
 Dec
 11
 Talk Interopérabilité du Directeur R&D
-<http://www.nuxeo.com/events/fguillaume-devoxx/>
 
 Devoxx - Anvers, Belgique
 
-RSS <
-http://www.nuxeo.com/events/news.rss
->
+RSS
 
-    » Plus <http://www.nuxeo.com/news/>
+    » Plus
 
     Actu
 
     20 Nov • Nuxeo réussit une levée de fonds de 2 millions d'Euros et
     structure sa gouvernance
-    <http://www.nuxeo.com/news/nuxeo-reussit-levee/>
     18 Nov • Slides de Nuxeo Courrier
-    <http://www.nuxeo.com/news/slides-nuxeo-courrier/>
     17 Nov • Nuxeo adhère à OASIS
-    <http://www.nuxeo.com/news/nuxeo-oasis-cmis/>
-    RSS <
-http://www.nuxeo.com/news.rss
->
+    RSS
 
-    [Nuxeo first developer day] </events/nuxeo-devday/>
-  </nuxeo/partenaires/takoma/> </nuxeo/partenaires/recrutement-oem/>
+    [Nuxeo first developer day]
 
     Produits
 
-    DOWNLOAD! </downloads/>
-    Nuxeo Platform </produits/platform/>
-    Nuxeo Entreprise Platform </produits/platform/ep/>
-    Nuxeo WebEngine </produits/platform/webengine/>
-    Nuxeo RCP </produits/platform/rcp/>
-    Nuxeo NewsWave </produits/newswave/>
-    » Découvrez la suite Galaxy! </produits/>
+    DOWNLOAD!
+    Nuxeo Platform
+    Nuxeo Entreprise Platform
+    Nuxeo WebEngine
+    Nuxeo RCP
+    Nuxeo NewsWave
+    » Découvrez la suite Galaxy!
 
 Services
 
-ABONNEZ-VOUS! </nuxeo/contact/>
-Nuxeo Connect </offre/support/>
-Nuxeo Connect Project </offre/support/project/>
-Nuxeo Connect Operations </offre/support/production/>
-INSCRIVEZ-VOUS! </offre/form/integrateur/#inscription>
-Formations </offre/form/>
-Conseil & Développement </offre/conseil/>
-» Découvrez tous nos services </offre/>
+ABONNEZ-VOUS!
+Nuxeo Connect
+Nuxeo Connect Project
+Nuxeo Connect Operations
+INSCRIVEZ-VOUS!
+Formations
+Conseil & Développement
+» Découvrez tous nos services
 
 écosystème
 
-Nos clients </clients/>
-Nos partenaires </nuxeo/partenaires/>
-Intégrateurs </nuxeo/partenaires/#integrator>
-OEM </nuxeo/partenaires/#oem>
-Communauté </nuxeo/communaute/>
-» Vous souhaitez devenir partenaire? </offre/support/#partner>
+Nos clients
+Nos partenaires
+Intégrateurs
+OEM
+Communauté
+» Vous souhaitez devenir partenaire?
 
 Société
 
-    * À propos de Nuxeo </nuxeo/>
-    * Événements </events/>
-    * Offres d'emplois </nuxeo/jobs/>
+    * À propos de Nuxeo
+    * Événements
+    * Offres d'emplois
 
-Produits </produits/>
+Produits
 
-    * Nuxeo Platform </produits/platform/>
-    * Nuxeo NewsWave </produits/newswave/>
+    * Nuxeo Platform
+    * Nuxeo NewsWave
 
-Services </offre/>
+Services
 
-    * Nuxeo Connect </offre/support/>
-    * Formations </offre/form/>
-    * Conseil & Développement </offre/conseil/>
+    * Nuxeo Connect
+    * Formations
+    * Conseil & Développement
 
-Partenariats </nuxeo/partenaires/>
+Partenariats
 
-    * Intégrateurs </nuxeo/partenaires/#integrator>
-    * OEM </nuxeo/partenaires/#oem>
-    * Devenir partenaire </offre/support/#partner>
+    * Intégrateurs
+    * OEM
+    * Devenir partenaire
 
 Clients
-    * Études de cas </downloads/#casestudy>
-    * Tous nos clients </clients/> </clients/>
+    * Études de cas
+    * Tous nos clients
 
  Nuxeo @ 18-20 rue Soleillet (BL 13), 75020 PARIS, France | Tél: +33 (0)1
  40 33 79 87 | Fax: +33 (0)1 40 33 71 41 | Email: contact@nuxeo.com
- <mailto:contact@nuxeo.com>
 
  © 2001-2008 Nuxeo. All rights reserved.
 
- Disclaimer </nuxeo/legal/> 
+ Disclaimer 

@@ -22,21 +22,26 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import net.htmlparser.jericho.Renderer;
 import net.htmlparser.jericho.Source;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.runtime.services.streaming.StreamSource;
+import org.nuxeo.runtime.services.streaming.StringSource;
 
 /**
  * Extract the text content of HTML documents while trying to respect the
  * paragraph structure.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
@@ -50,10 +55,27 @@ public class Html2TextConverter implements Converter {
 
         InputStream stream = null;
         try {
-            stream = blobHolder.getBlob().getStream();
+            Blob blob = blobHolder.getBlob();
+            Source source = null;
 
-            Source source = new Source(stream);
-            String text = source.getRenderer().toString();
+            // if the underlying source is unambiguously decoded, access the
+            // decoded string directly
+            if (blob instanceof StreamingBlob) {
+                StreamingBlob sblob = (StreamingBlob) blob;
+                StreamSource streamSource = sblob.getStreamSource();
+                if (streamSource instanceof StringSource) {
+                    source = new Source(
+                            ((StringSource) streamSource).getString());
+                }
+            }
+            if (source == null) {
+                // use the parser charset heuristic to decode properly
+                source = new Source(blob.getStream());
+            }
+            Renderer renderer = source.getRenderer();
+            renderer.setIncludeHyperlinkURLs(false);
+            renderer.setDecorateFontStyles(false);
+            String text = renderer.toString();
             text = text.replaceAll("\r\n", "\n"); // unix end of line
             text = text.replaceAll(" *\n", "\n"); // clean trailing spaces
             text = text.replaceAll("\\n\\n+", "\n\n"); // clean multiple lines

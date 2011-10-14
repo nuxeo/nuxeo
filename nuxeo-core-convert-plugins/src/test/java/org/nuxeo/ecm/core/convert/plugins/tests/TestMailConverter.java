@@ -87,7 +87,8 @@ public class TestMailConverter extends BaseConverterTest {
         assertEquals("text/plain", result.getMimeType());
 
         String actual = result.getString();
-        String expected = getTestBlob("test-docs/email/text_and_html_with_attachments.txt").getString();
+        String expected = getTestBlob(
+                "test-docs/email/text_and_html_with_attachments.txt").getString();
         assertEquals(expected, actual);
     }
 
