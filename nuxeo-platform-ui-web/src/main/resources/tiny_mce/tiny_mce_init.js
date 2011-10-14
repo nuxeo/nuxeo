@@ -18,6 +18,7 @@ tinyMCE.init({
 		remove_script_host : false,
         skin : "o2k7",
         skin_variant : "silver",
+    theme_advanced_disable : "styleselect",
 		theme_advanced_buttons3 : "hr,removeformat,visualaid,|,sub,sup,|,charmap,|",
 		theme_advanced_buttons3_add : toolbar
 });
