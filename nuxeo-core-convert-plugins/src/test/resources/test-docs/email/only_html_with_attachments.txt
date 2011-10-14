@@ -1,155 +1,160 @@
-test html with inline and attachment Anahide Tchertchian <at@nuxeo.com> Anahide Tchertchian <at@nuxeo.com> 
-
-Hinc ille
-commotus ut iniusta perferens et indigna praefecti custodiam
+test html with inline and attachment Anahide Tchertchian <at@nuxeo.com> Anahide Tchertchian <at@nuxeo.com> Hinc ille commotus ut iniusta perferens et indigna praefecti custodiam
 protectoribus mandaverat fidis. quo conperto Montius tunc quaestor acer
 quidem sed ad lenitatem propensior, consulens in commune advocatos
-palatinarum primos scholarum adlocutus est mollius docens nec decere
-haec fieri nec prodesse addensque vocis obiurgatorio sonu quod si id
-placeret, post statuas Constantii deiectas super adimenda vita
-praefecto conveniet securius cogitari.
+palatinarum primos scholarum adlocutus est mollius docens nec decere haec
+fieri nec prodesse addensque vocis obiurgatorio sonu quod si id placeret,
+post statuas Constantii deiectas super adimenda vita praefecto conveniet
+securius cogitari.
 
-Tempore
-quo primis auspiciis in mundanum fulgorem surgeret victura dum erunt
-homines Roma, ut augeretur sublimibus incrementis, foedere pacis
+Tempore quo primis auspiciis in mundanum fulgorem surgeret victura dum
+erunt homines Roma, ut augeretur sublimibus incrementis, foedere pacis
 aeternae Virtus convenit atque Fortuna plerumque dissidentes, quarum si
 altera defuisset, ad perfectam non venerat summitatem.
 
-His
-cognitis Gallus ut serpens adpetitus telo vel saxo iamque spes extremas
+His cognitis Gallus ut serpens adpetitus telo vel saxo iamque spes extremas
 opperiens et succurrens saluti suae quavis ratione colligi omnes iussit
 armatos et cum starent attoniti, districta dentium acie stridens adeste
 inquit viri fortes mihi periclitanti vobiscum.
 
 --
 Anahide Tchertchian, Nuxeo
-Mail: at@nuxeo.com - Tel: +33 (0)1 40 33 79 87
-http://www.nuxeo.com - http://www.nuxeo.org
+Mail: at@nuxeo.com <mailto:at@nuxeo.com> - Tel: +33 (0)1 40 33 79 87
+http://www.nuxeo.com <http://www.nuxeo.com> - http://www.nuxeo.org
+<http://www.nuxeo.org> before.jpg  after.jpg  Nuxeo: open source ECM - Enterprise Content Management.html * Community <http://www.nuxeo.org>
+    * Forums <http://www.nuxeo.org/discussions/index.jspa>
+    * Blogs <http://blogs.nuxeo.com>
+    * Corporate <>
+  [Nuxeo] </>
 
- before.jpg  after.jpg  Nuxeo: open source ECM - Enterprise Content Management.html 
+    * Société </nuxeo/>
+    * Actualités </news/>
+    * Produits </produits/>
+    * Services </offre/>
+    * Clients </clients/>
+    * Partenaires </nuxeo/partenaires/>
+    * Presse </presse/>
+    * Télécharger </downloads/>
+    * Contact </nuxeo/contact/>
 
- Nuxeo: open source ECM - Enterprise Content Management
+[English version] </en/>
 
- Community Forums Blogs Corporate
+    Éditeur ECM open source
 
- Société Actualités Produits Services Clients Partenaires Presse Télécharger Contact
+    Depuis sa création en 2000, Nuxeo propose, aux organisations les plus
+    exigeantes, une plateforme d'ECM (Entreprise Content Management) open
+    source robuste et extensible. Nuxeo Platform </produits/platform/> et
+    les produits de la suite Nuxeo Galaxy </produits/> apportent une
+    réponse souple, à un coût maîtrisé et sans coûts de licence, aux
+    nouveaux enjeux de la gestion de l'information. » en savoir plus
+    </nuxeo/>
 
- Éditeur ECM open source
-
- Depuis sa création en 2000, Nuxeo propose, aux organisations les plus exigeantes, une plateforme d'ECM (Entreprise Content Management) open source robuste et extensible. Nuxeo Platform et les produits de la suite Nuxeo Galaxy apportent une réponse souple, à un coût maîtrisé et sans coûts de licence, aux nouveaux enjeux de la gestion de l'information. » en savoir plus
-
-» Plus
+» Plus <http://www.nuxeo.com/events/>
 
 Événements à venir
 
 Dec
-
 1
-
-Premier «Nuxeo Developer Day»
+Premier «Nuxeo Developer Day» <http://www.nuxeo.com/events/nuxeo-devday/>
 
 Maison de la Chimie, Paris 7e
 
 Dec
-
 9
-
 Présentation de Nuxeo Courrier
+<http://www.nuxeo.com/events/nuxeo-courrier/>
 
 Salon Dématerialiser
 
 Dec
-
 11
-
 Talk Interopérabilité du Directeur R&D
+<http://www.nuxeo.com/events/fguillaume-devoxx/>
 
 Devoxx - Anvers, Belgique
 
- RSS
+RSS <
+http://www.nuxeo.com/events/news.rss
+>
 
-» Plus
+    » Plus <http://www.nuxeo.com/news/>
 
-Actu
+    Actu
 
-20 Nov •
+    20 Nov • Nuxeo réussit une levée de fonds de 2 millions d'Euros et
+    structure sa gouvernance
+    <http://www.nuxeo.com/news/nuxeo-reussit-levee/>
+    18 Nov • Slides de Nuxeo Courrier
+    <http://www.nuxeo.com/news/slides-nuxeo-courrier/>
+    17 Nov • Nuxeo adhère à OASIS
+    <http://www.nuxeo.com/news/nuxeo-oasis-cmis/>
+    RSS <
+http://www.nuxeo.com/news.rss
+>
 
-Nuxeo réussit une levée de fonds de 2 millions d'Euros et structure sa gouvernance
+    [Nuxeo first developer day] </events/nuxeo-devday/>
+  </nuxeo/partenaires/takoma/> </nuxeo/partenaires/recrutement-oem/>
 
-18 Nov •
+    Produits
 
-Slides de Nuxeo Courrier
+    DOWNLOAD! </downloads/>
+    Nuxeo Platform </produits/platform/>
+    Nuxeo Entreprise Platform </produits/platform/ep/>
+    Nuxeo WebEngine </produits/platform/webengine/>
+    Nuxeo RCP </produits/platform/rcp/>
+    Nuxeo NewsWave </produits/newswave/>
+    » Découvrez la suite Galaxy! </produits/>
 
-17 Nov •
+Services
 
-Nuxeo adhère à OASIS
+ABONNEZ-VOUS! </nuxeo/contact/>
+Nuxeo Connect </offre/support/>
+Nuxeo Connect Project </offre/support/project/>
+Nuxeo Connect Operations </offre/support/production/>
+INSCRIVEZ-VOUS! </offre/form/integrateur/#inscription>
+Formations </offre/form/>
+Conseil & Développement </offre/conseil/>
+» Découvrez tous nos services </offre/>
 
- RSS
+écosystème
 
- Produits
+Nos clients </clients/>
+Nos partenaires </nuxeo/partenaires/>
+Intégrateurs </nuxeo/partenaires/#integrator>
+OEM </nuxeo/partenaires/#oem>
+Communauté </nuxeo/communaute/>
+» Vous souhaitez devenir partenaire? </offre/support/#partner>
 
- DOWNLOAD!
+Société
 
- Nuxeo Platform
+    * À propos de Nuxeo </nuxeo/>
+    * Événements </events/>
+    * Offres d'emplois </nuxeo/jobs/>
 
- Nuxeo Entreprise Platform
+Produits </produits/>
 
- Nuxeo WebEngine
+    * Nuxeo Platform </produits/platform/>
+    * Nuxeo NewsWave </produits/newswave/>
 
- Nuxeo RCP
+Services </offre/>
 
- Nuxeo NewsWave
+    * Nuxeo Connect </offre/support/>
+    * Formations </offre/form/>
+    * Conseil & Développement </offre/conseil/>
 
- » Découvrez la suite Galaxy!
+Partenariats </nuxeo/partenaires/>
 
- Services
+    * Intégrateurs </nuxeo/partenaires/#integrator>
+    * OEM </nuxeo/partenaires/#oem>
+    * Devenir partenaire </offre/support/#partner>
 
- ABONNEZ-VOUS!
+Clients
+    * Études de cas </downloads/#casestudy>
+    * Tous nos clients </clients/> </clients/>
 
- Nuxeo Connect
-
- Nuxeo Connect Project
-
- Nuxeo Connect Operations
-
- INSCRIVEZ-VOUS!
-
- Formations
-
- Conseil & Développement
-
- » Découvrez tous nos services
-
- écosystème
-
- Nos clients
-
- Nos partenaires
-
- Intégrateurs
-
- OEM
-
- Communauté
-
- » Vous souhaitez devenir partenaire?
-
- Société
-
- À propos de Nuxeo Événements Offres d'emplois Produits
-
- Nuxeo Platform Nuxeo NewsWave Services
-
- Nuxeo Connect Formations Conseil & Développement Partenariats
-
- Intégrateurs OEM Devenir partenaire Clients
-
- Études de cas Tous nos clients
-
- Nuxeo @ 18-20 rue Soleillet (BL 13), 75020 PARIS, France | Tél: +33 (0)1 40 33 79 87 | Fax: +33 (0)1 40 33 71 41 | Email: contact@nuxeo.com
+ Nuxeo @ 18-20 rue Soleillet (BL 13), 75020 PARIS, France | Tél: +33 (0)1
+ 40 33 79 87 | Fax: +33 (0)1 40 33 71 41 | Email: contact@nuxeo.com
+ <mailto:contact@nuxeo.com>
 
  © 2001-2008 Nuxeo. All rights reserved.
 
- Disclaimer
-
- 
+ Disclaimer </nuxeo/legal/> 

@@ -22,10 +22,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
+import net.htmlparser.jericho.Source;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,17 +32,17 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
-import org.xml.sax.InputSource;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
+ * Extract the text content of HTML documents while trying to respect the
+ * paragraph structure.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
 public class Html2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(Html2TextConverter.class);
-
-    public static final String TAG_FILTER_PARAMETER = "tagFilter";
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
@@ -54,29 +51,13 @@ public class Html2TextConverter implements Converter {
         InputStream stream = null;
         try {
             stream = blobHolder.getBlob().getStream();
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer();
-            String tagFilter = null;
-            if (parameters != null) {
-                tagFilter = (String) parameters.get(TAG_FILTER_PARAMETER);
-            }
-            HtmlParser parser = new HtmlParser(tagFilter);
 
-            SAXResult result = new SAXResult(new DefaultHandler());
-
-            InputSource inputSource = new InputSource(stream);
-            String encoding = blobHolder.getBlob().getEncoding();
-            if (encoding != null) {
-                inputSource.setEncoding(encoding);
-            }
-
-            SAXSource source = new SAXSource(parser, inputSource);
-            transformer.transform(source, result);
-
-            //HtmlHandler html2text = new HtmlHandler();
-            //String text = html2text.parse(stream);
-            String text = parser.getContents();
-
+            Source source = new Source(stream);
+            String text = source.getRenderer().toString();
+            text = text.replaceAll("\r\n", "\n"); // unix end of line
+            text = text.replaceAll(" *\n", "\n"); // clean trailing spaces
+            text = text.replaceAll("\\n\\n+", "\n\n"); // clean multiple lines
+            text = text.trim();
             return new SimpleCachableBlobHolder(new StringBlob(text,
                     "text/plain"));
         } catch (Exception e) {
