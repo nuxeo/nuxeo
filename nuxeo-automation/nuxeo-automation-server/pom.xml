@@ -58,15 +58,15 @@
       <artifactId>jackson-mapper-asl</artifactId>
     </dependency>
     <!-- must be removed - since will be replaced by jackson -->
-    <!--dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <classifier>jdk15</classifier>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.ezmorph</groupId>
-      <artifactId>ezmorph</artifactId>
-    </dependency-->
+    <!-- <dependency> -->
+    <!-- <groupId>net.sf.json-lib</groupId> -->
+    <!-- <artifactId>json-lib</artifactId> -->
+    <!-- <classifier>jdk15</classifier> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>net.sf.ezmorph</groupId> -->
+    <!-- <artifactId>ezmorph</artifactId> -->
+    <!-- </dependency> -->
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
@@ -97,24 +97,19 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-features-test</artifactId>
-      <version>${nuxeo.features.version}</version>
-      <scope>test</scope>
     </dependency>
     <!-- For webengine servlet? -->
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-      <version>${nuxeo.webengine.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

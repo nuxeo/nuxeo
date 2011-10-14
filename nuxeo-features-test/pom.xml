@@ -59,7 +59,7 @@
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-admin</artifactId>
     </dependency>
-    <!--  Nuxeo Theme -->
+    <!-- Nuxeo Theme -->
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-core</artifactId>
