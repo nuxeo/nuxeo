@@ -51,9 +51,9 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
  * (entity tables, collections). It defines all policies relating to the choice
- * of structure (what schema are grouped together in for optimization) and names
- * in the SQL database (table names, column names), and to what entity names
- * (type name, field name) they correspond.
+ * of structure (what schema are grouped together in for optimization) and
+ * names in the SQL database (table names, column names), and to what entity
+ * names (type name, field name) they correspond.
  * <p>
  * A Nuxeo schema or type is mapped to a SQL-level table. Several types can be
  * aggregated in the same table. In theory, a type could even be split into
@@ -218,7 +218,8 @@ public class Model {
 
     public static final String LOCK_CREATED_KEY = "created";
 
-    public static final String FULLTEXT_DEFAULT_INDEX = "default"; // not config
+    public static final String FULLTEXT_DEFAULT_INDEX = "default"; // not
+                                                                   // config
 
     public static final String FULLTEXT_TABLE_NAME = "fulltext";
 
@@ -424,7 +425,8 @@ public class Model {
     }
 
     /**
-     * Fixup an id that has been turned into a string for high-level Nuxeo APIs.
+     * Fixup an id that has been turned into a string for high-level Nuxeo
+     * APIs.
      *
      * @param id the id to fixup
      * @return the fixed up id
@@ -487,7 +489,8 @@ public class Model {
             if (type.spec == ColumnSpec.BLOBID) {
                 List<String> keys = binaryPropertyInfos.get(fragmentName);
                 if (keys == null) {
-                    binaryPropertyInfos.put(fragmentName, keys = new ArrayList<String>(1));
+                    binaryPropertyInfos.put(fragmentName,
+                            keys = new ArrayList<String>(1));
                 }
                 keys.add(fragmentKey);
             }
@@ -1083,20 +1086,34 @@ public class Model {
                     // TODO log and avoid nulls earlier
                     continue;
                 }
-                docTypeSchemas.add(schema.getName());
-                String fragmentName = initTypeModel(schema);
-                addTypeFragment(typeName, fragmentName); // may be null
-                // collection fragments too for this schema
-                Set<String> cols = typeCollectionFragments.get(schema.getName());
-                if (cols != null) {
-                    for (String colFrag : cols) {
-                        addTypeCollectionFragment(typeName, colFrag);
+                try {
+                    docTypeSchemas.add(schema.getName());
+                    String fragmentName = initTypeModel(schema);
+                    addTypeFragment(typeName, fragmentName); // may be null
+                    // collection fragments too for this schema
+                    Set<String> cols = typeCollectionFragments.get(schema.getName());
+                    if (cols != null) {
+                        for (String colFrag : cols) {
+                            addTypeCollectionFragment(typeName, colFrag);
+                        }
                     }
+                } catch (Exception e) {
+                    throw new StorageException(String.format(
+                            "Error initializing schema '%s' "
+                                    + "for document type '%s'",
+                            schema.getName(), typeName), e);
                 }
             }
-            documentTypesSchemas.put(typeName, docTypeSchemas);
-            inferTypePropertyInfos(typeName, documentType.getSchemaNames());
-            inferTypePropertyPaths(documentType);
+
+            try {
+                documentTypesSchemas.put(typeName, docTypeSchemas);
+                inferTypePropertyInfos(typeName, documentType.getSchemaNames());
+                inferTypePropertyPaths(documentType);
+            } catch (Exception e) {
+                throw new StorageException(String.format(
+                        "Error initializing schemas for document type '%s'",
+                        typeName), e);
+            }
 
             for (String fragmentName : getCommonSimpleFragments(typeName)) {
                 addTypeFragment(typeName, fragmentName);
