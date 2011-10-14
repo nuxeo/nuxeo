@@ -91,18 +91,6 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="sort_order">
-      <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>sort_order</table>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/sort_order.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
-    </directory>
-
     <directory name="search_operators">
       <schema>vocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>

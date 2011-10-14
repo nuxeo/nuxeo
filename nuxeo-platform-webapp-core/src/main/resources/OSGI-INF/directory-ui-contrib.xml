@@ -26,8 +26,6 @@
     <!-- seems it's not used anymore -->
     <directory name="subject" layout="vocabulary" sortField="label" />
 
-    <directory name="sort_order" layout="vocabulary" sortField="label" />
-
     <directory name="search_operators" layout="vocabulary" sortField="label" />
 
     <directory name="predicates" layout="vocabulary" sortField="label" />
