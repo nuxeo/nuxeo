@@ -58,7 +58,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         super.tearDown();
        NamingContextFactory.revertSetAsInitial();
     }
-    
+
     public void testJNDIName() throws Exception {
         assertEquals("java:comp/env/jdbc/foo",
                 DataSourceHelper.getDataSourceJNDIName("foo"));
@@ -96,11 +96,14 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     public void testXANoTM() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/xadatasource-contrib.xml");
+        DataSource ds = DataSourceHelper.getDataSource("foo");
         try {
-            DataSourceHelper.getDataSource("foo");
+            ds.getConnection();
             fail("Should fail for XA with no TM");
-        } catch (NamingException e) {
-            // ok
+        } catch (RuntimeException e) {
+            Throwable t = e.getCause();
+            String m = t == null ? e.getMessage() : t.getMessage();
+            assertEquals("TransactionManager not found in JNDI", m);
         }
     }
 

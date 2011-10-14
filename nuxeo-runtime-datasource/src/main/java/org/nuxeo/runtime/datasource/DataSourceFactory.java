@@ -17,22 +17,24 @@
 
 package org.nuxeo.runtime.datasource;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.naming.Context;
 import javax.naming.Name;
-import javax.naming.NamingException;
 import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -40,7 +42,6 @@ import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.apache.commons.dbcp.managed.BasicManagedDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * JNDI factory for a DataSource that delegates to an Apache DBCP pool.
@@ -56,6 +57,17 @@ public class DataSourceFactory implements ObjectFactory {
 
     private static final String URL_LOWER = "url";
 
+    private static final String[] TOMCAT_PROPERTIES = { "scope", "auth",
+            "factory" };
+
+    public static final Set<String> SYSTEM_PROPERTIES;
+    static {
+        Set<String> props = new HashSet<String>(
+                Arrays.asList(BasicManagedDataSourceFactory.ALL_PROPERTIES));
+        props.addAll(Arrays.asList(TOMCAT_PROPERTIES));
+        SYSTEM_PROPERTIES = Collections.unmodifiableSet(props);
+    }
+
     @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx,
             Hashtable<?, ?> env) throws Exception {
@@ -64,31 +76,19 @@ public class DataSourceFactory implements ObjectFactory {
             return null;
         }
 
-        TransactionManager transactionManager;
-        try {
-            transactionManager = TransactionHelper.lookupTransactionManager();
-        } catch (NamingException e) {
-            transactionManager = null;
-        }
-
         boolean xa = ref.get(BasicManagedDataSourceFactory.PROP_XADATASOURCE) != null;
-        log.info(String.format("Creating pooled %s datasource: %s/%s",
-                xa ? "XA" : "non-XA", nameCtx.getNameInNamespace(), name));
+        log.info(String.format("Creating pooled %s datasource: %s", xa ? "XA"
+                : "non-XA", name));
 
-        if (xa && transactionManager == null) {
-            throw new RuntimeException("Cannot configure XA datasource " + name
-                    + " without an available transaction manager");
-        }
-
-        // extract properties from Reference
+        // extract implementation-specific properties from Reference
+        // skip those used to define standard datasource parameters
         Map<String, String> properties = new HashMap<String, String>();
         Enumeration<RefAddr> refAddrs = ref.getAll();
         while (refAddrs.hasMoreElements()) {
             RefAddr ra = refAddrs.nextElement();
             String key = ra.getType();
             String value = ra.getContent().toString();
-            if (key.startsWith(DataSourceDescriptor.PROP_PREFIX)) {
-                key = key.substring(DataSourceDescriptor.PROP_PREFIX.length());
+            if (!SYSTEM_PROPERTIES.contains(key)) {
                 properties.put(key, value);
             }
         }
@@ -123,7 +123,7 @@ public class DataSourceFactory implements ObjectFactory {
             BasicManagedDataSource bmds = (BasicManagedDataSource) ds;
 
             // set transaction manager
-            bmds.setTransactionManager(transactionManager);
+            bmds.setTransactionManager(new LazyTransactionManager());
 
             // set properties
             XADataSource xaDataSource = bmds.getXaDataSourceInstance();

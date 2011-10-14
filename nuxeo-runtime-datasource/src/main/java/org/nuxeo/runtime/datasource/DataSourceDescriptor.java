@@ -81,9 +81,6 @@ public class DataSourceDescriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
 
-    /** How we store XA props in the Reference. */
-    public static final String PROP_PREFIX = "property.";
-
     protected Reference reference;
 
     public Reference getReference() {
@@ -100,10 +97,15 @@ public class DataSourceDescriptor {
                 String value = Framework.expandVars(attr.getNodeValue());
                 reference.add(new StringRefAddr(name, value));
             }
+            // we store together the properties to configure the generic
+            // aspects of the datasource (pooling, timeouts, etc)
+            // and the implementation-specific datasource properties
+            // they will be distinguished from a fixed list in
+            // DataSourceFactory.getObjectInstance
             for (Entry<String, String> e : properties.entrySet()) {
                 String name = e.getKey();
                 String value = Framework.expandVars(e.getValue());
-                reference.add(new StringRefAddr(PROP_PREFIX + name, value));
+                reference.add(new StringRefAddr(name, value));
             }
         }
         return reference;
