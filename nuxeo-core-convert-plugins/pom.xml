@@ -85,6 +85,10 @@
       <artifactId>mail</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.htmlparser.jericho</groupId>
+      <artifactId>jericho-html</artifactId>
+    </dependency>
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xmlParserAPIs</artifactId>
       <scope>provided</scope>

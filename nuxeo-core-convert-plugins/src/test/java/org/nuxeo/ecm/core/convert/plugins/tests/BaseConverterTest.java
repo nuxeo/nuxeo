@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.plugins.text.extractors.Html2TextConverter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -68,7 +67,6 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-        parameters.put(Html2TextConverter.TAG_FILTER_PARAMETER, "body");
         BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
@@ -83,7 +81,6 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-        parameters.put(Html2TextConverter.TAG_FILTER_PARAMETER, "body");
 
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
         hg.getBlob().setMimeType(srcMT);
@@ -109,10 +106,10 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertNotNull(result);
         String textContent = result.getBlob().getString().trim();
 
-        // test that the first word is 'internet' in Arabic
-        assertTrue(textContent.startsWith("\u0625\u0646\u062a\u0631\u0646\u062a"));
+        // this is the wikipedia article for "Internet"
+        assertTrue(textContent.contains("\u0625\u0646\u062a\u0631\u0646\u062a"));
 
-        // other words that occur in the document
+        // other words
         assertTrue(textContent.contains("\u062a\u0645\u062b\u064a\u0644"));
         assertTrue(textContent.contains("\u0644\u0634\u0628\u0643\u0629"));
         assertTrue(textContent.contains("\u0645\u0646"));

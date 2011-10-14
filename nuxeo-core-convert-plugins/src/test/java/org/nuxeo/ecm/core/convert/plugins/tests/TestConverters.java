@@ -29,20 +29,19 @@ public class TestConverters extends BaseConverterTest {
         doTestTextConverter("text/html", "html2text", "hello.html");
     }
 
-    public void testHTMLConverter2() throws Exception {
+    public void testHTMLConverterWithEncoding() throws Exception {
 
-        String srcMT = "text/html";
-        String converter = "html2text";
+        String srcMimeType = "text/html";
+        String expectedconverterName = "html2text";
         String fileName = "strange.html";
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        String converterName = cs.getConverterName(srcMT, "text/plain");
-        assertEquals(converter, converterName);
+        String converterName = cs.getConverterName(srcMimeType, "text/plain");
+        assertEquals(expectedconverterName, converterName);
 
-        BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
-
-        BlobHolder result = cs.convert(converterName, hg, null);
+        BlobHolder holder = getBlobFromPath("test-docs/" + fileName);
+        BlobHolder result = cs.convert(converterName, holder, null);
         assertNotNull(result);
 
         String textResult = result.getBlob().getString().trim();
@@ -72,6 +71,10 @@ public class TestConverters extends BaseConverterTest {
 
     public void testOOWriterArabicConverter() throws Exception {
         doTestArabicTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "wikipedia-internet-ar.odt");
+    }
+
+    public void testHTMLArabicConverter() throws Exception {
+        doTestArabicTextConverter("text/html", "html2text", "wikipedia-internet-ar.html");
     }
 
     public void testOOCalcConverter() throws Exception {
