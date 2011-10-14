@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -39,14 +40,33 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     private Map<String, List<DirectoryFactory>> factoriesByDirectoryName;
 
-    public Directory getDirectory(String name) throws DirectoryException {
-        List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(name);
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        if (Framework.isTestModeSet()) {
+            // when testing, DatabaseHelper init hasn't occurred yet,
+            // so keep to lazy initialization
+            return;
+        }
+        // open all directories at application startup, so that
+        // their tables are created (outside a transaction) if needed
+        for (Directory dir : getDirectories()) {
+            dir.getName(); // enough to create tables for SQL directories
+        }
+    }
+
+    public Directory getDirectory(String directoryName)
+            throws DirectoryException {
+        if (directoryName == null) {
+            return null;
+        }
+
+        List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(directoryName);
         if (potentialFactories == null) {
             return null;
         }
         Directory dir = null;
         for (DirectoryFactory factory : potentialFactories) {
-            dir = factory.getDirectory(name);
+            dir = factory.getDirectory(directoryName);
             if (null != dir) {
                 break;
             }
