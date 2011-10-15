@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -76,6 +77,31 @@ public class ComponentRegistrySerializer {
                 comp.setAttribute("version", v.toString());
             }
             root.appendChild(comp);
+
+            // write source if known
+            URL url = ri.getXmlFileUrl();
+            if (url != null) {
+                String src;
+                String path = url.toExternalForm();
+                int i = path.lastIndexOf('!');
+                if (i > 0) {
+                    String jar = path.substring(0, i);
+                    path = path.substring(i + 1);
+                    int s = jar.lastIndexOf('/');
+                    if (s > -1) {
+                        jar = jar.substring(s + 1);
+                    }
+                    src = jar + "!" + path;
+                } else {
+                    int s = path.lastIndexOf('/');
+                    if (s != -1) {
+                        src = path.substring(s + 1);
+                    } else {
+                        src = path;
+                    }
+                }
+                comp.setAttribute("src", src);
+            }
 
             // write documentation
             String docText = ri.getDocumentation();
