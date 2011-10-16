@@ -48,13 +48,15 @@ public class JSONBatchBlobDecoder implements JSONBlobDecoder {
             BatchManager bm = Framework.getLocalService(BatchManager.class);
             blob = bm.getBlob(batchId, fileId);
 
-            RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
-                @Override
-                public void cleanup(HttpServletRequest request) {
-                    BatchManager bm = Framework.getLocalService(BatchManager.class);
-                    bm.clean(batchId);
-                }
-            });
+            if (RequestContext.getActiveContext()!=null) {
+                RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
+                    @Override
+                    public void cleanup(HttpServletRequest request) {
+                        BatchManager bm = Framework.getLocalService(BatchManager.class);
+                        bm.clean(batchId);
+                    }
+                });
+            }
 
         }
         return blob;
