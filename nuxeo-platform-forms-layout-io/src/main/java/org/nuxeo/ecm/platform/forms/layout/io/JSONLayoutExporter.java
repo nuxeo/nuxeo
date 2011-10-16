@@ -511,6 +511,9 @@ public class JSONLayoutExporter {
                 || (wType.equals("selectManyDirectory")) && (lang != null)) {
             String dirName = (String) widgetDef.getProperties("any", "any").get(
                     "directoryName");
+            if (dirName==null) {
+                dirName = (String) widgetDef.getProperties("any", "edit").get("directoryName");
+            }
             if (dirName != null) {
                 selectOptions.addAll(VocabularyExporter.getVocabulary(dirName,
                         lang));
