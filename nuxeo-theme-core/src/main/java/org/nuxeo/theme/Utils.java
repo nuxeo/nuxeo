@@ -254,7 +254,7 @@ public final class Utils {
             cssWriter.write(selector);
             String selectorStr = cssWriter.toText();
 
-            if (selectorStr.equals(EMPTY_CSS_SELECTOR)) {
+            if (selectorStr.equals(EMPTY_CSS_SELECTOR) || selectorStr.toLowerCase().equals("body")) {
                 selectorStr = "";
             }
 
