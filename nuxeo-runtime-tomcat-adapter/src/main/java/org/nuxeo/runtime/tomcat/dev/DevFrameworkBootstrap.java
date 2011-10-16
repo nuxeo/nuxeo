@@ -174,7 +174,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         devBundles = bundles;
 
         installNewClassLoader(devBundles);
-        
+
         // deploy last bundles
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
@@ -225,27 +225,17 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     public void writeComponentIndex() {
         File file = new File(home.getParentFile(), "sdk");
         file.mkdirs();
-        file = new File(file, "components.xml");
+        file = new File(file, "components.index");
         // if (file.isFile()) {
         // return;
         // }
-        FileWriter writer = null;
         try {
-            writer = new FileWriter(file);
             Method m = getClassLoader().loadClass(
                     "org.nuxeo.runtime.model.impl.ComponentRegistrySerializer").getMethod(
-                    "toXML", Writer.class);
-            m.invoke(null, writer);
+                    "writeIndex", File.class);
+            m.invoke(null, file);
         } catch (Throwable t) {
             // ignore
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    ;
-                }
-            }
         }
     }
 

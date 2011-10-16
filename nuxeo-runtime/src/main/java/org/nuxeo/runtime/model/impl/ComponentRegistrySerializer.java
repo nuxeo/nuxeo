@@ -16,6 +16,9 @@
  */
 package org.nuxeo.runtime.model.impl;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -44,6 +47,98 @@ import org.w3c.dom.Element;
 public class ComponentRegistrySerializer {
 
     private final static Log log = LogFactory.getLog(ComponentRegistrySerializer.class);
+
+    public static void writeIndex(File file) throws Exception {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        try {
+            writeIndex(writer);
+        } finally {
+            writer.close();
+        }
+    }
+
+    public static void writeIndex(Writer writer) throws Exception {
+        ComponentManagerImpl mgr = (ComponentManagerImpl) Framework.getRuntime().getComponentManager();
+        for (RegistrationInfo ri : mgr.getRegistrations()) {
+            ComponentName name = ri.getName();
+            if (name == null) {
+                log.error("BUG: Found component with null name");
+                continue;
+            }
+            String src = getComponentSrc(ri);
+            if (src == null) {
+                src = "";
+            }
+
+            String bundle = ri.getBundle();
+            if (bundle == null) {
+                bundle = ri.getContext().getBundle().getSymbolicName();
+            }
+            if (bundle == null) {
+                bundle = "";
+            }
+
+            String cname = name.getName();
+            writer.write("c:");
+            writer.write(cname);
+            writer.write(":");
+            writer.write(bundle);
+            writer.write(":");
+            writer.write(src);
+            writer.write("\n");
+
+            // write services
+            String[] services = ri.getProvidedServiceNames();
+            if (services != null && services.length > 0) {
+                for (String service : services) {
+                    writer.write("s:");
+                    writer.write(cname);
+                    writer.write(":");
+                    writer.write(service);
+                    writer.write("\n");
+                }
+            }
+
+            // write services
+            ExtensionPoint[] xpoints = ri.getExtensionPoints();
+            if (xpoints != null && xpoints.length > 0) {
+                for (ExtensionPoint xpoint : xpoints) {
+                    writer.write("x:");
+                    writer.write(cname);
+                    writer.write(":");
+                    writer.write(xpoint.getName());
+                    writer.write("\n");
+                }
+            }
+        }
+    }
+
+    private static String getComponentSrc(RegistrationInfo ri) {
+        URL url = ri.getXmlFileUrl();
+        if (url != null) {
+            String src;
+            String path = url.toExternalForm();
+            int i = path.lastIndexOf('!');
+            if (i > 0) {
+                String jar = path.substring(0, i);
+                path = path.substring(i + 1);
+                int s = jar.lastIndexOf('/');
+                if (s > -1) {
+                    jar = jar.substring(s + 1);
+                }
+                src = jar + "!" + path;
+            } else {
+                int s = path.lastIndexOf('/');
+                if (s != -1) {
+                    src = path.substring(s + 1);
+                } else {
+                    src = path;
+                }
+            }
+            return src;
+        }
+        return null;
+    }
 
     public static Document toDocument() throws Exception {
         ComponentManagerImpl mgr = (ComponentManagerImpl) Framework.getRuntime().getComponentManager();
@@ -79,27 +174,8 @@ public class ComponentRegistrySerializer {
             root.appendChild(comp);
 
             // write source if known
-            URL url = ri.getXmlFileUrl();
-            if (url != null) {
-                String src;
-                String path = url.toExternalForm();
-                int i = path.lastIndexOf('!');
-                if (i > 0) {
-                    String jar = path.substring(0, i);
-                    path = path.substring(i + 1);
-                    int s = jar.lastIndexOf('/');
-                    if (s > -1) {
-                        jar = jar.substring(s + 1);
-                    }
-                    src = jar + "!" + path;
-                } else {
-                    int s = path.lastIndexOf('/');
-                    if (s != -1) {
-                        src = path.substring(s + 1);
-                    } else {
-                        src = path;
-                    }
-                }
+            String src = getComponentSrc(ri);
+            if (src != null) {
                 comp.setAttribute("src", src);
             }
 
