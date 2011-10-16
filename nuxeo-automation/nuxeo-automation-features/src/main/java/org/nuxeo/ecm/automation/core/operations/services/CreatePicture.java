@@ -11,8 +11,16 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -33,10 +41,12 @@ import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = CreatePicture.ID, category = Constants.CAT_SERVICES, label = "Create Picture", description = "Create a Picture document in the input folder. You can initialize the document properties using the 'properties' parameter. The properties are specified as <i>key=value</i> pairs separated by a new line. The key <i>originalPicture</i> is used to reference the JSON representation of the Blob for the original picture. Returns the created document.")
+@Operation(id = CreatePicture.ID, category = Constants.CAT_SERVICES, label = "Create Picture", description = "Create a Picture document in the input folder. You can initialize the document properties using the 'properties' parameter. The properties are specified as <i>key=value</i> pairs separated by a new line. The key <i>originalPicture</i> is used to reference the JSON representation of the Blob for the original picture. The <i>pictureTemplates</i> parameter can be used to define the size of the different views to be generated, each line must be a JSONObject { title=\"title\", description=\"description\", maxsize=maxsize}. Returns the created document.")
 public class CreatePicture {
 
     public static final String ID = "Picture.Create";
+
+    public static final String PICTURE_FIELD = "originalPicture";
 
     @Context
     protected CoreSession session;
@@ -47,15 +57,53 @@ public class CreatePicture {
     @Param(name = "properties", required = false)
     protected Properties content;
 
+    @Param(name = "pictureTemplates", required = false)
+    protected Properties pictureTemplates;
+
     protected static final Log log = LogFactory.getLog(CreatePicture.class);
+
+    protected ArrayList<Map<String, Object>> computePictureTemplates() {
+        if (pictureTemplates==null || pictureTemplates.size()==0) {
+            return null;
+        }
+        ArrayList<Map<String, Object>> templates = new ArrayList<Map<String,Object>>();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            //for (String templateDef : pictureTemplates) {
+            for(String name : pictureTemplates.keySet()) {
+                String templateDef = pictureTemplates.get(name);
+                JsonNode node = mapper.readTree(templateDef);
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("tag", name);
+                Iterator<Entry<String, JsonNode>> it =  node.getFields();
+                while (it.hasNext()) {
+                    Entry<String, JsonNode> entry = it.next();
+                    if (entry.getValue().isInt() || entry.getValue().isLong()) {
+                        map.put(entry.getKey(), entry.getValue().getLongValue());
+                    } else {
+                        map.put(entry.getKey(), entry.getValue().getValueAsText());
+                    }
+                }
+                templates.add(map);
+            }
+        } catch (Exception e) {
+            log.error("Error while parsing picture templates", e);
+        }
+
+        return templates;
+    }
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (name == null) {
             name = "Untitled";
         }
-        String jsonBlob = content.get("originalPicture");
-        content.remove("originalPicture");
+        String jsonBlob = content.get(PICTURE_FIELD);
+        content.remove(PICTURE_FIELD);
+
+        ArrayList<Map<String, Object>> templates = computePictureTemplates();
 
         DocumentModel newDoc = session.createDocumentModel(
                 doc.getPathAsString(), name, "Picture");
@@ -73,7 +121,7 @@ public class CreatePicture {
             } else {
                 PictureResourceAdapter adapter = picture.getAdapter(PictureResourceAdapter.class);
                 adapter.createPicture(blob, blob.getFilename(),
-                        picture.getTitle(), null);
+                        picture.getTitle(), templates);
                 picture = session.saveDocument(picture);
             }
         }
