@@ -15,17 +15,27 @@
       <ui:param name="category" value="ROUTE_LIST" />
     </ui:decorate>
 
-    <c:if test="#{documents.rowCount == 0}">
-      <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
-        <nxu:graphicImage value="/icons/add.png" />
-      </a>
-      <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
-        #{messages['command.add.routeelement.firstStep']}
-        <f:param
-          name="stepId"
-          value="#{currentDocument.id}" />
-      </a>
-    </c:if>
+      <nxu:set var="isEditableRouteElement" value="#{routingActions.isEditableRouteElement(currentDocument)}">
+      <nxu:set var="isEmptyFork" value="#{routingActions.isEmptyFork(currentDocument)}">
+      <nxu:set var="isEditableStep" value="#{routingActions.isEditableStep(currentDocument)}">
+
+      <c:if test="#{currentRouteLockedByCurrentUser and (isEditableRouteElement || isEmptyFork || isEditableStep)}">
+        <c:if test="#{documents.rowCount == 0}">
+          <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+            <nxu:graphicImage value="/icons/add.png" />
+          </a>
+          <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+            #{messages['command.add.routeelement.firstStep']}
+            <f:param
+              name="stepId"
+              value="#{currentDocument.id}" />
+          </a>
+        </c:if>
+      </c:if>
+
+      </nxu:set>
+      </nxu:set>
+      </nxu:set>
 
     <ui:decorate template="/incl/documents_layout_table.xhtml">
      <ui:param name="documents" value="#{documents}" />
