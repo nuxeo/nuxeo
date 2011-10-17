@@ -255,7 +255,7 @@ public class ComponentManagerImpl implements ComponentManager {
             throws Exception {
         ComponentName name = extension.getTargetComponent();
         RegistrationInfoImpl ri = reg.getComponent(name);
-        if (ri != null) {
+        if (ri != null && ri.component != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Register contributed extension: " + extension);
             }
