@@ -343,6 +343,7 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-management-test</artifactId>
         <version>${nuxeo.core.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
