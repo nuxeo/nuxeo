@@ -204,7 +204,8 @@ public class BasicManagedDataSourceFactory implements ObjectFactory {
      */
     public static DataSource createDataSource(Properties properties)
             throws Exception {
-        BasicManagedDataSource dataSource = new BasicManagedDataSource();
+        // PATCH: use patched class to avoid a PostgreSQL driver bug NXP-6985
+        BasicManagedDataSource dataSource = new PatchedBasicManagedDataSource();
 
         String value = properties.getProperty(PROP_DEFAULTAUTOCOMMIT);
         if (value != null) {
