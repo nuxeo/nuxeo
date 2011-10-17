@@ -18,6 +18,8 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
@@ -46,9 +48,15 @@ public class RefreshUI {
     @OperationMethod
     public void run() {
         OperationHelper.getContentViewActions().resetAllContent();
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
-        Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED);
+        NavigationContext context = OperationHelper.getNavigationContext();
+        DocumentModel dm = context.getCurrentDocument();
+        if (dm != null) {
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, dm);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    dm);
+            Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED,
+                    dm);
+        }
         if (additionalSeamEvents != null) {
             for (String event : additionalSeamEvents) {
                 Events.instance().raiseEvent(event);
