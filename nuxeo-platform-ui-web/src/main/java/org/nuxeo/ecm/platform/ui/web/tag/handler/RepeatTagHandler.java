@@ -105,7 +105,7 @@ public class RepeatTagHandler extends TagHandler {
         return model;
     }
 
-    public synchronized void apply(FaceletContext ctx, UIComponent parent)
+    public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         DataModel dm = getDataModel(ctx);
 
