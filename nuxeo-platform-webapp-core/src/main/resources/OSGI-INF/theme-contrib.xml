@@ -170,28 +170,25 @@
   </extension>
 
   <!-- mapping between theme pages and resources -->
-  <!-- 
+  <!--
   <extension target="org.nuxeo.theme.styling.service" point="pages">
     <themePage name="galaxy/default">
-      <defaultFlavour>galaxy</defaultFlavour>
+      <defaultFlavour>default</defaultFlavour>
       <flavours append="true">
         <flavour>galaxy</flavour>
-        <flavour>galaxy2</flavour>
+        <flavour>dark</flavour>
+        <flavour>default</flavour>
       </flavours>
       <styles append="true">
         <style>nuxeo_dm_default</style>
-        <style>nuxeo_dm_default2</style>
       </styles>
     </themePage>
   </extension>
-  -->
+   -->
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dm_default">
       <path>themes/css/nuxeo_dm_default.css</path>
-    </style>
-    <style name="nuxeo_dm_default2">
-      <path>themes/css/nuxeo_dm_default2.css</path>
     </style>
   </extension>
 
@@ -208,14 +205,25 @@
       </presetsList>
     </flavour>
 
-    <flavour name="galaxy2">
+    <flavour name="dark">
       <presetsList append="true">
         <!-- TODO: use one file for all categories with a custom parser -->
-        <presets category="border" src="themes/palettes/galaxy-borders.properties" />
+        <presets category="border" src="themes/palettes/dark-borders.properties" />
         <presets category="background"
-          src="themes/palettes/galaxy-backgrounds.properties" />
-        <presets category="font" src="themes/palettes/galaxy-fonts.properties" />
-        <presets category="color" src="themes/palettes/galaxy-colors2.properties" />
+          src="themes/palettes/dark-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/dark-fonts.properties" />
+        <presets category="color" src="themes/palettes/dark-colors.properties" />
+      </presetsList>
+    </flavour>
+
+    <flavour name="default">
+      <presetsList append="true">
+        <!-- TODO: use one file for all categories with a custom parser -->
+        <presets category="border" src="themes/palettes/default-borders.properties" />
+        <presets category="background"
+          src="themes/palettes/default-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/default-fonts.properties" />
+        <presets category="color" src="themes/palettes/default-colors.properties" />
       </presetsList>
     </flavour>
 
