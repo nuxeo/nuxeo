@@ -5,9 +5,9 @@
   <c:if test="#{widget.mode == 'edit' }">
     <h:selectOneRadio value="#{field}" id="#{widget.id}_radio">
       <f:selectItem itemValue="#{false}"
-        itemLabel="#{messages['label.userprofile.gender.man']}" />
+        itemLabel="#{messages['label.userprofile.gender.male']}" />
       <f:selectItem itemValue="#{true}"
-        itemLabel="#{messages['label.userprofile.gender.woman']}" />
+        itemLabel="#{messages['label.userprofile.gender.female']}" />
     </h:selectOneRadio>
     <h:message styleClass="errorMessage" for="#{widget.id}_checkbox"
       id="#{widget.id}_message" />
@@ -15,9 +15,9 @@
 
   <c:if test="#{widget.mode == 'view' }">
     <h:outputText rendered="#{!field}"
-      value="#{messages['label.userprofile.gender.man']}" />
+      value="#{messages['label.userprofile.gender.male']}" />
     <h:outputText rendered="#{field}"
-      value="#{messages['label.userprofile.gender.woman']}" />
+      value="#{messages['label.userprofile.gender.female']}" />
   </c:if>
 
 </f:subview>
