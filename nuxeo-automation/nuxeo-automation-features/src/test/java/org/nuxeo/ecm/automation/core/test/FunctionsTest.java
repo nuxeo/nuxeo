@@ -13,11 +13,12 @@ package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.security.Principal;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Functions;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
@@ -32,8 +33,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-
-import java.security.Principal;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
