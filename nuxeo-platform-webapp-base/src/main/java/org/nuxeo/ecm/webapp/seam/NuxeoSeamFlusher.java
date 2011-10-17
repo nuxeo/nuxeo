@@ -68,7 +68,6 @@ public class NuxeoSeamFlusher implements EventListener {
                 log.error("Cannot invalidate seam web sessions", e);
             }
         }
-        log.info("zoo");
     }
 
     protected boolean postSeamReload() throws IOException {
