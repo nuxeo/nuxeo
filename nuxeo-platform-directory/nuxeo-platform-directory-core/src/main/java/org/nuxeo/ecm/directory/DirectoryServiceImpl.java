@@ -41,6 +41,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        if (Framework.isTestModeSet()) {
+            // when testing, DatabaseHelper init hasn't occurred yet,
+            // so keep to lazy initialization
+            return;
+        }
         // open all directories at application startup, so that
         // their tables are created (outside a transaction) if needed
         for (Directory dir : getDirectories()) {
