@@ -7,23 +7,6 @@
       <category>MAIN_TABS</category>
     </action>
 
-    <action id="user_center_non_anonymous_logout"
-      link="#{loginLogoutAction.logout()}" label="command.logout">
-      <category>USER_CENTER_USER_SERVICES</category>
-      <filter-id>not_anonymous</filter-id>
-    </action>
-
-    <action id="user_center_login" link="#{loginLogoutAction.logout()}"
-      label="command.login">
-      <category>USER_CENTER_USER_SERVICES</category>
-      <filter-id>anonymous</filter-id>
-    </action>
-
-    <action id="userCenterExit" link="#{adminViews.exit()}"
-      label="action.user.center.exit">
-      <category>USER_CENTER_USER_SERVICES</category>
-    </action>
-
     <!-- Users and Groups directory -->
     <action id="UsersGroupsHome" link="user_center_fragment.xhtml"
       label="command.manageMembers" icon="/icons/users_groups.png" order="60">
