@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -43,6 +44,9 @@ public class RouteSecurityChecker {
     @In(required = true, create = false)
     protected CoreSession documentManager;
 
+    @In(create = true)
+    private transient NavigationContext navigationContext;
+
     @Deprecated
     /**
      * @deprecated use
@@ -50,14 +54,23 @@ public class RouteSecurityChecker {
      *             instead.
      */
     public boolean canValidateRoute() {
+        try {
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (!documentManager.hasChildren(currentDoc.getRef())) {
+            // Cannot validate an empty route
+            return false;
+        }
+        } catch (ClientException e) {
+            new RuntimeException(e);
+        }
         return getDocumentRoutingService().canUserValidateRoute(currentUser);
     }
 
     public boolean canValidateRoute(DocumentModel routeDocument)
             throws ClientException {
-        return getDocumentRoutingService().canValidateRoute(routeDocument,
-                documentManager)
-                || canValidateRoute();
+        return canValidateRoute()
+                || getDocumentRoutingService().canValidateRoute(routeDocument,
+                        documentManager);
     }
 
     public DocumentRoutingService getDocumentRoutingService() {

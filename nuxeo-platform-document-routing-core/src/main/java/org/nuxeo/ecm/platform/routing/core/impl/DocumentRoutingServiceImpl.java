@@ -310,6 +310,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public boolean canValidateRoute(DocumentModel documentRoute,
             CoreSession coreSession) throws ClientException {
+        if (!coreSession.hasChildren(documentRoute.getRef())) {
+            // Cannot validate an empty route
+            return false;
+        }
         return coreSession.hasPermission(documentRoute.getRef(),
                 DocumentRoutingConstants.VALIDATE_ROUTE_PERMISSION_NAME);
     }
