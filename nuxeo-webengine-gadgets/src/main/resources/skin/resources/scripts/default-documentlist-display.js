@@ -135,11 +135,15 @@ function mkCell(colDef, dashBoardItem) {
             if (colDef.view){
                 view = colDef.view;
             }
+            var  codec = "nxpath";
+            if (colDef.codec){
+                codec = colDef.codec;
+            }
             html += "<td><a target = \"_top\" title=\"";
             html += dashBoardItem.title;
             html += "\" href=\"";
             html += NXGadgetContext.clientSideBaseUrl;
-            html += "nxpath/default";
+            html += codec + "/default";
             html += dashBoardItem.path;
             html += "@" + view;
             html += "\" />";
