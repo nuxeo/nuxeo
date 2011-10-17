@@ -1,5 +1,5 @@
 <project name="nuxeo-assembly"
-         default="init"
+         default="build"
          xmlns:nx="urn:nuxeo-build"
          xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
