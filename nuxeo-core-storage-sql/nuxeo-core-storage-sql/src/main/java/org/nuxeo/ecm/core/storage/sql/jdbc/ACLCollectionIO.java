@@ -57,6 +57,8 @@ public class ACLCollectionIO implements CollectionIO {
                 user = (String) v;
             } else if (key.equals(model.ACL_GROUP_KEY)) {
                 group = (String) v;
+            } else if (key.equals(model.ACL_POS_KEY)) {
+                // ignore, query already sorts by pos
             } else {
                 throw new RuntimeException(key);
             }
