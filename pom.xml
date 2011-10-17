@@ -123,7 +123,6 @@
     <jersey.version>1.1.5</jersey.version>
     <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
-    <apache.abdera.version>0.4.0-incubating</apache.abdera.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>0.4.0-r1096750</chemistry.opencmis.version>
 
@@ -3415,27 +3414,6 @@
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
         <version>3.1.3</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.abdera</groupId>
-        <artifactId>abdera-core</artifactId>
-        <version>${apache.abdera.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.abdera</groupId>
-        <artifactId>abdera-i18n</artifactId>
-        <version>${apache.abdera.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.abdera</groupId>
-        <artifactId>abdera-parser</artifactId>
-        <version>${apache.abdera.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.abdera</groupId>
-        <artifactId>abdera-server</artifactId>
-        <version>${apache.abdera.version}</version>
       </dependency>
 
       <dependency>
