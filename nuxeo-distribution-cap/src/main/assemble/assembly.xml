@@ -16,11 +16,14 @@
   </target>
 
   <target name="expand">
-    <artifact:nuxeo-expand scope="test" />
-    <artifact:print output="${outdir}/test-artifacts.properties" mode="sdk" />
-    <artifact:nuxeo-expand />
+    <artifact:nuxeo-expand includeTestScope="true" />
     <artifact:print output="${outdir}/artifacts.properties" mode="sdk" />
-    <!-- <artifact:print output="${outdir}/dependency-tree.log" /> -->
+    <artifact:print output="${outdir}/test-artifacts.properties"
+                    mode="sdk"
+                    scopes="test" />
+    <!--
+    <artifact:print output="${outdir}/dependency-tree.log" />
+    -->
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo CAP">
@@ -36,11 +39,8 @@
     <copy todir="${nuxeo.ear}/bundles" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo*" />
+          <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
         </includes>
-        <excludes>
-          <artifact type="pom" />
-        </excludes>
       </artifact:set>
     </copy>
 
@@ -60,7 +60,7 @@
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="!org.nuxeo*" />
+          <artifact groupId="!org.nuxeo*" scope="!test" />
         </includes>
       </artifact:set>
     </copy>

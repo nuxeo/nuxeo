@@ -10,7 +10,7 @@
 
   <artifactId>nuxeo-distribution-coreserver</artifactId>
   <packaging>zip</packaging>
-  <name>Nuxeo Core Server EAR</name>
+  <name>Nuxeo Core Server</name>
 
   <dependencies>
     <dependency>
@@ -284,63 +284,10 @@
 
     <!-- Scope test -->
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-management-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-api-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-features-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-jbpm-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mail-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-opencmis-tests</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap-tests</artifactId>
+      <artifactId>nuxeo-distribution-tests</artifactId>
+      <type>pom</type>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-functional-tests</artifactId>
-    </dependency>
-
   </dependencies>
 
   <build>

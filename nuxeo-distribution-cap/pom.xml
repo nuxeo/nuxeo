@@ -340,6 +340,13 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-profile</artifactId>
     </dependency>
+
+    <!-- Scope test -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-tests</artifactId>
+      <type>pom</type>
+    </dependency>
   </dependencies>
 
   <build>

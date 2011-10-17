@@ -19,6 +19,7 @@
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
+    <module>nuxeo-distribution-tests</module>
   </modules>
 
   <profiles>
@@ -57,6 +58,7 @@
       </modules>
     </profile>
     <profile>
+      <!-- Build Tomcat distributions -->
       <id>tomcat</id>
       <modules>
         <module>nuxeo-distribution-coreserver</module>
@@ -66,8 +68,8 @@
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
-    <!-- for deployment purpose -->
     <profile>
+      <!-- Build all distributions -->
       <id>all-distributions</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -102,6 +104,10 @@
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
       </modules>
+    </profile>
+    <profile>
+      <!-- Build SDK distributions for use in Nuxeo IDE -->
+      <id>sdk</id>
     </profile>
   </profiles>
 

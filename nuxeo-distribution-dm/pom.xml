@@ -234,6 +234,13 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-generic-wss-handler</artifactId>
     </dependency>
+
+    <!-- Scope test -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-tests</artifactId>
+      <type>pom</type>
+    </dependency>
   </dependencies>
 
   <build>
