@@ -835,6 +835,31 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, session2.getProxies(ver1, null).size()); // by target
     }
 
+    public void testCrossSessionACLInvalidation() throws Exception {
+        // init repo and root ACL
+        Session session1 = repository.getConnection();
+        session1.close();
+
+        // read roots (with ACL) in two sessions
+        session1 = repository.getConnection();
+        Session session2 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node root2 = session2.getRootNode();
+        CollectionProperty prop1 = root1.getCollectionProperty(Model.ACL_PROP);
+        CollectionProperty prop2 = root2.getCollectionProperty(Model.ACL_PROP);
+
+        // change ACL in session 1
+        ACLRow acl = new ACLRow(0, "test", true, "Read", null, "Members");
+        prop1.setValue(new ACLRow[] { acl });
+        session1.save();
+
+        // process invalidations in session 2
+        session2.save();
+
+        // read invalidated ACL in session 2
+        prop2.getValue();
+    }
+
     public void testClustering() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
