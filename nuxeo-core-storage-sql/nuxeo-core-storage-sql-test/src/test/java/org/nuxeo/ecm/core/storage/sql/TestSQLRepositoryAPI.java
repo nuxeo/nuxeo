@@ -1558,6 +1558,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         // do copy
         session.copy(f1.getRef(), root.getRef(), "f2");
+        session.save();
 
         // check bob doesn't see doc1's copy
         dml = session.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f2'");
