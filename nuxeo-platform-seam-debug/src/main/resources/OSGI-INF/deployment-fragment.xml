@@ -14,6 +14,10 @@
     <copy from="nxwebplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
 
     <delete path="nxwebplatform.tmp" />
+
+    <mkdir path="nuxeo.war/WEB-INF" />
+    <mkdir path="nuxeo.war/WEB-INF/dev" />
+   
   </install>
 
 </fragment>
