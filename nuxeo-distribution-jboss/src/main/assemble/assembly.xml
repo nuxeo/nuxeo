@@ -42,7 +42,7 @@
         <artifact artifactId="nuxeo-webengine-apt" />
       </excludes>
     </artifact:nuxeo-expand>
-    <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
+    <!-- <artifact:print output="${outdir}/dependency-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" unless="no.build">

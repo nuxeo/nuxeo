@@ -44,7 +44,7 @@
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
     <artifact:print output="${outdir}/artifacts.properties" mode="sdk" />
-    <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
+    <!-- <artifact:print output="${outdir}/dependency-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" unless="no.build">
