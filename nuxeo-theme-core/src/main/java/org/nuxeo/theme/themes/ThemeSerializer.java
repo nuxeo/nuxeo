@@ -296,6 +296,9 @@ public class ThemeSerializer {
         // style
         else if ("style".equals(typeName)) {
             Style style = (Style) format;
+            if (style.isExternal()) {
+                return;
+            }
             String styleName = style.getName();
             Style ancestor = (Style) ThemeManager.getAncestorFormatOf(style);
             if (styleName != null) {
@@ -307,8 +310,7 @@ public class ThemeSerializer {
             if (style.isRemote()) {
                 domElement.setAttribute("remote", "true");
             }
-            if ((!style.isRemote() || style.isCustomized())
-                    && !style.isExternal()) {
+            if ((!style.isRemote() || style.isCustomized())) {
                 for (String viewName : style.getSelectorViewNames()) {
                     for (String path : style.getPathsForView(viewName)) {
                         Properties styleProperties = style.getPropertiesFor(
