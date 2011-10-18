@@ -97,7 +97,7 @@ input.button[disabled=disabled], input.button[disabled=disabled]:hover {
 	border: 1px solid; border-color: "button.disabled (__FLAVOUR__ border)";
 	color: "link.disabled (__FLAVOUR__ color)";
 	cursor: default;
-	visibility: hidden }
+	visibility: hidden; }
 
 .majorButton, input.majorButton {
 	background: none repeat scroll 0 0 #0080B0;

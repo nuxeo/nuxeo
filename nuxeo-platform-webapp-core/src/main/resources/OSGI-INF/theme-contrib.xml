@@ -180,6 +180,7 @@
         <flavour>default</flavour>
       </flavours>
       <styles append="true">
+        <style>print_default</style>
         <style>nuxeo_dm_default</style>
       </styles>
     </themePage>
@@ -189,6 +190,9 @@
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dm_default">
       <path>themes/css/nuxeo_dm_default.css</path>
+    </style>
+    <style name="print_default">
+      <path>themes/css/print_default.css</path>
     </style>
   </extension>
 
