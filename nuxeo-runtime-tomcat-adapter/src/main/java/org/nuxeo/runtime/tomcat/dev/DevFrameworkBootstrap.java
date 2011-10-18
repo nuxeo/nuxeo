@@ -137,6 +137,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     protected void postloadDevBundles() throws Exception {
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
+            reloadServiceInvoker.flush();
         }
     }
 
