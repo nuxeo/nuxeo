@@ -43,4 +43,8 @@ public interface Style extends Format {
 
     String getCollection();
 
+    void setExternal(boolean external);
+
+    boolean isExternal();
+
 }

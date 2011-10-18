@@ -307,7 +307,8 @@ public class ThemeSerializer {
             if (style.isRemote()) {
                 domElement.setAttribute("remote", "true");
             }
-            if (!style.isRemote() || style.isCustomized()) {
+            if ((!style.isRemote() || style.isCustomized())
+                    && !style.isExternal()) {
                 for (String viewName : style.getSelectorViewNames()) {
                     for (String path : style.getPathsForView(viewName)) {
                         Properties styleProperties = style.getPropertiesFor(

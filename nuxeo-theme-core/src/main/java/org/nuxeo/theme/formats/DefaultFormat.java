@@ -35,6 +35,8 @@ public class DefaultFormat implements Format {
 
     private boolean customized = false;
 
+    private boolean external;
+
     public Integer getUid() {
         return uid;
     }
@@ -133,4 +135,11 @@ public class DefaultFormat implements Format {
         this.customized = customized;
     }
 
+    public void setExternal(boolean external) {
+        this.external = external;
+    }
+
+    public boolean isExternal() {
+        return external;
+    }
 }
