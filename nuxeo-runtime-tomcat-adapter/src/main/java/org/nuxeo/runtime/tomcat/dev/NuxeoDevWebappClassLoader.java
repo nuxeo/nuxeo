@@ -20,10 +20,12 @@
 package org.nuxeo.runtime.tomcat.dev;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.catalina.loader.WebappClassLoader;
 import org.nuxeo.osgi.application.MutableClassLoader;
@@ -40,9 +42,9 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         addChildren(cl);
         return cl;
     }
-    
+
     protected DevFrameworkBootstrap bootstrap;
-    
+
     protected List<LocalClassLoader> children;
 
     protected volatile LocalClassLoader[] _children;
@@ -130,22 +132,36 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         }
         return null;
     }
+    
+    @Override
+    public InputStream getResourceAsStream(String name)  {
+        InputStream is = super.getResourceAsStream(name);
+        if  (is != null) {
+            return is;
+        }
+        for (LocalClassLoader cl:getChildren()) {
+            try {
+                is = cl.getLocalResourceAsStream(name);
+            } catch (IOException e) {
+               throw new Error("Cannot read input from " + name, e);
+            }
+            if (is != null) {
+                return is;
+            }
+        }
+        return null;
+    }
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
-        Enumeration<URL> urls = super.getResources(name);
-        if (urls.hasMoreElements()) {
-            return urls;
-        }
+        CompoundEnumeration<URL> enums = new CompoundEnumeration<URL>();
+        enums.add(super.getResources(name));
         for (LocalClassLoader cl : getChildren()) {
-            urls = cl.getLocalResources(name);
-            if (urls.hasMoreElements()) {
-                return urls;
-            }
+            enums.add(cl.getLocalResources(name));
         }
-        return urls;
+        return enums;
     }
-    
+
     @Override
     public void addURL(URL url) {
         super.addURL(url);
@@ -163,6 +179,51 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     @Override
     public ClassLoader getClassLoader() {
         return this;
+    }
+
+    protected static class CompoundEnumeration<E> implements Enumeration<E> {
+
+        private final List<Enumeration<E>> enums = new ArrayList<Enumeration<E>>();
+
+        private int index = 0;
+
+        public CompoundEnumeration() {
+            // nothing to do
+        }
+
+        public CompoundEnumeration(List<Enumeration<E>> enums) {
+            this.enums.addAll(enums);
+        }
+
+        private boolean next() {
+            while (index < enums.size()) {
+                if (enums.get(index) != null && enums.get(index).hasMoreElements()) {
+                    return true;
+                }
+                index++;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return next();
+        }
+
+        @Override
+        public E nextElement() {
+            if (!next()) {
+                throw new NoSuchElementException();
+            }
+            return enums.get(index).nextElement();
+        }
+
+        public void add(Enumeration<E> e) {
+            if (!e.hasMoreElements()) {
+                return;
+            }
+            enums.add(e);
+        }
     }
 
 }
