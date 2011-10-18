@@ -171,6 +171,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         if (devBundles != null) {
             reloadServiceInvoker.hotUndeployBundles(devBundles);
         }
+
+        reloadServiceInvoker.flush();
+        
         devBundles = bundles;
 
         installNewClassLoader(devBundles);
@@ -179,7 +182,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
         }
-        reloadServiceInvoker.flush();
     }
 
     protected void installNewClassLoader(DevBundle[] bundles) {
