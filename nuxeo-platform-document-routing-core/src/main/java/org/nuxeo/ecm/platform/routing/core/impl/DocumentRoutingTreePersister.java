@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -75,6 +76,10 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         DocumentModel result = null;
         try {
             result = session.copy(model.getRef(), parent.getRef(), null);
+            // copy now copies all the acls, and we don't need the readOnly
+            // policy applied on the model
+            // on the instance, too => removing acls
+            undoReadOnlySecurityModel(result);
             // using the ref, the value of the attached document might not been
             // saved on the model
             result.setPropertyValue(
@@ -197,5 +202,25 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected void undoReadOnlySecurityModel(DocumentModel instance)
+            throws ClientException {
+        ACP acp = new ACPImpl();
+        // remove READ for everyone
+
+        ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
+        routingACL.remove(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.READ, true));
+        // unblock rights inheritance
+
+        ACL inheritedACL = acp.getOrCreateACL(ACL.INHERITED_ACL);
+        inheritedACL.remove(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
+
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        localACL.remove(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
+        instance.setACP(acp, true);
     }
 }
