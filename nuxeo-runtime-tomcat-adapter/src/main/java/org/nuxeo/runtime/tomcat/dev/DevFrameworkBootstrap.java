@@ -268,11 +268,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
 
     protected static String resourceBundleName(File file) {
         String name = file.getName();
-        int lastDotIdx = name.lastIndexOf('-');
-        if (lastDotIdx == -1) {
-            lastDotIdx = 0;
-        }
-        return name.substring(lastDotIdx);
+        return name.substring(name.lastIndexOf('-')+1);
     }
 
 }
