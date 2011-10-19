@@ -19,19 +19,16 @@
 
 package org.nuxeo.ecm.platform.ui.web.rest;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-import org.jboss.seam.util.DTDEntityResolver;
+
+import com.sun.faces.application.ApplicationAssociate;
+import com.sun.faces.application.ConfigNavigationCase;
 
 /**
  * View id helper that matches view ids and outcomes thanks to navigation cases
@@ -41,35 +38,34 @@ public class StaticNavigationHandler {
 
     private static final Log log = LogFactory.getLog(StaticNavigationHandler.class);
 
-    private Map<String, String> outcomeToViewId;
+    private final HashMap<String, String> outcomeToViewId =
+    		new HashMap<String, String>();
 
-    private Map<String, String> viewIdToOutcome;
+    private final HashMap<String, String> viewIdToOutcome =
+    		new HashMap<String, String>();
 
-    public StaticNavigationHandler(ServletContext context) {
-        InputStream stream = null;
-        if (context != null) {
-            stream = context.getResourceAsStream("/WEB-INF/faces-config.xml");
-        }
-
-        if (stream == null) {
-            log.error("No faces-config.xml file found: "
-                    + "cannot resolve view id from outcome");
-        } else {
-            log.debug("Reading faces-config.xml");
-            parse(stream);
-        }
-    }
+	public StaticNavigationHandler(ServletContext context) {
+		ApplicationAssociate associate = ApplicationAssociate
+				.getCurrentInstance();
+		for (List<ConfigNavigationCase> cases : associate
+				.getNavigationCaseListMappings().values()) {
+			for (ConfigNavigationCase cnc : cases) {
+				String toViewId = cnc.getToViewId();
+				String fromOutcome = cnc.getFromOutcome();
+				outcomeToViewId.put(fromOutcome, toViewId);
+				viewIdToOutcome.put(toViewId, fromOutcome);
+			}
+		}
+	}
 
     public String getOutcomeFromViewId(String viewId) {
         if (viewId == null) {
             return null;
         }
-        if (viewIdToOutcome != null) {
-            viewId = viewId.replace(".faces", ".xhtml");
-            if (viewIdToOutcome.containsKey(viewId)) {
-                return viewIdToOutcome.get(viewId);
-            }
-        }
+		viewId = viewId.replace(".faces", ".xhtml");
+		if (viewIdToOutcome.containsKey(viewId)) {
+			return viewIdToOutcome.get(viewId);
+		}
         return viewId;
     }
 
@@ -77,48 +73,10 @@ public class StaticNavigationHandler {
         if (outcome == null) {
             return null;
         }
-        if (outcomeToViewId != null) {
-            if (outcomeToViewId.containsKey(outcome)) {
-                return outcomeToViewId.get(outcome).replace(".xhtml", ".faces");
-            }
-        }
+		if (outcomeToViewId.containsKey(outcome)) {
+			return outcomeToViewId.get(outcome).replace(".xhtml", ".faces");
+		}
         return "/" + outcome + ".faces";
-    }
-
-    @SuppressWarnings("unchecked")
-    private void parse(InputStream stream) {
-        outcomeToViewId = new HashMap<String, String>();
-        viewIdToOutcome = new HashMap<String, String>();
-        Element root = getDocumentRoot(stream);
-        List<Element> elements = root.elements("navigation-rule");
-        for (Element rule : elements) {
-            List<Element> nav_cases = rule.elements("navigation-case");
-            for (Element nav_case : nav_cases) {
-                Element from_el = nav_case.element("from-outcome");
-                Element to_el = nav_case.element("to-view-id");
-
-                if ((from_el != null) && (to_el != null)) {
-                    String from = from_el.getTextTrim();
-                    String to = to_el.getTextTrim();
-                    outcomeToViewId.put(from, to);
-                    viewIdToOutcome.put(to, from);
-                }
-            }
-        }
-    }
-
-    /**
-     * Gets the root element of the document.
-     */
-    private static Element getDocumentRoot(InputStream stream) {
-        try {
-            SAXReader saxReader = new SAXReader();
-            saxReader.setEntityResolver(new DTDEntityResolver());
-            saxReader.setMergeAdjacentText(true);
-            return saxReader.read(stream).getRootElement();
-        } catch (DocumentException de) {
-            throw new RuntimeException(de);
-        }
     }
 
 }
