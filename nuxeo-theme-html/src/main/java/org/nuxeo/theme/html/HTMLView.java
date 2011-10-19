@@ -78,9 +78,9 @@ public class HTMLView extends TemplateView {
             result = replaceModelExpressions(info, result);
         }
 
-        String className = element.getClassName();
-        if (className != null) {
-            result = CSSUtils.insertCssClass(result, className);
+        String cssClassName = element.getCssClassName();
+        if (cssClassName != null) {
+            result = CSSUtils.insertCssClass(result, cssClassName);
         }
 
         // replace [nxthemes markup] strings with the actual markup

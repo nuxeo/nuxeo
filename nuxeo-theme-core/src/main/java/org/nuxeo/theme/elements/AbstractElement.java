@@ -31,7 +31,7 @@ public abstract class AbstractElement extends AbstractNode implements Element {
 
     private String description;
 
-    private String className;
+    private String cssClassName;
 
     public Integer getUid() {
         return uid;
@@ -86,13 +86,13 @@ public abstract class AbstractElement extends AbstractNode implements Element {
     }
 
     @Override
-    public String getClassName() {
-        return className;
+    public String getCssClassName() {
+        return cssClassName;
     }
 
     @Override
-    public void setClassName(String className) {
-        this.className = className;
+    public void setCssClassName(String cssClassName) {
+        this.cssClassName = cssClassName;
     }
 
     public String computeXPath() {

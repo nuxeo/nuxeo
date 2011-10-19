@@ -200,7 +200,7 @@ public class ThemeSerializer {
             domElement.setAttribute("name", elementName);
         }
 
-        final String elementClassName = parent.getClassName();
+        final String elementClassName = parent.getCssClassName();
         if (elementClassName != null) {
             domElement.setAttribute("class", elementClassName);
         }

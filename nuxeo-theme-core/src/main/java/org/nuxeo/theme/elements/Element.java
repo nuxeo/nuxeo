@@ -37,8 +37,8 @@ public interface Element extends Relate, Node, Identifiable {
 
     String computeXPath();
 
-    String getClassName();
+    String getCssClassName();
 
-    void setClassName(String className);
+    void setCssClassName(String cssClassName);
 
 }

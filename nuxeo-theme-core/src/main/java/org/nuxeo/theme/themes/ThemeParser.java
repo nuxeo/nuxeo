@@ -388,7 +388,7 @@ public class ThemeParser {
 
             Node classAttr = attributes.getNamedItem("class");
             if (classAttr != null) {
-                elem.setClassName(classAttr.getNodeValue());
+                elem.setCssClassName(classAttr.getNodeValue());
             }
 
             String description = getCommentAssociatedTo(n);

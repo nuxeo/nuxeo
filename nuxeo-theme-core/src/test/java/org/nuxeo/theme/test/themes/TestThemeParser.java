@@ -84,19 +84,19 @@ public class TestThemeParser extends NXRuntimeTestCase {
         PageElement page1 = themeManager.getPageByPath("theme1/page1");
         assertEquals("page1", page1.getName());
         assertEquals("page", page1.getElementType().getTypeName());
-        assertEquals("pageClass1 pageClass2", page1.getClassName());
+        assertEquals("pageClass1 pageClass2", page1.getCssClassName());
 
         SectionElement section1 = (SectionElement) page1.getChildren().get(0);
         assertEquals("header", section1.getName());
-        assertEquals("sectionClass1 sectionClass2", section1.getClassName());
+        assertEquals("sectionClass1 sectionClass2", section1.getCssClassName());
 
         CellElement cell1 = (CellElement) section1.getChildren().get(0);
         assertNull(cell1.getName());
-        assertNull(cell1.getClassName());
+        assertNull(cell1.getCssClassName());
 
         CellElement cell2 = (CellElement) section1.getChildren().get(1);
         assertEquals("right column", cell2.getName());
-        assertEquals("cellClass", cell2.getClassName());
+        assertEquals("cellClass", cell2.getCssClassName());
     }
 
     public void testWidgets() {
