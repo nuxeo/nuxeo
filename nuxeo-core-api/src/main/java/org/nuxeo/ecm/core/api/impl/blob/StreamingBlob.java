@@ -216,6 +216,7 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
             // URI follow
             String uri = sm.addStream(src);
             out.writeUTF(uri);
+            sm.removeStream(uri);
         }
     }
 
