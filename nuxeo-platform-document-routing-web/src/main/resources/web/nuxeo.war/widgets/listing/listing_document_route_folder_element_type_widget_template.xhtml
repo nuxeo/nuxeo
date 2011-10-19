@@ -14,8 +14,14 @@
       title="#{field_0.dc.title}"
       class="stepExecutionIcon" />
   </c:if>
-  <c:if test="#{field_0.stepf.execution eq 'serial'}">
+  <c:if test="#{field_0.stepf.execution eq 'serial' and !field_0.hasFacet('ConditionalStepFolder') }">
     <h:graphicImage value="icons/route_serial_vertical.png"
+      alt="#{field_0.dc.title}"
+      title="#{field_0.dc.title}"
+      class="stepExecutionIcon" />
+  </c:if>
+  <c:if test="#{field_0.stepf.execution eq 'serial' and field_0.hasFacet('ConditionalStepFolder') }">
+    <h:graphicImage value="icons/conditional_folder.png"
       alt="#{field_0.dc.title}"
       title="#{field_0.dc.title}"
       class="stepExecutionIcon" />
