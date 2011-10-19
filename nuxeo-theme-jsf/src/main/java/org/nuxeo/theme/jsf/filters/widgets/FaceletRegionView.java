@@ -27,7 +27,7 @@ public final class FaceletRegionView extends AbstractView {
         final StringBuilder s = new StringBuilder();
 
         final Element element = info.getElement();
-        String className = element.getClassName();
+        String className = element.getCssClassName();
 
         if ("".equals(region.name)) {
             if (className == null) {
