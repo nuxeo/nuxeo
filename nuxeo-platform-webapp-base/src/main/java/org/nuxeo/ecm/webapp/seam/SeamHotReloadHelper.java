@@ -49,8 +49,9 @@ import org.jboss.seam.navigation.Pages;
 
 /**
  * Helper class to manage Seam Hot Reload
- *
- * Most of the code comes from Jboss Seam 2.0.3-RC1 Debug package (HotDeployFilter)
+ * 
+ * Most of the code comes from Jboss Seam 2.0.3-RC1 Debug package
+ * (HotDeployFilter)
  */
 public class SeamHotReloadHelper {
 
@@ -58,48 +59,45 @@ public class SeamHotReloadHelper {
 
     public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
 
-
     public static boolean isHotReloadEnabled() {
-        String sysProp = System.getProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "false");
+        String sysProp = System.getProperty(SEAM_HOT_RELOAD_SYSTEM_PROP,
+                "false");
         return "true".equalsIgnoreCase(sysProp);
     }
 
-    public static Set<String> reloadSeamComponents(HttpServletRequest httpRequest) {
+    public static void flush() {
+        Seam.clearComponentNameCache();
+        try {
+            Field f = Seam.class.getDeclaredField("CLASSLOADERS_LOADED");
+            f.setAccessible(true);
+            ((Set<?>)f.get(null)).clear();
+        } catch (Exception e) {
+            log.warn("Can't flush seam class loader cache", e);
+        }
+        flushI18N();
+    }
 
+    public static Set<String> reloadSeamComponents(
+            HttpServletRequest httpRequest) {
 
         ServletContext servletContext = httpRequest.getSession().getServletContext();
 
-        flushI18N();
-
-        boolean reloadDone = false;
-
         Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
         if (init != null && init.hasHotDeployableComponents()) {
-            for (File file : init.getHotDeployPaths()) {
-                if (scan(init, file)) {
-                    Seam.clearComponentNameCache();
-                    try {
-                        new Initialization(servletContext).redeploy(httpRequest);
-                    } catch (InterruptedException e) {
-                        log.error("Error during hot redeploy", e);
-                    }
-                    reloadDone=true;
-                    break;
-                }
+            try {
+                new Initialization(servletContext).redeploy(httpRequest);
+            } catch (InterruptedException e) {
+                log.error("Error during hot redeploy", e);
             }
         }
 
-        servletContext.removeAttribute(Seam.getComponentName(Pages.class));
-        servletContext.removeAttribute(Seam.getComponentName(Exceptions.class));
-
-        if (reloadDone) {
-            return init.getHotDeployableComponents();
-        } else {
-            return null;
-        }
+        // re-initialized by re-deployment, why removing ?
+        // servletContext.removeAttribute(Seam.getComponentName(Pages.class)); 
+        return init.getHotDeployableComponents();
     }
 
-    public static Set<String> getHotDeployableComponents(HttpServletRequest httpRequest) {
+    public static Set<String> getHotDeployableComponents(
+            HttpServletRequest httpRequest) {
 
         ServletContext servletContext = httpRequest.getSession().getServletContext();
         Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
@@ -132,7 +130,9 @@ public class SeamHotReloadHelper {
         try {
             flushWebResources();
         } catch (Exception e) {
-            log.error("Cannot flush web resources, did you start with the sdk profile active ?", e);
+            log.error(
+                    "Cannot flush web resources, did you start with the sdk profile active ?",
+                    e);
         }
         ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
     }
@@ -145,20 +145,10 @@ public class SeamHotReloadHelper {
             InstanceNotFoundException, MBeanException {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         ObjectName on = new ObjectName("org.nuxeo:type=sdk,name=web-resources");
-        if (mbs.isRegistered(on)) { 
+        if (mbs.isRegistered(on)) {
             // only in tomcat container
             mbs.invoke(on, "flushWebResources", new Object[0], new String[0]);
         }
-    } 
-    
-    @SuppressWarnings({ "unused", "unchecked" })
-    private static <T> T getFieldValue(Object object, String fieldName) {
-    try {
-        Field field = object.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return (T) field.get(object);
-    } catch (Exception e) {
-        return null;
-    }       
-}
+    }
+
 }

@@ -54,18 +54,20 @@ public class NuxeoSeamFlusher implements EventListener {
             return;
         }
         String id = event.getId();
-        if ("flush".equals(id) || "reloadSeamComponents".equals(id)) {
+        if ("flush".equals(id) || "flushSeamComponents".equals(id)) {
+            SeamHotReloadHelper.flush();
+            try {
+                invalidateWebSessions();
+            } catch (Exception e) {
+                log.error("Cannot invalidate seam web sessions", e);
+            }
+        } else if ("reload".equals(id) || "reloadSeamComponents".equals(id)) {
             try {
                 if (postSeamReload() == false) {
                     log.error("Cannot post hot-reload seam components on loopback url");
                 }
             } catch (IOException e) {
                 log.error("Cannot hot-reload seam components", e);
-            }
-            try {
-                invalidateWebSessions();
-            } catch (Exception e) {
-                log.error("Cannot invalidate seam web sessions", e);
             }
         }
     }
@@ -94,7 +96,8 @@ public class NuxeoSeamFlusher implements EventListener {
                 "Catalina:type=Manager,path=/nuxeo,host=*"), null)) {
             WebSessionFlusher flusher = JMX.newMBeanProxy(mbs,
                     oi.getObjectName(), WebSessionFlusher.class);
-            StringTokenizer tokenizer = new StringTokenizer(flusher.listSessionIds(), " ");
+            StringTokenizer tokenizer = new StringTokenizer(
+                    flusher.listSessionIds(), " ");
             while (tokenizer.hasMoreTokens()) {
                 String id = tokenizer.nextToken();
                 flusher.expireSession(id);
