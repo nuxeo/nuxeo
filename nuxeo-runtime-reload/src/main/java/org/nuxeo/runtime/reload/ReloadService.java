@@ -35,12 +35,15 @@ public interface ReloadService {
      */
    void undeployBundle(String name) throws Exception;
 
-    void reloadRepository() throws Exception;
+    void flushRepository() throws Exception;
 
     void flushJaasCache() throws Exception;
 
     void reloadProperties() throws Exception;
     
+    /**
+     * @since 5.4.3
+     */
     void reloadSeamComponents() throws Exception;
 
     void addJar(File file) throws Exception;
@@ -62,4 +65,9 @@ public interface ReloadService {
      * @since 5.4.3
      */
     void installWebResources(File file) throws Exception;
+
+    /**
+     * @since 5.4.3
+     */
+    void reload() throws Exception;
 }

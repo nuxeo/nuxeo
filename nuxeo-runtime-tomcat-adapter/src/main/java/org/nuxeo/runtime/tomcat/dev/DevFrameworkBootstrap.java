@@ -137,7 +137,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     protected void postloadDevBundles() throws Exception {
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
-            reloadServiceInvoker.flush();
         }
     }
 
@@ -168,33 +167,36 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     protected synchronized void reloadDevBundles(DevBundle[] bundles)
             throws Exception {
 
-        // un-deploy previous bundles
-        if (devBundles != null) {
-            reloadServiceInvoker.hotUndeployBundles(devBundles);
+        if (devBundles != null) { // clear last context
+            try {
+                reloadServiceInvoker.hotUndeployBundles(devBundles);
+                clearClassLoader();
+            } finally {
+                devBundles = null;
+            }
         }
 
-        reloadServiceInvoker.flush();
-        
-        devBundles = bundles;
-
-        installNewClassLoader(devBundles);
-
-        // deploy last bundles
-        if (devBundles != null) {
-            reloadServiceInvoker.hotDeployBundles(devBundles);
+        if (bundles != null) { // create new context
+            try {
+                installNewClassLoader(bundles);
+                reloadServiceInvoker.hotDeployBundles(bundles);
+            } finally {
+                devBundles = bundles;
+            }
         }
     }
 
-    protected void installNewClassLoader(DevBundle[] bundles) {
-        // flush and reset class loader
+    protected void clearClassLoader() {
         NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.clear();
         System.gc();
+    }
 
-        // configure new loader
+    protected void installNewClassLoader(DevBundle[] bundles) {
         List<URL> jarUrls = new ArrayList<URL>();
         List<File> seamDirs = new ArrayList<File>();
         List<File> resourceBundleFragments = new ArrayList<File>();
+        // filter dev bundles types
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType.isJar) {
                 try {
@@ -208,6 +210,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
                 resourceBundleFragments.add(bundle.file());
             }
         }
+
+        // install class loader
+        NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.createLocalClassLoader(jarUrls.toArray(new URL[jarUrls.size()]));
 
         // install seam classes in hot sync folder
@@ -271,7 +276,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
 
     protected static String resourceBundleName(File file) {
         String name = file.getName();
-        return name.substring(name.lastIndexOf('-')+1);
+        return name.substring(name.lastIndexOf('-') + 1);
     }
 
 }

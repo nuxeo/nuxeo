@@ -34,6 +34,8 @@ public class ReloadServiceInvoker {
     protected Method undeployBundle;
 
     protected Method flush;
+    
+    protected Method reload;
 
     public ReloadServiceInvoker(ClassLoader cl) throws Exception {
         Class<?> frameworkClass = cl.loadClass("org.nuxeo.runtime.api.Framework");
@@ -45,7 +47,8 @@ public class ReloadServiceInvoker {
         deployBundle = reloadServiceClass.getDeclaredMethod("deployBundle",
                 new Class<?>[] { File.class });
         undeployBundle = reloadServiceClass.getDeclaredMethod("undeployBundle", new Class<?>[] { String.class });
-        flush = reloadServiceClass.getDeclaredMethod("flush", new Class<?>[] {});
+        flush = reloadServiceClass.getDeclaredMethod("flush", new Class<?>[0]);
+        reload = reloadServiceClass.getDeclaredMethod("reload", new Class<?>[0]);
     }
 
     protected void hotDeployBundles(DevBundle[]bundles) throws Exception {
@@ -54,6 +57,7 @@ public class ReloadServiceInvoker {
                 bundle.name = (String)deployBundle.invoke(reloadService, new Object[] { bundle.file() });
             }
         }
+        reload();
     }
     
     protected void hotUndeployBundles(DevBundle[] bundles) throws Exception {
@@ -62,11 +66,15 @@ public class ReloadServiceInvoker {
                 undeployBundle.invoke(reloadService, new Object[] { bundle.name });
             }
         }
+        flush();
     }
 
     protected void flush() throws Exception {
         flush.invoke(reloadService);
     }
 
+    protected void reload() throws Exception {
+        reload.invoke(reloadService);
+    }
 
 }
