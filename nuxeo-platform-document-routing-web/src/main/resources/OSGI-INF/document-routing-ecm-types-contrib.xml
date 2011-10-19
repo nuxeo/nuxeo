@@ -105,8 +105,8 @@
     
     <type id="ConditionalStepFolder" coreType="ConditionalStepFolder">
       <label>ConditionalStepFolder</label>
-      <icon>/icons/fork.png</icon>
-      <bigIcon>/icons/fork_100.png</bigIcon>
+      <icon>/icons/conditional_folder.png</icon>
+      <bigIcon>/icons/conditional_folder_100.png</bigIcon>
       <category>StepContainers</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>

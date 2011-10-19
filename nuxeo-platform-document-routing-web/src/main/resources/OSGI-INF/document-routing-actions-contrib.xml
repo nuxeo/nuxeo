@@ -115,7 +115,6 @@
       <category>ADD_STEP_IN_FORK_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
-       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
     <action id="REMOVE_STEP" label="command.delete"
