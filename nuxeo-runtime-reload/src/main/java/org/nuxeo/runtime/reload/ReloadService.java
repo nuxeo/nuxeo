@@ -35,7 +35,7 @@ public interface ReloadService {
      */
    void undeployBundle(String name) throws Exception;
 
-    void flushRepository() throws Exception;
+    void reloadRepository() throws Exception;
 
     void flushJaasCache() throws Exception;
 

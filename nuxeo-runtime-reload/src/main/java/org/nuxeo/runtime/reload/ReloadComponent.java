@@ -80,7 +80,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void flushRepository() throws Exception {
+    public void reloadRepository() throws Exception {
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, "reloadRepositories", this, null));
     }
