@@ -39,6 +39,15 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     private Map<String, List<DirectoryFactory>> factoriesByDirectoryName;
 
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        // open all directories at application startup, so that
+        // their tables are created (outside a transaction) if needed
+        for (Directory dir : getDirectories()) {
+            dir.getName(); // enough to create tables for SQL directories
+        }
+    }
+
     public Directory getDirectory(String name) throws DirectoryException {
         List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(name);
         if (potentialFactories == null) {
