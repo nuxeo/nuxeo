@@ -2,13 +2,13 @@
 <theme description="Default theme" name="default" resource-bank="nuxeo" template-engines="freemarker,jsf-facelets">
   <layout>
     <!-- Page 1 -->
-    <page name="page1">
+    <page name="page1" class="page1">
       <section name="header">
-        <cell>
+        <cell class="firstCell">
           <!-- The first fragment -->
           <fragment type="dummy fragment"/>
         </cell>
-        <cell name="right column">
+        <cell name="right column" class="column">
           <fragment perspectives="default" type="dummy fragment"/>
           <!-- this fragment is visible in the view perspective only -->
           <fragment type="dummy fragment" name="main"/>

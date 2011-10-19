@@ -200,6 +200,11 @@ public class ThemeSerializer {
             domElement.setAttribute("name", elementName);
         }
 
+        final String elementClassName = parent.getClassName();
+        if (elementClassName != null) {
+            domElement.setAttribute("class", elementClassName);
+        }
+
         if (parent instanceof Fragment) {
             domElement.setAttribute("type",
                     ((Fragment) parent).getFragmentType().getTypeName());
