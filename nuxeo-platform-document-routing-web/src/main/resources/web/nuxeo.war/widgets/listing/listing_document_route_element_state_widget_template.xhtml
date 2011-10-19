@@ -23,5 +23,8 @@
     <h:graphicImage value="icons/review_accepted.png"
       alt="#{field_0}" title="#{field_0}" />
   </c:if>
-
+  <c:if test="#{field_0 eq 'canceled'}">
+    <h:graphicImage value="icons/action_delete.gif"
+      alt="#{field_0}" title="#{field_0}" />
+  </c:if>
 </f:subview>

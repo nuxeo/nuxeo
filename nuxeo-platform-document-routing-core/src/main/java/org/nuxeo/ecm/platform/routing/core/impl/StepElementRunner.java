@@ -112,6 +112,9 @@ public class StepElementRunner implements ElementRunner {
 
     @Override
     public void cancel(CoreSession session, DocumentRouteElement element) {
+        if (element.isCanceled()) {
+            return;
+        }
         if (element.isReady() || element.isDone()) {
             element.setCanceled(session);
         } else if (element.isRunning()) {

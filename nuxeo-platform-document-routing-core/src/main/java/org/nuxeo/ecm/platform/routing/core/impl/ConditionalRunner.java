@@ -72,7 +72,9 @@ public class ConditionalRunner extends SerialRunner {
                         }
                     } else {
                         // cancel the branch that won;t be run
-                        child.cancel(session);
+                        if (!child.isCanceled()) {
+                            child.cancel(session);
+                        }
                     }
                 }
             }

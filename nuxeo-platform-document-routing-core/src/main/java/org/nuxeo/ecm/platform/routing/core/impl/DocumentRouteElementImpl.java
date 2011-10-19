@@ -161,7 +161,9 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     public void followTransition(ElementLifeCycleTransistion transition,
             CoreSession session, boolean recursive) {
         try {
-            document.followTransition(transition.name());
+            if (document.followTransition(transition.name())) {
+                document = session.getDocument(document.getRef());
+            }
             if (Framework.isTestModeSet()) {
                 Framework.getLocalService(EventService.class).waitForAsyncCompletion();
             }
@@ -171,7 +173,9 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
                     DocumentRouteElement element = child.getAdapter(DocumentRouteElement.class);
                     element.followTransition(transition, session, recursive);
                 }
+
             }
+
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -195,8 +199,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     @Override
     public void setValidated(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toValidated, session,
-                true);
+        followTransition(ElementLifeCycleTransistion.toValidated, session, true);
     }
 
     @Override
