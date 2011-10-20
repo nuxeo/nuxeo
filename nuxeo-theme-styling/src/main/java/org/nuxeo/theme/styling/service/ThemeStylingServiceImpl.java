@@ -31,7 +31,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
+import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.elements.PageElement;
+import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
@@ -228,9 +230,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         PageElement pageElement = themeManager.getPageByPath(page.getName());
         if (pageElement != null) {
             List<String> styleNames = page.getStyles();
-            // create styles if needed
 
-            // link styles to the theme page
             if (styleNames != null) {
                 for (String styleName : page.getStyles()) {
                     SimpleStyle simpleStyle = themePageStyles.get(styleName);
@@ -256,9 +256,16 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                             }
                             Utils.loadCss(style, cssSource, "*");
                         }
-                    }
 
-                    // TODO associate page and style
+                        Style existingPageStyle = (Style) ElementFormatter.getFormatFor(
+                                pageElement, "style");
+                        if (existingPageStyle == null) {
+                            existingPageStyle = (Style) FormatFactory.create("style");
+                            ElementFormatter.setFormat(pageElement,
+                                    existingPageStyle);
+                        }
+                        themeManager.makeFormatInherit(existingPageStyle, style);
+                    }
                 }
             }
 
