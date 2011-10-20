@@ -200,8 +200,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (themePageResources != null) {
             String styleName = style.getName();
             for (ThemePage res : themePageResources.values()) {
-                List<String> styles = res.getStyles();
-                if (styles != null && styles.contains(styleName)) {
+                List<String> styleNames = res.getStyles();
+                if (styleNames != null && styleNames.contains(styleName)) {
                     // only register resources again if it's already been
                     // loaded
                     if (res.isLoaded()) {
@@ -238,7 +238,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             List<String> styles = page.getStyles();
             // link styles to the theme page
             if (styles != null) {
-                String parentStyle = null;
+                String parentStyleName = null;
                 for (String styleName : page.getStyles()) {
                     Style pageStyle = themeManager.createStyle();
                     pageStyle.setName(styleName);
@@ -260,20 +260,20 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     // register directly style to the page
                     ElementFormatter.setFormat(pageElement, pageStyle);
                     // handle inheritance
-                    if (parentStyle == null) {
+                    if (parentStyleName == null) {
                         ThemeManager.removeInheritanceTowards(pageStyle);
                     } else {
                         Style inheritedStyle = (Style) themeManager.getNamedObject(
-                                themeName, "style", parentStyle);
+                                themeName, "style", parentStyleName);
                         if (inheritedStyle == null) {
                             throw new ThemeException(
                                     "Could not find named style: "
-                                            + parentStyle);
+                                            + parentStyleName);
                         }
                         themeManager.makeFormatInherit(pageStyle,
                                 inheritedStyle);
                     }
-                    parentStyle = styleName;
+                    parentStyleName = styleName;
                 }
             }
             // mark page as loaded
