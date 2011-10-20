@@ -31,7 +31,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
-import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PaletteParser;
@@ -69,56 +68,29 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (contribution instanceof ThemePage) {
-            ThemePage item = (ThemePage) contribution;
-            String themePage = item.getName();
-            if (themePageResources.containsKey(themePage)) {
-                if (!item.getAppendStyles() && !item.getAppendFlavours()) {
-                    // override
-                    themePageResources.put(themePage, item);
-                } else {
-                    // merge
-                    List<String> newStyles = new ArrayList<String>();
-                    ThemePage existing = themePageResources.get(themePage);
-                    if (item.getAppendStyles()) {
-                        List<String> existingStyles = existing.getStyles();
-                        if (existingStyles != null) {
-                            newStyles.addAll(existingStyles);
-                        }
-                    }
-                    newStyles.addAll(item.getStyles());
-                    List<String> newFlavours = new ArrayList<String>();
-                    if (item.getAppendFlavours()) {
-                        List<String> existingFlavours = existing.getFlavours();
-                        if (existingFlavours != null) {
-                            newFlavours.addAll(existingFlavours);
-                        }
-                    }
-                    newFlavours.addAll(item.getFlavours());
-                    existing.setStyles(newStyles);
-                    existing.setFlavours(newFlavours);
-                    themePageResources.put(themePage, existing);
-                    if (existing.isLoaded()) {
-                        // reload
-                        postRegisterThemePageResources(existing);
-                    }
-                }
-            } else {
-                themePageResources.put(themePage, item);
-            }
-        } else if (contribution instanceof Flavour) {
+
+        /*
+         * Register flavours
+         */
+        if (contribution instanceof Flavour) {
             Flavour flavour = (Flavour) contribution;
             String flavourName = flavour.getName();
             if (themePageFlavours.containsKey(flavourName)
                     && flavour.getAppendPresets()) {
                 Flavour existing = themePageFlavours.get(flavourName);
                 // TODO: merge
-                themePageFlavours.put(flavourName, flavour);
+                themePageFlavours.put(flavourName, existing);
             } else {
                 themePageFlavours.put(flavourName, flavour);
             }
+            // Register flavour and presets as palettes
             registerPaletteToThemeServiceFor(contributor.getContext(), flavour);
-        } else if (contribution instanceof SimpleStyle) {
+        }
+
+        /*
+         * Register styles
+         */
+        else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
             themePageStyles.put(style.getName(), style);
             // load the style content
@@ -138,9 +110,52 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             } else {
                 String cssSource = new String(FileUtils.readBytes(url));
                 style.setContent(cssSource);
-                postRegisterThemePageResourcesForStyle(
-                        contributor.getContext(), style);
             }
+        }
+        /*
+         * Register pages
+         */
+        else if (contribution instanceof ThemePage) {
+            ThemePage item = (ThemePage) contribution;
+            String themePage = item.getName();
+
+            // Merge
+            if (themePageResources.containsKey(themePage)
+                    && (item.getAppendStyles() || item.getAppendFlavours())) {
+
+                List<String> newStyles = new ArrayList<String>();
+                ThemePage existing = themePageResources.get(themePage);
+                if (item.getAppendStyles()) {
+                    List<String> existingStyles = existing.getStyles();
+                    if (existingStyles != null) {
+                        newStyles.addAll(existingStyles);
+                    }
+                }
+                newStyles.addAll(item.getStyles());
+                List<String> newFlavours = new ArrayList<String>();
+                if (item.getAppendFlavours()) {
+                    List<String> existingFlavours = existing.getFlavours();
+                    if (existingFlavours != null) {
+                        newFlavours.addAll(existingFlavours);
+                    }
+                }
+                newFlavours.addAll(item.getFlavours());
+                existing.setStyles(newStyles);
+                existing.setFlavours(newFlavours);
+                themePageResources.put(themePage, existing);
+                if (existing.isLoaded()) {
+                    // reload
+                    postRegisterThemePageResources(existing);
+                }
+
+            }
+
+            // New page or override existing page
+            else {
+                themePageResources.put(themePage, item);
+                postRegisterThemePageResources(item);
+            }
+
         } else {
             log.error("Unknown contribution to the theme service, extension"
                     + " point 'themePageResources': " + contribution);
@@ -195,35 +210,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
      * 
      * @since 5.4.3
      */
-    protected void postRegisterThemePageResourcesForStyle(
-            RuntimeContext extensionContext, SimpleStyle style) {
-        if (themePageResources != null) {
-            String styleName = style.getName();
-            for (ThemePage res : themePageResources.values()) {
-                List<String> styleNames = res.getStyles();
-                if (styleNames != null && styleNames.contains(styleName)) {
-                    // only register resources again if it's already been
-                    // loaded
-                    if (res.isLoaded()) {
-                        try {
-                            postRegisterThemePageResources(res);
-                        } catch (ThemeException e) {
-                            log.error(String.format(
-                                    "Could not load theme page "
-                                            + "resources for page '%s' "
-                                            + "and style '%s",
-                                    res.getThemeName(), style), e);
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     protected void postRegisterThemePageResources(ThemePage page)
             throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         String themeName = page.getThemeName();
+
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
         if (themeDescriptor == null) {
             log.error(String.format(
@@ -235,47 +227,41 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         }
         PageElement pageElement = themeManager.getPageByPath(page.getName());
         if (pageElement != null) {
-            List<String> styles = page.getStyles();
+            List<String> styleNames = page.getStyles();
+            // create styles if needed
+
             // link styles to the theme page
-            if (styles != null) {
-                String parentStyleName = null;
+            if (styleNames != null) {
                 for (String styleName : page.getStyles()) {
-                    Style pageStyle = themeManager.createStyle();
-                    pageStyle.setName(styleName);
-                    // Set the style as external to make theme export work
-                    pageStyle.setExternal(true);
-                    if (themePageStyles.containsKey(styleName)) {
-                        SimpleStyle styleDesc = themePageStyles.get(styleName);
-                        String cssSource = styleDesc.getContent();
-                        if (cssSource != null) {
-                            cssSource = cssSource.replaceAll("__FLAVOUR__",
-                                    ThemeManager.getCollectionCssMarker());
+                    SimpleStyle simpleStyle = themePageStyles.get(styleName);
+                    if (simpleStyle == null) {
+                        log.warn("Style unknown: " + styleName);
+                    } else {
+
+                        // Check whether the style is already registered
+                        Style style = (Style) themeManager.getNamedObject(
+                                themeName, "style", styleName);
+
+                        // Register new style
+                        if (style == null) {
+                            style = themeManager.createStyle();
+                            style.setName(styleName);
+                            style.setExternal(true);
                             themeManager.setNamedObject(themeName, "style",
-                                    pageStyle);
-                            Utils.loadCss(pageStyle, cssSource, "*");
+                                    style);
+                            String cssSource = simpleStyle.getContent();
+                            if (cssSource != null) {
+                                cssSource = cssSource.replaceAll("__FLAVOUR__",
+                                        ThemeManager.getCollectionCssMarker());
+                            }
+                            Utils.loadCss(style, cssSource, "*");
                         }
-                    } else {
-                        log.warn("Style not available (yet?): " + styleName);
                     }
-                    // register directly style to the page
-                    ElementFormatter.setFormat(pageElement, pageStyle);
-                    // handle inheritance
-                    if (parentStyleName == null) {
-                        ThemeManager.removeInheritanceTowards(pageStyle);
-                    } else {
-                        Style inheritedStyle = (Style) themeManager.getNamedObject(
-                                themeName, "style", parentStyleName);
-                        if (inheritedStyle == null) {
-                            throw new ThemeException(
-                                    "Could not find named style: "
-                                            + parentStyleName);
-                        }
-                        themeManager.makeFormatInherit(pageStyle,
-                                inheritedStyle);
-                    }
-                    parentStyleName = styleName;
+
+                    // TODO associate page and style
                 }
             }
+
             // mark page as loaded
             page.setLoaded(true);
             // reset cache
