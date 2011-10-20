@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.4.3-SNAPSHOT</version>
+    <version>5.4.3-I20111020_1649</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -15,11 +15,11 @@
   <packaging>pom</packaging>
 
   <properties>
-    <nuxeo.platform.version>5.4.3-SNAPSHOT</nuxeo.platform.version>
-    <nuxeo.features.version>5.4.3-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.core.version>5.4.3-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.runtime.version>5.4.3-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.version>5.4.3-SNAPSHOT</nuxeo.version>
+    <nuxeo.platform.version>5.4.3-I20111020_1649</nuxeo.platform.version>
+    <nuxeo.features.version>5.4.3-I20111020_1649</nuxeo.features.version>
+    <nuxeo.core.version>5.4.3-I20111020_1649</nuxeo.core.version>
+    <nuxeo.runtime.version>5.4.3-I20111020_1649</nuxeo.runtime.version>
+    <nuxeo.version>5.4.3-I20111020_1649</nuxeo.version>
   </properties>
 
   <modules>
