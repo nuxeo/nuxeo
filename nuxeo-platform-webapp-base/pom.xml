@@ -261,6 +261,7 @@
       <plugin>
         <groupId>net.sourceforge.maven-taglib</groupId>
         <artifactId>maven-taglib-plugin</artifactId>
+        <version>2.4</version>
         <configuration>
           <taglib.src.dir>src/main/resources/WEB</taglib.src.dir>
         </configuration>

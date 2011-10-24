@@ -18,8 +18,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>

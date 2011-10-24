@@ -19,8 +19,8 @@
       <artifactId>jsf-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-api</artifactId>
     </dependency>
   </dependencies>
 
