@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.opencmis.atom.config">
+<component name="org.nuxeo.ecm.core.opencmis.json.config">
 
-  <!-- the /atom/cmis part is defined in the servlet mapping in deployment-fragment.xml -->
+  <!-- the /json/cmis part is defined in the servlet mapping in deployment-fragment.xml -->
 
   <extension
     target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
-    <filterConfig name="cmis-atom" transactional="true">
-      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis/.*</pattern>
+    <filterConfig name="cmis-json" transactional="true">
+      <pattern>${org.nuxeo.ecm.contextPath}/json/cmis/.*</pattern>
     </filterConfig>
   </extension>
 
@@ -19,7 +19,7 @@
       enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
       <parameters>
-        <parameter name="ForcePromptURL_CMISAtomPub">atom/cmis</parameter>
+        <parameter name="ForcePromptURL_CMISAtomPub">json/cmis</parameter>
       </parameters>
     </authenticationPlugin>
   </extension>

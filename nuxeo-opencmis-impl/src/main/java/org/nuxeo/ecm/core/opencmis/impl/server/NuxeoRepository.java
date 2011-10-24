@@ -61,7 +61,6 @@ public class NuxeoRepository {
     public NuxeoRepository(String repositoryId, String rootFolderId) {
         this.repositoryId = repositoryId;
         this.rootFolderId = rootFolderId;
-
     }
 
     public String getId() {

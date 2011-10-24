@@ -35,11 +35,8 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
 
     public static final BigInteger DEFAULT_TYPES_MAX_ITEMS = BigInteger.valueOf(100);
-
     public static final BigInteger DEFAULT_TYPES_DEPTH = BigInteger.valueOf(-1);
-
     public static final BigInteger DEFAULT_MAX_ITEMS = BigInteger.valueOf(100);
-
     public static final BigInteger DEFAULT_DEPTH = BigInteger.valueOf(2);
 
     protected Map<String, NuxeoRepository> repositories;
