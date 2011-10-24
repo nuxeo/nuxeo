@@ -145,16 +145,16 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${project.build.directory}/${artifactId}-${version}.rar</file>
+                  <file>${project.build.directory}/${project.artifactId}-${project.version}.rar</file>
                   <type>jar</type>
                 </artifact>
                 <artifact>
-                  <file>${project.build.directory}/${artifactId}-${version}-j2ee.rar</file>
+                  <file>${project.build.directory}/${project.artifactId}-${project.version}-j2ee.rar</file>
                   <type>rar</type>
                   <classifier>j2ee</classifier>
                 </artifact>
                 <artifact>
-                  <file>${project.build.directory}/${artifactId}-${version}-j2ee.rar</file>
+                  <file>${project.build.directory}/${project.artifactId}-${project.version}-j2ee.rar</file>
                   <type>jar</type>
                   <classifier>j2ee</classifier>
                 </artifact>
