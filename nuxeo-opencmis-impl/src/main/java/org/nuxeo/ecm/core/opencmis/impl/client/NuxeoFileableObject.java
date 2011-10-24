@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -18,6 +18,7 @@ import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
+import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
@@ -39,7 +40,8 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
     }
 
     @Override
-    public List<Folder> getParents() {
+    public List<Folder> getParents(OperationContext context) {
+        // context ignored
         try {
             CoreSession coreSession = data.doc.getCoreSession();
             DocumentModel parent = coreSession.getParentDocument(new IdRef(
@@ -53,6 +55,11 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+    }
+
+    @Override
+    public List<Folder> getParents() {
+        return getParents(null);
     }
 
     @Override
@@ -72,7 +79,9 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
     }
 
     @Override
-    public NuxeoFileableObject move(ObjectId sourceFolder, ObjectId targetFolder) {
+    public NuxeoFileableObject move(ObjectId sourceFolder,
+            ObjectId targetFolder, OperationContext context) {
+        // context ignored
         Holder<String> objectIdHolder = new Holder<String>(getId());
         if (sourceFolder == null) {
             throw new CmisInvalidArgumentException("Missing source folder");
@@ -83,6 +92,11 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
         service.moveObject(getRepositoryId(), objectIdHolder,
                 targetFolder.getId(), sourceFolder.getId(), null);
         return this;
+    }
+
+    @Override
+    public NuxeoFileableObject move(ObjectId sourceFolder, ObjectId targetFolder) {
+        return move(sourceFolder, targetFolder, null);
     }
 
 }

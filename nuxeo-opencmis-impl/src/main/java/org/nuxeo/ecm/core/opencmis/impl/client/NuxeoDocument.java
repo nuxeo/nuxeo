@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -14,7 +14,12 @@ package org.nuxeo.ecm.core.opencmis.impl.client;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.chemistry.opencmis.client.api.*;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.ObjectId;
+import org.apache.chemistry.opencmis.client.api.ObjectType;
+import org.apache.chemistry.opencmis.client.api.OperationContext;
+import org.apache.chemistry.opencmis.client.api.Policy;
+import org.apache.chemistry.opencmis.client.api.TransientDocument;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
@@ -247,13 +252,4 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
         return session.createObjectId(objectId);
     }
 
-    @Override
-    public FileableCmisObject move(ObjectId objectId, ObjectId objectId1, OperationContext operationContext) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public List<Folder> getParents(OperationContext operationContext) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

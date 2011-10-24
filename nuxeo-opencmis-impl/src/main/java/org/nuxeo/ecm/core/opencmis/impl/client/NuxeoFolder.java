@@ -277,13 +277,4 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
         return data.doc.getPath().isRoot();
     }
 
-    @Override
-    public FileableCmisObject move(ObjectId objectId, ObjectId objectId1, OperationContext operationContext) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public List<Folder> getParents(OperationContext operationContext) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

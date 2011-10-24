@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -84,7 +84,7 @@ public class NuxeoBinding implements CmisBinding {
 
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null; // no provider
     }
 
     @Override

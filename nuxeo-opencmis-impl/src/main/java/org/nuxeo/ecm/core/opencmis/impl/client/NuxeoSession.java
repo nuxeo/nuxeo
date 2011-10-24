@@ -16,9 +16,23 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.chemistry.opencmis.client.api.*;
+import org.apache.chemistry.opencmis.client.api.ChangeEvents;
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.ObjectId;
+import org.apache.chemistry.opencmis.client.api.ObjectType;
+import org.apache.chemistry.opencmis.client.api.OperationContext;
+import org.apache.chemistry.opencmis.client.api.Policy;
+import org.apache.chemistry.opencmis.client.api.QueryResult;
+import org.apache.chemistry.opencmis.client.api.QueryStatement;
+import org.apache.chemistry.opencmis.client.api.Relationship;
+import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
+import org.apache.chemistry.opencmis.client.runtime.QueryStatementImpl;
 import org.apache.chemistry.opencmis.client.runtime.util.EmptyItemIterable;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -48,6 +62,8 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
  * {@link CoreSession}.
  */
 public class NuxeoSession implements Session {
+
+    private static final long serialVersionUID = 1L;
 
     public static final OperationContext DEFAULT_CONTEXT = new OperationContextImpl(
             null, false, true, false, IncludeRelationships.NONE, null, true,
@@ -396,8 +412,8 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public QueryStatement createQueryStatement(String s) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public QueryStatement createQueryStatement(String statement) {
+        return new QueryStatementImpl(this, statement);
     }
 
     @Override

@@ -227,6 +227,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         CmisQueryWalker walker = null;
         try {
             walker = QueryUtil.getWalker(statement);
+            walker.setDoFullTextParse(false);
             walker.query(query, new AnalyzingWalker());
         } catch (RecognitionException e) {
             String msg;

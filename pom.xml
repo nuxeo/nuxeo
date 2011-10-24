@@ -21,7 +21,7 @@
   </modules>
 
   <properties>
-    <chemistry.opencmis.version>0.5.0-SNAPSHOT</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.6.0-SNAPSHOT</chemistry.opencmis.version>
   </properties>
 
   <dependencyManagement>
@@ -55,6 +55,7 @@
       <groupId>org.apache.chemistry.opencmis</groupId>
       <artifactId>chemistry-opencmis-server-bindings</artifactId>
       <version>${chemistry.opencmis.version}</version>
+      <classifier>classes</classifier>
     </dependency>
     </dependencies>
   </dependencyManagement>

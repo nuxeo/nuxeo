@@ -11,6 +11,10 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -111,7 +115,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
@@ -126,19 +129,19 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
 public class NuxeoCmisService extends AbstractCmisService {
 
     public static final int DEFAULT_TYPE_LEVELS = 2;
+
     public static final int DEFAULT_FOLDER_LEVELS = 2;
+
     public static final int DEFAULT_CHANGE_LOG_SIZE = 100;
+
     public static final int DEFAULT_QUERY_SIZE = 100;
+
     public static final int DEFAULT_MAX_CHILDREN = 100;
 
     public static final String NUXEO_WAR = "nuxeo.war";
@@ -1111,7 +1114,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             if (reader == null) {
                 log.warn("Audit Service not found. latest change log token will be '0'");
                 return "0";
-                //throw new CmisRuntimeException("Cannot find audit service");
+                // throw new CmisRuntimeException("Cannot find audit service");
             }
             // TODO XXX repositoryId as well
             Map<String, Object> params = new HashMap<String, Object>();
