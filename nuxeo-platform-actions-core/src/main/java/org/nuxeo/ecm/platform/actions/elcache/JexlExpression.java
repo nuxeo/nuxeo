@@ -21,7 +21,8 @@ import org.apache.commons.jexl.ExpressionFactory;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  * 
- * @deprecated use a single EL logic (like the one in nuxeo-platform-el)
+ * @deprecated - use a single EL logic (like the one in nuxeo-platform-el)
+ * @since 5.4.3 - moved from runtime
  */
 public class JexlExpression implements
         org.nuxeo.ecm.platform.actions.elcache.Expression {
