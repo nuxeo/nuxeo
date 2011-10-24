@@ -106,8 +106,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
