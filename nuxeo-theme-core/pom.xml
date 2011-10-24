@@ -60,6 +60,10 @@
       <artifactId>milyn-magger</artifactId>
     </dependency>
     <dependency>
+      <groupId> org.apache.xmlgraphics</groupId>
+      <artifactId>batik-css</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.milyn</groupId>
       <artifactId>milyn-commons</artifactId>
     </dependency>
