@@ -42,7 +42,7 @@ public class DefaultThemeFlavour implements Scheme {
         if (defaultTheme != null) {
             try {
                 ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-                return service.getDefaultFlavour(defaultTheme);
+                return service.getDefaultFlavor(defaultTheme);
             } catch (Exception e) {
                 log.error(e);
             }

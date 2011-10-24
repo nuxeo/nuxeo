@@ -50,7 +50,7 @@
   <!-- 
   <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="admin/default">
-      <defaultFlavour>admin</defaultFlavour>
+      <defaultFlavor>admin</defaultFlavor>
       <styles append="true">
         <style>nuxeo_admin_center_default</style>
       </styles>
@@ -66,9 +66,9 @@
 
   <!-- TODO -->
   <!--
-  <extension target="org.nuxeo.theme.styling.service" point="flavours">
-    <flavour name="admin">
-    </flavour>
+  <extension target="org.nuxeo.theme.styling.service" point="flavors">
+    <flavor name="admin">
+    </flavor>
   </extension>
   -->
 
