@@ -25,12 +25,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audio-core</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audio-jsf</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
     </dependencies>
