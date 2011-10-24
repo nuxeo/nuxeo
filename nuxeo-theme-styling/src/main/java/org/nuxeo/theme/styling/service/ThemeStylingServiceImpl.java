@@ -49,7 +49,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 /**
  * Default implementation for the {@link ThemeStylingService}
- * 
+ *
  * @since 5.4.3
  */
 public class ThemeStylingServiceImpl extends DefaultComponent implements
@@ -113,6 +113,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 String cssSource = new String(FileUtils.readBytes(url));
                 style.setContent(cssSource);
             }
+            // FIXME: reload theme styles in case style content changed
         }
         /*
          * Register pages
@@ -209,7 +210,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     /**
      * Reload theme page resources conf according to new style
-     * 
+     *
      * @since 5.4.3
      */
 
@@ -257,6 +258,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                             Utils.loadCss(style, cssSource, "*");
                         }
 
+                        // link page and style
                         Style existingPageStyle = (Style) ElementFormatter.getFormatFor(
                                 pageElement, "style");
                         if (existingPageStyle == null) {
@@ -312,9 +314,5 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             }
         }
     }
-    // TODO:
-    //
-    // - add negociator handling the default flavour
-    // - move local theme stuff here? (including negociator?)
 
 }
