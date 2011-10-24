@@ -45,8 +45,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
     private static final Log log = LogFactory.getLog(ActionService.class);
 
     private ActionContributionHandler actions;
-    private FilterContributionHandler filters;
 
+    private FilterContributionHandler filters;
 
     @Override
     public void activate(ComponentContext context) {
@@ -166,12 +166,12 @@ public class ActionService extends DefaultComponent implements ActionManager {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if ("actions".equals(extensionPoint)) {
-            actions.addContribution((Action)contribution);
+            actions.addContribution((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {
             if (contribution.getClass() == FilterFactory.class) {
-                registerFilterFactory((FilterFactory)contribution);
+                registerFilterFactory((FilterFactory) contribution);
             } else {
-                filters.addContribution((DefaultActionFilter)contribution);
+                filters.addContribution((DefaultActionFilter) contribution);
             }
         }
     }
@@ -181,18 +181,19 @@ public class ActionService extends DefaultComponent implements ActionManager {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if ("actions".equals(extensionPoint)) {
-            actions.removeContribution((Action)contribution);
+            actions.removeContribution((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {
             if (contribution.getClass() == FilterFactory.class) {
-                unregisterFilterFactory((FilterFactory)contribution);
+                unregisterFilterFactory((FilterFactory) contribution);
             } else {
-                filters.removeContribution((DefaultActionFilter)contribution);
+                filters.removeContribution((DefaultActionFilter) contribution);
             }
         }
     }
 
     /**
-     * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
+     * @deprecated seems not used in Nuxeo - should be removed - and anyway the
+     *             merge is not done
      * @param ff
      */
     @Deprecated
@@ -209,7 +210,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     /**
-     * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
+     * @deprecated seems not used in Nuxeo - should be removed - and anyway the
+     *             merge is not done
      * @param ff
      */
     @Deprecated
