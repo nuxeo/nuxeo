@@ -41,14 +41,10 @@
   <xs:element name="complexField" type="nxs:complexType" />
   <xs:complexType name="complexType">
     <xs:sequence>
-      <xs:element name="stringComplexItem" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xs:element name="dateComplexItem" type="xs:date" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xs:element name="intComplexItem" type="xs:int" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xs:element name="booleanComplexItem" type="xs:boolean" minOccurs="0"
-        maxOccurs="unbounded" />
+      <xs:element name="stringComplexItem" type="xs:string" />
+      <xs:element name="dateComplexItem" type="xs:date" />
+      <xs:element name="intComplexItem" type="xs:int" />
+      <xs:element name="booleanComplexItem" type="xs:boolean" />
     </xs:sequence>
   </xs:complexType>
 
@@ -70,12 +66,9 @@
 
   <xs:complexType name="listOfListsItemType">
     <xs:sequence>
-      <xs:element name="stringItem" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xs:element name="stringArrayItem" type="nxs:stringArrayType"
-        minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="stringListItem" type="nxs:stringListType" minOccurs="0"
-        maxOccurs="unbounded" />
+      <xs:element name="stringItem" type="xs:string" />
+      <xs:element name="stringArrayItem" type="nxs:stringArrayType" />
+      <xs:element name="stringListItem" type="nxs:stringListType" />
     </xs:sequence>
   </xs:complexType>
 
