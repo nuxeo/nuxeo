@@ -45,7 +45,7 @@
   <!-- 
   <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="userCenter/default">
-      <defaultFlavour>userCenter</defaultFlavour>
+      <defaultFlavor>userCenter</defaultFlavor>
       <styles append="true">
         <style>nuxeo_user_center_default</style>
       </styles>
@@ -59,9 +59,9 @@
   </extension>
   <!-- TODO -->
   <!--
-  <extension target="org.nuxeo.theme.styling.service" point="flavours">
-    <flavour name="userCenter">
-    </flavour>
+  <extension target="org.nuxeo.theme.styling.service" point="flavors">
+    <flavor name="userCenter">
+    </flavor>
   </extension>
   -->
 
