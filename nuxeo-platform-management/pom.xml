@@ -69,11 +69,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
@@ -89,18 +84,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-ri</artifactId>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-impl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence</artifactId>
+      <artifactId>persistence-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 
-import com.sun.el.ExpressionFactoryImpl;
+import javax.el.ExpressionFactory;
 
 public class TestExpressionEvaluator extends TestCase {
 
@@ -49,8 +49,8 @@ public class TestExpressionEvaluator extends TestCase {
         return new SampleBean[] { createSampleBean() };
     }
 
-    private final ExpressionEvaluator evaluatorUnderTest = new ExpressionEvaluator(
-            new ExpressionFactoryImpl());
+    private final ExpressionEvaluator evaluatorUnderTest = 
+	new ExpressionEvaluator(ExpressionFactory.newInstance());
 
     private final ExpressionContext context = new ExpressionContext();
 
