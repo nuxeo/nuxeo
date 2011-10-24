@@ -14,7 +14,7 @@
   <description>Addon defining sample widgets for demo and tests.</description>
 
   <properties>
-    <nuxeo.version>${pom.version}</nuxeo.version>
+    <nuxeo.version>${project.version}</nuxeo.version>
   </properties>
 
   <profiles>
