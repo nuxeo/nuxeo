@@ -71,9 +71,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
 
-        /*
-         * Register flavours
-         */
+        // Register flavours
         if (contribution instanceof Flavour) {
             Flavour flavour = (Flavour) contribution;
             String flavourName = flavour.getName();
@@ -89,9 +87,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             registerPaletteToThemeServiceFor(contributor.getContext(), flavour);
         }
 
-        /*
-         * Register styles
-         */
+        // Register styles
         else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
             themePageStyles.put(style.getName(), style);
@@ -113,11 +109,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 String cssSource = new String(FileUtils.readBytes(url));
                 style.setContent(cssSource);
             }
-            // FIXME: reload theme styles in case style content changed
+            // reload theme styles in case style content changed
+            postRegisterThemePageResourcesForStyle(extensionContext, style);
         }
-        /*
-         * Register pages
-         */
+
+        // Register pages
         else if (contribution instanceof ThemePage) {
             ThemePage item = (ThemePage) contribution;
             String themePage = item.getName();
@@ -151,17 +147,17 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     postRegisterThemePageResources(existing);
                 }
 
-            }
-
-            // New page or override existing page
-            else {
+            } else {
+                // register new page or override existing page
                 themePageResources.put(themePage, item);
-                postRegisterThemePageResources(item);
+                // wait for theme to be registered to make the link with styles
+                // postRegisterThemePageResources(item);
             }
 
         } else {
-            log.error("Unknown contribution to the theme service, extension"
-                    + " point 'themePageResources': " + contribution);
+            log.error(String.format("Unknown contribution to the theme "
+                    + "styling service, extension point '%s': '%s",
+                    extensionPoint, contribution));
         }
     }
 
@@ -210,10 +206,35 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     /**
      * Reload theme page resources conf according to new style
-     *
-     * @since 5.4.3
      */
+    protected void postRegisterThemePageResourcesForStyle(
+            RuntimeContext extensionContext, SimpleStyle style) {
+        if (themePageResources != null) {
+            String styleName = style.getName();
+            for (ThemePage res : themePageResources.values()) {
+                List<String> styleNames = res.getStyles();
+                if (styleNames != null && styleNames.contains(styleName)) {
+                    // only register resources again if it's already been
+                    // loaded
+                    if (res.isLoaded()) {
+                        try {
+                            postRegisterThemePageResources(res);
+                        } catch (ThemeException e) {
+                            log.error(
+                                    String.format("Could not load theme page "
+                                            + "resources for page '%s' "
+                                            + "and style '%s",
+                                            res.getThemeName(), style), e);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    /**
+     * Register link between page and style after theme has been registered
+     */
     protected void postRegisterThemePageResources(ThemePage page)
             throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -231,9 +252,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         PageElement pageElement = themeManager.getPageByPath(page.getName());
         if (pageElement != null) {
             List<String> styleNames = page.getStyles();
-
             if (styleNames != null) {
-                for (String styleName : page.getStyles()) {
+                for (String styleName: styleNames) {
                     SimpleStyle simpleStyle = themePageStyles.get(styleName);
                     if (simpleStyle == null) {
                         log.warn("Style unknown: " + styleName);

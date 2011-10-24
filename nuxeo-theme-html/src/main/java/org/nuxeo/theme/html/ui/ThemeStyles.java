@@ -57,7 +57,8 @@ public class ThemeStyles {
         }
 
         if (inline) {
-            return String.format("<style type=\"text/css\">%s</style>",
+            return String.format(
+                    "<style type=\"text/css\">%s</style>",
                     generateThemeStyles(themeName, themeDescriptor, basePath,
                             collectionName));
         }
@@ -82,16 +83,22 @@ public class ThemeStyles {
 
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("/* CSS styles for theme '%s' (%s) */\n\n",
-                themeName, new Date()));
-
         final ThemeManager themeManager = Manager.getThemeManager();
         // Named styles sorted to preserve dependencies in CSS
         for (Style style : themeManager.getSortedNamedStyles(themeName)) {
             sb.insert(0, CSSUtils.styleToCss(style,
                     style.getSelectorViewNames(), IGNORE_VIEW_NAME,
                     IGNORE_CLASSNAME, INDENT));
+            sb.insert(
+                    0,
+                    String.format("\n\n/* CSS styles named '%s' */\n",
+                            style.getName()));
         }
+
+        // add generation comment on top of file
+        sb.insert(0, String.format("/* CSS styles for theme '%s' (%s) */\n",
+                themeName, new Date()));
+
         // Local theme styles
         for (Style style : themeManager.getStyles(themeName)) {
             sb.append(CSSUtils.styleToCss(style, style.getSelectorViewNames(),
