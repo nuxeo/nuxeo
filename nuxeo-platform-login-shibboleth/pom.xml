@@ -58,12 +58,10 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.seam</groupId>
@@ -71,13 +69,9 @@
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
+      <artifactId>commons-logging</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
@@ -89,17 +83,14 @@
     <dependency>
       <groupId>org.richfaces.framework</groupId>
       <artifactId>richfaces-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.richfaces.framework</groupId>
       <artifactId>richfaces-impl</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.richfaces.ui</groupId>
       <artifactId>richfaces-ui</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

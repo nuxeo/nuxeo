@@ -36,15 +36,10 @@
 
     <dependency>
       <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
+      <artifactId>commons-logging</artifactId>
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>

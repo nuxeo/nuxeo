@@ -29,7 +29,7 @@
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
+      <artifactId>commons-logging</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
