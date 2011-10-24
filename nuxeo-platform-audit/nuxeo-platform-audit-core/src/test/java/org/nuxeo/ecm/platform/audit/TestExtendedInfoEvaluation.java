@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.el.ExpressionFactory;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -27,8 +29,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
-
-import com.sun.el.ExpressionFactoryImpl;
 
 public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
 
@@ -49,7 +49,7 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
         super.setUp();
 
         evaluatorUnderTest = new ExpressionEvaluator(
-                new ExpressionFactoryImpl());
+                ExpressionFactory.newInstance());
 
         openRepository();
     }

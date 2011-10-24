@@ -34,8 +34,7 @@
     <!-- Persistence -->
     <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence</artifactId>
-      <scope>provided</scope>
+      <artifactId>persistence-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>

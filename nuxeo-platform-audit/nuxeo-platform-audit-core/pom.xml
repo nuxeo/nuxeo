@@ -47,16 +47,8 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-ri</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence</artifactId>
+      <artifactId>persistence-api</artifactId>
     </dependency>
     <dependency>
       <groupId>de.odysseus.juel</groupId>

@@ -55,7 +55,7 @@
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence</artifactId>
+      <artifactId>persistence-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>

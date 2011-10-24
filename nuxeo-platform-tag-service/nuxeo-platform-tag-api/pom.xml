@@ -25,7 +25,7 @@
     <!-- Persistence -->
     <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence</artifactId>
+      <artifactId>persistence-api</artifactId>
       <scope>provided</scope>
     </dependency>
 

@@ -53,16 +53,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>jms</artifactId>
+      <artifactId>commons-logging</artifactId>
     </dependency>
 
     <!-- scope test -->
