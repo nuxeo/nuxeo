@@ -1,8 +1,8 @@
-Nuxeo used to create Domain directly with localconfiguration 
+This module provides multi tenant support through Domain and local configuration.
 
 ## How to build
 
-You can build Nuxeo Social Collaboration with:
+You can build Nuxeo Multi Tenant with:
 
 	$ ant build
 
