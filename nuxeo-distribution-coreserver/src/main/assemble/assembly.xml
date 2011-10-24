@@ -21,9 +21,7 @@
     <artifact:print output="${outdir}/test-artifacts.properties"
                     mode="sdk"
                     scopes="test" />
-    <!--
     <artifact:print output="${outdir}/dependency-tree.log" />
-    -->
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo Core Server">

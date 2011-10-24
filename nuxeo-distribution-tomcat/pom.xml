@@ -41,6 +41,9 @@
     <profile>
       <id>all-distributions</id>
       <!-- profile for building all classifiers -->
+      <properties>
+        <profile.name>dm</profile.name>
+      </properties>
     </profile>
     <profile>
       <id>all</id>
@@ -48,17 +51,29 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+      <properties>
+        <profile.name>dm</profile.name>
+      </properties>
     </profile>
     <profile>
       <id>nuxeo-coreserver</id>
       <!-- profile for building Tomcat with only Nuxeo CoreServer -->
+      <properties>
+	<profile.name>coreserver</profile.name>
+      </properties>
     </profile>
     <profile>
       <id>nuxeo-cap</id>
+      <properties>
+	<profile.name>cap</profile.name>
+      </properties>
       <!-- profile for building Tomcat with only Nuxeo CAP -->
     </profile>
     <profile>
       <id>nuxeo-dm</id>
+      <properties>
+	<profile.name>dm</profile.name>
+      </properties>
       <!-- default profile for building Tomcat with only Nuxeo DM -->
     </profile>
     <profile>
@@ -70,6 +85,14 @@
 
   <build>
     <plugins>
+      <plugin>
+	<groupId>org.jboss.tattletale</groupId>
+	<artifactId>tattletale-maven</artifactId>
+	<configuration> 
+	  <!--source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/nxserver/lib:${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/lib</source--> 
+	  <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/nxserver/lib</source>
+	</configuration>
+      </plugin>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>

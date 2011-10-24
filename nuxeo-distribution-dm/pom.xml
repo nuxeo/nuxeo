@@ -246,6 +246,13 @@
   <build>
     <plugins>
       <plugin>
+	<groupId>org.jboss.tattletale</groupId>
+	<artifactId>tattletale-maven</artifactId>
+	<configuration>
+	  <source>${project.build.directory}/nuxeo.ear/lib</source>
+	</configuration>
+      </plugin>
+      <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
