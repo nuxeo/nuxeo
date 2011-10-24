@@ -6,7 +6,6 @@
   <require>org.nuxeo.theme.fragments</require>
   <require>org.nuxeo.theme.html</require>
   <require>org.nuxeo.theme.jsf</require>
-  <require>org.nuxeo.theme.styling.service</require>
 
   <!-- perspectives -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="perspectives">
@@ -26,30 +25,8 @@
 
     <theme>
       <src>themes/theme-galaxy.xml</src>
-      <!--src>themes/theme-galaxy-new.xml</src-->
+      <!--src>themes/theme-galaxy-new.xml</src -->
     </theme>
-
-  </extension>
-
-  <extension target="org.nuxeo.theme.services.ThemeService" point="banks">
-    <bank name="nuxeo" url="${nuxeo.loopback.url}/site/theme-banks/nuxeo" />
-  </extension>
-
-  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-    <import src="themes/collections/nuxeo-DM.zip" bank="nuxeo"
-      collection="nuxeo DM" />
-    <import src="themes/collections/Galaxy.zip" bank="nuxeo" collection="Galaxy" />
-  </extension>
-
-  <!-- fragments -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="fragments">
-
-    <!-- see http://jira.nuxeo.org/browse/NXP-982 -->
-    <!-- fragment name="nuxeo5 actions fragment">
-      <class>org.nuxeo.ecm.webapp.theme.fragment.ActionFragment</class>
-      <model-type>menu item</model-type>
-      <dynamic>true</dynamic>
-      </fragment -->
 
   </extension>
 
@@ -170,60 +147,69 @@
     </resource>
   </extension>
 
-
-  <!-- Register flavours (collections of presets) -->
-  <extension target="org.nuxeo.theme.styling.service" point="flavours">
-
-    <flavour name="galaxy">
-      <presetsList append="true">
-        <!-- TODO: use one file for all categories with a custom parser -->
-        <presets category="border" src="themes/palettes/galaxy-borders.properties" />
-        <presets category="background"
-          src="themes/palettes/galaxy-backgrounds.properties" />
-        <presets category="font" src="themes/palettes/galaxy-fonts.properties" />
-        <presets category="color" src="themes/palettes/galaxy-colors.properties" />
-      </presetsList>
-    </flavour>
-
-    <flavour name="galaxy2">
-      <presetsList append="true">
-        <!-- TODO: use one file for all categories with a custom parser -->
-        <presets category="border" src="themes/palettes/galaxy-borders.properties" />
-        <presets category="background"
-          src="themes/palettes/galaxy-backgrounds.properties" />
-        <presets category="font" src="themes/palettes/galaxy-fonts.properties" />
-        <presets category="color" src="themes/palettes/galaxy-colors2.properties" />
-      </presetsList>
-    </flavour>
-
-  </extension>
-
-  <!-- Register style resources (contain indirect references to flavour names, i.e. "__FLAVOUR__") -->
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_dm_default">
-      <path>themes/css/nuxeo_dm_default.css</path>
-    </style>
-    <style name="nuxeo_dm_default2">
-      <path>themes/css/nuxeo_dm_default2.css</path>
-    </style>
-  </extension>
-
   <!-- Register mapping between theme pages and resources -->
   <!--
   <extension target="org.nuxeo.theme.styling.service" point="pages">
     <themePage name="galaxy/default">
-      <defaultFlavour>galaxy</defaultFlavour>
+      <defaultFlavour>default</defaultFlavour>
       <flavours append="true">
-        <flavour>galaxy</flavour>
-        <flavour>galaxy2</flavour>
+        <flavour>default</flavour>
+        <flavour>dark</flavour>
       </flavours>
       <styles append="true">
         <style>nuxeo_dm_default</style>
-        <style>nuxeo_dm_default2</style>
+      </styles>
+    </themePage>
+
+    <themePage name="galaxy/print">
+      <defaultFlavour>default</defaultFlavour>
+      <flavours append="true">
+        <flavour>default</flavour>
+        <flavour>dark</flavour>
+      </flavours>
+      <styles append="true">
+        <style>print_default</style>
       </styles>
     </themePage>
   </extension>
   -->
+
+  <!-- Register flavours (collections of presets) -->
+  <extension target="org.nuxeo.theme.styling.service" point="flavours">
+
+    <flavour name="default">
+      <presetsList append="true">
+        <!-- TODO: use one file for all categories with a custom parser -->
+        <presets category="border" src="themes/palettes/default-borders.properties" />
+        <presets category="background"
+          src="themes/palettes/default-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/default-fonts.properties" />
+        <presets category="color" src="themes/palettes/default-colors.properties" />
+      </presetsList>
+    </flavour>
+
+    <flavour name="dark">
+      <presetsList append="true">
+        <!-- TODO: use one file for all categories with a custom parser -->
+        <presets category="border" src="themes/palettes/dark-borders.properties" />
+        <presets category="background" src="themes/palettes/dark-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/dark-fonts.properties" />
+        <presets category="color" src="themes/palettes/dark-colors.properties" />
+      </presetsList>
+    </flavour>
+
+  </extension>
+
+  <!-- Register style resources (contain indirect references to flavour names, i.e. 
+    "__FLAVOUR__") -->
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo_dm_default">
+      <path>themes/css/nuxeo_dm_default.css</path>
+    </style>
+    <style name="print_default">
+      <path>themes/css/print_default.css</path>
+    </style>
+  </extension>
 
   <!-- application settings -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
@@ -330,7 +316,6 @@
       </scheme>
     </negotiation>
 
-
   </extension>
 
 
@@ -348,6 +333,5 @@
       category="color" />
 
   </extension>
-
 
 </component>
