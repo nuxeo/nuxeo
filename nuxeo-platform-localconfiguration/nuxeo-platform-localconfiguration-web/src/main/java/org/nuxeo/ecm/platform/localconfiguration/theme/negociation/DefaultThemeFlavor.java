@@ -28,9 +28,9 @@ import org.nuxeo.theme.styling.service.ThemeStylingService;
 /**
  * @since 5.4.3
  */
-public class DefaultThemeFlavour implements Scheme {
+public class DefaultThemeFlavor implements Scheme {
 
-    private static final Log log = LogFactory.getLog(DefaultThemeFlavour.class);
+    private static final Log log = LogFactory.getLog(DefaultThemeFlavor.class);
 
     public String getOutcome(Object context) {
         FacesContext faces = (FacesContext) context;
