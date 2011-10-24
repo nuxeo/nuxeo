@@ -21,10 +21,10 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 
 /**
- * Entry point for jax-rs calls to the {@link WebLayoutManager} service.
+ * Entry point for jax-rs calls to the {@link LayoutManager} service.
  *
  * @author Anahide Tchertchian
  * @since 5.4

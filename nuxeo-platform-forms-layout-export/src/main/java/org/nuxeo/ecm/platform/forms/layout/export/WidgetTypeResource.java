@@ -36,7 +36,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
-import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WidgetTypeResource {
 
-    protected WebLayoutManager service;
+    protected LayoutManager service;
 
     protected final List<WidgetTypeDefinition> widgetTypes;
 
@@ -58,7 +58,7 @@ public class WidgetTypeResource {
 
     public WidgetTypeResource() throws Exception {
         try {
-            service = Framework.getService(WebLayoutManager.class);
+            service = Framework.getService(LayoutManager.class);
             widgetTypes = service.getWidgetTypeDefinitions();
             // sort so that order is deterministic
             Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator(

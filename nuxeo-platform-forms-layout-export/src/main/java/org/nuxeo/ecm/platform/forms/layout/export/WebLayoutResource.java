@@ -14,8 +14,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
-import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
@@ -29,13 +29,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WebLayoutResource {
 
-    protected WebLayoutManager service;
+    protected LayoutManager service;
 
     protected List<String> registredLayoutNames;
 
     public WebLayoutResource() throws Exception {
         try {
-            service = Framework.getService(WebLayoutManager.class);
+            service = Framework.getService(LayoutManager.class);
             registredLayoutNames = service.getLayoutDefinitionNames();
             // sort so that order is deterministic
             Collections.sort(registredLayoutNames);

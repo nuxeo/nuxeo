@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.api.Framework;
 
@@ -22,7 +22,7 @@ public class RootResource {
 
     @GET
     public Object doGet(@Context UriInfo uriInfo) throws Exception  {
-       WebLayoutManager service = Framework.getService(WebLayoutManager.class);
+       LayoutManager service = Framework.getService(LayoutManager.class);
        int nbWidgets = service.getWidgetTypeDefinitions().size();
        int nbLayouts = service.getLayoutDefinitionNames().size();
        return getTemplate("index.ftl", uriInfo).arg("nbWidgets", nbWidgets).arg("nbLayouts", nbLayouts);
