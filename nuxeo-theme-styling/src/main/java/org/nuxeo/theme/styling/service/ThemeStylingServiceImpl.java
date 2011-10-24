@@ -38,8 +38,8 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetType;
-import org.nuxeo.theme.styling.service.descriptors.Flavour;
-import org.nuxeo.theme.styling.service.descriptors.FlavourPresets;
+import org.nuxeo.theme.styling.service.descriptors.Flavor;
+import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
 import org.nuxeo.theme.themes.ThemeDescriptor;
@@ -60,7 +60,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     // TODO: use ContributionFragmentRegistry instances for hot reload support
     protected Map<String, ThemePage> themePageResources = new HashMap<String, ThemePage>();
 
-    protected Map<String, Flavour> themePageFlavours = new HashMap<String, Flavour>();
+    protected Map<String, Flavor> themePageFlavors = new HashMap<String, Flavor>();
 
     protected Map<String, SimpleStyle> themePageStyles = new HashMap<String, SimpleStyle>();
 
@@ -71,20 +71,20 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
 
-        // Register flavours
-        if (contribution instanceof Flavour) {
-            Flavour flavour = (Flavour) contribution;
-            String flavourName = flavour.getName();
-            if (themePageFlavours.containsKey(flavourName)
-                    && flavour.getAppendPresets()) {
-                Flavour existing = themePageFlavours.get(flavourName);
+        // Register flavors
+        if (contribution instanceof Flavor) {
+            Flavor flavor = (Flavor) contribution;
+            String flavorName = flavor.getName();
+            if (themePageFlavors.containsKey(flavorName)
+                    && flavor.getAppendPresets()) {
+                Flavor existing = themePageFlavors.get(flavorName);
                 // TODO: merge
-                themePageFlavours.put(flavourName, existing);
+                themePageFlavors.put(flavorName, existing);
             } else {
-                themePageFlavours.put(flavourName, flavour);
+                themePageFlavors.put(flavorName, flavor);
             }
-            // Register flavour and presets as palettes
-            registerPaletteToThemeServiceFor(contributor.getContext(), flavour);
+            // Register flavor and presets as palettes
+            registerPaletteToThemeServiceFor(contributor.getContext(), flavor);
         }
 
         // Register styles
@@ -120,7 +120,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
             // Merge
             if (themePageResources.containsKey(themePage)
-                    && (item.getAppendStyles() || item.getAppendFlavours())) {
+                    && (item.getAppendStyles() || item.getAppendFlavors())) {
 
                 List<String> newStyles = new ArrayList<String>();
                 ThemePage existing = themePageResources.get(themePage);
@@ -131,16 +131,16 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     }
                 }
                 newStyles.addAll(item.getStyles());
-                List<String> newFlavours = new ArrayList<String>();
-                if (item.getAppendFlavours()) {
-                    List<String> existingFlavours = existing.getFlavours();
-                    if (existingFlavours != null) {
-                        newFlavours.addAll(existingFlavours);
+                List<String> newFlavors = new ArrayList<String>();
+                if (item.getAppendFlavors()) {
+                    List<String> existingFlavors = existing.getFlavors();
+                    if (existingFlavors != null) {
+                        newFlavors.addAll(existingFlavors);
                     }
                 }
-                newFlavours.addAll(item.getFlavours());
+                newFlavors.addAll(item.getFlavors());
                 existing.setStyles(newStyles);
-                existing.setFlavours(newFlavours);
+                existing.setFlavors(newFlavors);
                 themePageResources.put(themePage, existing);
                 if (existing.isLoaded()) {
                     // reload
@@ -169,12 +169,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     }
 
     protected void registerPaletteToThemeServiceFor(
-            RuntimeContext extensionContext, Flavour flavour) {
+            RuntimeContext extensionContext, Flavor flavor) {
         // register all presets to the standard registries
-        List<FlavourPresets> presets = flavour.getPresets();
+        List<FlavorPresets> presets = flavor.getPresets();
         if (presets != null) {
-            for (FlavourPresets myPreset : presets) {
-                PaletteType palette = new PaletteType(flavour.getName(),
+            for (FlavorPresets myPreset : presets) {
+                PaletteType palette = new PaletteType(flavor.getName(),
                         myPreset.getSrc(), myPreset.getCategory());
                 TypeRegistry typeRegistry = Manager.getTypeRegistry();
                 String paletteName = palette.getName() + " "
@@ -272,7 +272,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                                     style);
                             String cssSource = simpleStyle.getContent();
                             if (cssSource != null) {
-                                cssSource = cssSource.replaceAll("__FLAVOUR__",
+                                cssSource = cssSource.replaceAll("__FLAVOR__",
                                         ThemeManager.getCollectionCssMarker());
                             }
                             Utils.loadCss(style, cssSource, "*");
@@ -304,11 +304,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     // service API
 
     @Override
-    public String getDefaultFlavour(String themePageName) {
+    public String getDefaultFlavor(String themePageName) {
         if (themePageResources != null) {
             ThemePage themePage = themePageResources.get(themePageName);
             if (themePage != null) {
-                return themePage.getDefaultFlavour();
+                return themePage.getDefaultFlavor();
             }
         }
         return null;

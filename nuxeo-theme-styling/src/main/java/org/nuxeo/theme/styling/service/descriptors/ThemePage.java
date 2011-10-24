@@ -35,8 +35,8 @@ public class ThemePage {
     @XNode("@name")
     String name;
 
-    @XNode("defaultFlavour")
-    String defaultFlavour;
+    @XNode("defaultFlavor")
+    String defaultFlavor;
 
     @XNode("styles/append")
     boolean appendStyles;
@@ -44,11 +44,11 @@ public class ThemePage {
     @XNodeList(value = "styles/style", type = ArrayList.class, componentType = String.class)
     List<String> styles;
 
-    @XNode("flavours/append")
-    boolean appendFlavours;
+    @XNode("flavors/append")
+    boolean appendFlavors;
 
-    @XNodeList(value = "flavours/flavour", type = ArrayList.class, componentType = String.class)
-    List<String> flavours;
+    @XNodeList(value = "flavors/flavor", type = ArrayList.class, componentType = String.class)
+    List<String> flavors;
 
     /**
      * boolean handling the descriptor status: has it been already loaded to
@@ -71,12 +71,12 @@ public class ThemePage {
         }
     }
 
-    public String getDefaultFlavour() {
-        return defaultFlavour;
+    public String getDefaultFlavor() {
+        return defaultFlavor;
     }
 
-    public void setDefaultFlavour(String defaultFlavour) {
-        this.defaultFlavour = defaultFlavour;
+    public void setDefaultFlavor(String defaultFlavor) {
+        this.defaultFlavor = defaultFlavor;
     }
 
     public boolean getAppendStyles() {
@@ -87,12 +87,12 @@ public class ThemePage {
         return styles;
     }
 
-    public boolean getAppendFlavours() {
-        return appendFlavours;
+    public boolean getAppendFlavors() {
+        return appendFlavors;
     }
 
-    public List<String> getFlavours() {
-        return flavours;
+    public List<String> getFlavors() {
+        return flavors;
     }
 
     public void setName(String name) {
@@ -103,8 +103,8 @@ public class ThemePage {
         this.styles = styles;
     }
 
-    public void setFlavours(List<String> flavours) {
-        this.flavours = flavours;
+    public void setFlavors(List<String> flavors) {
+        this.flavors = flavors;
     }
 
     public boolean isLoaded() {

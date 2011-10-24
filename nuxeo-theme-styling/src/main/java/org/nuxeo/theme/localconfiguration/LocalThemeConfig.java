@@ -57,7 +57,7 @@ public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
     String computePagePath();
 
     /**
-     * Returns the collection (flavour) to use for current page
+     * Returns the collection (flavor) to use for current page
      *
      * @since 5.4.3
      */

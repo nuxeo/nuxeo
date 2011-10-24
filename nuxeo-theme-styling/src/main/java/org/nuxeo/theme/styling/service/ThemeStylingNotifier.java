@@ -49,7 +49,7 @@ public class ThemeStylingNotifier implements EventListener {
                 ThemeStylingService service = Framework.getService(ThemeStylingService.class);
                 service.themeRegistered((String) event.getData());
             } catch (Exception e) {
-                log.error("Error while flushing the URLPolicyService cache", e);
+                log.error(e);
             }
         }
     }

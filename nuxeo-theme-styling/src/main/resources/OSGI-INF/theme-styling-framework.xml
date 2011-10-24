@@ -15,8 +15,8 @@
     <object class="org.nuxeo.theme.styling.service.descriptors.SimpleStyle" />
   </extension-point>
 
-  <extension-point name="flavours">
-    <object class="org.nuxeo.theme.styling.service.descriptors.Flavour" />
+  <extension-point name="flavors">
+    <object class="org.nuxeo.theme.styling.service.descriptors.Flavor" />
   </extension-point>
 
   <extension target="org.nuxeo.runtime.EventService" point="listeners">
