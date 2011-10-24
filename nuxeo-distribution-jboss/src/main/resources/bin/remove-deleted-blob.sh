@@ -10,7 +10,7 @@
 # you need to set the following property first
 
 # the path of the JBoss server
-JBOSS_HOME=/opt/nuxeo-dm-5.4.3-SNAPSHOT
+JBOSS_HOME=/opt/nuxeo-dm-5.4.3-I20111024_2229
 # the path where the deleted blob will be moved
 BACKUP_DIR=/tmp/nuxeo-delete
 # other property you might change
