@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +52,11 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetImpl;
-import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -79,40 +77,27 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     public static final ComponentName NAME = new ComponentName(
             WebLayoutManagerImpl.class.getName());
 
+    private static final Log log = LogFactory.getLog(WebLayoutManagerImpl.class);
+
+    private static final long serialVersionUID = 1L;
+
     public static final String WIDGET_TYPES_EP_NAME = "widgettypes";
 
     public static final String WIDGETS_EP_NAME = "widgets";
 
     public static final String LAYOUTS_EP_NAME = "layouts";
 
-    private static final long serialVersionUID = -4778456059717447736L;
-
-    private static final Log log = LogFactory.getLog(WebLayoutManagerImpl.class);
-
-    protected final Map<String, WidgetType> widgetTypeRegistry;
-
-    protected final Map<String, WidgetTypeDefinition> widgetTypeDefinitionRegistry;
-
-    protected final Map<String, LayoutDefinition> layoutRegistry;
-
-    protected final Map<String, WidgetDefinition> widgetRegistry;
-
-    public WebLayoutManagerImpl() {
-        widgetTypeDefinitionRegistry = new HashMap<String, WidgetTypeDefinition>();
-        widgetTypeRegistry = new HashMap<String, WidgetType>();
-        layoutRegistry = new HashMap<String, LayoutDefinition>();
-        widgetRegistry = new HashMap<String, WidgetDefinition>();
-    }
+    // runtime component API
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
-            registerWidgetType(contribution);
+            registerWidgetType((WidgetTypeDefinition) contribution);
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
-            registerLayout(contribution);
+            registerLayout((LayoutDefinition) contribution);
         } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
-            registerWidget(contribution);
+            registerWidget((WidgetDefinition) contribution);
         } else {
             log.error(String.format(
                     "Unknown extension point %s, can't register !",
@@ -124,11 +109,11 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
-            unregisterWidgetType(contribution);
+            unregisterWidgetType((WidgetTypeDefinition) contribution);
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
-            unregisterLayout(contribution);
+            unregisterLayout((LayoutDefinition) contribution);
         } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
-            unregisterWidget(contribution);
+            unregisterWidget((WidgetDefinition) contribution);
         } else {
             log.error(String.format(
                     "Unknown extension point %s, can't unregister !",
@@ -136,135 +121,82 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         }
     }
 
+    // Core service api
+
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(WebLayoutManager.class)) {
-            return (T) this;
-        }
-        return null;
+    public void registerWidgetType(WidgetTypeDefinition desc) {
+        getCoreLayoutManager().registerWidgetType(desc);
     }
 
-    // widget types
+    @Override
+    public void unregisterWidgetType(WidgetTypeDefinition desc) {
+        getCoreLayoutManager().unregisterWidgetType(desc);
+    }
 
-    protected void registerWidgetType(Object contribution) {
-        WidgetTypeDefinition desc = (WidgetTypeDefinition) contribution;
-        String name = desc.getName();
-        String className = desc.getHandlerClassName();
-        if (className == null) {
-            log.error("Handler class missing " + "for widget type " + name);
-            return;
-        }
-        Class<?> widgetTypeClass;
+    @Override
+    public void registerLayout(LayoutDefinition layoutDef) {
+        getCoreLayoutManager().registerLayout(layoutDef);
+    }
+
+    @Override
+    public void unregisterLayout(LayoutDefinition layoutDef) {
+        getCoreLayoutManager().unregisterLayout(layoutDef);
+    }
+
+    @Override
+    public void registerWidget(WidgetDefinition widgetDef) {
+        getCoreLayoutManager().registerWidget(widgetDef);
+    }
+
+    @Override
+    public void unregisterWidget(WidgetDefinition widgetDef) {
+        getCoreLayoutManager().unregisterWidget(widgetDef);
+    }
+
+    protected LayoutManager getCoreLayoutManager() {
+        LayoutManager lm = null;
         try {
-            // Thread context loader is not working in isolated EARs
-            widgetTypeClass = WebLayoutManagerImpl.class.getClassLoader().loadClass(
-                    className);
+            lm = Framework.getLocalService(LayoutManager.class);
         } catch (Exception e) {
-            log.error("Caught error when instantiating widget type handler", e);
-            return;
+            throw new RuntimeException(e);
         }
-
-        // override only if handler class was resolved correctly
-        if (widgetTypeRegistry.containsKey(name)
-                || widgetTypeDefinitionRegistry.containsKey(name)) {
-            log.warn(String.format("Overriding definition for widget type %s",
-                    name));
-            widgetTypeRegistry.remove(name);
-            widgetTypeDefinitionRegistry.remove(name);
+        if (lm == null) {
+            throw new RuntimeException("Missing service for LayoutManager");
         }
-        WidgetType widgetType = new WidgetTypeImpl(name, widgetTypeClass,
-                desc.getProperties());
-        widgetTypeRegistry.put(name, widgetType);
-        widgetTypeDefinitionRegistry.put(name, desc);
-        log.info("Registered widget type: " + name);
+        return lm;
     }
 
-    protected void unregisterWidgetType(Object contribution) {
-        WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
-        String name = desc.getName();
-        if (widgetTypeRegistry.containsKey(name)) {
-            widgetTypeRegistry.remove(name);
-            log.debug("Unregistered widget type: " + name);
-        }
-    }
-
-    // layouts
-
-    protected void registerLayout(Object contribution) {
-        LayoutDefinition layoutDef = (LayoutDefinition) contribution;
-        String name = layoutDef.getName();
-        if (layoutRegistry.containsKey(name)) {
-            // TODO: implement merge
-            layoutRegistry.remove(name);
-        }
-        layoutRegistry.put(name, layoutDef);
-        log.info("Registered layout: " + name);
-    }
-
-    protected void unregisterLayout(Object contribution) {
-        LayoutDefinition layoutDef = (LayoutDefinition) contribution;
-        String name = layoutDef.getName();
-        if (layoutRegistry.containsKey(name)) {
-            layoutRegistry.remove(name);
-            log.debug("Unregistered layout: " + name);
-        }
-    }
-
-    // widgets
-
-    protected void registerWidget(Object contribution) {
-        WidgetDefinition widgetDef = (WidgetDefinition) contribution;
-        String name = widgetDef.getName();
-        if (widgetRegistry.containsKey(name)) {
-            // TODO: implement merge
-            widgetRegistry.remove(name);
-        }
-        widgetRegistry.put(name, widgetDef);
-        log.info("Registered widget: " + name);
-    }
-
-    protected void unregisterWidget(Object contribution) {
-        WidgetDefinition widgetDef = (WidgetDefinition) contribution;
-        String name = widgetDef.getName();
-        if (widgetRegistry.containsKey(name)) {
-            widgetRegistry.remove(name);
-            log.debug("Unregistered widget: " + name);
-        }
-    }
-
-    // service api
-
+    @Override
     public WidgetType getWidgetType(String typeName) {
-        return widgetTypeRegistry.get(typeName);
+        return getCoreLayoutManager().getWidgetType(typeName);
     }
 
     @Override
     public WidgetTypeDefinition getWidgetTypeDefinition(String typeName) {
-        return widgetTypeDefinitionRegistry.get(typeName);
+        return getCoreLayoutManager().getWidgetTypeDefinition(typeName);
     }
 
     @Override
     public List<WidgetTypeDefinition> getWidgetTypeDefinitions() {
-        List<WidgetTypeDefinition> res = new ArrayList<WidgetTypeDefinition>();
-        Collection<WidgetTypeDefinition> defs = widgetTypeDefinitionRegistry.values();
-        if (defs != null) {
-            res.addAll(defs);
-        }
-        return res;
+        return getCoreLayoutManager().getWidgetTypeDefinitions();
     }
 
+    @Override
     public LayoutDefinition getLayoutDefinition(String layoutName) {
-        return layoutRegistry.get(layoutName);
+        return getCoreLayoutManager().getLayoutDefinition(layoutName);
     }
 
+    @Override
     public List<String> getLayoutDefinitionNames() {
-        return new ArrayList<String>(layoutRegistry.keySet());
+        return getCoreLayoutManager().getLayoutDefinitionNames();
     }
 
+    @Override
     public WidgetDefinition getWidgetDefinition(String widgetName) {
-        return widgetRegistry.get(widgetName);
+        return getCoreLayoutManager().getWidgetDefinition(widgetName);
     }
+
+    // specific API (depends on JSF impl)
 
     public WidgetTypeHandler getWidgetTypeHandler(String typeName)
             throws WidgetException {
@@ -572,6 +504,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 subWidgets, 0, null, computeWidgetDefinitionId(wDef));
         return widget;
     }
+
+    // helpers
 
     /**
      * Returns an identifier computed from this definition so that an identical

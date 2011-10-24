@@ -37,8 +37,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
-import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -49,16 +49,17 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 // TODO: move to API module?
 public class TestLayoutExport extends NXRuntimeTestCase {
 
-    private WebLayoutManager service;
+    private LayoutManager service;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
                 "OSGI-INF/layouts-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.export.tests",
                 "layouts-test-contrib.xml");
-        service = Framework.getService(WebLayoutManager.class);
+        service = Framework.getService(LayoutManager.class);
         assertNotNull(service);
     }
 

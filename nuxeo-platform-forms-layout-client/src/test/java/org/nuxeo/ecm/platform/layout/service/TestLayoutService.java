@@ -52,6 +52,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-framework.xml");
         service = Framework.getService(WebLayoutManager.class);

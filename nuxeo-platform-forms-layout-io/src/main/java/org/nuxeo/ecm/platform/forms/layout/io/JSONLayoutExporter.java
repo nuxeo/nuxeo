@@ -51,7 +51,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionsImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeConfigurationImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionImpl;
-import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -351,8 +351,7 @@ public class JSONLayoutExporter {
         if (!rows.isEmpty()) {
             json.element("rows", rows);
         }
-        // XXX Change to a non JSF specific implementation : see NXP-7614
-        WebLayoutManager webLayoutManager = Framework.getLocalService(WebLayoutManager.class);
+        LayoutManager webLayoutManager = Framework.getLocalService(LayoutManager.class);
         JSONArray widgets = new JSONArray();
         for (String widgetName : widgetsToExport) {
             WidgetDefinition widgetDef = layoutDef.getWidgetDefinition(widgetName);
