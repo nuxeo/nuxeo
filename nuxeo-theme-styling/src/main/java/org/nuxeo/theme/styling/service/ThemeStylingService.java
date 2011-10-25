@@ -14,6 +14,14 @@ import org.nuxeo.theme.services.ThemeService;
  */
 public interface ThemeStylingService {
 
+    public static final String FLAVOR_MARKER = "__FLAVOR__";
+
+    public static final String PAGE_STYLE_NAME_SUFFIX = " Page Styles";
+
+    public static enum PRESET_CATEGORY {
+        background, border, color, font;
+    }
+
     /**
      * Returns the default flavor for a given theme page
      */

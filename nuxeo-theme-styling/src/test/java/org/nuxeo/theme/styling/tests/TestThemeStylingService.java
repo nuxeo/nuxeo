@@ -22,11 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
+import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.themes.ThemeManager;
 
 /**
@@ -35,6 +37,12 @@ import org.nuxeo.theme.themes.ThemeManager;
 public class TestThemeStylingService extends NXRuntimeTestCase {
 
     public static final String THEME_NAME = "testStyling";
+
+    public static final String DEFAULT_PAGE_NAME = THEME_NAME + "/default";
+
+    public static final String PRINT_PAGE_NAME = THEME_NAME + "/print";
+
+    protected ThemeStylingService service;
 
     @Override
     public void setUp() throws Exception {
@@ -47,6 +55,9 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
                 "theme-styling-test-config.xml");
         // force application start
         fireFrameworkStarted();
+
+        service = Framework.getService(ThemeStylingService.class);
+        assertNotNull(service);
     }
 
     protected String getRenderedCssFileContent(String collection) {
@@ -66,16 +77,33 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         // replacements needed for generated ids
         ThemeManager themeManager = Manager.getThemeManager();
         Style style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
-                THEME_NAME + "/default Page Styles");
+                DEFAULT_PAGE_NAME + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
         assertNotNull(style);
         content = content.replace("${default_suid}",
                 CSSUtils.computeCssClassName(style));
         style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
-                THEME_NAME + "/print Page Styles");
+                PRINT_PAGE_NAME + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
         assertNotNull(style);
         content = content.replace("${print_suid}",
                 CSSUtils.computeCssClassName(style));
         return content;
+    }
+
+    protected void checkOriginalTheme() throws Exception {
+        assertEquals("default", service.getDefaultFlavor(DEFAULT_PAGE_NAME));
+        assertEquals("default", service.getDefaultFlavor(PRINT_PAGE_NAME));
+
+        String res = getRenderedCssFileContent("*");
+        String expected = getTestFileContent("css_no_flavor_rendering.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("default");
+        expected = getTestFileContent("css_default_rendering.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("dark");
+        expected = getTestFileContent("css_dark_rendering.txt");
+        assertEquals(expected, res);
     }
 
     public void testStylesRegistration() throws Exception {
@@ -86,16 +114,19 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.styling.tests",
                 "theme-styling-test-config2.xml");
 
-        String res = getRenderedCssFileContent("default");
-        String expected = getTestFileContent("css_default_rendering2.txt");
+        assertEquals("default", service.getDefaultFlavor(DEFAULT_PAGE_NAME));
+        assertEquals("default", service.getDefaultFlavor(PRINT_PAGE_NAME));
+
+        String res = getRenderedCssFileContent("*");
+        String expected = getTestFileContent("css_no_flavor_rendering2.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("default");
+        expected = getTestFileContent("css_default_rendering2.txt");
         assertEquals(expected, res);
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering2.txt");
-        assertEquals(expected, res);
-
-        res = getRenderedCssFileContent("*");
-        expected = getTestFileContent("css_no_flavor_rendering2.txt");
         assertEquals(expected, res);
 
         // FIXME
@@ -105,18 +136,34 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         // checkOriginalTheme();
     }
 
-    protected void checkOriginalTheme() throws Exception {
-        String res = getRenderedCssFileContent("default");
-        String expected = getTestFileContent("css_default_rendering.txt");
+    public void testFlavorsRegistration() throws Exception {
+        checkOriginalTheme();
+
+        // override conf, by changing dark flavor colors and default flavor
+        deployContrib("org.nuxeo.theme.styling.tests",
+                "theme-styling-test-config3.xml");
+
+        assertEquals("dark", service.getDefaultFlavor(DEFAULT_PAGE_NAME));
+        assertEquals("default", service.getDefaultFlavor(PRINT_PAGE_NAME));
+
+        String res = getRenderedCssFileContent("*");
+        String expected = getTestFileContent("css_no_flavor_rendering3.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("default");
+        expected = getTestFileContent("css_default_rendering3.txt");
         assertEquals(expected, res);
 
         res = getRenderedCssFileContent("dark");
-        expected = getTestFileContent("css_dark_rendering.txt");
+        expected = getTestFileContent("css_dark_rendering3.txt");
         assertEquals(expected, res);
 
-        res = getRenderedCssFileContent("*");
-        expected = getTestFileContent("css_no_flavor_rendering.txt");
-        assertEquals(expected, res);
-}
+        // FIXME
+        // // undeploy, check theme styling is back to first definition
+        // undeployContrib("org.nuxeo.theme.styling.tests",
+        // "theme-styling-test-config3.xml");
+        // checkOriginalTheme();
+
+    }
 
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.theme.styling.tests.themeStylingContrib2">
 
+  <!-- adds a new style to an already configured page -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
     <themePage name="testStyling/default">
       <styles append="true">
@@ -10,6 +11,11 @@
   </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <!-- override print css -->
+    <style name="print_default">
+      <path>themes/css/print_default2.css</path>
+    </style>
+    <!-- define new css -->
     <style name="nuxeo_dm_default2">
       <path>themes/css/nuxeo_dm_default2.css</path>
     </style>

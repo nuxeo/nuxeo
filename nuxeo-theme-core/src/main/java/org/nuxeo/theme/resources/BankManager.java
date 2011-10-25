@@ -67,8 +67,11 @@ public class BankManager {
 
     public static List<String> getBankNames() {
         List<String> names = new ArrayList<String>();
-        for (File bankFile : BankUtils.listFilesSorted(getBanksDir())) {
-            names.add(bankFile.getName());
+        File[] sortedFiles = BankUtils.listFilesSorted(getBanksDir());
+        if (sortedFiles != null) {
+            for (File bankFile : sortedFiles) {
+                names.add(bankFile.getName());
+            }
         }
         return names;
     }

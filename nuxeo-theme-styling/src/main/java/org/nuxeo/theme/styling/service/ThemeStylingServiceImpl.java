@@ -36,7 +36,6 @@ import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PaletteParser;
-import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
@@ -45,6 +44,8 @@ import org.nuxeo.theme.styling.service.descriptors.ThemePage;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
+import org.nuxeo.theme.types.Type;
+import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 /**
@@ -78,8 +79,17 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             if (themePageFlavors.containsKey(flavorName)
                     && flavor.getAppendPresets()) {
                 Flavor existing = themePageFlavors.get(flavorName);
-                // TODO: merge
-                themePageFlavors.put(flavorName, existing);
+                List<FlavorPresets> newPresets = existing.getPresets();
+                if (newPresets == null) {
+                    newPresets = new ArrayList<FlavorPresets>();
+                }
+                // merge
+                List<FlavorPresets> presets = flavor.getPresets();
+                if (presets != null) {
+                    newPresets.addAll(presets);
+                }
+                flavor.setPresets(newPresets);
+                themePageFlavors.put(flavorName, flavor);
             } else {
                 themePageFlavors.put(flavorName, flavor);
             }
@@ -115,47 +125,49 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
         // Register pages
         else if (contribution instanceof ThemePage) {
-            ThemePage item = (ThemePage) contribution;
-            String themePage = item.getName();
+            ThemePage themePage = (ThemePage) contribution;
+            String themePageName = themePage.getName();
 
-            ThemePage existing = themePageResources.get(themePage);
-            ThemePage newPage = null;
+            ThemePage existingPage = themePageResources.get(themePageName);
             // Merge
-            if (existing != null
-                    && (item.getAppendStyles() || item.getAppendFlavors())) {
-                newPage = existing;
-                List<String> newStyles = new ArrayList<String>();
-                if (item.getAppendStyles()) {
-                    System.err.println("merge styles");
-                    List<String> existingStyles = existing.getStyles();
+            if (existingPage != null) {
+                String defaultFlavor = existingPage.getDefaultFlavor();
+                if (themePage.getDefaultFlavor() != null) {
+                    // override
+                    defaultFlavor = themePage.getDefaultFlavor();
+                }
+
+                List<String> newStyles = themePage.getStyles();
+                if (newStyles.isEmpty() || themePage.getAppendStyles()) {
+                    List<String> existingStyles = existingPage.getStyles();
                     if (existingStyles != null) {
-                        newStyles.addAll(existingStyles);
+                        newStyles.addAll(0, existingStyles);
                     }
-                } else {
-                    System.err.println("do not merge styles");
                 }
-                newStyles.addAll(item.getStyles());
-                List<String> newFlavors = new ArrayList<String>();
-                if (item.getAppendFlavors()) {
-                    List<String> existingFlavors = existing.getFlavors();
+
+                List<String> newFlavors = themePage.getFlavors();
+                if (newFlavors.isEmpty() || themePage.getAppendFlavors()) {
+                    List<String> existingFlavors = existingPage.getFlavors();
                     if (existingFlavors != null) {
-                        newFlavors.addAll(existingFlavors);
+                        newFlavors.addAll(0, existingFlavors);
                     }
                 }
-                newFlavors.addAll(item.getFlavors());
+
+                ThemePage newPage = new ThemePage();
+                newPage.setName(themePageName);
+                newPage.setDefaultFlavor(defaultFlavor);
                 newPage.setStyles(newStyles);
                 newPage.setFlavors(newFlavors);
-                themePageResources.put(themePage, newPage);
+                themePageResources.put(themePageName, newPage);
+                if (existingPage.isLoaded()) {
+                    // reload
+                    postRegisterThemePageResources(newPage);
+                }
             } else {
                 // register new page or override existing page
-                themePageResources.put(themePage, item);
-                newPage = item;
-            }
-            if (existing != null && existing.isLoaded()) {
-                // reload
-                postRegisterThemePageResources(newPage);
-            } else {
+                themePageResources.put(themePageName, themePage);
                 // wait for the theme to be loaded
+                // postRegisterThemePageResources(item);
             }
         } else {
             log.error(String.format("Unknown contribution to the theme "
@@ -171,19 +183,18 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         // TODO
     }
 
+    protected String getPaletteName(String name, String category) {
+        return name + " " + category;
+    }
+
     protected void registerPaletteToThemeServiceFor(
             RuntimeContext extensionContext, Flavor flavor) {
         // register all presets to the standard registries
         List<FlavorPresets> presets = flavor.getPresets();
+        Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
         if (presets != null) {
             for (FlavorPresets myPreset : presets) {
-                PaletteType palette = new PaletteType(flavor.getName(),
-                        myPreset.getSrc(), myPreset.getCategory());
-                TypeRegistry typeRegistry = Manager.getTypeRegistry();
-                String paletteName = palette.getName() + " "
-                        + palette.getCategory();
-                String src = palette.getSrc();
-                String category = palette.getCategory();
+                String src = myPreset.getSrc();
                 URL url = null;
                 try {
                     url = new URL(src);
@@ -193,16 +204,52 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                         url = extensionContext.getResource(src);
                     }
                 }
-
                 if (url != null) {
-                    typeRegistry.register(palette);
-                    Map<String, String> entries = PaletteParser.parse(url);
-                    for (Map.Entry<String, String> entry : entries.entrySet()) {
-                        PresetType preset = new PresetType(entry.getKey(),
-                                entry.getValue(), paletteName, category, "", "");
-                        typeRegistry.register(preset);
+                    String cat = myPreset.getCategory();
+                    Map<String, String> allEntries;
+                    if (presetsByCat.containsKey(cat)) {
+                        allEntries = presetsByCat.get(cat);
+                    } else {
+                        allEntries = new HashMap<String, String>();
+                    }
+                    Map<String, String> newEntries = PaletteParser.parse(url);
+                    if (newEntries != null) {
+                        allEntries.putAll(newEntries);
+                    }
+                    if (allEntries.isEmpty()) {
+                        presetsByCat.remove(cat);
+                    } else {
+                        presetsByCat.put(cat, allEntries);
                     }
                 }
+            }
+        }
+
+        String flavorName = flavor.getName();
+
+        // cleanup already registered presets
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        List<String> groupNames = new ArrayList<String>();
+        for (PRESET_CATEGORY cat : PRESET_CATEGORY.values()) {
+            String paletteName = getPaletteName(flavorName, cat.name());
+            groupNames.add(paletteName);
+        }
+        List<Type> registeredPresets = typeRegistry.getTypes(TypeFamily.PRESET);
+        for (Type type : registeredPresets) {
+            PresetType preset = (PresetType) type;
+            if (groupNames.contains(preset.getGroup())) {
+                typeRegistry.unregister(type);
+            }
+        }
+
+        // register all presets
+        for (String cat : presetsByCat.keySet()) {
+            String paletteName = getPaletteName(flavorName, cat);
+            Map<String, String> entries = presetsByCat.get(cat);
+            for (Map.Entry<String, String> entry : entries.entrySet()) {
+                PresetType preset = new PresetType(entry.getKey(),
+                        entry.getValue(), paletteName, cat, "", "");
+                typeRegistry.register(preset);
             }
         }
     }
@@ -266,7 +313,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     } else {
                         String cssSource = simpleStyle.getContent();
                         if (cssSource != null) {
-                            cssSource = cssSource.replaceAll("__FLAVOR__",
+                            cssSource = cssSource.replaceAll(FLAVOR_MARKER,
                                     ThemeManager.getCollectionCssMarker());
                         }
                         // merge all properties into new style
@@ -274,7 +321,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     }
                 }
                 // link page and style
-                style.setName(pageName + " Page Styles");
+                style.setName(pageName + PAGE_STYLE_NAME_SUFFIX);
                 themeManager.setNamedObject(themeName, "style", style);
                 Style existingPageStyle = (Style) ElementFormatter.getFormatFor(
                         pageElement, "style");

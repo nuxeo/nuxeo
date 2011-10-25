@@ -4,22 +4,22 @@
   <extension target="org.nuxeo.theme.styling.service" point="pages">
     <themePage name="testStyling/default">
       <defaultFlavor>default</defaultFlavor>
-      <flavors append="true">
+      <flavors>
         <flavor>default</flavor>
         <flavor>dark</flavor>
       </flavors>
-      <styles append="true">
+      <styles>
         <style>nuxeo_dm_default</style>
       </styles>
     </themePage>
 
     <themePage name="testStyling/print">
       <defaultFlavor>default</defaultFlavor>
-      <flavors append="true">
+      <flavors>
         <flavor>default</flavor>
         <flavor>dark</flavor>
       </flavors>
-      <styles append="true">
+      <styles>
         <style>print_default</style>
       </styles>
     </themePage>
@@ -29,7 +29,7 @@
   <extension target="org.nuxeo.theme.styling.service" point="flavors">
 
     <flavor name="default">
-      <presetsList append="true">
+      <presetsList>
         <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/default-borders.properties" />
         <presets category="background"
@@ -40,7 +40,7 @@
     </flavor>
 
     <flavor name="dark">
-      <presetsList append="true">
+      <presetsList>
         <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/dark-borders.properties" />
         <presets category="background" src="themes/palettes/dark-backgrounds.properties" />

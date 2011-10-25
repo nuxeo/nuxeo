@@ -33,7 +33,7 @@ public class Flavor {
     @XNode("@name")
     String name;
 
-    @XNode("presetsList/append")
+    @XNode("presetsList@append")
     boolean appendPresets;
 
     @XNodeList(value = "presetsList/presets", type = ArrayList.class, componentType = FlavorPresets.class)
@@ -49,6 +49,10 @@ public class Flavor {
 
     public List<FlavorPresets> getPresets() {
         return presets;
+    }
+
+    public void setPresets(List<FlavorPresets> presets) {
+        this.presets = presets;
     }
 
 }

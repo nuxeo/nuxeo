@@ -3,7 +3,7 @@
 
 
 /* CSS styles named 'testStyling/print Page Styles' */
-.${print_suid} {color:red;font-family:'Lucida Grande', Arial, Helvetica, Geneva, sans-serif;}
+.${print_suid} {color:#000;font-family:'Lucida Grande', Arial, Helvetica, Geneva, sans-serif;}
 .${print_suid} h1 {margin:0;padding:0;}
 .${print_suid} h2 {margin:0;padding:0;}
 .${print_suid} h3 {margin:0;padding:0;}
@@ -19,7 +19,7 @@
 .${default_suid} div {margin:0;padding:0;}
 .${default_suid} p {margin:0;padding:0;}
 .${default_suid} ul {list-style:none;margin:0;padding:0;}
-.${default_suid} a {color:"red";margin:0;padding:0;text-decoration:none;outline:medium none;}
+.${default_suid} a {color:#0079a6;margin:0;padding:0;text-decoration:none;outline:medium none;}
 .${default_suid} h1 {color:#5c5c5c;font-size:1.4em;font-weight:bold;margin:0;padding:0.4em 0 0.5em;}
 .${default_suid} h2 {color:#5c5c5c;font-size:1.2em;font-weight:bold;margin:0;padding:0.5em 1em 0.5em 0;}
 .${default_suid} h3 {color:#5c5c5c;font-size:1.2em;font-weight:bold;margin:0;padding:0.8em 0 0.3em;}
@@ -35,14 +35,11 @@
 .${default_suid} hr {margin:0;padding:0;}
 .${default_suid} fieldset {margin:0;padding:0;}
 .${default_suid} iframe {margin:0;padding:0;}
-.${default_suid} a:link {color:"red";text-decoration:none;}
-.${default_suid} a:visited {color:"red";text-decoration:none;}
+.${default_suid} a:link {color:#0079a6;text-decoration:none;}
+.${default_suid} a:visited {color:#0079a6;text-decoration:none;}
 .${default_suid} a:hover {color:#00416b;text-decoration:underline;}
 .${default_suid} .selectDocumentType {margin-top:10px;}
 .${default_suid} .checkBox {margin-right:3px;}
 .${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
-.${default_suid} .boldLabel {font-weight:bold;}
-.${default_suid} .button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
-.${default_suid} input.button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
 
 </style>
