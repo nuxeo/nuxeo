@@ -1,0 +1,48 @@
+<style type="text/css">/* CSS styles for theme 'testStyling' */
+
+
+/* CSS styles named 'print_default' */
+.${print_default_suid} {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${print_default_suid} h1 {margin:0;padding:0;}
+.${print_default_suid} h2 {margin:0;padding:0;}
+.${print_default_suid} h3 {margin:0;padding:0;}
+.${print_default_suid} h4 {margin:0;padding:0;}
+.${print_default_suid} h5 {margin:0;padding:0;}
+.${print_default_suid} h6 {margin:0;padding:0;}
+
+
+/* CSS styles named 'nuxeo_dm_default2' */
+.${nuxeo_dm_default2_suid} a {color:"red";text-decoration:none;}
+.${nuxeo_dm_default2_suid} a:link {color:"red";text-decoration:none;}
+.${nuxeo_dm_default2_suid} a:visited {color:"red";text-decoration:none;}
+
+
+/* CSS styles named 'nuxeo_dm_default' */
+.${nuxeo_dm_default_suid} {color:#444;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;font-size:100%;line-height:1.125em;margin:0;padding:0;}
+.${nuxeo_dm_default_suid} textarea {font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;font-size:0.95em;padding:5px;}
+.${nuxeo_dm_default_suid} form {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} div {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} p {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} ul {list-style:none;margin:0;padding:0;}
+.${nuxeo_dm_default_suid} a {color:#9080e3;margin:0;padding:0;text-decoration:none;outline:medium none;}
+.${nuxeo_dm_default_suid} h1 {color:#391193;font-size:1.4em;font-weight:bold;margin:0;padding:0.4em 0 0.5em;}
+.${nuxeo_dm_default_suid} h2 {color:#391193;font-size:1.2em;font-weight:bold;margin:0;padding:0.5em 1em 0.5em 0;}
+.${nuxeo_dm_default_suid} h3 {color:#391193;font-size:1.2em;font-weight:bold;margin:0;padding:0.8em 0 0.3em;}
+.${nuxeo_dm_default_suid} h4 {color:#7759bc;font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
+.${nuxeo_dm_default_suid} h5 {color:#7759bc;font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
+.${nuxeo_dm_default_suid} h6 {color:#7759bc;font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
+.${nuxeo_dm_default_suid} input {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} table {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} dd {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} dt {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} dl {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} img {border:0 none;margin:0;padding:0;outline:medium none;}
+.${nuxeo_dm_default_suid} hr {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} fieldset {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} iframe {margin:0;padding:0;}
+.${nuxeo_dm_default_suid} a:link {color:#9080e3;text-decoration:none;}
+.${nuxeo_dm_default_suid} a:visited {color:#9080e3;text-decoration:none;}
+.${nuxeo_dm_default_suid} a:hover {color:#7864e1;text-decoration:underline;}
+.${nuxeo_dm_default_suid} .selectDocumentType {margin-top:10px;}
+.${nuxeo_dm_default_suid} .checkBox {margin-right:3px;}
+</style>

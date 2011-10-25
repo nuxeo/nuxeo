@@ -97,7 +97,7 @@ public final class Styles extends HttpServlet implements Serializable {
 
         if (rendered == null) {
             rendered = ThemeStyles.generateThemeStyles(themeName,
-                    themeDescriptor, basePath, collectionName);
+                    themeDescriptor, basePath, collectionName, true);
             themeManager.setCachedStyles(themeName, basePath, collectionName,
                     rendered);
         }

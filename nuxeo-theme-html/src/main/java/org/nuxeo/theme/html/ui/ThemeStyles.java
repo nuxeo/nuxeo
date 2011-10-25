@@ -57,10 +57,15 @@ public class ThemeStyles {
         }
 
         if (inline) {
+            boolean includeDate = true;
+            String includeDateParam = params.get("includeDate");
+            if (includeDateParam != null) {
+                includeDate = Boolean.TRUE.equals(includeDateParam);
+            }
             return String.format(
                     "<style type=\"text/css\">%s</style>",
                     generateThemeStyles(themeName, themeDescriptor, basePath,
-                            collectionName));
+                            collectionName, includeDate));
         }
 
         long timestamp = 0;
@@ -79,7 +84,7 @@ public class ThemeStyles {
 
     public static String generateThemeStyles(String themeName,
             ThemeDescriptor themeDescriptor, String basePath,
-            String collectionName) {
+            String collectionName, boolean includeDate) {
 
         final StringBuilder sb = new StringBuilder();
 
@@ -96,8 +101,14 @@ public class ThemeStyles {
         }
 
         // add generation comment on top of file
-        sb.insert(0, String.format("/* CSS styles for theme '%s' (%s) */\n",
-                themeName, new Date()));
+
+        if (includeDate) {
+            sb.insert(0, String.format("/* CSS styles for theme '%s' (%s) */\n",
+                    themeName, new Date()));
+        } else {
+            sb.insert(0, String.format("/* CSS styles for theme '%s' */\n",
+                    themeName));
+        }
 
         // Local theme styles
         for (Style style : themeManager.getStyles(themeName)) {
