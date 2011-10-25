@@ -115,8 +115,8 @@ public class LDAPServerDescriptor {
             return ldapUrls;
         }
 
-        // Leverage JNDI support for clustered servers by concatinating
-        // all the provided URLs for failover
+        // Leverage JNDI support for clustered servers by concatenating
+        // all the provided URLs for fail-over
         StringBuilder calculatedLdapUrls = new StringBuilder();
         for (LdapEntry entry : ldapEntries) {
             calculatedLdapUrls.append(entry);
@@ -141,7 +141,6 @@ public class LDAPServerDescriptor {
             throw new DirectoryException(
                     "At least one <ldapUrl/> server declaration is required");
         }
-
         ldapEntries = new LinkedHashSet<LdapEntry>();
 
         Set<LDAPUrlDescriptor> processed = new HashSet<LDAPUrlDescriptor>();
