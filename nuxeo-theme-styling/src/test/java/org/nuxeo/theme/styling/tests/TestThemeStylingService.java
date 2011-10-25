@@ -79,6 +79,33 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
     }
 
     public void testStylesRegistration() throws Exception {
+        checkOriginalTheme();
+
+        // override conf, by adding additional nuxeo_dm_default2 css to the
+        // page
+        deployContrib("org.nuxeo.theme.styling.tests",
+                "theme-styling-test-config2.xml");
+
+        String res = getRenderedCssFileContent("default");
+        String expected = getTestFileContent("css_default_rendering2.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("dark");
+        expected = getTestFileContent("css_dark_rendering2.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("*");
+        expected = getTestFileContent("css_no_flavor_rendering2.txt");
+        assertEquals(expected, res);
+
+        // FIXME
+        // // undeploy, check theme styling is back to first definition
+        // undeployContrib("org.nuxeo.theme.styling.tests",
+        // "theme-styling-test-config2.xml");
+        // checkOriginalTheme();
+    }
+
+    protected void checkOriginalTheme() throws Exception {
         String res = getRenderedCssFileContent("default");
         String expected = getTestFileContent("css_default_rendering.txt");
         assertEquals(expected, res);
@@ -87,21 +114,9 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         expected = getTestFileContent("css_dark_rendering.txt");
         assertEquals(expected, res);
 
-        // override conf, by adding additional nuxeo_dm_default2 css to the
-        // page
-        deployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-config2.xml");
-
-        res = getRenderedCssFileContent("default");
-        expected = getTestFileContent("css_default_rendering2.txt");
+        res = getRenderedCssFileContent("*");
+        expected = getTestFileContent("css_no_flavor_rendering.txt");
         assertEquals(expected, res);
-
-        res = getRenderedCssFileContent("dark");
-        expected = getTestFileContent("css_dark_rendering2.txt");
-        assertEquals(expected, res);
-    }
-
-    // TODO: test themePage merge + (styles + flavors merge)
-    // test Flavors (presets) merge
+}
 
 }

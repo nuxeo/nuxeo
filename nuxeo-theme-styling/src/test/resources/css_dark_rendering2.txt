@@ -42,5 +42,7 @@
 .${default_suid} .checkBox {margin-right:3px;}
 .${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
 .${default_suid} .boldLabel {font-weight:bold;}
+.${default_suid} .button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
+.${default_suid} input.button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
 
 </style>
