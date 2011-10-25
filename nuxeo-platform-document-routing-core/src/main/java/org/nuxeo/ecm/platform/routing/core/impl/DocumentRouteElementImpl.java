@@ -162,10 +162,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
             CoreSession session, boolean recursive) {
         try {
             if (document.followTransition(transition.name())) {
+                if (Framework.isTestModeSet()) {
+                    session.save();
+                    Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+                }
                 document = session.getDocument(document.getRef());
-            }
-            if (Framework.isTestModeSet()) {
-                Framework.getLocalService(EventService.class).waitForAsyncCompletion();
             }
             if (recursive) {
                 DocumentModelList children = session.getChildren(document.getRef());

@@ -74,15 +74,15 @@
     point="types">
     <types>
       <type name="DocumentRoute"
-        noRecursionForTransitions="toValidate,toReady,toRunning,toDone,toCanceled">
+        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
         documentRouteElement
       </type>
       <type name="StepFolder"
-        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled">
+        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
         documentRouteElement
       </type>
       <type name="ConditionalStepFolder"
-        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled">
+        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
         documentRouteElement
       </type>
       <type name="DocumentRouteStep">documentRouteElement</type>
