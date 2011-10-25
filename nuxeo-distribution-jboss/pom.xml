@@ -74,6 +74,44 @@
 	<profile.name>dm</profile.name>
       </properties>
     </profile>
+    <profile>
+      <id>tattletale-linux</id>
+      <activation>
+        <os>
+          <family>linux</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.tattletale</groupId>
+            <artifactId>tattletale-maven</artifactId>
+            <configuration>
+              <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib</source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>tattletale-mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.tattletale</groupId>
+            <artifactId>tattletale-maven</artifactId>
+            <configuration>
+              <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib</source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <build>
@@ -93,18 +131,6 @@
             <phase>package</phase>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-	<groupId>org.jboss.tattletale</groupId>
-	<artifactId>tattletale-maven</artifactId>
-	<configuration> 
-<!--
-	  <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/common/lib:${
-project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib</source>
- -->
-	  <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-${profile.name}-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib</source>
-	</configuration>
-
       </plugin>
     </plugins>
   </build>

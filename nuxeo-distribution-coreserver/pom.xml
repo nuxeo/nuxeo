@@ -296,15 +296,9 @@
     </dependency>
   </dependencies>
 
+
   <build>
     <plugins>
-      <plugin>
-	<groupId>org.jboss.tattletale</groupId>
-	<artifactId>tattletale-maven</artifactId>
-	<configuration>
-	  <source>${project.build.directory}/nuxeo.ear/lib</source>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
@@ -314,5 +308,52 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>tattletale-linux</id>
+      <activation>
+        <os>
+          <family>linux</family>
+        </os>
+      </activation>
+      <properties>
+        <tattletale.source>${project.build.directory}/nuxeo.ear/lib</tattletale.source>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.tattletale</groupId>
+            <artifactId>tattletale-maven</artifactId>
+            <configuration>
+              <source>${project.build.directory}/nuxeo.ear/lib</source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>tattletale-mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <tattletale.source>${project.build.directory}/nuxeo.ear/lib</tattletale.source>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.tattletale</groupId>
+            <artifactId>tattletale-maven</artifactId>
+            <configuration>
+              <source>${project.build.directory}/nuxeo.ear/lib</source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

@@ -81,18 +81,48 @@
       <!-- profile for building SDK distributions (they are always built when release
         profile is activated) -->
     </profile>
+    <profile>
+      <id>tattletale-linux</id>
+      <activation>
+        <os>
+          <family>linux</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.tattletale</groupId>
+            <artifactId>tattletale-maven</artifactId>
+            <configuration>
+              <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/nxserver/lib</source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>tattletale-mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.tattletale</groupId>
+            <artifactId>tattletale-maven</artifactId>
+            <configuration>
+              <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/nxserver/lib</source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <build>
     <plugins>
-      <plugin>
-	<groupId>org.jboss.tattletale</groupId>
-	<artifactId>tattletale-maven</artifactId>
-	<configuration> 
-	  <!--source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/nxserver/lib:${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/lib</source--> 
-	  <source>${project.build.directory}/nuxeo-${profile.name}-${project.version}-tomcat/nxserver/lib</source>
-	</configuration>
-      </plugin>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
