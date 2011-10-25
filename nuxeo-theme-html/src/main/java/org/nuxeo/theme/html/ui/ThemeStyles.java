@@ -101,7 +101,6 @@ public class ThemeStyles {
         }
 
         // add generation comment on top of file
-
         if (includeDate) {
             sb.insert(0, String.format("/* CSS styles for theme '%s' (%s) */\n",
                     themeName, new Date()));

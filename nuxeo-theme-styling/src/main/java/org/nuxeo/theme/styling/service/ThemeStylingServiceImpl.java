@@ -322,6 +322,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 }
                 // link page and style
                 style.setName(pageName + PAGE_STYLE_NAME_SUFFIX);
+                style.setCollection(page.getPageName()
+                        + PAGE_STYLE_CLASS_NAME_PREFIX);
+
                 themeManager.setNamedObject(themeName, "style", style);
                 Style existingPageStyle = (Style) ElementFormatter.getFormatFor(
                         pageElement, "style");

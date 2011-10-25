@@ -60,6 +60,17 @@ public class ThemePage {
         return name;
     }
 
+    public String getPageName() {
+        try {
+            String[] nameEl = name.split("/");
+            return nameEl[1];
+        } catch (Exception e) {
+            throw new RuntimeException(String.format(
+                    "Invalid theme page name '%s': cannot retrieve page name",
+                    name));
+        }
+    }
+
     public String getThemeName() {
         try {
             String[] nameEl = name.split("/");

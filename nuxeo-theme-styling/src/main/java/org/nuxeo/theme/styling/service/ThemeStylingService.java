@@ -16,6 +16,8 @@ public interface ThemeStylingService {
 
     public static final String FLAVOR_MARKER = "__FLAVOR__";
 
+    public static final String PAGE_STYLE_CLASS_NAME_PREFIX = " CSS";
+
     public static final String PAGE_STYLE_NAME_SUFFIX = " Page Styles";
 
     public static enum PRESET_CATEGORY {
