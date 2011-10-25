@@ -2811,12 +2811,6 @@
         <artifactId>bsh-engine</artifactId>
         <version>1.0</version>
       </dependency>
-      <!-- Prefer use of javax.resource:connector-api:1.5 -->
-      <dependency>
-        <groupId>javax.ressource</groupId>
-        <artifactId>jca-api</artifactId>
-        <version>1.5</version>
-      </dependency>
       <dependency>
         <groupId>javax.resource</groupId>
         <artifactId>connector-api</artifactId>
