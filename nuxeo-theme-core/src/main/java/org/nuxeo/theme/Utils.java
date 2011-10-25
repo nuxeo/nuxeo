@@ -226,6 +226,10 @@ public final class Utils {
         // pre-processing: replace empty selectors (which are invalid
         // selectors) with a marker selector
 
+        // replace ${basePath} occurrences with a temporary marker to avoid
+        // interfering with the regexp logic
+        cssSource = cssSource.replaceAll("\\$\\{basePath\\}",
+                "TEMPORARY_BASE_PATH_MARKER");
         final Matcher matcher = emptyCssSelectorPattern.matcher(cssSource);
         final StringBuilder buf = new StringBuilder();
         while (matcher.find()) {
@@ -235,6 +239,9 @@ public final class Utils {
             buf.append(matcher.group(0));
         }
         cssSource = buf.toString();
+        cssSource = cssSource.replaceAll("TEMPORARY_BASE_PATH_MARKER",
+                "\\$\\{basePath\\}");
+
         CSSStylesheet styleSheet = null;
         CSSParser parser = new CSSParser(new URIResourceLocator());
         try {

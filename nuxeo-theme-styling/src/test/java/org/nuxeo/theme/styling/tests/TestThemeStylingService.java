@@ -52,8 +52,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
     protected String getRenderedCssFileContent(String collection) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("themeName", THEME_NAME);
-        params.put("path", "myPath");
-        params.put("basePath", "myBasePath");
+        params.put("basepath", "/nuxeo/myBasePath");
         params.put("collection", collection);
         params.put("includeDate", "false");
         return ThemeStyles.render(params, false, true, false);

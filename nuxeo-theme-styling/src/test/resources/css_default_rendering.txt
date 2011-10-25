@@ -40,5 +40,6 @@
 .${default_suid} a:hover {color:#00416b;text-decoration:underline;}
 .${default_suid} .selectDocumentType {margin-top:10px;}
 .${default_suid} .checkBox {margin-right:3px;}
+.${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
 
 </style>
