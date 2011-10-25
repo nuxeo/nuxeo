@@ -57,6 +57,7 @@
       <resource>fancybox-popup-utils.js</resource>
       <resource>contextmenu.js</resource>
       <resource>jquery.tools.tooltip.min.js</resource>
+      <resource>jquery.hotkeys.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -144,6 +145,10 @@
     </resource>
     <resource name="fancybox-popup-utils.js">
       <path>scripts/fancybox-popup-utils.js</path>
+    </resource>
+    <!-- Hotkeys (e.g. used to focus the search box using '/') -->
+    <resource name="jquery.hotkeys.js">
+      <path>scripts/jquery/jquery.hotkeys.js</path>
     </resource>
   </extension>
 
