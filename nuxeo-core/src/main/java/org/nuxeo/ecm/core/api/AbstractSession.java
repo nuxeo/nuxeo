@@ -3061,7 +3061,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             DocumentModel proxy = null;
             Document target;
-            if (docModel.isProxy()) {
+            if (docModel.isProxy() || docModel.isVersion()) {
                 if (overwriteExistingProxy) {
                     // remove previous
                     List<String> removedProxyIds = removeExistingProxies(doc,

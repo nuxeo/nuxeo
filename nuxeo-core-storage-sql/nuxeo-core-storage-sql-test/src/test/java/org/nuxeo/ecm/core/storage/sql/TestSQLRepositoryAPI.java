@@ -3165,6 +3165,15 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
         assertEquals(2, session.getChildrenRefs(folder.getRef(), null).size());
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
+
+        // publish a version directly
+        DocumentModel ver = session.getLastDocumentVersion(doc.getRef());
+        DocumentModel proxy3 = session.publishDocument(ver, folder, false);
+        session.save();
+        assertFalse(proxy3.isVersion());
+        assertTrue(proxy3.isProxy());
+        assertEquals(doc.getVersionSeriesId(), proxy3.getVersionSeriesId());
+        assertEquals(ver.getVersionLabel(), proxy3.getVersionLabel());
     }
 
     public void testProxyLive() throws Exception {
