@@ -52,6 +52,8 @@ public class NuxeoRepository {
 
     public static final String NUXEO_VERSION_PROP = "org.nuxeo.distribution.version";
 
+    public static final String NUXEO_URL_PROP = "nuxeo.url";
+
     protected final String repositoryId;
 
     protected final String rootFolderId;
@@ -165,7 +167,7 @@ public class NuxeoRepository {
         repositoryInfo.setCmisVersionSupported("1.0");
         repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
         repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
-        repositoryInfo.setThinClientUri(null); // TODO
+        repositoryInfo.setThinClientUri(Framework.getProperty(NUXEO_URL_PROP));
         repositoryInfo.setChangesIncomplete(Boolean.FALSE);
         repositoryInfo.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
                 BaseTypeId.CMIS_FOLDER));
