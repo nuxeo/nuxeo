@@ -181,6 +181,7 @@ public final class EventNames {
 
     /**
      * Event raised when the content of a directory has changed
+     * @since 5.4.3
      */
     public static final String DIRECTORY_CHANGED = "directoryChanged";
 

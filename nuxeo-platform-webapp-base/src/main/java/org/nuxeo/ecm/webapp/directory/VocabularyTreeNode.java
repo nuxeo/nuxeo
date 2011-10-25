@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
  * xx is the current locale language) else. If this one doesn't exist either,
  * the english label (from label_en) is used.
  *
+ * @since 5.4.3
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
 public class VocabularyTreeNode {
@@ -58,8 +60,6 @@ public class VocabularyTreeNode {
     public static final String DEFAULT_LANGUAGE = "en";
 
     public static final String OBSOLETE_FIELD = "obsolete";
-
-    public static final String ORDERING_FIELD = "ordering";
 
     protected final String path;
 
@@ -77,40 +77,43 @@ public class VocabularyTreeNode {
 
     protected DocumentModelList childrenEntries;
 
-    protected boolean showObsolete;
+    protected boolean displayObsoleteEntries;
 
-    protected boolean sortByOrdering;
+    protected String orderingField;
 
-    protected Long ordering;
+    protected Comparable orderingValue;
+
+    protected char keySeparator;
 
     public VocabularyTreeNode(int level, String id, String description,
             String path, String vocabularyName,
             DirectoryService directoryService) {
         this(level, id, description, path, vocabularyName, directoryService,
-                false, false, null);
+                false, '/', null);
     }
 
     public VocabularyTreeNode(int level, String id, String description,
             String path, String vocabularyName,
-            DirectoryService directoryService, boolean showObsolete,
-            boolean sortByOrdering) {
+            DirectoryService directoryService, boolean displayObsoleteEntries,
+            char keySeparator, String orderingField) {
         this(level, id, description, path, vocabularyName, directoryService,
-                showObsolete, sortByOrdering, null);
+                displayObsoleteEntries, keySeparator, orderingField, null);
     }
 
     public VocabularyTreeNode(int level, String id, String description,
             String path, String vocabularyName,
-            DirectoryService directoryService, boolean showObsolete,
-            boolean sortByOrdering, Long ordering) {
+            DirectoryService directoryService, boolean displayObsoleteEntries,
+            char keySeparator, String orderingField, Comparable orderingValue) {
         this.level = level;
         this.id = id;
         this.label = description;
         this.path = path;
         this.vocabularyName = vocabularyName;
         this.directoryService = directoryService;
-        this.showObsolete = showObsolete;
-        this.sortByOrdering = sortByOrdering;
-        this.ordering = ordering;
+        this.displayObsoleteEntries = displayObsoleteEntries;
+        this.keySeparator = keySeparator;
+        this.orderingField = orderingField;
+        this.orderingValue = orderingValue;
     }
 
     public List<VocabularyTreeNode> getChildren() {
@@ -129,22 +132,26 @@ public class VocabularyTreeNode {
                 if ("".equals(path)) {
                     childPath = childIdendifier;
                 } else {
-                    childPath = path + '/' + childIdendifier;
+                    childPath = path + keySeparator + childIdendifier;
                 }
-                Long childOrdering = (Long) result.getProperty(schemaName,
-                        ORDERING_FIELD);
+                Comparable orderingValue = null;
+                if (!StringUtils.isBlank(orderingField)) {
+                    orderingValue = (Comparable) result.getProperty(schemaName,
+                            orderingField);
+                }
                 children.add(new VocabularyTreeNode(level + 1, childIdendifier,
                         childLabel, childPath, vocabularyName,
-                        getDirectoryService(), showObsolete, sortByOrdering,
-                        childOrdering));
+                        getDirectoryService(), displayObsoleteEntries,
+                        keySeparator, orderingField, orderingValue));
             }
 
             // sort children
             Comparator<? super VocabularyTreeNode> cmp;
-            if (sortByOrdering) {
-                cmp = new OrderingComparator();
-            } else {
+            if (StringUtils.isBlank(orderingField)
+                    || "label".equals(orderingField)) {
                 cmp = new LabelComparator(); // sort alphabetically
+            } else {
+                cmp = new OrderingComparator();
             }
             Collections.sort(children, cmp);
 
@@ -226,11 +233,11 @@ public class VocabularyTreeNode {
                 // filter on empty parent
                 filter.put(PARENT_FIELD_ID, "");
             } else {
-                String[] bitsOfPath = path.split("/");
+                String[] bitsOfPath = StringUtils.split(path, keySeparator);
                 filter.put(PARENT_FIELD_ID, bitsOfPath[level - 1]);
             }
 
-            if (!showObsolete) {
+            if (!displayObsoleteEntries) {
                 filter.put(OBSOLETE_FIELD, Long.valueOf(0));
             }
 
@@ -257,8 +264,8 @@ public class VocabularyTreeNode {
         return path;
     }
 
-    public Long getOrdering() {
-        return ordering;
+    public Comparable getOrdering() {
+        return orderingValue;
     }
 
     protected DirectoryService getDirectoryService() {

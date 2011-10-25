@@ -29,24 +29,24 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Manage localized vocabulary trees. These trees use {@code VocabularyTreeNode}
  *
+ * @since 5.4.3
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
 @Scope(CONVERSATION)
@@ -64,13 +64,9 @@ public class VocabularyTreeActions implements Serializable {
 
     protected transient Map<String, VocabularyTreeNode> treeModels;
 
-    protected DirectoryService directoryService;
-
-    public VocabularyTreeNode get(String vocabularyName) {
-        return get(vocabularyName, false, false);
-    }
-
-    public VocabularyTreeNode get(String vocabularyName, boolean showObsolete, boolean sortByOrdering) {
+    public VocabularyTreeNode get(String vocabularyName,
+            boolean displayObsoleteEntries, char keySeparator,
+            String orderingField) {
         if (treeModels == null) {
             treeModels = new HashMap<String, VocabularyTreeNode>();
         }
@@ -79,9 +75,10 @@ public class VocabularyTreeActions implements Serializable {
             // return cached model
             return treeModel;
         }
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         try {
-            Directory directory = getDirectoryService().getDirectory(
-                    vocabularyName);
+            Directory directory = Framework.getLocalService(
+                    DirectoryService.class).getDirectory(vocabularyName);
             if (directory == null) {
                 throw new DirectoryException(vocabularyName
                         + " is not a registered directory");
@@ -99,60 +96,34 @@ public class VocabularyTreeActions implements Serializable {
         }
 
         treeModel = new VocabularyTreeNode(0, "", "", "", vocabularyName,
-                directoryService, showObsolete, sortByOrdering);
+                directoryService, displayObsoleteEntries, keySeparator,
+                orderingField);
 
         treeModels.put(vocabularyName, treeModel);
         return treeModel;
     }
 
-    public List<VocabularyTreeNode> getRoots(String vocabularyName, boolean showObsolete, boolean sortByOrdering) {
-        return get(vocabularyName, showObsolete, sortByOrdering).getChildren();
+    public List<VocabularyTreeNode> getRoots(String vocabularyName,
+            boolean displayObsoleteEntries, char keySeparator,
+            String orderingField) {
+        return get(vocabularyName, displayObsoleteEntries, keySeparator,
+                orderingField).getChildren();
     }
 
-    public String getLabelFor(String vocabularyName, String pathOrId) {
-        return getLabelFor(vocabularyName, pathOrId, false);
-    }
-
-    public String getLabelFor(String vocabularyName, String pathOrId,
-            boolean idOnly) {
-        if (idOnly) {
-            return getLabelFromId(vocabularyName, pathOrId);
-        }
-        return getLabelFromPath(vocabularyName, pathOrId);
-    }
-
-    protected String getLabelFromPath(String vocabularyName, String fullPath) {
-        VocabularyTreeNode rootNode = get(vocabularyName);
-        List<String> labels = new ArrayList<String>();
-        computeLabels(labels, rootNode, fullPath);
-        return StringUtils.join(labels, "/");
-    }
-
-    protected void computeLabels(List<String> labels, VocabularyTreeNode node,
-            String fullPath) {
-        if (!node.getPath().isEmpty()) {
-            labels.add(node.getLabel());
-        }
-        if (fullPath.equals(node.getPath())) {
-            return;
-        }
-        for (VocabularyTreeNode treeNode : node.getChildren()) {
-            if (fullPath.startsWith(treeNode.getPath())) {
-                computeLabels(labels, treeNode, fullPath);
-            }
-        }
-    }
-
-    protected String getLabelFromId(String vocabularyName, String id) {
+    public String getLabelFor(String vocabularyName, String path,
+            char keySeparator) {
         Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
         String schemaName = null;
         Session session = null;
-        DocumentModel entry = null;
+        List<String> labels = new ArrayList<String>();
         try {
-            schemaName = getDirectoryService().getDirectorySchema(
-                    vocabularyName);
-            session = getDirectoryService().open(vocabularyName);
-            entry = session.getEntry(id);
+            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+            schemaName = directoryService.getDirectorySchema(vocabularyName);
+            session = directoryService.open(vocabularyName);
+            for (String id : StringUtils.split(path, keySeparator)) {
+                labels.add(VocabularyTreeNode.computeLabel(locale,
+                        session.getEntry(id), schemaName));
+            }
         } catch (DirectoryException e) {
             log.error("Error while accessing directory " + vocabularyName, e);
         } finally {
@@ -164,18 +135,11 @@ public class VocabularyTreeActions implements Serializable {
                 log.error("Error while closing directory " + vocabularyName, e);
             }
         }
-        if (entry != null && schemaName != null) {
-            return VocabularyTreeNode.computeLabel(locale, entry, schemaName);
-        } else {
+        if (labels.isEmpty()) {
             return null;
+        } else {
+            return StringUtils.join(labels, keySeparator);
         }
-    }
-
-    protected DirectoryService getDirectoryService() {
-        if (directoryService == null) {
-            directoryService = DirectoryHelper.getDirectoryService();
-        }
-        return directoryService;
     }
 
     @Observer(EventNames.DIRECTORY_CHANGED)

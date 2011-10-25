@@ -958,27 +958,144 @@
       </property>
     </widgetType>
 
-    <widgetType name="select_vocabulary_tree">
+    <widgetType name="select_l10n_vocabulary_tree">
       <configuration>
         <sinceVersion>5.4.3</sinceVersion>
-        <title>Vocabulary tree</title>
+        <title>Localized vocabulary tree</title>
         <description>
-          Widget allowing to select one or more values from a tree constructed
+          Widget allowing to select one or more values in a tree constructed
           from a l10nvocabulary or l10nxvocabulary directory.
-
-          The property 'directoryName' is required.
-          The following properties are optional and set by default to false :
-          To be able to select multiple values, set property 'multipleValues' to true.
-          To select only the id of a node (instead of its path), set property 'selectIdOnly' to true.
-          To show obsolete entries, set property 'showObsolete' to true.
-          To sort by ordering value instead of alphabetical order, set property 'sortByOrdering' to true.
         </description>
+        <properties>
+          <layouts mode="any">
+            <layout name="list_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>directoryName</widget>
+                </row>
+                <row>
+                  <widget>directoryNameDemoPreview</widget>
+                </row>
+                <row>
+                  <widget>selectIdOnly</widget>
+                </row>
+                <row>
+                  <widget>keySeparator</widget>
+                </row>
+              </rows>
+              <widget name="directoryName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+                <properties mode="any">
+                  <property name="resourceName">vocabularies</property>
+                </properties>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="directoryNameDemoPreview" type="text">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">view</mode>
+                </widgetModes>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="selectIdOnly" type="checkbox">
+                <labels>
+                  <label mode="any">Select id only</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, only the entries id are stored instead of
+                    their path.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>selectIdOnly</field>
+                </fields>
+              </widget>
+              <widget name="keySeparator" type="text">
+                <labels>
+                  <label mode="any">Key separator</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The string used to separate directory keys in the value.
+                    Defaults to "/".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>keySeparator</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="list_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>multiSelect</widget>
+                </row>
+                <row>
+                  <widget>displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget>ordering</widget>
+                </row>
+              </rows>
+              <widget name="multiSelect" type="checkbox">
+                <labels>
+                  <label mode="any">Multiple selection</label>
+                </labels>
+                <fields>
+                  <field>multiSelect</field>
+                </fields>
+              </widget>
+              <widget name="displayObsoleteEntries" type="checkbox">
+                <labels>
+                  <label mode="any">Display obsolete entries</label>
+                </labels>
+                <fields>
+                  <field>displayObsoleteEntries</field>
+                </fields>
+              </widget>
+              <widget name="ordering" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Sort criterion</label>
+                </labels>
+                <fields>
+                  <field>ordering</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Label (default)" itemValue="label" />
+                  <option itemLabel="Ordering" itemValue="ordering" />
+                  <option itemLabel="Id" itemValue="id" />
+                </selectOptions>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/select_vocabulary_tree_widget_template.xhtml
+        /widgets/select_l10n_vocabulary_tree_widget_template.xhtml
       </property>
     </widgetType>
 
