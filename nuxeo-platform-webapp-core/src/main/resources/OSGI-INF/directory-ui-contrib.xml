@@ -471,7 +471,7 @@
           <widget>l10nxvocabulary_order</widget>
         </row>
       </rows>
-      <widget name="parent" type="select_vocabulary_tree">
+      <widget name="parent" type="select_l10n_vocabulary_tree">
         <labels>
           <label mode="any">label.vocabulary.entry.parent</label>
         </labels>
@@ -515,7 +515,7 @@
           <widget>l10nxvocabulary_order</widget>
         </row>
       </rows>
-      <widget name="parent" type="select_vocabulary_tree">
+      <widget name="parent" type="select_l10n_vocabulary_tree">
         <labels>
           <label mode="any">label.vocabulary.entry.parent</label>
         </labels>
