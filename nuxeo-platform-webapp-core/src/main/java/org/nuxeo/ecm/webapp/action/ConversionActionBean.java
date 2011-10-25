@@ -189,12 +189,10 @@ public class ConversionActionBean implements ConversionAction {
             }
             // add pdf extension
             int pos = name.lastIndexOf('.');
-            if (pos <= 0) {
-                name += ".pdf";
-            } else {
-                String sub = name.substring(pos + 1);
-                name = name.replace(sub, "pdf");
+            if (pos > 0) {
+                name = name.substring(0, pos);
             }
+            name += ".pdf";
 
             if (result == null) {
                 log.error("Transform service didn't return any resulting documents which is not normal.");
