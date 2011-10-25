@@ -77,8 +77,8 @@
 
     <!-- scope provided -->
     <dependency>
-      <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
