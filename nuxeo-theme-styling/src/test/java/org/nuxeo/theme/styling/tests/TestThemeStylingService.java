@@ -27,7 +27,6 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.themes.ThemeManager;
 
 /**
@@ -36,8 +35,6 @@ import org.nuxeo.theme.themes.ThemeManager;
 public class TestThemeStylingService extends NXRuntimeTestCase {
 
     public static final String THEME_NAME = "testStyling";
-
-    protected ThemeService themeService;
 
     @Override
     public void setUp() throws Exception {
@@ -48,7 +45,6 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.styling.tests", "theme-test-config.xml");
         deployContrib("org.nuxeo.theme.styling.tests",
                 "theme-styling-test-config.xml");
-        themeService = Manager.getThemeService();
         // force application start
         fireFrameworkStarted();
     }
@@ -70,31 +66,39 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         String content = FileUtils.read(expected);
         // replacements needed for generated ids
         ThemeManager themeManager = Manager.getThemeManager();
-        Style dmStyle = (Style) themeManager.getNamedObject(THEME_NAME,
-                "style", "nuxeo_dm_default");
-        assertNotNull(dmStyle);
-        content = content.replace("${nuxeo_dm_default_suid}",
-                CSSUtils.computeCssClassName(dmStyle));
-        Style dmStyle2 = (Style) themeManager.getNamedObject(THEME_NAME,
-                "style", "nuxeo_dm_default2");
-        assertNotNull(dmStyle2);
-        content = content.replace("${nuxeo_dm_default2_suid}",
-                CSSUtils.computeCssClassName(dmStyle2));
-        Style printStyle = (Style) themeManager.getNamedObject(THEME_NAME,
-                "style", "print_default");
-        assertNotNull(printStyle);
-        content = content.replace("${print_default_suid}",
-                CSSUtils.computeCssClassName(printStyle));
+        Style style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
+                THEME_NAME + "/default Page Styles");
+        assertNotNull(style);
+        content = content.replace("${default_suid}",
+                CSSUtils.computeCssClassName(style));
+        style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
+                THEME_NAME + "/print Page Styles");
+        assertNotNull(style);
+        content = content.replace("${print_suid}",
+                CSSUtils.computeCssClassName(style));
         return content;
     }
 
     public void testStylesRegistration() throws Exception {
         String res = getRenderedCssFileContent("default");
-        String expected = getTestFileContent("expected_default_rendering.txt");
+        String expected = getTestFileContent("css_default_rendering.txt");
         assertEquals(expected, res);
 
         res = getRenderedCssFileContent("dark");
-        expected = getTestFileContent("expected_dark_rendering.txt");
+        expected = getTestFileContent("css_dark_rendering.txt");
+        assertEquals(expected, res);
+
+        // override conf, by adding additional nuxeo_dm_default2 css to the
+        // page
+        deployContrib("org.nuxeo.theme.styling.tests",
+                "theme-styling-test-config2.xml");
+
+        res = getRenderedCssFileContent("default");
+        expected = getTestFileContent("css_default_rendering2.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("dark");
+        expected = getTestFileContent("css_dark_rendering2.txt");
         assertEquals(expected, res);
     }
 

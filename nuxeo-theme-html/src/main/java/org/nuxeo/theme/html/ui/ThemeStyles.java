@@ -63,7 +63,7 @@ public class ThemeStyles {
                 includeDate = Boolean.TRUE.equals(includeDateParam);
             }
             return String.format(
-                    "<style type=\"text/css\">%s</style>",
+                    "<style type=\"text/css\">\n%s\n</style>",
                     generateThemeStyles(themeName, themeDescriptor, basePath,
                             collectionName, includeDate));
         }

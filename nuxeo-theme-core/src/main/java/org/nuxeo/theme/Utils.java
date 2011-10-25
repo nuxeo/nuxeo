@@ -215,10 +215,16 @@ public final class Utils {
         }
     }
 
+    /**
+     * Parses and loads css resources into given style element. If boolean
+     * merge is set to true, keep existing properties already defined in style.
+     *
+     * @since 5.4.3
+     */
     public static void loadCss(final Style style, String cssSource,
-            final String viewName) {
-        // pre-processing: replace empty selectors (which are invalid selectors)
-        // with a marker selector
+            final String viewName, final boolean merge) {
+        // pre-processing: replace empty selectors (which are invalid
+        // selectors) with a marker selector
 
         final Matcher matcher = emptyCssSelectorPattern.matcher(cssSource);
         final StringBuilder buf = new StringBuilder();
@@ -238,8 +244,10 @@ public final class Utils {
             return;
         }
 
-        // remove existing properties
-        style.clearPropertiesFor(viewName);
+        if (!merge) {
+            // remove existing properties
+            style.clearPropertiesFor(viewName);
+        }
 
         CssStringWriter cssWriter = new CssStringWriter();
 
@@ -273,5 +281,10 @@ public final class Utils {
             }
             style.setPropertiesFor(viewName, selectorStr, styleProperties);
         }
+    }
+
+    public static void loadCss(final Style style, String cssSource,
+            final String viewName) {
+        loadCss(style, cssSource, viewName, false);
     }
 }

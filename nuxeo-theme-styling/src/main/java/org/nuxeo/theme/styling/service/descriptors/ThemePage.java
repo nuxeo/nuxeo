@@ -38,13 +38,13 @@ public class ThemePage {
     @XNode("defaultFlavor")
     String defaultFlavor;
 
-    @XNode("styles/append")
+    @XNode("styles@append")
     boolean appendStyles;
 
     @XNodeList(value = "styles/style", type = ArrayList.class, componentType = String.class)
     List<String> styles;
 
-    @XNode("flavors/append")
+    @XNode("flavors@append")
     boolean appendFlavors;
 
     @XNodeList(value = "flavors/flavor", type = ArrayList.class, componentType = String.class)

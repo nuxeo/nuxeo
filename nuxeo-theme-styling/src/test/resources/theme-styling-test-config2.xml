@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.styling.tests.themeStylingContrib2">
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+    <themePage name="testStyling/default">
+      <styles append="true">
+        <style>nuxeo_dm_default2</style>
+      </styles>
+    </themePage>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo_dm_default2">
+      <path>themes/css/nuxeo_dm_default2.css</path>
+    </style>
+  </extension>
+
+</component>
