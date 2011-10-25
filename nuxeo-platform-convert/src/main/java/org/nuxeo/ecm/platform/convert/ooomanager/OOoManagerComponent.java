@@ -20,12 +20,14 @@ package org.nuxeo.ecm.platform.convert.ooomanager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.ArrayUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
@@ -54,6 +56,10 @@ public class OOoManagerComponent extends DefaultComponent implements
     private static final String TASK_QUEUE_TIMEOUT_PROPERTY_KEY = "jod.task.queue.timeout";
 
     private static final String TEMPLATE_PROFILE_DIR_PROPERTY_KEY = "jod.template.profile.dir";
+
+    private static final String OFFICE_PIPES_PROPERTY_KEY = "jod.office.pipes";
+
+    private static final String OFFICE_PORTS_PROPERTY_KEY = "jod.office.ports";
 
     private static final String DEFAULT_LINUX_OO_HOME = "/usr/lib/openoffice/";
 
@@ -167,11 +173,41 @@ public class OOoManagerComponent extends DefaultComponent implements
         }
 
         // Descriptor configuration
-        String[] pipeNames = descriptor.getPipeNames();
+        String pipeNamesProperty = Framework.getProperty(OFFICE_PIPES_PROPERTY_KEY);
+        String[] pipeNames = null;
+        if (pipeNamesProperty != null) {
+            String[] unvalidatedPipeNames = pipeNamesProperty.split(",\\s*");
+            ArrayList<String> validatedPipeNames = new ArrayList<String>();
+            // Basic validation to avoid empty strings
+            for (int i=0; i<unvalidatedPipeNames.length; i++) {
+                String tmpPipeName = unvalidatedPipeNames[i].trim();
+                if (tmpPipeName.length() > 0) {
+                    validatedPipeNames.add(tmpPipeName);
+                }
+            }
+            pipeNames = validatedPipeNames.toArray(new String[0]);
+        } else {
+            pipeNames = descriptor.getPipeNames();
+        }
         if (pipeNames != null && pipeNames.length != 0) {
             configuration.setPipeNames(pipeNames);
         }
-        int[] portNumbers = descriptor.getPortNumbers();
+        String portNumbersProperty = Framework.getProperty(OFFICE_PORTS_PROPERTY_KEY);
+        int[] portNumbers = null;
+        if (portNumbersProperty != null) {
+            String[] portStrings = portNumbersProperty.split(",\\s*");
+            ArrayList<Integer> portList = new ArrayList<Integer>();
+            for (int i=0; i<portStrings.length; i++) {
+                try {
+                    portList.add(Integer.parseInt(portStrings[i].trim()));
+                } catch (NumberFormatException e) {
+                    log.error("Ignoring malformed port number: "+portStrings[i]);
+                }
+            }
+            portNumbers = ArrayUtils.toPrimitive(portList.toArray(new Integer[0]));
+        } else {
+            portNumbers = descriptor.getPortNumbers();
+        }
         if (portNumbers != null && portNumbers.length != 0) {
             configuration.setPortNumbers(portNumbers);
         }
