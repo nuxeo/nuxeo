@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.platform.faceted.search.actions">
+<component name="org.nuxeo.ecm.platform.suggestbox.actions">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
