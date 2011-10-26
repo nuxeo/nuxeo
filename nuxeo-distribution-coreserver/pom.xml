@@ -114,10 +114,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-core</artifactId>
       <exclusions>
-	<exclusion>
-	  <groupId>de.odysseus.juel</groupId>
-	  <artifactId>juel-api</artifactId>
-	</exclusion>
+        <exclusion>
+          <groupId>de.odysseus.juel</groupId>
+          <artifactId>juel-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -311,37 +311,12 @@
 
   <profiles>
     <profile>
-      <id>tattletale-linux</id>
+      <id>os-notwindows</id>
       <activation>
         <os>
-          <family>linux</family>
+          <family>!windows</family>
         </os>
       </activation>
-      <properties>
-        <tattletale.source>${project.build.directory}/nuxeo.ear/lib</tattletale.source>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jboss.tattletale</groupId>
-            <artifactId>tattletale-maven</artifactId>
-            <configuration>
-              <source>${project.build.directory}/nuxeo.ear/lib</source>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>tattletale-mac</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <tattletale.source>${project.build.directory}/nuxeo.ear/lib</tattletale.source>
-      </properties>
       <build>
         <plugins>
           <plugin>

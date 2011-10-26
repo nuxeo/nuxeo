@@ -35,12 +35,6 @@
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-cap-tests</artifactId>
     </dependency>
-<!--     <dependency> -->
-<!--       <groupId>org.nuxeo.ecm.distribution</groupId> -->
-<!--       <artifactId>nuxeo-distribution-tomcat</artifactId> -->
-<!--       <type>zip</type> -->
-<!--       <classifier>nuxeo-dm</classifier> -->
-<!--     </dependency> -->
   </dependencies>
 
   <build>
@@ -64,7 +58,8 @@
             <configuration>
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${build.directory}/tomcat/lib/log4j.xml
                 -Dnuxeo.log.dir=${build.directory}/tomcat/log
-                -DconnectPassword=${connect.password}</argLine>
+                -DconnectPassword=${connect.password}
+              </argLine>
             </configuration>
           </execution>
         </executions>
@@ -107,28 +102,6 @@
   </build>
 
   <profiles>
-    <profile>
-      <id>os-notwindows</id>
-      <activation>
-        <os>
-          <family>!windows</family>
-        </os>
-      </activation>
-      <properties>
-        <file.uri.prefix>file://</file.uri.prefix>
-      </properties>
-    </profile>
-    <profile>
-      <id>os-windows</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <properties>
-        <file.uri.prefix>file:///</file.uri.prefix>
-      </properties>
-    </profile>
     <profile>
       <id>pgsql</id>
     </profile>

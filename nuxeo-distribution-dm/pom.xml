@@ -257,29 +257,10 @@
 
   <profiles>
     <profile>
-      <id>tattletale-linux</id>
+      <id>os-notwindows</id>
       <activation>
         <os>
-          <family>linux</family>
-        </os>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jboss.tattletale</groupId>
-            <artifactId>tattletale-maven</artifactId>
-            <configuration>
-              <source>${project.build.directory}/nuxeo.ear/lib</source>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>tattletale-mac</id>
-      <activation>
-        <os>
-          <family>mac</family>
+          <family>!windows</family>
         </os>
       </activation>
       <build>
