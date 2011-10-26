@@ -14,8 +14,7 @@
  */
 package org.nuxeo.ecm.platform.preview.tests.service;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -44,14 +43,12 @@ public class TestService extends NXRuntimeTestCase {
         PreviewAdapterManager pam = Framework.getLocalService(PreviewAdapterManager.class);
         assertNotNull(pam);
 
-        DocumentModel doc = new DocumentModelImpl("Note");
-
-        boolean hasPreview = pam.hasAdapter(doc);
-        assertFalse(hasPreview);
+        MimeTypePreviewer previewer = pam.getPreviewer("text/html");
+        assertNull(previewer);
 
         deployContrib("org.nuxeo.ecm.platform.preview", "OSGI-INF/preview-adapter-contrib.xml");
-        hasPreview = pam.hasAdapter(doc);
-        assertTrue(hasPreview);
+        previewer = pam.getPreviewer("text/html");
+        assertNotNull(previewer);
     }
 
 }

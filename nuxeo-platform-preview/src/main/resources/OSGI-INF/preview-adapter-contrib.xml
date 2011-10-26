@@ -7,7 +7,7 @@
     Default builtin adapters
     </documentation>
 
-    <previewAdapter name="notePreviewAdapter" enabled="true">
+    <previewAdapter name="notePreviewAdapter" enabled="false">
       <typeName>Note</typeName>
       <class>org.nuxeo.ecm.platform.preview.adapter.factories.NotePreviewAdapter</class>
     </previewAdapter>

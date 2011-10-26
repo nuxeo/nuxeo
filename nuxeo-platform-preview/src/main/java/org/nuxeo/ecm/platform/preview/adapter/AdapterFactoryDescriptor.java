@@ -45,7 +45,7 @@ public class AdapterFactoryDescriptor implements Serializable{
         return adapterClass;
     }
 
-    public boolean getEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 

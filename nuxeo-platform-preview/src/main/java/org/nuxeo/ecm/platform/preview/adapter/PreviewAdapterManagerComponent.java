@@ -62,11 +62,13 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
 
         if (ADAPTER_FACTORY_EP.equals(extensionPoint)) {
             AdapterFactoryDescriptor desc = (AdapterFactoryDescriptor) contribution;
-
-            PreviewAdapterFactory factory = desc.getNewInstance();
-
-            if (factory != null) {
-                factoryRegistry.put(desc.getTypeName(), factory);
+            if (desc.isEnabled()) {
+                PreviewAdapterFactory factory = desc.getNewInstance();
+                if (factory != null) {
+                    factoryRegistry.put(desc.getTypeName(), factory);
+                }
+            } else {
+                factoryRegistry.remove(desc.getTypeName());
             }
         } else if (PREVIEWED_MIME_TYPE.equals(extensionPoint)) {
             MimeTypePreviewerDescriptor desc = (MimeTypePreviewerDescriptor) contribution;

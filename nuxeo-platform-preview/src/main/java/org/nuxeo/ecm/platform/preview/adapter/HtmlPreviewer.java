@@ -39,13 +39,13 @@ public class HtmlPreviewer extends AbstractPreviewer implements
 
         StringBuffer htmlPage = new StringBuffer();
 
-        htmlPage.append("<html>");
+        htmlPage.append("<html><head></head><body>");
         try {
             htmlPage.append("<pre>").append(blob.getString()).append("</pre>");
         } catch (IOException e) {
             throw new PreviewException(e);
         }
-        htmlPage.append("</html>");
+        htmlPage.append("</body></html>");
 
         Blob mainBlob = new StringBlob(htmlPage.toString());
         mainBlob.setFilename("index.html");
