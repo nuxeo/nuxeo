@@ -57,6 +57,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected boolean isStarted = false;
 
+    protected boolean isShuttingDown = false;
+
     protected File workingDir;
 
     protected Properties properties = new Properties();
@@ -129,25 +131,35 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted) {
-            log.info("Stopping Nuxeo Runtime service " + getName()
-                    + "; version: " + getVersion());
-            Framework.sendEvent(new RuntimeServiceEvent(
-                    RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
-            stopExtensions();
-            doStop();
-            isStarted = false;
-            Framework.sendEvent(new RuntimeServiceEvent(
-                    RuntimeServiceEvent.RUNTIME_STOPPED, this));
-            manager.shutdown();
-            // NXRuntime.setRuntime(null);
-            manager = null;
-            JavaUtilLoggingHelper.reset();
+            isShuttingDown = true;
+            try {
+                log.info("Stopping Nuxeo Runtime service " + getName()
+                        + "; version: " + getVersion());
+                Framework.sendEvent(new RuntimeServiceEvent(
+                        RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
+                stopExtensions();
+                doStop();
+                isStarted = false;
+                Framework.sendEvent(new RuntimeServiceEvent(
+                        RuntimeServiceEvent.RUNTIME_STOPPED, this));
+                manager.shutdown();
+                // NXRuntime.setRuntime(null);
+                manager = null;
+                JavaUtilLoggingHelper.reset();
+            } finally {
+                isShuttingDown = false;
+            }
         }
     }
 
     @Override
     public boolean isStarted() {
         return isStarted;
+    }
+
+    @Override
+    public boolean isShuttingDown() {
+        return isShuttingDown;
     }
 
     protected void doStart() throws Exception {

@@ -59,11 +59,19 @@ public interface RuntimeService {
     void stop() throws Exception;
 
     /**
-     * Tests whether or not the runtime is started.
+     * Returns true if the runtime is started.
      *
      * @return true if the runtime is started, false otherwise
      */
     boolean isStarted();
+
+    /**
+     * Returns true if the runtime is shutting down.
+     *
+     * @return true if the runtime is shutting down, false otherwise
+     * @since 5.4.3
+     */
+    boolean isShuttingDown();
 
     /**
      * Gets the home directory of the runtime.
@@ -126,8 +134,8 @@ public interface RuntimeService {
     String getProperty(String name, String defaultValue);
 
     /**
-     * Replaces any substring in the form <code>${property.name}</code> with the
-     * corresponding runtime property value if any, otherwise leaves the
+     * Replaces any substring in the form <code>${property.name}</code> with
+     * the corresponding runtime property value if any, otherwise leaves the
      * substring unchanged.
      *
      * @param expression the expression to process
@@ -182,8 +190,8 @@ public interface RuntimeService {
     RuntimeContext getContext();
 
     /**
-     * Gets the service of type serviceClass if such a service was declared by a
-     * resolved runtime component.
+     * Gets the service of type serviceClass if such a service was declared by
+     * a resolved runtime component.
      * <p>
      * If the component is not yet activated, it will be prior to return the
      * service.
@@ -217,7 +225,9 @@ public interface RuntimeService {
     File getBundleFile(Bundle bundle);
 
     /**
-     * Get an installed  bundle given its symbolic name. This method is not handling versions.
+     * Get an installed bundle given its symbolic name. This method is not
+     * handling versions.
+     *
      * @param symbolicName
      * @return
      */
