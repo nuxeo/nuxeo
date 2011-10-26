@@ -19,11 +19,17 @@ package org.nuxeo.ecm.platform.video;
 import java.io.Serializable;
 import java.util.Calendar;
 
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.core.Interpolator;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.video.service.VideoService;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * @author "<a href=\"mailto:bjalon@nuxeo.com\">Benjamin JALON</a>"
@@ -35,21 +41,34 @@ public class VideoActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public String getURLForPlayer(DocumentModel videoDoc)
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
+    @In(create = true)
+    protected VideoService videoService;
+
+    public String getURLForPlayer(DocumentModel doc)
             throws ClientException {
-        return DocumentModelFunctions.bigFileUrl(videoDoc, "file:content", "");
+        return DocumentModelFunctions.bigFileUrl(doc, "file:content", "");
     }
 
-    public String getTranscodedVideoURL(DocumentModel videoDoc, String name) {
-        VideoDocument video = videoDoc.getAdapter(VideoDocument.class);
-        TranscodedVideo transcodedVideo = video.getTranscodedVideo(name);
+    public String getTranscodedVideoURL(DocumentModel doc, String name) {
+        TranscodedVideo transcodedVideo = getTranscodedVideo(doc, name);
         if (transcodedVideo == null) {
             return null;
         }
 
         String blobPropertyName = transcodedVideo.getBlobPropertyName();
-        return DocumentModelFunctions.bigFileUrl(videoDoc, blobPropertyName,
+        return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName,
                 transcodedVideo.getVideoBlob().getFilename());
+    }
+
+    public TranscodedVideo getTranscodedVideo(DocumentModel doc, String name) {
+        VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
+        return videoDocument.getTranscodedVideo(name);
     }
 
     public String getURLForStaticPreview(DocumentModel videoDoc)
@@ -58,6 +77,25 @@ public class VideoActions implements Serializable {
                 + (((Calendar) videoDoc.getPropertyValue("dc:modified")).getTimeInMillis());
         return DocumentModelFunctions.fileUrl("downloadPicture", videoDoc,
                 "StaticPlayerView:content", lastModification);
+    }
+
+    public VideoConversionStatus getVideoConversionStatus(DocumentModel doc, String conversionName) {
+        return videoService.getProgressStatus(doc.getRepositoryName(), doc.getRef(), conversionName);
+    }
+
+    public String getStatusMessageFor(VideoConversionStatus status) {
+        String i18nMessageTemplate = resourcesAccessor.getMessages().get(status.getMessage());
+        if (i18nMessageTemplate == null) {
+            return "";
+        } else {
+            return Interpolator.instance().interpolate(
+                    i18nMessageTemplate, status.positionInQueue,
+                    status.queueSize);
+        }
+    }
+
+    public void launchConversion(DocumentModel doc, String conversionName) {
+        videoService.launchConversion(doc, conversionName);
     }
 
 }

@@ -20,6 +20,10 @@
       <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-webapp-base</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
@@ -27,6 +31,7 @@
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam-ui</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-test</artifactId>

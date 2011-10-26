@@ -33,11 +33,11 @@ public final class TranscodedVideo {
 
     private static final String CONTENT = "content";
 
-    private static final String METADATA = "metadata";
+    private static final String INFO = "info";
 
     private final String name;
 
-    private final VideoMetadata metadata;
+    private final VideoInfo videoInfo;
 
     private final Blob blob;
 
@@ -48,23 +48,23 @@ public final class TranscodedVideo {
         return new TranscodedVideo(map, position);
     }
 
-    public static TranscodedVideo fromBlobAndMetadata(String name, Blob blob,
-            VideoMetadata videoMetadata) {
-        return new TranscodedVideo(name, blob, videoMetadata);
+    public static TranscodedVideo fromBlobAndInfo(String name, Blob blob,
+                                                  VideoInfo videoInfo) {
+        return new TranscodedVideo(name, blob, videoInfo);
     }
 
     private TranscodedVideo(Map<String, Serializable> map, int position) {
         this.position = position;
         name = (String) map.get(NAME);
         blob = (Blob) map.get(CONTENT);
-        Map<String, Serializable> metadata = (Map<String, Serializable>) map.get(METADATA);
-        this.metadata = VideoMetadata.fromMap(metadata);
+        Map<String, Serializable> info = (Map<String, Serializable>) map.get(INFO);
+        this.videoInfo = VideoInfo.fromMap(info);
     }
 
-    private TranscodedVideo(String name, Blob blob, VideoMetadata videoMetadata) {
+    private TranscodedVideo(String name, Blob blob, VideoInfo videoInfo) {
         this.name = name;
         this.blob = blob;
-        metadata = videoMetadata;
+        this.videoInfo = videoInfo;
         position = -1;
     }
 
@@ -73,23 +73,23 @@ public final class TranscodedVideo {
     }
 
     public double getDuration() {
-        return metadata.getDuration();
+        return videoInfo.getDuration();
     }
 
     public long getWidth() {
-        return metadata.getWidth();
+        return videoInfo.getWidth();
     }
 
     public long getHeight() {
-        return metadata.getHeight();
+        return videoInfo.getHeight();
     }
 
     public String getFormat() {
-        return metadata.getFormat();
+        return videoInfo.getFormat();
     }
 
     public double getFrameRate() {
-        return metadata.getFrameRate();
+        return videoInfo.getFrameRate();
     }
 
     public Blob getVideoBlob() {
@@ -108,7 +108,7 @@ public final class TranscodedVideo {
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(NAME, name);
         map.put(CONTENT, (Serializable) blob);
-        map.put(METADATA, (Serializable) metadata.toMap());
+        map.put(INFO, (Serializable) videoInfo.toMap());
         return map;
     }
 

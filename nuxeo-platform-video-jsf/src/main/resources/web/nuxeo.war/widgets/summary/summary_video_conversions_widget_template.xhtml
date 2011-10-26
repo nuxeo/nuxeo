@@ -1,0 +1,52 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+   <style>
+     .videoConversionRow:hover {
+       background-color: #e6f6ff
+     }
+   </style>
+
+  <h3 class="summaryTitle">Conversions</h3>
+
+  <table width="100%" cellspacing="0">
+    <tbody>
+      <c:forEach var="conversion" items="#{videoService.getAvailableVideoConversions()}">
+        <tr class="videoConversionRow">
+          <td>
+            #{conversion.name}
+          </td>
+          <td style="text-align: center; width: 50%;">
+            <nxu:set var="conversionStatus"
+              value="#{videoActions.getVideoConversionStatus(currentDocument, conversion.name)}">
+              <c:if test="#{not empty conversionStatus}">
+                #{videoActions.getStatusMessageFor(conversionStatus)}
+              </c:if>
+              <c:if test="#{empty conversionStatus}">
+                <nxu:set var="transcodedVideo"
+                  value="#{videoActions.getTranscodedVideo(currentDocument, conversion.name)}">
+                <c:if test="#{not empty transcodedVideo}">
+                  <h:outputLink value="#{videoActions.getTranscodedVideoURL(currentDocument, conversion.name)}">
+                    <h:graphicImage url="/icons/download.png" />
+                  </h:outputLink>
+                </c:if>
+                <c:if test="#{empty transcodedVideo}">
+                  <h:commandButton value="#{messages['action.video.launch.conversion']}"
+                    action="#{videoActions.launchConversion(currentDocument, conversion.name)}" />
+                </c:if>
+                </nxu:set>
+              </c:if>
+            </nxu:set>
+          </td>
+        </tr>
+      </c:forEach>
+    </tbody>
+  </table>
+</div>

@@ -74,6 +74,12 @@ public class TestVideoService extends SQLRepositoryTestCase {
         videoService = Framework.getLocalService(VideoService.class);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testVideoConversion() throws IOException, ClientException {
         Blob video = getBlobFromPath(DELTA_MP4, "video/mp4");
         TranscodedVideo transcodedVideo = videoService.convert(video,

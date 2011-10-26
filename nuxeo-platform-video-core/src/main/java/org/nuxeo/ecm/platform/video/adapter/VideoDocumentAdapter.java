@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoDocument;
-import org.nuxeo.ecm.platform.video.VideoMetadata;
+import org.nuxeo.ecm.platform.video.VideoInfo;
 
 import com.google.common.collect.Maps;
 
@@ -40,7 +40,7 @@ public class VideoDocumentAdapter implements VideoDocument {
 
     private final DocumentModel doc;
 
-    private final VideoMetadata metadata;
+    private final VideoInfo videoInfo;
 
     private Map<String, TranscodedVideo> transcodedVideos;
 
@@ -51,15 +51,15 @@ public class VideoDocumentAdapter implements VideoDocument {
 
         try {
             this.doc = doc;
-            metadata = VideoMetadata.fromMap((Map<String, Serializable>) doc.getPropertyValue("vid:metadata"));
+            videoInfo = VideoInfo.fromMap((Map<String, Serializable>) doc.getPropertyValue("vid:info"));
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
     @Override
-    public VideoMetadata getVideoMetadata() {
-        return metadata;
+    public VideoInfo getVideoInfo() {
+        return videoInfo;
     }
 
     @Override

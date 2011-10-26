@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.platform.video.service;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -28,6 +31,8 @@ import org.nuxeo.ecm.platform.video.VideoConversionStatus;
  * @since 5.4.3
  */
 public interface VideoService {
+
+    Collection<VideoConversion> getAvailableVideoConversions();
 
     void launchConversion(DocumentModel doc, String conversionName);
 

@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 
 /**
- * Core event listener to update the preview and the metadata of a Video
+ * Core event listener to update the preview and the info of a Video
  * document.
  * <p>
  * It also set the context property {@link VIDEO_CHANGED_PROPERTY} to
@@ -56,7 +56,7 @@ public class VideoChangedListener implements EventListener {
             if (origVideoProperty.isDirty()) {
                 try {
                     Blob blob = origVideoProperty.getValue(Blob.class);
-                    VideoHelper.updateMetadata(doc, blob);
+                    VideoHelper.updateVideoInfo(doc, blob);
                     VideoHelper.updatePreviews(doc, blob);
                     ctx.setProperty(VIDEO_CHANGED_PROPERTY, true);
                 } catch (IOException e) {

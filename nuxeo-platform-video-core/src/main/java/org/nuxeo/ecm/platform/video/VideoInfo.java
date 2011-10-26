@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.3
  */
-public final class VideoMetadata {
+public final class VideoInfo {
 
     public static final Pattern FORMAT_PATTERN = Pattern.compile(
             "^\\s*(Input|Output) #0, (\\w+).+$\\s*", Pattern.CASE_INSENSITIVE);
@@ -56,7 +56,7 @@ public final class VideoMetadata {
     public static final Pattern BIT_RATE_PATTERN = Pattern.compile(
             "(\\d+)\\s+kb/s", Pattern.CASE_INSENSITIVE);
 
-    public static final VideoMetadata EMPTY_METADATA = new VideoMetadata(0, 0,
+    public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0,
             0, 0, null, null);
 
     private static final String DURATION = "duration";
@@ -83,7 +83,7 @@ public final class VideoMetadata {
 
     private final double frameRate;
 
-    public static VideoMetadata fromMap(Map<String, Serializable> map) {
+    public static VideoInfo fromMap(Map<String, Serializable> map) {
         Double duration = (Double) map.get(DURATION);
         if (duration == null) {
             duration = 0d;
@@ -113,11 +113,11 @@ public final class VideoMetadata {
             }
         }
 
-        return new VideoMetadata(duration, width, height, frameRate, format,
+        return new VideoInfo(duration, width, height, frameRate, format,
                 streams);
     }
 
-    public static VideoMetadata fromFFmpegOutput(List<String> output) {
+    public static VideoInfo fromFFmpegOutput(List<String> output) {
         double duration = 0;
         long width = 0;
         long height = 0;
@@ -181,12 +181,12 @@ public final class VideoMetadata {
                 streams.add(Stream.fromMap(map));
             }
         }
-        return new VideoMetadata(duration, width, height, frameRate, format,
+        return new VideoInfo(duration, width, height, frameRate, format,
                 streams);
     }
 
-    public VideoMetadata(double duration, long width, long height,
-            double frameRate, String format, List<Stream> streams) {
+    public VideoInfo(double duration, long width, long height,
+                     double frameRate, String format, List<Stream> streams) {
         this.duration = duration;
         this.width = width;
         this.height = height;

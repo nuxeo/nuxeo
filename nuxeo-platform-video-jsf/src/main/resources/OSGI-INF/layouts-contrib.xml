@@ -43,15 +43,36 @@
         /widgets/summary/summary_video_storyboard_widget_template.xhtml
       </property>
     </widgetType>
+
+    <widgetType name="summary_video_conversions">
+      <documentation>
+        This widget displays the list of available
+        video conversions.
+
+        It requires the following variables to be
+        present in the EL context:
+        <ul>
+          <li>currentDocument: the current document</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/summary_video_conversions_widget_template.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
       point="widgets">
     <widget name="summary_video_player"
       type="summary_video_player" />
-
     <widget name="summary_video_storyboard"
       type="summary_video_storyboard" />
+    <widget name="summary_video_conversions"
+          type="summary_video_conversions" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -71,8 +92,9 @@
         </row>
         <row>
           <widget>summary_current_document_lc_and_version</widget>
-          <widget>summary_video_storyboard</widget>
           <widget>summary_current_document_actions</widget>
+          <widget>summary_video_storyboard</widget>
+          <widget>summary_video_conversions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
         </row>

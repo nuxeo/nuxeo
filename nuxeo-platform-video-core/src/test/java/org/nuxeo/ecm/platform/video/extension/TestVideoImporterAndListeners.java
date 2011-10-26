@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.video.Stream;
 import org.nuxeo.ecm.platform.video.VideoDocument;
-import org.nuxeo.ecm.platform.video.VideoMetadata;
+import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /*
@@ -103,7 +103,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         eventServiceAdmin.setListenerEnabledFlag(
                 "videoAutomaticConversions", false);
         eventServiceAdmin.setListenerEnabledFlag(
-                        "sql-storage-binary-text", false);
+                "sql-storage-binary-text", false);
 
         root = session.getRootDocument();
         fileManagerService = Framework.getService(FileManager.class);
@@ -113,6 +113,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     public void tearDown() throws Exception {
         fileManagerService = null;
         root = null;
+        closeSession();
         super.tearDown();
     }
 
@@ -277,7 +278,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertTrue(docModel.getProperty("picture:views").getValue(List.class).isEmpty());
     }
 
-    public void testVideoMetadata() throws Exception {
+    public void testVideoInfo() throws Exception {
         File testFile = getTestFile();
         Blob blob = StreamingBlob.createFromFile(testFile, "video/mpg");
         blob.setFilename("Sample.mpg");
@@ -301,15 +302,15 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
         assertNotNull(videoDocument);
 
-        VideoMetadata videoMetadata = videoDocument.getVideoMetadata();
-        assertNotNull(videoMetadata);
-        assertEquals("mpegvideo", videoMetadata.getFormat());
-        assertEquals(0.04, videoMetadata.getDuration(), 0.1);
-        assertEquals(23.98, videoMetadata.getFrameRate(), 0.1);
-        assertEquals(320, videoMetadata.getWidth());
-        assertEquals(200, videoMetadata.getHeight());
+        VideoInfo videoInfo = videoDocument.getVideoInfo();
+        assertNotNull(videoInfo);
+        assertEquals("mpegvideo", videoInfo.getFormat());
+        assertEquals(0.04, videoInfo.getDuration(), 0.1);
+        assertEquals(23.98, videoInfo.getFrameRate(), 0.1);
+        assertEquals(320, videoInfo.getWidth());
+        assertEquals(200, videoInfo.getHeight());
 
-        List<Stream> streams = videoMetadata.getStreams();
+        List<Stream> streams = videoInfo.getStreams();
         assertNotNull(streams);
         assertEquals(1, streams.size());
         Stream stream = streams.get(0);

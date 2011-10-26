@@ -18,6 +18,9 @@
 package org.nuxeo.ecm.platform.video.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +45,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
-import org.nuxeo.ecm.platform.video.VideoMetadata;
+import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -114,6 +117,11 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
+    public Collection<VideoConversion> getAvailableVideoConversions() {
+        return videoConversions.registry.values();
+    }
+
+    @Override
     public void launchConversion(DocumentModel doc, String conversionName) {
         VideoConversionTask task = new VideoConversionTask(doc, conversionName,
                 this);
@@ -128,7 +136,9 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void launchAutomaticConversions(DocumentModel doc) {
-        for (AutomaticVideoConversion conversion : automaticVideoConversions.registry.values()) {
+        List<AutomaticVideoConversion> conversions = new ArrayList<AutomaticVideoConversion>(automaticVideoConversions.registry.values());
+        Collections.sort(conversions);
+        for (AutomaticVideoConversion conversion : conversions) {
             launchConversion(doc, conversion.getName());
         }
     }
@@ -158,9 +168,9 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
             BlobHolder result = conversionService.convert(
                     conversion.getConverter(), blobHolder, parameters);
-            VideoMetadata videoMetadata = VideoMetadata.fromFFmpegOutput((List<String>) result.getProperty("cmdOutput"));
-            return TranscodedVideo.fromBlobAndMetadata(conversionName,
-                    result.getBlob(), videoMetadata);
+            VideoInfo videoInfo = VideoInfo.fromFFmpegOutput((List<String>) result.getProperty("cmdOutput"));
+            return TranscodedVideo.fromBlobAndInfo(conversionName,
+                    result.getBlob(), videoInfo);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         } finally {
@@ -189,7 +199,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             Object[] queuedItems = q.toArray();
             queueSize = queuedItems.length;
             for (int i = 0; i < queueSize; i++) {
-                if (queuedItems[i].equals(id)) {
+                if (((VideoConversionTask) queuedItems[i]).getId().equals(id)) {
                     posInQueue = i + 1;
                     break;
                 }

@@ -29,7 +29,7 @@ import org.junit.Test;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.3
  */
-public class TestVideoMetadata {
+public class TestVideoInfo {
 
     String[] ffmpegOutput = {
             "Input #0, matroska,webm, from 'test.mkv':",
@@ -39,16 +39,16 @@ public class TestVideoMetadata {
 
     @Test
     public void testFFmpegOutputParsing() {
-        VideoMetadata videoMetadata = VideoMetadata.fromFFmpegOutput(Arrays.asList(ffmpegOutput));
-        assertNotNull(videoMetadata);
+        VideoInfo videoInfo = VideoInfo.fromFFmpegOutput(Arrays.asList(ffmpegOutput));
+        assertNotNull(videoInfo);
 
-        assertEquals("matroska", videoMetadata.getFormat());
-        assertEquals(21 * 60 + 9 + 2d / 100, videoMetadata.getDuration(), 0.1);
-        assertEquals(1280, videoMetadata.getWidth());
-        assertEquals(720, videoMetadata.getHeight());
-        assertEquals(23.98, videoMetadata.getFrameRate(), 0.1);
+        assertEquals("matroska", videoInfo.getFormat());
+        assertEquals(21 * 60 + 9 + 2d / 100, videoInfo.getDuration(), 0.1);
+        assertEquals(1280, videoInfo.getWidth());
+        assertEquals(720, videoInfo.getHeight());
+        assertEquals(23.98, videoInfo.getFrameRate(), 0.1);
 
-        List<Stream> streams = videoMetadata.getStreams();
+        List<Stream> streams = videoInfo.getStreams();
         assertEquals(2, streams.size());
         Stream stream = streams.get(0);
         assertEquals(Stream.VIDEO_TYPE, stream.getType());

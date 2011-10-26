@@ -8,10 +8,12 @@
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <ui:repeat var="item" value="#{storyboardActions.getItems(videoDocument)}">
-    <a href="#play"
-      onclick="return unhidePlayerAndPlay('videoPlayerStaticPreview', 'videoPlayerObject', '#{item.timecode}');">
+  <nxu:set var="currentSelection" value="#{damDocumentActions.currentSelection}">
+  <ui:repeat var="item" value="#{storyboardActions.getItems(currentSelection)}">
+    <a class="videoStoryboardItem" href="#play" timecode="#{item.timecode}">
       <nxh:graphicImage url="#{item.url}" />
     </a>
   </ui:repeat>
+  </nxu:set>
+
 </div>

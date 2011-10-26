@@ -204,11 +204,11 @@ public class VideoHelper {
         updatePreviews(docModel, video, position, THUMBNAILS_VIEWS);
     }
 
-    public static void updateMetadata(DocumentModel docModel, Blob video)
+    public static void updateVideoInfo(DocumentModel docModel, Blob video)
             throws ClientException {
         if (video == null) {
-            docModel.setPropertyValue("vid:metadata",
-                    (Serializable) VideoMetadata.EMPTY_METADATA.toMap());
+            docModel.setPropertyValue("vid:info",
+                    (Serializable) VideoInfo.EMPTY_INFO.toMap());
             return;
         }
 
@@ -226,9 +226,9 @@ public class VideoHelper {
             // read the duration with a first command to adjust the best rate:
             ExecResult result = cleService.execCommand(
                     FFMPEG_INFO_COMMAND_LINE, params);
-            VideoMetadata videoMetadata = VideoMetadata.fromFFmpegOutput(result.getOutput());
-            docModel.setPropertyValue("vid:metadata",
-                    (Serializable) videoMetadata.toMap());
+            VideoInfo videoInfo = VideoInfo.fromFFmpegOutput(result.getOutput());
+            docModel.setPropertyValue("vid:info",
+                    (Serializable) videoInfo.toMap());
         } catch (Exception e) {
             throw ClientException.wrap(e);
         } finally {

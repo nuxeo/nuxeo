@@ -7,8 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:rich="http://richfaces.org/rich"
-  xmlns:a4j="http://richfaces.org/a4j"
-  class="videoPlayer">
+  xmlns:a4j="http://richfaces.org/a4j">
 
   <link rel="stylesheet" href="#{baseURL}css/video-js.css" type="text/css" media="screen" title="Video JS"/>
   <script src="#{baseURL}scripts/video.js" type="text/javascript" charset="utf-8"></script>
@@ -18,8 +17,15 @@
   <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'MP4 480p')}">
   <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'WebM 480p')}">
 
-    <c:if test="#{empty mp4URL and empty webmURL}">
-      <p>This video is in processing.</p>
+    <c:if test="#{empty mp4URL}">
+      <nxu:set var="conversionStatus"
+        value="#{videoActions.getVideoConversionStatus(currentDocument, 'MP4 480p')}">
+        <c:if test="#{not empty conversionStatus}">
+          <p class="tips">
+            #{videoActions.getStatusMessageFor(conversionStatus)}
+          </p>
+        </c:if>
+      </nxu:set>
     </c:if>
     <c:if test="#{not empty mp4URL or not empty webmURL}">
       <div class="video-js-box">
@@ -32,7 +38,7 @@
             <source src="#{videoActions.getTranscodedVideoURL(currentDocument, 'WebM 480p')}" type='video/webm; codecs="vp8, vorbis"' />
           </c:if>
           <c:if test="#{not empty mp4URL}">
-            <object type="application/x-shockwave-flash" data="http://jarisflvplayer.org/files/JarisFLVPlayer.swf" width="450px" height="337px">
+            <object type="application/x-shockwave-flash" data="#{baseURL}swf/JarisFLVPlayer.swf" width="450px" height="337px">
               <param name="menu" value="false"/>
               <param name="scale" value="noScale"/>
               <param name="allowFullscreen" value="true"/>

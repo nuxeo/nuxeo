@@ -8,25 +8,56 @@
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <a id="videoPlayerStaticPreview" href="#play"
-   onclick="return unhidePlayerAndPlay('videoPlayerStaticPreview', 'videoPlayerObject');">
-    <nxh:graphicImage
-      url="#{videoActions.getURLForStaticPreview(videoDoc)}?conversationId=#{conversation.id}"
-      style="max-width: 400px;" />
-  </a>
+     <link rel="stylesheet" href="#{baseURL}css/video-js.css" type="text/css" media="screen" title="Video JS"/>
+     <script src="#{baseURL}scripts/video.js" type="text/javascript" charset="utf-8"></script>
+     <script src="#{baseURL}scripts/video-player-util.js" type="text/javascript" charset="utf-8"></script>
 
-  <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B'
-    width="400" codebase='http://www.apple.com/qtactivex/qtplugin.cab'
-    id="videoPlayerObject" style="display: none">
-    <param name="src" value="#{videoActions.getURLForPlayer(videoDoc)}"/>
-    <param name="autoplay" value="true"/>
-    <param name="loop" value="false"/>
-    <param name="scale" value="aspect"/>
-    <embed src="#{videoActions.getURLForPlayer(videoDoc)}"
-     name="videoPlayerObject" EnableJavaScript="true"
-     width="400" autoplay="true" loop="true" scale="aspect"
-     bgcolor="#6F6F6F"
-     pluginspage="http://www.apple.com/quicktime/download/" />
-  </object>
+     <nxu:set var="currentSelection" value="#{damDocumentActions.currentSelection}">
+     <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(currentSelection)}">
+     <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(currentSelection, 'MP4 480p')}">
+     <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(currentSelection, 'WebM 480p')}">
+
+       <c:if test="#{empty mp4URL}">
+         <nxu:set var="conversionStatus"
+           value="#{videoActions.getVideoConversionStatus(currentSelection, 'MP4 480p')}">
+           <c:if test="#{not empty conversionStatus}">
+             <p class="tips">
+               #{videoActions.getStatusMessageFor(conversionStatus)}
+             </p>
+           </c:if>
+         </nxu:set>
+       </c:if>
+       <c:if test="#{not empty mp4URL or not empty webmURL}">
+         <div class="video-js-box">
+           <!-- HTML5 player -->
+           <video class="video-js" width="400" height="300" controls="controls" preload="auto" poster="#{staticPreview}">
+             <c:if test="#{not empty mp4URL}">
+               <source src="#{videoActions.getTranscodedVideoURL(currentSelection, 'MP4 480p')}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
+             </c:if>
+             <c:if test="#{not empty webmURL}">
+               <source src="#{videoActions.getTranscodedVideoURL(currentSelection, 'WebM 480p')}" type='video/webm; codecs="vp8, vorbis"' />
+             </c:if>
+             <c:if test="#{not empty mp4URL}">
+               <object type="application/x-shockwave-flash" data="#{baseURL}swf/JarisFLVPlayer.swf" width="400px" height="300px">
+                 <param name="menu" value="false"/>
+                 <param name="scale" value="noScale"/>
+                 <param name="allowFullscreen" value="true"/>
+                 <param name="allowScriptAccess" value="always"/>
+                 <param name="bgcolor" value="#000000"/>
+                 <param name="quality" value="high"/>
+                 <param name="wmode" value="opaque"/>
+                 <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(currentSelection)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"/>
+                 <img src="#{staticPreview}" height="430" alt="Poster Image"
+                   title="No video playback capabilities." />
+               </object>
+             </c:if>
+           </video>
+         </div>
+       </c:if>
+
+     </nxu:set>
+     </nxu:set>
+     </nxu:set>
+     </nxu:set>
 
 </div>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.nuxeo.ecm.platform.audio.lifecycle">
+<component name="org.nuxeo.nuxeo.ecm.platform.video.lifecycle">
 
   <require>org.nuxeo.ecm.core.LifecycleCoreExtensions</require>
 

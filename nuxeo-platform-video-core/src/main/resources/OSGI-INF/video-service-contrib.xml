@@ -13,8 +13,8 @@
   <extension target="org.nuxeo.ecm.platform.video.service.VideoService"
     point="automaticVideoConversions">
 
-    <automaticVideoConversion name="MP4 480p" />
-    <automaticVideoConversion name="WebM 480p" />
+    <automaticVideoConversion name="MP4 480p" order="0" />
+    <automaticVideoConversion name="WebM 480p" order="10" />
 
   </extension>
 

@@ -5,11 +5,11 @@
 
   <xs:include schemaLocation="core-types.xsd" />
 
-  <xs:element name="metadata" type="nxs:metadata" />
+  <xs:element name="info" type="nxs:info" />
   <xs:element name="transcodedVideos" type="nxs:transcodedVideoItems" />
   <xs:element name="storyboard" type="nxs:storyboarditems" />
 
-  <xs:complexType name="metadata">
+  <xs:complexType name="info">
     <xs:sequence>
       <xs:element name="duration" type="xs:float" /> <!-- in seconds -->
       <xs:element name="width" type="xs:integer" />
@@ -47,7 +47,7 @@
     <xs:sequence>
       <xs:element name="name" type="xs:string" />
       <xs:element name="content" type="nxs:content" />
-      <xs:element name="metadata" type="nxs:metadata" />
+      <xs:element name="info" type="nxs:info" />
     </xs:sequence>
   </xs:complexType>
 

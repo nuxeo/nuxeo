@@ -25,13 +25,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.4.3
  */
 @XObject("automaticVideoConversion")
-public class AutomaticVideoConversion implements Cloneable {
+public class AutomaticVideoConversion implements Cloneable, Comparable<AutomaticVideoConversion> {
 
     @XNode("@name")
     private String name;
 
     @XNode("@enabled")
     private boolean enabled = true;
+
+    @XNode("@order")
+    private int order = 0;
 
     public String getName() {
         return name;
@@ -45,9 +48,23 @@ public class AutomaticVideoConversion implements Cloneable {
         this.enabled = enabled;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
     @Override
     public AutomaticVideoConversion clone() throws CloneNotSupportedException {
         return (AutomaticVideoConversion) super.clone();
+    }
+
+    @Override
+    public int compareTo(AutomaticVideoConversion o) {
+        int cmp = order - o.order;
+        if (cmp == 0) {
+            // make sure we have a deterministic sort
+            cmp = name.compareTo(o.name);
+        }
+        return cmp;
     }
 
 }
