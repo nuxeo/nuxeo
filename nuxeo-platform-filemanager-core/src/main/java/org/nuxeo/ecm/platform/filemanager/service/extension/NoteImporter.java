@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -96,17 +95,7 @@ public class NoteImporter extends AbstractFileImporter {
             // Update known attributes (title, note)
             docModel.setProperty(DUBLINCORE_SCHEMA, TITLE_FIELD, title);
             docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, content.getString());
-
-            // simple guess for MT
-            String mt = "text/plain";
-            String extension = new Path(filename).getFileExtension();
-            extension = extension == null ? "" : extension.toLowerCase();
-            if (extension.endsWith("htm") || extension.endsWith("html")) {
-                mt = "text/html";
-            } else if (extension.endsWith("xml")) {
-                mt = "text/xml";
-            }
-            docModel.setProperty(NOTE_SCHEMA, MT_FIELD, mt);
+            docModel.setProperty(NOTE_SCHEMA, MT_FIELD, content.getMimeType());
 
             // Create the new document in the repository
             docModel.setPathInfo(path, pss.generatePathSegment(docModel));
