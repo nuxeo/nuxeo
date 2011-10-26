@@ -78,7 +78,7 @@ public class LDAPDirectoryDescriptor {
 
     public String searchFilter;
 
-    public int searchScope;
+    public int searchScope = defaultSearchScope; // default value: onelevel
 
     public String substringMatchType;
 
@@ -224,7 +224,7 @@ public class LDAPDirectoryDescriptor {
     @XNode("searchScope")
     public void setSearchScope(String searchScope) throws DirectoryException {
         if (null == searchScope) {
-            // default value: onelevel
+            // restore default search scope
             this.searchScope = defaultSearchScope;
             return;
         }

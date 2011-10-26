@@ -84,9 +84,29 @@ public class LDAPDirectory extends AbstractDirectory {
         factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(
                 LDAPDirectoryFactory.NAME);
 
+        if (config.getIdField() == null || config.getIdField().equals("")) {
+            throw new DirectoryException(
+                    "idField configuration is missing for directory "
+                            + config.getName());
+        }
+        if (config.getSchemaName() == null || config.getSchemaName().equals("")) {
+            throw new DirectoryException(
+                    "schema configuration is missing for directory "
+                            + config.getName());
+        }
+        if (config.getSearchBaseDn() == null
+                || config.getSearchBaseDn().equals("")) {
+            throw new DirectoryException(
+                    "searchBaseDn configuration is missing for directory "
+                            + config.getName());
+        }
         // computing attributes that will be useful for all sessions
         Schema schema = NXSchema.getSchemaManager().getSchema(
                 config.getSchemaName());
+        if (schema == null) {
+            throw new DirectoryException(config.getSchemaName()
+                    + " is not a registered schema");
+        }
         schemaFieldMap = new LinkedHashMap<String, Field>();
         for (Field f : schema.getFields()) {
             schemaFieldMap.put(f.getName().toString(), f);
@@ -136,10 +156,16 @@ public class LDAPDirectory extends AbstractDirectory {
                 "com.sun.jndi.ldap.LdapCtxFactory");
 
         /*
-         * Get inital connection URLs, dynamic URLs may cause the list to be
+         * Get initial connection URLs, dynamic URLs may cause the list to be
          * updated when creating the session
          */
         String ldapUrls = serverConfig.getLdapUrls();
+        if (serverConfig.getLdapUrls() == null
+                || config.getSchemaName().equals("")) {
+            throw new DirectoryException(
+                    "Server LDAP URL configuration is missing for directory "
+                            + config.getName());
+        }
         props.put(Context.PROVIDER_URL, ldapUrls);
         props.put(Context.REFERRAL, "follow");
 
@@ -247,6 +273,11 @@ public class LDAPDirectory extends AbstractDirectory {
              * Dynamic server list requires re-computation on each access
              */
             String serverName = config.getServerName();
+            if (serverName == null || serverName.equals("")) {
+                throw new DirectoryException(
+                        "server configuration is missing for directory "
+                                + config.getName());
+            }
             LDAPServerDescriptor serverConfig = factory.getServer(serverName);
             if (serverConfig.isDynamicServerList()) {
                 String ldapUrls = serverConfig.getLdapUrls();
