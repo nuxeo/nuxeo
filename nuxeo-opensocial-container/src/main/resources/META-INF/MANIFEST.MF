@@ -4,4 +4,5 @@ Bundle-Name: Nuxeo OpenSocial Container
 Bundle-SymbolicName: org.nuxeo.ecm.opensocial.gwt.container;singleton:=true
 Bundle-Activator: org.nuxeo.ecm.webengine.gwt.GwtBundleActivator
 Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
-Nuxeo-Component: OSGI-INF/opensocial-container-transactional-contrib.xml
+Nuxeo-Component: OSGI-INF/opensocial-container-transactional-contrib.xml,
+ OSGI-INF/theme-contrib.xml

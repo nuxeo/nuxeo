@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.container.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <!-- OpenSocial container -->
+      <resource>opensocial-container.css</resource>
+      <resource>opensocial-gadgets.css</resource>
+      <resource>opensocial-reset-fonts-grids.css</resource>
+      <resource>opensocial-rpc-container.js</resource>
+      <!-- Lightweight container -->
+      <resource>opensocial-light-container-gadgets.css</resource>
+      <resource>opensocial-cookiebaseduserprefstore.js</resource>
+      <resource>opensocial-cookies.js</resource>
+      <resource>opensocial-gadgets.js</resource>
+      <resource>opensocial-util.js</resource>
+      <resource>jquery.opensocial.gadget.js</resource>
+    </view>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <!-- OpenSocial container -->
+    <resource name="opensocial-container.css">
+      <path>opensocial/css/container.css</path>
+      <require>opensocial-reset-fonts-grids.css</require>
+    </resource>
+    <resource name="opensocial-gadgets.css">
+      <path>opensocial/css/gadgets.css</path>
+      <require>opensocial-reset-fonts-grids.css</require>
+    </resource>
+    <resource name="opensocial-reset-fonts-grids.css">
+      <path>opensocial/css/reset-fonts-grids.css</path>
+    </resource>
+
+    <resource name="opensocial-rpc-container.js">
+      <path>scripts/opensocial/rpc-container.js</path>
+    </resource>
+
+    <!-- Lightweight container -->
+    <resource name="opensocial-light-container-gadgets.css">
+      <path>css/opensocial/light-container-gadgets.css</path>
+    </resource>
+
+    <resource name="opensocial-cookiebaseduserprefstore.js">
+      <path>scripts/opensocial/cookiebaseduserprefstore.js</path>
+      <require>opensocial-util.js</require>
+      <require>opensocial-cookies.js</require>
+    </resource>
+    <resource name="opensocial-cookies.js">
+      <path>scripts/opensocial/cookies.js</path>
+      <require>opensocial-gadgets.js</require>
+    </resource>
+    <resource name="opensocial-gadgets.js">
+      <path>scripts/opensocial/gadgets.js</path>
+      <require>opensocial-util.js</require>
+    </resource>
+    <resource name="opensocial-rpc-container.js">
+      <path>scripts/opensocial/rpc-container.js</path>
+    </resource>
+    <resource name="opensocial-util.js">
+      <path>scripts/opensocial/util.js</path>
+    </resource>
+    <resource name="jquery.opensocial.gadget.js">
+      <path>scripts/opensocial/jquery.opensocial.gadget.js</path>
+    </resource>
+
+  </extension>
+
+
+</component>
