@@ -247,6 +247,19 @@
         </parameter>
     </parameters>
    </converter>
+
+    <converter name="md2html" class="org.nuxeo.ecm.platform.convert.plugins.Md2HtmlConverter">
+      <destinationMimeType>text/html</destinationMimeType>
+      <sourceMimeType>text/x-web-markdown</sourceMimeType>
+    </converter>
+
+   <converter name="md2pdf">
+      <conversionSteps>
+        <subconverter>md2html</subconverter>
+        <subconverter>any2pdf</subconverter>
+      </conversionSteps>
+   </converter>
+
   </extension>
 
 </component>

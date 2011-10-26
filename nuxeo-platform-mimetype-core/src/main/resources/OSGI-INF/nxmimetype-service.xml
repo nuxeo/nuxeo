@@ -184,6 +184,18 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="text/x-web-markdown"
+     binary="false" iconPath="text.png">
+     <mimetypes>
+       <mimetype>text/x-web-markdown</mimetype>
+     </mimetypes>
+     <extensions>
+       <extension>md</extension>
+       <extension>mkd</extension>
+       <extension>markdown</extension>
+     </extensions>
+   </mimetype>
+
     <mimetype normalized="message/rfc822" binary="false" iconPath="email.png">
       <mimetypes>
         <mimetype>message/rfc822</mimetype>
@@ -227,7 +239,7 @@
       <extensions>
         <extension>ppt</extension>
         <extension>pot</extension>
-        <extension>pps</extension>        
+        <extension>pps</extension>
       </extensions>
     </mimetype>
 

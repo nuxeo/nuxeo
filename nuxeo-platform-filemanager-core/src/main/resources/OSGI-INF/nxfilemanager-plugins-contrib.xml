@@ -20,6 +20,7 @@
       <filter>text/plain</filter>
       <filter>text/html</filter>
       <filter>application/xhtml+xml</filter>
+      <filter>text/x-web-markdown</filter>
     </plugin>
 
     <plugin name="DefaultFileImporter"
