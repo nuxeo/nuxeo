@@ -52,6 +52,8 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
             ext = ".html";
         } else if ("text/xml".equals(mt)) {
             ext = ".xml";
+        } else if ("text/x-web-markdown".equals(mt)) {
+            ext = ".md";
         }
         String title = doc.getTitle();
         if (!title.endsWith(ext)) {
