@@ -126,8 +126,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         if (reloadResourceClasspath) {
             reloadResourceClassPath(Collections.singletonList(path));
         }
-        installWebResources(file);  // run fragment processor if needed
+        installWebResources(file); // run fragment processor if needed
         Bundle newBundle = getBundleContext().installBundle(path);
+        if (newBundle == null) {
+            throw new IllegalArgumentException(
+                    "Could not find a valid bundle at path: " + path);
+        }
         newBundle.start();
         return newBundle.getSymbolicName();
     }
