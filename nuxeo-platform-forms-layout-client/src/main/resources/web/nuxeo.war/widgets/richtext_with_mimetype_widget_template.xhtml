@@ -15,14 +15,15 @@
   <div class="#{cssClass}">
     <c:choose>
       <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
-        <c:set var="preprocessedHtml"
-          value="#{nxu:test(!empty widget.properties.translatedHtml, widget.properties.translatedHtml, null)}" />
-        <c:if test="#{!empty preprocessedHtml}">
-          <nxh:outputText value="#{preprocessedHtml}" escape="false" />
+        <c:if test="#{!empty widgetProperty_translatedHtml}">
+          <h:outputText value="#{widgetProperty_translatedHtml}" escape="false" />
         </c:if>
-        <c:if test="#{empty htmlPreprocess}">
+        <c:if test="#{empty widgetProperty_translatedHtml}">
           <h:outputText value="#{field_0}" escape="false" />
         </c:if>
+      </c:when>
+      <c:when test="#{field_1 == 'text/x-web-markdown'}">
+        <h:outputText value="#{richTextEditorActions.convertToHtml(field_0, field_1)}" escape="false" />
       </c:when>
       <c:otherwise>
         <pre>
@@ -68,6 +69,7 @@
     <f:selectItem itemLabel="#{messages['mimetype.text']}"
       itemValue="text/plain" />
     <f:selectItem itemLabel="#{messages['mimetype.xml']}" itemValue="text/xml" />
+    <f:selectItem itemLabel="#{messages['mimetype.markdown']}" itemValue="text/x-web-markdown" />
   </h:selectOneMenu>
 
 <script>
@@ -84,6 +86,13 @@ function changeEditorType(cbo) {
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
-  <nxp:html><h:outputText value="#{field_0}" escape="false" /></nxp:html>
+  <c:choose>
+    <c:when test="#{field_1 == 'text/x-web-markdown'}">
+      <nxp:html><h:outputText value="#{richTextEditorActions.convertToHtml(field_0, field_1)}" escape="false" /></nxp:html>
+    </c:when>
+    <c:otherwise>
+      <nxp:html><h:outputText value="#{field_0}" escape="false" /></nxp:html>
+    </c:otherwise>
+  </c:choose>
 </c:if>
 </f:subview>

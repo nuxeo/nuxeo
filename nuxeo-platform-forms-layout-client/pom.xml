@@ -70,6 +70,11 @@
       <artifactId>richfaces-ui</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+    </dependency>
+
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
