@@ -107,7 +107,7 @@ input.button[disabled=disabled], input.button[disabled=disabled]:hover {
 .smallButton, input.smallButton { font-size: 0.85em; padding: 3px }
 
 /*-- =Global helpers */
-.boldLabel { font-weight: bold }
+.boldLabel, .bold { font-weight: bold }
 
 .textAlignR { text-align: right }
 .textAlignC { text-align: center }
@@ -230,6 +230,7 @@ input.button[disabled=disabled], input.button[disabled=disabled]:hover {
   background: url("${basePath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
   padding: 0;
   width: 82%; }
+.mainFragment { padding: 7px }
 
 /*-- =TabsContent */
 .tabsContent { font-size: .95em; margin: 0; padding: 5px 10px 10px 10px }
@@ -826,5 +827,124 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 .slideShowControl input { margin: 0 3px; padding: 0 }
 .slideShowControl .indexPicture { margin: 0 3px 4px 0 }
 .slideShowControl span { padding-right: 10px }
+
+/* Righ click context menu classes */
+#contextMenu {
+  position: absolute;
+  visibility: hidden;
+  background-color: #DDDDDD;
+  background-style: solid;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  color: green;
+  top: 0;
+  left: 0 }
+.ctxMenuStyle { list-style: none; padding: 1px; margin: 0px; background-color: #232323; width: 100px; font-size: 9px }
+.ctxMenuItemStyle { margin: 0px; color: #e7e7e7; display: block; cursor: default; padding: 3px; border-bottom: 1px solid #232323; background-color:#3a3d40 }
+.ctxMenuItemHoverStyle { margin: 0px; color: #fff; display: block; cursor: default; padding: 3px; border-bottom: 1px solid #4e9ae1; background-color: #4e9ae1 }
+.ctxMenuItemStyle a { text-decoration:none; color: #e7e7e7 }
+.ctxMenuItemHoverStyle a { text-decoration:none; color: #fff }
+.ctxMenuImg { vertical-align:middle; padding:1px; padding-right:4px }
+.ctxMenuShadow { background-color:#000; position:absolute; opacity:0.2; z-index:499 }
+
+/* modal Panel from RichFaces*/
+.rich-mpnl-mask-div { opacity:0.1 }
+h3.documentTypes { padding:0; margin:15px 0px 5px 0px; color:#333; border-bottom:1px solid #C2C2C2 }
+
+.documentType { margin:10px 0px; width:200px }
+.documentType img { float:left; margin-right:5px }
+.documentType a, a:link, .documentType a:visted, .documentType a:hover { font-weight:bold; color:#0066CC; text-decoration:none }
+.documentType span { color:#454545 }
+a.documentTypeLink { color:#063C9F; font-weight:bold; text-decoration:none }
+.imagingPanelDownloadLink { color:#0066CC; display:block; font-weight:bold; padding:5px 0px 2px 0px }
+
+#tooltip { position:absolute; display:block }
+#tooltipContent { display:block; padding:2px 12px 3px 7px; margin-left:5px; background:#FFFFAA; color:#000; border: 1px solid #333 }
+
+/* HTML5 Drag and Drop styles */
+#dropzone-info-panel { display:none }
+#dropzone-info-panel td { vertical-align: top }
+
+.dndControlMessage { display: none }
+.loadingComplete { background: transparent url(/nuxeo/icons/checked.gif) no-repeat left center; padding: 2px 0 0 18px }
+
+.dropPanel { padding: 10px; background: #BBBBCC; border-radius: 5px; height: 250px }
+
+.dropzone { display: block; margin : 4px }
+.dropzoneHL { border: 2px dashed #ccc; background-color: #F0F0F0 }
+
+.dropzoneTarget { border:2px solid #92cdff }
+.dropzoneTargetExtended { border: 2px solid #54d920 }
+.dropzoneTargetOverlay { position : absolute; background-color : rgba(200,220,250,0.3) }
+
+.dropzone-info-block { display: block; margin: 5px 0 0 0; text-align: center }
+.dropzone-info-summary { display: block; margin : 7px 10px 20px 50px }
+.dropzone-info-summary-item {}
+.dropzone-info-progress { background-color: #7ebbff; height: 3px; width: 0% }
+.dropzone-info-item { border : 1px solid #999; margin : 0 2px 10px 0 }
+.dropzone-info-name { text-align: center }
+
+.dropzone-bar { height: 20px }
+.dropzone-bar-btn { visibility:hidden; float:right }
+.dropzone-bar-msg { display: block; padding-top: 2px }
+
+.dndFormPanel{
+    display:none;
+    position:absolute;
+    border:solid 1px #adadad;
+    background-color:white;
+    padding : 25px;
+    margin: 4px;
+    z-index: 5000;
+    max-height: 350px;
+    overflow: auto }
+.dndProgressPanel{
+    display:none;
+    border:solid 1px #adadad;
+    background-color:white;
+    padding : 5px 25px 5px 25px;
+    margin: 0px }
+.dndFormPanel th { text-align: left; padding-bottom: 10px; font-size: 1.1em }
+.dndFormPanel td { vertical-align: top; padding: 0 35px 10px 0 }
+.dndFormPanel input { margin: 10px 0px }
+.dndFormPanel .alignRight { text-align: right }
+.dndFormPanel body { margin: 0 }
+
+.uploadedFileList { font-size : 1.1em }
+
+.importOperationForm iframe { margin: 25px 0 0 }
+.importOperationForm .dataInput { margin: 0 0 15px }
+.importOperationForm .dataInput input { margin: 20px 0 0 0 }
+
+#dndContinueButton {
+  display:none;
+  cursor:hand;
+  padding:5px  }
+#operationForm {
+   border-style:solid;
+   border-color:#444444;
+   border-width: 0px 0px 0px 2px }
+
+ /* Footer Banner */
+.bannerBottom { font-size: 1.2em; text-align:left; padding:3px 15px 1px; }
+.bannerBottom .links a, .links a:link, .links a:visited { background-color: #108EBD; border: 1px solid #1191C1; color: #EFEFEF; cursor: pointer; display: block; margin: 3px; padding: 1px 30px 1px 50px; text-decoration: none; }
+.bannerBottom .links a:hover { background-color: #1aabe0; border: 1px solid #3ab6e3; color:#fff; text-decoration: none }
+
+.bannerMessage { padding:1px }
+.bannerMessage p { margin: 0 0 3px }
+
+.unregistered { background-color: #0e88b5; color:#fff; }
+.unregistered .bannerMessage { float: left }
+.unregistered .links { float: right }
+
+/* Studio header link */
+.studioButton a { background-color: #00a5b8; display: block; padding: 2px 10px; color: #f1f5f7; text-decoration: none; border-radius: 4px; margin:0 0 0 10px;}
+.studioButton a:hover { background-color: #00b6cb; color: #fff; text-decoration:none !important }
+
+/* FancyBox styles */
+#fancybox-wrap { font: normal 12px/19px "Lucida Grande", Helvetica, Verdana, sans-serif }
+#fancybox-wrap a, #fancybox-wrap a:link, #fancybox-wrap a:visited { text-decoration: none; color: #0066cc }
+#fancybox-wrap a:hover, #fancybox-wrap a:active { text-decoration: underline }
 
 /* End */
