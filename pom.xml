@@ -2214,12 +2214,12 @@
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
         <version>2.1.0.SP1</version>
-	    <exclusions>
-	      <exclusion>
-	        <groupId>javax.el</groupId>
-	        <artifactId>el-api</artifactId>
-	      </exclusion>
-	    </exclusions>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
@@ -2480,7 +2480,7 @@
         <scope>provided</scope>
       </dependency>
 
-      <dependency> 
+      <dependency>
         <groupId>org.milyn</groupId>
         <artifactId>milyn-magger</artifactId>
         <version>1.3.1-NXP-7750</version> <!-- removed duplicate batik classes -->
@@ -2904,7 +2904,7 @@
         <groupId>org.apache.geronimo.components</groupId>
         <artifactId>geronimo-connector</artifactId>
         <version>2.1.3-NX1</version>
-        <exclusions>   
+        <exclusions>
           <exclusion>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
@@ -3481,16 +3481,16 @@
         <groupId>org.owasp.antisamy</groupId>
         <artifactId>antisamy</artifactId>
         <version>1.4.4</version>
-	<exclusions>
-	  <exclusion>
-	    <groupId>xml-apis</groupId>
-	    <artifactId>xml-apis</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>xml-apis</groupId>
-	    <artifactId>xml-apis-ext</artifactId>
-	  </exclusion>
-	</exclusions>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis-ext</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
@@ -4142,7 +4142,7 @@
             </execution>
           </executions>
           <configuration>
-            <destination>${project.reporting.outputDirectory}/tattletale</destination>
+            <destination>${project.build.directory}/tattletale</destination>
             <reports>
               <report>jar</report>
               <report>multiplejars</report>
@@ -4211,7 +4211,6 @@
     <profile>
       <id>release</id>
       <activation>
-        <activeByDefault>false</activeByDefault>
         <property>
           <name>performRelease</name>
           <value>true</value>
@@ -4256,9 +4255,6 @@
     </profile>
     <profile>
       <id>nightly</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
       <build>
         <plugins>
           <plugin>
@@ -4278,9 +4274,6 @@
     </profile>
     <profile>
       <id>javadoc</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
       <build>
         <plugins>
           <plugin>
@@ -4399,9 +4392,6 @@
     <!-- For use by Nuxeo internal QA -->
     <profile>
       <id>qa</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
       <repositories>
         <repository>
           <id>internal-releases</id>
@@ -4471,9 +4461,6 @@
 
     <profile>
       <id>qapriv</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
       <repositories>
         <repository>
           <id>private-releases</id>
@@ -4584,6 +4571,28 @@
       </build>
     </profile>
 
+    <profile>
+      <id>os-notwindows</id>
+      <activation>
+        <os>
+          <family>!windows</family>
+        </os>
+      </activation>
+      <properties>
+        <file.uri.prefix>file://</file.uri.prefix>
+      </properties>
+    </profile>
+    <profile>
+      <id>os-windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <file.uri.prefix>file:///</file.uri.prefix>
+      </properties>
+    </profile>
   </profiles>
 
   <developers>
