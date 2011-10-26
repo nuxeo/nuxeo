@@ -1,0 +1,13 @@
+<div xmlns:h="http://java.sun.com/jsf/html">
+
+  <h:inputText value="#{documentSearchActions.simpleSearchKeywords}"
+    size="15" class="directoryFilter"
+    onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
+    id="simpleSearchKeywordsInput" required="true"
+    requiredMessage="#{messages['feedback.search.noKeywords']}"
+    validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
+  <h:commandButton action="search_results_simple"
+    value="#{messages['command.search']}" styleClass="button"
+    id="simpleSearchSubmitButton" />
+
+</div>

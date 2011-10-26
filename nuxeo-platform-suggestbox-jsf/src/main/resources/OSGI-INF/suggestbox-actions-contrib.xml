@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.platform.faceted.search.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="simple_search" link="/search/suggestbox.xhtml"
+      label="" order="1">
+      <category>SEARCH_SIMPLE_ACTION</category>
+    </action>
+
+  </extension>
+
+</component>
