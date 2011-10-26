@@ -49,20 +49,18 @@
                   title="#{messages['label.document.directEdit']}"/>
               </h:outputLink>
             </nxu:methodResult>
-            <c:if test="#{conversionActions.pdfConverterAvailability.available}">
-              <nxu:methodResult name="hasPDFCapabilities"
-                value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
-                <h:panelGroup rendered="#{hasPDFCapabilities}">
-                  <nxh:commandLink
-                    action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
-                  <nxh:graphicImage
-                    value="/icons/pdf.png"
-                    title="#{messages['label.document.generatePdf']}"
-                    alt="#{messages['label.document.generatePdf']}"/>
-                </nxh:commandLink>
-                </h:panelGroup>
-              </nxu:methodResult>
-            </c:if>
+            <nxu:methodResult name="hasPDFCapabilities"
+              value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
+              <h:panelGroup rendered="#{hasPDFCapabilities}">
+                <nxh:commandLink
+                  action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
+                <nxh:graphicImage
+                  value="/icons/pdf.png"
+                  title="#{messages['label.document.generatePdf']}"
+                  alt="#{messages['label.document.generatePdf']}"/>
+              </nxh:commandLink>
+              </h:panelGroup>
+            </nxu:methodResult>
             <nxh:outputLink
               value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
               <nxh:graphicImage value="/icons/download.png"

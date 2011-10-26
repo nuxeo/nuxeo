@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.action;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
@@ -54,12 +55,11 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.EVENT)
 public class ConversionActionBean implements ConversionAction {
 
-    private static final Log log = LogFactory
-            .getLog(ConversionActionBean.class);
+    private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
-    protected static ConverterCheckResult any2PDFAvailability;
+    protected ConverterCheckResult pdfConverterAvailability;
 
-    protected static final String PDF_PREVIEW_CONVERTER = "any2pdf";
+    protected static final String PDF_MIMETYPE = "application/pdf";
 
     @In(create = true, required = false)
     CoreSession documentManager;
@@ -75,6 +75,8 @@ public class ConversionActionBean implements ConversionAction {
 
     @RequestParameter
     private String filename;
+
+    protected String pdfConverterName;
 
     protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(
             20);
@@ -98,17 +100,11 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     public void reCheckConverterAvailability() {
-        any2PDFAvailability = null;
+        pdfConverterAvailability = null;
     }
 
     public ConverterCheckResult getPdfConverterAvailability() throws Exception {
-        if (any2PDFAvailability == null) {
-            ConversionService cs = Framework
-                    .getService(ConversionService.class);
-            any2PDFAvailability = cs.isConverterAvailable(
-                    PDF_PREVIEW_CONVERTER, true);
-        }
-        return any2PDFAvailability;
+        return pdfConverterAvailability;
     }
 
     public boolean isExportableToPDF(BlobHolder bh) throws ClientException {
@@ -132,22 +128,28 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     protected boolean isMimeTypeExportableToPDF(String mimetype) {
+        if (pdfConverterAvailability != null) {
+            return pdfConverterAvailability.isAvailable();
+        }
         if (mimetype == null) {
             return false;
         }
         try {
-            ConverterCheckResult availability = getPdfConverterAvailability();
-
-            if (!availability.isAvailable()) {
-                return false;
-            } else {
-                return availability.getSupportedInputMimeTypes().contains(
-                        mimetype);
+            ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+            Iterator<String> converterNames = conversionService.getConverterNames(
+                    mimetype, PDF_MIMETYPE).iterator();
+            while (converterNames.hasNext()) {
+                pdfConverterName = converterNames.next();
+                pdfConverterAvailability = conversionService.isConverterAvailable(
+                        pdfConverterName, true);
+                if (pdfConverterAvailability.isAvailable()) {
+                    return true;
+                }
             }
         } catch (Exception e) {
             log.error("Error while testing PDF converter availability", e);
-            return false;
         }
+        return false;
     }
 
     @WebRemote
@@ -166,7 +168,8 @@ public class ConversionActionBean implements ConversionAction {
             }
             return isSupported;
         } catch (Exception e) {
-            log.error("Error while trying to check PDF conversion against a filename",
+            log.error(
+                    "Error while trying to check PDF conversion against a filename",
                     e);
             return false;
         }
@@ -174,11 +177,13 @@ public class ConversionActionBean implements ConversionAction {
 
     public String generatePdfFileFromBlobHolder(BlobHolder bh) {
         try {
-            ConversionService cs = Framework
-                    .getService(ConversionService.class);
-            BlobHolder result = cs.convert(PDF_PREVIEW_CONVERTER,
-                    bh,
-                    null);
+            if (pdfConverterName == null) {
+                log.error("No PDF converter was found.");
+                return "pdf_generation_error";
+            }
+
+            BlobHolder result = Framework.getLocalService(
+                    ConversionService.class).convert(pdfConverterName, bh, null);
 
             String fname = new Path(bh.getFilePath()).lastSegment();
             String name;
@@ -225,7 +230,8 @@ public class ConversionActionBean implements ConversionAction {
     @WebRemote
     public String generatePdfFile() {
         try {
-            BlobHolder bh = new DocumentBlobHolder(getDocument(), fileFieldFullName);
+            BlobHolder bh = new DocumentBlobHolder(getDocument(),
+                    fileFieldFullName);
             return generatePdfFileFromBlobHolder(bh);
         } catch (Exception e) {
             log.error("PDF generation error for file " + filename, e);
@@ -240,8 +246,7 @@ public class ConversionActionBean implements ConversionAction {
     private static void writeResponse(String header, String headerContent,
             String contentType, byte[] value) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletResponse response = (HttpServletResponse) context
-                .getExternalContext().getResponse();
+        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         response.setHeader(header, headerContent);
         response.setContentType(contentType);
         response.getOutputStream().write(value);
