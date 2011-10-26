@@ -58,6 +58,8 @@
       <resource>contextmenu.js</resource>
       <resource>jquery.tools.tooltip.min.js</resource>
       <resource>jquery.hotkeys.js</resource>
+
+      <resource>sarissa-ie-workaround.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -150,6 +152,11 @@
     <resource name="jquery.hotkeys.js">
       <path>scripts/jquery/jquery.hotkeys.js</path>
     </resource>
+    <!-- Workaround for jQuery and Sarissa library conflict on IE -->
+    <resource name="sarissa-ie-workaround.js">
+      <path>scripts/sarissa-ie-workaround.js</path>
+      <require>jquery.js</require>
+    </resource>
   </extension>
 
   <!-- Register mapping between theme pages and resources -->
@@ -205,7 +212,7 @@
 
   </extension>
 
-  <!-- Register style resources (contain indirect references to flavor names, i.e. 
+  <!-- Register style resources (contain indirect references to flavor names, i.e.
     "__FLAVOR__") -->
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dm_default">
