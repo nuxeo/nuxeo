@@ -6,7 +6,7 @@
   <parent>
     <artifactId>nuxeo-platform-tag-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.4.3-SNAPSHOT</version>
+    <version>5.4.3-I20111027_0115</version>
   </parent>
 
   <artifactId>nuxeo-platform-tag-core</artifactId>
