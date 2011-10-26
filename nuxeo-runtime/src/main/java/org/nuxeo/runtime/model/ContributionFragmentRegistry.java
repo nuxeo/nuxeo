@@ -34,28 +34,34 @@ import java.util.Map;
  * A simple implementation is:
  *
  * <pre>
- *   public class MyRegistry extends ContributionFragmentRegistry&lt;MyContribution&gt; {
- *       public Map&lt;String, MyContribution&gt; registry = new HAshMap&lt;String,MyContribution&gt;();
- *       public String getContributionId(MyContribution contrib) {
- *          return contrib.getId();
- *       }
- *       public void contributionUpdated(String id, MyContribution contrib, MyContribution origContrib) {
- *           registry.put(id, contrib);
- *       }
- *       public void contributionRemoved(String id, MyContribution origContrib) {
- *           registry.remove(id);
- *       }
- *       public MyContribution clone(MyContribution contrib) {
+ * public class MyRegistry extends ContributionFragmentRegistry&lt;MyContribution&gt; {
+ *     public Map&lt;String, MyContribution&gt; registry = new HAshMap&lt;String, MyContribution&gt;();
+ *
+ *     public String getContributionId(MyContribution contrib) {
+ *         return contrib.getId();
+ *     }
+ *
+ *     public void contributionUpdated(String id, MyContribution contrib,
+ *             MyContribution origContrib) {
+ *         registry.put(id, contrib);
+ *     }
+ *
+ *     public void contributionRemoved(String id, MyContribution origContrib) {
+ *         registry.remove(id);
+ *     }
+ *
+ *     public MyContribution clone(MyContribution contrib) {
  *          MyContribution clone = new MyContribution(contrib.getId());
  *          clone.setSomeProperty(contrib.getSomeProperty());
  *          ...
  *          return clone;
  *       }
- *       public void merge(MyContribution src, MyContribution dst) {
+ *
+ *     public void merge(MyContribution src, MyContribution dst) {
  *          dst.setSomeProperty(src.getSomeProperty());
  *          ...
  *       }
- *   }
+ * }
  * </pre>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -65,7 +71,7 @@ public abstract class ContributionFragmentRegistry<T> {
     protected Map<String, FragmentList<T>> contribs = new HashMap<String, FragmentList<T>>();
 
     /**
-     * Get the contribution ID given the contribution object
+     * Returns the contribution ID given the contribution object
      *
      * @param contrib
      * @return
@@ -73,7 +79,7 @@ public abstract class ContributionFragmentRegistry<T> {
     public abstract String getContributionId(T contrib);
 
     /**
-     * Add or update a contribution.
+     * Adds or updates a contribution.
      * <p>
      * If the contribution doesn't yet exists then it will be added, otherwise
      * the value will be updated. If the given value is null the existing
@@ -119,7 +125,7 @@ public abstract class ContributionFragmentRegistry<T> {
      * @param object
      * @return
      */
-    public abstract T clone(T object);
+    public abstract T clone(T orig);
 
     /**
      * Merge 'src' into 'dst'. When merging only the 'dst' object is modified.
@@ -186,7 +192,7 @@ public abstract class ContributionFragmentRegistry<T> {
         return contribs.values().toArray(new FragmentList[contribs.size()]);
     }
 
-    private FragmentList<T> addFragment(String id, T contrib) {
+    protected FragmentList<T> addFragment(String id, T contrib) {
         FragmentList<T> head = contribs.get(id);
         if (head == null) {
             // no merge needed
@@ -197,7 +203,7 @@ public abstract class ContributionFragmentRegistry<T> {
         return head;
     }
 
-    private FragmentList<T> removeFragment(String id, T contrib) {
+    protected FragmentList<T> removeFragment(String id, T contrib) {
         FragmentList<T> head = contribs.get(id);
         if (head == null) {
             return null;
@@ -255,6 +261,11 @@ public abstract class ContributionFragmentRegistry<T> {
         public boolean remove(T contrib) {
             Fragment<T> p = next;
             while (p != this) {
+                // contributions come from the runtime that keeps exact
+                // instances, so using equality here makes it possible to
+                // remove the exact instance that was contributed by this
+                // component (without needing to reference the component name
+                // for instance)
                 if (p.object == contrib) {
                     p.remove();
                     object = null;
