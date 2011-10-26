@@ -43,6 +43,10 @@ public class Flavor {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean getAppendPresets() {
         return appendPresets;
     }

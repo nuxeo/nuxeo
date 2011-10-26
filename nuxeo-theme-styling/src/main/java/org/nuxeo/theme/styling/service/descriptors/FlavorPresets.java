@@ -39,4 +39,19 @@ public class FlavorPresets {
         return src;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
+
+    public FlavorPresets clone() {
+        FlavorPresets clone = new FlavorPresets();
+        clone.setSrc(src);
+        clone.setCategory(category);
+        return clone;
+    }
+
 }

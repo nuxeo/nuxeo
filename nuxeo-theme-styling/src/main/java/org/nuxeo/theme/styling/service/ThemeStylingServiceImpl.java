@@ -26,6 +26,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -41,6 +43,9 @@ import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
+import org.nuxeo.theme.styling.service.registries.FlavorRegistry;
+import org.nuxeo.theme.styling.service.registries.PageRegistry;
+import org.nuxeo.theme.styling.service.registries.StyleRegistry;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -58,117 +63,44 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ThemeStylingServiceImpl.class);
 
-    // TODO: use ContributionFragmentRegistry instances for hot reload support
-    protected Map<String, ThemePage> themePageResources = new HashMap<String, ThemePage>();
+    protected PageRegistry pageReg;
 
-    protected Map<String, Flavor> themePageFlavors = new HashMap<String, Flavor>();
+    protected FlavorRegistry flavorReg;
 
-    protected Map<String, SimpleStyle> themePageStyles = new HashMap<String, SimpleStyle>();
+    protected StyleRegistry styleReg;
 
     // Runtime Component API
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
+        pageReg = new PageRegistry();
+        flavorReg = new FlavorRegistry();
+        styleReg = new StyleRegistry();
+    }
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-
-        // Register flavors
         if (contribution instanceof Flavor) {
             Flavor flavor = (Flavor) contribution;
-            String flavorName = flavor.getName();
-            if (themePageFlavors.containsKey(flavorName)
-                    && flavor.getAppendPresets()) {
-                Flavor existing = themePageFlavors.get(flavorName);
-                List<FlavorPresets> newPresets = existing.getPresets();
-                if (newPresets == null) {
-                    newPresets = new ArrayList<FlavorPresets>();
-                }
-                // merge
-                List<FlavorPresets> presets = flavor.getPresets();
-                if (presets != null) {
-                    newPresets.addAll(presets);
-                }
-                flavor.setPresets(newPresets);
-                themePageFlavors.put(flavorName, flavor);
-            } else {
-                themePageFlavors.put(flavorName, flavor);
-            }
-            // Register flavor and presets as palettes
-            registerPaletteToThemeServiceFor(contributor.getContext(), flavor);
-        }
-
-        // Register styles
-        else if (contribution instanceof SimpleStyle) {
+            log.info(String.format("Register flavor '%s'", flavor.getName()));
+            registerFlavor(flavor, contributor.getContext());
+            log.info(String.format("Done registering flavor '%s'",
+                    flavor.getName()));
+        } else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
-            themePageStyles.put(style.getName(), style);
-            // load the style content
-            String src = style.getPath();
-            URL url = null;
-            RuntimeContext extensionContext = contributor.getContext();
-            try {
-                url = new URL(src);
-            } catch (MalformedURLException e) {
-                url = extensionContext.getLocalResource(src);
-                if (url == null) {
-                    url = extensionContext.getResource(src);
-                }
-            }
-            if (url == null) {
-                log.error(String.format("Could not find resource at '%s'", src));
-            } else {
-                String cssSource = new String(FileUtils.readBytes(url));
-                style.setContent(cssSource);
-            }
-            // reload theme styles in case style content changed
-            postRegisterThemePageResourcesForStyle(extensionContext, style);
-        }
-
-        // Register pages
-        else if (contribution instanceof ThemePage) {
+            log.info(String.format("Register style '%s'", style.getName()));
+            registerStyle(style, contributor.getContext());
+            log.info(String.format("Done registering style '%s'",
+                    style.getName()));
+        } else if (contribution instanceof ThemePage) {
             ThemePage themePage = (ThemePage) contribution;
-            String themePageName = themePage.getName();
-
-            ThemePage existingPage = themePageResources.get(themePageName);
-            // Merge
-            if (existingPage != null) {
-                String defaultFlavor = existingPage.getDefaultFlavor();
-                if (themePage.getDefaultFlavor() != null) {
-                    // override
-                    defaultFlavor = themePage.getDefaultFlavor();
-                }
-
-                List<String> newStyles = themePage.getStyles();
-                if (newStyles.isEmpty() || themePage.getAppendStyles()) {
-                    List<String> existingStyles = existingPage.getStyles();
-                    if (existingStyles != null) {
-                        newStyles.addAll(0, existingStyles);
-                    }
-                }
-
-                List<String> newFlavors = themePage.getFlavors();
-                if (newFlavors.isEmpty() || themePage.getAppendFlavors()) {
-                    List<String> existingFlavors = existingPage.getFlavors();
-                    if (existingFlavors != null) {
-                        newFlavors.addAll(0, existingFlavors);
-                    }
-                }
-
-                ThemePage newPage = new ThemePage();
-                newPage.setName(themePageName);
-                newPage.setDefaultFlavor(defaultFlavor);
-                newPage.setStyles(newStyles);
-                newPage.setFlavors(newFlavors);
-                themePageResources.put(themePageName, newPage);
-                if (existingPage.isLoaded()) {
-                    // reload
-                    postRegisterThemePageResources(newPage);
-                }
-            } else {
-                // register new page or override existing page
-                themePageResources.put(themePageName, themePage);
-                // wait for the theme to be loaded
-                // postRegisterThemePageResources(item);
-            }
+            log.info(String.format("Register page '%s'", themePage.getName()));
+            registerPage(themePage);
+            log.info(String.format("Done registering page '%s'",
+                    themePage.getName()));
         } else {
             log.error(String.format("Unknown contribution to the theme "
                     + "styling service, extension point '%s': '%s",
@@ -180,31 +112,70 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        // TODO
+        if (contribution instanceof Flavor) {
+            Flavor flavor = (Flavor) contribution;
+            flavorReg.removeContribution(flavor);
+            Flavor newFlavor = flavorReg.getContribution(flavor.getName());
+            if (newFlavor == null) {
+                unregisterFlavorToThemeService(flavor);
+            } else {
+                if (!Framework.getRuntime().isShuttingDown()) {
+                    // register again the new one
+                    registerFlavor(newFlavor, contributor.getContext());
+                }
+            }
+        } else if (contribution instanceof SimpleStyle) {
+            SimpleStyle style = (SimpleStyle) contribution;
+            styleReg.removeContribution(style);
+            if (!Framework.getRuntime().isShuttingDown()) {
+                // reload theme styles in case style content changed
+                postRegisterAllThemePageResources();
+            }
+        } else if (contribution instanceof ThemePage) {
+            ThemePage themePage = (ThemePage) contribution;
+            pageReg.removeContribution(themePage);
+            ThemePage newThemePage = pageReg.getContribution(themePage.getName());
+            if (newThemePage == null) {
+                unRegisterThemePageResources(themePage);
+            } else {
+                if (!Framework.getRuntime().isShuttingDown()) {
+                    // reload conf
+                    postRegisterThemePageResources(newThemePage);
+                }
+            }
+        } else {
+            log.error(String.format("Unknown contribution to the theme "
+                    + "styling service, extension point '%s': '%s",
+                    extensionPoint, contribution));
+        }
     }
 
-    protected String getPaletteName(String name, String category) {
-        return name + " " + category;
+    protected void registerPage(ThemePage themePage) throws Exception {
+        String themePageName = themePage.getName();
+        ThemePage existingPage = pageReg.getContribution(themePageName);
+        pageReg.addContribution(themePage);
+        if (existingPage != null && existingPage.isLoaded()) {
+            // reload
+            ThemePage newPage = pageReg.getContribution(themePageName);
+            postRegisterThemePageResources(newPage);
+        }
     }
 
-    protected void registerPaletteToThemeServiceFor(
-            RuntimeContext extensionContext, Flavor flavor) {
-        // register all presets to the standard registries
-        List<FlavorPresets> presets = flavor.getPresets();
+    protected void registerFlavor(Flavor flavor, RuntimeContext extensionContext)
+            throws Exception {
+        flavorReg.addContribution(flavor);
+        String flavorName = flavor.getName();
+        Flavor newFlavor = flavorReg.getContribution(flavorName);
+        List<FlavorPresets> presets = newFlavor.getPresets();
         Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
         if (presets != null) {
             for (FlavorPresets myPreset : presets) {
                 String src = myPreset.getSrc();
-                URL url = null;
-                try {
-                    url = new URL(src);
-                } catch (MalformedURLException e) {
-                    url = extensionContext.getLocalResource(src);
-                    if (url == null) {
-                        url = extensionContext.getResource(src);
-                    }
-                }
-                if (url != null) {
+                URL url = getUrlFromPath(src, extensionContext);
+                if (url == null) {
+                    log.error(String.format("Could not find resource at '%s'",
+                            src));
+                } else {
                     String cat = myPreset.getCategory();
                     Map<String, String> allEntries;
                     if (presetsByCat.containsKey(cat)) {
@@ -225,7 +196,31 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             }
         }
 
+        // register all presets to the standard theme service registries
+        unregisterFlavorToThemeService(newFlavor);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Register flavor '%s' to the theme service", flavorName));
+        }
+
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        for (String cat : presetsByCat.keySet()) {
+            String paletteName = getPaletteName(flavorName, cat);
+            Map<String, String> entries = presetsByCat.get(cat);
+            for (Map.Entry<String, String> entry : entries.entrySet()) {
+                PresetType preset = new PresetType(entry.getKey(),
+                        entry.getValue(), paletteName, cat, "", "");
+                typeRegistry.register(preset);
+            }
+        }
+    }
+
+    protected void unregisterFlavorToThemeService(Flavor flavor) {
         String flavorName = flavor.getName();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Unregister flavor '%s' from the theme service", flavorName));
+        }
 
         // cleanup already registered presets
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
@@ -241,41 +236,55 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 typeRegistry.unregister(type);
             }
         }
+    }
 
-        // register all presets
-        for (String cat : presetsByCat.keySet()) {
-            String paletteName = getPaletteName(flavorName, cat);
-            Map<String, String> entries = presetsByCat.get(cat);
-            for (Map.Entry<String, String> entry : entries.entrySet()) {
-                PresetType preset = new PresetType(entry.getKey(),
-                        entry.getValue(), paletteName, cat, "", "");
-                typeRegistry.register(preset);
+    protected void registerStyle(SimpleStyle style,
+            RuntimeContext extensionContext) throws Exception {
+        // load the style content
+        String src = style.getPath();
+        URL url = getUrlFromPath(src, extensionContext);
+        if (url == null) {
+            log.error(String.format("Could not find resource at '%s'", src));
+        } else {
+            String cssSource = new String(FileUtils.readBytes(url));
+            style.setContent(cssSource);
+        }
+        styleReg.addContribution(style);
+        // reload theme styles in case style content changed
+        postRegisterAllThemePageResources();
+    }
+
+    protected String getPaletteName(String name, String category) {
+        return name + " " + category;
+    }
+
+    protected URL getUrlFromPath(String path, RuntimeContext extensionContext) {
+        URL url = null;
+        try {
+            url = new URL(path);
+        } catch (MalformedURLException e) {
+            url = extensionContext.getLocalResource(path);
+            if (url == null) {
+                url = extensionContext.getResource(path);
             }
         }
+        return url;
     }
 
     /**
      * Reload theme page resources conf according to new style
      */
-    protected void postRegisterThemePageResourcesForStyle(
-            RuntimeContext extensionContext, SimpleStyle style) {
-        if (themePageResources != null) {
-            String styleName = style.getName();
-            for (ThemePage res : themePageResources.values()) {
-                List<String> styleNames = res.getStyles();
-                if (styleNames != null && styleNames.contains(styleName)) {
-                    // only register resources again if it's already been
-                    // loaded
-                    if (res.isLoaded()) {
-                        try {
-                            postRegisterThemePageResources(res);
-                        } catch (ThemeException e) {
-                            log.error(
-                                    String.format("Could not load theme page "
-                                            + "resources for page '%s' "
-                                            + "and style '%s",
-                                            res.getThemeName(), style), e);
-                        }
+    protected void postRegisterAllThemePageResources() {
+        if (pageReg != null) {
+            for (ThemePage res : pageReg.getThemePages()) {
+                if (res.isLoaded()) {
+                    try {
+                        postRegisterThemePageResources(res);
+                    } catch (ThemeException e) {
+                        log.error(
+                                String.format("Could not load theme page "
+                                        + "resources for page '%s' ",
+                                        res.getThemeName()), e);
                     }
                 }
             }
@@ -302,12 +311,19 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         }
         PageElement pageElement = themeManager.getPageByPath(pageName);
         if (pageElement != null) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Register theme page '%s' to the theme service",
+                        pageName));
+            }
+
             List<String> styleNames = page.getStyles();
             if (styleNames != null) {
+
                 Style style = themeManager.createStyle();
                 style.setExternal(true);
                 for (String styleName : styleNames) {
-                    SimpleStyle simpleStyle = themePageStyles.get(styleName);
+                    SimpleStyle simpleStyle = styleReg.getContribution(styleName);
                     if (simpleStyle == null) {
                         log.warn("Style unknown: " + styleName);
                     } else {
@@ -315,9 +331,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                         if (cssSource != null) {
                             cssSource = cssSource.replaceAll(FLAVOR_MARKER,
                                     ThemeManager.getCollectionCssMarker());
+                            // merge all properties into new style
+                            Utils.loadCss(style, cssSource, "*", true);
+                        } else {
+                            log.error("Null content for css style: "
+                                    + styleName);
                         }
-                        // merge all properties into new style
-                        Utils.loadCss(style, cssSource, "*", true);
                     }
                 }
                 // link page and style
@@ -333,10 +352,53 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     ElementFormatter.setFormat(pageElement, existingPageStyle);
                 }
                 themeManager.makeFormatInherit(existingPageStyle, style);
+            } else {
+                // remove style linked to page
+                themeManager.removeNamedObject(themeName, "style", pageName
+                        + PAGE_STYLE_NAME_SUFFIX);
             }
 
             // mark page as loaded
             page.setLoaded(true);
+            // reset cache
+            themeManager.stylesModified(themeName);
+            themeManager.themeModified(themeName);
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Done registering theme page '%s' to the theme service",
+                        pageName));
+            }
+        } else {
+            log.error(String.format("Unknown theme page '%s'", page.getName()));
+        }
+    }
+
+    protected void unRegisterThemePageResources(ThemePage page)
+            throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        String themeName = page.getThemeName();
+        String pageName = page.getName();
+
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor == null) {
+            // not there anymore => ignore
+            return;
+        }
+        if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+            ThemeManager.loadTheme(themeDescriptor);
+        }
+        PageElement pageElement = themeManager.getPageByPath(pageName);
+        if (pageElement != null) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Unregister theme page '%s' from the theme service",
+                        pageName));
+            }
+
+            // remove style linked to page
+            themeManager.removeNamedObject(themeName, "style", pageName
+                    + PAGE_STYLE_NAME_SUFFIX);
             // reset cache
             themeManager.stylesModified(themeName);
             themeManager.themeModified(themeName);
@@ -349,8 +411,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     @Override
     public String getDefaultFlavor(String themePageName) {
-        if (themePageResources != null) {
-            ThemePage themePage = themePageResources.get(themePageName);
+        if (pageReg != null) {
+            ThemePage themePage = pageReg.getContribution(themePageName);
             if (themePage != null) {
                 return themePage.getDefaultFlavor();
             }
@@ -363,13 +425,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (themeName == null) {
             return;
         }
-        if (themePageResources != null) {
-            for (ThemePage res : themePageResources.values()) {
+        if (pageReg != null) {
+            for (ThemePage res : pageReg.getThemePages()) {
                 if (themeName.equals(res.getThemeName())) {
                     try {
                         postRegisterThemePageResources(res);
-                        log.info("Registered theme page resources for "
-                                + res.getName());
                     } catch (ThemeException e) {
                         log.error("Could not load theme page "
                                 + "resources for theme " + themeName, e);
