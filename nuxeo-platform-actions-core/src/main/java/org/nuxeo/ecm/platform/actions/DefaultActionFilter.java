@@ -32,8 +32,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.elcache.CachedJEXLManager;
-import org.nuxeo.runtime.expression.Context;
-import org.nuxeo.runtime.expression.JexlExpression;
+import org.nuxeo.ecm.platform.actions.elcache.Context;
+import org.nuxeo.ecm.platform.actions.elcache.JexlExpression;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -144,12 +144,18 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             return precomputed.get(rule);
         }
         // compute filter result
-        boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(context, rule.facets))
-                && (rule.types == null || rule.types.length == 0 || checkTypes(context, rule.types))
-                && (rule.schemas == null || rule.schemas.length == 0 || checkSchemas(context, rule.schemas))
-                && (rule.permissions == null || rule.permissions.length == 0 || checkPermissions(context, rule.permissions))
-                && (rule.groups == null || rule.groups.length == 0 || checkGroups(context, rule.groups))
-                && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(context, rule.conditions));
+        boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(
+                context, rule.facets))
+                && (rule.types == null || rule.types.length == 0 || checkTypes(
+                        context, rule.types))
+                && (rule.schemas == null || rule.schemas.length == 0 || checkSchemas(
+                        context, rule.schemas))
+                && (rule.permissions == null || rule.permissions.length == 0 || checkPermissions(
+                        context, rule.permissions))
+                && (rule.groups == null || rule.groups.length == 0 || checkGroups(
+                        context, rule.groups))
+                && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(
+                        context, rule.conditions));
         // put in cache
         precomputed.put(rule, Boolean.valueOf(result));
         return result;
@@ -157,7 +163,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     /**
      * Returns true if document has one of the given facets, else false.
-     *
+     * 
      * @return true if document has one of the given facets, else false.
      */
     protected final boolean checkFacets(ActionContext context, String[] facets) {
@@ -177,11 +183,12 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * Returns true if given document has one of the permissions, else false.
      * <p>
      * If no document is found, return true only if principal is a manager.
-     *
+     * 
      * @return true if given document has one of the given permissions, else
      *         false
      */
-    protected final boolean checkPermissions(ActionContext context, String[] permissions) {
+    protected final boolean checkPermissions(ActionContext context,
+            String[] permissions) {
         DocumentModel doc = context.getCurrentDocument();
         if (doc == null) {
             NuxeoPrincipal principal = context.getCurrentPrincipal();
@@ -228,14 +235,16 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * Returns true if one of the conditions is verified, else false.
      * <p>
      * If one evaluation fails, return false.
-     *
+     * 
      * @return true if one of the conditions is verified, else false.
      */
-    protected final boolean checkConditions(ActionContext context, String[] conditions) {
+    protected final boolean checkConditions(ActionContext context,
+            String[] conditions) {
         DocumentModel doc = context.getCurrentDocument();
         NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
 
-        // FIXME: this loop doesn't loop, so this function doesn't behave as advertised.
+        // FIXME: this loop doesn't loop, so this function doesn't behave as
+        // advertised.
         for (String condition : conditions) {
             try {
                 JexlExpression exp = CachedJEXLManager.getExpression(condition);
@@ -271,7 +280,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * <p>
      * If document is null, consider context is the server and return true if
      * 'Server' is in the list.
-     *
+     * 
      * @return true if document type is one of the given types, else false.
      */
     protected final boolean checkTypes(ActionContext context, String[] types) {
@@ -294,7 +303,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     /**
      * Returns true if document has one of the given schemas, else false.
-     *
+     * 
      * @return true if document has one of the given schemas, else false
      */
     protected final boolean checkSchemas(ActionContext context, String[] schemas) {

@@ -81,4 +81,17 @@ public interface LayoutManager extends Serializable {
      */
     WidgetDefinition getWidgetDefinition(String widgetName);
 
+    // registry API
+    void registerWidgetType(WidgetTypeDefinition desc);
+
+    void unregisterWidgetType(WidgetTypeDefinition desc);
+
+    void registerLayout(LayoutDefinition layoutDef);
+
+    void unregisterLayout(LayoutDefinition layoutDef);
+
+    void registerWidget(WidgetDefinition widgetDef);
+
+    void unregisterWidget(WidgetDefinition widgetDef);
+
 }

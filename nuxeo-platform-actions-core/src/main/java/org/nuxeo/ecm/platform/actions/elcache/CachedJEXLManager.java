@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.actions.elcache;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.nuxeo.runtime.expression.JexlExpression;
-
 public class CachedJEXLManager {
 
     public static boolean enforceThreadSafe = false;
@@ -32,7 +30,8 @@ public class CachedJEXLManager {
 
     private static final Map<String, JexlExpression> expCache = new ConcurrentHashMap<String, JexlExpression>();
 
-    public static JexlExpression getExpression(String elString) throws Exception {
+    public static JexlExpression getExpression(String elString)
+            throws Exception {
         if (!useCache) {
             return new JexlExpression(elString);
         }
