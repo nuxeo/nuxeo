@@ -35,7 +35,7 @@
         <nxu:set var="image_url"
           value="#{nxd:fileUrl('downloadFile', userprofile, widget.properties.file_property_name, avatar.filename)}">
           <img src="#{image_url}" title="#{avatar.filename}"
-            alt="#{avatar.filename}" width="#{widget.properties['width']}" class="avatar" />
+            alt="#{avatar.filename}" class="avatar" />
         </nxu:set>
       </div>
     </c:if>
