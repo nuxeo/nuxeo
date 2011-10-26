@@ -320,6 +320,14 @@
     <priority value="WARN" />
   </category>
 
+  <category name="org.apache.myfaces.shared_tomahawk">
+    <priority value="WARN" />
+  </category>
+
+  <category name="org.artofsolving.jodconverter">
+    <priority value="WARN" />
+  </category>
+
   <!--
     Limit JBoss categories
     <category name="org.jboss">
