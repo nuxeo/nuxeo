@@ -8,6 +8,9 @@
 
       <div class="globalActionBar">
         <h:form id="userProfileButtons" rendered="#{userProfileActions.mode == 'view'}">
+          <h1>
+            <h:outputText value="#{userProfileActions.userProfile.user.firstName} #{userProfileActions.userProfile.user.lastName}"/>
+          </h1>
           <ul class="actionList">
              <li class="dropDownMenu">
                <h:outputText value="#{messages['label.content.header.actions']}" />
