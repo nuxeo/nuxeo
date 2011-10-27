@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
@@ -61,8 +62,8 @@ public class DocumentPageProviderOperation {
     @Param(name = "query", required = false)
     protected String query;
 
-    @Param(name = "language", required = false, widget = Constants.W_OPTION, values = { "NXQL" })
-    protected String lang = "NXQL";
+    @Param(name = "language", required = false, widget = Constants.W_OPTION, values = { NXQL.NXQL })
+    protected String lang = NXQL.NXQL;
 
     @Param(name = "page", required = false)
     protected Integer page;

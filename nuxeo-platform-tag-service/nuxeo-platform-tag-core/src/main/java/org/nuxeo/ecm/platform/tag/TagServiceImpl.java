@@ -51,6 +51,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
 
+    public static final String NXTAG = TagQueryMaker.NXTAG;
+
     private Boolean enabled;
 
     public boolean isEnabled() {
@@ -141,7 +143,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             String query = String.format(
                     "SELECT ecm:uuid FROM Tag WHERE tag:label = '%s' AND ecm:isProxy = 0",
                     label);
-            IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+            IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL);
             try {
                 for (Map<String, Serializable> map : res) {
                     tagId = (String) map.get(NXQL.ECM_UUID);
@@ -170,7 +172,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             if (username != null) {
                 query += String.format(" AND dc:creator = '%s'", username);
             }
-            res = session.queryAndFetch(query, "NXQL");
+            res = session.queryAndFetch(query, NXQL.NXQL);
             try {
                 if (res.iterator().hasNext()) {
                     // tagging already exists
@@ -229,7 +231,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 String query = String.format(
                         "SELECT ecm:uuid FROM Tag WHERE tag:label = '%s' AND ecm:isProxy = 0",
                         label);
-                IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+                IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL);
                 try {
                     for (Map<String, Serializable> map : res) {
                         tagId = (String) map.get(NXQL.ECM_UUID);
@@ -255,7 +257,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             if (username != null) {
                 query += String.format(" AND dc:creator = '%s'", username);
             }
-            IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+            IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL);
             try {
                 for (Map<String, Serializable> map : res) {
                     taggingIds.add((String) map.get(NXQL.ECM_UUID));
@@ -310,7 +312,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             if (username != null) {
                 query += String.format(" AND dc:creator = '%s'", username);
             }
-            IterableQueryResult res = session.queryAndFetch(query, "NXTAG");
+            IterableQueryResult res = session.queryAndFetch(query, NXTAG);
             try {
                 for (Map<String, Serializable> map : res) {
                     String label = (String) map.get(TagConstants.TAG_LABEL_FIELD);
@@ -357,7 +359,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             if (username != null) {
                 query += String.format(" AND dc:creator = '%s'", username);
             }
-            IterableQueryResult res = session.queryAndFetch(query, "NXTAG");
+            IterableQueryResult res = session.queryAndFetch(query, NXTAG);
             try {
                 for (Map<String, Serializable> map : res) {
                     docIds.add((String) map.get(TagConstants.TAGGING_SOURCE_FIELD));
@@ -409,7 +411,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                         + "WHERE ecm:path STARTSWITH '%s'", path);
                 List<String> docIds = new ArrayList<String>();
                 docIds.add(docId);
-                IterableQueryResult r = session.queryAndFetch(q, "NXQL");
+                IterableQueryResult r = session.queryAndFetch(q, NXQL.NXQL);
                 try {
                     for (Map<String, Serializable> map : r) {
                         docIds.add((String) map.get(NXQL.ECM_UUID));
@@ -431,7 +433,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
             }
             int min = 999999, max = 0;
-            IterableQueryResult res = session.queryAndFetch(query, "NXTAG");
+            IterableQueryResult res = session.queryAndFetch(query, NXTAG);
             try {
                 for (Map<String, Serializable> map : res) {
                     String label = (String) map.get(TagConstants.TAG_LABEL_FIELD);
@@ -524,7 +526,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             if (username != null) {
                 query += String.format(" AND dc:creator = '%s'", username);
             }
-            IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+            IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL);
             try {
                 for (Map<String, Serializable> map : res) {
                     String label = (String) map.get(TagConstants.TAG_LABEL_FIELD);

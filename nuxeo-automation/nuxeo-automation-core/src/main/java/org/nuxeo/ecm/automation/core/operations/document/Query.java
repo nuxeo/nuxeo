@@ -18,6 +18,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
  *
@@ -35,8 +36,8 @@ public class Query {
     protected String query;
 
     @Param(name = "language", required = false, widget = Constants.W_OPTION, values = {
-            "NXQL", "CMISQL" })
-    protected String lang = "NXQL";
+            NXQL.NXQL, "CMISQL" })
+    protected String lang = NXQL.NXQL;
 
     @OperationMethod
     public DocumentModelList run() throws Exception {

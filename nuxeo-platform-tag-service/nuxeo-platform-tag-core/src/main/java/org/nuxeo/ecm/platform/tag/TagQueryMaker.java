@@ -36,6 +36,9 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
  */
 public class TagQueryMaker extends NXQLQueryMaker {
 
+    /** The NXTAG query type. */
+    public static final String NXTAG = "NXTAG";
+
     public static final String SCHEMA_TAG = "tag";
 
     public static final String SCHEMA_RELATION = "relation";
@@ -63,12 +66,12 @@ public class TagQueryMaker extends NXQLQueryMaker {
 
     @Override
     public String getName() {
-        return "NXTAG";
+        return NXTAG;
     }
 
     @Override
     public boolean accepts(String queryType) {
-        return queryType.equals("NXTAG");
+        return queryType.equals(NXTAG);
     }
 
     @Override
