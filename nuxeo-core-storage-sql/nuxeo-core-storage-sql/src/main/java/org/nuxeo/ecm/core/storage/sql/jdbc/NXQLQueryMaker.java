@@ -188,9 +188,8 @@ public class NXQLQueryMaker implements QueryMaker {
     }
 
     @Override
-    public boolean accepts(String queryString) {
-        return queryString.equals("NXQL")
-                || queryString.toLowerCase().trim().startsWith("select ");
+    public boolean accepts(String queryType) {
+        return queryType.equals("NXQL");
     }
 
     public enum DocKind {

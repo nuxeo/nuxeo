@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
@@ -288,6 +289,26 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:subjects NOT ILIKE '%oo'");
         assertEquals(6, dml.size());
+    }
+
+    public void testQueryWithType() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        dml = session.query("SELECT * FROM File", "NXQL", null, 0, 0, false);
+        assertEquals(3, dml.size());
+        for (DocumentModel dm : dml) {
+            assertEquals("File", dm.getType());
+        }
+
+        try {
+            session.query("SELECT * FROM File", "NOSUCHQUERYTYPE", null, 0, 0,
+                    false);
+            fail("Unknown query type should be rejected");
+        } catch (ClientException e) {
+            String m = e.getMessage();
+            assertTrue(m, m.contains("No QueryMaker accepts"));
+        }
     }
 
     public void testQueryMultiple() throws Exception {

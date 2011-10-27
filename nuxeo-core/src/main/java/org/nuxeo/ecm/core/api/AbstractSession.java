@@ -1465,14 +1465,19 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    @SuppressWarnings("null")
     public DocumentModelList query(String query, Filter filter, long limit,
             long offset, boolean countTotal) throws ClientException {
+        return query(query, "NXQL", filter, limit, offset, countTotal);
+    }
+
+    @Override
+    public DocumentModelList query(String query, String queryType,
+            Filter filter, long limit, long offset, boolean countTotal)
+            throws ClientException {
         SecurityService securityService = getSecurityService();
         Principal principal = getPrincipal();
         try {
-            Query compiledQuery = getSession().createQuery(query,
-                    Query.Type.NXQL);
+            Query compiledQuery = getSession().createQuery(query, queryType);
             QueryResult results;
             boolean postFilterPermission;
             boolean postFilterFilter;

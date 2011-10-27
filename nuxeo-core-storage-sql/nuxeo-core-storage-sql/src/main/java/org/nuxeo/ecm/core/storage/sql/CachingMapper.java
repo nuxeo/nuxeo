@@ -88,10 +88,10 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     }
 
     @Override
-    public PartialList<Serializable> query(String query,
+    public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        return mapper.query(query, queryFilter, countTotal);
+        return mapper.query(query, queryType, queryFilter, countTotal);
     }
 
     @Override

@@ -479,6 +479,19 @@ public class SQLSession implements Session {
     }
 
     @Override
+    public Query createQuery(String query, String queryType, String... params)
+            throws QueryException {
+        if (params != null && params.length != 0) {
+            throw new QueryException("Parameters not supported");
+        }
+        try {
+            return new SQLSessionQuery(query, queryType);
+        } catch (QueryParseException e) {
+            throw new QueryException(e.getMessage() + ": " + query, e);
+        }
+    }
+
+    @Override
     public Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException {
         if (qType != Query.Type.NXQL) {
@@ -563,7 +576,7 @@ public class SQLSession implements Session {
                     queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
                 }
                 PartialList<Serializable> list = session.query(query,
-                        queryFilter, countTotal);
+                        queryType, queryFilter, countTotal);
                 return new SQLQueryResult(SQLSession.this, list, orderByPath,
                         limit, offset);
             } catch (StorageException e) {

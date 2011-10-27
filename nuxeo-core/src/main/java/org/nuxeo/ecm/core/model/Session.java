@@ -82,6 +82,15 @@ public interface Session {
      * @param query the SQL like query
      * @return the query
      */
+    Query createQuery(String query, String queryType, String... params)
+            throws QueryException;
+
+    /**
+     * Creates a query object given a SQL like query string.
+     *
+     * @param query the SQL like query
+     * @return the query
+     */
     Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException;
 
