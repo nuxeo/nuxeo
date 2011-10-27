@@ -1656,6 +1656,81 @@
       <selector path=".fullWidth">
         <width>100%</width>
       </selector>
+   <!-- Style for title and global action bar -->
+      <selector path=".headerTitleAndTools">
+        <margin-bottom>50px</margin-bottom>
+      </selector>
+      <selector path=".headerTitleAndTools h1">
+        <display>inline</display>
+      </selector>
+      <selector path=".headerTitleAndTools .globalActionBar">
+        <float>right</float>
+      </selector>
+      <selector path=".globalActionBar .actionList">
+        <margin>0</margin>
+        <padding>0</padding>
+        <list-style>none</list-style>
+        <float>right</float>
+      </selector>
+      <selector path=".globalActionBar .actionList li">
+        <float>right</float>
+        <position>relative</position>
+        <background-color>#f5f5f5</background-color>
+        <border>1px solid #ddd</border>
+        <border-radius>2px</border-radius>
+        <color>#333</color>
+        <padding>3px 5px</padding>
+        <margin>0 0 0 8px</margin>
+        <cursor>pointer</cursor>
+        <text-decoration>none</text-decoration>
+        <!-- just for IE7 -->
+        <z-index>3000</z-index>
+      </selector>
+      <selector path=".globalActionBar .actionList li a">
+          <padding>0</padding>
+          <color>#333</color>
+      </selector>
+      <selector path=".globalActionBar .actionList li:hover">
+        <border-color>#333</border-color>
+      </selector>
+      <selector path=".globalActionBar .actionList .actionSubList">
+        <border>1px solid #ddd</border>
+        <background-color>#fff</background-color>
+        <box-shadow>1px 1px 3px rgba(0, 0, 0, 0.2)</box-shadow>
+        <display>none</display>
+        <position>absolute</position>
+        <top>20px</top>
+        <right>0</right>
+        <width>250px</width>
+        <z-index>1001</z-index>
+        <padding>0</padding>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".globalActionBar .actionList .actionSubList li">
+        <width>300px</width>
+        <float>none</float>
+        <display>inline</display>
+        <text-align>left</text-align>
+        <background>none</background>
+        <height>auto</height>
+        <border>none</border>
+         <margin>0</margin>
+         <padding>0</padding>
+      </selector>
+      <selector path=".globalActionBar .actionList .actionSubList li a">
+        <display>block</display>
+        <padding>5px 10px</padding>
+        <background>none</background>
+        <text-decoration>none</text-decoration>
+        <border>none</border>
+        <margin>0</margin>
+      </selector>
+      <selector path=".globalActionBar .actionList .actionSubList li a:hover">
+        <background-color>#d3e7f2</background-color>
+      </selector>
+      <selector path=".clear">
+        <clear>both</clear>
+      </selector>
       <!-- Avatar resize -->
       <selector path=".pictureColumn">
         <width>150px</width>
@@ -1718,3 +1793,4 @@
     <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="common style 1" />
   </formats>
 </theme>
+
