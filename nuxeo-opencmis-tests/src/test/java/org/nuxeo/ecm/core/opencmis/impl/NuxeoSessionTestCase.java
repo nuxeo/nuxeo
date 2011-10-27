@@ -425,10 +425,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // get rendition stream
         ContentStream cs = ren.getContentStream();
         assertEquals("image/png", cs.getMimeType());
-        if (!isAtomPub) {
-            assertEquals("text.png", cs.getFileName());
-            assertEquals(394, cs.getBigLength().longValue());
-        }
+        assertEquals("text.png", cs.getFileName());
+        assertEquals(394, cs.getBigLength().longValue());
 
         // get renditions directly with object
 
@@ -448,10 +446,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // get rendition stream
         cs = ren.getContentStream();
         assertEquals("image/png", cs.getMimeType());
-        if (!isAtomPub) {
-            assertEquals("text.png", cs.getFileName());
-            assertEquals(394, cs.getBigLength().longValue());
-        }
+        assertEquals("text.png", cs.getFileName());
+        assertEquals(394, cs.getBigLength().longValue());
     }
 
     public void testDeletedInTrash() throws Exception {
