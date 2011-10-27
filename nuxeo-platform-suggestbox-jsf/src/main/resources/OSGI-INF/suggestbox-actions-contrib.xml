@@ -5,7 +5,7 @@
 
     <action id="simple_search" link="/search/suggestbox.xhtml"
       label="" order="1">
-      <category>SEARCH_SIMPLE_ACTION</category>
+      <category>SEARCH_BOX_TEMPLATE</category>
     </action>
 
   </extension>
