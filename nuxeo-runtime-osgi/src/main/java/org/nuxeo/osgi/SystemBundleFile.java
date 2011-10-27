@@ -22,6 +22,7 @@
 package org.nuxeo.osgi;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -31,7 +32,7 @@ import java.util.jar.Manifest;
  */
 public class SystemBundleFile extends DirectoryBundleFile {
 
-    public SystemBundleFile(File file) {
+    public SystemBundleFile(File file) throws IOException {
         super (file, createManifest());
     }
 

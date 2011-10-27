@@ -53,13 +53,9 @@ public class DirectoryBundleFile implements BundleFile {
 
     public DirectoryBundleFile(File file) throws IOException {
         this(file, null);
-        if (mf == null) {
-            throw new IOException("Cannot find " + MANIFEST_PATH + " in "
-                    + file);
-        }
     }
 
-    public DirectoryBundleFile(File file, Manifest mf) {
+    public DirectoryBundleFile(File file, Manifest mf) throws IOException {
         this.file = file;
         this.files = findFiles(file);
         this.mf = mf == null ? findManifest() : mf;
@@ -150,23 +146,23 @@ public class DirectoryBundleFile implements BundleFile {
         return mf;
     }
 
-    protected Manifest findManifest() {
+    protected Manifest findManifest() throws IOException {
         for (File file : files) {
             File entry = new File(file, MANIFEST_PATH);
             if (entry.exists()) {
+                FileInputStream fis = new FileInputStream(entry);
                 try {
-                    FileInputStream fis = new FileInputStream(entry);
-                    try {
-                        return new Manifest(fis);
-                    } finally {
-                        fis.close();
-                    }
-                } catch (Exception e) {
-                    // ignore
+                    return new Manifest(fis);
+                } finally {
+                    fis.close();
                 }
             }
         }
-        return null;
+        String paths = StringUtils.join(
+                files.toArray(new Object[files.size()]), ", ");
+        throw new IOException(
+                String.format("Could not find a file '%s' in paths: %s",
+                        MANIFEST_PATH, paths));
     }
 
     @Override

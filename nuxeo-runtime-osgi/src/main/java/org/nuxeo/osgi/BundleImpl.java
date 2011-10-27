@@ -66,12 +66,13 @@ public class BundleImpl implements Bundle {
 
     protected double startupTime;
 
-    public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader) {
+    public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader)
+            throws BundleException {
         this(osgi, file, loader, false);
     }
 
     public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader,
-            boolean isSystemBundle) {
+            boolean isSystemBundle) throws BundleException {
         this.osgi = osgi;
         this.loader = loader;
         this.file = file;
@@ -83,12 +84,11 @@ public class BundleImpl implements Bundle {
             context = null;
             return;
         }
-        headers = BundleManifestReader.getHeaders(mf);
-        if (headers == null) {
-            symbolicName = null;
-            id = -1;
-            context = null;
-            return;
+        try {
+            headers = BundleManifestReader.getHeaders(mf);
+        } catch (BundleException e) {
+            throw new BundleException("Invalid Manifest in file " + file
+                    + " : " + e.getMessage(), e);
         }
         symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
         id = isSystemBundle ? 0 : osgi.getBundleId(symbolicName);
@@ -219,16 +219,21 @@ public class BundleImpl implements Bundle {
     public BundleActivator getActivator() throws IllegalAccessException,
             InstantiationException, ClassNotFoundException {
         if (activator == null) {
+            if (headers == null) {
+                // bundle without manifest does not have an activator
+                activator = NullActivator.INSTANCE;
+                return activator;
+            }
             String className = headers.get(Constants.BUNDLE_ACTIVATOR);
             if (className == null) {
                 activator = NullActivator.INSTANCE;
-            } else {
-                try {
-                    activator = (BundleActivator) loadClass(className).newInstance();
-                } catch (ClassNotFoundException e) {
-                    activator = NullActivator.INSTANCE;
-                    throw e;
-                }
+                return activator;
+            }
+            try {
+                activator = (BundleActivator) loadClass(className).newInstance();
+            } catch (ClassNotFoundException e) {
+                activator = NullActivator.INSTANCE;
+                throw e;
             }
         }
         return activator;
@@ -241,8 +246,14 @@ public class BundleImpl implements Bundle {
             getActivator().start(context);
             setStarted();
         } catch (Exception e) {
-            throw new BundleException("Failed to start activator: "
-                    + headers.get(Constants.BUNDLE_ACTIVATOR), e);
+            if (headers == null) {
+                throw new BundleException("Failed to start bundle at: " + file,
+                        e);
+            } else {
+                throw new BundleException("Failed to start bundle at: " + file
+                        + " with activator: "
+                        + headers.get(Constants.BUNDLE_ACTIVATOR), e);
+            }
         }
     }
 

@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.StringUtils;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
 /**
@@ -93,11 +94,15 @@ public final class BundleManifestReader {
     }
 
 
-    public static Dictionary<String, String> getHeaders(Manifest mf) {
+    public static Dictionary<String, String> getHeaders(Manifest mf)
+            throws BundleException {
         Attributes attrs = mf.getMainAttributes();
         String symbolicName = attrs.getValue(Constants.BUNDLE_SYMBOLICNAME);
         if (symbolicName == null) {
-            return null;
+            throw new BundleException(
+                    "Missing attribute in Manifest (possibly cause by a missing"
+                            + " new line at the end of the file): "
+                            + Constants.BUNDLE_SYMBOLICNAME);
         }
         Hashtable<String, String> headers = new Hashtable<String, String>();
         parseSymbolicName(headers, symbolicName);

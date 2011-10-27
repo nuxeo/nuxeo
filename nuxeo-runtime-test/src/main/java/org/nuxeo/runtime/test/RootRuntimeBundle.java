@@ -25,6 +25,7 @@ import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleException;
 
 /**
  * @author gracinet
@@ -32,12 +33,12 @@ import org.osgi.framework.BundleActivator;
 public class RootRuntimeBundle extends BundleImpl {
 
     public RootRuntimeBundle(OSGiAdapter osgi, BundleFile file,
-            ClassLoader loader) {
+            ClassLoader loader) throws BundleException {
         super(osgi, file, loader);
     }
 
     public RootRuntimeBundle(OSGiAdapter osgi, BundleFile file,
-            ClassLoader loader, boolean isSystemBundle) {
+            ClassLoader loader, boolean isSystemBundle) throws BundleException {
         super(osgi, file, loader, isSystemBundle);
     }
 

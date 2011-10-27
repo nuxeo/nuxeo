@@ -21,6 +21,8 @@
 
 package org.nuxeo.osgi;
 
+import org.osgi.framework.BundleException;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,7 +30,8 @@ package org.nuxeo.osgi;
  */
 public class SystemBundle extends BundleImpl {
 
-    public SystemBundle(OSGiAdapter osgi, BundleFile file, ClassLoader loader) {
+    public SystemBundle(OSGiAdapter osgi, BundleFile file, ClassLoader loader)
+            throws BundleException {
         super(osgi, file, loader, true);
     }
 
