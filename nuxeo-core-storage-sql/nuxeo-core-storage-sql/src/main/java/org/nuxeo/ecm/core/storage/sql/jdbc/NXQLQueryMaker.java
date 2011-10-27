@@ -210,7 +210,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 || queryString.toLowerCase().trim().startsWith("select ");
     }
 
-    private enum DocKind {
+    public enum DocKind {
         DIRECT, PROXY;
     }
 
@@ -235,7 +235,7 @@ public class NXQLQueryMaker implements QueryMaker {
          * Find all relevant types and keys for the criteria.
          */
 
-        QueryAnalyzer info = new QueryAnalyzer(queryFilter.getFacetFilter());
+        QueryAnalyzer info = newQueryAnalyzer(queryFilter.getFacetFilter());
         try {
             info.visitQuery(sqlQuery);
         } catch (QueryCannotMatchException e) {
@@ -337,7 +337,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             WhereBuilder whereBuilder;
             try {
-                whereBuilder = new WhereBuilder(docKind == DocKind.PROXY);
+                whereBuilder = newWhereBuilder(docKind == DocKind.PROXY);
             } catch (QueryMakerException e) {
                 throw new StorageException(e.getMessage(), e);
             }
@@ -752,6 +752,10 @@ public class NXQLQueryMaker implements QueryMaker {
         return INDEX_SLASH.matcher(xpath).replaceAll("*$1");
     }
 
+    protected QueryAnalyzer newQueryAnalyzer(FacetFilter facetFilter) {
+        return new QueryAnalyzer(facetFilter);
+    }
+
     /**
      * Collects various info about the query AST, and rewrites the toplevel AND
      * {@link Predicate}s of the WHERE clause into a single
@@ -1047,6 +1051,10 @@ public class NXQLQueryMaker implements QueryMaker {
             this.needsSubSelect = !isArrayElement && propertyType.isArray();
             this.isBoolean = propertyType == PropertyType.BOOLEAN;
         }
+    }
+
+    protected WhereBuilder newWhereBuilder(boolean isProxies) {
+        return new WhereBuilder(isProxies);
     }
 
     /**
