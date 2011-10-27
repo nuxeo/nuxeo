@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -1113,7 +1114,7 @@ public class SessionImpl implements Session, XAResource {
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        return mapper.query(query, "NXQL", queryFilter, countTotal);
+        return mapper.query(query, NXQL.NXQL, queryFilter, countTotal);
     }
 
     @Override

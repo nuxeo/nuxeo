@@ -201,12 +201,12 @@ public class NXQLQueryMaker implements QueryMaker {
 
     @Override
     public String getName() {
-        return "NXQL";
+        return NXQL.NXQL;
     }
 
     @Override
     public boolean accepts(String queryType) {
-        return queryType.equals("NXQL");
+        return queryType.equals(NXQL.NXQL);
     }
 
     public enum DocKind {

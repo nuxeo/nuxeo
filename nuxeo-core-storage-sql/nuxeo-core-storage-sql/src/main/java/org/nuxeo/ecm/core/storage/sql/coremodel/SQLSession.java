@@ -541,7 +541,7 @@ public class SQLSession implements Session {
 
         public SQLSessionQuery(String query) {
             this.query = query;
-            queryType = "NXQL";
+            queryType = NXQL.NXQL;
         }
 
         public SQLSessionQuery(String query, String queryType) {

@@ -23,6 +23,9 @@ public class NXQL {
     private NXQL() {
     }
 
+    /** The NXQL query type. */
+    public static final String NXQL = "NXQL";
+
     public static final String ECM_PREFIX = "ecm:";
 
     public static final String ECM_UUID = "ecm:uuid";

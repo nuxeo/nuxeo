@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -99,7 +100,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
             }
             Collections.reverse(queryMakers);
             // BBB backward compat
-            if (queryMakers.isEmpty() && !done.contains("NXQL")) {
+            if (queryMakers.isEmpty() && !done.contains(NXQL.NXQL)) {
                 queryMakers.add(NXQLQueryMaker.class);
             }
         }

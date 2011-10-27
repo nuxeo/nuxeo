@@ -96,6 +96,7 @@ import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -1467,7 +1468,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     @Override
     public DocumentModelList query(String query, Filter filter, long limit,
             long offset, boolean countTotal) throws ClientException {
-        return query(query, "NXQL", filter, limit, offset, countTotal);
+        return query(query, NXQL.NXQL, filter, limit, offset, countTotal);
     }
 
     @Override
@@ -1577,7 +1578,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             String permission = BROWSE;
             String[] permissions = securityService.getPermissionsToCheck(permission);
             Collection<Transformer> transformers;
-            if ("NXQL".equals(queryType)) {
+            if (NXQL.NXQL.equals(queryType)) {
                 String repoName = getRepositoryName();
                 if (!securityService.arePoliciesExpressibleInQuery(repoName)) {
                     log.warn("Security policy cannot be expressed in query");
