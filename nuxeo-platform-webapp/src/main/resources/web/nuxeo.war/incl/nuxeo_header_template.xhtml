@@ -28,16 +28,21 @@
       <div class="searchService">
 
         <c:if test="#{userServicesContext.searchEnabled}">
-          <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
-            class="directoryFilter"
-            onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
-            id="simpleSearchKeywordsInput"
-            required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
-            validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
-          <h:commandButton action="search_results_simple"
-            value="#{messages['command.search']}" styleClass="button"
-            id="simpleSearchSubmitButton" />
-
+          <nxu:repeat var="simpleSearchActions" value="#{webActions.getActionsList('SEARCH_BOX_TEMPLATE')}"
+            id="#{widget.id}_simpleSearchActions">
+            <ui:include src="#{simpleSearchActions.link}"/>
+          </nxu:repeat>
+          <f:subview rendered="#{empty webActions.getActionsList('SEARCH_BOX_TEMPLATE')}">
+            <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
+              class="directoryFilter"
+              onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
+              id="simpleSearchKeywordsInput"
+              required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
+              validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
+            <h:commandButton action="search_results_simple"
+              value="#{messages['command.search']}" styleClass="button"
+              id="simpleSearchSubmitButton" />
+          </f:subview>
           <nxu:set var="actions"
             value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
             cache="true">
