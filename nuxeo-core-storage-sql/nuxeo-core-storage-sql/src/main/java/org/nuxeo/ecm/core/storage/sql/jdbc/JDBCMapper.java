@@ -594,7 +594,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
-    protected QueryMaker findQueryMaker(String query) throws StorageException {
+    protected QueryMaker findQueryMaker(String queryType)
+            throws StorageException {
         for (Class<? extends QueryMaker> klass : queryMakerService.getQueryMakers()) {
             QueryMaker queryMaker;
             try {
@@ -602,7 +603,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             } catch (Exception e) {
                 throw new StorageException(e);
             }
-            if (queryMaker.accepts(query)) {
+            if (queryMaker.accepts(queryType)) {
                 return queryMaker;
             }
         }
@@ -641,15 +642,16 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public PartialList<Serializable> query(String query,
+    public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         if (sqlInfo.dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
-        QueryMaker queryMaker = findQueryMaker(query);
+        QueryMaker queryMaker = findQueryMaker(queryType);
         if (queryMaker == null) {
-            throw new StorageException("No QueryMaker accepts query: " + query);
+            throw new StorageException("No QueryMaker accepts query: "
+                    + queryType + ": " + query);
         }
         QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model,
                 pathResolver, query, queryFilter);
