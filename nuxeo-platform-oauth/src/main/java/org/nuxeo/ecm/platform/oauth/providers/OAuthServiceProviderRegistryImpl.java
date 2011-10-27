@@ -60,6 +60,16 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
                     serviceName, null);
             return provider;
         } catch (Exception e) {
+            // temporary debug log for NXP-7513
+            Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
+            for (Map.Entry<Thread, StackTraceElement[]> stackEntry : stacks.entrySet()) {
+                log.error("Thread: " + stackEntry.getKey().getName());
+                log.error("StackTrace:\n");
+                StackTraceElement[] trace = stackEntry.getValue();
+                for (int i = 0; i < trace.length; i++) {
+                    log.error("\tat " + trace[i]);
+                }
+            }
             log.error("Unable to read provider from Directory backend", e);
             return null;
         }
