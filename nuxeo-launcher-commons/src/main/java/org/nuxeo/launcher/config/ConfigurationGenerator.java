@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -362,18 +363,46 @@ public class ConfigurationGenerator {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
 
-        evalDynamicProperties();
+        Map<String, String> newParametersToSave = evalDynamicProperties();
+        if (newParametersToSave != null && !newParametersToSave.isEmpty()) {
+            saveConfiguration(newParametersToSave, false, false);
+            userConfig.putAll(newParametersToSave);
+        }
     }
 
     /**
      * Generate properties which values are based on others
      *
+     * @return Map with new parameters to save in {@code nuxeoConf}
+     *
      * @throws ConfigurationException
      *
      * @since 5.4.3
      */
-    protected void evalDynamicProperties() throws ConfigurationException {
+    protected HashMap<String, String> evalDynamicProperties()
+            throws ConfigurationException {
+        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
         evalLoopbackURL();
+        evalServerStatusKey(newParametersToSave);
+        return newParametersToSave;
+    }
+
+    /**
+     * Generate a server status key if not already set
+     *
+     * @param newParametersToSave
+     *
+     * @throws ConfigurationException
+     *
+     * @see #PARAM_STATUS_KEY
+     * @since 5.4.3
+     */
+    private void evalServerStatusKey(Map<String, String> newParametersToSave)
+            throws ConfigurationException {
+        if (userConfig.getProperty(PARAM_STATUS_KEY) == null) {
+            newParametersToSave.put(PARAM_STATUS_KEY,
+                    UUID.randomUUID().toString().substring(0, 8));
+        }
     }
 
     private void evalLoopbackURL() throws ConfigurationException {
@@ -581,9 +610,28 @@ public class ConfigurationGenerator {
      */
     public void saveConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
-        // Keep true or once; switch false to once
-        setOnceToFalse = false;
-        setFalseToOnce = true;
+        // Keep wizard true or once; switch false to once
+        saveConfiguration(changedParameters, false, true);
+    }
+
+    /**
+     * Save changed parameters in {@code nuxeo.conf}.
+     * This method does not check values in map. Use
+     * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
+     *
+     * @param changedParameters Map of modified parameters
+     * @param setWizardOnceToFalse If wizard was on (true or once), then set it
+     *            to false or not?
+     * @param setWizardFalseToOnce If wizard was off (false), then set it to
+     *            once?
+     * @see #saveFilteredConfiguration(Map)
+     * @since 5.4.3
+     */
+    public void saveConfiguration(Map<String, String> changedParameters,
+            boolean setWizardOnceToFalse, boolean setWizardFalseToOnce)
+            throws ConfigurationException {
+        this.setOnceToFalse = setWizardOnceToFalse;
+        this.setFalseToOnce = setWizardFalseToOnce;
         // Will change wizardParam value instead of appending it
         wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
         writeConfiguration(loadConfiguration(changedParameters),
