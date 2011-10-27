@@ -19,13 +19,6 @@
                   styleClass="button" id="editUserButton"
                   rendered="#{userProfileActions.mode == 'view'}"
                   reRender="profilePanel" />
-                <a4j:commandButton
-                  value="#{messages['command.cancel']}"
-                  actionListener="#{editableListBean.resetAllListsCachedModels}"
-                  action="#{userProfileActions.setMode('view')}"
-                  styleClass="button" id="viewUserButton"
-                  rendered="#{userProfileActions.mode != 'view'}"
-                  reRender="profilePanel" />
               </td>
               <td class="fieldColumn">
                  <a4j:commandButton
@@ -83,6 +76,25 @@
           </tbody>
         </table>
       </h:form>
+      <a4j:form id="userProfileCancelButton">
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="iconColumn"></td>
+              <td class="labelColumn">
+                <a4j:commandButton
+                      value="#{messages['command.cancel']}"
+                      actionListener="#{editableListBean.resetAllListsCachedModels}"
+                      action="#{userProfileActions.setMode('view')}"
+                      styleClass="button" id="viewUserButton"
+                      rendered="#{userProfileActions.mode != 'view'}"
+                      reRender="profilePanel" />
+              </td>
+              <td class="fieldColumn"></td>
+           </tr>
+          </tbody>
+        </table>
+      </a4j:form>
 
     </a4j:outputPanel>
   </a4j:region>
