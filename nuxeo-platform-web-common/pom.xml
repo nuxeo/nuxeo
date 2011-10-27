@@ -103,14 +103,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
