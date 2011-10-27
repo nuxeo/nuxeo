@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
@@ -96,7 +97,7 @@ public class CoreQueryAndFetchPageProvider extends
                             Long.valueOf(offset)));
                 }
 
-                result = coreSession.queryAndFetch(query, "NXQL");
+                result = coreSession.queryAndFetch(query, NXQL.NXQL);
                 long resultsCount = result.size();
                 setResultsCount(resultsCount);
                 if (offset < resultsCount) {
