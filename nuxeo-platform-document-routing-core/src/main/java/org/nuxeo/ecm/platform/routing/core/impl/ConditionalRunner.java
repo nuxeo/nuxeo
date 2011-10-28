@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  * by the posOfChildStepToRunNext on this container. It's done once the selected
  * branch to be run is done .
  * 
- * @since 5.4.3
+ * @since 5.5
  * 
  */
 public class ConditionalRunner extends SerialRunner {

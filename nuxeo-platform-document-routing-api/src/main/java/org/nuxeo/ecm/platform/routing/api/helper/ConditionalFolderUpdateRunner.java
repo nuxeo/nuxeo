@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  * Set the position of the child to be run once the step with the given id it's
  * finished.
  * 
- * @since 5.4.3
+ * @since 5.5
  */
 public class ConditionalFolderUpdateRunner {
 
