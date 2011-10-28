@@ -235,7 +235,7 @@ public final class Functions {
     /**
      * Returns the full name of a user, or its username if user if not found.
      * <p>
-     * Since 5.4.3, returns null if given username is null (instead of
+     * Since 5.5, returns null if given username is null (instead of
      * returning the current user full name).
      */
     @SuppressWarnings("unchecked")
@@ -284,7 +284,7 @@ public final class Functions {
      * @see #groupDisplayName(String, String)
      * @param groupId the group id
      * @return the group full name
-     * @since 5.4.3
+     * @since 5.5
      */
     public static String groupFullName(String groupId) {
         try {
@@ -329,7 +329,7 @@ public final class Functions {
      * @param last last name of the user
      * @param email email of the user
      * @return id or full name with email if exists
-     * @since 5.4.3
+     * @since 5.5
      */
     public static String userDisplayNameAndEmail(String id, String first,
             String last, String email) {
@@ -349,7 +349,7 @@ public final class Functions {
      * @param name the group name
      * @param label the group name
      * @return label if not empty or null, otherwise group name
-     * @since 5.4.3
+     * @since 5.5
      */
     public static String groupDisplayName(String name, String label) {
         return StringUtils.isBlank(label) ? name : label;

@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Manage localized vocabulary trees. These trees use {@code VocabularyTreeNode}
  *
- * @since 5.4.3
+ * @since 5.5
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
 @Scope(CONVERSATION)

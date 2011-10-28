@@ -11,7 +11,7 @@ import net.sf.json.JSONObject;
  * Helper to manage labels translation using the default web message bundles
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.3
+ * @since 5.5
  *
  */
 public class TranslationHelper {

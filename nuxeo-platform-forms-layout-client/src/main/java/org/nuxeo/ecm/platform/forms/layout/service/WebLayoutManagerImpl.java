@@ -511,7 +511,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * Returns an identifier computed from this definition so that an identical
      * definition will have the same id.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     protected String computeLayoutDefinitionId(LayoutDefinition layoutDef) {
         StringBuilder builder = new StringBuilder();
@@ -545,7 +545,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * Returns an identifier computed from this definition so that an identical
      * definition will have the same id.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     protected String computeLayoutRowDefinitionId(
             LayoutRowDefinition layoutRowDef) {
@@ -578,7 +578,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * Returns an identifier computed from this definition so that an identical
      * definition will have the same id.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     protected String computeWidgetDefinitionId(WidgetDefinition widgetDef) {
         StringBuffer builder = new StringBuffer();

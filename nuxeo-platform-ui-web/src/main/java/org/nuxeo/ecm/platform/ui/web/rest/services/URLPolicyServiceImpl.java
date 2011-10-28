@@ -317,7 +317,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
      *
      * @since 5.4.2
      * @param viewId
-     * @deprecated since 5.4.3
+     * @deprecated since 5.5
      */
     @Deprecated
     protected List<URLPatternDescriptor> getSortedURLPatternDescriptorsFor(

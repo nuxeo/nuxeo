@@ -26,7 +26,7 @@ import org.nuxeo.runtime.services.event.EventListener;
 /**
  * Event listener that flushes the {@link URLPolicyService} cache.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class URLPolicyServiceCacheFlusher implements EventListener {
 

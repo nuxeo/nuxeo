@@ -37,7 +37,7 @@ import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * @author matic
- * @since 5.4.3
+ * @since 5.5
  */
 public class NuxeoSeamFlusher implements EventListener {
 

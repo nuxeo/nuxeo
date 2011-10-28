@@ -46,7 +46,7 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
  * xx is the current locale language) else. If this one doesn't exist either,
  * the english label (from label_en) is used.
  *
- * @since 5.4.3
+ * @since 5.5
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
 public class VocabularyTreeNode {

@@ -24,7 +24,7 @@ import org.nuxeo.runtime.api.Framework;
  * Exports Vocabularies as translated SelectOptions
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.3
+ * @since 5.5
  */
 public class VocabularyExporter {
 

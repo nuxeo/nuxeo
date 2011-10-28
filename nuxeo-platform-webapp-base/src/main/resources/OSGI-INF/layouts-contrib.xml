@@ -121,7 +121,7 @@
                 <helpLabels>
                   <label mode="any">
                     Field to use as the third label when displaying the
-                    selected user. Defaults to 'email'. Available since 5.4.3.
+                    selected user. Defaults to 'email'. Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -163,7 +163,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the third label should be hidden.
-                    Defaults to false. Available since 5.4.3.
+                    Defaults to false. Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -200,7 +200,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the email should be display in user suggestion.
-                    Defaults to false. Available since 5.4.3.
+                    Defaults to false. Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -436,7 +436,7 @@
                 <helpLabels>
                   <label mode="any">
                     Field to use as the third label when displaying the
-                    selected user. Defaults to 'email'. Available since 5.4.3.
+                    selected user. Defaults to 'email'. Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -478,7 +478,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the third label should be hidden.
-                    Defaults to false. Available since 5.4.3.
+                    Defaults to false. Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -492,7 +492,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the email should be display in user suggestion.
-                    Defaults to false. Available since 5.4.3.
+                    Defaults to false. Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -929,7 +929,7 @@
             <li>an empty field to map the document</li>
           </ul>
 
-          Since 5.4.3, it also displays the document header related actions.
+          Since 5.5, it also displays the document header related actions.
           They must be contributed in one of the following categories:
           <ul>
             <li>DOCUMENT_HEADER_ACTIONS_LIST</li>
@@ -960,7 +960,7 @@
 
     <widgetType name="select_l10n_vocabulary_tree">
       <configuration>
-        <sinceVersion>5.4.3</sinceVersion>
+        <sinceVersion>5.5</sinceVersion>
         <title>Localized vocabulary tree</title>
         <description>
           Widget allowing to select one or more values in a tree constructed

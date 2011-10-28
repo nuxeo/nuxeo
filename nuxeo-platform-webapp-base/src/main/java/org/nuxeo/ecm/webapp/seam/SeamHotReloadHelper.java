@@ -124,7 +124,7 @@ public class SeamHotReloadHelper {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected static void flushI18N() {
         try {
@@ -138,7 +138,7 @@ public class SeamHotReloadHelper {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected static void flushWebResources()
             throws MalformedObjectNameException, ReflectionException,

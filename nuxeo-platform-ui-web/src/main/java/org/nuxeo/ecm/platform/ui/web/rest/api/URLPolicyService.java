@@ -152,7 +152,7 @@ public interface URLPolicyService {
     /**
      * Returns true if the service holds a pattern descriptor with given name
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean hasPattern(String name);
 
@@ -166,7 +166,7 @@ public interface URLPolicyService {
      * Initializes the view id manager {@link StaticNavigationHandler} using
      * the given servlet context.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     void initViewIdManager(ServletContext context);
 
@@ -177,7 +177,7 @@ public interface URLPolicyService {
      * For instance, will return "/view_documents.xhtml" given
      * "view_documents".
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     String getViewIdFromOutcome(String outcome, HttpServletRequest httpRequest);
 
@@ -188,7 +188,7 @@ public interface URLPolicyService {
      * For instance, will return "view_documents" given "/view_documents.xhtml"
      * or "/view_documents.faces".
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     String getOutcomeFromViewId(String viewId, HttpServletRequest httpRequest);
 
@@ -199,7 +199,7 @@ public interface URLPolicyService {
      * It parses the given url to extract the outcome, and then calls
      * {@link #getOutcomeFromViewId(String, HttpServletRequest)}
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     String getOutcomeFromUrl(String url, HttpServletRequest httpRequest);
 
@@ -207,7 +207,7 @@ public interface URLPolicyService {
      * Flushes the URLPolicyService cache, to be called when hot reload is
      * performed for instance.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     void flushCache();
 

@@ -58,7 +58,7 @@ public class SetTagHandler extends AliasTagHandler {
     protected final TagAttribute value;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected final TagAttribute resolveTwice;
 

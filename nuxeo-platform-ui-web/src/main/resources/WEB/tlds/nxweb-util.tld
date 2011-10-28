@@ -66,22 +66,22 @@
       </li>
       <li>
         userDisplayNameAndEmail(String, String, String,String): returns the full name of a user 
-        and its email given its id, first name, last name and email. Available since 5.4.3.
+        and its email given its id, first name, last name and email. Available since 5.5.
       </li>
       <li>
         groupDisplayName(String, String): returns the label of a group given its
-        id, label. Available since 5.4.3.
+        id, label. Available since 5.5.
       </li>
       <li>
         groupFullName(String): returns the label of a group from its id.
-        Available since 5.4.3.
+        Available since 5.5.
       </li>
       <li>
         userUrl(String patternName, String username, String viewId,
         boolean newConversation): returns the user profile rest url given the
         pattern name (usually 'user'), the user name, the view id (can be null)
         and if a new conversation need to be created or not.
-        Available since 5.4.3.
+        Available since 5.5.
       </li>
       <li>
         htmlEscape(String): returns html escaped string (can be use to do safe
@@ -263,7 +263,7 @@
         Boolean. Flag indicating if the expression should be evaluated twice
         when resolving it: if value resolved is a String that still contains EL
         expressions after the first resolution, a second resolution is done.
-        Set to "false" by default. Available since 5.4.3.
+        Set to "false" by default. Available since 5.5.
       </description>
     </attribute>
     <example>

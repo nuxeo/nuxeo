@@ -125,7 +125,7 @@
                     only resolve
                     literal values 'true' or 'false'. Defaults to
                     false.
-                    Available since 5.4.3.
+                    Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -2614,7 +2614,7 @@
                   <label mode="any">
                     This attribute controls the possibility to
                     order the items.
-                    Available since 5.4.3.
+                    Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>

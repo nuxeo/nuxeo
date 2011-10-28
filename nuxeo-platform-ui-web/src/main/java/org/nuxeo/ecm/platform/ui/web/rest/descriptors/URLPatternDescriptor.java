@@ -68,7 +68,7 @@ public class URLPatternDescriptor {
     private ValueBindingDescriptor[] valueBindings;
 
     /**
-     * @deprecated since 5.4.3: use {@link #documentViewBindingApplies} binding
+     * @deprecated since 5.5: use {@link #documentViewBindingApplies} binding
      *             instead
      */
     @Deprecated
@@ -175,7 +175,7 @@ public class URLPatternDescriptor {
     }
 
     /**
-     * @deprecated since 5.4.3: use {@link #getDocumentViewBindingApplies()} binding
+     * @deprecated since 5.5: use {@link #getDocumentViewBindingApplies()} binding
      *             instead
      */
     @Deprecated

@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @author <a href="mailto:bdelbosc@nuxeo.com">Benoit Delbosc</a>
- * @since 5.4.3
+ * @since 5.5
  */
 @Name("richTextEditorActions")
 @Scope(CONVERSATION)

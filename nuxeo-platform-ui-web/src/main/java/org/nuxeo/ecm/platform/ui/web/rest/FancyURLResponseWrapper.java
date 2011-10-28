@@ -49,7 +49,7 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * @deprecated since 5.4.3: use constructor without the
+     * @deprecated since 5.5: use constructor without the
      *             {@link StaticNavigationHandler} that is now wrapped into the
      *             {@link URLPolicyService}
      */

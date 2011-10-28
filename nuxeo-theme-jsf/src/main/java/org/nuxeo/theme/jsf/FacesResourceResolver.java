@@ -23,7 +23,7 @@ import org.nuxeo.theme.ResourceResolver;
  * Resolver for resources that checks the servlet context (through FacesContext)
  * first.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class FacesResourceResolver extends ResourceResolver {
 

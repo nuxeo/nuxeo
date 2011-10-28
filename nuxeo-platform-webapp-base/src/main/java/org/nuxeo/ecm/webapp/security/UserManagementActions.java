@@ -101,7 +101,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     * @deprecated since version 5.4.3, use {@link #setSelectedUserName}
+     * @deprecated since version 5.5, use {@link #setSelectedUserName}
      *             instead.
      */
     @Deprecated
@@ -110,7 +110,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public void setSelectedUserName(String userName) throws ClientException {
         setSelectedUser(refreshUser(userName));
@@ -345,7 +345,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public void setShowUser(String showUser) {
         showUserOrGroup = Boolean.valueOf(showUser);

@@ -66,7 +66,7 @@ public final class ComponentTagUtils {
      * even if no parameters are needed.
      *
      * @param value the value to evaluate (not null)
-     * @deprecated since 5.4.3: method and value references are now equivalent
+     * @deprecated since 5.5: method and value references are now equivalent
      *             with jboss EL
      */
     @Deprecated

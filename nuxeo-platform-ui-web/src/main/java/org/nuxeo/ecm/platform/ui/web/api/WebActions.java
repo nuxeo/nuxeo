@@ -43,7 +43,7 @@ public interface WebActions {
     /**
      * The category of actions for main tabs
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public static final String MAIN_TABS_CATEGORY = "MAIN_TABS";
 
@@ -52,21 +52,21 @@ public interface WebActions {
     /**
      * Identifier of main tab for the "Documents management" area
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public static final String DOCUMENTS_MAIN_TAB_ID = "documents";
 
     /**
      * Request parameter used for tab ids settings
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public static final String TAB_IDS_PARAMETER = "tabIds";
 
     /**
      * Request parameter used for main tab id settings
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public static final String MAIN_TAB_ID_PARAMETER = "mainTabId";
 
@@ -220,7 +220,7 @@ public interface WebActions {
     /**
      * Indicates if the current tab id is set for given category
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean hasCurrentTabId(String category);
 

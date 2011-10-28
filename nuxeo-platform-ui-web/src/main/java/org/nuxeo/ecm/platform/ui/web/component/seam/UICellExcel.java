@@ -33,7 +33,7 @@ import com.sun.faces.renderkit.html_basic.HtmlResponseWriter;
  * Override of Seam cell component to control html encoding of accents in
  * excel.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
 
