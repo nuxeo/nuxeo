@@ -233,7 +233,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("Nuxeo", info.getVendorName());
         assertEquals("Nuxeo OpenCMIS Connector", info.getProductName());
         String version = Framework.getProperty(
-                NuxeoRepository.NUXEO_VERSION_PROP, "5.4 dev");
+                NuxeoRepository.NUXEO_VERSION_PROP, "5.5 dev");
         assertEquals(version, info.getProductVersion());
         assertEquals(rootFolderId, info.getRootFolderId());
         assertEquals("Guest", info.getPrincipalIdAnonymous());
