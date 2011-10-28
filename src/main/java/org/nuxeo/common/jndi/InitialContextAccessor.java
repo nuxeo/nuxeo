@@ -24,7 +24,7 @@ import javax.naming.NamingException;
  * Utility class used for testing JNDI space provider.
  * 
  * @author Stephane Lacoin (aka matic)
- * @since 5.4.3
+ * @since 5.5
  * 
  */
 public class InitialContextAccessor extends InitialContext {
