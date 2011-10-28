@@ -19,14 +19,14 @@
     <h:panelGrid id="#{widget.id}_mailbox_panel" columns="3">
       <h:panelGroup>
         <h:inputText id="faceted_search_suggest_box"
-            class="faceted_search_suggest_box"
+            class="search_suggest_box directoryFilter"
             onkeydown="if (event.keyCode == 13) {return false;}"
             value="#{suggestboxActions.searchKeywords}" />
         <script type="text/javascript">
         <!--
         function focus_searchbox(event) {
            event.preventDefault();
-           jQuery('input.faceted_search_suggest_box').focus();
+           jQuery('input.search_suggest_box').focus();
            return false;
         }
         // bind the '/' key to focus the searchbox
