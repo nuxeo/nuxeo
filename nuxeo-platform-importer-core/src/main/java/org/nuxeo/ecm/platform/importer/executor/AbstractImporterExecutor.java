@@ -129,7 +129,7 @@ public abstract class AbstractImporterExecutor {
     }
 
     /***
-     * since 5.4.3 this method is invoked when using the
+     * since 5.5 this method is invoked when using the
      * <code>DefaultImporterService</code> and passing the executor to the
      * importDocuments method
      *
