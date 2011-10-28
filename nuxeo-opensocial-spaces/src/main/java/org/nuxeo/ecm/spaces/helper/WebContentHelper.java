@@ -57,7 +57,7 @@ public class WebContentHelper {
      * If the {@code additionalPreferences} map is not null and not empty, the
      * gadget's additionalPreferences will be initialized with that map.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public static void createOpenSocialGadget(Space space, CoreSession session,
             Locale currentLocale, String gadgetName, int zoneIndex,

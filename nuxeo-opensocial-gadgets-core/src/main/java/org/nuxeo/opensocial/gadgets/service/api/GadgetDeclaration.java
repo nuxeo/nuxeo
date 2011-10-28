@@ -71,7 +71,7 @@ public interface GadgetDeclaration {
      * <p>
      * The label key is "label.gadget." + gadgetName.
      * 
-     * @since 5.4.3
+     * @since 5.5
      */
     String getTitle(Locale locale);
 
