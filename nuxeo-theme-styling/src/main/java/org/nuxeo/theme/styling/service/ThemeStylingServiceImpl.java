@@ -56,7 +56,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 /**
  * Default implementation for the {@link ThemeStylingService}
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class ThemeStylingServiceImpl extends DefaultComponent implements
         ThemeStylingService {

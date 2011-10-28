@@ -27,7 +27,7 @@ import org.nuxeo.theme.services.ThemeService;
 /**
  * Descriptor to associate resources to a theme page
  *
- * @since 5.4.3
+ * @since 5.5
  */
 @XObject("themePage")
 public class ThemePage {

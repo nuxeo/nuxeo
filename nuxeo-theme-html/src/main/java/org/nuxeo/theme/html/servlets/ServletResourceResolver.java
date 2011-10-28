@@ -22,7 +22,7 @@ import org.nuxeo.theme.ResourceResolver;
 /**
  * Resolver for resources that checks the servlet context first.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class ServletResourceResolver extends ResourceResolver {
 

@@ -19,7 +19,7 @@ import java.net.URL;
  * <p>
  * This default implementation uses the thread context ClassLoader.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class ResourceResolver {
 

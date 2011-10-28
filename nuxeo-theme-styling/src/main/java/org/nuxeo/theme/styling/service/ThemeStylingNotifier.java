@@ -28,7 +28,7 @@ import org.nuxeo.theme.themes.ThemeManager;
  * Event listener that triggers {@link ThemeStylingService} methods to impact
  * the standard {@link ThemeService} registries
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class ThemeStylingNotifier implements EventListener {
 

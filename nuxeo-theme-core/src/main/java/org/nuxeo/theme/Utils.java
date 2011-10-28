@@ -219,7 +219,7 @@ public final class Utils {
      * Parses and loads css resources into given style element. If boolean
      * merge is set to true, keep existing properties already defined in style.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public static void loadCss(final Style style, String cssSource,
             final String viewName, final boolean merge) {

@@ -59,7 +59,7 @@ public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
     /**
      * Returns the collection (flavor) to use for current page
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     String getCollection();
 

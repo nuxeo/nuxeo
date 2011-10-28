@@ -36,7 +36,7 @@ import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 /**
- * @since 5.4.3
+ * @since 5.5
  */
 public class TestThemeStylingService extends NXRuntimeTestCase {
 

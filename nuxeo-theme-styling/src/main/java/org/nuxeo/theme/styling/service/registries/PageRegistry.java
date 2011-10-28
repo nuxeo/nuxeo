@@ -28,7 +28,7 @@ import org.nuxeo.theme.styling.service.descriptors.ThemePage;
  * Registry for theme page resources, handling merge of registered
  * {@link ThemePage} elements.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
 

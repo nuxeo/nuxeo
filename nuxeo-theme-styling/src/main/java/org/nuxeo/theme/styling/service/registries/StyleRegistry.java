@@ -26,7 +26,7 @@ import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
  * Registry for theme style resources, handling merge of registered
  * {@link SimpleStyle} elements.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class StyleRegistry extends ContributionFragmentRegistry<SimpleStyle> {
 

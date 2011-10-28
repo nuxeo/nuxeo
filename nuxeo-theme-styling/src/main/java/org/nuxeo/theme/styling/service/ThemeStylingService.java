@@ -10,7 +10,7 @@ import org.nuxeo.theme.services.ThemeService;
  * styling of the page is handled as if styling was provided by the theme
  * definition. Also handles related flavors as theme collections.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public interface ThemeStylingService {
 

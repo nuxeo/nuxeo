@@ -20,7 +20,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @since 5.4.3
+ * @since 5.5
  */
 @XObject("presets")
 public class FlavorPresets {

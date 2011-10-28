@@ -1510,7 +1510,7 @@ public final class ThemeManager implements Registrable {
      * Returns all the ordered resource names and their dependencies, given a
      * list of resources names.
      *
-     * @since 5.4.3
+     * @since 5.5
      * @param resourceNames
      */
     // TODO: optimize?

@@ -24,7 +24,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @since 5.4.3
+ * @since 5.5
  */
 // TODO: use one file for all categories with a custom parser
 @XObject("flavor")

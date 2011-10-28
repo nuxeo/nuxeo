@@ -29,7 +29,7 @@ import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
  * Registry for theme flavors, handling merge of registered {@link Flavor}
  * elements.
  *
- * @since 5.4.3
+ * @since 5.5
  */
 public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
 
