@@ -248,7 +248,7 @@ public interface Session extends Connection {
      *
      * @param proxy the proxy
      * @param targetId the new target id
-     * @since 5.4.3
+     * @since 5.5
      */
     void setProxyTarget(Node proxy, Serializable targetId)
             throws StorageException;

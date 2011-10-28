@@ -628,7 +628,7 @@ public interface DocumentModel extends Serializable {
     /**
      * Checks if the document has actual data to write (dirty parts).
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean isDirty();
 
@@ -643,7 +643,7 @@ public interface DocumentModel extends Serializable {
      *            visitor to carry on the visiting context.
      * @throws ClientException
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     void accept(PropertyVisitor visitor, Object arg) throws ClientException;
 
@@ -791,7 +791,7 @@ public interface DocumentModel extends Serializable {
      * @param xpath the property xpath
      * @return {@code true} if it is prefetched
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean isPrefetched(String xpath);
 
@@ -802,7 +802,7 @@ public interface DocumentModel extends Serializable {
      * @param name the property name
      * @return {@code true} if it is prefetched
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean isPrefetched(String schemaName, String name);
 
@@ -976,7 +976,7 @@ public interface DocumentModel extends Serializable {
      *
      * See CMIS spec : http://docs.oasis-open.org/cmis/CMIS/v1.0/os/cmis-spec-v1.0.html#_Toc243905432
      *
-     * @since 5.4.3
+     * @since 5.5
      *
      * @return the ChangeToken string that can be null for some Document types
      */

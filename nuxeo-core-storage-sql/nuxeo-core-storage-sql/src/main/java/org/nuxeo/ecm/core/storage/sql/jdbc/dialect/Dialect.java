@@ -835,7 +835,7 @@ public abstract class Dialect {
      * The dialect need an extra SQL statement to populate a user read acl cache
      * before running the query.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public boolean needsPrepareUserReadAcls() {
         return false;
@@ -1060,7 +1060,7 @@ public abstract class Dialect {
      *
      * This can be used to populate a table cache.
      *
-     * @since 5.4.3
+     * @since 5.5
      * @return and SQL expression with one parameter (principals)
      */
     public String getPrepareUserReadAclsSql() {

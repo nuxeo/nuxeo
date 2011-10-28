@@ -1338,7 +1338,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * <p>
      * INTERNAL: This method is not in the public interface.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public void setPrefetch(Prefetch prefetch) {
         this.prefetch = prefetch;

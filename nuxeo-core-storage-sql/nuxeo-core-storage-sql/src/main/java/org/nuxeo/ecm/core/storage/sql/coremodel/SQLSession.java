@@ -1068,7 +1068,7 @@ public class SQLSession implements Session {
     /**
      * Makes a property from a complex list element.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     protected Property makeProperty(Node node, String name, Type parentType,
             boolean readonly, int pos) throws DocumentException {

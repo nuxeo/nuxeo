@@ -339,7 +339,7 @@ public interface RowMapper {
      *         needs to be validated. this occurs after a connection error
      * 
      * @see JDBCConnection#checkConnectionReset
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean isClusterReconnecting();
 

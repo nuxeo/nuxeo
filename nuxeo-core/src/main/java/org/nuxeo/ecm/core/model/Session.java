@@ -280,7 +280,7 @@ public interface Session {
      *
      * @param proxy the proxy
      * @param target the new target
-     * @since 5.4.3
+     * @since 5.5
      */
     void setProxyTarget(Document proxy, Document target)
             throws DocumentException;

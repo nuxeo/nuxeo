@@ -371,7 +371,7 @@ LOG.INFO Initializing ancestors table for path optimization, please wait...
 EXEC nx_init_ancestors
 
 
-# ancestors ids (since Nuxeo 5.4.3)
+# ancestors ids (since Nuxeo 5.5)
 
 IF OBJECT_ID('dbo.NX_ANCESTORS', 'TF') IS NOT NULL
   DROP FUNCTION dbo.NX_ANCESTORS;

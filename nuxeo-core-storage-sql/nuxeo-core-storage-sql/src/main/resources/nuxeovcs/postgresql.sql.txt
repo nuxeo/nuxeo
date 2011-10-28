@@ -209,7 +209,7 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
-# ancestors ids (since Nuxeo 5.4.3)
+# ancestors ids (since Nuxeo 5.5)
 
 #IF: pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])

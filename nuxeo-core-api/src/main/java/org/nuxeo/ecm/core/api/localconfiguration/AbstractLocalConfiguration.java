@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * Provides default implementation for most methods.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.3
+ * @since 5.5
  */
 public abstract class AbstractLocalConfiguration<T> implements
         LocalConfiguration<T> {
