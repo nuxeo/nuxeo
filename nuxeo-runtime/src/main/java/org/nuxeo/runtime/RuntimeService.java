@@ -69,7 +69,7 @@ public interface RuntimeService {
      * Returns true if the runtime is shutting down.
      *
      * @return true if the runtime is shutting down, false otherwise
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean isShuttingDown();
 

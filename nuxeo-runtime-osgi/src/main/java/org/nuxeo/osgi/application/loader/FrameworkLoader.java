@@ -339,7 +339,7 @@ public class FrameworkLoader {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @return Environment summary
      */
     protected static StringBuilder getStartMessage() {

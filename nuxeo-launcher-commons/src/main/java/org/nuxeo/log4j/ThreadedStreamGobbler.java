@@ -55,7 +55,7 @@ public class ThreadedStreamGobbler extends Thread {
     /**
      * @param inputStream InputStream to read
      * @param output List to store output instead of logging it.
-     * @since 5.4.3
+     * @since 5.5
      */
     public ThreadedStreamGobbler(InputStream inputStream, List<String> output) {
         this(inputStream, SimpleLog.LOG_LEVEL_OFF);
@@ -65,7 +65,7 @@ public class ThreadedStreamGobbler extends Thread {
     /**
      * @param inputStream InputStream to read
      * @param output OutputStream where to write.
-     * @since 5.4.3
+     * @since 5.5
      */
     public ThreadedStreamGobbler(InputStream inputStream, OutputStream output) {
         this(inputStream, SimpleLog.LOG_LEVEL_OFF);

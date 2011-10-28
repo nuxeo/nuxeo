@@ -24,14 +24,14 @@ import java.io.File;
 public interface ReloadService {
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     String deployBundle(File file, boolean reloadResources) throws Exception;
     
     String deployBundle(File file) throws Exception;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
    void undeployBundle(String name) throws Exception;
 
@@ -42,7 +42,7 @@ public interface ReloadService {
     void reloadProperties() throws Exception;
     
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     void reloadSeamComponents() throws Exception;
 
@@ -55,19 +55,19 @@ public interface ReloadService {
      * been done.
      * @throws Exception 
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     void flush() throws Exception;
 
     /**
      * Copy web resources in nuxeo WAR
      * 
-     * @since 5.4.3
+     * @since 5.5
      */
     void installWebResources(File file) throws Exception;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     void reload() throws Exception;
 }

@@ -110,7 +110,7 @@ public class Log4JHelper {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @param category Log4J category for which to switch debug log level
      * @param debug set debug log level to true or false
      */
@@ -137,7 +137,7 @@ public class Log4JHelper {
      * Set "quiet" mode: set log level to WARN for the given Log4J appender.
      *
      * @param appenderName Log4J appender to switch to WARN
-     * @since 5.4.3
+     * @since 5.5
      */
     public static void setQuiet(String appenderName) {
         Appender appender = Logger.getRootLogger().getAppender(appenderName);

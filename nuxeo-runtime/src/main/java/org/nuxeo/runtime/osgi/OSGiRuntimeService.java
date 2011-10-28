@@ -502,7 +502,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @param msg summary message about all components loading status
      * @return true if there was no detected error, else return false
      */

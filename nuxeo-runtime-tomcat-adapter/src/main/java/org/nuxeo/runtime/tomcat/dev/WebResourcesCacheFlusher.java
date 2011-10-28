@@ -23,7 +23,7 @@ import javax.management.MXBean;
  * 
  * @see SeamHotReloadHelper#resetI18n
  * 
- * @since 5.4.3
+ * @since 5.5
  *
  */
 @MXBean

@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * 
  * Bundle descriptor for hot deployment
  * 
- * @since 5.4.3
+ * @since 5.5
  *
  */
 public class DevBundle implements Serializable {

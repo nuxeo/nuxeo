@@ -377,7 +377,7 @@ public class ConfigurationGenerator {
      *
      * @throws ConfigurationException
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     protected HashMap<String, String> evalDynamicProperties()
             throws ConfigurationException {
@@ -395,7 +395,7 @@ public class ConfigurationGenerator {
      * @throws ConfigurationException
      *
      * @see #PARAM_STATUS_KEY
-     * @since 5.4.3
+     * @since 5.5
      */
     private void evalServerStatusKey(Map<String, String> newParametersToSave)
             throws ConfigurationException {
@@ -625,7 +625,7 @@ public class ConfigurationGenerator {
      * @param setWizardFalseToOnce If wizard was off (false), then set it to
      *            once?
      * @see #saveFilteredConfiguration(Map)
-     * @since 5.4.3
+     * @since 5.5
      */
     public void saveConfiguration(Map<String, String> changedParameters,
             boolean setWizardOnceToFalse, boolean setWizardFalseToOnce)
@@ -884,7 +884,7 @@ public class ConfigurationGenerator {
      *
      * @throws ConfigurationException
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public void checkAddressesAndPorts() throws ConfigurationException {
         InetAddress bindAddress = getBindAddress();
@@ -912,7 +912,7 @@ public class ConfigurationGenerator {
     /**
      * @param address address to check for availability
      * @throws ConfigurationException
-     * @since 5.4.3
+     * @since 5.5
      */
     public static void checkAddressReachable(InetAddress address)
             throws ConfigurationException {
@@ -931,7 +931,7 @@ public class ConfigurationGenerator {
      * @param port port to check for availability
      * @throws ConfigurationException Throws an exception if address is
      *             unavailable.
-     * @since 5.4.3
+     * @since 5.5
      */
     public static void checkPortAvailable(InetAddress address, int port)
             throws ConfigurationException {
