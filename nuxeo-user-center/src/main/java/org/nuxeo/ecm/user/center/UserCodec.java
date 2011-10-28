@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  * parameters.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.3
+ * @since 5.5
  */
 public class UserCodec extends AbstractDocumentViewCodec {
 
