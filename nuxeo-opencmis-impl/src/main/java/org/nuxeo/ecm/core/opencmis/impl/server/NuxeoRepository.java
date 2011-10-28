@@ -174,7 +174,7 @@ public class NuxeoRepository {
         repositoryInfo.setLatestChangeLogToken(latestChangeLogToken);
         repositoryInfo.setVendorName("Nuxeo");
         repositoryInfo.setProductName("Nuxeo OpenCMIS Connector");
-        String version = Framework.getProperty(NUXEO_VERSION_PROP, "5.4 dev");
+        String version = Framework.getProperty(NUXEO_VERSION_PROP, "5.5 dev");
         repositoryInfo.setProductVersion(version);
         repositoryInfo.setRootFolder(rootFolderId);
         RepositoryCapabilitiesImpl caps = new RepositoryCapabilitiesImpl();
