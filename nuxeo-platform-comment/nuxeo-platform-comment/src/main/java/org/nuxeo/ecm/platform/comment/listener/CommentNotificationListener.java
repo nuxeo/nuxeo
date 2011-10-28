@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @description the related thread of comments is retrieved for sending to its
  *              subscribers
- * @since 5.4.3
+ * @since 5.5
  * @author vpasquier
  * 
  */

@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
  * Exports and presents documentation about layouts definitions
  *
  * @author Tiry
- * @since 5.4.3
+ * @since 5.5
  */
 public class WebLayoutResource {
 

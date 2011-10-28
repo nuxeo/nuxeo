@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.schema.types.SimpleType;
  * a property file
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.3
+ * @since 5.5
  *
  */
 public class ComplexTypeJSONDecoder {

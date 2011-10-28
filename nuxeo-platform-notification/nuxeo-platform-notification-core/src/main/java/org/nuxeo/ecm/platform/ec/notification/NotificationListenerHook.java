@@ -19,7 +19,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * @description NotificationListenerHook interface
- * @since 5.4.3
+ * @since 5.5
  */
 public interface NotificationListenerHook {
 

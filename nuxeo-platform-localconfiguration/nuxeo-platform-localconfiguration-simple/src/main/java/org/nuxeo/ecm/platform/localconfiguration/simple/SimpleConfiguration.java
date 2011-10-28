@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
  * {@code SimpleConfiguration}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.3
+ * @since 5.5
  */
 public interface SimpleConfiguration extends
         LocalConfiguration<SimpleConfiguration> {

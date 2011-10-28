@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.localconfiguration.simple.SimpleConfigurationAdapt
  * An object that stores simple key/value user preferences.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- * @since 5.4.3
+ * @since 5.5
  */
 public class SimpleUserPreferences extends SimpleConfigurationAdapter {
 

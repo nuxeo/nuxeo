@@ -41,7 +41,7 @@ import com.google.inject.Inject;
  * Tests for {@link UserPreferencesService}
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- * @since 5.4.3
+ * @since 5.5
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

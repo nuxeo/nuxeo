@@ -20,7 +20,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 
 /**
- * @since 5.4.3
+ * @since 5.5
  */
 @XObject("hookListener")
 public class NotificationListenerHookDescriptor {

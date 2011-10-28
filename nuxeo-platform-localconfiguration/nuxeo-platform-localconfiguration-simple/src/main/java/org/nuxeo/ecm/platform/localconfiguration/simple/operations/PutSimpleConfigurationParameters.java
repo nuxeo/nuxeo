@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.localconfiguration.simple.SimpleConfiguration;
  * needed.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.3
+ * @since 5.5
  */
 @Operation(id = PutSimpleConfigurationParameters.ID, category = CAT_LOCAL_CONFIGURATION, label = "Put Simple Configuration parameters", description = "Put Simple Configuration parameters "
         + "on the input document. "

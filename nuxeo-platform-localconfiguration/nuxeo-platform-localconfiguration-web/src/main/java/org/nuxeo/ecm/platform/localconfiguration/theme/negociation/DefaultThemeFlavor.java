@@ -26,7 +26,7 @@ import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 
 /**
- * @since 5.4.3
+ * @since 5.5
  */
 public class DefaultThemeFlavor implements Scheme {
 

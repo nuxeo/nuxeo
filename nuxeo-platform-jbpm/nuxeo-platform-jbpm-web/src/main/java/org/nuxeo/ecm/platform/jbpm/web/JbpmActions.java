@@ -107,7 +107,7 @@ public interface JbpmActions extends Serializable {
      * Returns true if given document type has process definitions attached to
      * it.
      *
-     * @since 5.4.3
+     * @since 5.5
      * @param documentType the document type name
      */
     boolean hasProcessDefinitions(String documentType);

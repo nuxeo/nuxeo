@@ -57,7 +57,7 @@ public interface UserWorkspaceService extends Serializable {
      * @param userName is the username of the wanted user's workspace owner
      * @param context is a document to determine the domain
      * @return the DocumentModel for the personal workspace
-     * @since 5.4.3
+     * @since 5.5
      */
     DocumentModel getUserPersonalWorkspace(String userName, DocumentModel context)
             throws ClientException;
