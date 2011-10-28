@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -537,6 +538,24 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             }
             assertEquals("Expecting " + docNames + " got " + names,
                     browsePermissions.length, list.size());
+
+            // Add a new folder to update the read acls
+            DocumentModel folder = new DocumentModelImpl(
+                    root.getPathAsString(), "new-folder", "Folder");
+            folder = session.createDocument(folder);
+            ACP acp = folder.getACP();
+            assertNotNull(acp); // the acp inherited from root is returned
+            acp = new ACPImpl();
+            ACL acl = new ACLImpl();
+            acl.add(new ACE("joe", browsePermissions[0], true));
+            acl.add(new ACE("bob", browsePermissions[0], true));
+            acp.addACL(acl);
+            folder.setACP(acp, true);
+            session.save();
+
+            list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(browsePermissions.length + 1, list.size());
+
         } finally {
             closeSession(joeSession);
         }
