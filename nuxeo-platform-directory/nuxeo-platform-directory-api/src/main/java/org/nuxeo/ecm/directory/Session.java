@@ -221,14 +221,14 @@ public interface Session {
 
     /**
      * @deprecated do not use, the container manages transactions.
-     * @since 5.4.3
+     * @since 5.5
      */
     @Deprecated
     void commit() throws ClientException, DirectoryException;
 
     /**
      * @deprecated do not use, the container manages transactions.
-     * @since 5.4.3
+     * @since 5.5
      */
     @Deprecated
     void rollback() throws ClientException, DirectoryException;

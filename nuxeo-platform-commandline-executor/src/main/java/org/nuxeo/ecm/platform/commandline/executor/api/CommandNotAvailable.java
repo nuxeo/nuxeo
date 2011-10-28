@@ -47,7 +47,7 @@ public class CommandNotAvailable extends Exception {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     @Override
     public String getMessage() {

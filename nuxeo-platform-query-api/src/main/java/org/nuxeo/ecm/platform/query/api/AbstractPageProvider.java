@@ -53,7 +53,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      * for enabling or disabling the nextPage action when number of results
      * cannot be known.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     protected int currentHigherNonEmptyPageIndex = 0;
 
@@ -667,7 +667,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      * results. Useful for enabling or disabling the nextPage action when
      * number of results cannot be known.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public int getCurrentHigherNonEmptyPageIndex() {
         return currentHigherNonEmptyPageIndex;
@@ -682,7 +682,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      * (defaults to 1). Can be useful for displaying pages of a provider
      * without results count.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public int getMaxNumberOfEmptyPages() {
         return 1;

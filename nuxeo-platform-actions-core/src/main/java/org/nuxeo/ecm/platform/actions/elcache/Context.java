@@ -22,7 +22,7 @@ import org.apache.commons.jexl.JexlContext;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- * @since 5.4.3 - moved from runtime
+ * @since 5.5 - moved from runtime
  */
 public class Context implements JexlContext {
 

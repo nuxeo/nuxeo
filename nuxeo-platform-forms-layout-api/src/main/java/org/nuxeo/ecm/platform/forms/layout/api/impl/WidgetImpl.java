@@ -75,7 +75,7 @@ public class WidgetImpl implements Widget {
     }
 
     /**
-     * @deprecated since 5.4.3: use
+     * @deprecated since 5.5: use
      *             {@link #WidgetImpl(String, String, String, String, String, FieldDefinition[], String, String, boolean, Map, boolean, Widget[], int, WidgetSelectOption[], String)}
      */
     @Deprecated
@@ -90,7 +90,7 @@ public class WidgetImpl implements Widget {
 
     /**
      * @since 5.4.2
-     * @deprecated since 5.4.3: use
+     * @deprecated since 5.5: use
      *             {@link #WidgetImpl(String, String, String, String, String, FieldDefinition[], String, String, boolean, Map, boolean, Widget[], int, WidgetSelectOption[], String)}
      */
     @Deprecated

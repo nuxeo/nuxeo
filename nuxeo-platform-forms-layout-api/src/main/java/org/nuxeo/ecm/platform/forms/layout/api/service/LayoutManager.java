@@ -68,7 +68,7 @@ public interface LayoutManager extends Serializable {
     /**
      * Returns the names of all the registered layout definitions
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     List<String> getLayoutDefinitionNames();
 

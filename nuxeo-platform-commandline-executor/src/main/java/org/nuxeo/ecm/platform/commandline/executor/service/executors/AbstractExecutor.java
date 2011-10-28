@@ -61,7 +61,7 @@ public abstract class AbstractExecutor {
      * @param cmdDesc CommandLineDescriptor containing parameters
      * @param params parameterized values
      * @return Parameters as a String array
-     * @since 5.4.3
+     * @since 5.5
      */
     public static String[] getParametersArray(CommandLineDescriptor cmdDesc,
             CmdParameters params) {

@@ -35,7 +35,7 @@ import com.cforcoding.jmd.MarkDownParserAndSanitizer;
  * Markdown to HTML converter
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- * @since 5.4.3
+ * @since 5.5
  */
 public class Md2HtmlConverter implements Converter {
 

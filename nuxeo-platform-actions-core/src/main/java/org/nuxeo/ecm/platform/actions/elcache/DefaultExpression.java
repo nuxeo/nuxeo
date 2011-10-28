@@ -16,7 +16,7 @@ package org.nuxeo.ecm.platform.actions.elcache;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @since 5.4.3 - moved from runtime
+ * @since 5.5 - moved from runtime
  */
 public class DefaultExpression implements Expression {
 

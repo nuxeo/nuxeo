@@ -893,12 +893,12 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public void commit() throws DirectoryException {
-        // deprecated since 5.4.3
+        // deprecated since 5.5
     }
 
     @Override
     public void rollback() throws DirectoryException {
-        // deprecated since 5.4.3
+        // deprecated since 5.5
     }
 
     @Override

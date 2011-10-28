@@ -81,7 +81,7 @@ public interface UserManager extends Authenticator, Serializable {
     /**
      * Search matching groups through their defined search fields
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     DocumentModelList searchGroups(String pattern) throws ClientException;
 
@@ -380,7 +380,7 @@ public interface UserManager extends Authenticator, Serializable {
     /**
      * Returns the group label field.
      *
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     String getGroupLabelField() throws ClientException;

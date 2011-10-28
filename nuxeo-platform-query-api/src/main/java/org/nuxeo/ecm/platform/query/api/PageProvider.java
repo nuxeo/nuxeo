@@ -47,7 +47,7 @@ public interface PageProvider<T> extends Serializable {
      * Constant to express that the total number of result elements is unknown
      * even after performing a query.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     long UNKNOWN_SIZE_AFTER_QUERY = -2;
 
@@ -121,7 +121,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Returns the number of result elements if available or a negative value
      * if it is unknown: <code>UNKNOWN_SIZE</code> if it is unknown as query
-     * was not done, and since 5.4.3, <code>UNKNOWN_SIZE_AFTER_QUERY</code> if
+     * was not done, and since 5.5, <code>UNKNOWN_SIZE_AFTER_QUERY</code> if
      * it is still unknown after query was done.
      */
     long getResultsCount();
@@ -129,7 +129,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Sets the results count.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     void setResultsCount(long resultsCount);
 
@@ -171,7 +171,7 @@ public interface PageProvider<T> extends Serializable {
      * If the provider keeps information linked to the current page, they
      * should be reset after calling this method.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     public void setCurrentPageOffset(long offset);
 
@@ -195,7 +195,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Returns a boolean expressing if the last page can be displayed.
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     boolean isLastPageAvailable();
 

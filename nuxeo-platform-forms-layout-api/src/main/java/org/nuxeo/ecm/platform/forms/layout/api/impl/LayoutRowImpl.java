@@ -54,7 +54,7 @@ public class LayoutRowImpl implements LayoutRow {
     }
 
     /**
-     * @deprecated since 5.4.3: use
+     * @deprecated since 5.5: use
      *             {@link #LayoutRowImpl(String, boolean, boolean, List, Map, String)}
      */
     @Deprecated
@@ -68,7 +68,7 @@ public class LayoutRowImpl implements LayoutRow {
     }
 
     /**
-     * @deprecated since 5.4.3: use
+     * @deprecated since 5.5: use
      *             {@link #LayoutRowImpl(String, boolean, boolean, List, Map, String)}
      */
     @Deprecated
@@ -79,7 +79,7 @@ public class LayoutRowImpl implements LayoutRow {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public LayoutRowImpl(String name, boolean selectedByDefault,
             boolean alwaysSelected, List<Widget> widgets,

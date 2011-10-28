@@ -48,7 +48,7 @@ public interface MultiTenantUserManager extends Serializable {
      * defined in the users directory.
      * 
      * @throws ClientException
-     * @since 5.4.3
+     * @since 5.5
      */
     NuxeoPrincipal getPrincipal(String username, DocumentModel context)
             throws ClientException;
@@ -57,7 +57,7 @@ public interface MultiTenantUserManager extends Serializable {
      * Search matching groups through their defined search fields into the given
      * context document. The context document must be contained into the tenant.
      * 
-     * @since 5.4.3
+     * @since 5.5
      */
     DocumentModelList searchGroups(String pattern, DocumentModel context)
             throws ClientException;
@@ -66,7 +66,7 @@ public interface MultiTenantUserManager extends Serializable {
      * Returns the list of all user ids into the given context document. The
      * context document must be contained into the tenant.
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     List<String> getUserIds(DocumentModel context) throws ClientException;
@@ -75,7 +75,7 @@ public interface MultiTenantUserManager extends Serializable {
      * Creates user from given model into the given context document. The
      * context document must be contained into the tenant.
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      * @throws UserAlreadyExistsException
      */
@@ -87,7 +87,7 @@ public interface MultiTenantUserManager extends Serializable {
      * The context document must be contained into the tenant.
      * 
      * @param userModel
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     void updateUser(DocumentModel userModel, DocumentModel context)
@@ -97,7 +97,7 @@ public interface MultiTenantUserManager extends Serializable {
      * Deletes user represented by given model into the given context document.
      * The context document must be contained into the tenant.
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
      */
@@ -108,7 +108,7 @@ public interface MultiTenantUserManager extends Serializable {
      * Deletes user with given id into the given context document. The context
      * document must be contained into the tenant.
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
      */
@@ -120,7 +120,7 @@ public interface MultiTenantUserManager extends Serializable {
      * does not exist into the given context document. The context document must
      * be contained into the tenant.
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     DocumentModel getUserModel(String userName, DocumentModel context)
@@ -135,7 +135,7 @@ public interface MultiTenantUserManager extends Serializable {
      * search fields configuration. Search is performed on each of these fields
      * (OR).
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     DocumentModelList searchUsers(String pattern, DocumentModel context)
@@ -150,7 +150,7 @@ public interface MultiTenantUserManager extends Serializable {
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
      * @param context
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     DocumentModelList searchUsers(Map<String, Serializable> filter,
@@ -162,7 +162,7 @@ public interface MultiTenantUserManager extends Serializable {
      * open the user directory with directory suffix set into the local
      * configuration
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     List<String> getGroupIds(DocumentModel context)
@@ -177,7 +177,7 @@ public interface MultiTenantUserManager extends Serializable {
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
      * @param context
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     DocumentModelList searchGroups(Map<String, Serializable> filter,
@@ -190,7 +190,7 @@ public interface MultiTenantUserManager extends Serializable {
      * configuration of the context document.
      * 
      * @return the created group model
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      * @throws GroupAlreadyExistsException
      */
@@ -203,7 +203,7 @@ public interface MultiTenantUserManager extends Serializable {
      * append at the end of the groupname the directory suffix set into the
      * local configuration of the context document.
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
      */
@@ -217,7 +217,7 @@ public interface MultiTenantUserManager extends Serializable {
      * local configuration of the context document.
      * 
      * @param groupModel
-     * @since 5.4.3
+     * @since 5.5
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
      */
@@ -231,7 +231,7 @@ public interface MultiTenantUserManager extends Serializable {
      * configuration of the context document.
      * 
      * @param groupId
-     * @since 5.4.3
+     * @since 5.5
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
      */
@@ -243,7 +243,7 @@ public interface MultiTenantUserManager extends Serializable {
      * directory local config (if not null) or null if group does not exist.
      * 
      * @param groupName the group identifier
-     * @since 5.4.3
+     * @since 5.5
      * @throws ClientException
      */
     DocumentModel getGroupModel(String groupName, DocumentModel context)
@@ -258,7 +258,7 @@ public interface MultiTenantUserManager extends Serializable {
      * @param parentId the name of the parent group.
      * @return
      * @throws ClientException
-     * @since 5.4.3
+     * @since 5.5
      */
     List<String> getGroupsInGroup(String parentId, DocumentModel context)
             throws ClientException;
@@ -269,7 +269,7 @@ public interface MultiTenantUserManager extends Serializable {
      * 
      * @return
      * @throws ClientException
-     * @since 5.4.3
+     * @since 5.5
      */
     List<String> getTopLevelGroups(DocumentModel context)
             throws ClientException;
@@ -280,7 +280,7 @@ public interface MultiTenantUserManager extends Serializable {
      * 
      * @param groupId ID of the group
      * @return
-     * @since 5.4.3
+     * @since 5.5
      */
     List<String> getUsersInGroup(String groupId, DocumentModel context)
             throws ClientException;
@@ -290,7 +290,7 @@ public interface MultiTenantUserManager extends Serializable {
      * 
      * @param groupId ID of the group
      * @return
-     * @since 5.4.3
+     * @since 5.5
      */
     List<String> getUsersInGroupAndSubGroups(String groupId,
             DocumentModel context) throws ClientException;
@@ -299,7 +299,7 @@ public interface MultiTenantUserManager extends Serializable {
      * Returns true is users referential is read only (ie : LDAP) -> can not add
      * users -> can not delete users.
      * 
-     * @since 5.4.3
+     * @since 5.5
      */
     Boolean areGroupsReadOnly() throws ClientException;
 
@@ -314,7 +314,7 @@ public interface MultiTenantUserManager extends Serializable {
      * context. This method should be use with care as it can cause performance
      * issues while getting the list of users.
      * 
-     * @since 5.4.3
+     * @since 5.5
      * @param perm the permission
      * @param acp The access control policy of the document
      * @return the list of user ids
