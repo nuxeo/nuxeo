@@ -121,8 +121,13 @@ public class VocabularyTreeActions implements Serializable {
             schemaName = directoryService.getDirectorySchema(vocabularyName);
             session = directoryService.open(vocabularyName);
             for (String id : StringUtils.split(path, keySeparator)) {
-                labels.add(VocabularyTreeNode.computeLabel(locale,
-                        session.getEntry(id), schemaName));
+                String computeLabel = VocabularyTreeNode.computeLabel(locale,
+                        session.getEntry(id), schemaName);
+                if (computeLabel == null) {
+                    labels.add(id);
+                } else {
+                    labels.add(computeLabel);
+                }
             }
         } catch (DirectoryException e) {
             log.error("Error while accessing directory " + vocabularyName, e);
