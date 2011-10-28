@@ -124,6 +124,7 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
+import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -725,16 +726,18 @@ public class NuxeoCmisService extends AbstractCmisService {
                 int slash = iconPath.lastIndexOf('/');
                 String filename = slash == -1 ? iconPath
                         : iconPath.substring(slash + 1);
-                long len;
+
+                SimpleImageInfo info;
                 try {
-                    len = NuxeoObjectData.getStreamLength(is);
+                    info = new SimpleImageInfo(is);
                 } catch (IOException e) {
                     throw new CmisRuntimeException(e.toString(), e);
                 }
                 // refetch now-consumed stream
                 is = NuxeoObjectData.getIconStream(iconPath, callContext);
-                return new ContentStreamImpl(filename, BigInteger.valueOf(len),
-                        NuxeoObjectData.getIconMimeType(iconPath), is);
+                return new ContentStreamImpl(filename,
+                        BigInteger.valueOf(info.getLength()),
+                        info.getMimeType(), is);
             } catch (ClientException e) {
                 throw new CmisRuntimeException(e.toString(), e);
             }

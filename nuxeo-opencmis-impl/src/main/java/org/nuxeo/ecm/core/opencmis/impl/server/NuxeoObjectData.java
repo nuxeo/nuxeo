@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
+import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 
 /**
  * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a
@@ -309,17 +310,16 @@ public class NuxeoObjectData implements ObjectData {
             if (is != null) {
                 RenditionDataImpl ren = new RenditionDataImpl();
                 ren.setStreamId(STREAM_ICON);
-                ren.setMimeType(getIconMimeType(iconPath));
                 ren.setKind("cmis:thumbnail");
                 int slash = iconPath.lastIndexOf('/');
                 String filename = slash == -1 ? iconPath
                         : iconPath.substring(slash + 1);
                 ren.setTitle(filename);
-                long len = getStreamLength(is);
-                ren.setBigLength(BigInteger.valueOf(len));
-                // TODO width, height
-                // ren.setBigWidth(width);
-                // ren.setBigHeight(height);
+                SimpleImageInfo info = new SimpleImageInfo(is);
+                ren.setBigLength(BigInteger.valueOf(info.getLength()));
+                ren.setBigWidth(BigInteger.valueOf(info.getWidth()));
+                ren.setBigHeight(BigInteger.valueOf(info.getHeight()));
+                ren.setMimeType(info.getMimeType());
                 list.add(ren);
             }
 
@@ -347,31 +347,6 @@ public class NuxeoObjectData implements ObjectData {
             throw new CmisRuntimeException("Cannot get servlet context");
         }
         return servletContext.getResourceAsStream(iconPath);
-    }
-
-    public static long getStreamLength(InputStream is) throws IOException {
-        byte[] buf = new byte[4096];
-        long count = 0;
-        int n;
-        while ((n = is.read(buf)) != -1) {
-            count += n;
-        }
-        is.close();
-        return count;
-    }
-
-    protected static String getIconMimeType(String iconPath) {
-        iconPath = iconPath.toLowerCase();
-        if (iconPath.endsWith(".gif")) {
-            return "image/gif";
-        } else if (iconPath.endsWith(".png")) {
-            return "image/png";
-        } else if (iconPath.endsWith(".jpg") || iconPath.endsWith(".jpeg")) {
-            return "image/jpeg";
-        } else {
-            // TODO use NXMimeType service
-            return "application/octet-stream";
-        }
     }
 
     @Override
