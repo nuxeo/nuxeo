@@ -1,6 +1,6 @@
-                  Nuxeo platform 5.4.3-DEPRECATED Release Notes
+                  Nuxeo platform 5.5-SNAPSHOT Release Notes
 
-   Welcome to the Nuxeo platform 5.4.3-DEPRECATED.
+   Welcome to the Nuxeo platform 5.5-SNAPSHOT.
 
    You can always download the latest releases of Nuxeo applications based
    on the Nuxeo Enterprise Platform from
@@ -8,7 +8,7 @@
 
 Requirements
 
-   The applications based on Nuxeo EP 5.4 need Java. Please install and
+   The applications based on Nuxeo EP 5.5 need Java. Please install and
    set up the recommended [2]Sun Java Development Kit (JDK) 6 if it's not
    already installed on your computer.
 

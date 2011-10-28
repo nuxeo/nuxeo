@@ -241,7 +241,7 @@ public class NuxeoLauncherGUI {
 
     /**
      * @return the NuxeoLauncher managed by the current GUI
-     * @since 5.4.3
+     * @since 5.5
      */
     public NuxeoLauncher getLauncher() {
         return launcher;

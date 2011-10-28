@@ -37,7 +37,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
  * HTTP client monitoring Nuxeo server starting status
  *
  * @see org.nuxeo.ecm.core.management.statuses.StatusServlet
- * @since 5.4.3
+ * @since 5.5
  */
 public class StatusServletClient {
 

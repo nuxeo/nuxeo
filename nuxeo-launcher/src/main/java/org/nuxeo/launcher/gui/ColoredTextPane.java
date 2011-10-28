@@ -51,7 +51,7 @@ public class ColoredTextPane extends JTextPane {
     private boolean follow = true;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @return true if caret will follow additions
      */
     public boolean isFollow() {
@@ -61,7 +61,7 @@ public class ColoredTextPane extends JTextPane {
     /**
      * Whether to make the caret follow or not the additions (pin/unpin)
      *
-     * @since 5.4.3
+     * @since 5.5
      * @param follow true to make the caret follow additions
      */
     public void setFollow(boolean follow) {
@@ -71,7 +71,7 @@ public class ColoredTextPane extends JTextPane {
     /**
      * Limits the size of the text. 0 means no limit (default value).
      *
-     * @since 5.4.3
+     * @since 5.5
      * @param maxSize maximum number of character kept
      */
     public void setMaxSize(int maxSize) {

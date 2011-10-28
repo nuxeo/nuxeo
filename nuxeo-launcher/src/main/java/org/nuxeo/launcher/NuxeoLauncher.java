@@ -135,7 +135,7 @@ public abstract class NuxeoLauncher {
     private boolean useGui = false;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public boolean isUsingGui() {
         return useGui;
@@ -152,7 +152,7 @@ public abstract class NuxeoLauncher {
     private boolean quiet = false;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @return true if quiet mode is active
      */
     public boolean isQuiet() {
@@ -162,7 +162,7 @@ public abstract class NuxeoLauncher {
     private static Map<String, NuxeoLauncherGUI> guis;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public NuxeoLauncherGUI getGUI() {
         if (guis == null) {
@@ -172,7 +172,7 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public void setGUI(NuxeoLauncherGUI gui) {
         if (guis == null) {
@@ -294,7 +294,7 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @return (since 5.4.3) Array list with created stream gobbler threads.
+     * @return (since 5.5) Array list with created stream gobbler threads.
      */
     public ArrayList<ThreadedStreamGobbler> logProcessStreams(Process process,
             boolean logProcessOutput) {
@@ -419,7 +419,7 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @param launcher
      * @param launcherGUI
      * @param command
@@ -627,7 +627,7 @@ public abstract class NuxeoLauncher {
     /**
      * Must be called after {@link #getStartupSummary()}
      *
-     * @since 5.4.3
+     * @since 5.5
      * @return last detected status of running Nuxeo server
      */
     public boolean wasStartupFine() {
@@ -635,7 +635,7 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @return Nuxeo startup summary
      * @throws SocketTimeoutException if Nuxeo server is not responding
      */
@@ -750,7 +750,7 @@ public abstract class NuxeoLauncher {
      *
      * @throws InterruptedException
      *
-     * @since 5.4.3
+     * @since 5.5
      * @see #logProcessStreams(Process, boolean)
      */
     public void waitForProcessStreams(ArrayList<ThreadedStreamGobbler> sgArray) {
@@ -1017,7 +1017,7 @@ public abstract class NuxeoLauncher {
      * @return a NuxeoLauncher instance specific to current server (JBoss,
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
-     * @since 5.4.3
+     * @since 5.5
      */
     public static NuxeoLauncher createLauncher(String[] args)
             throws ConfigurationException {
@@ -1071,7 +1071,7 @@ public abstract class NuxeoLauncher {
      *
      * @param args arguments to read
      * @return the passed arguments without the options
-     * @since 5.4.3
+     * @since 5.5
      */
     protected String[] readOptions(String[] args) {
         int nbOptions = 0;
@@ -1096,7 +1096,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * @param beQuiet if true, launcher will be in quiet mode
-     * @since 5.4.3
+     * @since 5.5
      */
     protected void setQuiet() {
         quiet = true;
@@ -1105,7 +1105,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * @param activateDebug if true, will activate the DEBUG logs
-     * @since 5.4.3
+     * @since 5.5
      */
     protected void setDebug(boolean activateDebug) {
         Log4JHelper.setDebug("org.nuxeo.launcher", activateDebug);
@@ -1184,7 +1184,7 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @return true if Nuxeo finished starting
      */
     public boolean isStarted() {

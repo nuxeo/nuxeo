@@ -78,7 +78,7 @@ import org.nuxeo.shell.swing.ConsolePanel;
 public class NuxeoFrame extends JFrame {
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected class LogsPanelListener extends ComponentAdapter {
         private String logFile;
@@ -118,7 +118,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected Action startAction = new AbstractAction() {
         private static final long serialVersionUID = 1L;
@@ -133,7 +133,7 @@ public class NuxeoFrame extends JFrame {
     protected boolean stopping = false;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected Action stopAction = new AbstractAction() {
         private static final long serialVersionUID = 1L;
@@ -163,7 +163,7 @@ public class NuxeoFrame extends JFrame {
     /**
      * Log error and display its message in {@link #errorMessageLabel}
      *
-     * @since 5.4.3
+     * @since 5.5
      * @param message Message to log
      * @param e Caught exception
      */
@@ -176,7 +176,7 @@ public class NuxeoFrame extends JFrame {
     /**
      * Log error and display its message in {@link #errorMessageLabel}
      *
-     * @since 5.4.3
+     * @since 5.5
      * @param e Caught exception
      */
     public void setError(Exception e) {
@@ -225,7 +225,7 @@ public class NuxeoFrame extends JFrame {
 
     /**
      * @return JLabel for error display
-     * @since 5.4.3
+     * @since 5.5
      */
     public JLabel getErrorMessageLabel() {
         return errorMessageLabel;
@@ -512,7 +512,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected void updateLaunchBrowserButton() {
         launchBrowserButton.setEnabled(getController().launcher.isStarted());
@@ -548,7 +548,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      * @return GUI controller
      */
     public NuxeoLauncherGUI getController() {
