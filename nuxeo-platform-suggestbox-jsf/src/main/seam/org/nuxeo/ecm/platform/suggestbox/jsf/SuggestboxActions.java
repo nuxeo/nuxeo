@@ -292,7 +292,7 @@ public class SuggestboxActions extends
             // TODO handle i18n
             return new SearchBoxSuggestion(DOCUMENTS_BY_AUTHOR_SUGGESTION,
                     user.getId(), "Documents by " + user.getTitle(),
-                    "/icons/file.gif");
+                    "/img/facetedSearch.png");
         }
 
         public static SearchBoxSuggestion forDocumentsByDate(String type,
@@ -301,7 +301,7 @@ public class SuggestboxActions extends
             String formatted = df.format(date.getTime());
             // TODO handle i18n for label
             return new SearchBoxSuggestion(type, formatted, label + formatted,
-                    "/icons/file.gif");
+                    "/img/facetedSearch.png");
         }
 
         public static SearchBoxSuggestion forDocumentsModifiedBeforeDate(
@@ -333,7 +333,7 @@ public class SuggestboxActions extends
             // TODO handle i18n
             return new SearchBoxSuggestion(DOCUMENTS_WITH_KEY_WORDS_SUGGESTION,
                     keyWords, "Documents with keywords: '" + keyWords + "'",
-                    "/icons/file.gif");
+                    "/img/facetedSearch.png");
         }
 
     }
