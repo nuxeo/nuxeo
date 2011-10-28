@@ -3,6 +3,7 @@
 .settings
 nuxeo-social-collaboration
 nuxeo-rss-reader
+nuxeo-birt
 
 syntax: regexp
 
