@@ -50,7 +50,7 @@
 <!--Recherche rapide-->
 <tr>
 	<td>type</td>
-	<td>//input[@id=&quot;userServicesSearchForm:simpleSearchKeywordsInput&quot;]</td>
+    <td>//input[starts-with(@id,&quot;userServicesSearchForm&quot;) and contains(@id,&quot;simpleSearchKeywordsInput&quot;)]</td>
 	<td>testNote1</td>
 </tr>
 <tr>
@@ -133,7 +133,7 @@
 <!--Test avec une recherche incorrecte-->
 <tr>
 	<td>type</td>
-	<td>//input[@id=&quot;userServicesSearchForm:simpleSearchKeywordsInput&quot;]</td>
+    <td>//input[starts-with(@id,&quot;userServicesSearchForm&quot;) and contains(@id,&quot;simpleSearchKeywordsInput&quot;)]</td>
 	<td>truc</td>
 </tr>
 <tr>
