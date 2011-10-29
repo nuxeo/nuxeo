@@ -432,7 +432,7 @@ public abstract class NuxeoLauncher {
         } else if ("help".equalsIgnoreCase(launcher.command)) {
             printHelp();
         } else if ("status".equalsIgnoreCase(launcher.command)) {
-            log.info(launcher.status());
+            log.warn(launcher.status());
             if (launcher.isStarted()) {
                 log.info(launcher.getStartupSummary());
             }
