@@ -40,7 +40,7 @@ public class RefreshUI {
     /**
      * Additional list of seam event names to raise
      *
-     * @since 5.4.3
+     * @since 5.5
      */
     @Param(name = "additional list of seam events to raise", required = false)
     protected StringList additionalSeamEvents;

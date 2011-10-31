@@ -59,7 +59,7 @@ public abstract class AbstractTask implements Task {
     public static final String ENV_HOME = "env.home";
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public static final String ENV_SERVER_HOME = "env.server.home";
 
@@ -77,7 +77,7 @@ public abstract class AbstractTask implements Task {
     public static final String ENV_CONFIG = "env.config";
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public static final String ENV_TEMPLATES = "env.templates";
 

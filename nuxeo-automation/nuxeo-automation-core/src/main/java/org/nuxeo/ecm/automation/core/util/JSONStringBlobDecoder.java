@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
  * Very basic implementation of a Blob decoder Only usable for StringBlobs
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.3
+ * @since 5.5
  */
 public class JSONStringBlobDecoder implements JSONBlobDecoder {
     public Blob getBlobFromJSON(ObjectNode jsonObject) {

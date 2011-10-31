@@ -285,7 +285,7 @@ public class DocumentService {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public Documents getRelations(DocRef doc, String predicate, boolean outgoing, String graphName)
             throws Exception {

@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.localconfiguration.simple.SimpleConfiguration;
  * name of the SimpleConfiguration retrieve from the input Document.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.3
+ * @since 5.5
  */
 @Operation(id = SetSimpleConfigurationParameterAsVar.ID, category = CAT_LOCAL_CONFIGURATION, label = "Set Context Variable From a Simple Configuration Parameter", description = "Set a context variable "
         + "that points to the value of the given parameter name in "

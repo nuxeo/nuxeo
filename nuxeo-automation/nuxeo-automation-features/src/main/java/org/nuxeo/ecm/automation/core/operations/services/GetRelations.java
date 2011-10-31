@@ -134,7 +134,7 @@ public class GetRelations {
     }
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     public String getGraphName() {
         if (StringUtils.isEmpty(graphName)) {

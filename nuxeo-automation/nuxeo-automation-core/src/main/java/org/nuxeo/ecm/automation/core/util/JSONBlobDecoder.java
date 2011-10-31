@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.Blob;
  * Factory interface to create a {@link Blob} from a JSON Object
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.3
+ * @since 5.5
  *
  */
 public interface JSONBlobDecoder {

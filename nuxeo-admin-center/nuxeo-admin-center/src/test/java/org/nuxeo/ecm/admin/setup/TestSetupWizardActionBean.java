@@ -21,6 +21,7 @@ package org.nuxeo.ecm.admin.setup;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -108,7 +109,12 @@ public class TestSetupWizardActionBean {
         while ((newStr = bfNew.readLine()) != null) {
             expStr = bfExp.readLine();
             if (!newStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN)) {
-                assertEquals(newStr, expStr);
+                // server.status.key is generated, we can't test an exact match
+                if (newStr.startsWith("server.status.key")) {
+                    assertTrue(expStr.startsWith("server.status.key"));
+                } else {
+                    assertEquals(newStr, expStr);
+                }
             }
         }
         expStr = bfExp.readLine();

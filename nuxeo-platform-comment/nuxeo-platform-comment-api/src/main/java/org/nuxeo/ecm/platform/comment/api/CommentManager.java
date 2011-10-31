@@ -81,7 +81,7 @@ public interface CommentManager {
      * @param comment
      * @return
      * @throws ClientException
-     * @since 5.4.3
+     * @since 5.5
      */
     DocumentModel getThreadForComment(DocumentModel comment)
             throws ClientException;

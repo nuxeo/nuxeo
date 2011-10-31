@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
  * Simple operation to get the User's personal Workspace
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.3
+ * @since 5.5
  */
 @Operation(id = UserWorkspace.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Home", description = "Retrieve user's personal workspace.")
 public class UserWorkspace {

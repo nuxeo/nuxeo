@@ -207,7 +207,7 @@ public interface JbpmService {
      * Deletes a task instance (attached to a process or not)
      * 
      * @param principal the canceller.
-     * @Since 5.4.3
+     * @Since 5.5
      */
     void deleteTaskInstance(NuxeoPrincipal principal, Long taskId)
             throws NuxeoJbpmException;

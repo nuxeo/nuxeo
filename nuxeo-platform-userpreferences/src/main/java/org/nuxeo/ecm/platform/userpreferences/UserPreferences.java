@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
  * preferences.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- * @since 5.4.3
+ * @since 5.5
  */
 public interface UserPreferences<T> extends LocalConfiguration<T> {
 

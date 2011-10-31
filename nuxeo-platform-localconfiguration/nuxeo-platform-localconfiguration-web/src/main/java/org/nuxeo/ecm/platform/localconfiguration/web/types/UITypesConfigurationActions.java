@@ -84,7 +84,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @param document the domain to configure
      * @return a List of type of document, not currently selected for the domain
      * @throws ClientException
-     * @Since 5.4.3
+     * @Since 5.5
      */
     public List<Type> getNotSelectedTypes(DocumentModel document)
             throws ClientException {
@@ -133,7 +133,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @param document the domain to configure
      * @return List of documen type selected for the domain
      * @throws ClientException
-     * @Since 5.4.3
+     * @Since 5.5
      */
     public List<Type> getSelectedTypes(DocumentModel document)
             throws ClientException {
@@ -183,7 +183,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @param document the domain
      * @return List of Document types which have assoctiated Schema files.
      * @throws ClientException
-     * @Since 5.4.3
+     * @Since 5.5
      */
     public List<Type> getTypesWithSchemaFile(DocumentModel document)
             throws ClientException {

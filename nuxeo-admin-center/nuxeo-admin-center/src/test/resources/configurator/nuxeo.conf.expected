@@ -18,4 +18,6 @@ nuxeo.templates=postgresql,custom
 test.default.nuxeo.defaults=false
 #nuxeo.bind.address=0.0.0.0
 nuxeo.bind.address=127.0.0.1
+#server.status.key=null
+server.status.key=rAnd0MKey
 ### END - DO NOT EDIT BETWEEN BEGIN AND END ###
