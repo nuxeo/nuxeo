@@ -84,7 +84,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     /**
      * This will return the local directory name according the local
-     * configuration. If the localconfiguration is null or the suffix value is
+     * configuration. If the local configuration is null or the suffix value is
      * null or the suffix value trimmed is an empty string the returned value is
      * the directoryName given in parameter. If not this is directoryName +
      * DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix.
@@ -102,7 +102,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
                 return directoryName
                         + DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix;
             }
-            log.warn("The local configuration detected is an empty value, we concider it as no configuration set.");
+            log.warn("The local configuration detected is an empty value, we consider it as no configuration set.");
             log.debug("Directory Local Configuration is on : "
                     + configuration.getDocumentRef());
         }
@@ -136,12 +136,14 @@ public class DirectoryServiceImpl extends DefaultComponent implements
             return null;
         }
 
-        String localDirectoryName = getWaitingLocalDirectoryName(name, getDirectoryConfiguration(documentContext));
+        String localDirectoryName = getWaitingLocalDirectoryName(name,
+                getDirectoryConfiguration(documentContext));
 
         Directory directory = getDirectory(localDirectoryName);
 
         if (directory == null && !name.equals(localDirectoryName)) {
-            log.debug("The local directory name " + localDirectoryName + " not found. Look for the default one : " + name);
+            log.debug("The local directory name " + localDirectoryName
+                    + " not found. Look for the default one : " + name);
             directory = getDirectory(name);
         }
 
