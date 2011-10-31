@@ -124,6 +124,14 @@ public class TextTemplate {
                 if (trim) {
                     value = value.trim();
                 }
+
+                // process again the value if it still contains variable
+                // to replace
+                String oldValue = value;
+                while (!(value = process(oldValue)).equals(oldValue)) {
+                    oldValue = value;
+                }
+
                 // Allow use of backslash and dollars characters
                 String valueL = Matcher.quoteReplacement(value);
                 m.appendReplacement(sb, valueL);
