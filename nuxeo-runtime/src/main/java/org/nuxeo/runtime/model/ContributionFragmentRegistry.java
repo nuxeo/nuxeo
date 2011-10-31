@@ -64,6 +64,10 @@ import java.util.Map;
  * }
  * </pre>
  *
+ * Since 5.5, if the registry does not support merging of resources, you can
+ * just override the method {@link #isSupportingMerge()} and return false, so
+ * that {@link #merge(Object, Object)} and {@link #clone()} are never called.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class ContributionFragmentRegistry<T> {
@@ -134,6 +138,18 @@ public abstract class ContributionFragmentRegistry<T> {
      * @param dst this object is modified
      */
     public abstract void merge(T src, T dst);
+
+    /**
+     * Returns true if merge is supported.
+     * <p>
+     * Hook method to be overridden if merge logics behind {@link #clone()} and
+     * {@link #merge(Object, Object)} cannot be implemented.
+     *
+     * @since 5.5
+     */
+    public boolean isSupportingMerge() {
+        return true;
+    }
 
     /**
      * Add a new contribution. This will start install the new contribution and
@@ -238,10 +254,15 @@ public abstract class ContributionFragmentRegistry<T> {
             if (p == this) {
                 return null;
             }
-            mergedValue = reg.clone(p.object);
+            mergedValue = reg.isSupportingMerge() ? reg.clone(p.object)
+                    : p.object;
             p = p.next;
             while (p != this) {
-                reg.merge(p.object, mergedValue);
+                if (reg.isSupportingMerge()) {
+                    reg.merge(p.object, mergedValue);
+                } else {
+                    mergedValue = p.object;
+                }
                 p = p.next;
             }
             object = mergedValue;
