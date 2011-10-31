@@ -25,45 +25,15 @@
   <!-- Define JDBC datasources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME.
     For example java:comp/env/jdbc/nxsqldirectory This means you need to update corresponding
     JNDI bindings in nuxeo data source definitions in the config directory -->
-  <Resource name="jdbc/nxsqldirectory" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
 
-  <Resource name="jdbc/nxrelations-default-jena" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
-
-  <Resource name="jdbc/comment-relations" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
-
-  <Resource name="jdbc/nxaudit-logs" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
-
-  <Resource name="jdbc/nxjbpm" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
-
-  <Resource name="jdbc/placeful_service_ds" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
-
-  <Resource name="jdbc/nxwebwidgets" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
-
-  <Resource name="jdbc/nxuidsequencer" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-    url="${nuxeo.db.jdbc.url}"
-    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
+  <ResourceLink name="jdbc/nxsqldirectory" global="jdbc/nuxeo" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxrelations-default-jena" global="jdbc/nuxeo" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/comment-relations" global="jdbc/nuxeo" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxaudit-logs" global="jdbc/nuxeo" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxjbpm" global="jdbc/nuxeo" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/placeful_service_ds" global="jdbc/nuxeo" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxwebwidgets" global="jdbc/nuxeo" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxuidsequencer" global="jdbc/nuxeo" type="javax.sql.DataSource" />
 
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
