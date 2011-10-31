@@ -88,7 +88,6 @@ public abstract class UnrestrictedSessionRunner {
         session = null;
         sessionIsAlreadyUnrestricted = false;
         this.repositoryName = repositoryName;
-        this.originatingUsername = originatingUser;
     }
 
     public String getOriginatingUsername() {
