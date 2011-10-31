@@ -76,7 +76,7 @@
       <groupId>org.apache.shindig</groupId>
       <artifactId>shindig-social-api</artifactId>
     </dependency>
-    <!-- to get the AuthInfo that attaches tokens to requests-->
+    <!-- to get the AuthInfo that attaches tokens to requests -->
     <dependency>
       <groupId>org.apache.shindig</groupId>
       <artifactId>shindig-common</artifactId>
@@ -89,11 +89,9 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
-    <!-- Why not version 3.1 ? -->
     <dependency>
-      <groupId>apache-httpclient</groupId>
+      <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
-      <version>3.0.1</version>
     </dependency>
 
     <dependency>
