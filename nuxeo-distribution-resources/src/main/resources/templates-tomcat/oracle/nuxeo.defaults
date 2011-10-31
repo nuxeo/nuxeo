@@ -6,3 +6,5 @@ nuxeo.db.port=1521
 nuxeo.db.name=NUXEO
 nuxeo.db.user=nuxeo
 nuxeo.db.password=password
+nuxeo.db.jdbc.url=jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}
+nuxeo.db.driver=oracle.jdbc.driver.OracleDriver
