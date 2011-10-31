@@ -31,6 +31,12 @@ function navigateTo(page) {
 function showError(id) {
   alert(id);
 }
+
+function showIframeIfPossible() {
+  if (hasBrowserInternetAccess()) {
+    $("#connectBannerIframe").css("visibility","visible");
+  }
+}
 </script>
 </head>
 

@@ -3,6 +3,9 @@
     String welcomeLabel = "label.welcome."
             + collector.getDistributionName();
 %>
+<script src="<%=contextPath%>/scripts/browserInternetAccess.js"></script>
+<script src="http://www.nuxeo.com/var/storage/wizard/networkCheck.js?ts=<%=System.currentTimeMillis()%>"></script>
+
 <h1><fmt:message key="<%=welcomeLabel%>" /></h1>
 <form id="wizardform" action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
 <div class="formPadding">
@@ -19,14 +22,16 @@
 </p>
 
 <input type="hidden" name="baseUrl" id="baseUrl" value=""/>
-
+<input type="hidden" name="browserInternetAccess" id="browserInternetAccess" value=""/>
 </div>
 <center>
- <input type="submit" class="glossyButton" id="btnNext" value="<fmt:message key="label.action.next"/>"/>
+ <input type="submit" class="glossyButton" id="btnNext" disabled="true" value="<fmt:message key="label.action.next"/>"/>
 </center>
 <script>
   $(document).ready(function(){
     $("#baseUrl").attr("value",window.location.href);
+    $("#browserInternetAccess").attr("value",hasBrowserInternetAccess());
+    $("#btnNext").attr("disabled",false);
   });
 </script>
 </form>

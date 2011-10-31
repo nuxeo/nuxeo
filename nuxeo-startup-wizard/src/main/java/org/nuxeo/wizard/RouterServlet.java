@@ -405,6 +405,18 @@ public class RouterServlet extends HttpServlet {
                 Context.instance(req).setBaseUrl(baseUrl);
             }
         }
+
+        String browserInternetAccess = req.getParameter("browserInternetAccess");
+        if ("true".equals(browserInternetAccess)) {
+            Context.instance(req).setBrowserInternetAccess(true);
+            SimpleNavigationHandler.instance().deactivatePage("NetworkBlocked");
+            SimpleNavigationHandler.instance().activatePage("Connect");
+        } else {
+            Context.instance(req).setBrowserInternetAccess(false);
+            SimpleNavigationHandler.instance().activatePage("NetworkBlocked");
+            SimpleNavigationHandler.instance().deactivatePage("Connect");
+        }
+
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 

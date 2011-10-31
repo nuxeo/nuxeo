@@ -35,6 +35,7 @@ public class SimpleNavigationHandler {
     // I am too lazy to load a file
     // navCode / jsp Page / active flag / hidden flag
     protected static final String[] nav = { "Home|welcome.jsp|1|0",
+            "NetworkBlocked|networkBlocked.jsp|0|0",
             "General|generalSettings.jsp|1|0",
             "Proxy|proxySettings.jsp|1|0",
             "DB|dbSettings.jsp|1|0",

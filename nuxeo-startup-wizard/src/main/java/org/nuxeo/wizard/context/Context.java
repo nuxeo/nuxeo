@@ -42,6 +42,8 @@ public class Context {
 
     protected static String baseUrl;
 
+    protected static boolean browserInternetAccess;
+
     protected Map<String, String> errors = new HashMap<String, String>();
 
     protected static Map<String, String> connectMap;
@@ -151,4 +153,14 @@ public class Context {
     public String getBaseUrl() {
         return baseUrl;
     }
+
+    public boolean hasBrowserInternetAccess() {
+        return browserInternetAccess;
+    }
+
+    public void setBrowserInternetAccess(boolean browserInternetAccess) {
+        Context.browserInternetAccess = browserInternetAccess;
+    }
+
+
 }

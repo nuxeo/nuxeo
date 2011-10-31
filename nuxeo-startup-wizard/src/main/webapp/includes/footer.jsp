@@ -1,8 +1,8 @@
 </td>
 <td class="rightCell">
 
- <iframe class="nuxeoIFrame" style="visibility:hidden" scrolling="no" frameborder="0"
- onload="javascript:this.style.visibility='visible';"
+ <iframe id="connectBannerIframe" class="nuxeoIFrame" style="visibility:hidden" scrolling="no" frameborder="0"
+ onload="javascript:showIframeIfPossible();"
  src="<%=currentPage.getAssociatedIFrameUrl()%>?pkg=<%=ctx.getDistributionKey()%>"></iframe>
 
 </td>
