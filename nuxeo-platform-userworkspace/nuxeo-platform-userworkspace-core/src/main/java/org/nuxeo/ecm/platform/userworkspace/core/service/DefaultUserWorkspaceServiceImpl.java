@@ -351,7 +351,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
         protected UnrestrictedUserWorkspaceFinder(String userName,
                 DocumentModel context) throws Exception {
-            super(context.getCoreSession());
+            super(context.getCoreSession().getRepositoryName(), userName);
             this.userName = userName;
             this.context = context;
         }
