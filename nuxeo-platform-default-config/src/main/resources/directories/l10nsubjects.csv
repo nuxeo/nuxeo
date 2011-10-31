@@ -2,6 +2,7 @@ id, label_en, label_fr, parent, obsolete
 "art","Art","Art","","0"
 "daily life","Daily life","Vie quotidienne","","0"
 "human sciences","Human science","Sciences Humaines","","0"
+"sciences","Science","Sciences","","0"
 "society","Society","Société","","0"
 "technology","Technology","Technologie","","0"
 "architecture","Architecture","Architecture","art","0"
