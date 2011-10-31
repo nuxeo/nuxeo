@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -46,6 +46,8 @@ public class TypeManagerImpl implements TypeManager {
     public static final int DEFAULT_MAX_TYPE_CHILDREN = 100;
 
     protected Map<String, TypeDefinitionContainer> typesMap = new HashMap<String, TypeDefinitionContainer>();
+
+    protected Map<String, String> propQueryNameToId = new HashMap<String, String>();
 
     @Override
     public TypeDefinitionContainer getTypeById(String typeId) {
@@ -200,6 +202,18 @@ public class TypeManagerImpl implements TypeManager {
             addInheritedProperties(propDefs,
                     parentTypeContainer.getTypeDefinition());
         }
+
+        // prop query names
+        for (PropertyDefinition<?> pd : type.getPropertyDefinitions().values()) {
+            String propQueryName = pd.getQueryName();
+            String propId = pd.getId();
+            String old = propQueryNameToId.put(propQueryName, propId);
+            if (old != null && !old.equals(propId)) {
+                throw new RuntimeException("Cannot add type " + id
+                        + ", query name " + propQueryName
+                        + " already used for property id " + old);
+            }
+        }
     }
 
     @Override
@@ -210,6 +224,10 @@ public class TypeManagerImpl implements TypeManager {
                 return pd.getId();
         }
         return null;
+    }
+
+    public String getPropertyIdForQueryName(String propQueryName) {
+        return propQueryNameToId.get(propQueryName);
     }
 
     protected void addInheritedProperties(

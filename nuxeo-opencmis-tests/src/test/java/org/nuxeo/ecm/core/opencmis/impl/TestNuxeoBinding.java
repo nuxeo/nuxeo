@@ -42,6 +42,7 @@ import org.apache.chemistry.opencmis.commons.data.ChangeEventInfo;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
+import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.data.Properties;
@@ -706,6 +707,28 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisConstraintException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testGetChildren() {
+        ObjectInFolderList res;
+        String orderBy;
+
+        orderBy = "cmis:name";
+        res = navService.getChildren(repositoryId, rootFolderId, null, orderBy,
+                null, null, null, null, null, null, null);
+        assertEquals("testfolder1_Title",
+                getValue(res.getObjects().get(0).getObject(), "cmis:name"));
+        assertEquals("testfolder2_Title",
+                getValue(res.getObjects().get(1).getObject(), "cmis:name"));
+
+        orderBy = "cmis:name DESC";
+        res = navService.getChildren(repositoryId, rootFolderId, null, orderBy,
+                null, null, null, null, null, null, null);
+        assertEquals("testfolder2_Title",
+                getValue(res.getObjects().get(0).getObject(), "cmis:name"));
+        assertEquals("testfolder1_Title",
+                getValue(res.getObjects().get(1).getObject(), "cmis:name"));
     }
 
     // flatten and order children

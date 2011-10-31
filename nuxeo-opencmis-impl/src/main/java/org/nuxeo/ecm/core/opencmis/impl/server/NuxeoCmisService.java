@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -101,6 +102,7 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -125,6 +127,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
+import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -1369,7 +1372,11 @@ public class NuxeoCmisService extends AbstractCmisService {
             list.add(oifd);
             collectObjectInfo(repositoryId, data);
         }
-        // TODO orderBy
+
+        if (StringUtils.isNotBlank(orderBy)) {
+            Collections.sort(list, new OrderByComparator(orderBy, repository));
+        }
+
         BatchedList<ObjectInFolderData> batch = ListUtils.getBatchedList(list,
                 maxItems, skipCount, DEFAULT_MAX_CHILDREN);
         result.setObjects(batch.getList());
@@ -1377,6 +1384,78 @@ public class NuxeoCmisService extends AbstractCmisService {
         result.setNumItems(batch.getNumItems());
         collectObjectInfo(repositoryId, folderId);
         return result;
+    }
+
+    public static class OrderByComparator implements
+            Comparator<ObjectInFolderData> {
+
+        protected static String ASC = " asc";
+
+        protected static String DESC = " desc";
+
+        protected String[] props;
+
+        protected boolean[] descs;
+
+        public OrderByComparator(String orderBy, NuxeoRepository repository) {
+            TypeManagerImpl typeManager = repository.getTypeManager();
+            String[] orders = orderBy.split(",");
+            props = new String[orders.length];
+            descs = new boolean[orders.length];
+            for (int i = 0; i < orders.length; i++) {
+                String order = orders[i].trim();
+                String lower = order.toLowerCase();
+                String prop;
+                boolean desc;
+                if (lower.endsWith(DESC)) {
+                    prop = order.substring(0, order.length() - DESC.length()).trim();
+                    desc = true;
+                } else if (lower.endsWith(ASC)) {
+                    prop = order.substring(0, order.length() - ASC.length()).trim();
+                    desc = false;
+                } else {
+                    prop = order;
+                    desc = false;
+                }
+                String propId = typeManager.getPropertyIdForQueryName(prop);
+                if (propId == null) {
+                    throw new CmisInvalidArgumentException("Invalid orderBy: "
+                            + orderBy);
+                }
+                props[i] = propId;
+                descs[i] = desc;
+            }
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public int compare(ObjectInFolderData ob1, ObjectInFolderData ob2) {
+            int cmp = 0;
+            for (int i = 0; i < props.length; i++) {
+                String prop = props[i];
+                boolean desc = descs[i];
+                NuxeoPropertyDataBase<?> p1 = ((NuxeoObjectData) ob1.getObject()).getProperty(prop);
+                NuxeoPropertyDataBase<?> p2 = ((NuxeoObjectData) ob2.getObject()).getProperty(prop);
+                Object v1 = p1 == null ? null : p1.getValue();
+                Object v2 = p2 == null ? null : p2.getValue();
+                if (v1 == null && v2 == null) {
+                    cmp = 0;
+                } else if (v1 == null) {
+                    cmp = -1;
+                } else if (v2 == null) {
+                    cmp = 1;
+                } else {
+                    cmp = ((Comparable<Object>) v1).compareTo(v2);
+                }
+                if (desc) {
+                    cmp = -cmp;
+                }
+                if (cmp != 0) {
+                    break;
+                }
+            }
+            return cmp;
+        }
     }
 
     @Override
