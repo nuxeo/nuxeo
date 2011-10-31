@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
@@ -585,7 +584,11 @@ public class SessionImpl implements Session, XAResource {
             throws StorageException {
         List<Node> nodes = getNodesByIds(Collections.singletonList(id),
                 prefetch);
-        return nodes.get(0);
+        Node node = nodes.get(0);
+        // ((JDBCMapper) ((CachingMapper)
+        // mapper).mapper).logger.log("getNodeById " + id + " -> " + (node ==
+        // null ? "missing" : "found"));
+        return node;
     }
 
     @Override

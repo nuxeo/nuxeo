@@ -1069,19 +1069,24 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * ----- XAResource -----
      */
 
+    protected static String systemToString(Object o) {
+        return o.getClass().getName() + "@"
+                + Integer.toHexString(System.identityHashCode(o));
+    }
+
     @Override
     public void start(Xid xid, int flags) throws XAException {
         try {
             checkConnectionValid();
             xaresource.start(xid, flags);
-            if (log.isDebugEnabled()) {
-                log.debug("XA start on " + xid.getFormatId());
+            if (logger.isLogEnabled()) {
+                logger.log("XA start on " + systemToString(xid));
             }
         } catch (StorageException e) {
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         } catch (XAException e) {
             checkConnectionReset(e);
-            log.error("XA start error on " + xid.getFormatId(), e);
+            logger.error("XA start error on " + systemToString(xid), e);
             throw e;
         }
     }
@@ -1090,15 +1095,15 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public void end(Xid xid, int flags) throws XAException {
         try {
             xaresource.end(xid, flags);
-            if (log.isDebugEnabled()) {
-                log.debug("XA end on " + xid.getFormatId());
+            if (logger.isLogEnabled()) {
+                logger.log("XA end on " + systemToString(xid));
             }
         } catch (NullPointerException e) {
             // H2 when no active transaction
-            log.error("XA end error on " + xid, e);
+            logger.error("XA end error on " + systemToString(xid), e);
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         } catch (XAException e) {
-            log.error("XA end error on " + xid, e);
+            logger.error("XA end error on " + systemToString(xid), e);
             throw e;
         }
     }
@@ -1108,7 +1113,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             return xaresource.prepare(xid);
         } catch (XAException e) {
-            log.error("XA prepare error on  " + xid, e);
+            logger.error("XA prepare error on  " + systemToString(xid), e);
             throw e;
         }
     }
@@ -1118,7 +1123,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             xaresource.commit(xid, onePhase);
         } catch (XAException e) {
-            log.error("XA commit error on  " + xid, e);
+            logger.error("XA commit error on  " + systemToString(xid), e);
             throw e;
         }
     }

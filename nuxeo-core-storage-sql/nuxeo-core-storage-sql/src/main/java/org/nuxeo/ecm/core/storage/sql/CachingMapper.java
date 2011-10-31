@@ -34,7 +34,7 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     /**
      * The {@link Mapper} to which operations are delegated.
      */
-    private final Mapper mapper;
+    public final Mapper mapper;
 
     public CachingMapper(Model model, Mapper mapper,
             InvalidationsPropagator cachePropagator,
