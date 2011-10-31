@@ -389,18 +389,14 @@ class BasePage:
         fl = self.fl
         description = description and description or 'Search ' + query
 
-        searchWidgetId = extractToken(fl.getBody(), 'id="userServicesSearchForm:', 'simpleSearchKeywordsInput"')
-        searchInputName = 'userServicesSearchForm:' + searchWidgetId + 'simpleSearchKeywordsInput'
-        searchButtonName = 'userServicesSearchForm:' + searchWidgetId + 'simpleSearchSubmitButton'
-
         if '/search_results_simple.faces' in fl.getBody():
             action = '/search/search_results_simple.faces'
         else:
             action = '/view_documents.faces'
         fl.post(fl.server_url + action, params=[
-            [searchInputName, query],
+            ['userServicesSearchForm:userServicesSearchDefault:simpleSearchKeywordsInput', query],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            [searchButtonName, 'Search'],
+            ['userServicesSearchForm:userServicesSearchDefault:simpleSearchSubmitButton', 'Search'],
             ['userServicesSearchForm_SUBMIT', '1']],
             description=description)
         fl.assert_('simple_search' in fl.getBody(),
