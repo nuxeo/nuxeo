@@ -17,6 +17,9 @@
 
 package org.nuxeo.runtime.datasource;
 
+import java.lang.reflect.Field;
+import java.util.Hashtable;
+
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -45,10 +48,16 @@ public class DataSourceComponent extends DefaultComponent {
 
     public static final String ENV_CTX_NAME = "java:comp/env";
 
+    public static final String CONTEXT_ACCESS_CONTROLLER_CLASS_NAME = "org.apache.naming.ContextAccessController";
+
+    public static final String READ_ONLY_CONTEXTS_FIELD_NAME = "readOnlyContexts";
+
     protected boolean isNamingOwner;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        clearReadOnlyNamingContexts();
+
         Context ctx = InitialContextAccessor.getInitialContext();
         if (ctx != null) {
             if (InitialContextAccessor.isWritable(ctx)) {
@@ -56,9 +65,35 @@ public class DataSourceComponent extends DefaultComponent {
             }
             NamingContextFactory.setDelegateContext(ctx);
             NamingContextFactory.setDelegateEnvironment(ctx.getEnvironment());
-        } 
+        }
         NamingContextFactory.setAsInitial();
         isNamingOwner = true;
+    }
+
+    /**
+     * Clear the Map holding the read only contexts so that we can contribute
+     * our own DataSources because Tomcat sets its Naming contexts as read only
+     * after initializing them.
+     */
+    protected void clearReadOnlyNamingContexts() {
+        try {
+            Class clazz = Class.forName(CONTEXT_ACCESS_CONTROLLER_CLASS_NAME);
+            if (clazz == null) {
+                return;
+            }
+
+            for (Field field : clazz.getDeclaredFields()) {
+                if (READ_ONLY_CONTEXTS_FIELD_NAME.equals(field.getName())) {
+                    field.setAccessible(true);
+                    Hashtable readOnlyContexts = (Hashtable) field.get(clazz);
+                    // readOnlyContexts.remove("/Catalina/localhost/nuxeo");
+                    readOnlyContexts.clear();
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            log.debug(e.getMessage());
+        }
     }
 
     @Override
