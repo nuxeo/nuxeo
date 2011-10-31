@@ -2255,6 +2255,10 @@
             <groupId>javax.xml</groupId>
             <artifactId>jaxb-api</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>apache-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -3022,11 +3026,6 @@
 
       <dependency>
         <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>3.1</version>
-      </dependency>
-      <dependency>
-        <groupId>apache-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>3.1</version>
       </dependency>
