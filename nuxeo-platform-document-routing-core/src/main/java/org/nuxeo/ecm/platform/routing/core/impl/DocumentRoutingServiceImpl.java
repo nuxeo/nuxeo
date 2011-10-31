@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
@@ -315,7 +316,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             return false;
         }
         return coreSession.hasPermission(documentRoute.getRef(),
-                DocumentRoutingConstants.VALIDATE_ROUTE_PERMISSION_NAME);
+                SecurityConstants.EVERYTHING);
     }
 
     @Override

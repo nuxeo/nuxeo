@@ -203,7 +203,7 @@
         <group>routeManagers</group>
       </rule>
       <rule grant="true">
-        <permission>ValidateRoute</permission>
+        <permission>Manage everything</permission>
       </rule>      
     </filter>
 
