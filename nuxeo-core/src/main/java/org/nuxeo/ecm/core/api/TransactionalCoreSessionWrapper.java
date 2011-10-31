@@ -74,7 +74,7 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
     }
 
     protected void checkTxActiveRequired(Method m) {
-        if (threadBound.get() != null) { 
+        if (threadBound.get() != null) {
             return; // tx is active, no ckeck needed
         }
         if (J2EEContainerDescriptor.getSelected() == null) {
