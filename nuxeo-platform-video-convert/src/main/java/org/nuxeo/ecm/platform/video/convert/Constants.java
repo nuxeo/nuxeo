@@ -24,7 +24,17 @@ public class Constants {
 
     public static final String SCREENSHOT_CONVERTER = "videoScreenshot";
 
+    public static final String TO_MP4_CONVERTER = "convertToMP4";
+
+    public static final String TO_WEBM_CONVERTER = "convertToWebM";
+
+    public static final String TO_OGG_CONVERTER = "convertToOgg";
+
     public static final String POSITION_PARAMETER = "position";
+
+    public static final String INPUT_FILE_PATH_PARAMETER = "inFilePath";
+
+    public static final String OUTPUT_FILE_PATH_PARAMETER = "outFilePath";
 
     // Constant utility class.
     private Constants() {

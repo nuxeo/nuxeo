@@ -27,8 +27,8 @@ function unhidePlayerAndPlay(videoPreviewId, videoPlayerId, timecode) {
 	video.attr("style", "display: block");
 
 	if (timecode != null) {
-		timecode = parseInt(timecode);
-		
+		timecode = parseFloat(timecode) * 1000;
+
 		try {
 			var player = VideoController(videoPlayerId);
 			player.setTime(timecode);
@@ -37,7 +37,7 @@ function unhidePlayerAndPlay(videoPreviewId, videoPlayerId, timecode) {
 			// ignore JS errors when seeking in the player to always
 			// return false to make the click on the thumbnail avoid
 			// triggering a redirect
-			
+
 			// error can happen if the VideoController is no fully loaded
 		}
 	}

@@ -50,7 +50,7 @@ public class StoryboardItem {
             Double tc = doc.getProperty(propertyPath + "/timecode").getValue(
                     Double.class);
             if (tc != null) {
-                timecode = String.format("%d", (int) Math.floor(tc * 1000));
+                timecode = String.format("%f", Math.floor(tc));
             }
             // TODO: read filename from blob too
         } catch (Exception e) {

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.video.listener;
 
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_PROPERTY;
 
 import java.io.IOException;
 
@@ -32,11 +33,15 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 
 /**
- * Core event listener to compute / update the story board of a Video document
+ * Core event listener to update the preview and the info of a Video
+ * document.
+ * <p>
+ * It also set the context property {@link VIDEO_CHANGED_PROPERTY} to
+ * {@code true} if the main video has changed.
  *
  * @author ogrisel
  */
-public class VideoPreviewListener implements EventListener {
+public class VideoChangedListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -50,8 +55,10 @@ public class VideoPreviewListener implements EventListener {
             Property origVideoProperty = doc.getProperty("file:content");
             if (origVideoProperty.isDirty()) {
                 try {
-                    VideoHelper.updatePreviews(doc,
-                            origVideoProperty.getValue(Blob.class));
+                    Blob blob = origVideoProperty.getValue(Blob.class);
+                    VideoHelper.updateVideoInfo(doc, blob);
+                    VideoHelper.updatePreviews(doc, blob);
+                    ctx.setProperty(VIDEO_CHANGED_PROPERTY, true);
                 } catch (IOException e) {
                     throw ClientException.wrap(e);
                 }

@@ -36,11 +36,16 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.video.Stream;
+import org.nuxeo.ecm.platform.video.VideoDocument;
+import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /*
@@ -94,6 +99,12 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
         openSession();
 
+        EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        eventServiceAdmin.setListenerEnabledFlag(
+                "videoAutomaticConversions", false);
+        eventServiceAdmin.setListenerEnabledFlag(
+                "sql-storage-binary-text", false);
+
         root = session.getRootDocument();
         fileManagerService = Framework.getService(FileManager.class);
     }
@@ -102,6 +113,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     public void tearDown() throws Exception {
         fileManagerService = null;
         root = null;
+        closeSession();
         super.tearDown();
     }
 
@@ -180,8 +192,10 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
             return;
         }
 
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
         // the test video is very short, no storyboard:
-        assertEquals(0.0, docModel.getPropertyValue(DURATION_PROPERTY));
+        assertEquals(0.04, docModel.getPropertyValue(DURATION_PROPERTY));
         List<Map<String, Serializable>> storyboard = docModel.getProperty(
                 "vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
@@ -190,7 +204,6 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     }
 
     public void testImportBigVideo() throws Exception {
-
         CommandAvailability ca = Framework.getService(
                 CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-storyboard");
@@ -204,9 +217,14 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel.setPropertyValue("file:content",
                 (Serializable) getBlobFromPath(ELEPHANTS_DREAM).getBlob());
         docModel = session.createDocument(docModel);
+        session.save();
 
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+        session.save();
+
+        docModel = session.getDocument(docModel.getRef());
         // the test video last around 10 minutes
-        assertEquals(653.53, docModel.getPropertyValue(DURATION_PROPERTY));
+        assertEquals(653.8, docModel.getPropertyValue(DURATION_PROPERTY));
         List<Map<String, Serializable>> storyboard = docModel.getProperty(
                 "vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
@@ -250,8 +268,58 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel.setPropertyValue("file:content", null);
         docModel = session.saveDocument(docModel);
 
+        session.save();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+        session.save();
+
+        docModel = session.getDocument(docModel.getRef());
+
         assertTrue(docModel.getProperty("vid:storyboard").getValue(List.class).isEmpty());
         assertTrue(docModel.getProperty("picture:views").getValue(List.class).isEmpty());
+    }
+
+    public void testVideoInfo() throws Exception {
+        File testFile = getTestFile();
+        Blob blob = StreamingBlob.createFromFile(testFile, "video/mpg");
+        blob.setFilename("Sample.mpg");
+        String rootPath = root.getPathAsString();
+        assertNotNull(blob);
+        assertNotNull(rootPath);
+        assertNotNull(session);
+        assertNotNull(fileManagerService);
+
+        DocumentModel docModel = fileManagerService.createDocumentFromBlob(
+                session, blob, rootPath, true, "test-data/sample.mpg");
+        session.save();
+
+        closeSession();
+        openSession();
+
+        docModel = session.getDocument(docModel.getRef());
+        assertEquals("Video", docModel.getType());
+        assertEquals("sample.mpg", docModel.getTitle());
+
+        VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
+        assertNotNull(videoDocument);
+
+        VideoInfo videoInfo = videoDocument.getVideoInfo();
+        assertNotNull(videoInfo);
+        assertEquals("mpegvideo", videoInfo.getFormat());
+        assertEquals(0.04, videoInfo.getDuration(), 0.1);
+        assertEquals(23.98, videoInfo.getFrameRate(), 0.1);
+        assertEquals(320, videoInfo.getWidth());
+        assertEquals(200, videoInfo.getHeight());
+
+        List<Stream> streams = videoInfo.getStreams();
+        assertNotNull(streams);
+        assertEquals(1, streams.size());
+        Stream stream = streams.get(0);
+        assertEquals(Stream.VIDEO_TYPE, stream.getType());
+        assertEquals("mpeg1video", stream.getCodec());
+        assertEquals(104857, stream.getBitRate(), 0.1);
+        assertEquals(
+                "Stream #0.0: Video: mpeg1video, yuv420p, 320x200 [PAR 1:1 DAR 8:5], 104857 kb/s, 23.98 fps, 23.98 tbr, 1200k tbn, 23.98 tbc",
+                stream.getStreamInfo());
     }
 
 }

@@ -22,6 +22,10 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -43,10 +47,14 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-convert</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-video-convert</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
     </dependency>
 
     <!-- test dependencies -->

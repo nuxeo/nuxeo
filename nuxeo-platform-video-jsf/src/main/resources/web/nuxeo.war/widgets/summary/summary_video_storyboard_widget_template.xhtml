@@ -1,0 +1,20 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h3 class="summaryTitle">#{messages['heading.storyboard']}</h3>
+
+  <ui:repeat var="item" value="#{storyboardActions.getItems(currentDocument)}">
+    <a class="videoStoryboardItem" href="#play" timecode="#{item.timecode}">
+      <nxh:graphicImage url="#{item.url}" />
+    </a>
+  </ui:repeat>
+
+</div>
