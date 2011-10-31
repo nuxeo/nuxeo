@@ -26,13 +26,12 @@
   <div class="userSearchBlock">
     <h:form id="userServicesSearchForm">
       <div class="searchService">
-
         <c:if test="#{userServicesContext.searchEnabled}">
           <c:forEach var="simpleSearchActions" items="#{webActions.getActionsList('SEARCH_BOX_TEMPLATE')}"
             id="#{widget.id}_simpleSearchActions">
             <ui:include src="#{simpleSearchActions.link}"/>
           </c:forEach>
-          <f:subview rendered="#{empty webActions.getActionsList('SEARCH_BOX_TEMPLATE')}">
+          <f:subview id="userServicesSearchDefault" rendered="#{empty webActions.getActionsList('SEARCH_BOX_TEMPLATE')}">
             <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
               class="directoryFilter"
               onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
