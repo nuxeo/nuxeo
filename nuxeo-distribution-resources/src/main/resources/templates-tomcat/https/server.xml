@@ -43,6 +43,13 @@
               description="User database that can be updated and saved"
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
+
+    <!-- Common datasource for all basic nuxeo datasources -->
+    <Resource name="${nuxeo.db.commonds}" auth="Container" type="javax.sql.DataSource"
+        maxActive="100" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
+        url="${nuxeo.db.jdbc.url}"
+        username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
+
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share

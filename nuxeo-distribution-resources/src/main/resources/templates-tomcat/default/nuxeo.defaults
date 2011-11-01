@@ -12,6 +12,7 @@ nuxeo.db.user=sa
 nuxeo.db.password=
 nuxeo.db.jdbc.url=jdbc:derby:${nuxeo.data.dir}/derby/${nuxeo.db.name};create=true
 nuxeo.db.driver=org.apache.derby.jdbc.EmbeddedDriver
+nuxeo.db.commonds=jdbc/nuxeo
 
 org.nuxeo.ecm.instance.name=Nuxeo 5.4
 org.nuxeo.ecm.instance.description=Nuxeo ECM server
