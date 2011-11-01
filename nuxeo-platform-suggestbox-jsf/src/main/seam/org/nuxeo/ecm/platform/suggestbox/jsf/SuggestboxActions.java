@@ -50,7 +50,6 @@ import org.nuxeo.ecm.platform.suggestbox.utils.DateMatcher;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
-import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 import org.nuxeo.ecm.webapp.security.GroupManagementActions;
 import org.nuxeo.ecm.webapp.security.UserManagementActions;
@@ -60,8 +59,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("suggestboxActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
-public class SuggestboxActions extends
-        DocumentContextBoundActionBean implements Serializable {
+public class SuggestboxActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -336,10 +334,6 @@ public class SuggestboxActions extends
                     "/img/facetedSearch.png");
         }
 
-    }
-
-    @Override
-    protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
     }
 
     public List<DocumentModel> getUsersSuggestions(Object user)
