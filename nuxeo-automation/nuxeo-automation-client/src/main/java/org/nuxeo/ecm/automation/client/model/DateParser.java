@@ -100,8 +100,23 @@ public class DateParser {
                 pad(cal.get(Calendar.DATE))).append('T').append(
                 pad(cal.get(Calendar.HOUR_OF_DAY))).append(':').append(
                 pad(cal.get(Calendar.MINUTE))).append(':').append(
+                pad(cal.get(Calendar.SECOND))).append('Z').toString();
+    }
+
+    public static String formatW3CDateTimeMs(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        cal.setTime(date);
+        StringBuilder buf = new StringBuilder(32);
+        return buf.append(cal.get(Calendar.YEAR)).append('-').append(
+                pad(cal.get(Calendar.MONTH) + 1)).append('-').append(
+                pad(cal.get(Calendar.DATE))).append('T').append(
+                pad(cal.get(Calendar.HOUR_OF_DAY))).append(':').append(
+                pad(cal.get(Calendar.MINUTE))).append(':').append(
                 pad(cal.get(Calendar.SECOND))).append('.').append(
-                pad(cal.get(Calendar.MILLISECOND) / 10)).append('Z').toString();
+                pad(cal.get(Calendar.MILLISECOND))).append('Z').toString();
     }
 
     private final static String pad(int i) {

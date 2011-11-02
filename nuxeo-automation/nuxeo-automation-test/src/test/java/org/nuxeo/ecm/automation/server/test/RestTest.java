@@ -113,8 +113,10 @@ public class RestTest {
 
     @BeforeClass
     public static void connect() throws Exception {
-        Framework.getLocalService(ObjectCodecService.class).addCodec(new MyObjectCodec());
-        Framework.getLocalService(AutomationService.class).putOperation(MyObjectOperation.class);
+        Framework.getLocalService(ObjectCodecService.class).addCodec(
+                new MyObjectCodec());
+        Framework.getLocalService(AutomationService.class).putOperation(
+                MyObjectOperation.class);
         try {
             client = new HttpAutomationClient(
                     "http://localhost:18080/automation");
@@ -277,11 +279,15 @@ public class RestTest {
         assertEquals("updated", doc.getString("dc:description"));
 
         String now = DateUtils.formatDate(new Date());
-        doc = (Document) session.newRequest(UpdateDocument.ID)
-                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
-                .setInput(new DocRef("/docsInput/note1"))
-                .set("properties", "dc:valid=" + now)
-                .execute();
+        doc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
+                new DocRef("/docsInput/note1")).set("properties",
+                "dc:valid=" + now).execute();
+        // TODO this test will not work if the client date writer and the server
+        // date writer
+        // are encoding differently the date (for instance the client add the
+        // milliseconds field but the server not)
+        // should instead compare date objects up to the second field.
         assertThat(doc.getDate("dc:valid"), is(DateUtils.parseDate(now)));
     }
 
@@ -633,8 +639,8 @@ public class RestTest {
     @Test
     public void testCodecs() throws Exception {
         JsonMarshalling.addMarshaller(new MyObjectMarshaller());
-        //session.getClient().addCodec(new MyObjectCodec());
-        MyObject msg = (MyObject)session.newRequest(MyObjectOperation.ID).execute();
+        // session.getClient().addCodec(new MyObjectCodec());
+        MyObject msg = (MyObject) session.newRequest(MyObjectOperation.ID).execute();
         assertEquals("hello world", msg.getMessage());
     }
 
