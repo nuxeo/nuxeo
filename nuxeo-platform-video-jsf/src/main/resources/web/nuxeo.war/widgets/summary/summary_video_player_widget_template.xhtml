@@ -9,6 +9,8 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j">
 
+  <c:if test="#{currentDocument.hasFacet('Video')}">
+
   <link rel="stylesheet" href="#{baseURL}css/video-js.css" type="text/css" media="screen" title="Video JS"/>
   <script src="#{baseURL}scripts/video.js" type="text/javascript" charset="utf-8"></script>
   <script src="#{baseURL}scripts/video-player-util.js" type="text/javascript" charset="utf-8"></script>
@@ -58,5 +60,7 @@
   </nxu:set>
   </nxu:set>
   </nxu:set>
+
+  </c:if>
 
 </div>

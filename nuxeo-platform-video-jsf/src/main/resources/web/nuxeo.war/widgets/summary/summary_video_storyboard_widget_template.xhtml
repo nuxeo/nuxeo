@@ -9,6 +9,8 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j">
 
+  <c:if test="#{currentDocument.hasFacet('Video')}">
+
   <h3 class="summaryTitle">#{messages['heading.storyboard']}</h3>
 
   <ui:repeat var="item" value="#{storyboardActions.getItems(currentDocument)}">
@@ -16,5 +18,7 @@
       <nxh:graphicImage url="#{item.url}" />
     </span>
   </ui:repeat>
+
+  </c:if>
 
 </div>

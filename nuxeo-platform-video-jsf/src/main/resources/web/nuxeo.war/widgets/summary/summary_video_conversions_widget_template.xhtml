@@ -8,6 +8,8 @@
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
+  <c:if test="#{currentDocument.hasFacet('Video')}">
+
    <style>
      .videoConversionRow:hover {
        background-color: #e6f6ff
@@ -49,4 +51,7 @@
       </c:forEach>
     </tbody>
   </table>
+
+  </c:if>
+
 </div>
