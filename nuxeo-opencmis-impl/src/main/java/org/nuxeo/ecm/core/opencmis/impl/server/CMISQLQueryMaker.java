@@ -971,6 +971,15 @@ public class CMISQLQueryMaker implements QueryMaker {
                 String key = vc.getKey();
                 ColumnReference col = vc.getValue();
                 String qual = col.getQualifier();
+                if (col.getPropertyId().equals(PropertyIds.BASE_TYPE_ID)) {
+                    // special case, no need to get full Nuxeo Document
+                    String typeId = (String) map.get(getPropertyKey(qual,
+                            PropertyIds.OBJECT_TYPE_ID));
+                    TypeDefinitionContainer type = service.repository.getTypeManager().getTypeById(typeId);
+                    String baseTypeId = type.getTypeDefinition().getBaseTypeId().value();
+                    map.put(key, baseTypeId);
+                    continue;
+                }
                 if (datas == null) {
                     datas = new HashMap<String, NuxeoObjectData>(2);
                 }
