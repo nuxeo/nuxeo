@@ -12,9 +12,9 @@
   <h3 class="summaryTitle">#{messages['heading.storyboard']}</h3>
 
   <ui:repeat var="item" value="#{storyboardActions.getItems(currentDocument)}">
-    <a class="videoStoryboardItem" href="#play" timecode="#{item.timecode}">
+    <span class="videoStoryboardItem" timecode="#{item.timecode}">
       <nxh:graphicImage url="#{item.url}" />
-    </a>
+    </span>
   </ui:repeat>
 
 </div>
