@@ -63,6 +63,25 @@
         /widgets/summary/summary_video_conversions_widget_template.xhtml
       </property>
     </widgetType>
+
+    <widgetType name="summary_video_info">
+      <documentation>
+        This widget displays the information of the video.
+
+        It requires the following variables to be
+        present in the EL context:
+        <ul>
+          <li>currentDocument: the current document</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/summary_video_info_widget_template.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -73,6 +92,99 @@
       type="summary_video_storyboard" />
     <widget name="summary_video_conversions"
           type="summary_video_conversions" />
+    <widget name="summary_video_info"
+          type="summary_video_info" />
+
+    <widget name="video_info_duration" type="text">
+      <labels>
+        <label mode="any">label.widget.video.duration</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/duration</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_width" type="int">
+      <labels>
+        <label mode="any">label.widget.video.width</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/width</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_height" type="int">
+      <labels>
+        <label mode="any">label.widget.video.height</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/height</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_format" type="text">
+      <labels>
+        <label mode="any">label.widget.video.format</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/format</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_frameRate" type="text">
+      <labels>
+        <label mode="any">label.widget.video.frameRate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/frameRate</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_streams" type="list">
+      <labels>
+        <label mode="any">label.widget.video.streams</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/streams</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="listItem" type="text">
+          <fields>
+            <field>streamInfo</field>
+          </fields>
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <widgetModes>
+            <mode value="any">view</mode>
+          </widgetModes>
+        </widget>
+      </subWidgets>
+    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -95,6 +207,7 @@
           <widget>summary_current_document_actions</widget>
           <widget>summary_video_storyboard</widget>
           <widget>summary_video_conversions</widget>
+          <widget>summary_video_info</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
         </row>
@@ -107,6 +220,29 @@
       </rows>
       <widget name="summary_current_document_entities"
        type="summary_current_document_entities"/>
+    </layout>
+
+    <layout name="video_info">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>video_info_format</widget>
+        </row>
+        <row>
+          <widget>video_info_duration</widget>
+        </row>
+        <row>
+          <widget>video_info_width</widget>
+        </row>
+        <row>
+          <widget>video_info_height</widget>
+        </row>
+        <row>
+          <widget>video_info_frameRate</widget>
+        </row>
+      </rows>
     </layout>
   </extension>
 
