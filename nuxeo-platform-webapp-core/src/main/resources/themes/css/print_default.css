@@ -3,9 +3,9 @@
 body { color: "black (__FLAVOR__ color)"; font-family: "default (__FLAVOR__ font)" }
 h1,h2,h3,h4,h5,h6 { margin: 0; padding: 0 }
 
-div { background-color: #fff; float: none; }
+div { background-color: #fff; float: none }
 
-a:link, a:visited { background: transparent; color: "black (__FLAVOR__ color)"; font-weight: bold; text-decoration: none; }
+a:link, a:visited { background: transparent; color: "black (__FLAVOR__ color)"; text-decoration: none }
 
 /* Breadcrumb */
 .breadcrumbs { float:left; font-size: .8em; margin-bottom: 20px }
@@ -14,7 +14,7 @@ a:link, a:visited { background: transparent; color: "black (__FLAVOR__ color)"; 
 .fieldColumn { padding-left: 5px }
 .dataOutput th, .dataList th { background-color: "neutral.lighter (__FLAVOR__ background)"; color:; padding: 4px 5px; text-align: left;  }
 .dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img { display: block }
-.dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse; }
+.dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
 .dataOutput td, .dataList td { border-width: 1px; border-style: solid none; border-color: "light (__FLAVOR__ border)"; padding: 5px 3px }
 .dataOutput2Columns td { padding: 5px 3px; vertical-align: top }
 

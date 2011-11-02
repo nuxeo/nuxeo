@@ -2,7 +2,7 @@
 <theme name="galaxy" template-engines="jsf-facelets">
   <layout>
     <page name="default" class="documentManagement">
-      <section class="header">
+      <section class="nxHeader">
         <cell class="logo">
           <!-- logo -->
           <fragment type="generic fragment"/>
@@ -16,7 +16,7 @@
           <fragment type="generic fragment"/>
         </cell>
       </section>
-      <section class="mainContainer">
+      <section class="nxMainContainer">
         <cell class="column">
           <!-- NXP-6413: keep multiple_domains perspective as BBB -->
           <!-- tree view -->
@@ -33,7 +33,7 @@
           <fragment type="region fragment" class="mainFragment"/>
         </cell>
       </section>
-      <section class="footer">
+      <section class="nxFooter">
         <cell class="content">
           <!-- copyrights -->
           <fragment type="generic fragment"/>
@@ -41,8 +41,8 @@
       </section>
     </page>
     <page name="popup">
-      <section>
-        <cell>
+      <section class="nxMainContainer">
+        <cell class="content">
           <!-- Include -->
           <fragment type="generic fragment"/>
           <!-- main area -->
@@ -51,8 +51,8 @@
       </section>
     </page>
     <page name="print">
-      <section>
-        <cell>
+      <section class="nxMainContainer">
+        <cell class="content">
           <!-- includes -->
           <fragment type="generic fragment"/>
           <!-- breadcrumbs -->
