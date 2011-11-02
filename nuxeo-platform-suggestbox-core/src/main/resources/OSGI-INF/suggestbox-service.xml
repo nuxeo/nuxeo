@@ -22,20 +22,6 @@
   based navigation in the repository.
   </documentation>
 
-  <extension-point name="suggestionPoint">
-
-    <documentation>
-      Extension point for assembling several named suggesters into an aggregate
-      user interface element.
-
-      For instance the top right search box can use a specific global
-      search-centric SuggestionPoint.
-    </documentation>
-
-    <object
-      class="org.nuxeo.ecm.platform.suggestbox.service.SuggestionPointDescriptor" />
-  </extension-point>
-
   <extension-point name="suggesters">
 
     <documentation>
@@ -49,6 +35,20 @@
     <object
       class="org.nuxeo.ecm.platform.suggestbox.service.SuggesterDescriptor" />
 
+  </extension-point>
+
+  <extension-point name="suggesterGroup">
+
+    <documentation>
+      Extension point for assembling several named suggesters into a named
+      aggregate user interface element.
+
+      For instance the top right search box can use a specific global
+      search-centric SuggesterGroup.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.suggestbox.service.SuggesterGroupDescriptor" />
   </extension-point>
 
 </component>

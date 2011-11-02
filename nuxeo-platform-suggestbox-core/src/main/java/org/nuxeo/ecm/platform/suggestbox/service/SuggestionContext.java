@@ -1,6 +1,8 @@
 package org.nuxeo.ecm.platform.suggestbox.service;
 
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -12,7 +14,7 @@ import com.sun.star.lang.IllegalArgumentException;
  * Base class and default implementation for passing contextual information to
  * the suggestion service.
  * 
- * This is primarly a hash map to store arbitrary context element that might be
+ * This is primarily a hash map to store arbitrary context element that might be
  * useful for suggester along with a few mandatory and common optional
  * attributes for direct access.
  * 
@@ -26,9 +28,13 @@ public class SuggestionContext extends HashMap<String, Object> {
 
     public final NuxeoPrincipal principal;
 
+    public final Map<String, String> messages = new HashMap<String, String>();
+
     public transient CoreSession session;
 
     public DocumentModel currentDocument;
+
+    public Locale locale = Locale.ENGLISH;
 
     public SuggestionContext(String suggestionPoint, NuxeoPrincipal principal)
             throws IllegalArgumentException {
@@ -53,4 +59,15 @@ public class SuggestionContext extends HashMap<String, Object> {
         this.currentDocument = currentDocument;
         return this;
     }
+
+    public SuggestionContext withLocale(Locale locale) {
+        this.locale = locale;
+        return this;
+    }
+
+    public SuggestionContext withMessages(Map<String, String> messages) {
+        this.messages.putAll(messages);
+        return this;
+    }
+
 }

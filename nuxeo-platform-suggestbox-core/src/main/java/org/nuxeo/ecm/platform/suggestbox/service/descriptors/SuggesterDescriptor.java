@@ -3,6 +3,7 @@ package org.nuxeo.ecm.platform.suggestbox.service.descriptors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.runtime.model.RuntimeContext;
 
@@ -34,22 +35,31 @@ public class SuggesterDescriptor implements Cloneable {
         return enabled;
     }
 
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
     public void setRuntimeContext(RuntimeContext context)
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException {
+            throws ComponentInitializationException {
         // store the runtime context for later usage if a merge is required
         this.runtimeContext = context;
         loadParameterizedSuggester();
     }
 
-    protected void loadParameterizedSuggester() throws InstantiationException,
-            IllegalAccessException, ClassNotFoundException {
+    protected void loadParameterizedSuggester()
+            throws ComponentInitializationException {
         if (enabled && className != null) {
             // try build the suggester instance as early as possible to throw
             // errors at deployment time rather than lazily at first access time
             // by the user: fail early.
-            suggester = (Suggester) runtimeContext.loadClass(className).newInstance();
-            suggester.setParameters(parameters);
+            try {
+                suggester = (Suggester) runtimeContext.loadClass(className).newInstance();
+            } catch (Exception e) {
+                throw new ComponentInitializationException(String.format(
+                        "Failed to initialize suggester '%d' with class '%s'",
+                        name, className), e);
+            }
+            suggester.initWithParameters(this);
         }
         // if the the descriptor is enabled but does not provide any
         // contrib this is probably just for overriding some parameters
@@ -61,8 +71,7 @@ public class SuggesterDescriptor implements Cloneable {
     }
 
     public void mergeFrom(SuggesterDescriptor previousDescriptor)
-            throws InstantiationException, IllegalAccessException,
-            ClassNotFoundException {
+            throws ComponentInitializationException {
         if (name == null || !name.equals(previousDescriptor)) {
             throw new RuntimeException("Cannot merge descriptor with name '"
                     + name + "' with another descriptor with different name "
@@ -93,4 +102,5 @@ public class SuggesterDescriptor implements Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
 }

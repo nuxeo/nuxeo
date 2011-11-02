@@ -31,6 +31,7 @@ public interface SuggestionService {
      * @param context user context (with suggestPoint name and more)
      * @return generated suggestion for the given input and context
      */
-    public List<Suggestion> suggest(String userInput, SuggestionContext context);
+    public List<Suggestion> suggest(String userInput, SuggestionContext context)
+            throws SuggestionException;
 
 }
