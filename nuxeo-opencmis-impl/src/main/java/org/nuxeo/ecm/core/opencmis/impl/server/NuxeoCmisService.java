@@ -139,6 +139,8 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     public static final int DEFAULT_MAX_CHILDREN = 100;
 
+    public static final int DEFAULT_MAX_RELATIONSHIPS = 100;
+
     public static final String NUXEO_WAR = "nuxeo.war";
 
     private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
@@ -1548,10 +1550,23 @@ public class NuxeoCmisService extends AbstractCmisService {
             RelationshipDirection relationshipDirection, String typeId,
             String filter, Boolean includeAllowableActions,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
+        IncludeRelationships includeRelationships;
+        if (relationshipDirection == null
+                || relationshipDirection == RelationshipDirection.SOURCE) {
+            includeRelationships = IncludeRelationships.SOURCE;
+        } else if (relationshipDirection == RelationshipDirection.TARGET) {
+            includeRelationships = IncludeRelationships.TARGET;
+        } else { // RelationshipDirection.EITHER
+            includeRelationships = IncludeRelationships.BOTH;
+        }
+        List<ObjectData> rels = NuxeoObjectData.getRelationships(objectId,
+                includeRelationships, coreSession, this);
+        BatchedList<ObjectData> batch = ListUtils.getBatchedList(rels,
+                maxItems, skipCount, DEFAULT_MAX_RELATIONSHIPS);
         ObjectListImpl res = new ObjectListImpl();
-        res.setNumItems(BigInteger.valueOf(0));
-        res.setHasMoreItems(Boolean.FALSE);
-        res.setObjects(Collections.<ObjectData> emptyList());
+        res.setObjects(batch.getList());
+        res.setNumItems(batch.getNumItems());
+        res.setHasMoreItems(batch.getHasMoreItems());
         return res;
     }
 

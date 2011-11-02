@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,12 +35,15 @@ import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
 import org.apache.chemistry.opencmis.client.runtime.QueryStatementImpl;
+import org.apache.chemistry.opencmis.client.runtime.util.AbstractPageFetcher;
+import org.apache.chemistry.opencmis.client.runtime.util.CollectionIterable;
 import org.apache.chemistry.opencmis.client.runtime.util.EmptyItemIterable;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
@@ -417,11 +422,39 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ItemIterable<Relationship> getRelationships(ObjectId objectId,
-            boolean includeSubRelationshipTypes,
-            RelationshipDirection relationshipDirection, ObjectType type,
-            OperationContext context) {
-        return EmptyItemIterable.instance();
+    public ItemIterable<Relationship> getRelationships(final ObjectId objectId,
+            final boolean includeSubRelationshipTypes,
+            final RelationshipDirection relationshipDirection,
+            final ObjectType type, final OperationContext context) {
+        final String typeId = type == null ? null : type.getId();
+        AbstractPageFetcher<Relationship> pageFetcher = new AbstractPageFetcher<Relationship>(
+                context.getMaxItemsPerPage()) {
+            @Override
+            protected Page<Relationship> fetchPage(long skipCount) {
+                ObjectList relations = service.getObjectRelationships(
+                        repositoryId, objectId.getId(),
+                        Boolean.valueOf(includeSubRelationshipTypes),
+                        relationshipDirection, typeId, null, null,
+                        BigInteger.valueOf(this.maxNumItems),
+                        BigInteger.valueOf(skipCount), null);
+                // convert objects
+                List<Relationship> page = new ArrayList<Relationship>();
+                if (relations.getObjects() != null) {
+                    for (ObjectData objectData : relations.getObjects()) {
+                        CmisObject ob = objectFactory.convertObject(objectData,
+                                context);
+                        if (!(ob instanceof Relationship)) {
+                            // should not happen...
+                            continue;
+                        }
+                        page.add((Relationship) ob);
+                    }
+                }
+                return new Page<Relationship>(page, relations.getNumItems(),
+                        relations.hasMoreItems());
+            }
+        };
+        return new CollectionIterable<Relationship>(pageFetcher);
     }
 
     @Override

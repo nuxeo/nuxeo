@@ -41,6 +41,7 @@ import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.Action;
+import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
@@ -282,6 +283,13 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.SOURCE_ID, id1);
         properties.put(PropertyIds.TARGET_ID, id2);
         ObjectId relid = session.createRelationship(properties);
+
+        ItemIterable<Relationship> rels = session.getRelationships(session.createObjectId(id1), false,
+                RelationshipDirection.SOURCE, null, new OperationContextImpl());
+        assertEquals(1, rels.getTotalNumItems());
+        for (Relationship r : rels) {
+            assertEquals(relid.getId(), r.getId());
+        }
 
         // has to be superuser to get relations
         closeSession();
