@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Convenient functions for use on Nuxeo projects version controlled under Git.
 #
@@ -25,4 +26,14 @@ gitf() {
       (cd "$dir" ; git "$@"; echo )
     fi
   done
+}
+
+gitfa() {
+   ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1)
+   for dir in $ADDONS; do
+     if [ -d "$dir"/.git ]; then
+       echo "[$dir]"
+       (cd "$dir" ; git "$@"; echo )
+     fi
+   done
 }
