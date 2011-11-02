@@ -43,6 +43,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
@@ -64,6 +66,8 @@ public class DownloadServlet extends HttpServlet {
     protected static final int BUFFER_SIZE = 1024 * 512;
 
     protected static final int MIN_BUFFER_SIZE = 1024 * 64;
+
+    protected static final Blob BLOB_NOT_FOUND = new StringBlob("404");
 
     private static final long serialVersionUID = 986876871L;
 
@@ -156,12 +160,14 @@ public class DownloadServlet extends HttpServlet {
                         blob = bh.getBlobs().get(idxbh);
                     }
                 } else {
-                    blob = (Blob) DocumentModelUtils.getPropertyValue(doc,
-                            DocumentModelUtils.decodePropertyName(fieldPath));
-                    if (blob == null) {
-                        // maybe it's a complex property
-                        blob = (Blob) DocumentModelUtils.getComplexPropertyValue(
-                                doc, fieldPath);
+                    try {
+                        blob = (Blob) doc.getPropertyValue(fieldPath);
+                    } catch(PropertyNotFoundException e) {
+                        log.debug(e.getMessage());
+                        return BLOB_NOT_FOUND;
+                    } catch(ClientException e) {
+                        log.debug(e.getMessage());
+                        return null;
                     }
                 }
             }
@@ -186,15 +192,10 @@ public class DownloadServlet extends HttpServlet {
         String downloadUrl = requestURI.replace(NXDOWNLOADINFO_PREFIX,
                 NXBIGFILE_PREFIX);
         Blob blob = resolveBlob(req, resp, downloadUrl);
-        if (blob == null) {
-            try {
-                resp.sendError(HttpServletResponse.SC_NO_CONTENT,
-                        "No Blob found");
-                return;
-            } catch (IOException e) {
-                throw new ServletException(e);
-            }
+        if(!isBlobFound(blob, resp)) {
+            return;
         }
+
         StringBuffer sb = new StringBuffer();
 
         resp.setContentType("text/plain");
@@ -211,14 +212,36 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
+    private boolean isBlobFound(Blob blob, HttpServletResponse resp) throws ServletException {
+        if (blob == null) {
+            try {
+                resp.sendError(HttpServletResponse.SC_NO_CONTENT,
+                        "No Blob found");
+                return false;
+            } catch (IOException e) {
+                throw new ServletException(e);
+            }
+        } else if (BLOB_NOT_FOUND.equals(blob)) {
+            try {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND,
+                        "No Blob found");
+                return false;
+            } catch (IOException e) {
+                throw new ServletException(e);
+            }
+        }
+        return true;
+    }
+
     private void handleDownloadSingleDocument(HttpServletRequest req,
             HttpServletResponse resp, String requestURI)
             throws ServletException {
 
         Blob blob = resolveBlob(req, resp, requestURI);
-        if (blob == null) {
+        if(!isBlobFound(blob, resp)) {
             return;
         }
+
         try {
             downloadBlob(req, resp, blob, null);
         } catch (IOException e) {
