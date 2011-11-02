@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
@@ -49,9 +48,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyIdListImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RenditionDataImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
@@ -376,7 +373,7 @@ public class NuxeoObjectData implements ObjectData {
                 + PropertyIds.BASE_TYPE_ID + ", " + PropertyIds.SOURCE_ID
                 + ", " + PropertyIds.TARGET_ID + " FROM "
                 + BaseTypeId.CMIS_RELATIONSHIP.value() + " WHERE ";
-        String qid = "'" + id + "'";
+        String qid = "'" + id.replace("'", "''") + "'";
         if (includeRelationships != IncludeRelationships.TARGET) {
             statement += PropertyIds.SOURCE_ID + " = " + qid;
         }

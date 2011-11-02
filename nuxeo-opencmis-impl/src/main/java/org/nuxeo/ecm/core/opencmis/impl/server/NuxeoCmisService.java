@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1712,8 +1713,38 @@ public class NuxeoCmisService extends AbstractCmisService {
             String filter, String orderBy, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-        // TODO implement using query on non-proxy non-version non-checkedin
-        throw new CmisNotSupportedException();
+        // columns from filter
+        List<String> props;
+        if (StringUtils.isBlank(filter)) {
+            props = Arrays.asList(PropertyIds.OBJECT_ID,
+                    PropertyIds.OBJECT_TYPE_ID, PropertyIds.BASE_TYPE_ID);
+        } else {
+            props = NuxeoObjectData.getPropertyIdsFromFilter(filter);
+            // same as query names
+        }
+        // clause from folderId
+        List<String> clauses = new ArrayList<String>(3);
+        clauses.add(NuxeoTypeHelper.NX_ISVERSION + " = false");
+        // TODO optimize storage of ecm:isCheckedIn to avoid this OR
+        clauses.add("(" + NuxeoTypeHelper.NX_ISCHECKEDIN + " = false" //
+                + " OR " + NuxeoTypeHelper.NX_ISCHECKEDIN + " IS NULL)");
+        if (folderId != null) {
+            String qid = "'" + folderId.replace("'", "''") + "'";
+            clauses.add("IN_FOLDER(" + qid + ")");
+        }
+        // orderBy
+        String order;
+        if (StringUtils.isBlank(orderBy)) {
+            order = "";
+        } else {
+            order = " ORDER BY " + orderBy;
+        }
+        String statement = "SELECT " + StringUtils.join(props, ", ") + " FROM "
+                + BaseTypeId.CMIS_DOCUMENT.value() + " WHERE "
+                + StringUtils.join(clauses, " AND ") + order;
+        return query(repositoryId, statement, Boolean.FALSE,
+                includeAllowableActions, includeRelationships, renditionFilter,
+                maxItems, skipCount, extension);
     }
 
     @Override

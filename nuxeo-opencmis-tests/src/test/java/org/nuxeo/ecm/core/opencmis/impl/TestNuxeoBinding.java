@@ -2066,6 +2066,41 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryPWC() throws Exception {
+        ObjectList list = navService.getCheckedOutDocs(repositoryId, null,
+                null, null, null, null, null, null, null, null);
+        assertEquals(4, list.getNumItems().intValue());
+
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+        Holder<String> idHolder = new Holder<String>(id);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
+                "comment", null, null, null, null);
+
+        list = navService.getCheckedOutDocs(repositoryId, null, null, null,
+                null, null, null, null, null, null);
+        assertEquals(3, list.getNumItems().intValue());
+
+        verService.checkOut(repositoryId, idHolder, null, null);
+
+        // re-checkout (ecm:isCheckedIn now false instead of null earlier)
+        list = navService.getCheckedOutDocs(repositoryId, null, null, null,
+                null, null, null, null, null, null);
+        assertEquals(4, list.getNumItems().intValue());
+
+        // with folder and filter and order
+        ObjectData f1 = getObjectByPath("/testfolder1");
+        list = navService.getCheckedOutDocs(repositoryId, f1.getId(),
+                "cmis:name", "cmis:name DESC", null, null, null, null, null,
+                null);
+        assertEquals(3, list.getNumItems().intValue());
+        List<ObjectData> objects = list.getObjects();
+        assertEquals("testfile3_Title", getValue(objects.get(0), "cmis:name"));
+        assertEquals("testfile2_Title", getValue(objects.get(1), "cmis:name"));
+        assertEquals("testfile1_Title", getValue(objects.get(2), "cmis:name"));
+    }
+
+    @Test
     public void testVersioning() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
@@ -2082,6 +2117,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
+        checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.FALSE, ob);
         String series = (String) getValue(ob, PropertyIds.VERSION_SERIES_ID);
 
         // check in major -> version 1.0
@@ -2104,6 +2140,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, ver);
+        checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.TRUE, ver); // hm
 
         // look at the checked in document to verify
         // that CMIS views it as a version
@@ -2121,7 +2158,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ci);
 
         // not viewed as a version according to Nuxeo semantics though
+        ob = getObjectByPath("/testfolder1/testfile1");
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
+        checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.TRUE, ob);
 
         // check out
 
@@ -2142,6 +2181,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, co);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, co);
+        checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.FALSE, co);
 
         // check in minor -> version 1.1
 
@@ -2163,6 +2203,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, ver2);
+        checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.TRUE, ver2);
 
         // check out again (with no content copied holder)
 

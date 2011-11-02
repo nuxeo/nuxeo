@@ -105,6 +105,8 @@ public class NuxeoTypeHelper {
 
     public static final String NX_ISVERSION = "nuxeo:isVersion";
 
+    public static final String NX_ISCHECKEDIN = "nuxeo:isCheckedIn";
+
     public static final String NX_FACETS = "nuxeo:secondaryObjectTypeIds";
 
     public static final String NX_LIFECYCLE_STATE = "nuxeo:lifecycleState";
@@ -424,9 +426,12 @@ public class NuxeoTypeHelper {
                 Cardinality.SINGLE, Updatability.READONLY, false, false, false,
                 false));
         t.addPropertyDefinition(newPropertyDefinition(NX_ISVERSION,
-                "Is Checkedin Version", PropertyType.BOOLEAN,
+                "Is Version", PropertyType.BOOLEAN,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true,
                 true));
+        t.addPropertyDefinition(newPropertyDefinition(NX_ISCHECKEDIN,
+                "Is Checked In PWC", PropertyType.BOOLEAN, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, true, true));
     }
 
     protected static PropertyDefinition<?> newPropertyDefinition(String id,

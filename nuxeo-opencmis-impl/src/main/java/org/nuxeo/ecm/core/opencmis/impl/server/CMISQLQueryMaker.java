@@ -852,6 +852,10 @@ public class CMISQLQueryMaker implements QueryMaker {
             return database.getTable(model.HIER_TABLE_NAME).getColumn(
                     model.MAIN_IS_VERSION_KEY);
         }
+        if (id.equals(NuxeoTypeHelper.NX_ISCHECKEDIN)) {
+            return database.getTable(model.HIER_TABLE_NAME).getColumn(
+                    model.MAIN_CHECKED_IN_KEY);
+        }
         if (id.equals(NuxeoTypeHelper.NX_LIFECYCLE_STATE)) {
             return database.getTable(model.MISC_TABLE_NAME).getColumn(
                     model.MISC_LIFECYCLE_STATE_KEY);
