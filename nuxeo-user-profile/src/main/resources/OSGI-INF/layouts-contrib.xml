@@ -7,7 +7,7 @@
     point="widgettypes">
     <widgetType name="summary_user_profile">
       <configuration>
-        <sinceVersion>5.4.3</sinceVersion>
+        <sinceVersion>5.5</sinceVersion>
         <title>User Profile Summary</title>
         <description>
           <p>This widget displays the user profile layout.</p>
@@ -30,7 +30,7 @@
 
     <widgetType name="avatar">
       <configuration>
-        <sinceVersion>5.4.3</sinceVersion>
+        <sinceVersion>5.5</sinceVersion>
         <title>User Profile Avatar</title>
         <description>
           Widget allowing to upload a picture for the user avatar.

@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  * Seam component to manage user profile editing
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- * @since 5.4.3
+ * @since 5.5
  */
 @Name("userProfileActions")
 @Scope(ScopeType.CONVERSATION)
