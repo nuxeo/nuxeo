@@ -373,8 +373,9 @@ public class NuxeoObjectData implements ObjectData {
             return null;
         }
         String statement = "SELECT " + PropertyIds.OBJECT_ID + ", "
-                + PropertyIds.SOURCE_ID + ", " + PropertyIds.TARGET_ID
-                + " FROM " + BaseTypeId.CMIS_RELATIONSHIP.value() + " WHERE ";
+                + PropertyIds.BASE_TYPE_ID + ", " + PropertyIds.SOURCE_ID
+                + ", " + PropertyIds.TARGET_ID + " FROM "
+                + BaseTypeId.CMIS_RELATIONSHIP.value() + " WHERE ";
         String qid = "'" + id + "'";
         if (includeRelationships != IncludeRelationships.TARGET) {
             statement += PropertyIds.SOURCE_ID + " = " + qid;

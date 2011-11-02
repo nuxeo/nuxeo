@@ -193,11 +193,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected static Object getValue(ObjectData data, String key) {
-        return data.getProperties().getProperties().get(key).getFirstValue();
+        PropertyData<?> pd = data.getProperties().getProperties().get(key);
+        return pd == null ? null : pd.getFirstValue();
     }
 
     protected static Object getValues(ObjectData data, String key) {
-        return data.getProperties().getProperties().get(key).getValues();
+        PropertyData<?> pd = data.getProperties().getProperties().get(key);
+        return pd == null ? null : pd.getValues();
     }
 
     protected static String getString(ObjectData data, String key) {
@@ -2439,6 +2441,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         List<ObjectData> rels1 = od1.getRelationships();
         assertNotNull(rels1);
         assertEquals(1, rels1.size());
+        // check relation base type id present
+        assertNotNull(getValue(rels1.get(0), PropertyIds.BASE_TYPE_ID));
         ObjectData od2 = getObject(id2);
         List<ObjectData> rels2 = od2.getRelationships();
         assertNotNull(rels2);
@@ -2453,6 +2457,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         rels1 = od1.getRelationships();
         assertNotNull(rels1);
         assertEquals(1, rels1.size());
+        // check relation base type id present
+        assertNotNull(getValue(rels1.get(0), PropertyIds.BASE_TYPE_ID));
 
         // query relationship
         statement = "SELECT cmis:objectId, cmis:name, cmis:sourceId, cmis:targetId FROM Relation";
