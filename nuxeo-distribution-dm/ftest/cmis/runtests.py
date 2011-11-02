@@ -3,6 +3,14 @@
 import cmislibtest
 import unittest
 import sys
+import os
+
+VERBOSITY=1
+if os.environ.has_key("VERBOSITY"):
+    try:
+        VERBOSITY=int(os.environ["VERBOSITY"])
+    except:
+        pass
 
 # These are the tests (from cmislibtest) that are actually run against Nuxeo.
 # Please uncomment (remove leading '#') when a new test passes.
@@ -90,7 +98,7 @@ for line in TESTS.split("\n"):
 
 suite = unittest.TestLoader().loadTestsFromNames(testNames)
 
-status = unittest.TextTestRunner(verbosity=1).run(suite)
+status = unittest.TextTestRunner(verbosity=VERBOSITY).run(suite)
 
 if not status.wasSuccessful():
     sys.exit(1)
