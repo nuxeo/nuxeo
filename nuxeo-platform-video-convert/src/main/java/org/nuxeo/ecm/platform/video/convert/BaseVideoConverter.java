@@ -75,6 +75,11 @@ public abstract class BaseVideoConverter {
 
     protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d+)");
 
+    /**
+     * @deprecated since 5.5. The duration is now extracted with the other
+     * information sotred in the VideoInfo.
+     */
+    @Deprecated
     protected static Double extractDuration(List<String> output)
             throws ConversionException {
         for (String line : output) {

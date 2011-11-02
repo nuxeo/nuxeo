@@ -64,14 +64,16 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
     }
 
     protected BlobHolder applyConverter(String converter, String fileName,
-            Double position) throws Exception {
+            Double position, Double duration) throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertNotNull(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getBlobFromPath(fileName);
-        Map<String, Serializable> params = null;
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
         if (position != null) {
-            params = new HashMap<String, Serializable>();
             params.put("position", position);
+        }
+        if(duration != null) {
+            params.put("duration", duration);
         }
         BlobHolder result = cs.convert(converter, in, params);
         assertNotNull(result);
@@ -87,13 +89,12 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
             return;
         }
         BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER,
-                ELEPHANTS_DREAM, null);
+                ELEPHANTS_DREAM, null, 653.53);
         List<Blob> blobs = result.getBlobs();
         assertEquals(9, blobs.size());
         assertEquals("00000.000-seconds.jpeg", blobs.get(0).getFilename());
         assertEquals("00070.000-seconds.jpeg", blobs.get(1).getFilename());
         assertEquals("00560.000-seconds.jpeg", blobs.get(8).getFilename());
-        assertEquals(653.53, result.getProperty("duration"));
     }
 
     public void testScreenshotConverter() throws Exception {
@@ -105,38 +106,18 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
             return;
         }
         BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER,
-                ELEPHANTS_DREAM, null);
+                ELEPHANTS_DREAM, null, null);
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("video-screenshot-00000.000.jpeg",
                 blobs.get(0).getFilename());
-        assertEquals(653.53, result.getProperty("duration"));
 
         result = applyConverter(Constants.SCREENSHOT_CONVERTER,
-                ELEPHANTS_DREAM, 10.0);
+                ELEPHANTS_DREAM, 10.0, null);
         blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("video-screenshot-00010.000.jpeg",
                 blobs.get(0).getFilename());
-        assertEquals(653.53, result.getProperty("duration"));
-    }
-
-    public void extractDuration() throws Exception {
-        List<String> output = Arrays.asList(
-                "FFmpeg version r11872+debian_0.svn20080206-18+lenny1, Copyright (c) 2000-2008 Fabrice Bellard, et al.",
-                " Duration: 00:00:10.0, start: 0.000000, bitrate: 484 kb/s",
-                " some other output line");
-
-        Double duration = BaseVideoConverter.extractDuration(output);
-        assertEquals(10.0, duration);
-
-        output = Arrays.asList(
-                "FFmpeg version SVN-r19352-4:0.5+svn20090706-2ubuntu2, Copyright (c) 2000-2009 Fabrice Bellard, et al.",
-                " Duration: 00:00:10.04, start: 0.000000, bitrate: 484 kb/s",
-                " some other output line");
-
-        duration = BaseVideoConverter.extractDuration(output);
-        assertEquals(10.04, duration);
     }
 
 }

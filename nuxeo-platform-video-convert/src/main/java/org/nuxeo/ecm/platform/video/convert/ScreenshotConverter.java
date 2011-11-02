@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -31,14 +30,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -92,17 +90,13 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             long positionParam = Math.round(position);
             params.addNamedParameter(POSITION_PARAMETER,
                     String.valueOf(positionParam));
-            ExecResult result = cleService.execCommand(
-                    FFMPEG_SCREENSHOT_COMMAND, params);
+            cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
 
             Blob outBlob = StreamingBlob.createFromStream(
                     new FileInputStream(outFile), "image/jpeg").persist();
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg",
                     positionParam));
-            Map<String, Serializable> properties = new HashMap<String, Serializable>();
-            properties.put("duration",
-                    BaseVideoConverter.extractDuration(result.getOutput()));
-            return new SimpleBlobHolderWithProperties(outBlob, properties);
+            return new SimpleCachableBlobHolder(outBlob);
         } catch (Exception e) {
             if (blob != null) {
                 throw new ConversionException(

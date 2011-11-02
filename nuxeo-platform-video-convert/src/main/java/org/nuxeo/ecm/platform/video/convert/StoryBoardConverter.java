@@ -119,13 +119,8 @@ public class StoryboardConverter extends BaseVideoConverter implements
             params.addNamedParameter("inFilePath",
                     quoteFilePath(inputFile.file.getAbsolutePath()));
 
-            // read the duration with a first command to adjust the best rate:
-            ExecResult result = cleService.execCommand(FFMPEG_INFO_COMMAND,
-                    params);
-            Double duration = extractDuration(result.getOutput());
-            properties.put("duration", duration);
-
-            if (duration < 3.0) {
+            Double duration = (Double) parameters.get("duration");
+            if (duration == null || duration < 3.0) {
                 // do not extract a storyboard for so short videos
                 return collectBlobs(outFolder, properties, blob.getFilename(),
                         0.0);
@@ -148,7 +143,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
             params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
             params.addNamedParameter(HEIGHT_PARAM,
                     commonParams.get(HEIGHT_PARAM));
-            result = cleService.execCommand(FFMPEG_STORYBOARD_COMMAND, params);
+            ExecResult result = cleService.execCommand(FFMPEG_STORYBOARD_COMMAND, params);
             if (!result.isSuccessful()) {
                 Exception error = result.getError();
                 if (error != null) {

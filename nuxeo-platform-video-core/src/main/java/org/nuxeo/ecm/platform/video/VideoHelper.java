@@ -100,9 +100,13 @@ public class VideoHelper {
 
         BlobHolder result;
         try {
+
+            VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
+            Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+            parameters.put("duration", videoDocument.getVideoInfo().getDuration());
             result = Framework.getService(ConversionService.class).convert(
                     Constants.STORYBOARD_CONVERTER,
-                    new SimpleBlobHolder(video), null);
+                    new SimpleBlobHolder(video), parameters);
         } catch (ConversionException e) {
             // this can happen when if the codec is not supported or not
             // readable by ffmpeg and is recoverable by using a dummy preview
@@ -144,7 +148,7 @@ public class VideoHelper {
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put(Constants.POSITION_PARAMETER, position);
-        BlobHolder result = null;
+        BlobHolder result;
         try {
             result = Framework.getService(ConversionService.class).convert(
                     Constants.SCREENSHOT_CONVERTER,
@@ -158,7 +162,7 @@ public class VideoHelper {
             log.debug(e, e);
             return;
         } catch (Exception e) {
-            ClientException.wrap(e);
+           throw ClientException.wrap(e);
         }
 
         // compute the thumbnail preview
