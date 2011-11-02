@@ -1649,6 +1649,20 @@
         <artifactId>nuxeo-distribution-tomcat</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
+        <classifier>coreserver</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-tomcat</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>nuxeo-cap</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-tomcat</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
         <classifier>nuxeo-dm</classifier>
       </dependency>
       <dependency>
