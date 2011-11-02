@@ -171,12 +171,9 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public ItemIterable<CmisObject> getChildren(OperationContext context) {
-        final ObjectFactory objectFactory = session.getObjectFactory();
-        final OperationContext ctx = new OperationContextImpl(context);
-
+    public ItemIterable<CmisObject> getChildren(final OperationContext context) {
         AbstractPageFetcher<CmisObject> pageFetcher = new AbstractPageFetcher<CmisObject>(
-                ctx.getMaxItemsPerPage()) {
+                context.getMaxItemsPerPage()) {
             @Override
             protected Page<CmisObject> fetchPage(long skipCount) {
                 List<CmisObject> items = new ArrayList<CmisObject>();
@@ -203,8 +200,9 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
                         continue;
                     }
                     NuxeoObjectData data = new NuxeoObjectData(service, child,
-                            ctx);
-                    CmisObject ob = objectFactory.convertObject(data, ctx);
+                            context);
+                    CmisObject ob = session.objectFactory.convertObject(data,
+                            context);
                     items.add(ob);
                 }
                 return new Page<CmisObject>(items, totalItems,
