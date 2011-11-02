@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -162,10 +161,10 @@ public class DownloadServlet extends HttpServlet {
                 } else {
                     try {
                         blob = (Blob) doc.getPropertyValue(fieldPath);
-                    } catch(PropertyNotFoundException e) {
+                    } catch (PropertyNotFoundException e) {
                         log.debug(e.getMessage());
                         return BLOB_NOT_FOUND;
-                    } catch(ClientException e) {
+                    } catch (ClientException e) {
                         log.debug(e.getMessage());
                         return null;
                     }
@@ -192,7 +191,7 @@ public class DownloadServlet extends HttpServlet {
         String downloadUrl = requestURI.replace(NXDOWNLOADINFO_PREFIX,
                 NXBIGFILE_PREFIX);
         Blob blob = resolveBlob(req, resp, downloadUrl);
-        if(!isBlobFound(blob, resp)) {
+        if (!isBlobFound(blob, resp)) {
             return;
         }
 
@@ -212,7 +211,8 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    private boolean isBlobFound(Blob blob, HttpServletResponse resp) throws ServletException {
+    private boolean isBlobFound(Blob blob, HttpServletResponse resp)
+            throws ServletException {
         if (blob == null) {
             try {
                 resp.sendError(HttpServletResponse.SC_NO_CONTENT,
@@ -238,7 +238,7 @@ public class DownloadServlet extends HttpServlet {
             throws ServletException {
 
         Blob blob = resolveBlob(req, resp, requestURI);
-        if(!isBlobFound(blob, resp)) {
+        if (!isBlobFound(blob, resp)) {
             return;
         }
 
@@ -282,9 +282,10 @@ public class DownloadServlet extends HttpServlet {
                 }
                 if (byteRange != null) {
                     resp.setHeader("Accept-Ranges", "bytes");
-                    resp.setHeader("Content-Range", "bytes "
-                            + byteRange.getStart() + "-" + byteRange.getEnd()
-                            + "/" + fileSize);
+                    resp.setHeader(
+                            "Content-Range",
+                            "bytes " + byteRange.getStart() + "-"
+                                    + byteRange.getEnd() + "/" + fileSize);
                     resp.setContentLength(byteRange.getLength());
                     resp.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                     writeStream(in, out, byteRange);
@@ -354,8 +355,7 @@ public class DownloadServlet extends HttpServlet {
         int read;
         int offset = range.getStart();
         in.skip(offset);
-        while (offset <= range.getEnd()
-                && (read = in.read(buffer)) != -1) {
+        while (offset <= range.getEnd() && (read = in.read(buffer)) != -1) {
             read = Math.min(read, range.getEnd() - offset + 1);
             out.write(buffer, 0, read);
             out.flush();
@@ -366,7 +366,8 @@ public class DownloadServlet extends HttpServlet {
 
     public static ByteRange parseRange(String range, int fileSize)
             throws ClientException {
-        if (!range.startsWith("bytes=") || range.indexOf(',') >= 0) { // Do no support multiple ranges
+        // Do no support multiple ranges
+        if (!range.startsWith("bytes=") || range.indexOf(',') >= 0) {
             throw new ClientException("Cannot parse range : " + range);
         }
         int sepIndex = range.indexOf('-', 6);
