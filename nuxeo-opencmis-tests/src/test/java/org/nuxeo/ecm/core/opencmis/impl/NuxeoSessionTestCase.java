@@ -284,18 +284,18 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.TARGET_ID, id2);
         ObjectId relid = session.createRelationship(properties);
 
+        // has to be superuser to get relations
+        closeSession();
+        super.session = openSessionAs(SecurityConstants.SYSTEM_USERNAME);
+        tearDownCmisSession();
+        setUpCmisSession();
+
         ItemIterable<Relationship> rels = session.getRelationships(session.createObjectId(id1), false,
                 RelationshipDirection.SOURCE, null, new OperationContextImpl());
         assertEquals(1, rels.getTotalNumItems());
         for (Relationship r : rels) {
             assertEquals(relid.getId(), r.getId());
         }
-
-        // has to be superuser to get relations
-        closeSession();
-        super.session = openSessionAs(SecurityConstants.SYSTEM_USERNAME);
-        tearDownCmisSession();
-        setUpCmisSession();
 
         Relationship rel = (Relationship) session.getObject(relid);
         assertNotNull(rel);

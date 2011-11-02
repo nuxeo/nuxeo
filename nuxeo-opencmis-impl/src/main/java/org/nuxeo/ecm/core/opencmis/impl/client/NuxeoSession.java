@@ -37,7 +37,6 @@ import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
 import org.apache.chemistry.opencmis.client.runtime.QueryStatementImpl;
 import org.apache.chemistry.opencmis.client.runtime.util.AbstractPageFetcher;
 import org.apache.chemistry.opencmis.client.runtime.util.CollectionIterable;
-import org.apache.chemistry.opencmis.client.runtime.util.EmptyItemIterable;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -440,9 +439,13 @@ public class NuxeoSession implements Session {
                 // convert objects
                 List<Relationship> page = new ArrayList<Relationship>();
                 if (relations.getObjects() != null) {
-                    for (ObjectData objectData : relations.getObjects()) {
-                        CmisObject ob = objectFactory.convertObject(objectData,
-                                context);
+                    for (ObjectData data : relations.getObjects()) {
+                        CmisObject ob;
+                        if (data instanceof NuxeoObjectData) {
+                            ob = objectFactory.convertObject(data, context);
+                        } else {
+                            ob = getObject(data.getId(), context);
+                        }
                         if (!(ob instanceof Relationship)) {
                             // should not happen...
                             continue;
