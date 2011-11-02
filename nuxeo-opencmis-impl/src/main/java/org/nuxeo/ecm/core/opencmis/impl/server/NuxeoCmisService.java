@@ -18,7 +18,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,15 +53,7 @@ import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyBooleanDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyDateTimeDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyDecimalDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyHtmlDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyIdDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyIntegerDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyStringDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyUriDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
@@ -1168,22 +1159,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 res.skipTo(skip);
             }
             for (Map<String, Serializable> map : res) {
-                ObjectDataImpl od = new ObjectDataImpl();
-
-                // properties (kept in list form)
-                PropertiesImpl properties = new PropertiesImpl();
-                for (Entry<String, Serializable> en : map.entrySet()) {
-                    String queryName = en.getKey();
-                    PropertyDefinition<?> pd = typeInfo.get(queryName);
-                    if (pd == null) {
-                        throw new NullPointerException("Cannot get "
-                                + queryName);
-                    }
-                    PropertyData<?> p = createPropertyData(pd, en.getValue(),
-                            queryName);
-                    properties.addProperty(p);
-                }
-                od.setProperties(properties);
+                ObjectDataImpl od = makeObjectData(map, typeInfo);
 
                 // optional stuff
                 if (Boolean.TRUE.equals(includeAllowableActions)) {
@@ -1191,7 +1167,14 @@ public class NuxeoCmisService extends AbstractCmisService {
                 }
                 if (includeRelationships != null
                         && includeRelationships != IncludeRelationships.NONE) {
-                    // od.setRelationships(relationships);
+                    // TODO get relationships using a JOIN
+                    // added to the original query
+                    String id = od.getId();
+                    if (id != null) { // null if JOIN in original query
+                        List<ObjectData> relationships = NuxeoObjectData.getRelationships(
+                                id, includeRelationships, coreSession, this);
+                        od.setRelationships(relationships);
+                    }
                 }
                 if (renditionFilter != null && renditionFilter.length() > 0) {
                     // od.setRenditions(renditions);
@@ -1217,83 +1200,27 @@ public class NuxeoCmisService extends AbstractCmisService {
         return objList;
     }
 
-    // TODO extract and move to BindingsObjectFactoryImpl
-    @SuppressWarnings("unchecked")
-    protected <T> PropertyData<T> createPropertyData(PropertyDefinition<T> pd,
-            Serializable value, String queryName) {
-        AbstractPropertyData<T> p;
-        String id = pd.getId();
-        if (pd instanceof PropertyIdDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyIdData(
-                        id, (String) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyIdData(
-                        id, (List<String>) value);
+    protected ObjectDataImpl makeObjectData(Map<String, Serializable> map,
+            Map<String, PropertyDefinition<?>> typeInfo) {
+        ObjectDataImpl od = new ObjectDataImpl();
+        PropertiesImpl properties = new PropertiesImpl();
+        for (Entry<String, Serializable> en : map.entrySet()) {
+            String queryName = en.getKey();
+            PropertyDefinition<?> pd = typeInfo.get(queryName);
+            if (pd == null) {
+                throw new NullPointerException("Cannot get " + queryName);
             }
-        } else if (pd instanceof PropertyStringDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyStringData(
-                        id, (String) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyStringData(
-                        id, (List<String>) value);
-            }
-        } else if (pd instanceof PropertyDateTimeDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyDateTimeData(
-                        id, (GregorianCalendar) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyDateTimeData(
-                        id, (List<GregorianCalendar>) value);
-            }
-        } else if (pd instanceof PropertyBooleanDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyBooleanData(
-                        id, (Boolean) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyBooleanData(
-                        id, (List<Boolean>) value);
-            }
-        } else if (pd instanceof PropertyIntegerDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyIntegerData(
-                        id, (BigInteger) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyIntegerData(
-                        id, (List<BigInteger>) value);
-            }
-        } else if (pd instanceof PropertyDecimalDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyDecimalData(
-                        id, (BigDecimal) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyDecimalData(
-                        id, (List<BigDecimal>) value);
-            }
-        } else if (pd instanceof PropertyHtmlDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyHtmlData(
-                        id, (String) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyHtmlData(
-                        id, (List<String>) value);
-            }
-        } else if (pd instanceof PropertyUriDefinition) {
-            if (pd.getCardinality() == Cardinality.SINGLE) {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyUriData(
-                        id, (String) value);
-            } else {
-                p = (AbstractPropertyData<T>) objectFactory.createPropertyUriData(
-                        id, (List<String>) value);
-            }
-        } else {
-            throw new CmisRuntimeException("Unknown property definition: " + pd);
+            AbstractPropertyData<?> p = (AbstractPropertyData<?>) objectFactory.createPropertyData(
+                    pd, en.getValue());
+            p.setLocalName(pd.getLocalName());
+            p.setDisplayName(pd.getDisplayName());
+            // queryName and pd.getQueryName() may be different
+            // for qualified properties
+            p.setQueryName(queryName);
+            properties.addProperty(p);
         }
-        p.setLocalName(pd.getLocalName());
-        p.setDisplayName(pd.getDisplayName());
-        p.setQueryName(queryName);
-        return p;
+        od.setProperties(properties);
+        return od;
     }
 
     @Override

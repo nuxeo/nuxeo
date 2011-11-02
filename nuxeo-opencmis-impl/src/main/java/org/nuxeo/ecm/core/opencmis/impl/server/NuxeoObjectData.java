@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,10 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
 import org.apache.chemistry.opencmis.client.api.OperationContext;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
@@ -46,13 +49,17 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyIdListImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RenditionDataImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
@@ -65,6 +72,8 @@ import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 public class NuxeoObjectData implements ObjectData {
 
     public static final String STREAM_ICON = "nx:icon";
+
+    public NuxeoCmisService service;
 
     public DocumentModel doc;
 
@@ -100,6 +109,7 @@ public class NuxeoObjectData implements ObjectData {
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
             ExtensionsData extension) {
+        this.service = service;
         this.doc = doc;
         propertyIds = getPropertyIdsFromFilter(filter);
         this.includeAllowableActions = includeAllowableActions;
@@ -351,11 +361,47 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public List<ObjectData> getRelationships() {
+        return getRelationships(getId(), includeRelationships,
+                doc.getCoreSession(), service);
+    }
+
+    public static List<ObjectData> getRelationships(String id,
+            IncludeRelationships includeRelationships, CoreSession coreSession,
+            NuxeoCmisService service) {
         if (includeRelationships == null
                 || includeRelationships == IncludeRelationships.NONE) {
             return null;
         }
-        return new ArrayList<ObjectData>(0); // TODO
+        String statement = "SELECT " + PropertyIds.OBJECT_ID + ", "
+                + PropertyIds.SOURCE_ID + ", " + PropertyIds.TARGET_ID
+                + " FROM " + BaseTypeId.CMIS_RELATIONSHIP.value() + " WHERE ";
+        String qid = "'" + id + "'";
+        if (includeRelationships != IncludeRelationships.TARGET) {
+            statement += PropertyIds.SOURCE_ID + " = " + qid;
+        }
+        if (includeRelationships == IncludeRelationships.BOTH) {
+            statement += " OR ";
+        }
+        if (includeRelationships != IncludeRelationships.SOURCE) {
+            statement += PropertyIds.TARGET_ID + " = " + qid;
+        }
+        List<ObjectData> list = new ArrayList<ObjectData>();
+        IterableQueryResult res = null;
+        try {
+            Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
+            res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
+                    service, typeInfo);
+            for (Map<String, Serializable> map : res) {
+                list.add(service.makeObjectData(map, typeInfo));
+            }
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.getMessage(), e);
+        } finally {
+            if (res != null) {
+                res.close();
+            }
+        }
+        return list;
     }
 
     @Override

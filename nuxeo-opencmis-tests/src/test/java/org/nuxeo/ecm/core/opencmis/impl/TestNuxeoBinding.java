@@ -178,7 +178,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     protected ObjectData getObject(String id) {
         return objService.getObject(repositoryId, id, null, Boolean.FALSE,
-                IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE,
+                IncludeRelationships.BOTH, null, Boolean.FALSE, Boolean.FALSE,
                 null);
     }
 
@@ -2433,6 +2433,26 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Properties properties = factory.createPropertiesData(props);
         String relid = objService.createRelationship(repositoryId, properties,
                 null, null, null, null);
+
+        // objects have relationship info
+        ObjectData od1 = getObject(id1);
+        List<ObjectData> rels1 = od1.getRelationships();
+        assertNotNull(rels1);
+        assertEquals(1, rels1.size());
+        ObjectData od2 = getObject(id2);
+        List<ObjectData> rels2 = od2.getRelationships();
+        assertNotNull(rels2);
+        assertEquals(1, rels2.size());
+
+        // object from query have relationship info
+        statement = "SELECT cmis:objectId FROM File WHERE cmis:name = 'testfile1_Title'";
+        res = discService.query(repositoryId, statement, null, null,
+                IncludeRelationships.BOTH, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+        od1 = res.getObjects().get(0);
+        rels1 = od1.getRelationships();
+        assertNotNull(rels1);
+        assertEquals(1, rels1.size());
 
         // query relationship
         statement = "SELECT cmis:objectId, cmis:name, cmis:sourceId, cmis:targetId FROM Relation";
