@@ -36,7 +36,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
-import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
@@ -50,16 +50,19 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WidgetTypeResource {
 
-    protected LayoutManager service;
+    protected final String category;
+
+    protected LayoutStore service;
 
     protected final List<WidgetTypeDefinition> widgetTypes;
 
     protected final Map<String, List<WidgetTypeDefinition>> widgetTypesByCat;
 
-    public WidgetTypeResource() throws Exception {
+    public WidgetTypeResource(String category) throws Exception {
+        this.category = category;
         try {
-            service = Framework.getService(LayoutManager.class);
-            widgetTypes = service.getWidgetTypeDefinitions();
+            service = Framework.getService(LayoutStore.class);
+            widgetTypes = service.getWidgetTypeDefinitions(category);
             // sort so that order is deterministic
             Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator(
                     true));
@@ -195,7 +198,8 @@ public class WidgetTypeResource {
     public Object getWidgetTypeDefinition(@Context
     HttpServletRequest request, @PathParam("name")
     String name) {
-        WidgetTypeDefinition def = service.getWidgetTypeDefinition(name);
+        WidgetTypeDefinition def = service.getWidgetTypeDefinition(category,
+                name);
         if (def != null) {
             return def;
         } else {
@@ -205,14 +209,14 @@ public class WidgetTypeResource {
 
     public TemplateView getTemplate(@Context
     UriInfo uriInfo) {
-        return getTemplate("widgets.ftl", uriInfo);
+        return getTemplate("widget-types.ftl", uriInfo);
     }
 
     @GET
     @Path("wiki")
     public Object getWikiDocumentation(@Context
     UriInfo uriInfo) {
-        return getTemplate("widgetswiki.ftl", uriInfo);
+        return getTemplate("widget-types-wiki.ftl", uriInfo);
     }
 
     protected TemplateView getTemplate(String name, UriInfo uriInfo) {
@@ -231,7 +235,8 @@ public class WidgetTypeResource {
         if (widgetTypeName == null) {
             return getTemplate(uriInfo);
         } else {
-            WidgetTypeDefinition wType = service.getWidgetTypeDefinition(widgetTypeName);
+            WidgetTypeDefinition wType = service.getWidgetTypeDefinition(
+                    category, widgetTypeName);
             if (wType == null) {
                 throw new WebResourceNotFoundException(
                         "No widget type found with name: " + widgetTypeName);

@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.api.Framework;
 
@@ -21,22 +21,27 @@ public class RootResource {
     }
 
     @GET
-    public Object doGet(@Context UriInfo uriInfo) throws Exception  {
-       LayoutManager service = Framework.getService(LayoutManager.class);
-       int nbWidgets = service.getWidgetTypeDefinitions().size();
-       int nbLayouts = service.getLayoutDefinitionNames().size();
-       return getTemplate("index.ftl", uriInfo).arg("nbWidgets", nbWidgets).arg("nbLayouts", nbLayouts);
+    public Object doGet(@Context
+    UriInfo uriInfo) throws Exception {
+        LayoutStore service = Framework.getService(LayoutStore.class);
+        // XXX: use hard coded "jsf" category for now
+        int nbWidgetTypes = service.getWidgetTypeDefinitions("jsf").size();
+        int nbLayouts = service.getLayoutDefinitionNames("jsf").size();
+        return getTemplate("index.ftl", uriInfo).arg("nbWidgets",
+                Integer.valueOf(nbWidgetTypes)).arg("nbLayouts",
+                Integer.valueOf(nbLayouts));
     }
 
     @Path("layouts")
     public Object getLayouts() throws Exception {
-        return new WebLayoutResource();
+        // XXX: use hard coded "jsf" category for now
+        return new LayoutResource("jsf");
     }
 
-    @Path("widgets")
+    @Path("widget-types")
     public Object getWidgets() throws Exception {
-        return new WidgetTypeResource();
+        // XXX: use hard coded "jsf" category for now
+        return new WidgetTypeResource("jsf");
     }
-
 
 }

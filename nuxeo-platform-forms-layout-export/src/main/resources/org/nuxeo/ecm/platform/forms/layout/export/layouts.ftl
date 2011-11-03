@@ -96,7 +96,7 @@ pre {
       <td width="30%">
         <!-- menu -->
         <div class="tree">
-          <div class="category">Registred Layouts</div>
+          <div class="category">Registered Layouts</div>
           <div class="category_content">${cat}</div>
             <#list layoutNames as layoutName>
               <div class="item">

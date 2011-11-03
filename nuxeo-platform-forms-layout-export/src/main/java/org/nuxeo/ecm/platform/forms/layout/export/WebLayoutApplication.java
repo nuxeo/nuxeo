@@ -21,10 +21,10 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 
 /**
- * Entry point for jax-rs calls to the {@link LayoutManager} service.
+ * Entry point for jax-rs calls to the {@link LayoutStore} service.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -35,8 +35,6 @@ public class WebLayoutApplication extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> result = new HashSet<Class<?>>();
         result.add(RootResource.class);
-//        result.add(WidgetTypeResource.class);
-//        result.add(WebLayoutResource.class);
         return result;
     }
 

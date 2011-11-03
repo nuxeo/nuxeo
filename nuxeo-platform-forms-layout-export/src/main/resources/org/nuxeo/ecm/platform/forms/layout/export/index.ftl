@@ -91,8 +91,8 @@ pre {
 
   <h1>Nuxeo Layout Documentation</h1>
 
-    <h2> <A href="${baseURL}layouts"> View Layouts definitions (${nbLayouts}) </A></h2>
-    <h2> <A href="${baseURL}widgets"> View Widgets types definitions (${nbWidgets}) </h2>
+    <h2> <A href="${baseURL}layouts"> View Layout definitions (${nbLayouts}) </A></h2>
+    <h2> <A href="${baseURL}widget-types"> View Widget type definitions (${nbWidgets}) </A></h2>
 
 </body>
 
