@@ -3715,6 +3715,9 @@
               ${nuxeo.test.vcs.password}
             </nuxeo.test.vcs.password>
           </systemPropertyVariables>
+          <systemPropertiesFile>
+            ${user.home}/nuxeo-test-vcs.properties
+          </systemPropertiesFile>
           <includes>
             <include>**/Test*.java</include>
             <include>**/*Test.java</include>
@@ -4004,12 +4007,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.5</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-report-plugin</artifactId>
-          <version>2.5</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -4196,7 +4199,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.5</version>
+        <version>2.10</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
