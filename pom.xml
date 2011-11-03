@@ -109,10 +109,6 @@
     <nuxeo.dm.version>5.5-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.webengine.version>5.5-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>5.5-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.distribution.version>5.5-SNAPSHOT</nuxeo.distribution.version>
-    <nuxeo.addons.version>5.5-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.opencmis.version>5.5-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.wss.version>5.5-SNAPSHOT</nuxeo.wss.version>
 
     <nuxeo.connect.client.version>1.2</nuxeo.connect.client.version>
     <nuxeo.distribution.tools.version>1.10.2-SNAPSHOT</nuxeo.distribution.tools.version>
@@ -125,6 +121,7 @@
     <shindig.version>1.1-BETA5-incubating</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>0.4.0-r1096750</chemistry.opencmis.version>
+    <textcat.version>1.0.1</textcat.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -1323,444 +1320,6 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
 
-      <!-- Nuxeo Addons -->
-      <!-- Language extensions -->
-      <dependency>
-        <groupId>org.nuxeo</groupId>
-        <artifactId>nuxeo-platform-lang-ext</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- CMIS -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-bindings</artifactId>
-        <version>${nuxeo.opencmis.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-impl</artifactId>
-        <version>${nuxeo.opencmis.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-tests</artifactId>
-        <version>${nuxeo.opencmis.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <!-- Correspondence marianne -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-correspondence-marianne-api</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-correspondence-marianne-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Login -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-cas2</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-cleartrust</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-deputy</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-digest</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-mod_sso</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-ntlm</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-portal-sso</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-shibboleth</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Faceted Search -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-faceted-search-api</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-faceted-search-dm</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-faceted-search-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Nuxeo Shell -->
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-automation</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-equinox</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Nuxeo Shell EJB (deprecated) -->
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-servlet</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-servlet-handlers</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-distribution</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- OpenSocial -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-gwt-richtexteditor</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container</artifactId>
-        <version>${nuxeo.addons.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.nuxeo.build</groupId>
-            <artifactId>nuxeo-distribution-tools</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container-webapp</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-features</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-server</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-spaces</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-webengine-gadgets</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- User Center -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-center</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard-opensocial</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-notification</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-oauth</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-profile</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Filesystem connectors -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-core-filesystem</artifactId>
-        <version>${nuxeo.wss.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-generic-wss-front</artifactId>
-        <version>${nuxeo.wss.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-generic-wss-handler</artifactId>
-        <version>${nuxeo.wss.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-wi-backend</artifactId>
-        <version>${nuxeo.wss.version}</version>
-      </dependency>
-      <!-- DEPRECATED since NXP-6308, superseded by nuxeo-platform-wi-backend -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-wss-backend</artifactId>
-        <version>${nuxeo.wss.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-webdav</artifactId>
-        <version>${nuxeo.wss.version}</version>
-      </dependency>
-
-      <!-- Nuxeo Distributions -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-coreserver</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-coreserver</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dm</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dm</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-jboss</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-jboss</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-cap</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>coreserver</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-cap</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>doc</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>doc-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>root</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>bin</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>templates-common</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>templates-common-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>templates-tomcat</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>templates-tomcat-coreserver</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>templates-tomcat-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>templates-jboss</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-startup-wizard</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo</groupId>
-        <artifactId>nuxeo-launcher</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <classifier>jar-with-dependencies</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-functional-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-        <scope>test</scope>
-      </dependency>
-
       <!-- Third parties -->
       <dependency>
         <groupId>org.nuxeo.build</groupId>
@@ -2081,7 +1640,7 @@
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-aspects</artifactId>
-        <version>5.1.0.GA</version>
+        <version>${version.org.jboss.integration}</version>
         <classifier>jboss-aspect-jdk50-client</classifier>
       </dependency>
       <dependency>
@@ -2298,7 +1857,7 @@
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-system</artifactId>
-        <version>5.1.0.GA</version>
+        <version>${version.org.jboss.integration}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.security</groupId>
@@ -2308,7 +1867,7 @@
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-server</artifactId>
-        <version>5.1.0.GA</version>
+        <version>${version.org.jboss.integration}</version>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -2340,20 +1899,25 @@
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-aspects</artifactId>
-        <version>5.1.0.GA</version>
+        <version>${version.org.jboss.integration}</version>
         <classifier>jboss-aspects-jdk50-client</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-varia</artifactId>
-        <version>5.1.0.GA</version>
+        <version>${version.org.jboss.integration}</version>
         <classifier>logging-monitor</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-client</artifactId>
-        <version>5.1.0.GA</version>
+        <version>${version.org.jboss.integration}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-connector</artifactId>
+        <version>${version.org.jboss.integration}</version>
       </dependency>
 
       <!-- Jetty mortbay -->
@@ -2717,12 +2281,17 @@
         <artifactId>jtds</artifactId>
         <version>1.2.4</version>
       </dependency>
-      <!-- Informative comment, this driver isn't publicly available. -->
-      <!-- <dependency> -->
-      <!-- <groupId>com.oracle</groupId> -->
-      <!-- <artifactId>ojdbc14</artifactId> -->
-      <!-- <version>10.2.0.3.0</version> -->
-      <!-- </dependency> -->
+      <!-- Informative declarations, Oracle drivers are not publicly available. -->
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>ojdbc14</artifactId>
+        <version>10.2.0.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>ojdbc5</artifactId>
+        <version>11.2.0.1.0</version>
+      </dependency>
       <dependency>
         <groupId>jmock</groupId>
         <artifactId>jmock</artifactId>
@@ -3203,6 +2772,11 @@
         <version>1.0.7</version>
       </dependency>
       <dependency>
+        <groupId>com.noelios.restlet</groupId>
+        <artifactId>com.noelios.restlet.ext.httpclient</artifactId>
+        <version>1.0.7</version>
+      </dependency>
+      <dependency>
         <groupId>jotm</groupId>
         <artifactId>jotm</artifactId>
         <version>2.0.10</version>
@@ -3663,6 +3237,12 @@
         <groupId>com.cforcoding.jmd</groupId>
         <artifactId>jmd</artifactId>
         <version>0.8.1-tomasol-3e60e36137</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.knallgrau.utils</groupId>
+        <artifactId>textcat</artifactId>
+        <version>${textcat.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
