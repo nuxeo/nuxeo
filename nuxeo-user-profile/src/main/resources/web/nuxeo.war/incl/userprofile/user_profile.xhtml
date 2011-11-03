@@ -16,25 +16,29 @@
                <h:outputText value="#{messages['label.content.header.actions']}" />
                <ul class="actionSubList">
                  <li>
-                   <nxh:commandLink
+                   <a4j:commandLink id="editUserButton"
                         action="#{userProfileActions.setMode('edit')}"
                         immediate="#{action.immediate}"
-                        rendered="#{userProfileActions.mode == 'view'}">
+                        rendered="#{userProfileActions.mode == 'view'}"
+                        reRender="profilePanel">
                         <h:outputText value="#{messages['label.userManager.editUser']}" />
-                   </nxh:commandLink>
+                   </a4j:commandLink>
                  </li>
                  <li>
-                   <nxh:commandLink action="#{userProfileActions.setMode('editPassword')}"
+                   <a4j:commandLink  id="changePasswordButton"
+                      action="#{userProfileActions.setMode('editPassword')}"
                       immediate="#{action.immediate}"
-                      rendered="#{userProfileActions.mode == 'view' and userProfileActions.canEdit}">
+                      rendered="#{userProfileActions.mode == 'view' and userProfileActions.canEdit}"
+                      reRender="profilePanel">
                       <h:outputText value="#{messages['command.change.password']}" />
-                   </nxh:commandLink>
+                   </a4j:commandLink>
                  </li>
                </ul>
              </li>
           </ul>
         </h:form>
       </div>
+      <div class="clear"></div>
 
       <h:form id="viewUser" rendered="#{userProfileActions.mode == 'view'}">
         <nxl:layout name="summary_user_profile_layout" mode="view"
@@ -49,13 +53,22 @@
           <tbody>
             <tr>
               <td class="iconColumn"></td>
-              <td class="labelColumn">
-                <h:commandButton id="saveUserButton"
+              <td class="labelColumn"></td>
+              <td class="fieldColumn">
+                <a4j:commandButton id="saveUserButton"
                   value="#{messages['command.save']}"
                   action="#{userProfileActions.updateUser}"
-                  styleClass="button" />
+                  styleClass="button"
+                  reRender="profilePanel" />
+                <a4j:commandButton
+                  value="#{messages['command.cancel']}"
+                  actionListener="#{editableListBean.resetAllListsCachedModels}"
+                  action="#{userProfileActions.setMode('view')}"
+                  immediate="true"
+                  styleClass="button" id="viewUserButton"
+                  rendered="#{userProfileActions.mode != 'view'}"
+                  reRender="profilePanel" />
               </td>
-              <td class="fieldColumn"></td>
             </tr>
           </tbody>
         </table>
@@ -67,37 +80,27 @@
           <tbody>
             <tr>
               <td class="iconColumn"></td>
-              <td class="labelColumn">
-                <h:commandButton id="saveUserPasswordButton"
+              <td class="labelColumn"></td>
+              <td class="fieldColumn">
+                <a4j:commandButton id="saveUserPasswordButton"
                   value="#{messages['command.save']}"
                   action="#{userManagementActions.changePassword}"
                   styleClass="button"
-                  rendered="#{userProfileActions.canEdit}" />
+                  rendered="#{userProfileActions.canEdit}"
+                  reRender="profilePanel"/>
+                <a4j:commandButton
+                  value="#{messages['command.cancel']}"
+                  actionListener="#{editableListBean.resetAllListsCachedModels}"
+                  action="#{userProfileActions.setMode('view')}"
+                  immediate="true"
+                  styleClass="button" id="viewUserButton"
+                  rendered="#{userProfileActions.mode != 'view'}"
+                  reRender="profilePanel" />
               </td>
-              <td class="fieldColumn"></td>
             </tr>
           </tbody>
         </table>
       </h:form>
-      <a4j:form id="userProfileCancelButton">
-        <table class="dataInput">
-          <tbody>
-            <tr>
-              <td class="iconColumn"></td>
-              <td class="labelColumn">
-                <a4j:commandButton
-                      value="#{messages['command.cancel']}"
-                      actionListener="#{editableListBean.resetAllListsCachedModels}"
-                      action="#{userProfileActions.setMode('view')}"
-                      styleClass="button" id="viewUserButton"
-                      rendered="#{userProfileActions.mode != 'view'}"
-                      reRender="profilePanel" />
-              </td>
-              <td class="fieldColumn"></td>
-           </tr>
-          </tbody>
-        </table>
-      </a4j:form>
     <script type="text/javascript">
       jQuery(document).ready(function($) {
         jQuery('.dropDownMenu').click(function(e) {
