@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 
 /**
@@ -47,6 +49,8 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     protected LayoutRowDefinition[] rows;
 
     protected Map<String, WidgetDefinition> widgets;
+
+    protected Map<String, List<RenderingInfo>> renderingInfos;
 
     protected Integer columns;
 
@@ -114,7 +118,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
             columns = new Integer(0);
             LayoutRowDefinition[] rows = getRows();
             for (LayoutRowDefinition def : rows) {
-                int current = def.getWidgets().length;
+                int current = def.getWidgetReferences().length;
                 if (current > columns.intValue()) {
                     columns = new Integer(current);
                 }
@@ -128,6 +132,10 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public Map<String, Serializable> getProperties(String layoutMode) {
         return WidgetDefinitionImpl.getProperties(properties, layoutMode);
@@ -138,9 +146,17 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return properties;
     }
 
+    public void setProperties(Map<String, Map<String, Serializable>> properties) {
+        this.properties = properties;
+    }
+
     @Override
     public LayoutRowDefinition[] getRows() {
         return rows;
+    }
+
+    public void setRows(LayoutRowDefinition[] rows) {
+        this.rows = rows;
     }
 
     @Override
@@ -160,12 +176,90 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return templates;
     }
 
+    public void setTemplates(Map<String, String> templates) {
+        this.templates = templates;
+    }
+
     @Override
     public WidgetDefinition getWidgetDefinition(String name) {
         if (widgets != null) {
             return widgets.get(name);
         }
         return null;
+    }
+
+    @Override
+    public Map<String, List<RenderingInfo>> getRenderingInfos() {
+        return renderingInfos;
+    }
+
+    public void setRenderingInfos(
+            Map<String, List<RenderingInfo>> renderingInfos) {
+        this.renderingInfos = renderingInfos;
+    }
+
+    @Override
+    public List<RenderingInfo> getRenderingInfos(String mode) {
+        return WidgetDefinitionImpl.getRenderingInfos(renderingInfos, mode);
+    }
+
+    @Override
+    public LayoutDefinition clone() {
+        Map<String, Map<String, Serializable>> cprops = null;
+        if (properties != null) {
+            cprops = new HashMap<String, Map<String, Serializable>>();
+            for (Map.Entry<String, Map<String, Serializable>> entry : properties.entrySet()) {
+                Map<String, Serializable> subProps = entry.getValue();
+                Map<String, Serializable> csubProps = null;
+                if (subProps != null) {
+                    csubProps = new HashMap<String, Serializable>();
+                    csubProps.putAll(subProps);
+                }
+                cprops.put(entry.getKey(), csubProps);
+            }
+        }
+        Map<String, String> ctemplates = null;
+        if (templates != null) {
+            ctemplates = new HashMap<String, String>();
+            ctemplates.putAll(templates);
+        }
+        LayoutRowDefinition[] crows = null;
+        if (rows != null) {
+            crows = new LayoutRowDefinition[rows.length];
+            for (int i = 0; i < rows.length; i++) {
+                crows[i] = rows[i].clone();
+            }
+        }
+        Map<String, WidgetDefinition> cwidgets = null;
+        if (widgets != null) {
+            cwidgets = new HashMap<String, WidgetDefinition>();
+            for (Map.Entry<String, WidgetDefinition> entry : cwidgets.entrySet()) {
+                WidgetDefinition w = entry.getValue();
+                if (w != null) {
+                    w = w.clone();
+                }
+                cwidgets.put(entry.getKey(), w);
+            }
+        }
+        Map<String, List<RenderingInfo>> crenderingInfos = null;
+        if (renderingInfos != null) {
+            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            for (Map.Entry<String, List<RenderingInfo>> item : renderingInfos.entrySet()) {
+                List<RenderingInfo> infos = item.getValue();
+                List<RenderingInfo> clonedInfos = null;
+                if (infos != null) {
+                    clonedInfos = new ArrayList<RenderingInfo>();
+                    for (RenderingInfo info : infos) {
+                        clonedInfos.add(info.clone());
+                    }
+                }
+                crenderingInfos.put(item.getKey(), clonedInfos);
+            }
+        }
+        LayoutDefinition clone = new LayoutDefinitionImpl(name, cprops,
+                ctemplates, crows, cwidgets);
+        clone.setRenderingInfos(crenderingInfos);
+        return clone;
     }
 
 }

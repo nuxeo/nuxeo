@@ -17,10 +17,12 @@
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 
 /**
  * Default implementation for a layout row definition.
@@ -38,7 +40,7 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
 
     protected Map<String, Map<String, Serializable>> properties;
 
-    protected String[] widgets;
+    protected WidgetReference[] widgets;
 
     protected boolean alwaysSelected = false;
 
@@ -53,9 +55,11 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
         this.name = name;
         this.properties = null;
         if (widget == null) {
-            this.widgets = new String[0];
+            this.widgets = new WidgetReferenceImpl[0];
         } else {
-            this.widgets = new String[] { widget };
+            WidgetReferenceImpl widgetRef = new WidgetReferenceImpl(null,
+                    widget);
+            this.widgets = new WidgetReferenceImpl[] { widgetRef };
         }
         this.alwaysSelected = false;
         this.selectedByDefault = true;
@@ -63,15 +67,19 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
 
     public LayoutRowDefinitionImpl(String name,
             Map<String, Map<String, Serializable>> properties,
-            List<String> widgets, boolean alwaysSelected,
+            List<WidgetReference> widgets, boolean alwaysSelected,
             boolean selectedByDefault) {
         super();
         this.name = name;
         this.properties = properties;
         if (widgets == null) {
-            this.widgets = new String[0];
+            this.widgets = new WidgetReferenceImpl[0];
         } else {
-            this.widgets = widgets.toArray(new String[] {});
+            WidgetReference[] refs = new WidgetReference[widgets.size()];
+            for (int i = 0; i < widgets.size(); i++) {
+                refs[i] = widgets.get(i);
+            }
+            this.widgets = widgets.toArray(new WidgetReference[] {});
         }
         this.alwaysSelected = alwaysSelected;
         this.selectedByDefault = selectedByDefault;
@@ -79,7 +87,8 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
 
     public LayoutRowDefinitionImpl(String name,
             Map<String, Map<String, Serializable>> properties,
-            String[] widgets, boolean alwaysSelected, boolean selectedByDefault) {
+            WidgetReference[] widgets, boolean alwaysSelected,
+            boolean selectedByDefault) {
         super();
         this.name = name;
         this.properties = properties;
@@ -110,6 +119,15 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
 
     @Override
     public String[] getWidgets() {
+        String[] names = new String[widgets.length];
+        for (int i = 0; i < widgets.length; i++) {
+            names[i] = widgets[i].getName();
+        }
+        return names;
+    }
+
+    @Override
+    public WidgetReference[] getWidgetReferences() {
         return widgets;
     }
 
@@ -121,6 +139,33 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     @Override
     public boolean isSelectedByDefault() {
         return selectedByDefault;
+    }
+
+    @Override
+    public LayoutRowDefinition clone() {
+        Map<String, Map<String, Serializable>> cprops = null;
+        if (properties != null) {
+            cprops = new HashMap<String, Map<String, Serializable>>();
+            for (Map.Entry<String, Map<String, Serializable>> entry : properties.entrySet()) {
+                Map<String, Serializable> subProps = entry.getValue();
+                Map<String, Serializable> csubProps = null;
+                if (subProps != null) {
+                    csubProps = new HashMap<String, Serializable>();
+                    csubProps.putAll(subProps);
+                }
+                cprops.put(entry.getKey(), csubProps);
+            }
+        }
+        WidgetReference[] cwidgets = null;
+        if (widgets != null) {
+            cwidgets = new WidgetReference[widgets.length];
+            for (int i = 0; i < widgets.length; i++) {
+                cwidgets[i] = widgets[i].clone();
+            }
+        }
+        LayoutRowDefinition clone = new LayoutRowDefinitionImpl(name, cprops,
+                cwidgets, alwaysSelected, selectedByDefault);
+        return clone;
     }
 
 }

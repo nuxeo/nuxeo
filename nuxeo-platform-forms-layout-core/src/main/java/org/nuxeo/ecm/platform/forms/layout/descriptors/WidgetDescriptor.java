@@ -35,8 +35,10 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,9 +49,7 @@ import org.w3c.dom.Node;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("widget")
-public class WidgetDescriptor implements WidgetDefinition {
-
-    private static final long serialVersionUID = 1L;
+public class WidgetDescriptor {
 
     private static final Log log = LogFactory.getLog(WidgetDescriptor.class);
 
@@ -60,7 +60,7 @@ public class WidgetDescriptor implements WidgetDefinition {
     String type;
 
     @XNodeList(value = "fields/field", type = FieldDescriptor[].class, componentType = FieldDescriptor.class)
-    FieldDefinition[] fields = new FieldDefinition[0];
+    FieldDescriptor[] fields = new FieldDescriptor[0];
 
     @XNodeMap(value = "widgetModes/mode", key = "@value", type = HashMap.class, componentType = String.class)
     Map<String, String> modes = new HashMap<String, String>();
@@ -81,10 +81,16 @@ public class WidgetDescriptor implements WidgetDefinition {
     Map<String, PropertiesDescriptor> widgetModeProperties = new HashMap<String, PropertiesDescriptor>();
 
     @XNodeList(value = "subWidgets/widget", type = WidgetDescriptor[].class, componentType = WidgetDescriptor.class)
-    WidgetDefinition[] subWidgets = new WidgetDefinition[0];
+    WidgetDescriptor[] subWidgets = new WidgetDescriptor[0];
 
     // set in method to mix single and multiple options
     WidgetSelectOption[] selectOptions = new WidgetSelectOption[0];
+
+    @XNodeMap(value = "renderingInfos", key = "@mode", type = HashMap.class, componentType = RenderingInfosDescriptor.class)
+    Map<String, RenderingInfosDescriptor> renderingInfos = new HashMap<String, RenderingInfosDescriptor>();
+
+    @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
+    String[] categories = new String[0];
 
     public String getName() {
         return name;
@@ -95,7 +101,14 @@ public class WidgetDescriptor implements WidgetDefinition {
     }
 
     public FieldDefinition[] getFieldDefinitions() {
-        return fields;
+        if (fields == null) {
+            return null;
+        }
+        FieldDefinition[] res = new FieldDefinition[fields.length];
+        for (int i = 0; i < fields.length; i++) {
+            res[i] = fields[i].getFieldDefinition();
+        }
+        return res;
     }
 
     public String getMode(String layoutMode) {
@@ -106,7 +119,6 @@ public class WidgetDescriptor implements WidgetDefinition {
         return mode;
     }
 
-    @Override
     public Map<String, String> getModes() {
         return modes;
     }
@@ -114,14 +126,15 @@ public class WidgetDescriptor implements WidgetDefinition {
     public String getRequired(String layoutMode, String mode) {
         String res = "false";
         Map<String, Serializable> props = getProperties(layoutMode, mode);
-        if (props != null && props.containsKey(REQUIRED_PROPERTY_NAME)) {
-            Object value = props.get(REQUIRED_PROPERTY_NAME);
+        if (props != null
+                && props.containsKey(WidgetDefinition.REQUIRED_PROPERTY_NAME)) {
+            Object value = props.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
             if (value instanceof String) {
                 res = (String) value;
             } else {
                 log.error(String.format(
                         "Invalid property \"%s\" on widget %s: %s",
-                        REQUIRED_PROPERTY_NAME, value, name));
+                        WidgetDefinition.REQUIRED_PROPERTY_NAME, value, name));
             }
         }
         return res;
@@ -135,7 +148,6 @@ public class WidgetDescriptor implements WidgetDefinition {
         return label;
     }
 
-    @Override
     public Map<String, String> getLabels() {
         return labels;
     }
@@ -148,7 +160,6 @@ public class WidgetDescriptor implements WidgetDefinition {
         return label;
     }
 
-    @Override
     public Map<String, String> getHelpLabels() {
         return helpLabels;
     }
@@ -178,18 +189,23 @@ public class WidgetDescriptor implements WidgetDefinition {
         }
     }
 
-    @Override
     public Map<String, Map<String, Serializable>> getProperties() {
         return getProperties(properties);
     }
 
-    @Override
     public Map<String, Map<String, Serializable>> getWidgetModeProperties() {
         return getProperties(widgetModeProperties);
     }
 
     public WidgetDefinition[] getSubWidgetDefinitions() {
-        return subWidgets;
+        WidgetDefinition[] csubWidgets = null;
+        if (subWidgets != null) {
+            csubWidgets = new WidgetDefinition[subWidgets.length];
+            for (int i = 0; i < subWidgets.length; i++) {
+                csubWidgets[i] = subWidgets[i].getWidgetDefinition();
+            }
+        }
+        return csubWidgets;
     }
 
     public static Map<String, Serializable> getProperties(
@@ -243,7 +259,14 @@ public class WidgetDescriptor implements WidgetDefinition {
         while (p != null) {
             if (p.getNodeType() == Node.ELEMENT_NODE) {
                 try {
-                    options.add((WidgetSelectOption) xmap.load((Element) p));
+                    Object desc = xmap.load((Element) p);
+                    if (desc instanceof WidgetSelectOptionDescriptor) {
+                        options.add(((WidgetSelectOptionDescriptor) desc).getWidgetSelectOption());
+                    } else if (desc instanceof WidgetSelectOptionsDescriptor) {
+                        options.add(((WidgetSelectOptionsDescriptor) desc).getWidgetSelectOption());
+                    } else {
+                        log.error("Unknown resolution of select option");
+                    }
                 } catch (Exception e) {
                     log.error(e, e);
                 }
@@ -252,4 +275,63 @@ public class WidgetDescriptor implements WidgetDefinition {
         }
         selectOptions = options.toArray(new WidgetSelectOption[] {});
     }
+
+    /**
+     * Returns the categories for this widget type, so that it can be stored in
+     * the corresponding registry.
+     *
+     * @since 5.5
+     */
+    public String[] getCategories() {
+        return categories;
+    }
+
+    public WidgetDefinition getWidgetDefinition() {
+        Map<String, String> clabels = null;
+        if (labels != null) {
+            clabels = new HashMap<String, String>();
+            clabels.putAll(labels);
+        }
+        Map<String, String> chelpLabels = null;
+        if (helpLabels != null) {
+            chelpLabels = new HashMap<String, String>();
+            chelpLabels.putAll(helpLabels);
+        }
+        Map<String, String> cmodes = null;
+        if (modes != null) {
+            cmodes = new HashMap<String, String>();
+            cmodes.putAll(modes);
+        }
+        FieldDefinition[] cfieldDefinitions = getFieldDefinitions();
+        WidgetDefinition[] csubWidgets = getSubWidgetDefinitions();
+        WidgetSelectOption[] cselectOptions = null;
+        if (selectOptions != null) {
+            cselectOptions = new WidgetSelectOption[selectOptions.length];
+            for (int i = 0; i < selectOptions.length; i++) {
+                cselectOptions[i] = selectOptions[i].clone();
+            }
+        }
+        Map<String, List<RenderingInfo>> crenderingInfos = null;
+        if (renderingInfos != null) {
+            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            for (Map.Entry<String, RenderingInfosDescriptor> item : renderingInfos.entrySet()) {
+                RenderingInfosDescriptor infos = item.getValue();
+                List<RenderingInfo> clonedInfos = null;
+                if (infos != null) {
+                    clonedInfos = new ArrayList<RenderingInfo>();
+                    for (RenderingInfoDescriptor info : infos.getRenderingInfos()) {
+                        clonedInfos.add(info.getRenderingInfo());
+                    }
+                }
+                crenderingInfos.put(item.getKey(), clonedInfos);
+            }
+        }
+        WidgetDefinition clone = new WidgetDefinitionImpl(name, type, clabels,
+                chelpLabels, translated, cmodes, cfieldDefinitions,
+                getProperties(), getWidgetModeProperties(), csubWidgets,
+                cselectOptions);
+        clone.setRenderingInfos(crenderingInfos);
+        return clone;
+    }
+
 }

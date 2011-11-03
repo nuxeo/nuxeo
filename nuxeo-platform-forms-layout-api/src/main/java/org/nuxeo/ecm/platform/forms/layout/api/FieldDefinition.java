@@ -52,4 +52,13 @@ public interface FieldDefinition extends Serializable {
      */
     String getPropertyName();
 
+    /**
+     * Returns a clone instance of this field definition.
+     * <p>
+     * Useful for conversion of layout definition during export.
+     *
+     * @since 5.5
+     */
+    FieldDefinition clone();
+
 }

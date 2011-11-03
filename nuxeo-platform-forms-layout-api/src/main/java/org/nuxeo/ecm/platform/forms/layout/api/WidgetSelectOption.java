@@ -87,4 +87,10 @@ public interface WidgetSelectOption extends Serializable {
      * @see {@link Layout#getTagConfigId()}.
      */
     String getTagConfigId();
+
+    /**
+     * @since 5.5
+     */
+    WidgetSelectOption clone();
+
 }

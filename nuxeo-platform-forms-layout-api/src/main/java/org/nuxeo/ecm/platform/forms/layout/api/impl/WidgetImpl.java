@@ -22,10 +22,12 @@ package org.nuxeo.ecm.platform.forms.layout.api.impl;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
 /**
@@ -35,7 +37,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
  */
 public class WidgetImpl implements Widget {
 
-    private static final long serialVersionUID = -2954101230598440812L;
+    private static final long serialVersionUID = 1L;
 
     protected String id;
 
@@ -66,6 +68,8 @@ public class WidgetImpl implements Widget {
     protected int level = 0;
 
     protected WidgetSelectOption[] selectOptions;
+
+    protected List<RenderingInfo> renderingInfos;
 
     protected String definitionId;
 
@@ -110,6 +114,20 @@ public class WidgetImpl implements Widget {
             Map<String, Serializable> properties, boolean required,
             Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions,
             String definitionId) {
+        this(layoutName, name, mode, type, valueName, fields, label, helpLabel,
+                translated, properties, required, subWidgets, level,
+                selectOptions, definitionId, null);
+    }
+
+    /**
+     * @since 5.5
+     */
+    public WidgetImpl(String layoutName, String name, String mode, String type,
+            String valueName, FieldDefinition[] fields, String label,
+            String helpLabel, boolean translated,
+            Map<String, Serializable> properties, boolean required,
+            Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions,
+            String definitionId, List<RenderingInfo> renderingInfos) {
         this.layoutName = layoutName;
         this.name = name;
         this.mode = mode;
@@ -125,6 +143,7 @@ public class WidgetImpl implements Widget {
         this.level = level;
         this.selectOptions = selectOptions;
         this.definitionId = definitionId;
+        this.renderingInfos = renderingInfos;
     }
 
     public String getId() {
@@ -226,6 +245,11 @@ public class WidgetImpl implements Widget {
 
     public WidgetSelectOption[] getSelectOptions() {
         return selectOptions;
+    }
+
+    @Override
+    public List<RenderingInfo> getRenderingInfos() {
+        return renderingInfos;
     }
 
     @Override

@@ -54,8 +54,18 @@ public interface LayoutRowDefinition extends Serializable {
      * <p>
      * For instance, this could describe a layout like: ['title'], or
      * ['creationDate', '', 'modificationDate'].
+     *
+     * @deprecated since 5.5: use {@link #getWidgetReferences()} instead.
      */
+    @Deprecated
     String[] getWidgets();
+
+    /**
+     * Returns the list of widget references to use at a given row.
+     *
+     * @since 5.5
+     */
+    WidgetReference[] getWidgetReferences();
 
     /**
      * Returns a map of properties to use in a given mode.
@@ -66,4 +76,14 @@ public interface LayoutRowDefinition extends Serializable {
      * Returns properties by mode.
      */
     Map<String, Map<String, Serializable>> getProperties();
+
+    /**
+     * Returns a clone instance of this row definition.
+     * <p>
+     * Useful for conversion of layout definition during export.
+     *
+     * @since 5.5
+     */
+    LayoutRowDefinition clone();
+
 }

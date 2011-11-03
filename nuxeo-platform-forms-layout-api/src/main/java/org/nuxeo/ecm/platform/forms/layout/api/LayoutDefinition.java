@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +36,11 @@ public interface LayoutDefinition extends Serializable {
     String getName();
 
     /**
+     * @since 5.5
+     */
+    void setName(String name);
+
+    /**
      * Returns template to use in a given mode.
      */
     String getTemplate(String mode);
@@ -43,6 +49,11 @@ public interface LayoutDefinition extends Serializable {
      * Returns templates by mode
      */
     Map<String, String> getTemplates();
+
+    /**
+     * @since 5.5
+     */
+    void setTemplates(Map<String, String> templates);
 
     /**
      * Returns the widget definition with given name.
@@ -60,6 +71,11 @@ public interface LayoutDefinition extends Serializable {
     LayoutRowDefinition[] getRows();
 
     /**
+     * @since 5.5
+     */
+    void setRows(LayoutRowDefinition[] rows);
+
+    /**
      * Returns the maximum number of columns.
      */
     int getColumns();
@@ -73,4 +89,42 @@ public interface LayoutDefinition extends Serializable {
      * Returns a map of properties by mode.
      */
     Map<String, Map<String, Serializable>> getProperties();
+
+    /**
+     * @since 5.5
+     */
+    void setProperties(Map<String, Map<String, Serializable>> properties);
+
+    /**
+     * Returns the map of rendering information per mode.
+     * <p>
+     * Useful for preview management where some configuration needs to be
+     * changed: what's changed can be set as rendering information here to be
+     * displayed.
+     *
+     * @since 5.5
+     */
+    Map<String, List<RenderingInfo>> getRenderingInfos();
+
+    /**
+     * Returns the list of rendering information for given mode.
+     *
+     * @since 5.5
+     */
+    List<RenderingInfo> getRenderingInfos(String mode);
+
+    /**
+     * @since 5.5
+     */
+    void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos);
+
+    /**
+     * Returns a clone instance of this layout definition.
+     * <p>
+     * Useful for conversion of layout definition during export.
+     *
+     * @since 5.5
+     */
+    LayoutDefinition clone();
+
 }

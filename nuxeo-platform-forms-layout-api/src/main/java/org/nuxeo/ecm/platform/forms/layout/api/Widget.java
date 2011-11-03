@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -155,5 +156,16 @@ public interface Widget extends Serializable {
      * @since 5.4.2
      */
     WidgetSelectOption[] getSelectOptions();
+
+    /**
+     * Returns the list of rendering information.
+     * <p>
+     * Useful for preview management where some configuration needs to be
+     * changed: what's changed can be set as rendering information here to be
+     * displayed.
+     *
+     * @since 5.5
+     */
+    List<RenderingInfo> getRenderingInfos();
 
 }

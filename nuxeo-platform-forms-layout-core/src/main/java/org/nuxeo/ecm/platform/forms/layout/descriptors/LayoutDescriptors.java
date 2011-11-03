@@ -36,10 +36,17 @@ public class LayoutDescriptors implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNodeList(value = "layout", type = ArrayList.class, componentType = LayoutDescriptor.class)
-    List<LayoutDefinition> layouts;
+    List<LayoutDescriptor> layouts;
 
     public List<LayoutDefinition> getLayouts() {
-        return layouts;
+        if (layouts == null) {
+            return null;
+        }
+        List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
+        for (LayoutDescriptor item : layouts) {
+            res.add(item.getLayoutDefinition());
+        }
+        return res;
     }
 
 }

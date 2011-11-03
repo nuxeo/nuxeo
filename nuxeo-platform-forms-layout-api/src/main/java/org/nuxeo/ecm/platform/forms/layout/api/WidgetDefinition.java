@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,14 +42,29 @@ public interface WidgetDefinition extends Serializable {
     String getName();
 
     /**
+     * @since 5.5
+     */
+    void setName(String name);
+
+    /**
      * Returns the widget type used to render it.
      */
     String getType();
 
     /**
+     * @since 5.5
+     */
+    void setType(String type);
+
+    /**
      * Returns the list of fields managed by this widget.
      */
     FieldDefinition[] getFieldDefinitions();
+
+    /**
+     * @since 5.5
+     */
+    void setFieldDefinitions(FieldDefinition[] fieldDefinitions);
 
     /**
      * Returns the optional mode used to override the layout mode.
@@ -61,6 +77,11 @@ public interface WidgetDefinition extends Serializable {
     String getMode(String layoutMode);
 
     Map<String, String> getModes();
+
+    /**
+     * @since 5.5
+     */
+    void setModes(Map<String, String> modes);
 
     /**
      * Returns an EL expression evaluating to true if the widget is required in
@@ -82,6 +103,11 @@ public interface WidgetDefinition extends Serializable {
     Map<String, String> getLabels();
 
     /**
+     * @since 5.5
+     */
+    void setLabels(Map<String, String> labels);
+
+    /**
      * Returns the help label to use in a given mode.
      */
     String getHelpLabel(String mode);
@@ -92,11 +118,21 @@ public interface WidgetDefinition extends Serializable {
     Map<String, String> getHelpLabels();
 
     /**
+     * @since 5.5
+     */
+    void setHelpLabels(Map<String, String> helpLabels);
+
+    /**
      * Returns true if all labels are messages that need to be translated.
      * <p>
      * Default is true.
      */
     boolean isTranslated();
+
+    /**
+     * @since 5.5
+     */
+    void setTranslated(boolean translated);
 
     /**
      * Returns a map of properties to use in a given mode.
@@ -114,9 +150,20 @@ public interface WidgetDefinition extends Serializable {
     Map<String, Map<String, Serializable>> getProperties();
 
     /**
+     * @since 5.5
+     */
+    void setProperties(Map<String, Map<String, Serializable>> properties);
+
+    /**
      * Returns properties by widget mode.
      */
     Map<String, Map<String, Serializable>> getWidgetModeProperties();
+
+    /**
+     * @since 5.5
+     */
+    void setWidgetModeProperties(
+            Map<String, Map<String, Serializable>> properties);
 
     /**
      * Returns sub widget definitions.
@@ -124,10 +171,52 @@ public interface WidgetDefinition extends Serializable {
     WidgetDefinition[] getSubWidgetDefinitions();
 
     /**
+     * @since 5.5
+     */
+    void setSubWidgetDefinitions(WidgetDefinition[] subWidgets);
+
+    /**
      * Returns the select options for this widget.
      *
      * @since 5.4.2
      */
     WidgetSelectOption[] getSelectOptions();
+
+    /**
+     * @since 5.5
+     */
+    void setSelectOptions(WidgetSelectOption[] selectOptions);
+
+    /**
+     * Returns the map of rendering information per mode.
+     * <p>
+     * Useful for preview management where some configuration needs to be
+     * changed: what's changed can be set as rendering information here to be
+     * displayed.
+     *
+     * @since 5.5
+     */
+    Map<String, List<RenderingInfo>> getRenderingInfos();
+
+    /**
+     * Returns the list of rendering information for given mode.
+     *
+     * @since 5.5
+     */
+    List<RenderingInfo> getRenderingInfos(String mode);
+
+    /**
+     * @since 5.5
+     */
+    void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos);
+
+    /**
+     * Returns a clone instance of this widget definition.
+     * <p>
+     * Useful for conversion of widget definition during export.
+     *
+     * @since 5.5
+     */
+    WidgetDefinition clone();
 
 }

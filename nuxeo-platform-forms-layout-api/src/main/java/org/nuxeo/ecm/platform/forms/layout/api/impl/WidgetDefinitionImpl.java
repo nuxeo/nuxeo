@@ -17,12 +17,14 @@
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
@@ -59,6 +61,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     protected WidgetDefinition[] subWidgets;
 
     protected WidgetSelectOption[] selectOptions;
+
+    protected Map<String, List<RenderingInfo>> renderingInfos;
 
     // needed by GWT serialization
     protected WidgetDefinitionImpl() {
@@ -169,6 +173,11 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     @Override
+    public void setFieldDefinitions(FieldDefinition[] fieldDefinitions) {
+        this.fieldDefinitions = fieldDefinitions;
+    }
+
+    @Override
     public String getHelpLabel(String mode) {
         String label = helpLabels.get(mode);
         if (label == null) {
@@ -180,6 +189,10 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     @Override
     public Map<String, String> getHelpLabels() {
         return helpLabels;
+    }
+
+    public void setHelpLabels(Map<String, String> helpLabels) {
+        this.helpLabels = helpLabels;
     }
 
     @Override
@@ -194,6 +207,10 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     @Override
     public Map<String, String> getLabels() {
         return labels;
+    }
+
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
     }
 
     @Override
@@ -213,9 +230,17 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return modes;
     }
 
+    public void setModes(Map<String, String> modes) {
+        this.modes = modes;
+    }
+
     @Override
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -245,9 +270,18 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return properties;
     }
 
+    public void setProperties(Map<String, Map<String, Serializable>> properties) {
+        this.properties = properties;
+    }
+
     @Override
     public Map<String, Map<String, Serializable>> getWidgetModeProperties() {
         return widgetModeProperties;
+    }
+
+    public void setWidgetModeProperties(
+            Map<String, Map<String, Serializable>> widgetModeProperties) {
+        this.widgetModeProperties = widgetModeProperties;
     }
 
     @Override
@@ -270,14 +304,26 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return subWidgets;
     }
 
+    public void setSubWidgetDefinitions(WidgetDefinition[] subWidgets) {
+        this.subWidgets = subWidgets;
+    }
+
     @Override
     public String getType() {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public boolean isTranslated() {
         return translated;
+    }
+
+    public void setTranslated(boolean translated) {
+        this.translated = translated;
     }
 
     public static Map<String, Serializable> getProperties(
@@ -299,6 +345,127 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     @Override
     public WidgetSelectOption[] getSelectOptions() {
         return selectOptions;
+    }
+
+    public void setSelectOptions(WidgetSelectOption[] selectOptions) {
+        this.selectOptions = selectOptions;
+    }
+
+    @Override
+    public Map<String, List<RenderingInfo>> getRenderingInfos() {
+        return renderingInfos;
+    }
+
+    public void setRenderingInfos(
+            Map<String, List<RenderingInfo>> renderingInfos) {
+        this.renderingInfos = renderingInfos;
+    }
+
+    public static List<RenderingInfo> getRenderingInfos(
+            Map<String, List<RenderingInfo>> infos, String mode) {
+        List<RenderingInfo> res = new ArrayList<RenderingInfo>();
+        if (infos != null) {
+            List<RenderingInfo> inMode = infos.get(mode);
+            if (inMode != null) {
+                res.addAll(inMode);
+            }
+            List<RenderingInfo> inAnyMode = infos.get(BuiltinModes.ANY);
+            if (inAnyMode != null) {
+                res.addAll(inAnyMode);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<RenderingInfo> getRenderingInfos(String mode) {
+        return getRenderingInfos(renderingInfos, mode);
+    }
+
+    @Override
+    public WidgetDefinition clone() {
+        Map<String, Map<String, Serializable>> cprops = null;
+        if (properties != null) {
+            cprops = new HashMap<String, Map<String, Serializable>>();
+            for (Map.Entry<String, Map<String, Serializable>> entry : properties.entrySet()) {
+                Map<String, Serializable> subProps = entry.getValue();
+                Map<String, Serializable> csubProps = null;
+                if (subProps != null) {
+                    csubProps = new HashMap<String, Serializable>();
+                    csubProps.putAll(subProps);
+                }
+                cprops.put(entry.getKey(), csubProps);
+            }
+        }
+        Map<String, String> clabels = null;
+        if (labels != null) {
+            clabels = new HashMap<String, String>();
+            clabels.putAll(labels);
+        }
+        Map<String, String> chelpLabels = null;
+        if (helpLabels != null) {
+            chelpLabels = new HashMap<String, String>();
+            chelpLabels.putAll(helpLabels);
+        }
+        Map<String, String> cmodes = null;
+        if (modes != null) {
+            cmodes = new HashMap<String, String>();
+            cmodes.putAll(modes);
+        }
+        FieldDefinition[] cfieldDefinitions = null;
+        if (fieldDefinitions != null) {
+            cfieldDefinitions = new FieldDefinition[fieldDefinitions.length];
+            for (int i = 0; i < fieldDefinitions.length; i++) {
+                cfieldDefinitions[i] = fieldDefinitions[i].clone();
+            }
+        }
+        Map<String, Map<String, Serializable>> cwidgetProps = null;
+        if (widgetModeProperties != null) {
+            cwidgetProps = new HashMap<String, Map<String, Serializable>>();
+            for (Map.Entry<String, Map<String, Serializable>> entry : widgetModeProperties.entrySet()) {
+                Map<String, Serializable> subProps = entry.getValue();
+                Map<String, Serializable> csubProps = null;
+                if (subProps != null) {
+                    csubProps = new HashMap<String, Serializable>();
+                    csubProps.putAll(subProps);
+                }
+                cwidgetProps.put(entry.getKey(), csubProps);
+            }
+        }
+        WidgetDefinition[] csubWidgets = null;
+        if (subWidgets != null) {
+            csubWidgets = new WidgetDefinition[subWidgets.length];
+            for (int i = 0; i < subWidgets.length; i++) {
+                csubWidgets[i] = subWidgets[i].clone();
+            }
+        }
+        WidgetSelectOption[] cselectOptions = null;
+        if (selectOptions != null) {
+            cselectOptions = new WidgetSelectOption[selectOptions.length];
+            for (int i = 0; i < selectOptions.length; i++) {
+                cselectOptions[i] = selectOptions[i].clone();
+            }
+        }
+        Map<String, List<RenderingInfo>> crenderingInfos = null;
+        if (renderingInfos != null) {
+            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            for (Map.Entry<String, List<RenderingInfo>> item : renderingInfos.entrySet()) {
+                List<RenderingInfo> infos = item.getValue();
+                List<RenderingInfo> clonedInfos = null;
+                if (infos != null) {
+                    clonedInfos = new ArrayList<RenderingInfo>();
+                    for (RenderingInfo info : infos) {
+                        clonedInfos.add(info.clone());
+                    }
+                }
+                crenderingInfos.put(item.getKey(), clonedInfos);
+            }
+        }
+        WidgetDefinition clone = new WidgetDefinitionImpl(name, type, clabels,
+                chelpLabels, translated, cmodes, cfieldDefinitions, cprops,
+                cwidgetProps, csubWidgets, cselectOptions);
+        clone.setRenderingInfos(crenderingInfos);
+        return clone;
     }
 
 }

@@ -35,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeConfigurationImpl;
 import org.w3c.dom.DocumentFragment;
 
 /**
@@ -44,10 +45,7 @@ import org.w3c.dom.DocumentFragment;
  * @since 5.4
  */
 @XObject("configuration")
-public class WidgetTypeConfigurationDescriptor implements
-        WidgetTypeConfiguration {
-
-    private static final long serialVersionUID = 1L;
+public class WidgetTypeConfigurationDescriptor {
 
     private static final Log log = LogFactory.getLog(WidgetTypeConfigurationDescriptor.class);
 
@@ -85,7 +83,7 @@ public class WidgetTypeConfigurationDescriptor implements
     List<String> defaultFieldTypes;
 
     @XNodeList(value = "fields/defaultConfiguration/field", type = ArrayList.class, componentType = FieldDescriptor.class)
-    List<FieldDefinition> defaultFieldDefinitions;
+    List<FieldDescriptor> defaultFieldDefinitions;
 
     @XNodeList(value = "categories/category", type = ArrayList.class, componentType = String.class)
     List<String> categories;
@@ -99,7 +97,6 @@ public class WidgetTypeConfigurationDescriptor implements
         return categories;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
@@ -115,57 +112,53 @@ public class WidgetTypeConfigurationDescriptor implements
         }
     }
 
-    @Override
     public String getTitle() {
         return title;
     }
 
-    @Override
     public String getDemoId() {
         return demoId;
     }
 
-    @Override
     public boolean isDemoPreviewEnabled() {
         return demoPreviewEnabled;
     }
 
-    @Override
     public boolean isAcceptingSubWidgets() {
         return acceptingSubWidgets;
     }
 
-    @Override
     public boolean isComplex() {
         return complex;
     }
 
-    @Override
     public boolean isList() {
         return list;
     }
 
-    @Override
     public List<String> getDefaultFieldTypes() {
         return defaultFieldTypes;
     }
 
-    @Override
     public List<String> getSupportedFieldTypes() {
         return supportedFieldTypes;
     }
 
-    @Override
     public List<FieldDefinition> getDefaultFieldDefinitions() {
-        return defaultFieldDefinitions;
+        if (defaultFieldDefinitions == null) {
+            return null;
+        }
+        List<FieldDefinition> res = new ArrayList<FieldDefinition>();
+        for (int i = 0; i < defaultFieldDefinitions.size(); i++) {
+            res.add(defaultFieldDefinitions.get(i).getFieldDefinition());
+        }
+        return res;
     }
 
-    @Override
     public Map<String, Serializable> getConfProperties() {
         return properties;
     }
 
-    @Override
     public Serializable getConfProperty(String propName) {
         if (properties == null) {
             return null;
@@ -178,7 +171,6 @@ public class WidgetTypeConfigurationDescriptor implements
         properties = propsDesc.getProperties();
     }
 
-    @Override
     public List<LayoutDefinition> getPropertyLayouts(String mode,
             String additionalMode) {
         if (propertyLayouts != null) {
@@ -215,14 +207,21 @@ public class WidgetTypeConfigurationDescriptor implements
         return null;
     }
 
-    @Override
     public String getSinceVersion() {
         return sinceVersion;
     }
 
-    @Override
     public List<String> getSupportedModes() {
         return supportedModes;
     }
 
+    public WidgetTypeConfiguration getWidgetTypeConfiguration() {
+        return new WidgetTypeConfigurationImpl(getSinceVersion(), getTitle(),
+                getDescription(), getDemoId(), isDemoPreviewEnabled(),
+                getConfProperties(), getSupportedModes(),
+                isAcceptingSubWidgets(), isList(), isComplex(),
+                getSupportedFieldTypes(), getDefaultFieldTypes(),
+                getDefaultFieldDefinitions(), getCategories(),
+                getPropertyLayouts());
+    }
 }
