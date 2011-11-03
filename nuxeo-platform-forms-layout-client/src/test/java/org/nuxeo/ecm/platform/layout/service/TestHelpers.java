@@ -32,7 +32,7 @@ import org.dom4j.io.XMLWriter;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.FieldDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -50,41 +50,43 @@ public class TestHelpers extends NXRuntimeTestCase {
     }
 
     public void testValueExpressionHelper() {
-        FieldDefinition fieldDef = new FieldDescriptor("dublincore", "title");
+        FieldDefinition fieldDef = new FieldDefinitionImpl("dublincore",
+                "title");
         String expression = ValueExpressionHelper.createExpressionString(
                 "document", fieldDef);
         assertEquals("#{document['dublincore']['title']}", expression);
-        fieldDef = new FieldDescriptor(null, "dc:title");
+        fieldDef = new FieldDefinitionImpl(null, "dc:title");
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
         assertEquals("#{document['dc']['title']}", expression);
-        fieldDef = new FieldDescriptor(null, "dublincore:title");
+        fieldDef = new FieldDefinitionImpl(null, "dublincore:title");
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
         assertEquals("#{document['dublincore']['title']}", expression);
-        fieldDef = new FieldDescriptor(null, "dc:contributors/0/name");
+        fieldDef = new FieldDefinitionImpl(null, "dc:contributors/0/name");
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
         assertEquals("#{document['dc']['contributors'][0]['name']}", expression);
-        fieldDef = new FieldDescriptor(null, "test-schema:test-field");
+        fieldDef = new FieldDefinitionImpl(null, "test-schema:test-field");
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
         assertEquals("#{document['test-schema']['test-field']}", expression);
-        fieldDef = new FieldDescriptor(null, "data.ref");
+        fieldDef = new FieldDefinitionImpl(null, "data.ref");
         expression = ValueExpressionHelper.createExpressionString(
                 "pageSelection", fieldDef);
         assertEquals("#{pageSelection.data.ref}", expression);
-        fieldDef = new FieldDescriptor("data", "ref");
+        fieldDef = new FieldDefinitionImpl("data", "ref");
         expression = ValueExpressionHelper.createExpressionString(
                 "pageSelection", fieldDef);
         assertEquals("#{pageSelection['data']['ref']}", expression);
 
-        fieldDef = new FieldDescriptor(null, "contextData['request/comment']");
+        fieldDef = new FieldDefinitionImpl(null,
+                "contextData['request/comment']");
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
         assertEquals("#{document.contextData['request/comment']}", expression);
 
-        fieldDef = new FieldDescriptor(null,
+        fieldDef = new FieldDefinitionImpl(null,
                 "data.dc.contributors[fn:length(data.dc.contributors)-1]");
         expression = ValueExpressionHelper.createExpressionString("row",
                 fieldDef);

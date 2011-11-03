@@ -53,8 +53,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
-                "layouts-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
+                "OSGI-INF/layouts-framework.xml");
         service = Framework.getService(WebLayoutManager.class);
         assertNotNull(service);
     }
@@ -127,7 +127,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         // test rows
         assertEquals(1, layout.getColumns());
         LayoutRow[] rows = layout.getRows();
-        assertEquals(4, rows.length);
+        assertEquals(5, rows.length);
         LayoutRow row = rows[0];
 
         // test widgets
@@ -161,8 +161,14 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("globalTestWidget", widget.getName());
         assertEquals("test", widget.getType());
 
-        // test widget with selection options
+        // test widget defined globally on another category
         widget = rows[3].getWidgets()[0];
+        assertNotNull(widget);
+        assertEquals("globalTestWidgetWithTestCategory", widget.getName());
+        assertEquals("test", widget.getType());
+
+        // test widget with selection options
+        widget = rows[4].getWidgets()[0];
         assertNotNull(widget);
         assertEquals("widgetWithSelectOptions", widget.getName());
         assertEquals("test", widget.getType());

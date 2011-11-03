@@ -37,8 +37,8 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
-                "layouts-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
+                "OSGI-INF/layouts-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-listing-test-contrib.xml");
         service = Framework.getService(WebLayoutManager.class);

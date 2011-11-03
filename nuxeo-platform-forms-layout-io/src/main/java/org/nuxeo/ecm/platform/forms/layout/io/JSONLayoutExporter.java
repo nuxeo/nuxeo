@@ -38,20 +38,27 @@ import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContext;
+import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.RenderingInfoImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetReferenceImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionsImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeConfigurationImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionImpl;
-import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -79,6 +86,19 @@ public class JSONLayoutExporter {
         String decodedValues = URLDecoder.decode(json, ENCODED_VALUES_ENCODING);
         json = new String(Base64.decode(decodedValues));
         return JSONObject.fromObject(json);
+    }
+
+    /**
+     * @since 5.5
+     * @throws IOException
+     */
+    public static void export(String category, LayoutDefinition layoutDef,
+            LayoutConversionContext ctx,
+            List<WidgetDefinitionConverter> widgetConverters, OutputStream out)
+            throws IOException {
+        JSONObject res = exportToJson(category, layoutDef, ctx,
+                widgetConverters);
+        out.write(res.toString(2).getBytes(ENCODED_VALUES_ENCODING));
     }
 
     public static void export(WidgetTypeDefinition def, OutputStream out)
@@ -207,7 +227,7 @@ public class JSONLayoutExporter {
             for (String mode : modes) {
                 JSONArray modeLayouts = new JSONArray();
                 for (LayoutDefinition layoutDef : confLayouts.get(mode)) {
-                    modeLayouts.add(exportToJson(layoutDef));
+                    modeLayouts.add(exportToJson(null, layoutDef));
                 }
                 layouts.element(mode, modeLayouts);
             }
@@ -315,12 +335,26 @@ public class JSONLayoutExporter {
         return res;
     }
 
-    public static JSONObject exportToJson(LayoutDefinition layoutDef) {
-        return exportToJson(layoutDef, null);
+    public static JSONObject exportToJson(String category,
+            LayoutDefinition layoutDef) {
+        return exportToJson(category, layoutDef, null, null);
     }
 
-    public static JSONObject exportToJson(LayoutDefinition layoutDef,
-            String lang) {
+    /**
+     * Returns the JSON export of this layout definition
+     *
+     * @since 5.5
+     * @param category the category of the layout, needed for retrieval of
+     *            referenced global widgets.
+     * @param layoutDef the layout definition
+     * @param ctx the widget conversion context
+     * @param widgetConverters the list of ordered widget converters to use
+     *            before export
+     * @return
+     */
+    public static JSONObject exportToJson(String category,
+            LayoutDefinition layoutDef, LayoutConversionContext ctx,
+            List<WidgetDefinitionConverter> widgetConverters) {
         JSONObject json = new JSONObject();
         json.element("name", layoutDef.getName());
 
@@ -336,13 +370,13 @@ public class JSONLayoutExporter {
 
         JSONArray rows = new JSONArray();
         LayoutRowDefinition[] defRows = layoutDef.getRows();
-        List<String> widgetsToExport = new ArrayList<String>();
+        List<WidgetReference> widgetsToExport = new ArrayList<WidgetReference>();
         if (defRows != null) {
             for (LayoutRowDefinition layoutRowDef : defRows) {
                 rows.add(exportToJson(layoutRowDef));
-                String[] widgets = layoutRowDef.getWidgets();
+                WidgetReference[] widgets = layoutRowDef.getWidgetReferences();
                 if (widgets != null) {
-                    for (String widget : widgets) {
+                    for (WidgetReference widget : widgets) {
                         widgetsToExport.add(widget);
                     }
                 }
@@ -351,12 +385,18 @@ public class JSONLayoutExporter {
         if (!rows.isEmpty()) {
             json.element("rows", rows);
         }
-        LayoutManager webLayoutManager = Framework.getLocalService(LayoutManager.class);
+        LayoutStore webLayoutManager = Framework.getLocalService(LayoutStore.class);
         JSONArray widgets = new JSONArray();
-        for (String widgetName : widgetsToExport) {
+        for (WidgetReference widgetRef : widgetsToExport) {
+            String widgetName = widgetRef.getName();
             WidgetDefinition widgetDef = layoutDef.getWidgetDefinition(widgetName);
             if (widgetDef == null) {
-                widgetDef = webLayoutManager.getWidgetDefinition(widgetName);
+                String cat = widgetRef.getCategory();
+                if (cat == null) {
+                    cat = category;
+                }
+                widgetDef = webLayoutManager.getWidgetDefinition(cat,
+                        widgetName);
             }
             if (widgetDef == null) {
                 log.error(String.format(
@@ -365,10 +405,22 @@ public class JSONLayoutExporter {
                         layoutDef.getName()));
                 continue;
             }
-            widgets.add(exportToJson(widgetDef, lang));
+            if (widgetConverters != null) {
+                for (WidgetDefinitionConverter conv : widgetConverters) {
+                    widgetDef = conv.getWidgetDefinition(widgetDef, ctx);
+                }
+            }
+            if (widgetDef != null) {
+                widgets.add(exportToJson(widgetDef, ctx, widgetConverters));
+            }
         }
         if (!widgets.isEmpty()) {
             json.element("widgets", widgets);
+        }
+
+        JSONObject renderingInfos = exportRenderingInfosByModeToJson(layoutDef.getRenderingInfos());
+        if (!renderingInfos.isEmpty()) {
+            json.element("renderingInfos", renderingInfos);
         }
 
         return json;
@@ -395,8 +447,11 @@ public class JSONLayoutExporter {
             }
         }
 
+        Map<String, List<RenderingInfo>> renderingInfos = importRenderingInfosByMode(layoutDef.optJSONObject("renderingInfos"));
+
         LayoutDefinition res = new LayoutDefinitionImpl(name, properties,
                 templates, rows, widgets);
+        res.setRenderingInfos(renderingInfos);
 
         return res;
     }
@@ -412,10 +467,10 @@ public class JSONLayoutExporter {
             json.element("properties", props);
         }
         JSONArray widgets = new JSONArray();
-        String[] defWidgets = layoutRowDef.getWidgets();
+        WidgetReference[] defWidgets = layoutRowDef.getWidgetReferences();
         if (defWidgets != null) {
-            for (String widget : defWidgets) {
-                widgets.add(widget);
+            for (WidgetReference widget : defWidgets) {
+                widgets.add(widget.getName());
             }
         }
         if (!widgets.isEmpty()) {
@@ -429,11 +484,11 @@ public class JSONLayoutExporter {
         String name = layoutRowDef.optString("name", null);
         Map<String, Map<String, Serializable>> properties = importPropsByMode(layoutRowDef.optJSONObject("properties"));
 
-        List<String> widgets = new ArrayList<String>();
+        List<WidgetReference> widgets = new ArrayList<WidgetReference>();
         JSONArray jwidgets = layoutRowDef.optJSONArray("widgets");
         if (jwidgets != null) {
             for (Object item : jwidgets) {
-                widgets.add((String) item);
+                widgets.add(new WidgetReferenceImpl((String) item));
             }
         }
 
@@ -441,20 +496,21 @@ public class JSONLayoutExporter {
                 true);
     }
 
-    public static JSONObject exportToJson(WidgetDefinition widgetDef) {
-        return exportToJson(widgetDef, null);
-    }
-
+    /**
+     * @since 5.5
+     * @param widgetDef
+     * @param ctx
+     * @param widgetConverters
+     * @return
+     */
     public static JSONObject exportToJson(WidgetDefinition widgetDef,
-            String lang) {
+            LayoutConversionContext ctx,
+            List<WidgetDefinitionConverter> widgetConverters) {
         JSONObject json = new JSONObject();
         json.element("name", widgetDef.getName());
         json.element("type", widgetDef.getType());
         JSONObject labels = exportStringPropsToJson(widgetDef.getLabels());
         if (!labels.isEmpty()) {
-            if (widgetDef.isTranslated() && lang != null) {
-                labels = TranslationHelper.getTranslations(labels, lang);
-            }
             json.element("labels", labels);
         }
         JSONObject helpLabels = exportStringPropsToJson(widgetDef.getHelpLabels());
@@ -482,7 +538,7 @@ public class JSONLayoutExporter {
         WidgetDefinition[] subWidgetDefs = widgetDef.getSubWidgetDefinitions();
         if (subWidgetDefs != null) {
             for (WidgetDefinition wDef : subWidgetDefs) {
-                subWidgets.add(exportToJson(wDef, lang));
+                subWidgets.add(exportToJson(wDef, ctx, widgetConverters));
             }
         }
         if (!subWidgets.isEmpty()) {
@@ -502,33 +558,16 @@ public class JSONLayoutExporter {
         WidgetSelectOption[] selectOptionDefs = widgetDef.getSelectOptions();
         if (selectOptionDefs != null) {
             for (WidgetSelectOption selectOptionDef : selectOptionDefs) {
-                selectOptions.add(VocabularyExporter.exportToJson(selectOptionDef));
+                selectOptions.add(exportToJson(selectOptionDef));
             }
-        }
-        String wType = widgetDef.getType();
-        if ((wType.equals("selectOneDirectory"))
-                || (wType.equals("selectManyDirectory")) && (lang != null)) {
-            String dirName = (String) widgetDef.getProperties("any", "any").get(
-                    "directoryName");
-            if (dirName==null) {
-                dirName = (String) widgetDef.getProperties("any", "edit").get("directoryName");
-            }
-            if (dirName != null) {
-                selectOptions.addAll(VocabularyExporter.getVocabulary(dirName,
-                        lang));
-            }
-        } else if (wType.equals("template") && (lang != null)) {
-            if (widgetDef.getName().equals("subjects")) {
-                selectOptions.addAll(VocabularyExporter.getVocabulary("topic",
-                        "subtopic", lang));
-            } else if (widgetDef.getName().equals("coverage")) {
-                selectOptions.addAll(VocabularyExporter.getVocabulary(
-                        "continent", "country", lang));
-            }
-
         }
         if (!selectOptions.isEmpty()) {
             json.element("selectOptions", selectOptions);
+        }
+
+        JSONObject renderingInfos = exportRenderingInfosByModeToJson(widgetDef.getRenderingInfos());
+        if (!renderingInfos.isEmpty()) {
+            json.element("renderingInfos", renderingInfos);
         }
 
         return json;
@@ -570,12 +609,15 @@ public class JSONLayoutExporter {
             }
         }
 
+        Map<String, List<RenderingInfo>> renderingInfos = importRenderingInfosByMode(widgetDef.optJSONObject("renderingInfos"));
+
         WidgetDefinition res = new WidgetDefinitionImpl(name, type, labels,
                 helpLabels, translated, modes,
                 fieldDefinitions.toArray(new FieldDefinition[] {}), properties,
                 widgetModeProperties,
                 subWidgets.toArray(new WidgetDefinition[] {}),
                 selectOptions.toArray(new WidgetSelectOption[] {}));
+        res.setRenderingInfos(renderingInfos);
 
         return res;
     }
@@ -593,6 +635,52 @@ public class JSONLayoutExporter {
         FieldDefinition res = new FieldDefinitionImpl(fieldDef.optString(
                 "schemaName", null), fieldDef.getString("fieldName"));
         return res;
+    }
+
+    public static JSONObject exportToJson(WidgetSelectOption selectOption) {
+        JSONObject json = new JSONObject();
+        Serializable value = selectOption.getValue();
+        boolean isMulti = selectOption instanceof WidgetSelectOptions;
+        if (isMulti) {
+            json.element("multiple", true);
+        } else {
+            json.element("multiple", false);
+        }
+        if (value != null) {
+            json.element("value", value);
+        }
+        String var = selectOption.getVar();
+        if (var != null) {
+            json.element("var", var);
+        }
+        String itemLabel = selectOption.getItemLabel();
+        if (itemLabel != null) {
+            json.element("itemLabel", itemLabel);
+        }
+        String itemValue = selectOption.getItemValue();
+        if (itemValue != null) {
+            json.element("itemValue", itemValue);
+        }
+        Serializable itemDisabled = selectOption.getItemDisabled();
+        if (itemDisabled != null) {
+            json.element("itemDisabled", itemDisabled);
+        }
+        Serializable itemRendered = selectOption.getItemRendered();
+        if (itemRendered != null) {
+            json.element("itemRendered", itemRendered);
+        }
+        if (isMulti) {
+            WidgetSelectOptions selectOptions = (WidgetSelectOptions) selectOption;
+            String ordering = selectOptions.getOrdering();
+            if (ordering != null) {
+                json.element("ordering", ordering);
+            }
+            Boolean caseSensitive = selectOptions.getCaseSensitive();
+            if (caseSensitive != null) {
+                json.element("caseSensitive", caseSensitive);
+            }
+        }
+        return json;
     }
 
     public static WidgetSelectOption importWidgetSelectionOption(
@@ -651,7 +739,7 @@ public class JSONLayoutExporter {
         return props;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public static JSONObject exportPropsToJson(
             Map<String, Serializable> defProps) {
         JSONObject props = new JSONObject();
@@ -722,6 +810,72 @@ public class JSONLayoutExporter {
             }
         }
         return props;
+    }
+
+    public static JSONObject exportRenderingInfosByModeToJson(
+            Map<String, List<RenderingInfo>> infosByMode) {
+        JSONObject props = new JSONObject();
+        if (infosByMode != null) {
+            List<String> defModes = new ArrayList<String>(infosByMode.keySet());
+            // sort so that order is deterministic
+            Collections.sort(defModes);
+            for (String defMode : defModes) {
+                props.element(defMode,
+                        exportRenderingInfosToJson(infosByMode.get(defMode)));
+            }
+        }
+        return props;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, List<RenderingInfo>> importRenderingInfosByMode(
+            JSONObject infosByMode) {
+        Map<String, List<RenderingInfo>> props = new HashMap<String, List<RenderingInfo>>();
+        if (infosByMode != null && !infosByMode.isNullObject()) {
+            List<String> defModes = new ArrayList<String>(infosByMode.keySet());
+            // sort so that order is deterministic
+            Collections.sort(defModes);
+            for (String defMode : defModes) {
+                props.put(defMode,
+                        importRenderingInfos(infosByMode.getJSONArray(defMode)));
+            }
+        }
+        return props;
+    }
+
+    public static JSONArray exportRenderingInfosToJson(List<RenderingInfo> infos) {
+        JSONArray jinfos = new JSONArray();
+        if (infos != null) {
+            for (RenderingInfo info : infos) {
+                jinfos.add(exportToJson(info));
+            }
+        }
+        return jinfos;
+    }
+
+    public static List<RenderingInfo> importRenderingInfos(JSONArray jinfos) {
+        List<RenderingInfo> infos = new ArrayList<RenderingInfo>();
+        if (jinfos != null) {
+            for (Object item : jinfos) {
+                infos.add(importRenderingInfo((JSONObject) item));
+            }
+        }
+        return infos;
+    }
+
+    public static JSONObject exportToJson(RenderingInfo info) {
+        JSONObject json = new JSONObject();
+        json.element("level", info.getLevel());
+        json.element("message", info.getMessage());
+        json.element("translated", info.isTranslated());
+        return json;
+    }
+
+    public static RenderingInfo importRenderingInfo(JSONObject fieldDef) {
+        RenderingInfo res = new RenderingInfoImpl(fieldDef.optString("level",
+                ""), fieldDef.optString("message"), fieldDef.optBoolean(
+                "translated", false));
+        return res;
     }
 
 }

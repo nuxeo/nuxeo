@@ -50,7 +50,6 @@ import com.sun.facelets.tag.TagHandler;
  */
 public class SubWidgetTagHandler extends TagHandler {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SubWidgetTagHandler.class);
 
     protected final TagConfig config;
@@ -67,8 +66,8 @@ public class SubWidgetTagHandler extends TagHandler {
      * Needs widget to be exposed in context, so works in conjunction with
      * {@link WidgetTagHandler}.
      * <p>
-     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget},
-     * same variable suffixed with "_n" where n is the widget level, and
+     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget}
+     * , same variable suffixed with "_n" where n is the widget level, and
      * {@link RenderVariables.widgetVariables#widgetIndex}.
      */
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -101,7 +100,7 @@ public class SubWidgetTagHandler extends TagHandler {
             Integer level = null;
             String tagConfigId = null;
             if (subWidget != null) {
-                level = subWidget.getLevel();
+                level = Integer.valueOf(subWidget.getLevel());
                 tagConfigId = subWidget.getTagConfigId();
             }
 
@@ -111,7 +110,7 @@ public class SubWidgetTagHandler extends TagHandler {
                     RenderVariables.widgetVariables.widget.name(), level),
                     subWidgetVe);
             ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
-                    subWidgetCounter, Integer.class);
+                    Integer.valueOf(subWidgetCounter), Integer.class);
             variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
                     subWidgetIndexVe);
             variables.put(String.format("%s_%s",

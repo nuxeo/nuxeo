@@ -45,6 +45,8 @@ import com.sun.facelets.tag.TagConfig;
  */
 public interface WebLayoutManager extends LayoutManager {
 
+    public static final String JSF_CATEGORY = "jsf";
+
     /**
      * Returns the widget type handler for the registered widget type with this
      * type name.

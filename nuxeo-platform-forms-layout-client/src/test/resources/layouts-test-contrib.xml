@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.forms.layout.LayoutService.testContrib">
+<component name="org.nuxeo.ecm.platform.forms.layout.LayoutService.testContrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
@@ -81,6 +80,20 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="globalTestWidgetWithTestCategory" type="test">
+      <categories>
+        <category>testCategory</category>
+      </categories>
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+    </widget>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
@@ -122,6 +135,9 @@
         </row>
         <row>
           <widget>globalTestWidget</widget>
+        </row>
+        <row>
+          <widget category="testCategory">globalTestWidgetWithTestCategory</widget>
         </row>
         <row>
           <widget>widgetWithSelectOptions</widget>
@@ -214,7 +230,6 @@
       </widget>
     </layout>
 
-    <!-- FIXME AT: sub widgets registration does not seem to work -->
     <layout name="files">
       <rows>
         <row>

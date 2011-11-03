@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagConfig;
 /**
  * Widget tag handler.
  * <p>
- * Applies {@link  WidgetTypeHandler} found for given widget, in given mode and
+ * Applies {@link WidgetTypeHandler} found for given widget, in given mode and
  * for given value.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -156,7 +156,7 @@ public class WidgetTagHandler extends MetaTagHandler {
                     valueExpr);
             variables.put(String.format("%s_%s",
                     RenderVariables.globalVariables.value.name(),
-                    widget.getLevel()), valueExpr);
+                    Integer.valueOf(widget.getLevel())), valueExpr);
             // document as alias to value
             variables.put(RenderVariables.globalVariables.document.name(),
                     valueExpr);

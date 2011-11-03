@@ -52,7 +52,6 @@ import com.sun.facelets.tag.TagHandler;
  */
 public class LayoutRowTagHandler extends TagHandler {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LayoutRowTagHandler.class);
 
     protected final TagConfig config;
@@ -105,7 +104,7 @@ public class LayoutRowTagHandler extends TagHandler {
             variables.put(RenderVariables.columnVariables.layoutColumn.name(),
                     rowVe);
             ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(
-                    rowCounter, Integer.class);
+                    Integer.valueOf(rowCounter), Integer.class);
             variables.put(RenderVariables.rowVariables.layoutRowIndex.name(),
                     rowIndexVe);
             variables.put(

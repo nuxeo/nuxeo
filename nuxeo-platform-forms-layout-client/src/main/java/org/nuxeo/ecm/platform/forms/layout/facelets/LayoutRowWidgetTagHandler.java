@@ -52,7 +52,6 @@ import com.sun.facelets.tag.TagHandler;
  */
 public class LayoutRowWidgetTagHandler extends TagHandler {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LayoutRowWidgetTagHandler.class);
 
     protected final TagConfig config;
@@ -69,8 +68,8 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
      * Needs row to be exposed in context, so works in conjunction with
      * {@link LayoutRowTagHandler}.
      * <p>
-     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget},
-     * same variable suffixed with "_n" where n is the widget level, and
+     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget}
+     * , same variable suffixed with "_n" where n is the widget level, and
      * {@link RenderVariables.widgetVariables#widgetIndex}.
      */
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -106,14 +105,14 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             Integer level = null;
             String tagConfigId = null;
             if (widget != null) {
-                level = widget.getLevel();
+                level = Integer.valueOf(widget.getLevel());
                 tagConfigId = widget.getTagConfigId();
             }
             variables.put(String.format("%s_%s",
                     RenderVariables.widgetVariables.widget.name(), level),
                     widgetVe);
             ValueExpression widgetIndexVe = ctx.getExpressionFactory().createValueExpression(
-                    widgetCounter, Integer.class);
+                    Integer.valueOf(widgetCounter), Integer.class);
             variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
                     widgetIndexVe);
             variables.put(String.format("%s_%s",

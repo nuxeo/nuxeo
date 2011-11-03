@@ -1,7 +1,29 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.forms.layout.LayoutService.testContrib">
+<component name="org.nuxeo.ecm.platform.forms.layout.LayoutService.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="required_property" type="text">
+      <categories>
+        <category>widgetTypeConfiguration</category>
+      </categories>
+      <labels>
+        <label mode="any">Required</label>
+      </labels>
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+      <renderingInfos mode="any">
+        <renderingInfo level="error">
+          <translated>false</translated>
+          <message>This is my widget rendering message</message>
+        </renderingInfo>
+      </renderingInfos>
+    </widget>
+
+  </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
@@ -50,17 +72,17 @@
             <layout>
               <rows>
                 <row>
-                  <widget>required_property</widget>
+                  <widget category="widgetTypeConfiguration">
+                    required_property
+                  </widget>
                 </row>
               </rows>
-              <widget name="required_property" type="text">
-                <labels>
-                  <label mode="any">Required</label>
-                </labels>
-                <fields>
-                  <field schema="foo">bar</field>
-                </fields>
-              </widget>
+              <renderingInfos mode="any">
+                <renderingInfo level="error">
+                  <translated>false</translated>
+                  <message>This is my layout rendering message</message>
+                </renderingInfo>
+              </renderingInfos>
             </layout>
           </layouts>
           <layouts mode="edit">
@@ -108,10 +130,9 @@
                     itemDisabled="false" itemRendered="true" />
                   <options value="#{myBean.myList}" var="item"
                     itemValue="#{item.id}" itemLabel="#{item.title}" />
-                  <options value="#{documentList}" var="doc"
-                    itemValue="#{doc.id}" itemLabel="#{doc.dc.title}"
-                    itemDisabled="false" itemRendered="true" ordering="label"
-                    caseSensitive="true" />
+                  <options value="#{documentList}" var="doc" itemValue="#{doc.id}"
+                    itemLabel="#{doc.dc.title}" itemDisabled="false"
+                    itemRendered="true" ordering="label" caseSensitive="true" />
                   <option itemLabel="foo2" itemValue="bar2" />
                 </selectOptions>
               </widget>

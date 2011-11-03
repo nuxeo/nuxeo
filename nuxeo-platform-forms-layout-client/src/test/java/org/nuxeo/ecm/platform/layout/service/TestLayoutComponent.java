@@ -47,8 +47,8 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
-                "layouts-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
+                "OSGI-INF/layouts-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-contrib.xml");
         service = Framework.getService(WebLayoutManager.class);
@@ -186,16 +186,16 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("layoutPropertiesTest", layoutDef.getName());
 
         assertNotNull(layoutDef.getProperties("any"));
-        assertEquals("layoutPropValue", layoutDef.getProperties("any").get(
-                "layoutPropName"));
+        assertEquals("layoutPropValue",
+                layoutDef.getProperties("any").get("layoutPropName"));
 
         LayoutRowDefinition[] layoutRows = layoutDef.getRows();
         assertNotNull(layoutRows);
         assertEquals(1, layoutRows.length);
         LayoutRowDefinition layoutRow = layoutRows[0];
         assertNotNull(layoutRow.getProperties("any"));
-        assertEquals("layoutRowPropValue", layoutRow.getProperties("any").get(
-                "layoutRowPropName"));
+        assertEquals("layoutRowPropValue",
+                layoutRow.getProperties("any").get("layoutRowPropName"));
     }
 
     public void testLayoutColumnsRegistration() {
@@ -208,8 +208,8 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals(1, layoutColumns.length);
         LayoutRowDefinition layoutRow = layoutColumns[0];
         assertNotNull(layoutRow.getProperties("any"));
-        assertEquals("layoutColumnPropValue", layoutRow.getProperties("any").get(
-                "layoutColumnPropName"));
+        assertEquals("layoutColumnPropValue",
+                layoutRow.getProperties("any").get("layoutColumnPropName"));
     }
 
 }

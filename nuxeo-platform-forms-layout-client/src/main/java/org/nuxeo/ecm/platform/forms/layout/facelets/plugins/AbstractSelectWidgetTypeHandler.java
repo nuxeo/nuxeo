@@ -39,6 +39,8 @@ import com.sun.facelets.tag.TagAttributes;
 public abstract class AbstractSelectWidgetTypeHandler extends
         AbstractWidgetTypeHandler {
 
+    private static final long serialVersionUID = 1L;
+
     protected FaceletHandler getOptionsFaceletHandler(
             FaceletHandlerHelper helper, Widget widget) {
         FaceletHandler leaf = new LeafFaceletHandler();

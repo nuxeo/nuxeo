@@ -57,8 +57,18 @@
             "fieldName": "bar",
             "schemaName": "foo",
             "propertyName": "foo:bar"
-          }]
-        }]
+          }],
+          "renderingInfos": {"any": [          {
+            "level": "error",
+            "message": "This is my widget rendering message",
+            "translated": false
+          }]}
+        }],
+        "renderingInfos": {"any": [        {
+          "level": "error",
+          "message": "This is my layout rendering message",
+          "translated": false
+        }]}
       }],
       "edit": [      {
         "rows":         [

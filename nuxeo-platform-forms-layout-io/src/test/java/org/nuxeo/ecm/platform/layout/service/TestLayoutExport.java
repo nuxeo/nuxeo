@@ -32,13 +32,15 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
-import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
+import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -46,10 +48,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author Anahide Tchertchian
  * @since 5.4
  */
-// TODO: move to API module?
 public class TestLayoutExport extends NXRuntimeTestCase {
 
-    private LayoutManager service;
+    private LayoutStore service;
 
     @Override
     public void setUp() throws Exception {
@@ -59,12 +60,13 @@ public class TestLayoutExport extends NXRuntimeTestCase {
                 "OSGI-INF/layouts-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.export.tests",
                 "layouts-test-contrib.xml");
-        service = Framework.getService(LayoutManager.class);
+        service = Framework.getService(LayoutStore.class);
         assertNotNull(service);
     }
 
     public void testWidgetTypeExport() throws Exception {
-        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition("test");
+        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
+                WebLayoutManager.JSF_CATEGORY, "test");
         assertNotNull(wTypeDef);
 
         File file = File.createTempFile("widgettype-export", ".json");
@@ -81,7 +83,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     }
 
     public void testWidgetTypesExport() throws Exception {
-        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition("test");
+        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
+                WebLayoutManager.JSF_CATEGORY, "test");
         assertNotNull(wTypeDef);
 
         File file = File.createTempFile("widgettypes-export", ".json");
@@ -179,6 +182,17 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNull(anyLayout.getName());
         assertEquals(0, anyLayout.getTemplates().size());
         assertEquals(0, anyLayout.getProperties().size());
+        Map<String, List<RenderingInfo>> lrenderingInfos = anyLayout.getRenderingInfos();
+        assertNotNull(lrenderingInfos);
+        assertEquals(1, lrenderingInfos.size());
+        assertEquals("any", lrenderingInfos.keySet().iterator().next());
+        List<RenderingInfo> linfos = lrenderingInfos.get("any");
+        assertNotNull(linfos);
+        assertEquals(1, linfos.size());
+        RenderingInfo linfo = linfos.get(0);
+        assertEquals("error", linfo.getLevel());
+        assertEquals("This is my layout rendering message", linfo.getMessage());
+        assertFalse(linfo.isTranslated());
         LayoutRowDefinition[] anyRows = anyLayout.getRows();
         assertEquals(1, anyRows.length);
         LayoutRowDefinition anyRow = anyRows[0];
@@ -207,6 +221,17 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(0, requiredWidget.getWidgetModeProperties().size());
         assertEquals(0, requiredWidget.getSelectOptions().length);
         assertEquals(0, requiredWidget.getSubWidgetDefinitions().length);
+        Map<String, List<RenderingInfo>> wrenderingInfos = requiredWidget.getRenderingInfos();
+        assertNotNull(wrenderingInfos);
+        assertEquals(1, wrenderingInfos.size());
+        assertEquals("any", wrenderingInfos.keySet().iterator().next());
+        List<RenderingInfo> winfos = wrenderingInfos.get("any");
+        assertNotNull(winfos);
+        assertEquals(1, winfos.size());
+        RenderingInfo winfo = winfos.get(0);
+        assertEquals("error", winfo.getLevel());
+        assertEquals("This is my widget rendering message", winfo.getMessage());
+        assertFalse(winfo.isTranslated());
 
         List<LayoutDefinition> editLayouts = propLayouts.get(BuiltinModes.EDIT);
         assertNotNull(editLayouts);

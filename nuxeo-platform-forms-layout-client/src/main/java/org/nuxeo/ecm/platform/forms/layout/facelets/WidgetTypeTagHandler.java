@@ -37,7 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.FieldDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -61,7 +61,6 @@ import com.sun.facelets.tag.TagHandler;
  */
 public class WidgetTypeTagHandler extends TagHandler {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(WidgetTypeTagHandler.class);
 
     protected final TagConfig config;
@@ -101,6 +100,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         vars = tag.getAttributes().getAll();
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
         WebLayoutManager layoutService;
@@ -145,7 +145,7 @@ public class WidgetTypeTagHandler extends TagHandler {
                 if (item instanceof FieldDefinition) {
                     fieldsValue.add((FieldDefinition) item);
                 } else if (item instanceof String) {
-                    fieldsValue.add(new FieldDescriptor(null, (String) item));
+                    fieldsValue.add(new FieldDefinitionImpl(null, (String) item));
                 } else {
                     log.error("Invalid field item => discard: " + item);
                 }
@@ -175,9 +175,10 @@ public class WidgetTypeTagHandler extends TagHandler {
         ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
                 widget, Widget.class);
         vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
-        vm.setVariable(String.format("%s_%s",
-                RenderVariables.widgetVariables.widget.name(),
-                widget.getLevel()), widgetVe);
+        vm.setVariable(
+                String.format("%s_%s",
+                        RenderVariables.widgetVariables.widget.name(),
+                        Integer.valueOf(widget.getLevel())), widgetVe);
         try {
             WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget,
                     value, true);

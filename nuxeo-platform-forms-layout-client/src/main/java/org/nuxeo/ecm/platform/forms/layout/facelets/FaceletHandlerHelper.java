@@ -101,7 +101,7 @@ public final class FaceletHandlerHelper {
     /**
      * Returns a id unique within the facelet context using given id as base.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public String generateUniqueId(String base) {
         Map<String, Object> requestMap = context.getFacesContext().getExternalContext().getRequestMap();
         Map<String, Integer> counters = (Map) requestMap.get(LAYOUT_ID_COUNTERS);
@@ -284,7 +284,8 @@ public final class FaceletHandlerHelper {
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
-            TagAttribute valueAttr = createAttribute("value",
+            TagAttribute valueAttr = createAttribute(
+                    "value",
                     ValueExpressionHelper.createExpressionString(
                             widget.getValueName(), field));
             attrs.add(valueAttr);

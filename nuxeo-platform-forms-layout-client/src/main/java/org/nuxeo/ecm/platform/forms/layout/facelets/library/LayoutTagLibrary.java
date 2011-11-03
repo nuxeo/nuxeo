@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.library;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.FacesException;
@@ -40,6 +39,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.SubWidgetTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeTagHandler;
+import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -156,7 +156,6 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         if (layoutService == null) {
             throw new FacesException("Layout service not found");
         }
-
         return layoutService.getWidgetTypeDefinition(typeName);
     }
 
@@ -165,65 +164,24 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
      * name, separated by a space.
      */
     public static String getFieldDefinitionsAsString(FieldDefinition[] defs) {
-        StringBuilder buff = new StringBuilder();
-        if (defs != null) {
-            for (FieldDefinition def : defs) {
-                buff.append(def.getPropertyName()).append(" ");
-            }
-        }
-        return buff.toString().trim();
+        return LayoutFunctions.getFieldDefinitionsAsString(defs);
     }
 
     public static List<LayoutRow> getSelectedRows(Layout layout,
             List<String> selectedRowNames, boolean showAlwaysSelected) {
-        LayoutRow[] rows = layout.getRows();
-        List<LayoutRow> selectedRows = new ArrayList<LayoutRow>();
-        if (rows != null) {
-            for (LayoutRow row : rows) {
-                if (row.isAlwaysSelected() && showAlwaysSelected) {
-                    selectedRows.add(row);
-                } else if (selectedRowNames == null
-                        && row.isSelectedByDefault() && !row.isAlwaysSelected()) {
-                    selectedRows.add(row);
-                } else if (selectedRowNames != null
-                        && selectedRowNames.contains(row.getName())) {
-                    selectedRows.add(row);
-                }
-            }
-        }
-        return selectedRows;
+        return LayoutFunctions.getSelectedRows(layout, selectedRowNames,
+                showAlwaysSelected);
     }
 
     public static List<LayoutRow> getNotSelectedRows(Layout layout,
             List<String> selectedRowNames) {
-        LayoutRow[] rows = layout.getRows();
-        List<LayoutRow> notSelectedRows = new ArrayList<LayoutRow>();
-        if (rows != null) {
-            for (LayoutRow row : rows) {
-                if (selectedRowNames == null && !row.isSelectedByDefault()
-                        && !row.isAlwaysSelected()) {
-                    notSelectedRows.add(row);
-                } else if (selectedRowNames != null && !row.isAlwaysSelected()
-                        && !selectedRowNames.contains(row.getName())) {
-                    notSelectedRows.add(row);
-                }
-            }
-        }
-        return notSelectedRows;
+        return LayoutFunctions.getNotSelectedRows(layout, selectedRowNames);
     }
 
     public static List<String> getDefaultSelectedRowNames(Layout layout,
             boolean showAlwaysSelected) {
-        List<LayoutRow> selectedRows = getSelectedRows(layout, null,
+        return LayoutFunctions.getDefaultSelectedRowNames(layout,
                 showAlwaysSelected);
-        List<String> selectedRowNames = null;
-        if (selectedRows != null && !selectedRows.isEmpty()) {
-            selectedRowNames = new ArrayList<String>();
-            for (LayoutRow row : selectedRows) {
-                selectedRowNames.add(row.getName());
-            }
-        }
-        return selectedRowNames;
     }
 
 }

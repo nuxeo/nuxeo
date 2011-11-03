@@ -79,9 +79,12 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                 templateAttr);
         String widgetTagConfigId = widget.getTagConfigId();
-        TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                widgetTagConfigId, attributes, getNextHandler(ctx, tagConfig,
-                        helper, widget, widgetTagConfigId));
+        TagConfig config = TagConfigFactory.createTagConfig(
+                tagConfig,
+                widgetTagConfigId,
+                attributes,
+                getNextHandler(ctx, tagConfig, helper, widget,
+                        widgetTagConfigId));
         return new DecorateHandler(config);
     }
 
@@ -101,13 +104,14 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
         // expose field variables
-        for (Integer i = 0; i < fieldDefs.length; i++) {
+        for (int i = 0; i < fieldDefs.length; i++) {
             if (i == 0) {
                 paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
                         leaf, widget, widgetTagConfigId, fieldDefs[i], null));
             }
             paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                    leaf, widget, widgetTagConfigId, fieldDefs[i], i));
+                    leaf, widget, widgetTagConfigId, fieldDefs[i],
+                    Integer.valueOf(i)));
         }
         // expose widget properties too
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
@@ -128,8 +132,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                         RenderVariables.widgetVariables.widget.name(), key));
             }
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    widgetTagConfigId, FaceletHandlerHelper.getTagAttributes(
-                            name, value), leaf);
+                    widgetTagConfigId,
+                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
             paramHandlers.add(new ParamHandler(config));
         }
 
@@ -154,8 +158,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 widget.getValueName(), fieldDef);
         TagAttribute value = helper.createAttribute("value", computedValue);
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                widgetTagConfigId, FaceletHandlerHelper.getTagAttributes(name,
-                        value), leaf);
+                widgetTagConfigId,
+                FaceletHandlerHelper.getTagAttributes(name, value), leaf);
         return new ParamHandler(config);
     }
 
