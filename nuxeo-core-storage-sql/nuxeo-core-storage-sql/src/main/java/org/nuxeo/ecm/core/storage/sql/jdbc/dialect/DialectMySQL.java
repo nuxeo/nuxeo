@@ -89,7 +89,8 @@ public class DialectMySQL extends Dialect {
                 // don't use the max 65535 because this max is actually for the
                 // total size of all columns of a given table, so allow several
                 // varchar columns in the same table
-                return jdbcInfo("VARCHAR(500)", Types.VARCHAR);
+                // 255 is max for a column to be primary key in UTF8
+                return jdbcInfo("VARCHAR(255)", Types.VARCHAR);
             } else if (type.isClob() || type.length > 65535) {
                 return jdbcInfo("LONGTEXT", Types.LONGVARCHAR);
             } else {
