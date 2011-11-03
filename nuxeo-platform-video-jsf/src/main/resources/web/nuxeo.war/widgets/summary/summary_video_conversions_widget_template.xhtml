@@ -6,7 +6,8 @@
      xmlns:c="http://java.sun.com/jstl/core"
      xmlns:nxh="http://nuxeo.org/nxweb/html"
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
-     xmlns:nxd="http://nuxeo.org/nxweb/document">
+     xmlns:nxd="http://nuxeo.org/nxweb/document"
+     class="content_block">
 
   <c:if test="#{currentDocument.hasFacet('Video')}">
 
@@ -20,12 +21,18 @@
 
   <table width="100%" cellspacing="0">
     <tbody>
-      <c:forEach var="conversion" items="#{videoService.getAvailableVideoConversions()}">
+      <c:forEach var="conversion" items="#{videoService.getAvailableVideoConversions()}"
+        varStatus="status">
         <tr class="videoConversionRow">
-          <td>
+          <td class="labelColumn">
+            <c:if test="#{status.index == 0}">
+            #{messages['label.widget.video.format']}
+            </c:if>
+          </td>
+          <td class="fieldColumn">
             #{conversion.name}
           </td>
-          <td style="text-align: center; width: 50%;">
+          <td class="actionsColumn">
             <nxu:set var="conversionStatus"
               value="#{videoActions.getVideoConversionStatus(currentDocument, conversion.name)}">
               <c:if test="#{not empty conversionStatus}">
