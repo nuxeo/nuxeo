@@ -55,4 +55,9 @@ public class FieldDefinitionImpl implements FieldDefinition {
         }
     }
 
+    @Override
+    public FieldDefinition clone() {
+        return new FieldDefinitionImpl(schema, field);
+    }
+
 }

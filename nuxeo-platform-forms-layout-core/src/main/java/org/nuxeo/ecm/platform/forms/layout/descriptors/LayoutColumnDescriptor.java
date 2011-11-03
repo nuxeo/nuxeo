@@ -29,6 +29,4 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("column")
 public class LayoutColumnDescriptor extends LayoutRowDescriptor {
 
-    private static final long serialVersionUID = 1L;
-
 }

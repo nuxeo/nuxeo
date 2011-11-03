@@ -30,11 +30,19 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 /**
  * Layout manager interface.
  * <p>
- * It manages registries of layout definitions and widget types.
+ * It manages access to layout definitions, widget definitions and widget types
+ * for a given category.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public interface LayoutManager extends Serializable {
+
+    /**
+     * Return the default category used for storage
+     *
+     * @since 5.5
+     */
+    String getDefaultStoreCategory();
 
     /**
      * Returns the registered widget type for this type name.
@@ -80,18 +88,5 @@ public interface LayoutManager extends Serializable {
      * @since 5.1.7, 5.2.0
      */
     WidgetDefinition getWidgetDefinition(String widgetName);
-
-    // registry API
-    void registerWidgetType(WidgetTypeDefinition desc);
-
-    void unregisterWidgetType(WidgetTypeDefinition desc);
-
-    void registerLayout(LayoutDefinition layoutDef);
-
-    void unregisterLayout(LayoutDefinition layoutDef);
-
-    void registerWidget(WidgetDefinition widgetDef);
-
-    void unregisterWidget(WidgetDefinition widgetDef);
 
 }

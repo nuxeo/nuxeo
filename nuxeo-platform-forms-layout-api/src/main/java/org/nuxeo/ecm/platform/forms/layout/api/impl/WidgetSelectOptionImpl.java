@@ -104,4 +104,10 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         return intValue.toString();
     }
 
+    @Override
+    public WidgetSelectOption clone() {
+        return new WidgetSelectOptionImpl(value, var, itemLabel, itemValue,
+                itemDisabled, itemRendered);
+    }
+
 }

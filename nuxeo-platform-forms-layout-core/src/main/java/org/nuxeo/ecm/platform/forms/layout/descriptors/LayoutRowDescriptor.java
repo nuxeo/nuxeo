@@ -28,6 +28,8 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowDefinitionImpl;
 
 /**
  * Layout row descriptor.
@@ -35,9 +37,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("row")
-public class LayoutRowDescriptor implements LayoutRowDefinition {
-
-    private static final long serialVersionUID = 1L;
+public class LayoutRowDescriptor {
 
     @XNode("@name")
     String name;
@@ -48,8 +48,8 @@ public class LayoutRowDescriptor implements LayoutRowDefinition {
     @XNode("@alwaysSelected")
     boolean alwaysSelected = false;
 
-    @XNodeList(value = "widget", type = String[].class, componentType = String.class)
-    String[] widgets = new String[0];
+    @XNodeList(value = "widget", type = WidgetReferenceDescriptor[].class, componentType = WidgetReferenceDescriptor.class)
+    WidgetReferenceDescriptor[] widgets = new WidgetReferenceDescriptor[0];
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
@@ -62,7 +62,6 @@ public class LayoutRowDescriptor implements LayoutRowDefinition {
         return selectedByDefault;
     }
 
-    @Override
     public boolean isAlwaysSelected() {
         return alwaysSelected;
     }
@@ -72,16 +71,31 @@ public class LayoutRowDescriptor implements LayoutRowDefinition {
     }
 
     public String[] getWidgets() {
-        return widgets;
+        String[] names = new String[widgets.length];
+        for (int i = 0; i < widgets.length; i++) {
+            names[i] = widgets[i].getName();
+        }
+        return names;
     }
 
     public Map<String, Serializable> getProperties(String layoutMode) {
         return WidgetDescriptor.getProperties(properties, layoutMode);
     }
 
-    @Override
     public Map<String, Map<String, Serializable>> getProperties() {
         return WidgetDescriptor.getProperties(properties);
     }
 
+    public LayoutRowDefinition getLayoutRowDefinition() {
+        WidgetReference[] cwidgets = null;
+        if (widgets != null) {
+            cwidgets = new WidgetReference[widgets.length];
+            for (int i = 0; i < widgets.length; i++) {
+                cwidgets[i] = widgets[i].getWidgetReference();
+            }
+        }
+        LayoutRowDefinition clone = new LayoutRowDefinitionImpl(name,
+                getProperties(), cwidgets, alwaysSelected, selectedByDefault);
+        return clone;
+    }
 }

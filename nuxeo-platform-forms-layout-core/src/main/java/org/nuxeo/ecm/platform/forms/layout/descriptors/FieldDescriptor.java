@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.descriptors;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 
 /**
  * Field definition descriptor.
@@ -29,9 +30,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("field")
-public class FieldDescriptor implements FieldDefinition {
-
-    private static final long serialVersionUID = 1L;
+public class FieldDescriptor {
 
     @XNode("@schema")
     String schema;
@@ -61,6 +60,10 @@ public class FieldDescriptor implements FieldDefinition {
         } else {
             return String.format("%s:%s", schema, field);
         }
+    }
+
+    public FieldDefinition getFieldDefinition() {
+        return new FieldDefinitionImpl(schema, field);
     }
 
 }

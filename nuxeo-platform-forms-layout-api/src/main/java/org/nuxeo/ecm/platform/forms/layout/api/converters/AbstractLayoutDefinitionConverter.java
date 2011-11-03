@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,22 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: LayoutManagerLocal.java 26053 2007-10-16 01:45:43Z atchertchian $
+ *     Anahide Tchertchian
  */
+package org.nuxeo.ecm.platform.forms.layout.api.converters;
 
-package org.nuxeo.ecm.platform.forms.layout.api.service.ejb;
-
-import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 
 /**
- * Local interface for layout manager.
+ * Abstract implementation to ease up upgrade if interface changes.
  *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @since 5.5
  */
-public interface LayoutManagerLocal extends LayoutManager {
+public abstract class AbstractLayoutDefinitionConverter implements
+        LayoutDefinitionConverter {
+
+    protected LayoutDefinition getClonedLayout(LayoutDefinition layout) {
+        return layout.clone();
+    }
 
 }

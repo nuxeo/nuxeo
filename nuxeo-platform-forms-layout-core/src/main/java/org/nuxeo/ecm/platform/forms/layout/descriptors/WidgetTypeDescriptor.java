@@ -23,10 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionImpl;
 
 /**
  * Widget type descriptor.
@@ -34,9 +36,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("widgetType")
-public class WidgetTypeDescriptor implements WidgetTypeDefinition {
-
-    private static final long serialVersionUID = 1L;
+public class WidgetTypeDescriptor {
 
     @XNode("@name")
     String name;
@@ -50,6 +50,9 @@ public class WidgetTypeDescriptor implements WidgetTypeDefinition {
     @XNode("configuration")
     WidgetTypeConfigurationDescriptor configuration;
 
+    @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
+    String[] categories = new String[0];
+
     public String getName() {
         return name;
     }
@@ -62,9 +65,26 @@ public class WidgetTypeDescriptor implements WidgetTypeDefinition {
         return properties;
     }
 
-    @Override
     public WidgetTypeConfiguration getConfiguration() {
-        return configuration;
+        if (configuration == null) {
+            return null;
+        }
+        return configuration.getWidgetTypeConfiguration();
+    }
+
+    /**
+     * Returns the categories for this widget type, so that it can be stored in
+     * the corresponding registries.
+     *
+     * @since 5.5
+     */
+    public String[] getCategories() {
+        return categories;
+    }
+
+    public WidgetTypeDefinition getWidgetTypeDefinition() {
+        return new WidgetTypeDefinitionImpl(name, handlerClassName, properties,
+                getConfiguration());
     }
 
 }

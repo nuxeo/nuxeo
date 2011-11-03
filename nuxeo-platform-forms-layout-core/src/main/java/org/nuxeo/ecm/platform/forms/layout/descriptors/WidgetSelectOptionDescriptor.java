@@ -21,15 +21,14 @@ import java.io.Serializable;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionImpl;
 
 /**
  * @author Anahide Tchertchian
  * @since 5.4.2
  */
 @XObject("option")
-public class WidgetSelectOptionDescriptor implements WidgetSelectOption {
-
-    private static final long serialVersionUID = 1L;
+public class WidgetSelectOptionDescriptor {
 
     @XNode("@value")
     protected String value;
@@ -73,18 +72,9 @@ public class WidgetSelectOptionDescriptor implements WidgetSelectOption {
         return itemRendered;
     }
 
-    @Override
-    public String getTagConfigId() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(value).append(";");
-        builder.append(var).append(";");
-        builder.append(itemLabel).append(";");
-        builder.append(itemValue).append(";");
-        builder.append(itemDisabled).append(";");
-        builder.append(itemRendered).append(";");
-
-        Integer intValue = builder.toString().hashCode();
-        return intValue.toString();
+    public WidgetSelectOption getWidgetSelectOption() {
+        return new WidgetSelectOptionImpl(value, var, itemLabel, itemValue,
+                itemDisabled, itemRendered);
     }
 
 }

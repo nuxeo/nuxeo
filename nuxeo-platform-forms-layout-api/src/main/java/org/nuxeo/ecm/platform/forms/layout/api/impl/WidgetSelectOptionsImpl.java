@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 
 /**
@@ -121,6 +122,12 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
 
         Integer intValue = new Integer(builder.toString().hashCode());
         return intValue.toString();
+    }
+
+    @Override
+    public WidgetSelectOption clone() {
+        return new WidgetSelectOptionsImpl(value, var, itemLabel, itemValue,
+                itemDisabled, itemRendered, ordering, caseSensitive);
     }
 
 }

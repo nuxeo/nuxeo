@@ -20,16 +20,15 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionsImpl;
 
 /**
  * @author Anahide Tchertchian
  * @since 5.4.2
  */
 @XObject("options")
-public class WidgetSelectOptionsDescriptor implements WidgetSelectOptions {
-
-    private static final long serialVersionUID = 1L;
+public class WidgetSelectOptionsDescriptor {
 
     @XNode("@value")
     protected String value;
@@ -87,20 +86,9 @@ public class WidgetSelectOptionsDescriptor implements WidgetSelectOptions {
         return caseSensitive;
     }
 
-    @Override
-    public String getTagConfigId() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(value).append(";");
-        builder.append(var).append(";");
-        builder.append(itemLabel).append(";");
-        builder.append(itemValue).append(";");
-        builder.append(itemDisabled).append(";");
-        builder.append(itemRendered).append(";");
-        builder.append(ordering).append(";");
-        builder.append(caseSensitive).append(";");
-
-        Integer intValue = builder.toString().hashCode();
-        return intValue.toString();
+    public WidgetSelectOption getWidgetSelectOption() {
+        return new WidgetSelectOptionsImpl(value, var, itemLabel, itemValue,
+                itemDisabled, itemRendered, ordering, caseSensitive);
     }
 
 }

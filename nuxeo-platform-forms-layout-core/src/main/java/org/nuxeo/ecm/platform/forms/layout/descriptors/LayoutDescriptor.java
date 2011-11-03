@@ -20,7 +20,9 @@
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -30,7 +32,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutDefinitionImpl;
 
 /**
  * Layout definition descriptor.
@@ -38,9 +42,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("layout")
-public class LayoutDescriptor implements LayoutDefinition {
-
-    private static final long serialVersionUID = 1L;
+public class LayoutDescriptor {
 
     @XNode("@name")
     String name;
@@ -49,16 +51,22 @@ public class LayoutDescriptor implements LayoutDefinition {
     Map<String, String> templates = new HashMap<String, String>();
 
     @XNodeList(value = "rows/row", type = LayoutRowDescriptor[].class, componentType = LayoutRowDescriptor.class)
-    LayoutRowDefinition[] rows = new LayoutRowDefinition[0];
+    LayoutRowDescriptor[] rows = new LayoutRowDescriptor[0];
 
     @XNodeList(value = "columns/column", type = LayoutRowDescriptor[].class, componentType = LayoutRowDescriptor.class)
-    LayoutRowDefinition[] rowsAsColumns = new LayoutRowDefinition[0];
+    LayoutRowDescriptor[] rowsAsColumns = new LayoutRowDescriptor[0];
 
     @XNodeMap(value = "widget", key = "@name", type = HashMap.class, componentType = WidgetDescriptor.class)
-    Map<String, WidgetDefinition> widgets = new HashMap<String, WidgetDefinition>();
+    Map<String, WidgetDescriptor> widgets = new HashMap<String, WidgetDescriptor>();
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
+
+    @XNodeMap(value = "renderingInfos", key = "@mode", type = HashMap.class, componentType = RenderingInfosDescriptor.class)
+    Map<String, RenderingInfosDescriptor> renderingInfos = new HashMap<String, RenderingInfosDescriptor>();
+
+    @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
+    String[] categories = new String[0];
 
     Integer columns;
 
@@ -74,45 +82,106 @@ public class LayoutDescriptor implements LayoutDefinition {
         return template;
     }
 
-    @Override
     public Map<String, String> getTemplates() {
         return templates;
+    }
+
+    protected LayoutRowDefinition[] getDefinitions(LayoutRowDescriptor[] rows) {
+        LayoutRowDefinition[] crows = null;
+        if (rows != null) {
+            crows = new LayoutRowDefinition[rows.length];
+            for (int i = 0; i < rows.length; i++) {
+                crows[i] = rows[i].getLayoutRowDefinition();
+            }
+        }
+        return crows;
     }
 
     public LayoutRowDefinition[] getRows() {
         // check if columns tags are used instead of rows, they act as aliases.
         if (rowsAsColumns != null && rowsAsColumns.length > 0) {
-            return rowsAsColumns;
+            return getDefinitions(rowsAsColumns);
         }
-        return rows;
+        return getDefinitions(rows);
     }
 
     public int getColumns() {
         if (columns == null) {
             // compute it
-            columns = 0;
+            columns = Integer.valueOf(0);
             LayoutRowDefinition[] rows = getRows();
             for (LayoutRowDefinition def : rows) {
-                int current = def.getWidgets().length;
-                if (current > columns) {
-                    columns = current;
+                int current = def.getWidgetReferences().length;
+                if (current > columns.intValue()) {
+                    columns = Integer.valueOf(current);
                 }
             }
         }
-        return columns;
+        return columns.intValue();
+    }
+
+    protected WidgetDefinition getWidgetDefinition(WidgetDescriptor desc) {
+        if (desc == null) {
+            return null;
+        }
+        return desc.getWidgetDefinition();
     }
 
     public WidgetDefinition getWidgetDefinition(String name) {
-        return widgets.get(name);
+        return getWidgetDefinition(widgets.get(name));
     }
 
     public Map<String, Serializable> getProperties(String layoutMode) {
         return WidgetDescriptor.getProperties(properties, layoutMode);
     }
 
-    @Override
     public Map<String, Map<String, Serializable>> getProperties() {
         return WidgetDescriptor.getProperties(properties);
     }
 
+    /**
+     * Returns the categories for this layout, so that it can be stored in the
+     * corresponding registries.
+     *
+     * @since 5.5
+     */
+    public String[] getCategories() {
+        return categories;
+    }
+
+    public LayoutDefinition getLayoutDefinition() {
+        Map<String, String> ctemplates = null;
+        if (templates != null) {
+            ctemplates = new HashMap<String, String>();
+            ctemplates.putAll(templates);
+        }
+        LayoutRowDefinition[] crows = getRows();
+        Map<String, WidgetDefinition> cwidgets = null;
+        if (widgets != null) {
+            cwidgets = new HashMap<String, WidgetDefinition>();
+            for (Map.Entry<String, WidgetDescriptor> entry : widgets.entrySet()) {
+                WidgetDescriptor w = entry.getValue();
+                cwidgets.put(entry.getKey(), getWidgetDefinition(w));
+            }
+        }
+        Map<String, List<RenderingInfo>> crenderingInfos = null;
+        if (renderingInfos != null) {
+            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            for (Map.Entry<String, RenderingInfosDescriptor> item : renderingInfos.entrySet()) {
+                RenderingInfosDescriptor infos = item.getValue();
+                List<RenderingInfo> clonedInfos = null;
+                if (infos != null) {
+                    clonedInfos = new ArrayList<RenderingInfo>();
+                    for (RenderingInfoDescriptor info : infos.getRenderingInfos()) {
+                        clonedInfos.add(info.getRenderingInfo());
+                    }
+                }
+                crenderingInfos.put(item.getKey(), clonedInfos);
+            }
+        }
+        LayoutDefinition clone = new LayoutDefinitionImpl(name,
+                getProperties(), ctemplates, crows, cwidgets);
+        clone.setRenderingInfos(crenderingInfos);
+        return clone;
+    }
 }
