@@ -115,8 +115,12 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         builder.append(var).append(";");
         builder.append(itemLabel).append(";");
         builder.append(itemValue).append(";");
-        builder.append(itemDisabled.toString()).append(";");
-        builder.append(itemRendered.toString()).append(";");
+        if (itemDisabled != null) {
+            builder.append(itemDisabled.toString());
+        }
+        if (itemRendered != null) {
+            builder.append(itemRendered.toString());
+        }
         builder.append(ordering).append(";");
         builder.append(caseSensitive).append(";");
 
