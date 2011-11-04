@@ -92,6 +92,22 @@ public interface WebLayoutManager extends LayoutManager {
             boolean selectAllRowsByDefault);
 
     /**
+     * Returns the computed layout for this name, category, mode and list of
+     * selected rows in given context, or null if no layout with this name is
+     * found.
+     *
+     * @see LayoutManager#getLayoutDefinition(String)
+     * @see #getLayout(FaceletContext, LayoutDefinition, String, String, List,
+     *      boolean)
+     * @param layoutName the layout definition name.
+     * @return a layout computed in this context.
+     * @since 5.5
+     */
+    Layout getLayout(FaceletContext ctx, String layoutName,
+            String layoutCategory, String mode, String valueName,
+            List<String> selectedRows, boolean selectAllRowsByDefault);
+
+    /**
      * Returns the computed layout for this definition, mode and list of
      * selected rows in given context, or null if the layout definition is
      * null.

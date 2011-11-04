@@ -76,6 +76,11 @@ public class LayoutTagHandler extends TagHandler {
 
     protected final TagAttribute name;
 
+    /**
+     * @since 5.5.
+     */
+    protected final TagAttribute category;
+
     protected final TagAttribute definition;
 
     protected final TagAttribute mode;
@@ -100,6 +105,7 @@ public class LayoutTagHandler extends TagHandler {
         super(config);
         this.config = config;
         name = getAttribute("name");
+        category = getAttribute("category");
         definition = getAttribute("definition");
         if (name == null && definition == null) {
             throw new TagException(this.tag,
@@ -176,9 +182,13 @@ public class LayoutTagHandler extends TagHandler {
 
             if (name != null) {
                 layoutName = name.getValue(ctx);
+                String layoutCategory = null;
+                if (category != null) {
+                    layoutCategory = category.getValue(ctx);
+                }
                 layoutInstance = layoutService.getLayout(ctx, layoutName,
-                        modeValue, valueName, selectedRowsValue,
-                        selectAllByDefaultValue);
+                        layoutCategory, modeValue, valueName,
+                        selectedRowsValue, selectAllByDefaultValue);
             } else if (definition != null) {
                 LayoutDefinition layoutDef = (LayoutDefinition) definition.getObject(
                         ctx, LayoutDefinition.class);
@@ -236,8 +246,8 @@ public class LayoutTagHandler extends TagHandler {
                     this.config,
                     layoutTagConfigId,
                     FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
-                            "src", templateValue)), getNextHandler(ctx,
-                            this.config, helper, layoutInstance,
+                            "src", templateValue)),
+                    getNextHandler(ctx, this.config, helper, layoutInstance,
                             layoutTagConfigId));
             FaceletHandler includeHandler = new IncludeHandler(config);
 
@@ -296,8 +306,8 @@ public class LayoutTagHandler extends TagHandler {
                     RenderVariables.layoutVariables.layout.name());
             TagAttribute value = helper.createAttribute("value", "#{layout}");
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    layoutTagConfigId, FaceletHandlerHelper.getTagAttributes(
-                            name, value), leaf);
+                    layoutTagConfigId,
+                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
             paramHandlers.add(new ParamHandler(config));
         }
 
@@ -320,8 +330,8 @@ public class LayoutTagHandler extends TagHandler {
                         RenderVariables.layoutVariables.layout.name(), key));
             }
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    layoutTagConfigId, FaceletHandlerHelper.getTagAttributes(
-                            name, value), leaf);
+                    layoutTagConfigId,
+                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
             paramHandlers.add(new ParamHandler(config));
         }
 

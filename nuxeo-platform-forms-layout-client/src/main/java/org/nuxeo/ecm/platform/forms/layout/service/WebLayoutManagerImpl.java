@@ -31,6 +31,7 @@ import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -280,9 +281,21 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName, List<String> selectedRows,
             boolean selectAllRowsByDefault) {
-        LayoutDefinition layoutDef = getLayoutDefinition(layoutName);
+        return getLayout(ctx, layoutName, null, mode, valueName, selectedRows,
+                selectAllRowsByDefault);
+    }
+
+    public Layout getLayout(FaceletContext ctx, String layoutName,
+            String layoutCategory, String mode, String valueName,
+            List<String> selectedRows, boolean selectAllRowsByDefault) {
+        if (StringUtils.isBlank(layoutCategory)) {
+            layoutCategory = getDefaultStoreCategory();
+        }
+        LayoutDefinition layoutDef = getLayoutStore().getLayoutDefinition(
+                layoutCategory, layoutName);
         if (layoutDef == null) {
-            log.debug(String.format("Layout %s not found", layoutName));
+            log.debug(String.format("Layout '%s' not found for category '%s'",
+                    layoutName, layoutCategory));
             return null;
         }
         return getLayout(ctx, layoutDef, mode, valueName, selectedRows,
@@ -338,7 +351,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 if (wDef == null) {
                     // try in global registry
                     String cat = widgetRef.getCategory();
-                    if (cat == null) {
+                    if (StringUtils.isBlank(cat)) {
                         wDef = getWidgetDefinition(widgetName);
                     } else {
                         wDef = getLayoutStore().getWidgetDefinition(cat,
