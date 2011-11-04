@@ -67,7 +67,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.operation.OperationHandler;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
@@ -2278,6 +2277,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         options.put("versionLabel", label);
         options.put("checkInComment", checkinComment);
         options.put("checkedInVersionRef", checkedInVersionRef);
+        if (checkinComment == null) {
+            // check if there's a comment already in options
+            Object optionsComment = options.get("comment");
+            if (optionsComment instanceof String) {
+                checkinComment = (String) optionsComment;
+            }
+        }
         String comment = checkinComment == null ? label : label + ' '
                 + checkinComment;
         options.put("comment", comment); // compat, used in audit
