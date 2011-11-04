@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>5.5-SNAPSHOT</version>
+    <version>5.5-I20111104_1115</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>5.5-SNAPSHOT</version>
+  <version>5.5-I20111104_1115</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
