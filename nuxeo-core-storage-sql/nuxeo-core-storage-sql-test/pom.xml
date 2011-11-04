@@ -181,11 +181,14 @@
       <artifactId>jtds</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- <dependency> -->
-    <!-- <groupId>com.oracle</groupId> -->
-    <!-- <artifactId>ojdbc14</artifactId> -->
-    <!-- <scope>runtime</scope> -->
-    <!-- </dependency> -->
+    <!-- Not publicly available:
+         should be added to your local repository
+         or commented out -->
+    <dependency>
+      <groupId>com.oracle</groupId>
+      <artifactId>ojdbc6</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
