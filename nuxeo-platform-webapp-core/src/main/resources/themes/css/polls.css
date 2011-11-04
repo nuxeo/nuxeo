@@ -1,0 +1,11 @@
+/*
+Summary view for Polls used in Document Management view
+author: lkemen@nuxeo.com
+*/
+.pollStatusLabel, .pollStatus { float:left }
+.pollStatusLabel { padding: 0 10px 5px 0 }
+.pollStatus span, .pollStatus a { padding: 1px 5px }
+.pollStatus .status {	font-weight: bold; background-color: "neutral.lighter (__FLAVOR__ background)" }
+.pollStatus .project { color: #0088c0 }
+.pollStatus .open { color: "normal.status  (__FLAVOR__ color)" }
+.pollStatus .closed {	color: "default (__FLAVOR__ color)" }

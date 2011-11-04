@@ -1,0 +1,93 @@
+/*
+Styles for the buttons and actions.
+=Buttons -> default buttons. Major is used in forms, when you want to highlight one action
+=Syndication Button -> for RSS and Atom links
+=Action Bar -> usually used under tabs, to display many different actions (from document creation to view mode)
+=RightClick menu -> actions menu displayed by rightclick on links
+author: lkemen@nuxeo.com
+*/
+
+/* =Buttons */
+.button, input.button {
+	box-shadow:inset 0px 1px 0px 0px #fff;
+	background-color: "button (__FLAVOR__ background)";
+	border-radius:3px;
+	border:1px solid;  border-color: "button (__FLAVOR__ border)";
+	color:"link.action (__FLAVOR__ color)";
+	cursor: pointer;
+	font-size: .9em;
+	font-weight:bold;
+	margin: 5px 10px 10px 0;
+	padding:4px 10px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #fff }
+.button:hover, input.button:hover {
+  background: none "neutral.lighter (__FLAVOR__ background)";
+	border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
+
+input.button[disabled=disabled], input.button[disabled=disabled]:hover {
+	background: none "neutral.lighter (__FLAVOR__ background)";
+	border: 1px solid; border-color: "button.disabled (__FLAVOR__ border)";
+	color: "link.disabled (__FLAVOR__ color)";
+	cursor: default;
+	visibility: hidden }
+
+.major, input.major {
+	background: none repeat scroll 0 0 #0080B0;
+	border: 1px solid #014C68;
+	color: #fff;
+	text-shadow: 1px 1px 0 #000 }
+.major:hover, input.major:hover {
+	background: none repeat scroll 0 0 #01a2df;
+	border: 1px solid #0186b8 }
+
+.smallButton, input.smallButton { font-size: 0.85em; padding: 3px }
+
+/* =Syndication Button */
+div.syndicationButton { background-color: #ff9d5c; float: right; font-size: .7em; margin-bottom: 5px }
+.syndicationContainer { height: 30px }
+div.syndicationButton div.syndicationLinks {color: #fff; padding: 2px 4px }
+div.syndicationButton div.syndicationLinks a { color: #fff }
+
+/* =Action Bar */
+.action_bar { float: left; line-height: normal; margin: 10px 10px 10px 0 }
+.action_bar_message { float: right; font-size: .8em; margin: 0 }
+.action_bar_message form { display: inline; text-align: right }
+.action_bar ul { list-style: none; margin: 0; padding: 0 10px 0 0 }
+.action_bar li { float: left; margin: 0; padding: 0 }
+.action_bar a {
+  box-shadow:0px 1px 0px 0px #fff inset;
+  background-color:"neutral.medium (__FLAVOR__ background)";
+  border-radius:3px;
+  border:1px solid; border-color: "neutral.light (__FLAVOR__ border)";
+  color:"black (__FLAVOR__ color)";
+  cursor: pointer;
+  float: left;
+  font-size: .9em;
+  font-weight:bold;
+  margin-right: 10px;
+  padding:4px 8px;
+  text-decoration:none }
+.action_bar a:hover { background: none "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)" }
+.action_bar a img { margin: 0 3px -2px -4px }
+
+.listingLayoutSelector { float: right; margin: 11px 0 10px 7px; text-align: right }
+.listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 4px 0 0 }
+.listingLayoutSelector .langSelect { float: left; font-size: 0.8em; padding: 1px }
+
+/* =RightClick menu */
+#contextMenu {
+  position: absolute;
+  visibility: hidden;
+  background-color: #ddd;
+  border: 1px solid #000
+  color: green;
+  top: 0;
+  left: 0 }
+.ctxMenuStyle { list-style: none; padding: 1px; margin: 0px; background-color: #232323; width: 100px; font-size: 9px }
+.ctxMenuItemStyle { margin: 0px; color: #e7e7e7; display: block; cursor: default; padding: 3px; border-bottom: 1px solid #232323; background-color:#3a3d40 }
+.ctxMenuItemHoverStyle { margin: 0px; color: #fff; display: block; cursor: default; padding: 3px; border-color: "color.major.stronger (__FLAVOR__ border)"; background-color: "color.major.stronger (__FLAVOR__ background)"; }
+.ctxMenuItemStyle a { text-decoration:none; color: #e7e7e7 }
+.ctxMenuItemHoverStyle a { text-decoration:none; color: #fff }
+.ctxMenuImg { vertical-align:middle; padding:1px; padding-right:4px }
+.ctxMenuShadow { background-color:#000; position:absolute; opacity:0.2; z-index:499 }

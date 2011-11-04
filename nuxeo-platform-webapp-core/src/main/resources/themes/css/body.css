@@ -1,0 +1,12 @@
+/*
+Styles for default borders and background image
+author: lkemen@nuxeo.com
+*/
+
+.nxMainContainer { height: 600px; width: 100%; font-size: .8em }
+.nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: 5px; width: 18% }
+.nxMainContainer .content {
+  background: url("${basePath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
+  padding: 0;
+  width: 82% }
+.mainFragment { padding: 7px }

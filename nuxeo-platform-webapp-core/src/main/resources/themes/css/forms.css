@@ -1,0 +1,15 @@
+/*
+Styles for all the forms.
+=Forms elements
+=Calendar -> adjust the Calendar icon
+author: lkemen@nuxeo.com
+*/
+
+/* =Forms elements */
+textarea { font-family: "default (__FLAVOR__ font)"; padding: 5px; font-size: .95em }
+.selectDocumentType { margin-top: 10px }
+.checkBox { margin-right: 3px }
+.required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 10px 0 0 }
+
+/* =Calendar */
+.calendarTrigger { cursor: pointer; margin: 0 0 5px; vertical-align: bottom }

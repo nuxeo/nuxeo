@@ -1,0 +1,26 @@
+/*
+Picture Book styles used in Document Management view
+author: lkemen@nuxeo.com
+*/
+.pictureBookItem {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
+  float: left;
+  height: 100%;
+  margin: 10px 20px 10px 0;
+  text-align: center;
+  width: 140px }
+
+.itemSelected { background-color: #ECF6FF; border: 1px solid; border-color: "color.major.strong (__FLAVOR__ border)" }
+
+.pictureBookItem .cell { height: 110px; padding-top: 15px; text-align: center }
+.pictureBookItem .cell a { display: block; height: 100px; padding: 20px; width: 100px }
+.pictureBookItemTitle { background-color: #fff; font-size:.8em; padding: 5px 0 }
+
+.slideshowContent { padding: 10px 0 5px 0 }
+.slideshowContent h3 { padding: 8px 0 5px 70px }
+
+.slideShowControl { margin: 0 0 10px }
+.slideShowControl input { margin: 0 3px; padding: 0 }
+.slideShowControl .indexPicture { margin: 0 3px 4px 0 }
+.slideShowControl span { padding-right: 10px }

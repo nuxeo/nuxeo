@@ -1,0 +1,91 @@
+/*
+Style all the tables displayed
+author: lkemen@nuxeo.com
+*/
+
+table thead th { padding: 3px; text-align: left }
+
+.dataList { background: white; border-collapse: collapse; margin: 0 }
+.dataList td {
+  border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
+  padding: 5px 3px }
+.dataList thead th {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: 5px 3px;
+  text-align: left }
+.dataList thead th a, .dataList thead th a:link, .dataList thead th a:visited { color: "gray.dark (__FLAVOR__ color)"; text-decoration: none }
+.dataList thead th a:hover { text-decoration: underline }
+
+.dataInput { margin-top: 5px }
+.dataInput td, .rightsAddManager .dataInput td { border: 0 solid; padding: 7px 4px }
+.dataInput td td, .dataInput td td td { padding: 3px 4px }
+.dataInput .button { margin: 0 10px 0 0 }
+.dataInput textarea, .dataInput .dataInputText { width: 500px }
+.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)"; padding: 4px; vertical-align: top }
+.dataInput select { padding: 2px 1px 2px 1px; vertical-align: top }
+.archiveTabContent .dataInput { border: none; margin-bottom: 15px }
+.dataInputGroup { margin: 0; padding: 0; vertical-align: top }
+
+.dataOutput, .dataOutput2Columns {
+  border-collapse: collapse;
+  margin-top: 7px;
+  margin-bottom: 5px }
+table.dataOutput thead th {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: 5px 3px;
+  text-align: left }
+.dataOutput td {
+  border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
+  padding: 5px 3px }
+.dataOutput td table td { border: 0 none transparent }
+.dataOutput, .dataOutput2Columns, .dataList { width: 100% }
+.dataOutput2Columns td { padding: 5px 3px; vertical-align: top }
+table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited { color: "gray.dark (__FLAVOR__ color)" }
+.dataOutput .button { margin: 2px 10px 2px 0 !important }
+table.dataOutput th a img { margin: 0 0 0 2px; padding: 0; vertical-align: bottom }
+
+.boldColumn { font-weight: bold !important }
+.buttonColumn { text-align: center; width: 280px }
+.focusColumn { background-color: "neutral.lighter (__FLAVOR__ background)" }
+.radioColumn {
+  padding: 0 0 0 5px;
+  vertical-align: top;
+  width: 8px }
+.iconColumn { text-align: center; width: 20px }
+.iconColumn .cell { background: none; width: 40px }
+.iconColumn .dropInto { background-color: "neutral.lighter (__FLAVOR__ background)" }
+.iconColumn img { background: none; position: relative; z-index: 25 }
+.twoColumns { width: 50% }
+.fieldColumn img { margin: 0 4px; vertical-align: top }
+
+.buttonsGadgetNoForm .button { margin-right: 10px }
+.buttonsGadget { margin: 5px 0 5px 40px }
+.smallButtonsGadget { margin: 0 0 5px 100px }
+
+.labelColumn { font-weight: bold; vertical-align: top; width: 120px }
+.labelColumn span { display: block; padding-right: 8px }
+.workflowLabelColumn { width: 120px }
+
+.relationCommentList td { border: 0 none }
+.relationObjectColumn { vertical-align: top; width: 100px }
+.relationCommentColumn { vertical-align: top }
+.relationActionsColumn { text-align: center; vertical-align: top; width: 60px }
+.relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn { vertical-align: top }
+.relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table { border: 0 none; margin: 0; vertical-align: top }
+
+.selectDocumentType td { padding: 3px }
+.selectDocumentType td a img { margin-right: 4px; vertical-align: top }
+
+.vocabularyEntryContent { margin-left: 18px }
+.vocabularyEntryContent .notEditable { background-color: #fff }
+.vocabularyEntryContent .dataInput { border: none; margin-bottom: 15px }
+
+.taskPrincipalSelect select { margin: 5px 0 10px 15px; padding: 2px 1px 2px 1px }
+
+table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background)" }
+
+.dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.light (__FLAVOR__ background)" }

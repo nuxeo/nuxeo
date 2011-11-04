@@ -1,0 +1,69 @@
+/*
+Styles for all the foldable boxes.
+=Default boxes -> foldable box with a colored header
+=Light boxes -> foldable box with a simple border, whithout any color
+author: lkemen@nuxeo.com
+*/
+
+/* =Default boxes */
+.foldableBox { border-width: 1px; border-style: none none solid; border-color:"neutral.lighter (__FLAVOR__ border)"; font-size: .9em; margin-bottom: 20px }
+
+.foldableBox h3 {
+  background-color: #fff;
+  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
+  font-size: 1.1em;
+  height: 20px;
+  padding: 3px 3px 3px 18px }
+.foldableBox h3.folded {
+  background:url("${basePath}/icons/arrow_folded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)" }
+.foldableBox h3.unfolded {
+  background:url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)";
+  clear: both }
+.foldableBox h3.foldedDisabled {
+  background:"neutral.medium (__FLAVOR__ background)" none;
+  border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)";
+  color: #555 }
+.foldableBox h3 span, .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover {
+  color: "black (__FLAVOR__ color)";
+  display: block;
+  float: left;
+  padding-right: 10px }
+.foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)" }
+.foldableBox h3 a.action, .foldableBox h3 a.action:visited {
+  box-shadow:inset 0px 1px 0px 0px #fff;
+  background-color:"neutral.medium (__FLAVOR__ background)";
+  border-radius:3px;
+  border:1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
+  color:"black (__FLAVOR__ color)";
+  float: right;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin: 0 5px;
+  padding: 0 6px;
+  text-decoration:none;
+  text-shadow:1px 1px 0px #fff }
+.foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)" }
+
+.foldableBox .boxBody { clear: both; padding: 10px }
+
+/* =Light boxes */
+.foldableLightBox { margin-bottom: 20px }
+.foldableLightBox div.folded {background: #fff url("${basePath}/icons/arrow_folded.gif") top left no-repeat }
+.foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat }
+.foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: "gray.dark (__FLAVOR__ color)"; float: left }
+.foldableLightBox div.folded, .foldableLightBox div.unfolded {
+  border-width: 1px; border-style: none none solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  font-size: .8em;
+  height: 18px;
+  padding: 3px 3px 3px 18px }
+.foldableLightBox .boxBody {
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-top: none;
+  clear: both;
+  font-size: .8em;
+  padding: 10px }
+
+.massEditForm foldableBox { margin-right: 15px }

@@ -25,7 +25,7 @@
 
     <theme>
       <src>themes/theme-galaxy.xml</src>
-      <!--src>themes/theme-galaxy-new.xml</src -->
+      <!--src>themes/theme-galaxy-new.xml</src-->
     </theme>
 
   </extension>
@@ -162,6 +162,37 @@
   <!-- Register mapping between theme pages and resources -->
   <!--
   <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="galaxy/print">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors append="true">
+        <flavor>default</flavor>
+      </flavors>
+      <styles append="true">
+        <style>print_generic</style>
+      </styles>
+    </themePage>
+
+    <themePage name="galaxy/popup">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors append="true">
+        <flavor>default</flavor>
+      </flavors>
+      <styles append="true">
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>body</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>nuxeo_dm_specific</style>
+      </styles>
+    </themePage>
+
     <themePage name="galaxy/default">
       <defaultFlavor>default</defaultFlavor>
       <flavors append="true">
@@ -169,29 +200,34 @@
         <flavor>dark</flavor>
       </flavors>
       <styles append="true">
-        <style>nuxeo_dm_default</style>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>breadcrumb</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>drag_and_drop</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>picture_book</style>
+        <style>polls</style>
+        <style>faceted_search</style>
+        <style>nuxeo_dm_specific</style>
       </styles>
     </themePage>
 
-    <themePage name="galaxy/print">
-      <defaultFlavor>default</defaultFlavor>
-      <flavors append="true">
-        <flavor>default</flavor>
-        <flavor>dark</flavor>
-      </flavors>
-      <styles append="true">
-        <style>print_default</style>
-      </styles>
-    </themePage>
-  </extension>
-  -->
+  </extension>  -->
 
   <!-- Register flavors (collections of presets) -->
   <extension target="org.nuxeo.theme.styling.service" point="flavors">
 
     <flavor name="default">
       <presetsList append="true">
-        <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/default-borders.properties" />
         <presets category="background"
           src="themes/palettes/default-backgrounds.properties" />
@@ -202,7 +238,6 @@
 
     <flavor name="dark">
       <presetsList append="true">
-        <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/dark-borders.properties" />
         <presets category="background" src="themes/palettes/dark-backgrounds.properties" />
         <presets category="font" src="themes/palettes/dark-fonts.properties" />
@@ -215,11 +250,69 @@
   <!-- Register style resources (contain indirect references to flavor names, i.e.
     "__FLAVOR__") -->
   <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_dm_default">
-      <path>themes/css/nuxeo_dm_default.css</path>
+    <!-- Global styles -->
+    <style name="breadcrumb">
+      <path>themes/css/breadcrumb.css</path>
     </style>
-    <style name="print_default">
-      <path>themes/css/print_default.css</path>
+    <style name="buttons_and_actions">
+      <path>themes/css/buttons_and_actions.css</path>
+    </style>
+    <style name="basics">
+      <path>themes/css/basics.css</path>
+    </style>
+    <style name="body">
+      <path>themes/css/body.css</path>
+    </style>
+    <style name="drag_and_drop">
+      <path>themes/css/drag_and_drop.css</path>
+    </style>
+    <style name="foldable_boxes">
+      <path>themes/css/foldable_boxes.css</path>
+    </style>
+    <style name="forms">
+      <path>themes/css/forms.css</path>
+    </style>
+    <style name="messages_and_tooltips">
+      <path>themes/css/messages_and_tooltips.css</path>
+    </style>
+    <style name="navigation">
+      <path>themes/css/navigation.css</path>
+    </style>
+    <style name="richfaces_components">
+      <path>themes/css/richfaces_components.css</path>
+    </style>
+    <style name="tables">
+      <path>themes/css/tables.css</path>
+    </style>
+    <style name="tabs_content">
+      <path>themes/css/tabs_content.css</path>
+    </style>
+
+    <!-- Header and Footer -->
+    <style name="header">
+      <path>themes/css/header.css</path>
+    </style>
+    <style name="footer">
+      <path>themes/css/footer.css</path>
+    </style>
+
+    <!-- Addons -->
+    <style name="picture_book">
+      <path>themes/css/picture_book.css</path>
+    </style>
+    <style name="polls">
+      <path>themes/css/polls.css</path>
+    </style>
+    <style name="faceted_search">
+      <path>themes/css/faceted_search.css</path>
+    </style>
+
+    <!-- Specific to pages -->
+    <style name="nuxeo_dm_specific">
+      <path>themes/css/nuxeo_dm_specific.css</path>
+    </style>
+    <style name="print_generic">
+      <path>themes/css/print_generic.css</path>
     </style>
   </extension>
 
