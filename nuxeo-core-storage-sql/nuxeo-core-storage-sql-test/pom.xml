@@ -181,14 +181,6 @@
       <artifactId>jtds</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- Not publicly available:
-         should be added to your local repository
-         or commented out -->
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <profiles>
@@ -287,6 +279,29 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <!-- Oracle JDBC drivers are not redistributable
+         You should add them to your local repository to use those profiles.
+    -->
+    <profile>
+      <id>oracle10g</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc14</artifactId>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oracle11g</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc6</artifactId>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
