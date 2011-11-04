@@ -13,7 +13,7 @@
   <div class="popupTarget dropout" docRef="#{field_1}">
 
     <nxd:restDocumentLink document="#{field_0}"
-      tab="#{widgetProperty_tab}">
+      tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}">
       <span id="title_#{field_1}" title="#{field_2}">
         #{nxd:titleOrId(field_0)}
       </span>
@@ -21,7 +21,7 @@
 
     <nxd:restDocumentLink document="#{field_0}"
       newConversation="true" target="_blank"
-      tab="#{widgetProperty_tab}">
+      tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}">
       <nxu:graphicImage value="/icons/external.gif"
         style="vertical-align:middle"
         alt="#{messages['permalink.newTab']}"

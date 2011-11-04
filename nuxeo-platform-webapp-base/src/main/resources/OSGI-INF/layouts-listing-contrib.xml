@@ -19,7 +19,8 @@
       It also requires the following variables to be present in the EL context:
       <ul>
         <li>
-          provider: result provider used to get the list of items, its name will
+          provider: result provider used to get the list of items, its name
+          will
           be used, as well as sort and pagination features it provides.
         </li>
         <li>
@@ -44,8 +45,8 @@
       Its layout columns accept the following properties configuration:
       <ul>
         <li>
-          isListingSelectionBox: true or false, used to define wether a "select
-          all/unselect all" checkbox should be displayed. To be used in
+          isListingSelectionBox: true or false, used to define wether a
+          "select all/unselect all" checkbox should be displayed. To be used in
           conjunction with a widget of type "listing_selection_box". Defaults to
           false.
         </li>
@@ -61,9 +62,9 @@
           translation settings from the widget configuration. Defaults to false.
         </li>
         <li>
-          sortPropertyName: name of the property that will be used by the result
-          provider when clicking on the table header. If not set, the sort link
-          will not be displayed. Defaults to null.
+          sortPropertyName: name of the property that will be used by the
+          result provider when clicking on the table header. If not set, the
+          sort link will not be displayed. Defaults to null.
         </li>
         <li>
           defaultSortAscending: define the initial sort order of the column
@@ -319,19 +320,20 @@
             It requires the following fields configuration:
             <ul>
               <li>
-                first field maps the document model, the jsf method nxd:iconPath
-                will be used to provide its icon
+                first field maps the document model, the jsf method
+                nxd:iconPath will be used to provide its icon
               </li>
               <li>
                 second field maps the unique id to be used as drag/drop
                 identified (e.g. the document model id)
               </li>
               <li>
-                third field maps the icon title (can be the document model type)
+                third field maps the icon title (can be the document model
+                type)
               </li>
               <li>
-                fourth field maps a boolean stating whether the widget displays
-                a droppable zone (e.g. if document is folderish)
+                fourth field maps a boolean stating whether the widget
+                displays a droppable zone (e.g. if document is folderish)
               </li>
             </ul>
           </p>
@@ -385,7 +387,8 @@
                 model type)
               </li>
               <li>
-                fourth field maps a boolean stating whether the widget displays
+                fourth field maps a boolean stating whether the widget
+                displays
                 a droppable zone (e.g. if document is folderish)
               </li>
             </ul>
@@ -441,7 +444,8 @@
                 model type)
               </li>
               <li>
-                fourth field maps a boolean stating whether the widget displays
+                fourth field maps a boolean stating whether the widget
+                displays
                 a droppable zone (e.g. if document is folderish)
               </li>
             </ul>
@@ -484,8 +488,8 @@
             It requires the following fields configuration:
             <ul>
               <li>
-                first field maps the document model, it will be used to display
-                the document link and its title
+                first field maps the document model, it will be used to
+                display the document link and its title
               </li>
               <li>
                 second field maps the unique id to be used for contextual menu
@@ -500,8 +504,8 @@
                 download link
               </li>
               <li>
-                fifth field maps the file name to be used for download link (can
-                be the document model file name property value)
+                fifth field maps the file name to be used for download link
+                (can be the document model file name property value)
               </li>
             </ul>
           </p>
@@ -543,6 +547,9 @@
                 <row>
                   <widget>tab</widget>
                 </row>
+                <row>
+                  <widget>subTab</widget>
+                </row>
               </rows>
               <widget name="tab" type="text">
                 <labels>
@@ -550,12 +557,27 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The tab to select when clicking on the link. Available since
+                    The tab to select when clicking on the link.
+                    Available since
                     5.4.2.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>tab</field>
+                </fields>
+              </widget>
+              <widget name="subTab" type="text">
+                <labels>
+                  <label mode="any">Sub Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The sub tab to select when clicking on the
+                    link. Available since 5.5.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subTab</field>
                 </fields>
               </widget>
             </layout>
@@ -728,8 +750,8 @@
             It requires the following fields configuration:
             <ul>
               <li>
-                first field mapping the document model to be used for live edit
-                link
+                first field mapping the document model to be used for live
+                edit link
               </li>
             </ul>
           </p>
@@ -804,8 +826,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="listing_selection_box_with_current_document"
-      type="listing_selection_box_with_current_document">
+    <widget name="listing_selection_box_with_current_document" type="listing_selection_box_with_current_document">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -815,8 +836,7 @@
       </fields>
     </widget>
 
-    <widget name="listing_ajax_selection_box_with_current_document"
-      type="listing_ajax_selection_box_with_current_document">
+    <widget name="listing_ajax_selection_box_with_current_document" type="listing_ajax_selection_box_with_current_document">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -836,8 +856,7 @@
       </fields>
     </widget>
 
-    <widget name="listing_ajax_selection_box"
-      type="listing_ajax_selection_box">
+    <widget name="listing_ajax_selection_box" type="listing_ajax_selection_box">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -871,8 +890,7 @@
       </fields>
     </widget>
 
-    <widget name="listing_big_icon_type_link"
-      type="listing_big_icon_type_link">
+    <widget name="listing_big_icon_type_link" type="listing_big_icon_type_link">
       <labels>
         <label mode="any"></label>
       </labels>
