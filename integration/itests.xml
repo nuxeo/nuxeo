@@ -39,9 +39,7 @@
     <nx:profile name="oracle10g">
       <echo file="${vcsprops}" append="false">
         nuxeo.test.vcs.db=Oracle
-        nuxeo.test.vcs.server=${nuxeo.db.host}
-        nuxeo.test.vcs.port=${nuxeo.db.port}
-        nuxeo.test.vcs.database=${nuxeo.db.name}
+        nuxeo.test.vcs.url=jdbc:oracle:thin:@//${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
         nuxeo.test.vcs.user=${nuxeo.db.user}
         nuxeo.test.vcs.password=${nuxeo.db.pass}
       </echo>
@@ -49,9 +47,7 @@
     <nx:profile name="oracle11g">
       <echo file="${vcsprops}" append="false">
         nuxeo.test.vcs.db=Oracle
-        nuxeo.test.vcs.server=${nuxeo.db.host}
-        nuxeo.test.vcs.port=${nuxeo.db.port}
-        nuxeo.test.vcs.database=${nuxeo.db.name}
+        nuxeo.test.vcs.url=jdbc:oracle:thin:@//${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
         nuxeo.test.vcs.user=${nuxeo.db.user}
         nuxeo.test.vcs.password=${nuxeo.db.pass}
       </echo>
@@ -59,9 +55,7 @@
     <nx:profile name="mysql">
       <echo file="${vcsprops}" append="false">
         nuxeo.test.vcs.db=MySQL
-        nuxeo.test.vcs.server=${nuxeo.db.host}
-        nuxeo.test.vcs.port=${nuxeo.db.port}
-        nuxeo.test.vcs.database=${nuxeo.db.name}
+        nuxeo.test.vcs.url=jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
         nuxeo.test.vcs.user=${nuxeo.db.user}
         nuxeo.test.vcs.password=${nuxeo.db.pass}
       </echo>
