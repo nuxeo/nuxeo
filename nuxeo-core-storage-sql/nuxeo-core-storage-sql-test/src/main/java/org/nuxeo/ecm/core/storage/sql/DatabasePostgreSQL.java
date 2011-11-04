@@ -88,7 +88,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("ServerName", System.getProperty(SERVER_PROPERTY));
         properties.put("PortNumber", System.getProperty(PORT_PROPERTY));
-        properties.put("DatabaseName", databaseName);
+        properties.put("DatabaseName", System.getProperty(DATABASE_PROPERTY));
         properties.put("User", System.getProperty(USER_PROPERTY));
         properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
