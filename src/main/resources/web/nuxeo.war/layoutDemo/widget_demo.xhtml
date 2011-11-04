@@ -33,6 +33,10 @@ Needed parameters:
             <c:if test="#{useMultipartForm}">
               <h:form id="#{demoLayout.name}_edit_form"
                 enctype="multipart/form-data">
+                <span class="infoMessage">
+                  Fill the form and click on 'Submit' to display the widget
+                  rendering in view mode.
+                </span>
                 <nxl:layout value="#{layoutDemoDocument}"
                   mode="edit"
                   name="#{demoLayout.name}" />
@@ -47,6 +51,10 @@ Needed parameters:
             <c:if test="#{not useMultipartForm}">
               <a4j:form id="#{demoLayout.name}_edit_form"
                 ajaxSubmit="true">
+                <span class="infoMessage">
+                  Fill the form and click on 'Submit' to display the widget
+                  rendering in view mode.
+                </span>
                 <nxl:layout value="#{layoutDemoDocument}"
                   mode="edit"
                   name="#{demoLayout.name}" />
