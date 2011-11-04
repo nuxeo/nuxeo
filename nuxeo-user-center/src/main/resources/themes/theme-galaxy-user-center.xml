@@ -1666,6 +1666,9 @@
       <selector path=".headerTitleAndTools .globalActionBar">
         <float>right</float>
       </selector>
+      <selector path=".globalActionBar h1">
+        <float>left</float>
+      </selector>
       <selector path=".globalActionBar .actionList">
         <margin>0</margin>
         <padding>0</padding>
