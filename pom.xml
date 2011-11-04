@@ -58,6 +58,7 @@
     <module>nuxeo-platform-rendition</module>
     <module>nuxeo-platform-replication</module>
     <module>nuxeo-apidoc-server</module>
+    <!-- <module>nuxeo-birt</module> -->
     <!-- <module>nuxeo-social-collaboration</module> -->
   </modules>
 
@@ -559,6 +560,30 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-activity</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Birt reporting -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-birt-reporting</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-birt-reporting-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- RSS Reader -->
+      <dependency>
+        <groupId>org.nuxeo.rss.reader</groupId>
+        <artifactId>nuxeo-rss-reader</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.rss.reader</groupId>
+        <artifactId>nuxeo-rss-reader-ui</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>

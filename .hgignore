@@ -4,6 +4,7 @@
 nuxeo-social-collaboration
 nuxeo-rss-reader
 nuxeo-birt
+target
 
 syntax: regexp
 
