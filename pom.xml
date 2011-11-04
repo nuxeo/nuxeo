@@ -1,84 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-features-parent</artifactId>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.5-SNAPSHOT</version>
   </parent>
 
-  <version>5.5-SNAPSHOT</version>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-document-routing</artifactId>
   <name>Nuxeo Platform Document Routing Addon</name>
   <packaging>pom</packaging>
-  <description>
-    The parent module for Nuxeo Platform Document Routing Addon
-  </description>
+  <description>The parent module for Nuxeo Platform Document Routing Addon</description>
 
-  <properties>
-    <nuxeo.routing.version>5.5-SNAPSHOT</nuxeo.routing.version>
-  </properties>
   <modules>
     <module>nuxeo-platform-document-routing-api</module>
     <module>nuxeo-platform-document-routing-core</module>
     <module>nuxeo-platform-document-routing-web</module>
   </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap</artifactId>
-        <version>${nuxeo.features.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-document-routing-api</artifactId>
-        <version>${nuxeo.routing.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-document-routing-core</artifactId>
-        <version>${nuxeo.routing.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-document-routing-web</artifactId>
-        <version>${nuxeo.routing.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.automation</groupId>
-        <artifactId>nuxeo-automation-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-types</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <developers>
     <developer>
@@ -90,18 +31,30 @@
   <repositories>
     <repository>
       <id>public</id>
-      <url>http://maven.nuxeo.org/public</url>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
       <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-document-routing</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-document-routing</developerConnection>
+    <url>http://hg.nuxeo.org/addons/nuxeo-platform-document-routing</url>
+  </scm>
 
 </project>
