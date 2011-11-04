@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.io.plugins.MainContribution">
+  <documentation>
+    Component that provides main contributions to the basic widget
+    converters needed for export.
+    @version 5.5
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgetConverters">
+
+    <widgetConverter name="labelTranslation" order="10">
+      <categories>
+        <category>standalone</category>
+      </categories>
+      <converter-class>
+        org.nuxeo.ecm.platform.forms.layout.io.plugins.WidgetLabeli18nConverter
+      </converter-class>
+    </widgetConverter>
+
+    <widgetConverter name="directoryToSelectOptions" order="10">
+      <categories>
+        <category>standalone</category>
+      </categories>
+      <converter-class>
+        org.nuxeo.ecm.platform.forms.layout.io.plugins.WidgetDirectoryItemsConverter
+      </converter-class>
+    </widgetConverter>
+
+    <widgetConverter name="coverageToSelectOptions" order="10">
+      <categories>
+        <category>standalone</category>
+      </categories>
+      <converter-class>
+        org.nuxeo.ecm.platform.forms.layout.io.plugins.CoverageWidgetConverter
+      </converter-class>
+    </widgetConverter>
+
+    <widgetConverter name="subjectsToSelectOptions" order="10">
+      <categories>
+        <category>standalone</category>
+      </categories>
+      <converter-class>
+        org.nuxeo.ecm.platform.forms.layout.io.plugins.SubjectsWidgetConverter
+      </converter-class>
+    </widgetConverter>
+
+
+  </extension>
+
+</component>
