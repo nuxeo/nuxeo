@@ -2739,7 +2739,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>3.8</version>
+        <version>4.0.1</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -2796,6 +2796,38 @@
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>core</artifactId>
         <version>3.1.1-NXP-4284</version>
+      </dependency>
+      <!-- Birt -->
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>core-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>report-engine-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>report-model-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>org.mozilla.javascript</artifactId>
+        <version>1.7.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>script-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>birt-runtime-all</artifactId>
+        <version>2.6.1</version>
+        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>rhino</groupId>
