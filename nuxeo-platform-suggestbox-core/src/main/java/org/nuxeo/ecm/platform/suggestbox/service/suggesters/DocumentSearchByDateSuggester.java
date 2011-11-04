@@ -40,7 +40,6 @@ public class DocumentSearchByDateSuggester implements Suggester {
         // context
         DateMatcher matcher = DateMatcher.fromInput(userInput);
         if (matcher.hasMatch()) {
-
             for (String field : searchFields) {
                 String valueAfter = field + "_min";
                 String labelAfter = context.messages.get(LABEL_AFTER_PREFIX
@@ -55,7 +54,6 @@ public class DocumentSearchByDateSuggester implements Suggester {
                         iconURL));
             }
         }
-
         return suggestions;
     }
 

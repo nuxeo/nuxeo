@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Simple static suggester that always output the same suggestion based on the
@@ -30,7 +30,6 @@ public class StaticSuggester implements Suggester {
 
     protected boolean disabled;
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {

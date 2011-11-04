@@ -8,8 +8,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
-import com.sun.star.lang.IllegalArgumentException;
-
 /**
  * Base class and default implementation for passing contextual information to
  * the suggestion service.
