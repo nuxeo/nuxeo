@@ -154,29 +154,7 @@
 
             <ui:define name="syndication_buttons">
               <ui:insert name="content_view_syndication_buttons">
-                <div class="syndicationButton">
-                  <div class="syndicationLinks">
-                    <nxu:set var="contentViewState" value="#{contentViewRestActions.getContentViewState(contentView)}">
-                      <nxd:restDocumentLink document="#{currentDocument}"
-                        view="rss" addTabInfo="false"
-                        newConversation="true" target="_blank">
-                        <f:param name="contentViewName" value="#{contentView.name}" />
-                        <f:param name="currentPage" value="0" />
-                        <f:param name="contentViewState" value="#{contentViewState}" />
-                        <h:outputText value="#{messages['label.syndication.rss']}"/>
-                      </nxd:restDocumentLink>
-                      <h:outputText value=" | " />
-                      <nxd:restDocumentLink document="#{currentDocument}"
-                        view="atom" addTabInfo="false"
-                        newConversation="true" target="_blank">
-                        <f:param name="contentViewName" value="#{contentView.name}" />
-                        <f:param name="currentPage" value="0" />
-                        <f:param name="contentViewState" value="#{contentViewState}" />
-                        <h:outputText value="#{messages['label.syndication.atom']}" />
-                      </nxd:restDocumentLink>
-                    </nxu:set>
-                  </div>
-                </div>
+                <ui:include src="/incl/content_view_syndication_buttons.xhtml" />
                 <div style="clear:both;" />
               </ui:insert>
             </ui:define>
