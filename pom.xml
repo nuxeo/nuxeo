@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-ecm</artifactId>
+    <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.5-SNAPSHOT</version>
   </parent>
 
@@ -16,7 +16,7 @@
   <repositories>
     <repository>
       <id>public</id>
-      <url>http://maven.nuxeo.org/public</url>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -26,7 +26,7 @@
     </repository>
     <repository>
       <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -35,5 +35,11 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-lang-ext</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-lang-ext</developerConnection>
+    <url>http://hg.nuxeo.org/addons/nuxeo-platform-lang-ext</url>
+  </scm>
 
 </project>
