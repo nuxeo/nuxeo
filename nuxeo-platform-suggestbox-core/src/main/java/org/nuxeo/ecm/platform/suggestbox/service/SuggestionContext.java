@@ -22,7 +22,7 @@ public class SuggestionContext extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;
 
-    public final String suggestionPoint;
+    public final String suggesterGroup;
 
     public final NuxeoPrincipal principal;
 
@@ -34,17 +34,17 @@ public class SuggestionContext extends HashMap<String, Object> {
 
     public Locale locale = Locale.ENGLISH;
 
-    public SuggestionContext(String suggestionPoint, NuxeoPrincipal principal)
+    public SuggestionContext(String suggesterGroup, NuxeoPrincipal principal)
             throws IllegalArgumentException {
-        if (suggestionPoint == null) {
+        if (suggesterGroup == null) {
             throw new IllegalArgumentException(
-                    "suggestionPoint is a mandatory field of the SuggestionContext");
+                    "suggesterGroup is a mandatory field of the SuggestionContext");
         }
         if (principal == null) {
             throw new IllegalArgumentException(
                     "principal is a mandatory field of the SuggestionContext");
         }
-        this.suggestionPoint = suggestionPoint;
+        this.suggesterGroup = suggesterGroup;
         this.principal = principal;
     }
 

@@ -26,14 +26,14 @@ public class SuggestionServiceImpl extends DefaultComponent implements
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        SuggesterGroupDescriptor suggestionPoint = suggesterGroups.getContribution(context.suggestionPoint);
-        if (suggestionPoint == null) {
-            log.warn("No registered SuggestionPoint with id: "
-                    + context.suggestionPoint);
+        SuggesterGroupDescriptor suggesterGroup = suggesterGroups.getContribution(context.suggesterGroup);
+        if (suggesterGroup == null) {
+            log.warn("No registered SuggesterGroup with id: "
+                    + context.suggesterGroup);
             return suggestions;
         }
 
-        for (String suggesterId : suggestionPoint.getSuggesters()) {
+        for (String suggesterId : suggesterGroup.getSuggesters()) {
             SuggesterDescriptor suggesterDescritor = suggesters.getContribution(suggesterId);
             if (suggesterDescritor == null) {
                 log.warn("No suggester registered with id: " + suggesterId);
@@ -74,10 +74,10 @@ public class SuggestionServiceImpl extends DefaultComponent implements
             suggesterDescriptor.setRuntimeContext(contributor.getRuntimeContext());
             suggesters.addContribution(suggesterDescriptor);
         } else if (contribution instanceof SuggesterGroupDescriptor) {
-            SuggesterGroupDescriptor suggestionPointDescriptor = (SuggesterGroupDescriptor) contribution;
+            SuggesterGroupDescriptor suggesterGroupDescriptor = (SuggesterGroupDescriptor) contribution;
             log.info(String.format("Registering suggester group '%s'",
-                    suggestionPointDescriptor.getName()));
-            suggesterGroups.addContribution(suggestionPointDescriptor);
+                    suggesterGroupDescriptor.getName()));
+            suggesterGroups.addContribution(suggesterGroupDescriptor);
         } else {
             log.error(String.format(
                     "Unknown contribution to the SuggestionService "

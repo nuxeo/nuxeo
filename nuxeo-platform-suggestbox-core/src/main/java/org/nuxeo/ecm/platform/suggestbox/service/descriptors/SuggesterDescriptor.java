@@ -3,24 +3,32 @@ package org.nuxeo.ecm.platform.suggestbox.service.descriptors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
+import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * XMap descriptor for registering overidable parameterized Suggester
+ * XMap descriptor for registering overridable parameterized Suggester
  * implementation on the SuggesterService.
  * 
  * @author ogrisel
  */
+@XObject("suggester")
 public class SuggesterDescriptor implements Cloneable {
 
+    @XNode("@name")
     protected String name = "default";
 
+    @XNode("@class")
     protected String className;
 
+    @XNode("@enabled")
     protected boolean enabled = true;
 
+    @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<String, String>();
 
     protected Suggester suggester;
