@@ -29,7 +29,7 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.FieldDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 
 /**
  * Collects information to generate a layout definition from user information.
@@ -77,7 +77,7 @@ public class PreviewLayoutDefinition implements Serializable {
         if (fields != null) {
             List<FieldDefinition> res = new ArrayList<FieldDefinition>();
             for (String field : fields) {
-                res.add(new FieldDescriptor(null, field));
+                res.add(new FieldDefinitionImpl(null, field));
             }
             return res;
         }
@@ -207,7 +207,7 @@ public class PreviewLayoutDefinition implements Serializable {
         return values;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void validateCustomProperties(FacesContext context,
             UIComponent component, Object value) {
         if (value != null && !(value instanceof List)) {

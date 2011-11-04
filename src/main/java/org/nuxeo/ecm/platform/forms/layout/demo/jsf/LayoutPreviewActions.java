@@ -48,6 +48,9 @@ public class LayoutPreviewActions {
 
     private static final Log log = LogFactory.getLog(LayoutPreviewActions.class);
 
+    // XXX: use hard coded JSF category for now
+    public static final String LAYOUT_CATEGORY = "jsf";
+
     public String getPreviewLayoutURL(PreviewLayoutDefinition previewLayoutDef,
             String layoutMode, String layoutTemplate)
             throws UnsupportedEncodingException, ClientException {
@@ -83,7 +86,7 @@ public class LayoutPreviewActions {
 
     public String getEncodedLayoutDefinition(LayoutDefinition def)
             throws UnsupportedEncodingException {
-        JSONObject json = JSONLayoutExporter.exportToJson(def);
+        JSONObject json = JSONLayoutExporter.exportToJson(LAYOUT_CATEGORY, def);
         if (log.isDebugEnabled()) {
             log.debug("Encoded layout definition: " + json.toString());
         }
