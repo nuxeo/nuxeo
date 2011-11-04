@@ -9,6 +9,34 @@
     @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
   </documentation>
 
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="escape" type="checkbox">
+      <categories>
+        <category>widgetTypeConfiguration</category>
+      </categories>
+      <labels>
+        <label mode="any">Escape</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to false, the held value will not be
+          escaped. For
+          instance if it contains HTML tags, they will be
+          rendered as
+          part of the rendered HTML page instead of being
+          rendered as
+          text content. Defaults to true.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>escape</field>
+      </fields>
+    </widget>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -18,7 +46,8 @@
         <description>
           <p>
             The text widget displays an input text in create or edit mode, with
-            additional message tag for errors, and a regular text output in any
+            additional message tag for errors, and a regular text output in
+            any
             other mode.
           </p>
           <p>
@@ -60,7 +89,7 @@
                   <widget>title</widget>
                 </row>
                 <row>
-                  <widget>escape</widget>
+                  <widget category="widgetTypeConfiguration">escape</widget>
                 </row>
                 <row>
                   <widget>localize</widget>
@@ -93,25 +122,6 @@
                   <mode value="any">hidden</mode>
                   <mode value="view_reference">view</mode>
                 </widgetModes>
-              </widget>
-              <widget name="escape" type="checkbox">
-                <labels>
-                  <label mode="any">Escape</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    If set to false, the held value will not be
-                    escaped. For
-                    instance if it contains HTML tags, they will be
-                    rendered as
-                    part of the rendered HTML page instead of being
-                    rendered as
-                    text content. Defaults to true.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>escape</field>
-                </fields>
               </widget>
               <widget name="localize" type="checkbox">
                 <labels>
@@ -323,7 +333,8 @@
         <description>
           <p>
             The int widget displays an input text in create or edit mode, with
-            additional message tag for errors, and a regular text output in any
+            additional message tag for errors, and a regular text output in
+            any
             other mode. It uses a number converter.
           </p>
           <p>
@@ -1323,7 +1334,8 @@
           <p>
             Widgets using this type can provide properties accepted on a
             &lt;nxu:inputDatetime /&gt; tag in create or edit mode, and
-            properties accepted on a &lt;h:outputText /&gt; tag in other modes.
+            properties accepted on a &lt;h:outputText /&gt; tag in other
+            modes.
             The converter will also be given these properties.
           </p>
         </description>
