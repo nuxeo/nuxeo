@@ -1,6 +1,6 @@
-                  Nuxeo platform 5.5-SNAPSHOT Release Notes
+                  Nuxeo platform 5.5-I20111104_1115 Release Notes
 
-   Welcome to the Nuxeo platform 5.5-SNAPSHOT.
+   Welcome to the Nuxeo platform 5.5-I20111104_1115.
 
    You can always download the latest releases of Nuxeo applications based
    on the Nuxeo Enterprise Platform from
