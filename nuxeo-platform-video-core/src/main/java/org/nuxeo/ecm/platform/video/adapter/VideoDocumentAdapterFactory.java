@@ -23,6 +23,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
+ * Factory instantiating {@link org.nuxeo.ecm.platform.video.VideoDocument}
+ * adapter.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */

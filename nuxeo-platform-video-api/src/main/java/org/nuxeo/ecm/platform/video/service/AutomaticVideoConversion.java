@@ -21,6 +21,12 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * Object representing a registered automatic video conversion on the
+ * {@link VideoService}.
+ * <p>
+ * An {@code AutomaticVideoConversion} references the {@code VideoConversion}
+ * through its name.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */

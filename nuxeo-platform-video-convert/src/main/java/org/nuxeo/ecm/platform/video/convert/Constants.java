@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.platform.video.convert;
 
+/**
+ * Constants used for converters.
+ */
 public class Constants {
 
     public static final String STORYBOARD_CONVERTER = "videoStoryboard";

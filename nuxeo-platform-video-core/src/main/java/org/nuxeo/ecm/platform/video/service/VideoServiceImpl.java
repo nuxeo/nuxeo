@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -54,6 +53,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import com.google.common.collect.MapMaker;
 
 /**
+ * Default implementation of {@link VideoService}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -136,7 +137,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void launchAutomaticConversions(DocumentModel doc) {
-        List<AutomaticVideoConversion> conversions = new ArrayList<AutomaticVideoConversion>(automaticVideoConversions.registry.values());
+        List<AutomaticVideoConversion> conversions = new ArrayList<AutomaticVideoConversion>(
+                automaticVideoConversions.registry.values());
         Collections.sort(conversions);
         for (AutomaticVideoConversion conversion : conversions) {
             launchConversion(doc, conversion.getName());
@@ -149,7 +151,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    public TranscodedVideo convert(VideoConversionId id, Video originalVideo, String conversionName) {
+    public TranscodedVideo convert(VideoConversionId id, Video originalVideo,
+            String conversionName) {
         try {
             if (!videoConversions.registry.containsKey(conversionName)) {
                 throw new ClientRuntimeException(String.format(
@@ -161,7 +164,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
                 states.put(id, VideoConversionStatus.STATUS_CONVERSION_PENDING);
             }
 
-            BlobHolder blobHolder = new SimpleBlobHolder(originalVideo.getBlob());
+            BlobHolder blobHolder = new SimpleBlobHolder(
+                    originalVideo.getBlob());
             VideoConversion conversion = videoConversions.registry.get(conversionName);
             Map<String, Serializable> parameters = new HashMap<String, Serializable>();
             parameters.put("height", conversion.getHeight());
@@ -169,6 +173,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
             BlobHolder result = conversionService.convert(
                     conversion.getConverter(), blobHolder, parameters);
+            @SuppressWarnings("unchecked")
             VideoInfo videoInfo = VideoInfo.fromFFmpegOutput((List<String>) result.getProperty("cmdOutput"));
             return TranscodedVideo.fromBlobAndInfo(conversionName,
                     result.getBlob(), videoInfo);
@@ -182,8 +187,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    public VideoConversionStatus getProgressStatus(String repositoryName, DocumentRef docRef, String conversionName) {
-        VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(repositoryName, docRef), conversionName);
+    public VideoConversionStatus getProgressStatus(VideoConversionId id) {
         String status = states.get(id);
         if (status == null) {
             // early return

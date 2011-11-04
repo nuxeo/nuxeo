@@ -12,12 +12,12 @@
   <documentation>
     The VideoService provides extension points to register
     named video conversions and default conversions to run
-    when importing an image.
+    when importing a video.
   </documentation>
 
   <extension-point name="videoConversions">
     <documentation>
-      Extension point to contribute available video conversion
+      Extension point to contribute available video conversions
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.video.service.VideoConversion" />
@@ -25,7 +25,7 @@
 
   <extension-point name="automaticVideoConversions">
     <documentation>
-      Extension point to contribute default video conversion
+      Extension point to contribute default video conversions
       launched after the creation of a Video document.
     </documentation>
     <object

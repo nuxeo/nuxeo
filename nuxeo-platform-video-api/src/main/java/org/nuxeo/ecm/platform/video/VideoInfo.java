@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Object containing info about a video file.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -85,6 +87,12 @@ public final class VideoInfo implements Serializable {
 
     private final double frameRate;
 
+    /**
+     * Build a {@code VideoInfo} from a {@code Map} of attributes.
+     * <p>
+     * Used when creating a {@code VideoInfo} from a {@code DocumentModel}
+     * property.
+     */
     public static VideoInfo fromMap(Map<String, Serializable> map) {
         Double duration = (Double) map.get(DURATION);
         if (duration == null) {
@@ -108,6 +116,7 @@ public final class VideoInfo implements Serializable {
         }
 
         List<Stream> streams = new ArrayList<Stream>();
+        @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> streamItems = (List<Map<String, Serializable>>) map.get(STREAMS);
         if (streamItems != null) {
             for (Map<String, Serializable> m : streamItems) {
@@ -119,6 +128,9 @@ public final class VideoInfo implements Serializable {
                 streams);
     }
 
+    /**
+     * Build a {@code VideoInfo} from a FFmpeg output.
+     */
     public static VideoInfo fromFFmpegOutput(List<String> output) {
         double duration = 0;
         long width = 0;
@@ -187,7 +199,7 @@ public final class VideoInfo implements Serializable {
                 streams);
     }
 
-    public VideoInfo(double duration, long width, long height,
+    private VideoInfo(double duration, long width, long height,
             double frameRate, String format, List<Stream> streams) {
         this.duration = duration;
         this.width = width;
@@ -200,30 +212,53 @@ public final class VideoInfo implements Serializable {
         }
     }
 
+    /**
+     * Returns the duration of the video.
+     */
     public double getDuration() {
         return duration;
     }
 
+    /**
+     * Returns the width of the video.
+     */
     public long getWidth() {
         return width;
     }
 
+    /**
+     * Returns the height of the video.
+     */
     public long getHeight() {
         return height;
     }
 
+    /**
+     * Returns the format of the video.
+     */
     public String getFormat() {
         return format;
     }
 
+    /**
+     * Returns all the {@link Stream}s of the video.
+     */
     public List<Stream> getStreams() {
         return streams;
     }
 
+    /**
+     * Returns the frame rate of the video.
+     */
     public double getFrameRate() {
         return frameRate;
     }
 
+    /**
+     * Returns a {@code Map} of attributes for this {@code VideoInfo}.
+     * <p>
+     * Used when saving this {@code Stream} to a {@code DocumentModel} property.
+     */
     public Map<String, Serializable> toMap() {
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(DURATION, duration);

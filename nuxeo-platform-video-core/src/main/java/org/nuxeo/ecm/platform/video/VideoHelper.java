@@ -162,7 +162,7 @@ public class VideoHelper {
             log.debug(e, e);
             return;
         } catch (Exception e) {
-           throw ClientException.wrap(e);
+            throw ClientException.wrap(e);
         }
 
         // compute the thumbnail preview

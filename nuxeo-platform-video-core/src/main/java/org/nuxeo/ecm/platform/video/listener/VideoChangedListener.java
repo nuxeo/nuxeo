@@ -33,13 +33,13 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 
 /**
- * Core event listener to update the preview and the info of a Video
- * document.
+ * Core event listener to update the preview and the info of a Video document.
  * <p>
  * It also set the context property {@link VIDEO_CHANGED_PROPERTY} to
  * {@code true} if the main video has changed.
  *
  * @author ogrisel
+ * @since 5.5
  */
 public class VideoChangedListener implements EventListener {
 

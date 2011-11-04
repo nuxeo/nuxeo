@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.platform.video;
 
 /**
+ * Simple data transfer object to report on the state of a video conversion.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */

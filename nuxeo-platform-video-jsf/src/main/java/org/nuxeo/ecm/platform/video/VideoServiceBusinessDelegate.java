@@ -46,8 +46,8 @@ public class VideoServiceBusinessDelegate implements Serializable {
     protected VideoService videoService;
 
     /**
-     * Acquires a new {@link VideoService} reference. The related service
-     * may be deployed on a local or remote AppServer.
+     * Acquires a new {@link VideoService} reference. The related service may be
+     * deployed on a local or remote AppServer.
      */
     @Unwrap
     public VideoService getService() throws ClientException {
@@ -60,8 +60,7 @@ public class VideoServiceBusinessDelegate implements Serializable {
                 throw new ClientException(errMsg, e);
             }
             if (videoService == null) {
-                throw new ClientException(
-                        "VideoService service not bound");
+                throw new ClientException("VideoService service not bound");
             }
         }
         return videoService;

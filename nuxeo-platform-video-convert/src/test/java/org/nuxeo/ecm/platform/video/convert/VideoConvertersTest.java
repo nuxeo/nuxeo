@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.video.convert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         if (position != null) {
             params.put("position", position);
         }
-        if(duration != null) {
+        if (duration != null) {
             params.put("duration", duration);
         }
         BlobHolder result = cs.convert(converter, in, params);

@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.platform.video.convert;
 
 /**
+ * Convert to WebM format.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */

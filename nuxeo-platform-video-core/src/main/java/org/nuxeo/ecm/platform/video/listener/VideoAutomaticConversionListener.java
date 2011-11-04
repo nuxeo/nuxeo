@@ -33,6 +33,10 @@ import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Listener to launch
+ * {@link org.nuxeo.ecm.platform.video.service.AutomaticVideoConversion}s when
+ * creating or updating a video file.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */

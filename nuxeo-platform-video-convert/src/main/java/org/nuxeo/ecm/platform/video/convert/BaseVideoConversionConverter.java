@@ -40,6 +40,8 @@ import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 
 /**
+ * Base class for converters doing video conversions.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -82,6 +84,10 @@ public abstract class BaseVideoConversionConverter extends
                     outFileName).getAbsolutePath());
 
             VideoInfo videoInfo = (VideoInfo) parameters.get("videoInfo");
+            if (videoInfo == null) {
+                return cmdStringParams;
+            }
+
             long width = videoInfo.getWidth();
             long height = videoInfo.getHeight();
             long newHeight = (Long) parameters.get("height");
@@ -91,10 +97,8 @@ public abstract class BaseVideoConversionConverter extends
                 newWidth += 1;
             }
 
-            cmdStringParams.put("width",
-                    String.valueOf(newWidth));
-            cmdStringParams.put("height",
-                    String.valueOf(newHeight));
+            cmdStringParams.put("width", String.valueOf(newWidth));
+            cmdStringParams.put("height", String.valueOf(newHeight));
             return cmdStringParams;
         } catch (ClientException e) {
             throw new ConversionException("Unable to get Blob for holder", e);

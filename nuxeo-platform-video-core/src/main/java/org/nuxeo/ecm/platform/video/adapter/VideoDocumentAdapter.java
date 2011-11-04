@@ -36,6 +36,8 @@ import org.nuxeo.ecm.platform.video.VideoInfo;
 import com.google.common.collect.Maps;
 
 /**
+ * Default implementation of {@link VideoDocument}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -56,6 +58,7 @@ public class VideoDocumentAdapter implements VideoDocument {
             this.doc = doc;
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             Blob blob = bh.getBlob();
+            @SuppressWarnings("unchecked")
             VideoInfo videoInfo = VideoInfo.fromMap((Map<String, Serializable>) doc.getPropertyValue("vid:info"));
             video = Video.fromBlobAndInfo(blob, videoInfo);
         } catch (ClientException e) {
@@ -87,6 +90,7 @@ public class VideoDocumentAdapter implements VideoDocument {
     private void initTranscodedVideos() {
         try {
             if (transcodedVideos == null) {
+                @SuppressWarnings("unchecked")
                 List<Map<String, Serializable>> videos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
                 transcodedVideos = Maps.newHashMap();
                 for (int i = 0; i < videos.size(); i++) {

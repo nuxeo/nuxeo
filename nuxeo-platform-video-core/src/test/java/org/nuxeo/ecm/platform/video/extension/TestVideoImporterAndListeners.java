@@ -100,10 +100,10 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         openSession();
 
         EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
-        eventServiceAdmin.setListenerEnabledFlag(
-                "videoAutomaticConversions", false);
-        eventServiceAdmin.setListenerEnabledFlag(
-                "sql-storage-binary-text", false);
+        eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions",
+                false);
+        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text",
+                false);
 
         root = session.getRootDocument();
         fileManagerService = Framework.getService(FileManager.class);
@@ -225,6 +225,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel = session.getDocument(docModel.getRef());
         // the test video last around 10 minutes
         assertEquals(653.8, docModel.getPropertyValue(DURATION_PROPERTY));
+        @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> storyboard = docModel.getProperty(
                 "vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);

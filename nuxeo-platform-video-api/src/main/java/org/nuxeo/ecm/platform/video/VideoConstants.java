@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.video;
 
+/**
+ * Video constants.
+ */
 public class VideoConstants {
 
     public static final String VIDEO_TYPE = "Video";

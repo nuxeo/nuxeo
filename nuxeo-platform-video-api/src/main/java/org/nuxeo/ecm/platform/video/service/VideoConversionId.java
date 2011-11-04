@@ -22,6 +22,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 
 /**
+ * Unique identifier for a given video conversion on one document.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -54,4 +56,5 @@ public class VideoConversionId {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
 }

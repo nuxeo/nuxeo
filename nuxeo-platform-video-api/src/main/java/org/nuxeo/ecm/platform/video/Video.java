@@ -22,6 +22,8 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
+ * Object wrapping a video {@code Blob} and related {@link VideoInfo}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -31,6 +33,10 @@ public class Video {
 
     protected final Blob blob;
 
+    /**
+     * Build a {@code Video} from a video {@code blob} and the related
+     * {@code videoInfo}.
+     */
     public static Video fromBlobAndInfo(Blob blob, VideoInfo videoInfo) {
         return new Video(blob, videoInfo);
     }
@@ -40,34 +46,58 @@ public class Video {
         this.videoInfo = videoInfo;
     }
 
+    /**
+     * Returns the {@link VideoInfo} for this {@code Video}.
+     */
     public VideoInfo getVideoInfo() {
         return videoInfo;
     }
 
+    /**
+     * Returns the duration of this {@code Video}.
+     */
     public double getDuration() {
         return videoInfo.getDuration();
     }
 
+    /**
+     * Returns the width of this {@code Video}.
+     */
     public long getWidth() {
         return videoInfo.getWidth();
     }
 
+    /**
+     * Returns the height of this {@code Video}.
+     */
     public long getHeight() {
         return videoInfo.getHeight();
     }
 
+    /**
+     * Returns the format of this {@code Video}.
+     */
     public String getFormat() {
         return videoInfo.getFormat();
     }
 
+    /**
+     * Returns the frame rate of this {@code Video}.
+     */
     public double getFrameRate() {
         return videoInfo.getFrameRate();
     }
 
+    /**
+     * Returns all the {@link Stream}s of this {@code Video}.
+     */
     public List<Stream> getStreams() {
         return videoInfo.getStreams();
     }
 
+    /**
+     * Returns the video {@code Blob}.
+     */
     public Blob getBlob() {
         return blob;
     }

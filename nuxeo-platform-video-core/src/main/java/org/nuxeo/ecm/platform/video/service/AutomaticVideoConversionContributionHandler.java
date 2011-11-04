@@ -23,6 +23,9 @@ import java.util.Map;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
+ * {@link ContributionFragmentRegistry} to register
+ * {@link AutomaticVideoConversion}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */

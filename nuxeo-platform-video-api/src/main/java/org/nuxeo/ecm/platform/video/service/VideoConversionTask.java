@@ -36,6 +36,8 @@ import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
+ * Task running a defined video conversion.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -59,8 +61,8 @@ public class VideoConversionTask implements Runnable {
         repositoryName = doc.getRepositoryName();
         this.conversionName = conversionName;
         this.service = service;
-        this.id = new VideoConversionId(new DocumentLocationImpl(
-                repositoryName, docRef), conversionName);
+        id = new VideoConversionId(new DocumentLocationImpl(repositoryName,
+                docRef), conversionName);
     }
 
     @Override
@@ -110,6 +112,7 @@ public class VideoConversionTask implements Runnable {
                 @Override
                 public void run() throws ClientException {
                     DocumentModel doc = session.getDocument(docRef);
+                    @SuppressWarnings("unchecked")
                     List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
                     if (transcodedVideos == null) {
                         transcodedVideos = new ArrayList<Map<String, Serializable>>();

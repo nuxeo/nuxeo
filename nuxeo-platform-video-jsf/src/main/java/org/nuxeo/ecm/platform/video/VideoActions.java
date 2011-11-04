@@ -26,7 +26,9 @@ import org.jboss.seam.core.Interpolator;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.video.service.VideoConversionId;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -49,8 +51,7 @@ public class VideoActions implements Serializable {
     @In(create = true)
     protected VideoService videoService;
 
-    public String getURLForPlayer(DocumentModel doc)
-            throws ClientException {
+    public String getURLForPlayer(DocumentModel doc) throws ClientException {
         return DocumentModelFunctions.bigFileUrl(doc, "file:content", "");
     }
 
@@ -78,18 +79,21 @@ public class VideoActions implements Serializable {
                 "StaticPlayerView:content", lastModification);
     }
 
-    public VideoConversionStatus getVideoConversionStatus(DocumentModel doc, String conversionName) {
-        return videoService.getProgressStatus(doc.getRepositoryName(), doc.getRef(), conversionName);
+    public VideoConversionStatus getVideoConversionStatus(DocumentModel doc,
+            String conversionName) {
+        VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(
+                doc), conversionName);
+        return videoService.getProgressStatus(id);
     }
 
     public String getStatusMessageFor(VideoConversionStatus status) {
-        String i18nMessageTemplate = resourcesAccessor.getMessages().get(status.getMessage());
+        String i18nMessageTemplate = resourcesAccessor.getMessages().get(
+                status.getMessage());
         if (i18nMessageTemplate == null) {
             return "";
         } else {
-            return Interpolator.instance().interpolate(
-                    i18nMessageTemplate, status.positionInQueue,
-                    status.queueSize);
+            return Interpolator.instance().interpolate(i18nMessageTemplate,
+                    status.positionInQueue, status.queueSize);
         }
     }
 

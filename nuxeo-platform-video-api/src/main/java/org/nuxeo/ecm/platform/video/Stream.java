@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Object representing a Stream of a video.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -41,6 +43,12 @@ public class Stream {
 
     private final Map<String, Serializable> attributes;
 
+    /**
+     * Build a {@code Stream} from a {@code Map} of attributes.
+     * <p>
+     * Used when creating a {@code Stream} from a {@code DocumentModel}
+     * property.
+     */
     public static Stream fromMap(Map<String, Serializable> m) {
         return new Stream(m);
     }
@@ -49,22 +57,45 @@ public class Stream {
         attributes = new HashMap<String, Serializable>(m);
     }
 
+    /**
+     * Returns this {@code Stream}'s type.
+     * <p>
+     * Can be one of the following:
+     * <ul>
+     * <li>Video</li>
+     * <li>Audio</li>
+     * </ul>
+     */
     public String getType() {
         return (String) attributes.get(TYPE_ATTRIBUTE);
     }
 
+    /**
+     * Returns this {@code Stream}'s codec.
+     */
     public String getCodec() {
         return (String) attributes.get(CODEC_ATTRIBUTE);
     }
 
+    /**
+     * Returns this {@code Stream} whole info as returned by FFmpeg.
+     */
     public String getStreamInfo() {
         return (String) attributes.get(STREAM_INFO_ATTRIBUTE);
     }
 
+    /**
+     * Returns this {@code Stream}'s bit rate.
+     */
     public double getBitRate() {
         return (Double) attributes.get(BIT_RATE_ATTRIBUTE);
     }
 
+    /**
+     * Returns a {@code Map} of attributes for this {@code Stream}.
+     * <p>
+     * Used when saving this {@code Stream} to a {@code DocumentModel} property.
+     */
     public Map<String, Serializable> toMap() {
         return attributes;
     }

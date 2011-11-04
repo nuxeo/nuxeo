@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
      <adapter class="org.nuxeo.ecm.platform.video.VideoDocument"
-      factory="org.nuxeo.ecm.platform.video.adapter.VideoDocumentAdapterFactory"/>
+       factory="org.nuxeo.ecm.platform.video.adapter.VideoDocumentAdapterFactory"/>
   </extension>
 
 </component>

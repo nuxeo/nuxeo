@@ -143,7 +143,8 @@ public class StoryboardConverter extends BaseVideoConverter implements
             params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
             params.addNamedParameter(HEIGHT_PARAM,
                     commonParams.get(HEIGHT_PARAM));
-            ExecResult result = cleService.execCommand(FFMPEG_STORYBOARD_COMMAND, params);
+            ExecResult result = cleService.execCommand(
+                    FFMPEG_STORYBOARD_COMMAND, params);
             if (!result.isSuccessful()) {
                 Exception error = result.getError();
                 if (error != null) {

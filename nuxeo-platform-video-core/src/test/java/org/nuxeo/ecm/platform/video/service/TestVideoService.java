@@ -30,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -66,11 +67,10 @@ public class TestVideoService extends SQLRepositoryTestCase {
         openSession();
 
         EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
-        eventServiceAdmin.setListenerEnabledFlag(
-                "videoAutomaticConversions", false);
-        eventServiceAdmin.setListenerEnabledFlag(
-                        "sql-storage-binary-text", false);
-
+        eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions",
+                false);
+        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text",
+                false);
 
         videoService = Framework.getLocalService(VideoService.class);
     }
@@ -86,10 +86,8 @@ public class TestVideoService extends SQLRepositoryTestCase {
         TranscodedVideo transcodedVideo = videoService.convert(video,
                 "WebM 480p");
         assertNotNull(transcodedVideo);
-        assertEquals("video/webm",
-                transcodedVideo.getBlob().getMimeType());
-        assertTrue(transcodedVideo.getBlob().getFilename().endsWith(
-                "webm"));
+        assertEquals("video/webm", transcodedVideo.getBlob().getMimeType());
+        assertTrue(transcodedVideo.getBlob().getFilename().endsWith("webm"));
         assertEquals("WebM 480p", transcodedVideo.getName());
         assertEquals(8.38, transcodedVideo.getDuration(), 0.1);
         assertEquals(768, transcodedVideo.getWidth());
@@ -98,10 +96,11 @@ public class TestVideoService extends SQLRepositoryTestCase {
         assertEquals("webm", transcodedVideo.getFormat());
     }
 
-    protected static Video getTestVideo()
-            throws IOException {
-        InputStream is = TestVideoService.class.getResourceAsStream("/" + DELTA_MP4);
-        assertNotNull(String.format("Failed to load resource: " + DELTA_MP4), is);
+    protected static Video getTestVideo() throws IOException {
+        InputStream is = TestVideoService.class.getResourceAsStream("/"
+                + DELTA_MP4);
+        assertNotNull(String.format("Failed to load resource: " + DELTA_MP4),
+                is);
         Blob blob = StreamingBlob.createFromStream(is, "video/mp4");
         blob.setFilename(FilenameUtils.getName(DELTA_MP4));
         blob = blob.persist();
@@ -128,7 +127,9 @@ public class TestVideoService extends SQLRepositoryTestCase {
 
         videoService.launchConversion(doc, "WebM 480p");
 
-        while(videoService.getProgressStatus(doc.getRepositoryName(), doc.getRef(), "WebM 480p") != null) {
+        VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(
+                doc), "WebM 480p");
+        while (videoService.getProgressStatus(id) != null) {
             // wait for the conversion to complete
             Thread.sleep(200);
         }
@@ -136,6 +137,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
         session.save();
         doc = session.getDocument(doc.getRef());
         assertNotNull(doc);
+        @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
         assertNotNull(transcodedVideos);
         assertEquals(1, transcodedVideos.size());

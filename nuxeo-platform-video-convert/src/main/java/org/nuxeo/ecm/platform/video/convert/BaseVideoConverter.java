@@ -77,7 +77,7 @@ public abstract class BaseVideoConverter {
 
     /**
      * @deprecated since 5.5. The duration is now extracted with the other
-     * information sotred in the VideoInfo.
+     *             information stored in the VideoInfo.
      */
     @Deprecated
     protected static Double extractDuration(List<String> output)
