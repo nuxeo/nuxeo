@@ -18,12 +18,11 @@
 package org.nuxeo.ecm.platform.video.service;
 
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_TYPE;
-import static org.nuxeo.ecm.platform.video.convert.WebMConverter.WEBM_EXTENSION;
-import static org.nuxeo.ecm.platform.video.convert.WebMConverter.WEBM_VIDEO_MIMETYPE;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +34,8 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.Video;
+import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -81,14 +82,14 @@ public class TestVideoService extends SQLRepositoryTestCase {
     }
 
     public void testVideoConversion() throws IOException, ClientException {
-        Blob video = getBlobFromPath(DELTA_MP4, "video/mp4");
+        Video video = getTestVideo();
         TranscodedVideo transcodedVideo = videoService.convert(video,
                 "WebM 480p");
         assertNotNull(transcodedVideo);
-        assertEquals(WEBM_VIDEO_MIMETYPE,
-                transcodedVideo.getVideoBlob().getMimeType());
-        assertTrue(transcodedVideo.getVideoBlob().getFilename().endsWith(
-                WEBM_EXTENSION));
+        assertEquals("video/webm",
+                transcodedVideo.getBlob().getMimeType());
+        assertTrue(transcodedVideo.getBlob().getFilename().endsWith(
+                "webm"));
         assertEquals("WebM 480p", transcodedVideo.getName());
         assertEquals(8.38, transcodedVideo.getDuration(), 0.1);
         assertEquals(768, transcodedVideo.getWidth());
@@ -97,21 +98,31 @@ public class TestVideoService extends SQLRepositoryTestCase {
         assertEquals("webm", transcodedVideo.getFormat());
     }
 
-    protected static Blob getBlobFromPath(String path, String mimeType)
+    protected static Video getTestVideo()
             throws IOException {
-        InputStream is = TestVideoService.class.getResourceAsStream("/" + path);
-        assertNotNull(String.format("Failed to load resource: " + path), is);
-        Blob blob = StreamingBlob.createFromStream(is, mimeType);
-        blob.setFilename(FilenameUtils.getName(path));
-        return blob.persist();
+        InputStream is = TestVideoService.class.getResourceAsStream("/" + DELTA_MP4);
+        assertNotNull(String.format("Failed to load resource: " + DELTA_MP4), is);
+        Blob blob = StreamingBlob.createFromStream(is, "video/mp4");
+        blob.setFilename(FilenameUtils.getName(DELTA_MP4));
+        blob = blob.persist();
+        VideoInfo videoInfo = VideoInfo.fromFFmpegOutput(getTestVideoInfoOutput());
+        return Video.fromBlobAndInfo(blob, videoInfo);
+    }
+
+    protected static List<String> getTestVideoInfoOutput() {
+        List<String> output = new ArrayList<String>();
+        output.add("Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'DELTA.mp4':");
+        output.add("Duration: 00:00:08.38, start: 0.000000, bitrate: 930 kb/s");
+        output.add("Stream #0.0(und): Video: h264 (High), yuv420p, 768x480 [PAR 1:1 DAR 8:5], 927 kb/s, 23.98 fps, 23.98 tbr, 10k tbn, 47.96 tbc");
+        return output;
     }
 
     public void testAsynchronousVideoConversion() throws IOException,
             ClientException, InterruptedException {
-        Blob video = getBlobFromPath(DELTA_MP4, "video/mp4");
+        Video video = getTestVideo();
         DocumentModel doc = session.createDocumentModel("/", "video",
                 VIDEO_TYPE);
-        doc.setPropertyValue("file:content", (Serializable) video);
+        doc.setPropertyValue("file:content", (Serializable) video.getBlob());
         doc = session.createDocument(doc);
         session.save();
 

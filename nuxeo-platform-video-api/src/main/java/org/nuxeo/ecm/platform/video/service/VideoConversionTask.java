@@ -24,15 +24,15 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.Video;
+import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -59,16 +59,17 @@ public class VideoConversionTask implements Runnable {
         repositoryName = doc.getRepositoryName();
         this.conversionName = conversionName;
         this.service = service;
-        this.id = new VideoConversionId(new DocumentLocationImpl(repositoryName, docRef), conversionName);
+        this.id = new VideoConversionId(new DocumentLocationImpl(
+                repositoryName, docRef), conversionName);
     }
 
     @Override
     public void run() {
-        Blob originalVideo = getBlobToConvert();
+        Video originalVideo = getVideoToConvert();
         if (originalVideo != null) {
             try {
-                TranscodedVideo transcodedVideo = service.convert(id, originalVideo,
-                        conversionName);
+                TranscodedVideo transcodedVideo = service.convert(id,
+                        originalVideo, conversionName);
                 saveNewTranscodedVideo(transcodedVideo);
             } finally {
                 service.clearProgressStatus(id);
@@ -76,17 +77,18 @@ public class VideoConversionTask implements Runnable {
         }
     }
 
-    private Blob getBlobToConvert() {
-        final List<Blob> blobs = new ArrayList<Blob>();
+    private Video getVideoToConvert() {
+        final List<Video> videos = new ArrayList<Video>();
         TransactionHelper.startTransaction();
         try {
             new UnrestrictedSessionRunner(repositoryName) {
                 @Override
                 public void run() throws ClientException {
                     DocumentModel doc = session.getDocument(docRef);
-                    BlobHolder originalVideo = doc.getAdapter(BlobHolder.class);
-                    if (originalVideo != null) {
-                        blobs.add(originalVideo.getBlob());
+                    VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
+                    Video video = videoDocument.getVideo();
+                    if (video != null) {
+                        videos.add(video);
                     } else {
                         log.warn("No original video to transcode for: " + doc);
                     }
@@ -98,7 +100,7 @@ public class VideoConversionTask implements Runnable {
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
-        return blobs.isEmpty() ? null : blobs.get(0);
+        return videos.isEmpty() ? null : videos.get(0);
     }
 
     private void saveNewTranscodedVideo(final TranscodedVideo transcodedVideo) {

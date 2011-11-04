@@ -25,7 +25,7 @@ import java.util.Collection;
  */
 public interface VideoDocument {
 
-    VideoInfo getVideoInfo();
+    Video getVideo();
 
     Collection<TranscodedVideo> getTranscodedVideos();
 

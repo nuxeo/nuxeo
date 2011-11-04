@@ -15,6 +15,7 @@
   </description>
 
   <modules>
+    <module>nuxeo-platform-video-api</module>
     <module>nuxeo-platform-video-core</module>
     <module>nuxeo-platform-video-convert</module>
     <module>nuxeo-platform-video-jsf</module>
@@ -25,13 +26,18 @@
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-video-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-video-core</artifactId>
-        <version>${project.version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-video-convert</artifactId>
-        <version>${project.version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

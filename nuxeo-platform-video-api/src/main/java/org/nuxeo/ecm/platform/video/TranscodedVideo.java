@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.Blob;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public final class TranscodedVideo {
+public final class TranscodedVideo extends Video {
 
     private static final String NAME = "name";
 
@@ -37,63 +37,31 @@ public final class TranscodedVideo {
 
     private final String name;
 
-    private final VideoInfo videoInfo;
-
-    private final Blob blob;
-
     private final int position;
 
-    public static TranscodedVideo fromMap(Map<String, Serializable> map,
-            int position) {
-        return new TranscodedVideo(map, position);
+    public static TranscodedVideo fromMapAndPosition(
+            Map<String, Serializable> map, int position) {
+        Blob blob = (Blob) map.get(CONTENT);
+        Map<String, Serializable> info = (Map<String, Serializable>) map.get(INFO);
+        VideoInfo videoInfo = VideoInfo.fromMap(info);
+        String name = (String) map.get(NAME);
+        return new TranscodedVideo(blob, videoInfo, name, position);
     }
 
     public static TranscodedVideo fromBlobAndInfo(String name, Blob blob,
-                                                  VideoInfo videoInfo) {
-        return new TranscodedVideo(name, blob, videoInfo);
+            VideoInfo videoInfo) {
+        return new TranscodedVideo(blob, videoInfo, name, -1);
     }
 
-    private TranscodedVideo(Map<String, Serializable> map, int position) {
-        this.position = position;
-        name = (String) map.get(NAME);
-        blob = (Blob) map.get(CONTENT);
-        Map<String, Serializable> info = (Map<String, Serializable>) map.get(INFO);
-        this.videoInfo = VideoInfo.fromMap(info);
-    }
-
-    private TranscodedVideo(String name, Blob blob, VideoInfo videoInfo) {
+    private TranscodedVideo(Blob blob, VideoInfo videoInfo, String name,
+            int position) {
+        super(blob, videoInfo);
         this.name = name;
-        this.blob = blob;
-        this.videoInfo = videoInfo;
-        position = -1;
+        this.position = position;
     }
 
     public String getName() {
         return name;
-    }
-
-    public double getDuration() {
-        return videoInfo.getDuration();
-    }
-
-    public long getWidth() {
-        return videoInfo.getWidth();
-    }
-
-    public long getHeight() {
-        return videoInfo.getHeight();
-    }
-
-    public String getFormat() {
-        return videoInfo.getFormat();
-    }
-
-    public double getFrameRate() {
-        return videoInfo.getFrameRate();
-    }
-
-    public Blob getVideoBlob() {
-        return blob;
     }
 
     public String getBlobPropertyName() {

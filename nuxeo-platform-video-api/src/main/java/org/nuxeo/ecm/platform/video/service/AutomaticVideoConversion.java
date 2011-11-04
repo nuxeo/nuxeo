@@ -25,7 +25,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("automaticVideoConversion")
-public class AutomaticVideoConversion implements Cloneable, Comparable<AutomaticVideoConversion> {
+public class AutomaticVideoConversion implements Cloneable,
+        Comparable<AutomaticVideoConversion> {
 
     @XNode("@name")
     private String name;

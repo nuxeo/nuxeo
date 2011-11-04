@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
@@ -144,12 +144,12 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    public TranscodedVideo convert(Blob originalVideo, String conversionName) {
+    public TranscodedVideo convert(Video originalVideo, String conversionName) {
         return convert(null, originalVideo, conversionName);
     }
 
     @Override
-    public TranscodedVideo convert(VideoConversionId id, Blob originalVideo, String conversionName) {
+    public TranscodedVideo convert(VideoConversionId id, Video originalVideo, String conversionName) {
         try {
             if (!videoConversions.registry.containsKey(conversionName)) {
                 throw new ClientRuntimeException(String.format(
@@ -161,10 +161,11 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
                 states.put(id, VideoConversionStatus.STATUS_CONVERSION_PENDING);
             }
 
-            BlobHolder blobHolder = new SimpleBlobHolder(originalVideo);
+            BlobHolder blobHolder = new SimpleBlobHolder(originalVideo.getBlob());
             VideoConversion conversion = videoConversions.registry.get(conversionName);
             Map<String, Serializable> parameters = new HashMap<String, Serializable>();
             parameters.put("height", conversion.getHeight());
+            parameters.put("videoInfo", originalVideo.getVideoInfo());
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
             BlobHolder result = conversionService.convert(
                     conversion.getConverter(), blobHolder, parameters);

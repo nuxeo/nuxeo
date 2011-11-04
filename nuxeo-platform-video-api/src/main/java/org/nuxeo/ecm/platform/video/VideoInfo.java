@@ -34,7 +34,9 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public final class VideoInfo {
+public final class VideoInfo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final Pattern FORMAT_PATTERN = Pattern.compile(
             "^\\s*(Input|Output) #0, (\\w+).+$\\s*", Pattern.CASE_INSENSITIVE);
@@ -56,8 +58,8 @@ public final class VideoInfo {
     public static final Pattern BIT_RATE_PATTERN = Pattern.compile(
             "(\\d+)\\s+kb/s", Pattern.CASE_INSENSITIVE);
 
-    public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0,
-            0, 0, null, null);
+    public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0, 0, 0, null,
+            null);
 
     private static final String DURATION = "duration";
 
@@ -186,7 +188,7 @@ public final class VideoInfo {
     }
 
     public VideoInfo(double duration, long width, long height,
-                     double frameRate, String format, List<Stream> streams) {
+            double frameRate, String format, List<Stream> streams) {
         this.duration = duration;
         this.width = width;
         this.height = height;

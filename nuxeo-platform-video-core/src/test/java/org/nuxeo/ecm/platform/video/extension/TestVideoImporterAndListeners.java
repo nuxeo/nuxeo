@@ -44,8 +44,8 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.video.Stream;
+import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
-import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /*
@@ -302,15 +302,15 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
         assertNotNull(videoDocument);
 
-        VideoInfo videoInfo = videoDocument.getVideoInfo();
-        assertNotNull(videoInfo);
-        assertEquals("mpegvideo", videoInfo.getFormat());
-        assertEquals(0.04, videoInfo.getDuration(), 0.1);
-        assertEquals(23.98, videoInfo.getFrameRate(), 0.1);
-        assertEquals(320, videoInfo.getWidth());
-        assertEquals(200, videoInfo.getHeight());
+        Video video = videoDocument.getVideo();
+        assertNotNull(video);
+        assertEquals("mpegvideo", video.getFormat());
+        assertEquals(0.04, video.getDuration(), 0.1);
+        assertEquals(23.98, video.getFrameRate(), 0.1);
+        assertEquals(320, video.getWidth());
+        assertEquals(200, video.getHeight());
 
-        List<Stream> streams = videoInfo.getStreams();
+        List<Stream> streams = video.getStreams();
         assertNotNull(streams);
         assertEquals(1, streams.size());
         Stream stream = streams.get(0);

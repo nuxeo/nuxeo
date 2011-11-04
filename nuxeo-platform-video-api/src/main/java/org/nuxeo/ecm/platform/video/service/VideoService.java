@@ -18,12 +18,11 @@
 package org.nuxeo.ecm.platform.video.service;
 
 import java.util.Collection;
-import java.util.List;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
 
 /**
@@ -38,11 +37,13 @@ public interface VideoService {
 
     void launchAutomaticConversions(DocumentModel doc);
 
-    TranscodedVideo convert(Blob originalVideo, String conversionName);
+    TranscodedVideo convert(Video originalVideo, String conversionName);
 
-    TranscodedVideo convert(VideoConversionId id, Blob originalVideo, String conversionName);
+    TranscodedVideo convert(VideoConversionId id, Video originalVideo,
+            String conversionName);
 
-    VideoConversionStatus getProgressStatus(String repositoryName, DocumentRef docRef, String conversionName);
+    VideoConversionStatus getProgressStatus(String repositoryName,
+            DocumentRef docRef, String conversionName);
 
     void clearProgressStatus(VideoConversionId id);
 

@@ -22,10 +22,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.ecm.platform.video.VideoInfo;
@@ -40,7 +43,7 @@ public class VideoDocumentAdapter implements VideoDocument {
 
     private final DocumentModel doc;
 
-    private final VideoInfo videoInfo;
+    private final Video video;
 
     private Map<String, TranscodedVideo> transcodedVideos;
 
@@ -51,15 +54,18 @@ public class VideoDocumentAdapter implements VideoDocument {
 
         try {
             this.doc = doc;
-            videoInfo = VideoInfo.fromMap((Map<String, Serializable>) doc.getPropertyValue("vid:info"));
+            BlobHolder bh = doc.getAdapter(BlobHolder.class);
+            Blob blob = bh.getBlob();
+            VideoInfo videoInfo = VideoInfo.fromMap((Map<String, Serializable>) doc.getPropertyValue("vid:info"));
+            video = Video.fromBlobAndInfo(blob, videoInfo);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
     @Override
-    public VideoInfo getVideoInfo() {
-        return videoInfo;
+    public Video getVideo() {
+        return video;
     }
 
     @Override
@@ -84,7 +90,7 @@ public class VideoDocumentAdapter implements VideoDocument {
                 List<Map<String, Serializable>> videos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
                 transcodedVideos = Maps.newHashMap();
                 for (int i = 0; i < videos.size(); i++) {
-                    TranscodedVideo transcodedVideo = TranscodedVideo.fromMap(
+                    TranscodedVideo transcodedVideo = TranscodedVideo.fromMapAndPosition(
                             videos.get(i), i);
                     transcodedVideos.put(transcodedVideo.getName(),
                             transcodedVideo);

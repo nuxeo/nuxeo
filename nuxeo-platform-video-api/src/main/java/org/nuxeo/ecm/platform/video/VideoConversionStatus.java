@@ -39,7 +39,8 @@ public class VideoConversionStatus {
         queueSize = 0;
     }
 
-    public VideoConversionStatus(String message, int positionInQueue, int queueSize) {
+    public VideoConversionStatus(String message, int positionInQueue,
+            int queueSize) {
         this.message = message;
         this.positionInQueue = positionInQueue;
         this.queueSize = queueSize;

@@ -24,7 +24,6 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.core.Interpolator;
 import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
@@ -63,7 +62,7 @@ public class VideoActions implements Serializable {
 
         String blobPropertyName = transcodedVideo.getBlobPropertyName();
         return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName,
-                transcodedVideo.getVideoBlob().getFilename());
+                transcodedVideo.getBlob().getFilename());
     }
 
     public TranscodedVideo getTranscodedVideo(DocumentModel doc, String name) {

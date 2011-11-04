@@ -103,7 +103,7 @@ public class VideoHelper {
 
             VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
             Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-            parameters.put("duration", videoDocument.getVideoInfo().getDuration());
+            parameters.put("duration", videoDocument.getVideo().getDuration());
             result = Framework.getService(ConversionService.class).convert(
                     Constants.STORYBOARD_CONVERTER,
                     new SimpleBlobHolder(video), parameters);
