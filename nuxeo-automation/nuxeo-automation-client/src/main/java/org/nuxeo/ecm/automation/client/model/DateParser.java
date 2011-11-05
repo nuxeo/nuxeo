@@ -116,11 +116,21 @@ public class DateParser {
                 pad(cal.get(Calendar.HOUR_OF_DAY))).append(':').append(
                 pad(cal.get(Calendar.MINUTE))).append(':').append(
                 pad(cal.get(Calendar.SECOND))).append('.').append(
-                pad(cal.get(Calendar.MILLISECOND))).append('Z').toString();
+                pad3(cal.get(Calendar.MILLISECOND))).append('Z').toString();
     }
 
     private final static String pad(int i) {
         return i < 10 ? "0".concat(String.valueOf(i)) : String.valueOf(i);
+    }
+
+    private final static String pad3(int i) {
+        if (i < 10) {
+            return "00".concat(String.valueOf(i));
+        } else if (i < 100) {
+            return "0".concat(String.valueOf(i));
+        } else {
+            return String.valueOf(i);
+        }
     }
 
     private final static int readYear(Calendar cal, String str, int off)

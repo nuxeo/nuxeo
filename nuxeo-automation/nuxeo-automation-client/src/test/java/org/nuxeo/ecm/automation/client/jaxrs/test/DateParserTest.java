@@ -30,6 +30,17 @@ import org.nuxeo.ecm.automation.client.model.DateParser;
  */
 public class DateParserTest extends TestCase {
 
+    public void testEncodingDecodingMs() {
+        Calendar cal = Calendar.getInstance();
+        for (int i = 0; i < 1000; i++) {
+            cal.set(Calendar.MILLISECOND, i);
+            Date date = cal.getTime();
+            String encoded = DateParser.formatW3CDateTimeMs(date);
+            Date decoded = DateParser.parseW3CDateTime(encoded);
+            assertEquals(date, decoded);
+        }
+    }
+
     public void testEncodingDecoding() {
         Date date = new Date();
         String encoded = DateParser.formatW3CDateTime(date);
