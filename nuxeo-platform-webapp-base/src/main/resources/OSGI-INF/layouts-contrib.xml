@@ -1,6 +1,362 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.forms.layouts.webapp.base">
 
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="userSuggestionSearchType" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Search type</label>
+      </labels>
+      <fields>
+        <field>userSuggestionSearchType</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Users" itemValue="USER_TYPE" />
+        <option itemLabel="Groups" itemValue="GROUP_TYPE" />
+      </selectOptions>
+    </widget>
+
+    <widget name="userSuggestion_firstLabelField" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">First label field</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Field to use as the first label when displaying the
+          selected user. Defaults to 'firstName'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>firstLabelField</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_secondLabelField" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Second label field</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Field to use as the second label when displaying the
+          selected user. Defaults to 'lastName'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>secondLabelField</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_thirdLabelField" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">third label field</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Field to use as the third label when displaying the
+          selected user. Defaults to 'email'. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>thirdLabelField</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideFirstLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide first label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the first label should be
+          hidden. Defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideFirstLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideSecondLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide second label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the second label should be
+          hidden.Defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSecondLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideThirdLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide third label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the third label should be
+          hidden. Defaults to false. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideThirdLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_displayAction" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display action</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display action to use when rendering the user or
+          group. Can be 'nothing' to just display text only, 'view' to have a
+          link going to the user or group view, or 'edit' to have a link going
+          to the user or group edition. The 'edit' action assumes the widget is
+          used in the Users and Groups management.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>displayAction</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Nothing" itemValue="nothing" />
+        <option itemLabel="View" itemValue="view" />
+        <option itemLabel="Edit" itemValue="edit" />
+      </selectOptions>
+    </widget>
+
+    <widget name="userSuggestion_displayEmailInSuggestion" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">allow email display in user suggestions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the email should be display in
+          user suggestion. Defaults to false. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>displayEmailInSuggestion</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestionMaxSearchResults" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Max search results</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Number of maximum search results in the suggestion
+          (defaults to 0 that means no limit).
+        </label>
+      </helpLabels>
+      <fields>
+        <field>userSuggestionMaxSearchResults</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_minChars" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Minimum characters</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The minimal number of characters to type for the
+          suggestion to be active. Defaults to 3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>minChars</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_frequency" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Frequency</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Delay (in seconds) before activating the suggestion
+          pop-up. Default value is 0.
+        </label>
+      </helpLabels>
+
+      <fields>
+        <field>frequency</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_requestDelay" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Request delay</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The requestDelay attribute specifies an amount of time
+          in milliseconds for the request to wait in the queue before being sent
+          to the server. If a similar request is added to the queue before the
+          delay is over, the original request is removed from the queue and not
+          sent.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>requestDelay</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_width" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Width</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">The suggestion width.</label>
+      </helpLabels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_pageProviderName" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Document page provider name</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The page provider that will be called to perform a
+          search for the suggestion. It must accept one parameter that will be
+          replaced by the suggestion input. If no name is defined, a default
+          page provider is used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>pageProviderName</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_minChars" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Minimum characters</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The minimal number of characters to type for the
+          suggestion to be active. Defaults to 3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>minChars</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_frequency" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Frequency</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Delay (in seconds) before activating the suggestion
+          pop-up. Default value is 0.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>frequency</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_requestDelay" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Request delay</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The requestDelay attribute specifies an amount of time
+          in milliseconds for the request to wait in the queue before being sent
+          to the server. If a similar request is added to the queue before the
+          delay is over, the original request is removed from the queue and not
+          sent.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>requestDelay</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_width" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Width</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">The suggestion width.</label>
+      </helpLabels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -9,11 +365,14 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Path tree</title>
         <description>
-          Widget allowing to select one or more values from a Tree constructed
+          Widget allowing to select one or more values from a Tree
+          constructed
           from the navigation tree.
 
-          Set 'showAllDomains' property to true if you want to be able to select
-          a path from an other domain than the current one.
+          Set 'showAllDomains' property to
+          true if you want to be able to select
+          a path from an other domain than
+          the current one.
         </description>
       </configuration>
       <handler-class>
@@ -47,289 +406,63 @@
             <layout name="singleUserSuggestion_widget_type_properties_view">
               <rows>
                 <row>
-                  <widget>userSuggestionSearchType</widget>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget>firstLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_firstLabelField</widget>
                 </row>
                 <row>
-                  <widget>secondLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_secondLabelField</widget>
                 </row>
                 <row>
-                  <widget>thirdLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField</widget>
                 </row>
                 <row>
-                  <widget>hideFirstLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideFirstLabel</widget>
                 </row>
                 <row>
-                  <widget>hideSecondLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel</widget>
                 </row>
                 <row>
-                  <widget>hideThirdLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideThirdLabel</widget>
                 </row>
                 <row>
-                  <widget>displayAction</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displayAction</widget>
                 </row>
                 <row>
-                  <widget>displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
                 </row>
-               </rows>
-              <widget name="userSuggestionSearchType" type="selectOneListbox">
-                <labels>
-                  <label mode="any">Search type</label>
-                </labels>
-                <fields>
-                  <field>userSuggestionSearchType</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Users" itemValue="USER_TYPE" />
-                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
-                </selectOptions>
-              </widget>
-              <widget name="firstLabelField" type="text">
-                <labels>
-                  <label mode="any">First label field</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Field to use as the first label when displaying the selected
-                    user. Defaults to 'firstName'.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>firstLabelField</field>
-                </fields>
-              </widget>
-              <widget name="secondLabelField" type="text">
-                <labels>
-                  <label mode="any">Second label field</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Field to use as the second label when displaying the
-                    selected user. Defaults to 'lastName'.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>secondLabelField</field>
-                </fields>
-              </widget>
-              <widget name="thirdLabelField" type="text">
-                <labels>
-                  <label mode="any">third label field</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Field to use as the third label when displaying the
-                    selected user. Defaults to 'email'. Available since 5.5.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>thirdLabelField</field>
-                </fields>
-              </widget>
-              <widget name="hideFirstLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide first label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the first label should be hidden.
-                    Defaults to false.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideFirstLabel</field>
-                </fields>
-              </widget>
-              <widget name="hideSecondLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide second label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the second label should be hidden.
-                    Defaults to false.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideSecondLabel</field>
-                </fields>
-              </widget>
-              <widget name="hideThirdLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide third label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the third label should be hidden.
-                    Defaults to false. Available since 5.5.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideThirdLabel</field>
-                </fields>
-              </widget>
-              <widget name="displayAction" type="selectOneListbox">
-                <labels>
-                  <label mode="any">Display action</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The display action to use when rendering the user or group.
-                    Can be 'nothing' to just display text only, 'view' to have a
-                    link going to the user or group view, or 'edit' to have a
-                    link going to the user or group edition. The 'edit' action
-                    assumes the widget is used in the Users and Groups
-                    management.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>displayAction</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Nothing" itemValue="nothing" />
-                  <option itemLabel="View" itemValue="view" />
-                  <option itemLabel="Edit" itemValue="edit" />
-                </selectOptions>
-              </widget>
-              <widget name="displayEmailInSuggestion" type="checkbox">
-                <labels>
-                  <label mode="any">allow email display in user suggestions</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the email should be display in user suggestion.
-                    Defaults to false. Available since 5.5.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>displayEmailInSuggestion</field>
-                </fields>
-              </widget>
-
+              </rows>
             </layout>
           </layouts>
           <layouts mode="edit">
             <layout name="singleUserSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>userSuggestionSearchType</widget>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget>userSuggestionMaxSearchResults</widget>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
                 </row>
                 <row>
-                  <widget>minChars</widget>
+                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget>frequency</widget>
+                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
                 </row>
                 <row>
-                  <widget>requestDelay</widget>
+                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
                 </row>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">userSuggestion_width</widget>
                 </row>
                 <row>
-                  <widget>displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
                 </row>
               </rows>
-              <widget name="required" type="checkbox">
-                <labels>
-                  <label mode="any">Required</label>
-                </labels>
-                <fields>
-                  <field>required</field>
-                </fields>
-              </widget>
-              <widget name="userSuggestionSearchType" type="selectOneListbox">
-                <labels>
-                  <label mode="any">Search type</label>
-                </labels>
-                <fields>
-                  <field>userSuggestionSearchType</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Users and groups" itemValue="" />
-                  <option itemLabel="Users" itemValue="USER_TYPE" />
-                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
-                </selectOptions>
-              </widget>
-              <widget name="userSuggestionMaxSearchResults" type="int">
-                <labels>
-                  <label mode="any">Max search results</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Number of maximum search results in the suggestion (defaults
-                    to 0 that means no limit).
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>userSuggestionMaxSearchResults</field>
-                </fields>
-              </widget>
-              <widget name="minChars" type="int">
-                <labels>
-                  <label mode="any">Minimum characters</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The minimal number of characters to type for the suggestion
-                    to be active. Defaults to 3.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minChars</field>
-                </fields>
-              </widget>
-              <widget name="frequency" type="int">
-                <labels>
-                  <label mode="any">Frequency</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Delay (in seconds) before activating the suggestion pop-up.
-                    Default value is 0ms.
-                  </label>
-                </helpLabels>
-
-                <fields>
-                  <field>frequency</field>
-                </fields>
-              </widget>
-              <widget name="requestDelay" type="int">
-                <labels>
-                  <label mode="any">Request delay</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The requestDelay attribute specifies an amount of time in
-                    milliseconds for the request to wait in the queue before
-                    being sent to the server. If a similar request is added to
-                    the queue before the delay is over, the original request is
-                    removed from the queue and not sent.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>requestDelay</field>
-                </fields>
-              </widget>
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">The suggestion width.</label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
             </layout>
           </layouts>
         </properties>
@@ -361,266 +494,64 @@
           <category>document</category>
         </categories>
         <properties>
-        <layouts mode="view">
+          <layouts mode="view">
             <layout name="multipleUsersSuggestion_widget_type_properties_view">
               <rows>
                 <row>
-                  <widget>userSuggestionSearchType</widget>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget>firstLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_firstLabelField</widget>
                 </row>
                 <row>
-                  <widget>secondLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_secondLabelField</widget>
                 </row>
                 <row>
-                  <widget>thirdLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField</widget>
                 </row>
                 <row>
-                  <widget>hideFirstLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideFirstLabel</widget>
                 </row>
                 <row>
-                  <widget>hideSecondLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel</widget>
                 </row>
                 <row>
-                  <widget>hideThirdLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideThirdLabel</widget>
                 </row>
                 <row>
-                  <widget>displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
                 </row>
-               </rows>
-              <widget name="userSuggestionSearchType" type="selectOneListbox">
-                <labels>
-                  <label mode="any">Search type</label>
-                </labels>
-                <fields>
-                  <field>userSuggestionSearchType</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Users" itemValue="USER_TYPE" />
-                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
-                </selectOptions>
-              </widget>
-              <widget name="firstLabelField" type="text">
-                <labels>
-                  <label mode="any">First label field</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Field to use as the first label when displaying the selected
-                    user. Defaults to 'firstName'.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>firstLabelField</field>
-                </fields>
-              </widget>
-              <widget name="secondLabelField" type="text">
-                <labels>
-                  <label mode="any">Second label field</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Field to use as the second label when displaying the
-                    selected user. Defaults to 'lastName'.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>secondLabelField</field>
-                </fields>
-              </widget>
-              <widget name="thirdLabelField" type="text">
-                <labels>
-                  <label mode="any">third label field</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Field to use as the third label when displaying the
-                    selected user. Defaults to 'email'. Available since 5.5.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>thirdLabelField</field>
-                </fields>
-              </widget>
-              <widget name="hideFirstLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide first label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the first label should be hidden.
-                    Defaults to false.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideFirstLabel</field>
-                </fields>
-              </widget>
-              <widget name="hideSecondLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide second label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the second label should be hidden.
-                    Defaults to false.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideSecondLabel</field>
-                </fields>
-              </widget>
-              <widget name="hideThirdLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide third label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the third label should be hidden.
-                    Defaults to false. Available since 5.5.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideThirdLabel</field>
-                </fields>
-              </widget>
-              <widget name="displayEmailInSuggestion" type="checkbox">
-                <labels>
-                  <label mode="any">allow email display in user suggestions</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean indicating if the email should be display in user suggestion.
-                    Defaults to false. Available since 5.5.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>displayEmailInSuggestion</field>
-                </fields>
-              </widget>
+              </rows>
             </layout>
           </layouts>
           <layouts mode="edit">
-            <layout
-              name="multipleUsersSuggestion_widget_type_properties_edit">
+            <layout name="multipleUsersSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>userSuggestionSearchType</widget>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget>userSuggestionMaxSearchResults</widget>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
                 </row>
                 <row>
-                  <widget>minChars</widget>
+                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget>frequency</widget>
+                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
                 </row>
                 <row>
-                  <widget>requestDelay</widget>
+                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
                 </row>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">userSuggestion_width</widget>
                 </row>
                 <row>
-                  <widget>displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
                 </row>
-               </rows>
-              <widget name="required" type="checkbox">
-                <labels>
-                  <label mode="any">Required</label>
-                </labels>
-                <fields>
-                  <field>required</field>
-                </fields>
-              </widget>
-              <widget name="userSuggestionSearchType" type="selectOneListbox">
-                <labels>
-                  <label mode="any">Search type</label>
-                </labels>
-                <fields>
-                  <field>userSuggestionSearchType</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Users and groups" itemValue="" />
-                  <option itemLabel="Users" itemValue="USER_TYPE" />
-                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
-                </selectOptions>
-              </widget>
-              <widget name="userSuggestionMaxSearchResults" type="int">
-                <labels>
-                  <label mode="any">Max search results</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Number of maximum search results in the suggestion (defaults
-                    to 0 that means no limit).
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>userSuggestionMaxSearchResults</field>
-                </fields>
-              </widget>
-              <widget name="minChars" type="int">
-                <labels>
-                  <label mode="any">Minimum characters</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The minimal number of characters to type for the suggestion
-                    to be active. Defaults to 3.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minChars</field>
-                </fields>
-              </widget>
-              <widget name="frequency" type="int">
-                <labels>
-                  <label mode="any">Frequency</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Delay (in seconds) before activating the suggestion pop-up.
-                    Default value is 0ms.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>frequency</field>
-                </fields>
-              </widget>
-              <widget name="requestDelay" type="int">
-                <labels>
-                  <label mode="any">Request delay</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The requestDelay attribute specifies an amount of time in
-                    milliseconds for the request to wait in the queue before
-                    being sent to the server. If a similar request is added to
-                    the queue before the delay is over, the original request is
-                    removed from the queue and not sent.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>requestDelay</field>
-                </fields>
-              </widget>
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">The suggestion width.</label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
+              </rows>
             </layout>
           </layouts>
         </properties>
@@ -657,118 +588,27 @@
               name="multiplePrefixedUsersSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>userSuggestionSearchType</widget>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget>userSuggestionMaxSearchResults</widget>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
                 </row>
                 <row>
-                  <widget>minChars</widget>
+                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget>frequency</widget>
+                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
                 </row>
                 <row>
-                  <widget>requestDelay</widget>
+                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
                 </row>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">userSuggestion_width</widget>
                 </row>
               </rows>
-              <widget name="required" type="checkbox">
-                <labels>
-                  <label mode="any">Required</label>
-                </labels>
-                <fields>
-                  <field>required</field>
-                </fields>
-              </widget>
-              <widget name="userSuggestionSearchType" type="selectOneListbox">
-                <labels>
-                  <label mode="any">Search type</label>
-                </labels>
-                <fields>
-                  <field>userSuggestionSearchType</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Users and groups" itemValue="" />
-                  <option itemLabel="Users" itemValue="USER_TYPE" />
-                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
-                </selectOptions>
-              </widget>
-              <widget name="userSuggestionMaxSearchResults" type="int">
-                <labels>
-                  <label mode="any">Max search results</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Number of maximum search results in the suggestion (defaults
-                    to 0 that means no limit).
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>userSuggestionMaxSearchResults</field>
-                </fields>
-              </widget>
-              <widget name="minChars" type="int">
-                <labels>
-                  <label mode="any">Minimum characters</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The minimal number of characters to type for the suggestion
-                    to be active. Defaults to 3.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minChars</field>
-                </fields>
-              </widget>
-              <widget name="frequency" type="int">
-                <labels>
-                  <label mode="any">Frequency</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Delay (in seconds) before activating the suggestion pop-up.
-                    Default value is 0ms.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>frequency</field>
-                </fields>
-              </widget>
-              <widget name="requestDelay" type="int">
-                <labels>
-                  <label mode="any">Request delay</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The requestDelay attribute specifies an amount of time in
-                    milliseconds for the request to wait in the queue before
-                    being sent to the server. If a similar request is added to
-                    the queue before the delay is over, the original request is
-                    removed from the queue and not sent.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>requestDelay</field>
-                </fields>
-              </widget>
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">The suggestion width.</label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
             </layout>
           </layouts>
         </properties>
@@ -801,108 +641,27 @@
         </categories>
         <properties>
           <layouts mode="edit">
-            <layout
-              name="multipleDocumentsSuggestion_widget_type_properties_edit">
+            <layout name="multipleDocumentsSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>pageProviderName</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
                 </row>
                 <row>
-                  <widget>minChars</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget>frequency</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
                 </row>
                 <row>
-                  <widget>requestDelay</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_requestDelay</widget>
                 </row>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_width</widget>
                 </row>
               </rows>
-              <widget name="required" type="checkbox">
-                <labels>
-                  <label mode="any">Required</label>
-                </labels>
-                <fields>
-                  <field>required</field>
-                </fields>
-              </widget>
-              <widget name="pageProviderName" type="text">
-                <labels>
-                  <label mode="any">Document page provider name</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The page provider that will be called to perform a search
-                    for the suggestion. It must accept one parameter that will
-                    be replaced by the suggestion input. If no name is defined,
-                    a default page provider is used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>pageProviderName</field>
-                </fields>
-              </widget>
-              <widget name="minChars" type="int">
-                <labels>
-                  <label mode="any">Minimum characters</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The minimal number of characters to type for the suggestion
-                    to be active. Defaults to 3.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minChars</field>
-                </fields>
-              </widget>
-              <widget name="frequency" type="int">
-                <labels>
-                  <label mode="any">Frequency</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Delay (in seconds) before activating the suggestion pop-up.
-                    Default value is 0ms.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>frequency</field>
-                </fields>
-              </widget>
-              <widget name="requestDelay" type="int">
-                <labels>
-                  <label mode="any">Request delay</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The requestDelay attribute specifies an amount of time in
-                    milliseconds for the request to wait in the queue before
-                    being sent to the server. If a similar request is added to
-                    the queue before the delay is over, the original request is
-                    removed from the queue and not sent.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>requestDelay</field>
-                </fields>
-              </widget>
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">The suggestion width.</label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
             </layout>
           </layouts>
         </properties>
@@ -930,7 +689,8 @@
           </ul>
 
           Since 5.5, it also displays the document header related actions.
-          They must be contributed in one of the following categories:
+          They
+          must be contributed in one of the following categories:
           <ul>
             <li>DOCUMENT_HEADER_ACTIONS_LIST</li>
             <li>DOCUMENT_HEADER_ACTIONS_LIST_HREF</li>
@@ -963,7 +723,8 @@
         <sinceVersion>5.5</sinceVersion>
         <title>Localized vocabulary tree</title>
         <description>
-          Widget allowing to select one or more values in a tree constructed
+          Widget allowing to select one or more values in a tree
+          constructed
           from a l10nvocabulary or l10nxvocabulary directory.
         </description>
         <properties>
@@ -1021,7 +782,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to true, only the entries id are stored instead of
+                    If set to true, only the entries id are
+                    stored instead of
                     their path.
                   </label>
                 </helpLabels>
@@ -1035,7 +797,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The string used to separate directory keys in the value.
+                    The string used to separate directory keys
+                    in the value.
                     Defaults to "/".
                   </label>
                 </helpLabels>
@@ -1282,7 +1045,8 @@
         </fields>
         <widgetModes>
           <mode value="edit">
-            #{nxu:test(currentUser.administrator, 'edit', 'view')}
+            #{nxu:test(currentUser.administrator, 'edit',
+            'view')}
           </mode>
           <mode value="editPassword">hidden</mode>
         </widgetModes>
