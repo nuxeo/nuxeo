@@ -20,10 +20,6 @@
     </developer>
   </developers>
 
-  <properties>
-    <gwt.module>org.nuxeo.opensocial.container.gwtContainer</gwt.module>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
@@ -45,16 +41,12 @@
       </dependency>
 
     <dependency>
-      <groupId>com.google.code</groupId>
+      <groupId>com.allen-sauer.gwt.dnd</groupId>
       <artifactId>gwt-dnd</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -69,8 +61,16 @@
       <artifactId>gwt-dispatch</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.gwt.inject</groupId>
+      <groupId>com.google.gwt.inject</groupId>
       <artifactId>gin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.inject.extensions</groupId>
@@ -111,20 +111,6 @@
       </resource>
     </resources>
     <plugins>
-      <!-- APT plugin for annotation preprocessing -->
-      <plugin>
-        <groupId>org.apache.myfaces.tobago</groupId>
-        <artifactId>maven-apt-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-bindings</id>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- end APT plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -154,45 +140,34 @@
           <buildOutputDirectory>war/WEB-INF/classes</buildOutputDirectory>
         </configuration>
       </plugin>
-
-      <!-- After compiling java sources compile java to JS using GWT compiler. This
-        must be done process-classes after compile step finished to be sure we have all the
-        needed files in classes directory. I am using ant for this since the maven exec plugin
-        is not able to run correctly this -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>compile-js</id>
-            <phase>process-classes</phase>
             <configuration>
-              <tasks>
-                <property name="compile_classpath" refid="maven.compile.classpath" />
-                <property name="runtime_classpath" refid="maven.runtime.classpath" />
-                <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
-                  <classpath>
-                    <pathelement location="${project.build.outputDirectory}" />
-                    <pathelement path="${compile_classpath}" />
-                    <pathelement path="${runtime_classpath}" />
-                  </classpath>
-                  <jvmarg value="-Xmx256M" />
-                  <!-- jvmarg value="${gwt.arg}" / -->
-                  <arg value="-style" />
-                  <arg value="PRETTY" />
-                  <!-- to speed up compiler <arg value="-draftCompile" / -->
-                  <arg value="-draftCompile" />
-                  <arg value="-war" />
-                  <arg value="${project.build.outputDirectory}/gwt-war" />
-                  <arg value="${gwt.module}" />
-                </java>
-              </tasks>
+              <module>org.nuxeo.opensocial.container.gwtContainer</module>
             </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/.gwt-tmp/**</exclude>
+            <exclude>**/gwt-unitCache/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/GwtTest*.java</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>

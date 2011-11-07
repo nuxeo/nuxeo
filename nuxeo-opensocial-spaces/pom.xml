@@ -70,6 +70,10 @@
       <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+       <groupId>org.jsecurity</groupId>
+       <artifactId>jsecurity</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
