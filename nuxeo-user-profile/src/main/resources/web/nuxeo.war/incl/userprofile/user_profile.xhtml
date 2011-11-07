@@ -55,19 +55,17 @@
               <td class="iconColumn"></td>
               <td class="labelColumn"></td>
               <td class="fieldColumn">
-                <a4j:commandButton id="saveUserButton"
+                <h:commandButton id="saveUserButton"
                   value="#{messages['command.save']}"
                   action="#{userProfileActions.updateUser}"
-                  styleClass="button"
-                  reRender="profilePanel" />
-                <a4j:commandButton
+                  styleClass="button" />
+                <h:commandButton
                   value="#{messages['command.cancel']}"
                   actionListener="#{editableListBean.resetAllListsCachedModels}"
                   action="#{userProfileActions.setMode('view')}"
                   immediate="true"
                   styleClass="button" id="viewUserButton"
-                  rendered="#{userProfileActions.mode != 'view'}"
-                  reRender="profilePanel" />
+                  rendered="#{userProfileActions.mode != 'view'}" />
               </td>
             </tr>
           </tbody>
@@ -82,13 +80,13 @@
               <td class="iconColumn"></td>
               <td class="labelColumn"></td>
               <td class="fieldColumn">
-                <a4j:commandButton id="saveUserPasswordButton"
+                <h:commandButton id="saveUserPasswordButton"
                   value="#{messages['command.save']}"
                   action="#{userManagementActions.changePassword}"
                   styleClass="button"
                   rendered="#{userProfileActions.canEdit}"
                   reRender="profilePanel"/>
-                <a4j:commandButton
+                <h:commandButton
                   value="#{messages['command.cancel']}"
                   actionListener="#{editableListBean.resetAllListsCachedModels}"
                   action="#{userProfileActions.setMode('view')}"
