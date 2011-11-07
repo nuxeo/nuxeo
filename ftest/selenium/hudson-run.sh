@@ -1,8 +1,10 @@
 #!/bin/sh -x
 HERE=$(cd $(dirname $0); pwd -P)
 
-JBOSS_HOME=$1
+NUXEO_HOME=$1
 OUTPUT=$2
+
+echo DEPRECATED: should use nuxeo-ftest
 
 hostname=${hostname:-0.0.0.0}
 port=${port:-8080}
@@ -14,16 +16,16 @@ if [ ! -z $RUNNING_PID ]; then
     kill $RUNNING_PID || kill -9 $RUNNING_PID
 fi
 
-echo "start jboss"
-chmod +x $JBOSS_HOME/bin/*ctl || exit 1
-$JBOSS_HOME/bin/nuxeoctl start || exit 1
+echo "start server"
+chmod +x $NUXEO_HOME/bin/*ctl || exit 1
+$NUXEO_HOME/bin/nuxeoctl start || exit 1
 
 echo "run selenium tests"
 chmod +x "$HERE"/run.sh $OUTPUT || exit 1
 HIDE_FF=true "$HERE"/run.sh $OUTPUT
 ret1=$?
 
-echo "stop jboss"
-$JBOSS_HOME/bin/nuxeoctl stop || exit 1
+echo "stop server"
+$NUXEO_HOME/bin/nuxeoctl stop || exit 1
 
 exit $ret1

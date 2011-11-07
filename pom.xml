@@ -15,8 +15,33 @@
 
   <profiles>
     <profile>
-      <!-- Activate to unzip a JBoss and run IT tests against it -->
+      <!-- Activate to unzip a Nuxeo and run IT tests against it -->
       <id>testit</id>
+      <properties>
+        <nuxeo.distribution.version>${project.version}</nuxeo.distribution.version>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>nuxeo-distribution-tools</artifactId>
+            <executions>
+              <execution>
+                <id>antbuild</id>
+                <phase>integration-test</phase>
+                <configuration>
+                  <buildFiles>
+                    <buildFile>${basedir}/ftest/selenium/assembly.xml</buildFile>
+                  </buildFiles>
+                </configuration>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
@@ -84,29 +109,6 @@
       <artifactId>nuxeo-runtime-test</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.nuxeo.build</groupId>
-        <artifactId>nuxeo-distribution-tools</artifactId>
-        <executions>
-          <execution>
-            <id>antbuild</id>
-            <phase>integration-test</phase>
-            <configuration>
-              <buildFiles>
-                <buildFile>${basedir}/ftest/selenium/assembly.xml</buildFile>
-              </buildFiles>
-            </configuration>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
   <developers>
     <developer>
