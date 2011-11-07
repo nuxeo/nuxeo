@@ -6,6 +6,8 @@ if [ -r $HERE/run.conf ]; then
     . $HERE/run.conf
 fi
 
+echo DEPRECATED: should use nuxeo-ftest
+
 # Default values
 HIDE_FF=${HIDE_FF:-}
 SUITES=${SUITES:-"suite"}
