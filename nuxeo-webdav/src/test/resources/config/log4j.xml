@@ -3,7 +3,7 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
   debug="false">
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <!--    <param name="Target" value="System.out" />-->
     <layout class="org.apache.log4j.PatternLayout">
       <!--      <param name="ConversionPattern" value="[%C{1}] %m%n" />-->
@@ -23,7 +23,7 @@
 
   <!-- Specific appenders for some important nxshell commands -->
   <appender name="import" class="org.apache.log4j.RollingFileAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="File" value="log/import.log" />
     <param name="Append" value="true" />
     <param name="MaxFileSize" value="30MB" />
