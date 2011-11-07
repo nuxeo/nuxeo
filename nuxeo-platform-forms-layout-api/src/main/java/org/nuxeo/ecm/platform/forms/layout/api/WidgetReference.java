@@ -34,7 +34,7 @@ public interface WidgetReference extends Serializable {
     /**
      * Widget name. If a widget with this name is present in the layout
      * definition, it references this widget. Else, if a category is filled,
-     * the wiget is looked up in the store with this category. If no category
+     * the widget is looked up in the store with this category. If no category
      * is filled, the widget is looked up in the same store than the one of the
      * layout.
      */
