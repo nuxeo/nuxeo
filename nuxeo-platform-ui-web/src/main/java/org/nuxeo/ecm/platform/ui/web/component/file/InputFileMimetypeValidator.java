@@ -76,8 +76,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
      * unauthorized extensions check fails. The message format string for this
      * message may optionally include the following placeholders:
      * <ul>
-     * <li><code>{0}</code> replaced by the configured unauthorized
-     * extensions.</li>
+     * <li><code>{0}</code> replaced by the configured unauthorized extensions.</li>
      * </ul>
      * </p>
      */
@@ -107,8 +106,8 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
                         String messageId = authorized ? MIMETYPE_AUTHORIZED_EXTENSIONS_MESSAGE_ID
                                 : MIMETYPE_UNAUTHORIZED_EXTENSIONS_MESSAGE_ID;
                         throw new ValidatorException(MessageFactory.getMessage(
-                                context, messageId, StringUtils.join(
-                                        extensions, ", ")));
+                                context, messageId,
+                                StringUtils.join(extensions, ", ")));
                     }
                 }
             }
