@@ -22,6 +22,7 @@
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-rss-reader</module>
     <module>nuxeo-sample-project</module>
+    <module>nuxeo-shell-ejb</module>
   </modules>
 
 </project>
