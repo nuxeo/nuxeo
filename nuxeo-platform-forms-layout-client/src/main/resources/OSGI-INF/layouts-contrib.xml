@@ -712,7 +712,8 @@
         <field>ordering</field>
       </fields>
       <selectOptions>
-        <option itemLabel="Label" itemValue="label" />
+        <option itemLabel="Label (default)" itemValue="label" />
+        <option itemLabel="Ordering" itemValue="ordering" />
         <option itemLabel="Id" itemValue="id" />
       </selectOptions>
     </widget>
