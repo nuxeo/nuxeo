@@ -94,9 +94,11 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
                 }
                 String filename = info.getConvertedFilename();
                 if (filename != null) {
+                    String lowerCaseFilename = filename.toLowerCase();
                     boolean error = authorized;
                     for (String extension : extensions) {
-                        if (filename.endsWith(extension.trim())) {
+                        String lowerCaseExtension = extension.trim().toLowerCase();
+                        if (lowerCaseFilename.endsWith(lowerCaseExtension)) {
                             error = !authorized;
                             break;
                         }
