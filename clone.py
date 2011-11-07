@@ -91,7 +91,10 @@ for line in lines:
     hg_addons.append(hg_addon)
 #print hg_addons
 
-for line in os.popen("mvn -N help:effective-pom"):
+all_lines = os.popen("mvn -N help:effective-pom").readlines()
+all_lines += os.popen("mvn -N help:effective-pom -f pom-optionals.xml").readlines()
+
+for line in all_lines:
     line = line.strip()
     m = re.match("<module>(.*?)</module>", line)
     if not m:

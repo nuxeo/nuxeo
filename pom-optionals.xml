@@ -16,11 +16,12 @@
   included in the default full build). Thus they are not deprecated.</description>
 
   <modules>
+    <module>nuxeo-birt</module>
     <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-platform-splitpane</module>
-    <module>nuxeo-sample-project</module>
-    <module>nuxeo-birt</module>
+    <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-rss-reader</module>
+    <module>nuxeo-sample-project</module>
   </modules>
 
 </project>
