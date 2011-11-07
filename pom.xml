@@ -115,7 +115,8 @@
 
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
-    <gwt.version>2.0.4</gwt.version>
+    <gwt.version>2.4.0</gwt.version>
+    <guice.version>3.0</guice.version>
     <jersey.version>1.1.5</jersey.version>
     <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
@@ -1808,6 +1809,12 @@
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-ui</artifactId>
         <version>2.1.0.SP1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
@@ -2532,6 +2539,7 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
         <version>${gwt.version}</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
@@ -2559,6 +2567,7 @@
         <groupId>com.google.gwt.google-apis</groupId>
         <artifactId>gwt-gadgets</artifactId>
         <version>1.0.3</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>com.google.collections</groupId>
@@ -2566,34 +2575,39 @@
         <version>1.0-rc2</version>
       </dependency>
       <dependency>
-        <groupId>com.allen_sauer.gwt.log</groupId>
+        <groupId>com.allen-sauer.gwt.log</groupId>
         <artifactId>gwt-log</artifactId>
-        <version>2.5.2</version>
+        <version>3.1.6</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>net.customware.gwt.presenter</groupId>
         <artifactId>gwt-presenter</artifactId>
         <version>1.0.0</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>net.customware.gwt.dispatch</groupId>
         <artifactId>gwt-dispatch</artifactId>
         <version>1.0.0</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
-        <groupId>com.google.code</groupId>
+        <groupId>com.allen-sauer.gwt.dnd</groupId>
         <artifactId>gwt-dnd</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.2</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-gadgets</artifactId>
-        <version>1.1</version>
+        <version>1.2.0</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
-        <groupId>com.googlecode.gwt.inject</groupId>
+        <groupId>com.google.gwt.inject</groupId>
         <artifactId>gin</artifactId>
-        <version>1.0</version>
+        <version>1.5.0</version>
         <exclusions>
           <exclusion>
             <artifactId>gwt-servlet</artifactId>
@@ -2604,12 +2618,19 @@
       <dependency>
         <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-servlet</artifactId>
-        <version>2.0</version>
+        <version>${guice.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject.extensions</groupId>
+        <artifactId>guice-assistedinject</artifactId>
+        <version>${guice.version}</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>gwt.habyt</groupId>
         <artifactId>gwt-habyt-upload</artifactId>
         <version>0.1</version>
+        <scope>compile</scope>
       </dependency>
 
       <dependency>
@@ -2862,6 +2883,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.jsecurity</groupId>
+        <artifactId>jsecurity</artifactId>
+        <version>0.9.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.shindig</groupId>
         <artifactId>shindig-gadgets</artifactId>
         <version>${shindig.version}</version>
@@ -2872,6 +2898,13 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <!-- required by shindig gadgets at runtime (internal API uses)-->
+      <dependency>
+        <groupId>com.google.code.guice</groupId>
+        <artifactId>guice-internal</artifactId>
+        <version>2.0</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.shindig</groupId>
@@ -2885,6 +2918,14 @@
           <exclusion>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>el-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2901,6 +2942,10 @@
           <exclusion>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2921,14 +2966,14 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.google.code.guice</groupId>
+        <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
-        <version>2.0</version>
+        <version>${guice.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.code.guice</groupId>
+        <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-jmx</artifactId>
-        <version>2.0</version>
+        <version>${guice.version}</version>
       </dependency>
       <dependency>
         <groupId>caja</groupId>
@@ -3532,17 +3577,20 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
-          <version>1.2</version>
+          <version>${gwt.version}</version>
+          <inherited>true</inherited>
           <executions>
             <execution>
-              <configuration>
-                <extraJvmArgs>
-                  -Xmx512M -Xms128M -XX:MaxPermSize=384m
-                </extraJvmArgs>
-              </configuration>
               <goals>
                 <goal>compile</goal>
               </goals>
+              <configuration>
+                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m</extraJvmArgs>
+                <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
+                <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
+                <treeLogger>true</treeLogger>
+                <logLevel>TRACE</logLevel>
+              </configuration>
             </execution>
           </executions>
         </plugin>
