@@ -254,4 +254,10 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         // destroy seam component
     }
 
+    public void resetCurrentTree() {
+        if (treeModels != null && selectedTree != null) {
+            treeModels.remove(selectedTree);
+        }
+    }
+
 }
