@@ -30,12 +30,6 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 public interface MetadataUtils {
 
-    @Deprecated
-    Map<String, Object> getImageMetadata(InputStream in);
-
-    @Deprecated
-    Map<String, Object> getImageMetadata(File file);
-
     Map<String, Object> getImageMetadata(Blob blob);
 
 }

@@ -79,8 +79,6 @@ public class PictureBookManagerBean extends InputController implements
     @In(create = true)
     protected CoreSession documentManager;
 
-    protected Integer timeinterval;
-
     protected Integer maxsize;
 
     protected ArrayList<Map<String, Object>> views;
@@ -148,7 +146,6 @@ public class PictureBookManagerBean extends InputController implements
     @Destroy
     public void destroy() {
         title = null;
-        timeinterval = null;
         viewtitle = null;
         maxsize = null;
         tag = null;
@@ -170,7 +167,6 @@ public class PictureBookManagerBean extends InputController implements
             parentPath = navigationContext.getCurrentDocument().getPathAsString();
         }
 
-        doc.setProperty("picturebook", "timeinterval", timeinterval);
         doc.setProperty("picturebook", "picturetemplates", views);
 
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
@@ -198,7 +194,6 @@ public class PictureBookManagerBean extends InputController implements
     @BypassInterceptors
     public void reset() throws ClientException {
         title = null;
-        timeinterval = null;
         maxsize = null;
         viewtitle = null;
         tag = null;
@@ -383,20 +378,6 @@ public class PictureBookManagerBean extends InputController implements
     @Override
     public void setSelectedViews(String[] selectedViews) {
         this.selectedViews = selectedViews;
-    }
-
-    @Override
-    @Deprecated
-    public Integer getTimeinterval() {
-        if (timeinterval == null) {
-            timeinterval = 5;
-        }
-        return timeinterval;
-    }
-
-    @Override
-    public void setTimeinterval(Integer timeinterval) {
-        this.timeinterval = timeinterval;
     }
 
     @Override

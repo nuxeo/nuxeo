@@ -30,35 +30,6 @@ import org.nuxeo.ecm.core.api.Blob;
 public interface ImagingService {
 
     /**
-     * Crop image.
-     *
-     * @return resized image file created in temporary folder
-     * @deprecated use {@link #crop(Blob, int, int, int, int)
-
-     */
-    @Deprecated
-    InputStream crop(InputStream in, int x, int y, int width, int height);
-
-    /**
-     * Resize image.
-     *
-     * @return resized image file created in temporary folder
-     * @deprecated use {@link #resize(Blob, String, int, int, int)
-
-     */
-    @Deprecated
-    InputStream resize(InputStream in, int width, int height);
-
-    /**
-     * Rotate image.
-     *
-     * @deprecated use {@link #rotate(Blob, int)
-
-     */
-    @Deprecated
-    InputStream rotate(InputStream in, int angle);
-
-    /**
      * Crops an image.
      */
     Blob crop(Blob blob, int x, int y, int width, int height);
@@ -76,18 +47,6 @@ public interface ImagingService {
      * @return a Blob holding the rotated image
      */
     Blob rotate(Blob blob, int angle);
-
-    /**
-     * Retrieves metadata from an image.
-     */
-    @Deprecated
-    Map<String, Object> getImageMetadata(InputStream in);
-
-    /**
-     * Retrieves metadata from an image.
-     */
-    @Deprecated
-    Map<String, Object> getImageMetadata(File file);
 
     /**
      * Retrieves metadata from an image contained in a {@link Blob}.

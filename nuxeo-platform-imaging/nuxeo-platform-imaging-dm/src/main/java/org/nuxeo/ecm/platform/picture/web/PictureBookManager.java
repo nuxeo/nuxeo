@@ -36,24 +36,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 public interface PictureBookManager {
 
     /**
-     * Sets the Time Interval. timeinterval is the time spend before the next
-     * picture is displayed in the slideshow in seconds.
-     *
-     * @param timeinterval an Integer holding the Time Interval
-     */
-    void setTimeinterval(Integer timeinterval);
-
-    /**
-     * Gets the Time Interval. timeinterval is the time spend before the next
-     * picture is displayed in the slideshow in seconds.
-     *
-     * @return an Integer holding the Time Interval
-     * @deprecated The time interval is now handled by the PictureBook layout
-     */
-    @Deprecated
-    Integer getTimeinterval();
-
-    /**
      * Sets the title. This is the title of the PictureBook as defined in the
      * Dublincore schema
      *

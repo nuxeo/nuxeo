@@ -28,15 +28,6 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 public interface ImageUtils {
 
-    @Deprecated
-    InputStream crop(InputStream in, int x, int y, int width, int height);
-
-    @Deprecated
-    InputStream resize(InputStream in, int width, int height);
-
-    @Deprecated
-    InputStream rotate(InputStream in, int angle);
-
     Blob crop(Blob blob, int x, int y, int width, int height);
 
     Blob resize(Blob blob, String finalFormat, int width, int height, int depth);

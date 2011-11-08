@@ -54,53 +54,6 @@ public class ImagingComponent extends DefaultComponent implements
     private LibrarySelector librarySelector;
 
     @Override
-    @Deprecated
-    public InputStream crop(InputStream in, int x, int y, int width, int height) {
-        try {
-            return getLibrarySelectorService().getImageUtils().crop(in, x, y,
-                    width, height);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
-        return in;
-    }
-
-    @Override
-    @Deprecated
-    public InputStream resize(InputStream in, int width, int height) {
-        try {
-            return getLibrarySelectorService().getImageUtils().resize(in,
-                    width, height);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
-        return in;
-    }
-
-    @Override
-    @Deprecated
-    public InputStream rotate(InputStream in, int angle) {
-        try {
-            return getLibrarySelectorService().getImageUtils().rotate(in, angle);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
-        return in;
-    }
-
-    @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
         try {
             return getLibrarySelectorService().getImageUtils().crop(blob, x, y,
@@ -144,38 +97,6 @@ public class ImagingComponent extends DefaultComponent implements
             log.error(e, e);
         }
         return blob;
-    }
-
-    @Override
-    @Deprecated
-    public Map<String, Object> getImageMetadata(InputStream in) {
-        try {
-            return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
-                    in);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageMetadata Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageMetadata Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public Map<String, Object> getImageMetadata(File file) {
-        try {
-            return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
-                    file);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageMetadata Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageMetadata Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
-        return null;
     }
 
     @Override
