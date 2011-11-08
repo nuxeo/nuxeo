@@ -210,13 +210,18 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 return;
             }
 
-        } else if ("create url-directories".equals(methodName)) {
-            String urls = parameters.get("urldirs");
-            // assume only one url
-            urls = urls.substring(1, urls.length() - 1);
-            Map<String, String> params = unpackMapValues(urls);
-
-            String location = params.get("url");
+        } else if ("create url-directories".equals(methodName)
+                || "create url-directory".equals(methodName)) {
+            String location;
+            if ("create url-directories".equals(methodName)) {
+                String urls = parameters.get("urldirs");
+                // assume only one url
+                urls = urls.substring(1, urls.length() - 1);
+                Map<String, String> params = unpackMapValues(urls);
+                location = params.get("url");
+            } else {
+                location = parameters.get("url");
+            }
             String[] urlParts = location.split("/");
             String newFolderName = urlParts[urlParts.length - 1];
             String parentPath = (location + "*").replace("/" + newFolderName + "*", "");
