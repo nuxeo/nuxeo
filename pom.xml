@@ -1,8 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>nuxeo-features-parent</artifactId>
-    <groupId>org.nuxeo.ecm.platform</groupId>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.5-SNAPSHOT</version>
   </parent>
 
@@ -10,9 +11,7 @@
   <artifactId>nuxeo-platform-video-parent</artifactId>
   <name>Nuxeo Platform Video parent</name>
   <packaging>pom</packaging>
-  <description>Nuxeo Platform Video provides video managment
-               to Nuxeo Web Platform and RCP.
-  </description>
+  <description>Nuxeo Platform Video provides video management to Nuxeo Web Platform and RCP.</description>
 
   <modules>
     <module>nuxeo-platform-video-api</module>
@@ -24,20 +23,12 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- binaries data used by the tests -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-video-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-video-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-video-convert</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <artifactId>nuxeo-platform-video-convert-test-data</artifactId>
+        <version>5.3.2-20100324</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -55,10 +46,33 @@
     </developer>
   </developers>
 
-<scm>
-  <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-video</connection>
-  <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-video</developerConnection>
-  <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_platform-video</url>
-</scm>
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-video</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-video</developerConnection>
+    <url>http://hg.nuxeo.org/addons/nuxeo-platform-video</url>
+  </scm>
 
 </project>
