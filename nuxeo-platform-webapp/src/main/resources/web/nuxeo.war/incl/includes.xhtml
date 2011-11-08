@@ -72,4 +72,8 @@ var ctx = { currentDocument : '#{currentDocument.id}',
 <c:if test="#{!useHtml5DragAndDrop}">
   <ui:include src="/incl/dnd/legacyDnd.xhtml" />
 </c:if>
+
+<link href="#{contextPath}/css/custom-css.css" rel="stylesheet" type="text/css" />
+<ui:include src="/incl/custom-includes.xhtml" />
+
 </div>
