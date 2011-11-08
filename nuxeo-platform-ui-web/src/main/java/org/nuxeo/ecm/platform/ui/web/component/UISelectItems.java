@@ -207,14 +207,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
      */
     protected final Object saveRequestMapVarValue() {
         String varName = getVar();
-        if (varName != null) {
-            FacesContext context = getFacesContext();
-            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
-            if (requestMap.containsKey(varName)) {
-                return requestMap.get(varName);
-            }
-        }
-        return null;
+        return VariableManager.saveRequestMapVarValue(varName);
     }
 
     /**
@@ -224,15 +217,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
      */
     protected final void restoreRequestMapVarValue(Object value) {
         String varName = getVar();
-        if (varName != null) {
-            FacesContext context = getFacesContext();
-            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
-            if (value == null) {
-                requestMap.remove(varName);
-            } else {
-                requestMap.put(varName, value);
-            }
-        }
+        VariableManager.restoreRequestMapVarValue(varName, value);
     }
 
     @SuppressWarnings("unchecked")
@@ -322,18 +307,12 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
 
     protected void putIteratorToRequestParam(Object object) {
         String var = getVar();
-        if (var != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                    var, object);
-        }
+        VariableManager.putVariableToRequestParam(var, object);
     }
 
     protected void removeIteratorFromRequestParam() {
         String var = getVar();
-        if (var != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
-                    var);
-        }
+        VariableManager.removeVariableFromRequestParam(var);
     }
 
     @Override

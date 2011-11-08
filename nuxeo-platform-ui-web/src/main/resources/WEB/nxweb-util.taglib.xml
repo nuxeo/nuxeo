@@ -202,7 +202,7 @@
       java.lang.String)
     </function-signature>
   </function>
- <function>
+  <function>
     <function-name>userDisplayNameAndEmail</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
@@ -212,7 +212,7 @@
       java.lang.String, java.lang.String)
     </function-signature>
   </function>
- 
+
   <function>
     <function-name>groupDisplayName</function-name>
     <function-class>
@@ -318,7 +318,8 @@
   <tag>
     <tag-name>selectItems</tag-name>
     <component>
-      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need to include license -->
+      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need 
+        to include license -->
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.UISelectItems
       </component-type>
@@ -327,7 +328,8 @@
   <tag>
     <tag-name>selectItem</tag-name>
     <component>
-      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need to include license -->
+      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need 
+        to include license -->
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.UISelectItem
       </component-type>
@@ -393,6 +395,17 @@
       <component-type>org.richfaces.Calendar</component-type>
       <handler-class>
         org.nuxeo.ecm.platform.ui.web.tag.handler.InputDateTimeTagHandler
+      </handler-class>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>valueHolder</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.holder.UIValueHolder
+      </component-type>
+      <handler-class>
+        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
       </handler-class>
     </component>
   </tag>

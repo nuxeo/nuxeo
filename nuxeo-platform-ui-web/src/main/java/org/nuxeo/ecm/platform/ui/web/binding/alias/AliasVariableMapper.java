@@ -100,7 +100,7 @@ public class AliasVariableMapper extends VariableMapper {
         return vars;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static AliasVariableMapper getVariableMapper(
             FacesContext facesContext, String id) {
         ExternalContext ec = facesContext.getExternalContext();
@@ -112,7 +112,7 @@ public class AliasVariableMapper extends VariableMapper {
         return mappers.get(id);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void exposeAliasesToRequest(FacesContext facesContext,
             AliasVariableMapper vm) {
         if (vm == null) {
@@ -140,7 +140,7 @@ public class AliasVariableMapper extends VariableMapper {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void removeAliasesExposedToRequest(FacesContext facesContext,
             String id) {
         if (log.isTraceEnabled()) {

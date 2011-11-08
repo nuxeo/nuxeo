@@ -20,8 +20,11 @@ import javax.faces.component.UIComponent;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.FacesListener;
 
+import org.nuxeo.ecm.platform.ui.web.component.holder.UIValueHolder;
+
 /**
- * Wrapper event used by {@link UIAliasHolder} component
+ * Wrapper event used by {@link UIAliasHolder} and {@link UIValueHolder}
+ * components.
  *
  * @author Anahide Tchertchian
  * @since 5.4

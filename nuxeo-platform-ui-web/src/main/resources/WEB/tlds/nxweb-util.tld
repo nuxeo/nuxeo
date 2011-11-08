@@ -1230,6 +1230,95 @@
   </tag>
 
   <tag>
+    <name>valueHolder</name>
+    <tag-class>None</tag-class>
+    <description>
+      <![CDATA[
+      <p>
+      Tag to hold a value and expose it to the request context.
+      </p>
+      <p>
+      It can control a value to sublit as any input component, or not.
+      </p>
+      <p>
+      Available since 5.5.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.util.List</type>
+      <description>Value binding representing the item to hold</description>
+    </attribute>
+    <attribute>
+      <name>defaultValue</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.util.List</type>
+      <description>
+        Value binding representing the default value for the item to hold.
+        is only resolved when the value attribute resolves to a null or empty
+        value, and can be useful to set default values from the interface,
+        without having to resolve them in the original value binding method.
+      </description>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The component identifier for this component. This value must be unique
+        within the closest parent component that is a naming container.
+      </description>
+    </attribute>
+    <attribute>
+      <name>rendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not this component should be rendered (during
+        Render Response Phase), or processed on any subsequent form submit.
+      </description>
+    </attribute>
+    <attribute>
+      <name>required</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating that the user is required to provide a submitted value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String. The name of a request-scope attribute under which the value
+        held will be exposed.
+      </description>
+    </attribute>
+    <attribute>
+      <name>submitValue</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not the value held by this component should
+        be submitted to the backing bean.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+        <nxu:valueHolder var="myVar" value="#{myComp.myValue}">
+          <h:outputText value="#{myVar}" />
+        </nxu:valueHolder>
+      ]]>
+    </example>
+  </tag>
+
+
+  <tag>
     <name>dataList</name>
     <tag-class>None</tag-class>
     <description>Standard tomahawk tag</description>
