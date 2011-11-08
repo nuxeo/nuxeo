@@ -119,7 +119,7 @@ pre {
                    <#if layoutDefinition.getWidgetDefinition(widgetName)==null>
                     ${widgetName}
                    <#else>
-                    <A href="${baseURL}../widgets/?widgetType=${layoutDefinition.getWidgetDefinition(widgetName).getType()}">${widgetName}</A>
+                    <A href="${baseURL}../widget-types/?widgetType=${layoutDefinition.getWidgetDefinition(widgetName).getType()}">${widgetName}</A>
                    </#if>
                  </td>
                  </#list>
