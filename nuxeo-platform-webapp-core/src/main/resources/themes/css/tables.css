@@ -10,12 +10,11 @@ table thead th { padding: 3px; text-align: left }
   border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
   padding: 5px 3px }
 .dataList thead th {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
+  background-color: "neutral.light (__FLAVOR__ background)";
   border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
   color: "gray.dark (__FLAVOR__ color)";
   padding: 5px 3px;
   text-align: left }
-.dataList thead th a, .dataList thead th a:link, .dataList thead th a:visited { color: "gray.dark (__FLAVOR__ color)"; text-decoration: none }
 .dataList thead th a:hover { text-decoration: underline }
 
 .dataInput { margin-top: 5px }
@@ -33,7 +32,7 @@ table thead th { padding: 3px; text-align: left }
   margin-top: 7px;
   margin-bottom: 5px }
 table.dataOutput thead th {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
+  background-color: "neutral.light (__FLAVOR__ background)";
   border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
   color: "gray.dark (__FLAVOR__ color)";
   padding: 5px 3px;
@@ -57,7 +56,7 @@ table.dataOutput th a img { margin: 0 0 0 2px; padding: 0; vertical-align: botto
   width: 8px }
 .iconColumn { text-align: center; width: 20px }
 .iconColumn .cell { background: none; width: 40px }
-.iconColumn .dropInto { background-color: "neutral.lighter (__FLAVOR__ background)" }
+.iconColumn .dropInto { background-color: "neutral.light (__FLAVOR__ background)" }
 .iconColumn img { background: none; position: relative; z-index: 25 }
 .twoColumns { width: 50% }
 .fieldColumn img { margin: 0 4px; vertical-align: top }

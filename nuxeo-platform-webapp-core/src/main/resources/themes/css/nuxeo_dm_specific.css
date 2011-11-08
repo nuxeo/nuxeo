@@ -8,11 +8,10 @@ author: lkemen@nuxeo.com
 */
 
 /* =Frame */
+.documentManagement .nxMainContainer { height: 600px }
 .documentManagement .nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: 5px }
 
 /* =Document list */
-.currentDocumentDescription { font-size: .8em; padding: 4px 0 }
-.currentItemDescription { display: block; font-size: 13px }
 .serverChoice {
   float: left;
   margin-top: 20px;
