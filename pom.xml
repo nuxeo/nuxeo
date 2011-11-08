@@ -422,6 +422,11 @@
       <!-- Video -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-video-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-video-core</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
@@ -432,7 +437,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-video-api</artifactId>
+        <artifactId>nuxeo-platform-video-jsf</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
