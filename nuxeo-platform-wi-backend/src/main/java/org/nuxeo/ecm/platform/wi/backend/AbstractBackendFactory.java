@@ -44,12 +44,16 @@ public abstract class AbstractBackendFactory implements BackendFactory {
             WISession wiSession = (WISession) request.getAttribute(WIRequestFilter.SESSION_KEY);
             backend = getBackend(wiSession);
             // register a backend cleanup handler
-            RequestContext.getActiveContext(request).addRequestCleanupHandler(
-                    new RequestCleanupHandler() {
-                        public void cleanup(HttpServletRequest req) {
-                            backend.destroy();
-                        }
-                    });
+            // unless there's none (pure servlet call for WSS)
+            RequestContext activeContext = RequestContext.getActiveContext(request);
+            if (activeContext != null) {
+                activeContext.addRequestCleanupHandler(new RequestCleanupHandler() {
+                    @Override
+                    public void cleanup(HttpServletRequest req) {
+                        backend.destroy();
+                    }
+                });
+            }
         } else {
             // for tests
             backend = createRootBackend();
