@@ -1,0 +1,26 @@
+/*
+Relationship Network.
+=Popup -> small window to select the kind of relation you have with a user
+=Users view ->
+author: lkemen@nuxeo.com
+*/
+/* =Popup*/
+.relationPopUpContainer { position: relative }
+.relationPopUp { background-color: white;
+  border-width: 1px; border-style: solid; border-color: "neutral.light (__FLAVOR__ border)";
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+  display: none;
+  padding: 5px;
+  position: absolute; right: 0; top: 10px;
+  width: auto; z-index: 3000 }
+.relationPopUp table { width: 100% }
+.relationPopUp table td { border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)"; padding: 5px 0 }
+.relationPopUp table td span { float: left }
+.relationPopUp table input { float: right; margin: 0 0 0 20px }
+
+/* =Users view */
+.tag { margin:2px; display:block; padding: 2px; border-radius: 3px; background: "color.major.light (__FLAVOR__ background)"; border: 1px solid; border-color: "color.major.medium (__FLAVOR__ border)";}
+.userRelation { float: right }
+.userRelationsPanel { padding: 10px 15px 15px }
+.userRelationsPanel #searchForm { display: inline }
+.userRelationsPanel .dataOutput tr:hover { background: "color.major.light (__FLAVOR__ background)"; }

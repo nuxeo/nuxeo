@@ -11,7 +11,7 @@
 
     <theme>
       <src>themes/theme-galaxy-user-center.xml</src>
-      <!--<src>themes/theme-galaxy-user-center-new.xml</src>-->
+      <!--src>themes/theme-galaxy-user-center-new.xml</src-->
     </theme>
 
   </extension>
@@ -26,7 +26,61 @@
 
   </extension>
 
-  <!-- application settings -->
+  <!-- mapping between theme pages and resources -->
+  <!-- Register mapping between theme pages and resources -->
+  <!--
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="userCenter/default">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>dark</flavor>
+      </flavors>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>activity_stream</style>
+        <style>mini_messages</style>
+        <style>relationship_network</style>
+        <style>user_profile</style>
+        <style>nuxeo_usercenter_specific</style>
+      </styles>
+    </themePage>
+
+  </extension>-->
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <!-- Addons -->
+    <style name="activity_stream">
+      <path>themes/css/activity_stream.css</path>
+    </style>
+    <style name="mini_messages">
+      <path>themes/css/mini_messages.css</path>
+    </style>
+    <style name="relationship_network">
+      <path>themes/css/relationship_network.css</path>
+    </style>
+    <style name="user_profile">
+      <path>themes/css/user_profile.css</path>
+    </style>
+    <!-- Specific to pages -->
+    <style name="nuxeo_usercenter_specific">
+      <path>themes/css/nuxeo_usercenter_specific.css</path>
+    </style>
+  </extension>
+
+    <!-- application settings -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
 
@@ -40,30 +94,6 @@
     </application>
 
   </extension>
-
-  <!-- mapping between theme pages and resources -->
-  <!-- 
-  <extension target="org.nuxeo.theme.styling.service" point="pages">  
-    <themePage name="userCenter/default">
-      <defaultFlavor>userCenter</defaultFlavor>
-      <styles append="true">
-        <style>nuxeo_user_center_default</style>
-      </styles>
-    </themePage>
-  </extension>
-  -->
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_user_center_default">
-      <path>themes/css/nuxeo_user_center_default.css</path>
-    </style>
-  </extension>
-  <!-- TODO -->
-  <!--
-  <extension target="org.nuxeo.theme.styling.service" point="flavors">
-    <flavor name="userCenter">
-    </flavor>
-  </extension>
-  -->
 
   <!-- Styles presets -->
 

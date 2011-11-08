@@ -1,0 +1,23 @@
+/*
+Mini Messages List: specific styles.
+author: lkemen@nuxeo.com
+*/
+.miniMessages { text-align: center }
+.miniMessages .miniMessagePanel { border-width: 1px; border-style:solid border-color: "neutral.lighter (__FLAVOR__ border)"; display: block; margin: 0 auto; padding: 5px 30px; width: 80% }
+
+.miniMessages .newMiniMessageForm { margin: 10px 0 15px }
+.miniMessages .newMiniMessageForm textarea { border-width: 1px; border-style:solid border-color: "neutral.light (__FLAVOR__ border)"; font-size: 1.2em; margin: 5px 0 0; padding: 10px; width: 450px }
+.miniMessages .newMiniMessageForm .newMiniMessageActions { margin: 0 auto; padding: 0; text-align: right; width: 470px }
+
+.newMiniMessageForm .newMiniMessageActions .miniMessageCounter { color: "gray.medium (__FLAVOR__ color)"; font-size: 1.1em; font-weight: bold }
+.newMiniMessageForm .newMiniMessageActions .warning { color: "warning.status (__FLAVOR__ color)";}
+
+.miniMessages .newMiniMessageForm input.button { margin: 5px 0 10px 10px }
+.miniMessages .dataOutput { margin: 0 auto; width: 550px }
+.miniMessages .dataOutput td { padding: 0 }
+.miniMessages .miniMessage { padding: 8px 10px; text-align: left }
+.miniMessages .miniMessage:hover { background-color: "color.major.light (__FLAVOR__ background)"; }
+.miniMessages .username { font-size: 1.1em; font-weight: bold; padding-right: 5px }
+.miniMessages .owner a, .miniMessages .owner a:link { color: black }
+.miniMessages .timestamp { color: "gray.medium (__FLAVOR__ color)"; font-size: 1.1em }
+.miniMessages .message { font-size: 1.1em; padding: 3px 0 }

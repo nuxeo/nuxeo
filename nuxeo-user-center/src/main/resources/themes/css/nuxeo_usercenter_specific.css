@@ -1,0 +1,33 @@
+/*
+Specific styles for the Home View
+=Left Column -> specifiy tabs style
+=Main Frame -> small adjustments
+author: lkemen@nuxeo.com
+*/
+
+/* =Left Column----*/
+.adminTabsColumn { background: "color.major.light (__FLAVOR__ background)"; box-shadow: -2px -1px 5px #9F9F9F inset; padding: 0; width: 210px }
+.adminTabBlock { height: 100%; margin: 0 }
+
+.adminTabsColumn ul {  margin: 0; padding: 20px 0 30px }
+.adminTabsColumn li { box-shadow: -5px 2px 5px #b0b0b0; margin: 0 0 3px; padding: 0 }
+.adminTabsColumn li a { color: "gray.medium (__FLAVOR__ color)"; display: block; padding: 7px 0 8px 10px; text-decoration: none }
+.adminTabsColumn li a img { margin: 0 5px -1px 0 }
+
+.adminTabsColumn li.selected, .adminTabsColumn li.selected:hover { background-color: #fff; margin: 0 -1px 3px }
+.adminTabsColumn li:hover { background-color: #fff }
+.adminTabsColumn li.selected a, .adminTabsColumn li:hover a { color: "black (__FLAVOR__ color)"; }
+
+/* =Main Frame */
+.adminTabsColumn { min-height: 590px; height: auto!important; height: 590px; }
+.adminViewContent { border-collapse: collapse; height: 100%; width: 100% }
+.adminViewContent td { vertical-align: top }
+.adminContentColumn { padding: 20px }
+.adminViewContent h2 { padding: 20px 0 10px }
+.adminViewContent p { padding: 5px 0 }
+
+/* =Override GWT styles*/
+body, table td, select { font-family: "default (__FLAVOR__ font)"; }
+.widget .content { width: 100% }
+
+.adminViewContent p.directoryBack {  padding: 2px 2px 2px 20px }
