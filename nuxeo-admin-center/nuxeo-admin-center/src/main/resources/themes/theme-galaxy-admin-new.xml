@@ -2,7 +2,7 @@
 <theme name="admin" template-engines="jsf-facelets">
   <layout>
     <page name="default" class="adminCenter">
-      <section class="header">
+      <section class="nxHeader">
         <cell class="logo">
           <!-- logo -->
           <fragment type="generic fragment"/>
@@ -16,13 +16,13 @@
           <fragment type="generic fragment"/>
         </cell>
       </section>
-      <section class="mainContainer">
+      <section class="nxMainContainer">
         <cell class="content">
           <!-- main area -->
           <fragment type="region fragment"/>
         </cell>
       </section>
-      <section class="footer">
+      <section class="nxFooter">
         <cell class="content">
           <!-- footer -->
           <fragment type="generic fragment"/>

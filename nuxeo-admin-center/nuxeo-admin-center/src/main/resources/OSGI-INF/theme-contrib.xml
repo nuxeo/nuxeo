@@ -12,7 +12,7 @@
 
     <theme>
       <src>themes/theme-galaxy-admin.xml</src>
-      <!--<src>themes/theme-galaxy-admin-new.xml</src> -->
+      <!--src>themes/theme-galaxy-admin-new.xml</src-->
     </theme>
 
   </extension>
@@ -47,33 +47,47 @@
   </extension>
   
   <!-- mapping between theme pages and resources -->
-  <!-- 
-  <extension target="org.nuxeo.theme.styling.service" point="pages">  
+  <!--
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
     <themePage name="admin/default">
-      <defaultFlavor>admin</defaultFlavor>
-      <styles append="true">
-        <style>nuxeo_admin_center_default</style>
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>dark</flavor>
+      </flavors>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>activity_stream</style>
+        <style>mini_messages</style>
+        <style>relationship_network</style>
+        <style>user_profile</style>
+        <style>nuxeo_admincenter_specific</style>
       </styles>
     </themePage>
-  </extension>
-  -->
+
+  </extension> -->
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_admin_center_default">
-      <path>themes/css/nuxeo_admin_center_default.css</path>
+    <style name="nuxeo_admincenter_specific">
+      <path>themes/css/nuxeo_admincenter_specific.css</path>
     </style>
   </extension>
 
-  <!-- TODO -->
-  <!--
-  <extension target="org.nuxeo.theme.styling.service" point="flavors">
-    <flavor name="admin">
-    </flavor>
-  </extension>
-  -->
 
   <!-- Styles presets -->
-
   <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
 
     <palette name="Galaxy Admin borders"
