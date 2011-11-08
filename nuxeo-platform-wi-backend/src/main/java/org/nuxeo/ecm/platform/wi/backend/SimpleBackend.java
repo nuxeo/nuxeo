@@ -130,8 +130,10 @@ public class SimpleBackend extends AbstractCoreBackend {
     @Override
     public DocumentModel updateDocument(DocumentModel doc, String name,
             Blob content) throws ClientException {
-        doc.getProperty("file:content").setValue(content);
-        doc.getProperty("file:filename").setValue(name);
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh != null) {
+            bh.setBlob(content);
+        }
         getSession().saveDocument(doc);
         saveChanges();
         return doc;
@@ -347,11 +349,7 @@ public class SimpleBackend extends AbstractCoreBackend {
                 if (blob != null) {
                     blob.setFilename(destinationName);
                     blobUpdated = true;
-                    // XXXX should be done via blob holder !!!
-                    if (source.hasSchema("file")) {
-                        source.setProperty("file", "content", blob);
-                        source.setProperty("file", "filename", destinationName);
-                    }
+                    bh.setBlob(blob);
                     getSession().saveDocument(source);
                 }
             }
@@ -448,8 +446,10 @@ public class SimpleBackend extends AbstractCoreBackend {
                     parent.getPathAsString(), name, targetType);
             file.setPropertyValue("dc:title", name);
             if (content != null) {
-                file.setProperty("file", "content", content);
-                file.setProperty("file", "filename", name);
+                BlobHolder bh = file.getAdapter(BlobHolder.class);
+                if (bh != null) {
+                    bh.setBlob(content);
+                }
             }
             file = getSession().createDocument(file);
             getPathCache().put(parseLocation(parentPath) + "/" + name, file);

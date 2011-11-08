@@ -283,22 +283,21 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
 
     @Override
     public void setStream(InputStream is, String fileName) throws WSSException {
-        if (doc.hasSchema("file")) {
-            // Blob blob = new InputStreamBlob(is);
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh != null) {
             Blob blob = StreamingBlob.createFromStream(is);
             if (fileName != null) {
                 blob.setFilename(fileName);
             }
             try {
-                Blob oldBlob = (Blob) doc.getProperty("file", "content");
+                Blob oldBlob = bh.getBlob();
                 if (oldBlob == null) {
                     // force to recompute icon
                     if (doc.hasSchema("common")) {
                         doc.setProperty("common", "icon", null);
                     }
                 }
-                doc.setProperty("file", "content", blob);
-                doc.setProperty("file", "filename", fileName);
+                bh.setBlob(blob);
                 doc.putContextData(VersioningService.VERSIONING_OPTION,
                         VersioningOption.MINOR);
                 doc = getSession().saveDocument(doc);
@@ -306,7 +305,6 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 log.error("Error while setting stream", e);
             }
         } else {
-            // XXX needs writable BlobHolder
             log.error("Update of type " + doc.getType()
                     + " is not supported for now");
         }

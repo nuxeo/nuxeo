@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
@@ -65,7 +66,15 @@ public class FileResource extends ExistingResource {
 
     @GET
     public Object get() throws Exception {
-        Blob content = (Blob) doc.getPropertyValue("file:content");
+        Blob content = null;
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh != null) {
+            try {
+                content = bh.getBlob();
+            } catch (ClientException e) {
+                log.error("Unable to get blob", e);
+            }
+        }
         if (content == null) {
             return Response.ok("").build();
         } else {
@@ -124,8 +133,18 @@ public class FileResource extends ExistingResource {
         Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
         Date creationDate = getTimePropertyWrapper(doc, "dc:created");
 
-        Blob content = (Blob) doc.getPropertyValue("file:content");
-        Long contentLength = content != null ? content.getLength() : 0L;
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        long contentLength = 0;
+        if (bh != null) {
+            try {
+                Blob blob = bh.getBlob();
+                if (blob != null) {
+                    contentLength = blob.getLength();
+                }
+            } catch (ClientException e) {
+                log.error("Unable to get blob Size", e);
+            }
+        }
 
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
         response = new net.java.dev.webdav.jaxrs.xml.elements.Response(

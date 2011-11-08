@@ -152,7 +152,7 @@ public class ExistingResource extends AbstractResource {
         String davDestPath = destPath;
         WebDavBackend destinationBackend = Backend.get(davDestPath, request);
         destPath = destinationBackend.parseLocation(destPath).toString();
-        log.info("to " + davDestPath);
+        log.debug("to " + davDestPath);
 
         // Remove dest if it exists and the Overwrite header is set to "T".
         int status = 201;

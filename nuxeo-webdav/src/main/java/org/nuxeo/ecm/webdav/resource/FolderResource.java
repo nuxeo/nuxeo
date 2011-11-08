@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
@@ -149,12 +150,19 @@ public class FolderResource extends ExistingResource {
             if (child.isFolder()) {
                 props.isCollection();
             } else {
-                Blob blob = (Blob) child.getPropertyValue("file:content");
                 String mimeType = "application/octet-stream";
                 long size = 0;
-                if (blob != null) {
-                    size = blob.getLength();
-                    mimeType = blob.getMimeType();
+                BlobHolder bh = child.getAdapter(BlobHolder.class);
+                if (bh != null) {
+                    try {
+                        Blob blob = bh.getBlob();
+                        if (blob != null) {
+                            size = blob.getLength();
+                            mimeType = blob.getMimeType();
+                        }
+                    } catch (ClientException e) {
+                        log.error("Unable to get blob Size", e);
+                    }
                 }
                 if(StringUtils.isEmpty(mimeType) || "???".equals(mimeType) ){
                     mimeType = "application/octet-stream";
