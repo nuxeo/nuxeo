@@ -32,6 +32,7 @@ import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
+import org.nuxeo.wss.spi.dummy.DummyWSSListItem;
 import org.nuxeo.wss.spi.dws.DWSMetaData;
 import org.nuxeo.wss.spi.dws.Site;
 
@@ -51,6 +52,9 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
 
     @Override
     public WSSListItem getItem(String location) throws WSSException {
+        if ("".equals(location) || "/".equals(location)) {
+            return  new DummyWSSListItem("", "WSS Root", null);
+        }
         return getBackend(location).getItem(location);
     }
 
@@ -124,9 +128,6 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
     }
 
     protected WSSBackend getBackend(String location) {
-        if (StringUtils.isEmpty(location)) {
-            return new WSSFakeBackend();
-        }
         try {
             Set<String> names = new HashSet<String>(this.backend.getVirtualFolderNames());
             Path locationPath = new Path(location);
