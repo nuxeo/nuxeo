@@ -18,6 +18,9 @@
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
 import java.io.IOException;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
@@ -26,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
@@ -60,20 +64,30 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             return;
         }
 
-        response.resetBuffer();
-
-        String urlToReach = getURLToReach(request);
-        Cookie cookieUrlToReach = new Cookie(
-                NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY, urlToReach);
-        cookieUrlToReach.setPath("/");
-        cookieUrlToReach.setMaxAge(60);
-        response.addCookie(cookieUrlToReach);
-
-        if (!response.isCommitted()) {
-            request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request,
-                    response);
-        }
-        FacesContext.getCurrentInstance().responseComplete();
+        Principal principal = request.getUserPrincipal();
+        NuxeoPrincipal nuxeoPrincipal = null;
+        if (principal instanceof NuxeoPrincipal) {
+            nuxeoPrincipal = (NuxeoPrincipal) principal;
+            // redirect to login than to requested page
+            if (nuxeoPrincipal.isAnonymous()) {
+                response.resetBuffer();
+ 
+                String urlToReach = getURLToReach(request);
+                Cookie cookieUrlToReach = new Cookie(
+                        NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY, urlToReach);
+                cookieUrlToReach.setPath("/");
+                cookieUrlToReach.setMaxAge(60);
+                response.addCookie(cookieUrlToReach);
+ 
+                if (!response.isCommitted()) {
+                    request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request,
+                            response);
+                }
+                FacesContext.getCurrentInstance().responseComplete();
+            }
+         }
+        // go back to default handler
+        super.handleException(request, response, t);
     }
 
     protected Cas2Authenticator getCasAuthenticator() throws ClientException {
