@@ -1,5 +1,7 @@
 package org.nuxeo.theme.styling.service;
 
+import java.net.URL;
+
 import org.nuxeo.theme.services.ThemeService;
 
 /**
@@ -35,5 +37,12 @@ public interface ThemeStylingService {
      * @param themeName
      */
     void themeRegistered(String themeName);
+
+    /**
+     * Hook to notify the service that global resources for a theme need to be registered
+     *
+     * @param themeUrl
+     */
+    void themeGlobalResourcesRegistered(URL themeUrl);
 
 }

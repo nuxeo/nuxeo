@@ -29,6 +29,7 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
@@ -45,6 +46,8 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
     public static final String DEFAULT_PAGE_NAME = THEME_NAME + "/default";
 
     public static final String PRINT_PAGE_NAME = THEME_NAME + "/print";
+
+    public static final String THEME_DEFAULT_URL = "nxtheme://theme/default/*/jsf-facelets/testStyling/default/default/default";
 
     protected ThemeStylingService service;
 
@@ -121,6 +124,12 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering.txt");
         assertEquals(expected, res);
+
+        ResourceManager rm = Manager.getResourceManager();
+        List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
+        assertNotNull(resources);
+        assertEquals(1, resources.size());
+        assertEquals("jquery.fancybox.js", resources.get(0));
     }
 
     public void testStylesRegistration() throws Exception {
@@ -145,6 +154,13 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering2.txt");
         assertEquals(expected, res);
+
+        ResourceManager rm = Manager.getResourceManager();
+        List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
+        assertNotNull(resources);
+        assertEquals(2, resources.size());
+        assertEquals("jquery.fancybox.js", resources.get(0));
+        assertEquals("jquery.fancybox.style.css", resources.get(1));
 
         // undeploy, check theme styling is back to first definition
         undeployContrib("org.nuxeo.theme.styling.tests",
@@ -204,6 +220,12 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         List<Type> registeredPresets = typeRegistry.getTypes(TypeFamily.PRESET);
         assertEquals(0, registeredPresets.size());
+
+        // check resources are not registered on resource manager anymore
+        ResourceManager rm = Manager.getResourceManager();
+        List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
+        assertNotNull(resources);
+        assertEquals(0, resources.size());
 
         // bug from the theme service hot reload management
         // ThemeElement theme = themeManager.getThemeByName("testStyling");

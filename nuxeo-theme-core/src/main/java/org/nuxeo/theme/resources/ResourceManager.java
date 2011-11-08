@@ -22,6 +22,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.themes.ThemeException;
@@ -32,6 +35,8 @@ import org.nuxeo.theme.types.TypeRegistry;
 public final class ResourceManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ResourceManager.class);
+
+    public static final String GLOBAL_RESOURCES_REGISTERED_EVENT = "themeGlobalResourcesRegistered";
 
     private final HashMap<URL, List<String>> globalCache = new HashMap<URL, List<String>>();
 
@@ -107,6 +112,11 @@ public final class ResourceManager implements Registrable {
     public synchronized List<String> getGlobalResourcesFor(URL themeUrl) {
         if (!globalCache.containsKey(themeUrl)) {
             globalCache.put(themeUrl, new ArrayList<String>());
+            // hook to notify potential listeners that the resources for given
+            // theme url need to be built
+            EventService eventService = Framework.getLocalService(EventService.class);
+            eventService.sendEvent(new Event(ThemeManager.THEME_TOPIC,
+                    GLOBAL_RESOURCES_REGISTERED_EVENT, this, themeUrl));
         }
         return globalCache.get(themeUrl);
     }

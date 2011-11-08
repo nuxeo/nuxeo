@@ -16,11 +16,14 @@
  */
 package org.nuxeo.theme.styling.service;
 
+import java.net.URL;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.themes.ThemeManager;
 
@@ -48,6 +51,14 @@ public class ThemeStylingNotifier implements EventListener {
             try {
                 ThemeStylingService service = Framework.getService(ThemeStylingService.class);
                 service.themeRegistered((String) event.getData());
+            } catch (Exception e) {
+                log.error(e, e);
+            }
+        }
+        if (ResourceManager.GLOBAL_RESOURCES_REGISTERED_EVENT.equals(event.getId())) {
+            try {
+                ThemeStylingService service = Framework.getService(ThemeStylingService.class);
+                service.themeGlobalResourcesRegistered((URL) event.getData());
             } catch (Exception e) {
                 log.error(e, e);
             }

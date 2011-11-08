@@ -19,6 +19,10 @@
     <object class="org.nuxeo.theme.styling.service.descriptors.Flavor" />
   </extension-point>
 
+  <extension-point name="resources">
+    <object class="org.nuxeo.theme.resources.ResourceType" />
+  </extension-point>
+
   <extension target="org.nuxeo.runtime.EventService" point="listeners">
     <listener class="org.nuxeo.theme.styling.service.ThemeStylingNotifier">
       <topic>org.nuxeo.theme</topic>

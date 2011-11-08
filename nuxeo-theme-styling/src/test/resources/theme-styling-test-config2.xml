@@ -7,6 +7,9 @@
       <styles append="true">
         <style>nuxeo_dm_default2</style>
       </styles>
+      <resources append="true">
+        <resource>jquery.fancybox.style.css</resource>
+      </resources>
     </themePage>
   </extension>
 
@@ -19,6 +22,13 @@
     <style name="nuxeo_dm_default2">
       <path>themes/css/nuxeo_dm_default2.css</path>
     </style>
+  </extension>
+
+  <!-- define new resource -->
+  <extension target="org.nuxeo.theme.styling.service" point="resources">
+    <resource name="jquery.fancybox.style.css">
+      <path>css/jquery.fancybox.css</path>
+    </resource>
   </extension>
 
 </component>

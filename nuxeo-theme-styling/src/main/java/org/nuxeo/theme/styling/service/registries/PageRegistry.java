@@ -57,6 +57,7 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         clone.setDefaultFlavor(orig.getDefaultFlavor());
         clone.setStyles(orig.getStyles());
         clone.setFlavors(orig.getFlavors());
+        clone.setResources(orig.getResources());
         clone.setLoaded(orig.isLoaded());
         return clone;
     }
@@ -86,6 +87,15 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
             }
         }
         dst.setFlavors(newFlavors);
+
+        List<String> newResources = src.getResources();
+        if (newResources.isEmpty() || src.getAppendResources()) {
+            List<String> existingResources = dst.getResources();
+            if (existingResources != null) {
+                newResources.addAll(0, existingResources);
+            }
+        }
+        dst.setResources(newResources);
     }
 
     public List<ThemePage> getThemePages() {
@@ -93,7 +103,7 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         for (String themePageName : themePageResources.keySet()) {
             ThemePage item = getContribution(themePageName);
             if (item != null) {
-                res.add(getContribution(themePageName));
+                res.add(item);
             }
         }
         return res;

@@ -39,12 +39,15 @@ import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.resources.ResourceManager;
+import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
 import org.nuxeo.theme.styling.service.registries.FlavorRegistry;
 import org.nuxeo.theme.styling.service.registries.PageRegistry;
+import org.nuxeo.theme.styling.service.registries.ResourceRegistry;
 import org.nuxeo.theme.styling.service.registries.StyleRegistry;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
@@ -69,6 +72,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     protected StyleRegistry styleReg;
 
+    protected ResourceRegistry resourceReg;
+
     // Runtime Component API
 
     @Override
@@ -77,6 +82,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         pageReg = new PageRegistry();
         flavorReg = new FlavorRegistry();
         styleReg = new StyleRegistry();
+        resourceReg = new ResourceRegistry();
     }
 
     @Override
@@ -101,6 +107,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             registerPage(themePage);
             log.info(String.format("Done registering page '%s'",
                     themePage.getName()));
+        } else if (contribution instanceof ResourceType) {
+            ResourceType resource = (ResourceType) contribution;
+            log.info(String.format("Register resource '%s'", resource.getName()));
+            registerResource(resource, contributor.getContext());
+            log.info(String.format("Done registering resource '%s'",
+                    resource.getName()));
         } else {
             log.error(String.format("Unknown contribution to the theme "
                     + "styling service, extension point '%s': '%s",
@@ -122,6 +134,18 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 if (!Framework.getRuntime().isShuttingDown()) {
                     // register again the new one
                     registerFlavor(newFlavor, contributor.getContext());
+                }
+            }
+        } else if (contribution instanceof ResourceType) {
+            ResourceType resource = (ResourceType) contribution;
+            resourceReg.removeContribution(resource);
+            ResourceType newResource = resourceReg.getContribution(resource.getName());
+            if (newResource == null) {
+                unregisterResourceToThemeService(resource);
+            } else {
+                if (!Framework.getRuntime().isShuttingDown()) {
+                    // register again the new one
+                    registerResource(newResource, contributor.getContext());
                 }
             }
         } else if (contribution instanceof SimpleStyle) {
@@ -236,6 +260,27 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 typeRegistry.unregister(type);
             }
         }
+    }
+
+    protected void registerResource(ResourceType resource,
+            RuntimeContext extensionContext) throws Exception {
+        ResourceType oldResource = resourceReg.getContribution(resource.getName());
+        if (oldResource != null) {
+            // unregister it in case it was there
+            unregisterResourceToThemeService(oldResource);
+        }
+        resourceReg.addContribution(resource);
+        String resourceName = resource.getName();
+        ResourceType newResource = resourceReg.getContribution(resourceName);
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        typeRegistry.register(newResource);
+    }
+
+    protected void unregisterResourceToThemeService(ResourceType resource) {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        ThemeManager themeManager = Manager.getThemeManager();
+        typeRegistry.unregister(resource);
+        themeManager.unregisterResourceOrdering(resource);
     }
 
     protected void registerStyle(SimpleStyle style,
@@ -433,6 +478,31 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     } catch (ThemeException e) {
                         log.error("Could not load theme page "
                                 + "resources for theme " + themeName, e);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void themeGlobalResourcesRegistered(URL themeUrl) {
+        // get all resources for given theme url and add them to the
+        // ResourceManager instance
+        String themePageName = ThemeManager.getPagePathByUrl(themeUrl);
+        ThemePage themePage = pageReg.getContribution(themePageName);
+        if (themePage != null) {
+            List<String> resources = themePage.getResources();
+            if (resources != null && !resources.isEmpty()) {
+                ResourceManager resourceManager = Manager.getResourceManager();
+                for (String r : resources) {
+                    ResourceType resource = resourceReg.getContribution(r);
+                    if (resource == null) {
+                        log.warn(String.format(
+                                "Missing resource '%s' referenced "
+                                        + "in theme page '%s'", r,
+                                themePageName));
+                    } else {
+                        resourceManager.addResource(r, themeUrl);
                     }
                 }
             }

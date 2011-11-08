@@ -11,6 +11,9 @@
       <styles>
         <style>nuxeo_dm_default</style>
       </styles>
+      <resources>
+        <resource>jquery.fancybox.js</resource>
+      </resources>
     </themePage>
 
     <themePage name="testStyling/print">
@@ -60,6 +63,12 @@
     <style name="print_default">
       <path>themes/css/print_default.css</path>
     </style>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="resources">
+    <resource name="jquery.fancybox.js">
+      <path>scripts/jquery/jquery.fancybox.pack.js</path>
+    </resource>
   </extension>
 
 </component>

@@ -50,6 +50,12 @@ public class ThemePage {
     @XNodeList(value = "flavors/flavor", type = ArrayList.class, componentType = String.class)
     List<String> flavors;
 
+    @XNode("resources@append")
+    boolean appendResources;
+
+    @XNodeList(value = "resources/resource", type = ArrayList.class, componentType = String.class)
+    List<String> resources;
+
     /**
      * boolean handling the descriptor status: has it been already loaded to
      * the {@link ThemeService}?
@@ -116,6 +122,18 @@ public class ThemePage {
 
     public void setFlavors(List<String> flavors) {
         this.flavors = flavors;
+    }
+
+    public boolean getAppendResources() {
+        return appendResources;
+    }
+
+    public List<String> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<String> resources) {
+        this.resources = resources;
     }
 
     public boolean isLoaded() {
