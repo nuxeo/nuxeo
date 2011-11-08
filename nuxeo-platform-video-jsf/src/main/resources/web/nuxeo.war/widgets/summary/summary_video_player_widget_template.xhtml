@@ -11,10 +11,6 @@
 
   <c:if test="#{currentDocument.hasFacet('Video')}">
 
-  <link rel="stylesheet" href="#{baseURL}css/video-js.css" type="text/css" media="screen" title="Video JS"/>
-  <script src="#{baseURL}scripts/video.js" type="text/javascript" charset="utf-8"></script>
-  <script src="#{baseURL}scripts/video-player-util.js" type="text/javascript" charset="utf-8"></script>
-
   <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(currentDocument)}">
   <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'MP4 480p')}">
   <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'WebM 480p')}">
