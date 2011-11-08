@@ -35,7 +35,8 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 public class ImageResizer extends MagickExecutor {
 
     public static ImageInfo resize(String inputFile, String outputFile,
-            int targetWidth, int targetHeight, int targetDepth) throws CommandNotAvailable {
+            int targetWidth, int targetHeight, int targetDepth)
+            throws CommandNotAvailable {
 
         if (targetDepth == -1) {
             targetDepth = ImageIdentifier.getInfo(inputFile).getDepth();

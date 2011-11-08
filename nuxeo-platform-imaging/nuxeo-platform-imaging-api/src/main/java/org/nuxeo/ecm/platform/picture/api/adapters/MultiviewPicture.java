@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.picture.api.adapters;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 
-
 public interface MultiviewPicture {
 
     PictureView getView(String name) throws ClientException;

@@ -48,6 +48,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     private static final String FILENAME_PROPERTY = "filename";
 
+    @Override
     public boolean createPicture(Blob blob, String filename, String title,
             ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException {
@@ -85,6 +86,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         return true;
     }
 
+    @Override
     public void doRotate(int angle) throws ClientException {
         int size = doc.getProperty(VIEWS_PROPERTY).size();
         for (int i = 0; i < size; i++) {
@@ -112,13 +114,15 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         }
     }
 
+    @Override
     public void doCrop(String coords) throws ClientException {
         doc.setPropertyValue("picture:cropCoords", coords);
     }
 
+    @Override
     public Blob getPictureFromTitle(String title) throws PropertyException,
             ClientException {
-        if (title==null) {
+        if (title == null) {
             return null;
         }
         Collection<Property> views = doc.getProperty(VIEWS_PROPERTY).getChildren();
@@ -132,10 +136,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         return null;
     }
 
+    @Override
     public String getFirstViewXPath() {
         return getViewXPathFor(0);
     }
 
+    @Override
     public String getViewXPath(String viewName) {
         try {
             Property views = doc.getProperty(VIEWS_PROPERTY);

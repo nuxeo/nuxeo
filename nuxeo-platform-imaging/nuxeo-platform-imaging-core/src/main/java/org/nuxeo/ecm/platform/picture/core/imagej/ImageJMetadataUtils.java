@@ -101,6 +101,7 @@ public class ImageJMetadataUtils implements MetadataUtils {
 
     private static final int BUFFER_LIMIT = 32000000;
 
+    @Override
     @Deprecated
     public Map<String, Object> getImageMetadata(InputStream in) {
         BufferedInputStream bin = null;
@@ -116,12 +117,14 @@ public class ImageJMetadataUtils implements MetadataUtils {
         return getImageMetadata(blob);
     }
 
+    @Override
     @Deprecated
     public Map<String, Object> getImageMetadata(File file) {
         Blob blob = new FileBlob(file);
         return getImageMetadata(blob);
     }
 
+    @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
         Map<String, Object> metadata = new HashMap<String, Object>();
         // get Width and Height

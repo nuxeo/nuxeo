@@ -46,6 +46,7 @@ public class IMImageUtils implements ImageUtils {
 
     private static final Log log = LogFactory.getLog(IMImageUtils.class);
 
+    @Override
     @Deprecated
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
@@ -55,8 +56,8 @@ public class IMImageUtils implements ImageUtils {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
                 ImageInfo imageInfo = ImageIdentifier.getInfo(path);
-                File img2 = File.createTempFile("target", "."
-                        + imageInfo.getFormat());
+                File img2 = File.createTempFile("target",
+                        "." + imageInfo.getFormat());
                 ImageCropper.crop(path, img2.getAbsolutePath(), width, height,
                         x, y);
                 InputStream is = new FileInputStream(img2);
@@ -72,6 +73,7 @@ public class IMImageUtils implements ImageUtils {
         }
     }
 
+    @Override
     @Deprecated
     public InputStream resize(InputStream in, int width, int height) {
         try {
@@ -82,8 +84,8 @@ public class IMImageUtils implements ImageUtils {
                 String path = fb.getFile().getAbsolutePath();
 
                 ImageInfo imageInfo = ImageIdentifier.getInfo(path);
-                File img2 = File.createTempFile("target", "."
-                        + imageInfo.getFormat());
+                File img2 = File.createTempFile("target",
+                        "." + imageInfo.getFormat());
                 ImageResizer.resize(path, img2.getAbsolutePath(), width,
                         height, imageInfo.getDepth());
 
@@ -101,6 +103,7 @@ public class IMImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     @Deprecated
     public InputStream rotate(InputStream in, int angle) {
         try {
@@ -110,8 +113,8 @@ public class IMImageUtils implements ImageUtils {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
                 ImageInfo imageInfo = ImageIdentifier.getInfo(path);
-                File img2 = File.createTempFile("target", "."
-                        + imageInfo.getFormat());
+                File img2 = File.createTempFile("target",
+                        "." + imageInfo.getFormat());
                 ImageRotater.rotate(path, img2.getAbsolutePath(), angle);
                 InputStream is = new FileInputStream(img2);
                 img2.delete();
@@ -126,6 +129,7 @@ public class IMImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -154,6 +158,7 @@ public class IMImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob resize(Blob blob, String finalFormat, int width, int height,
             int depth) {
         try {
@@ -188,6 +193,7 @@ public class IMImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob rotate(Blob blob, int angle) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -226,6 +232,7 @@ public class IMImageUtils implements ImageUtils {
         return suffix;
     }
 
+    @Override
     public boolean isAvailable() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         CommandAvailability commandAvailability = cles.getCommandAvailability("identify");

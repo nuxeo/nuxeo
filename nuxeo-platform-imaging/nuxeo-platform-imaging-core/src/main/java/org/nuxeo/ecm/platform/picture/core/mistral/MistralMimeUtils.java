@@ -29,9 +29,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.platform.picture.core.MimeUtils;
 
 /**
@@ -68,10 +68,12 @@ public class MistralMimeUtils implements MimeUtils {
         mimeTypes.put("bmp", MIME_IMAGE_BMP);
     }
 
+    @Override
     public String getImageMimeType(InputStream in) {
         return getInternalImageMimeType(in);
     }
 
+    @Override
     public String getImageMimeType(File file) {
         return getInternalImageMimeType(file);
     }

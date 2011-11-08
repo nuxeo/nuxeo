@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.picture.config.PictureConfigurationService;
 import org.nuxeo.runtime.api.Framework;
 
-
 public class PictureResourceAdapterFactory implements DocumentAdapterFactory {
 
     private static PictureConfigurationService configService;
@@ -41,13 +40,15 @@ public class PictureResourceAdapterFactory implements DocumentAdapterFactory {
         return configService;
     }
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class cls) {
 
         PictureResourceAdapter adapter = null;
 
         // first try to get Type Adapter
         try {
-            adapter = getConfigService().getAdapterForType(doc.getType());
+            getConfigService();
+            adapter = PictureConfigurationService.getAdapterForType(doc.getType());
         } catch (InstantiationException e) {
             log.error("Error while getting PICTURE adapter for type "
                     + doc.getType() + ':' + e.getMessage());
@@ -55,7 +56,8 @@ public class PictureResourceAdapterFactory implements DocumentAdapterFactory {
             log.error("Error while getting PICTURE adapter for type "
                     + doc.getType() + ':' + e.getMessage());
         } catch (NullPointerException e) {
-            log.error("Error while getting PICTUREAdapter Configuration Service" + ':' + e.getMessage());
+            log.error("Error while getting PICTUREAdapter Configuration Service"
+                    + ':' + e.getMessage());
         }
 
         if (adapter == null) {

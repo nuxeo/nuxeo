@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.picture.api;
 
-
 public class PictureViewImpl implements PictureView {
 
     int width;
@@ -36,58 +35,72 @@ public class PictureViewImpl implements PictureView {
 
     Object content;
 
+    @Override
     public int getWidth() {
         return width;
     }
 
+    @Override
     public void setWidth(int width) {
         this.width = width;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getTag() {
         return tag;
     }
 
+    @Override
     public void setTag(String tag) {
         this.tag = tag;
     }
 
+    @Override
     public String getFilename() {
         return filename;
     }
 
+    @Override
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    @Override
     public Object getContent() {
         return content;
     }
 
+    @Override
     public void setContent(Object content) {
         this.content = content;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }
 
+    @Override
     public void setHeight(int height) {
         this.height = height;
     }

@@ -17,6 +17,11 @@
  */
 package org.nuxeo.ecm.platform.picture.convert;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.CONVERSION_FORMAT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_DEPTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +38,6 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.CONVERSION_FORMAT;
-import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_DEPTH;
-import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
-import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
-
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
@@ -45,6 +45,7 @@ public class ResizePictureConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(ResizePictureConverter.class);
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         try {
@@ -76,6 +77,7 @@ public class ResizePictureConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

@@ -74,11 +74,9 @@ public class TestExifHelper extends TestCase {
         // by paulo brandao
         // distributed under
         // http://creativecommons.org/licenses/by-sa/2.0/deed.en
-        Blob blob = StreamingBlob.createFromURL((this.getClass()
-                .getClassLoader().getResource("images/statue.jpg")));
+        Blob blob = StreamingBlob.createFromURL((this.getClass().getClassLoader().getResource("images/statue.jpg")));
         Map<String, Object> metadatas = service.getImageMetadata(blob);
-        String userComment = ((String) metadatas
-                .get(MetadataConstants.META_COMMENT)).trim();
+        String userComment = ((String) metadatas.get(MetadataConstants.META_COMMENT)).trim();
         assertNotSame("ASCII", userComment);
         assertEquals("(C) PAULO BRANDA", userComment);
     }

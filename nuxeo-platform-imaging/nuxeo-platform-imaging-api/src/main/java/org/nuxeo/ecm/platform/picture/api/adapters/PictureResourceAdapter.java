@@ -33,17 +33,19 @@ public interface PictureResourceAdapter {
     void setDocumentModel(DocumentModel doc);
 
     boolean createPicture(Blob fileContent, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates) throws IOException, ClientException;
+            ArrayList<Map<String, Object>> pictureTemplates)
+            throws IOException, ClientException;
 
     void doRotate(int angle) throws ClientException;
 
     void doCrop(String coords) throws ClientException;
 
-    Blob getPictureFromTitle(String title) throws PropertyException, ClientException;
+    Blob getPictureFromTitle(String title) throws PropertyException,
+            ClientException;
 
     /**
-     * Returns the XPath of the given view name, or {@code null} if
-     * the view is not found on the Picture.
+     * Returns the XPath of the given view name, or {@code null} if the view is
+     * not found on the Picture.
      *
      * @param viewName the view name
      */

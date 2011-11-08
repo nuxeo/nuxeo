@@ -44,8 +44,9 @@ public class ImagePlugin extends AbstractFileImporter {
 
     private static final Log log = LogFactory.getLog(ImagePlugin.class);
 
+    @Override
     @SuppressWarnings("unchecked")
-	public DocumentModel create(CoreSession documentManager, Blob content,
+    public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
         path = getNearestContainerPath(documentManager, path);
@@ -82,7 +83,8 @@ public class ImagePlugin extends AbstractFileImporter {
             String title = FileManagerUtils.fetchTitle(filename);
             docModel = documentManager.createDocumentModel(ImagingDocumentConstants.PICTURE_TYPE_NAME);
             try {
-                DocumentModel parent = documentManager.getDocument(new PathRef(path));
+                DocumentModel parent = documentManager.getDocument(new PathRef(
+                        path));
                 ArrayList<Map<String, Object>> pictureTemplates = null;
                 if (parent.getType().equals(
                         ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME)) {

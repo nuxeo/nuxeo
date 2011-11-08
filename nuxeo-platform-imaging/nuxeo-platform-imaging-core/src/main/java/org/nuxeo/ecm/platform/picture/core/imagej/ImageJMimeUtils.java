@@ -35,16 +35,18 @@ public class ImageJMimeUtils implements MimeUtils {
 
     private static final Log log = LogFactory.getLog(ImageJMimeUtils.class);
 
+    @Override
     public String getImageMimeType(File file) {
         Opener op = new Opener();
         ImagePlus im = op.openImage(file.getPath());
-        if (im == null){
+        if (im == null) {
             return null;
         }
         int fileType = im.getOriginalFileInfo().fileFormat;
         return getInternalMimeType(fileType);
     }
 
+    @Override
     public String getImageMimeType(InputStream in) {
         FileBlob fb;
         try {
@@ -56,7 +58,7 @@ public class ImageJMimeUtils implements MimeUtils {
         String path = fb.getFile().getPath();
         Opener op = new Opener();
         ImagePlus im = op.openImage(path);
-        if (im == null){
+        if (im == null) {
             return null;
         }
         int fileType = im.getOriginalFileInfo().fileFormat;

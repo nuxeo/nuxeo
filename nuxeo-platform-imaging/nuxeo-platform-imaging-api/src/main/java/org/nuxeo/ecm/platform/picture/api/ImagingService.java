@@ -34,6 +34,7 @@ public interface ImagingService {
      *
      * @return resized image file created in temporary folder
      * @deprecated use {@link #crop(Blob, int, int, int, int)
+
      */
     @Deprecated
     InputStream crop(InputStream in, int x, int y, int width, int height);
@@ -43,6 +44,7 @@ public interface ImagingService {
      *
      * @return resized image file created in temporary folder
      * @deprecated use {@link #resize(Blob, String, int, int, int)
+
      */
     @Deprecated
     InputStream resize(InputStream in, int width, int height);
@@ -51,6 +53,7 @@ public interface ImagingService {
      * Rotate image.
      *
      * @deprecated use {@link #rotate(Blob, int)
+
      */
     @Deprecated
     InputStream rotate(InputStream in, int angle);
@@ -104,7 +107,8 @@ public interface ImagingService {
     String getImageMimeType(InputStream in);
 
     /**
-     * Retrieves the {@link ImageInfo} of the {@link Blob} that is received as parameter.
+     * Retrieves the {@link ImageInfo} of the {@link Blob} that is received as
+     * parameter.
      * <p>
      * The information provided by the <b>ImageInfo</b>, like width, height or
      * format, is obtained using ImageMagick (see

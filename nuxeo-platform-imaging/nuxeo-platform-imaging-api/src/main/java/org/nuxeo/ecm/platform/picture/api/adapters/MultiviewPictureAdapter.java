@@ -110,7 +110,8 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     }
 
     @SuppressWarnings("unchecked")
-    public MultiviewPictureAdapter(DocumentModel docModel) throws ClientException {
+    public MultiviewPictureAdapter(DocumentModel docModel)
+            throws ClientException {
         this.docModel = docModel;
         Object o = docModel.getProperty("picture", "views");
 
@@ -124,15 +125,18 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         }
     }
 
+    @Override
     public PictureView[] getViews() {
         Collection<PictureView> collection = views.values();
         return collection.toArray(new PictureView[collection.size()]);
     }
 
+    @Override
     public PictureView getView(String title) {
         return views.get(title);
     }
 
+    @Override
     public void removeView(String name) throws ClientException {
         views.remove(name);
         List<Map<String, Object>> v = new ArrayList<Map<String, Object>>();
@@ -142,6 +146,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         docModel.setProperty("picture", "views", v.toArray());
     }
 
+    @Override
     public void addView(PictureView view) throws ClientException {
         views.put(view.getTitle(), view);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -151,103 +156,128 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         docModel.setProperty("picture", "views", list);
     }
 
+    @Override
     public void removeAllView() throws ClientException {
         docModel.setProperty("picture", "views", null);
         views.clear();
     }
 
+    @Override
     public String getHeadline() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_HEADLINE);
     }
 
-    public void setHeadline(String headline)  throws ClientException {
+    @Override
+    public void setHeadline(String headline) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_HEADLINE, headline);
     }
 
+    @Override
     public String getSubheadline() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_SUBHEADLINE);
     }
 
+    @Override
     public void setSubheadline(String subheadline) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_SUBHEADLINE, subheadline);
     }
 
+    @Override
     public String getByline() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_BYLINE);
     }
 
+    @Override
     public void setByline(String byline) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_BYLINE, byline);
     }
 
-    public String getDateline()  throws ClientException {
+    @Override
+    public String getDateline() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_DATELINE);
     }
 
+    @Override
     public void setDateline(String dateline) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_DATELINE, dateline);
     }
 
+    @Override
     public String getSlugline() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_SLUGLINE);
     }
 
+    @Override
     public void setSlugline(String slugline) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_SLUGLINE, slugline);
     }
 
+    @Override
     public String getCredit() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_CREDIT);
     }
 
+    @Override
     public void setCredit(String credit) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_CREDIT, credit);
     }
 
+    @Override
     public String getLanguage() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_LANGUAGE);
     }
 
+    @Override
     public void setLanguage(String language) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_LANGUAGE, language);
     }
 
+    @Override
     public String getSource() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_SOURCE);
     }
 
+    @Override
     public void setSource(String source) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_SOURCE, source);
     }
 
+    @Override
     public String getOrigin() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_ORIGIN);
     }
 
+    @Override
     public void setOrigin(String origin) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_ORIGIN, origin);
     }
 
+    @Override
     public String getGenre() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_GENRE);
     }
 
+    @Override
     public void setGenre(String genre) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_GENRE, genre);
     }
 
+    @Override
     public String getCaption() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_CAPTION);
     }
 
+    @Override
     public void setCaption(String caption) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_CAPTION, caption);
     }
 
+    @Override
     public String getTypage() throws ClientException {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_TYPAGE);
     }
 
+    @Override
     public void setTypage(String typage) throws ClientException {
         docModel.setProperty(SCHEMA_NAME, FIELD_TYPAGE, typage);
     }

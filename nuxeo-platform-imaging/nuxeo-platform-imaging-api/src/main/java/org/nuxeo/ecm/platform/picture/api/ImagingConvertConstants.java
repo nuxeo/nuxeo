@@ -25,18 +25,26 @@ public class ImagingConvertConstants {
 
     /** Operations */
     public static final String OPERATION_RESIZE = "pictureResize";
+
     public static final String OPERATION_ROTATE = "pictureRotation";
+
     public static final String OPERATION_CROP = "pictureCrop";
 
     /** Operation specific options */
     public static final String OPTION_RESIZE_WIDTH = "width";
+
     public static final String OPTION_RESIZE_HEIGHT = "height";
+
     public static final String OPTION_RESIZE_DEPTH = "depth";
+
     public static final String OPTION_CROP_X = "x";
+
     public static final String OPTION_CROP_Y = "y";
+
     public static final String OPTION_ROTATE_ANGLE = "angle";
 
     public static final String CONVERSION_FORMAT = "conversionFormat";
+
     public static final String JPEG_CONVERSATION_FORMAT = "jpg";
 
     private ImagingConvertConstants() {

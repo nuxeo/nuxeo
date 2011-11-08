@@ -33,6 +33,7 @@ public class PicturePreviewAdapterFactory implements PreviewAdapterFactory {
 
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
+    @Override
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
         ConverterBasedHtmlPreviewAdapter adapter = new ConverterBasedHtmlPreviewAdapter();
         adapter.setAdaptedDocument(doc);

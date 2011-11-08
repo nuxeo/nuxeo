@@ -29,7 +29,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class PictureConfigurationService extends DefaultComponent{
+public class PictureConfigurationService extends DefaultComponent {
 
     public static final String NAME = "org.nuxeo.ecm.platform.picture.config.PictureConfigurationService";
 
@@ -54,7 +54,7 @@ public class PictureConfigurationService extends DefaultComponent{
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-       if (extensionPoint.equals(PICTURE_ADAPTER_EP)) {
+        if (extensionPoint.equals(PICTURE_ADAPTER_EP)) {
             PictureAdapterDescriptor pictureAdapter = (PictureAdapterDescriptor) contribution;
             registerPictureAdapter(pictureAdapter, contributor);
         } else {
@@ -62,9 +62,11 @@ public class PictureConfigurationService extends DefaultComponent{
         }
     }
 
-    public static void registerPictureAdapter(PictureAdapterDescriptor pictureAdapter,
+    public static void registerPictureAdapter(
+            PictureAdapterDescriptor pictureAdapter,
             ComponentInstance contributor) {
-        pictureAdapterDescriptors.put(pictureAdapter.getTypeName(), pictureAdapter);
+        pictureAdapterDescriptors.put(pictureAdapter.getTypeName(),
+                pictureAdapter);
         log.debug("registered Picture AdapterDescriptor: "
                 + pictureAdapter.getName());
     }

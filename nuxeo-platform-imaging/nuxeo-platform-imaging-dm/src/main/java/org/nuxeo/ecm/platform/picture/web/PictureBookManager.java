@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.picture.web;
 
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,8 +150,8 @@ public interface PictureBookManager {
     Integer getMaxsize();
 
     /**
-     * Adds the current view to the views ArrayList using viewtitle, description,
-     * tag and maxsize.
+     * Adds the current view to the views ArrayList using viewtitle,
+     * description, tag and maxsize.
      */
     void addView();
 
@@ -167,12 +165,11 @@ public interface PictureBookManager {
 
     void initialize() throws Exception;
 
-
     String downloadSelectedBook() throws ClientException, IOException;
 
     String downloadAll() throws ClientException, IOException;
 
-    List<SelectItem> getSelectItems() throws ClientException ;
+    List<SelectItem> getSelectItems() throws ClientException;
 
     void setSelectItems(List<SelectItem> selectItems);
 

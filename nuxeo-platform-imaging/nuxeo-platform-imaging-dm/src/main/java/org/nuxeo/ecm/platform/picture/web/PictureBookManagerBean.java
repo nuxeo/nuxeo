@@ -109,6 +109,7 @@ public class PictureBookManagerBean extends InputController implements
         return navigationContext.getCurrentDocument();
     }
 
+    @Override
     @Create
     public void initialize() throws Exception {
         log.debug("Initializing...");
@@ -156,6 +157,7 @@ public class PictureBookManagerBean extends InputController implements
         log.debug("Destroy");
     }
 
+    @Override
     public String createPictureBook() throws Exception {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel doc = navigationContext.getChangeableDocument();
@@ -181,6 +183,7 @@ public class PictureBookManagerBean extends InputController implements
         return navigationContext.getActionResult(doc, UserAction.AFTER_CREATE);
     }
 
+    @Override
     public void addView() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("title", viewtitle);
@@ -190,6 +193,7 @@ public class PictureBookManagerBean extends InputController implements
         views.add(map);
     }
 
+    @Override
     @Observer({ EventNames.DOCUMENT_SELECTION_CHANGED })
     @BypassInterceptors
     public void reset() throws ClientException {
@@ -204,11 +208,13 @@ public class PictureBookManagerBean extends InputController implements
         initViews();
     }
 
+    @Override
     public String downloadSelectedBook() throws ClientException, IOException {
         List<DocumentModel> list = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         return createZip(list);
     }
 
+    @Override
     public String downloadAll() throws ClientException, IOException {
         List<DocumentModel> list = navigationContext.getCurrentDocumentChildren();
         return createZip(list);
@@ -354,6 +360,7 @@ public class PictureBookManagerBean extends InputController implements
         }
     }
 
+    @Override
     public List<SelectItem> getSelectItems() throws ClientException {
         if (selectItems == null) {
             initSelectItems();
@@ -363,18 +370,22 @@ public class PictureBookManagerBean extends InputController implements
         }
     }
 
+    @Override
     public void setSelectItems(List<SelectItem> selectItems) {
         this.selectItems = selectItems;
     }
 
+    @Override
     public String[] getSelectedViews() {
         return selectedViews;
     }
 
+    @Override
     public void setSelectedViews(String[] selectedViews) {
         this.selectedViews = selectedViews;
     }
 
+    @Override
     @Deprecated
     public Integer getTimeinterval() {
         if (timeinterval == null) {
@@ -383,54 +394,67 @@ public class PictureBookManagerBean extends InputController implements
         return timeinterval;
     }
 
+    @Override
     public void setTimeinterval(Integer timeinterval) {
         this.timeinterval = timeinterval;
     }
 
+    @Override
     public Integer getMaxsize() {
         return maxsize;
     }
 
+    @Override
     public void setMaxsize(Integer maxsize) {
         this.maxsize = maxsize;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getTag() {
         return tag;
     }
 
+    @Override
     public void setTag(String tag) {
         this.tag = tag;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getViewtitle() {
         return viewtitle;
     }
 
+    @Override
     public void setViewtitle(String viewtitle) {
         this.viewtitle = viewtitle;
     }
 
+    @Override
     public ArrayList<Map<String, Object>> getViews() {
         return views;
     }
 
+    @Override
     public void setViews(ArrayList<Map<String, Object>> views) {
         this.views = views;
     }

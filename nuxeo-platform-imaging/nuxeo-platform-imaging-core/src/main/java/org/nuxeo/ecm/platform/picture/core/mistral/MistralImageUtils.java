@@ -57,6 +57,7 @@ public class MistralImageUtils implements ImageUtils {
 
     private static final double QUALITY_SCALE = 0.25;
 
+    @Override
     @Deprecated
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
@@ -81,6 +82,7 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     @Deprecated
     public InputStream resize(InputStream in, int width, int height) {
         try {
@@ -130,6 +132,7 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     @Deprecated
     public InputStream rotate(InputStream in, int angle) {
         try {
@@ -148,6 +151,7 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
         try {
             ImplementationFactoryJAI.getInstance();
@@ -156,8 +160,8 @@ public class MistralImageUtils implements ImageUtils {
         } catch (Exception e) {
         }
         try {
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
-                    ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.IMAGE));
             image = image.execute2(new CropOp(x, y, width, height));
             File resultFile = writeJpegFile(image);
             if (resultFile != null) {
@@ -171,7 +175,9 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
-    public Blob resize(Blob blob, String finalFormat, int width, int height, int depth) {
+    @Override
+    public Blob resize(Blob blob, String finalFormat, int width, int height,
+            int depth) {
         try {
             ImplementationFactoryJAI.getInstance();
             ImplementationFactoryJ2D.getInstance().unregisterImplementation(
@@ -179,8 +185,8 @@ public class MistralImageUtils implements ImageUtils {
         } catch (Exception e) {
         }
         try {
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
-                    ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.IMAGE));
             int imageWidth = image.getWidth();
             int imageHeight = image.getHeight();
             if (imageWidth <= width && imageHeight <= height) {
@@ -219,10 +225,11 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob rotate(Blob blob, int angle) {
         try {
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
-                    ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.IMAGE));
             image = image.execute2(new RotateQuadrantOp(angle));
             File resultFile = writeJpegFile(image);
             if (resultFile != null) {
@@ -261,6 +268,7 @@ public class MistralImageUtils implements ImageUtils {
 
     }
 
+    @Override
     public boolean isAvailable() {
         return true; // we only need the mistral jar in the classpath
     }

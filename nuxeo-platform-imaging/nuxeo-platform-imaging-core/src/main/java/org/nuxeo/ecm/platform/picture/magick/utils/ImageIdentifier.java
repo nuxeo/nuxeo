@@ -32,12 +32,15 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  */
 public class ImageIdentifier extends MagickExecutor {
 
-    public static ImageInfo getInfo(String inputFilePath) throws CommandNotAvailable {
+    public static ImageInfo getInfo(String inputFilePath)
+            throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
         ExecResult result = execCommand("identify", params);
 
-        String out = result.getOutput().get(result.getOutput().size() > 1 ? result.getOutput().size() -1 : 0);
+        String out = result.getOutput().get(
+                result.getOutput().size() > 1 ? result.getOutput().size() - 1
+                        : 0);
         String[] res = out.split(" ");
 
         return new ImageInfo(res[1], res[2], res[0], res[res.length - 1],

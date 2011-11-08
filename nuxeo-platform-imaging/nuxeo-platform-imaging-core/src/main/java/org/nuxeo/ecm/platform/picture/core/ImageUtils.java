@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.picture.core;
 
 import java.io.InputStream;
+
 import org.nuxeo.ecm.core.api.Blob;
 
 /**

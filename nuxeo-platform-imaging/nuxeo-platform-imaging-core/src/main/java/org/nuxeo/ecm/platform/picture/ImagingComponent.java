@@ -53,6 +53,7 @@ public class ImagingComponent extends DefaultComponent implements
 
     private LibrarySelector librarySelector;
 
+    @Override
     @Deprecated
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
@@ -68,6 +69,7 @@ public class ImagingComponent extends DefaultComponent implements
         return in;
     }
 
+    @Override
     @Deprecated
     public InputStream resize(InputStream in, int width, int height) {
         try {
@@ -83,6 +85,7 @@ public class ImagingComponent extends DefaultComponent implements
         return in;
     }
 
+    @Override
     @Deprecated
     public InputStream rotate(InputStream in, int angle) {
         try {
@@ -97,6 +100,7 @@ public class ImagingComponent extends DefaultComponent implements
         return in;
     }
 
+    @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
         try {
             return getLibrarySelectorService().getImageUtils().crop(blob, x, y,
@@ -111,6 +115,7 @@ public class ImagingComponent extends DefaultComponent implements
         return blob;
     }
 
+    @Override
     public Blob resize(Blob blob, String finalFormat, int width, int height,
             int depth) {
         try {
@@ -126,6 +131,7 @@ public class ImagingComponent extends DefaultComponent implements
         return blob;
     }
 
+    @Override
     public Blob rotate(Blob blob, int angle) {
         try {
             return getLibrarySelectorService().getImageUtils().rotate(blob,
@@ -140,6 +146,7 @@ public class ImagingComponent extends DefaultComponent implements
         return blob;
     }
 
+    @Override
     @Deprecated
     public Map<String, Object> getImageMetadata(InputStream in) {
         try {
@@ -155,6 +162,7 @@ public class ImagingComponent extends DefaultComponent implements
         return null;
     }
 
+    @Override
     @Deprecated
     public Map<String, Object> getImageMetadata(File file) {
         try {
@@ -170,6 +178,7 @@ public class ImagingComponent extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
         try {
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
@@ -184,6 +193,7 @@ public class ImagingComponent extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public String getImageMimeType(File file) {
         try {
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(
@@ -198,6 +208,7 @@ public class ImagingComponent extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public String getImageMimeType(InputStream in) {
         try {
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(
@@ -225,6 +236,7 @@ public class ImagingComponent extends DefaultComponent implements
         return librarySelector;
     }
 
+    @Override
     public ImageInfo getImageInfo(Blob blob) {
         ImageInfo imageInfo = null;
         File tmpFile = new File(System.getProperty("java.io.tmpdir"),
@@ -265,16 +277,19 @@ public class ImagingComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public String getConfigurationValue(String configurationName) {
         return configurationParameters.get(configurationName);
     }
 
+    @Override
     public String getConfigurationValue(String configurationName,
             String defaultValue) {
         return configurationParameters.containsKey(configurationName) ? configurationParameters.get(configurationName)
                 : defaultValue;
     }
 
+    @Override
     public void setConfigurationValue(String configurationName,
             String configurationValue) {
         configurationParameters.put(configurationName, configurationValue);

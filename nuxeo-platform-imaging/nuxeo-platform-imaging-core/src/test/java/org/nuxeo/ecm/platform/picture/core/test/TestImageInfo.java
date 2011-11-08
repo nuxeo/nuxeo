@@ -74,8 +74,7 @@ public class TestImageInfo extends RepositoryOSGITestCase {
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");
-        map.put(
-                "content",
+        map.put("content",
                 StreamingBlob.createFromURL(this.getClass().getClassLoader().getResource(
                         "images/exif_sample.jpg")));
         views.add(map);
