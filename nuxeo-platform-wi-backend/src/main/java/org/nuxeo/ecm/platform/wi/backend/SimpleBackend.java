@@ -486,15 +486,16 @@ public class SimpleBackend extends AbstractCoreBackend {
         List<DocumentModel> children = getSession(true).getChildren(ref);
         for (DocumentModel child : children) {
             if (child.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION)) {
-                log.debug("Skipping hidden doc");
-            } else if (LifeCycleConstants.DELETED_STATE.equals(child.getCurrentLifeCycleState())) {
-                log.debug("Skipping deleted doc");
-            } else if (!child.hasSchema("dublincore")) {
-                log.debug("Skipping doc without dublincore schema");
-            } else if (!child.hasSchema("file")
-                    && !child.hasFacet(FacetNames.FOLDERISH)) {
-                log.debug("Skipping doc without file schema");
-            } else {
+                continue;
+            }
+            if (LifeCycleConstants.DELETED_STATE.equals(child.getCurrentLifeCycleState())) {
+                continue;
+            }
+            if (!child.hasSchema("dublincore")) {
+                continue;
+            }
+            if (child.hasFacet(FacetNames.FOLDERISH)
+                    || child.getAdapter(BlobHolder.class) != null) {
                 result.add(child);
             }
         }
