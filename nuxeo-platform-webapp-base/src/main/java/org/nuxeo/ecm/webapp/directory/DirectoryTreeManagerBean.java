@@ -285,4 +285,10 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return translatedLabels;
     }
 
+    public void resetCurrentTree() {
+        if (treeModels != null && selectedTree != null) {
+            treeModels.remove(selectedTree);
+        }
+    }
+
 }
