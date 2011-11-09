@@ -263,6 +263,41 @@
       </fields>
     </widget>
 
+    <widget name="documentSuggestion_tab" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The tab to select when clicking on the document link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>tab</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_subTab" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub Tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The sub tab to select when clicking on the document
+          link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>subTab</field>
+      </fields>
+    </widget>
+
     <widget name="documentSuggestion_pageProviderName" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -640,11 +675,100 @@
           <category>document</category>
         </categories>
         <properties>
+          <layouts mode="view">
+            <layout name="multipleDocumentsSuggestion_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
           <layouts mode="edit">
             <layout name="multipleDocumentsSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_requestDelay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_width</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/multiple_document_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="singleDocumentSuggestion">
+      <configuration>
+        <title>Single document suggestion</title>
+        <sinceVersion>5.5</sinceVersion>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="view">
+            <layout name="singleDocumentSuggestion_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="singleDocumentSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
@@ -670,7 +794,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/multiple_document_suggestion_widget_template.xhtml
+        /widgets/single_document_suggestion_widget_template.xhtml
       </property>
     </widgetType>
 

@@ -557,9 +557,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The tab to select when clicking on the link.
-                    Available since
-                    5.4.2.
+                    The tab to select when clicking on the document link.
+                    Available since 5.4.2.
                   </label>
                 </helpLabels>
                 <fields>
@@ -572,7 +571,7 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The sub tab to select when clicking on the
+                    The sub tab to select when clicking on the document
                     link. Available since 5.5.
                   </label>
                 </helpLabels>

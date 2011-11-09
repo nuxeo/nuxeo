@@ -32,7 +32,7 @@
   <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
   <c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
 
-  <f:subview rendered="#{displayAction == 'nothing' and searchType == 'USER_TYPE'}">
+  <c:if test="#{displayAction == 'nothing' and searchType == 'USER_TYPE'}">
     <h:outputText value="#{field_0}"
       converter="#{userSuggestionActions.userConverter}">
       <f:attribute name="prefixed" value="false" />
@@ -42,11 +42,11 @@
       <f:attribute name="lastNameField" value="#{lastNameField}" />
       <f:attribute name="emailField" value="#{emailField}" />
     </h:outputText>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'nothing' and searchType == 'GROUP_TYPE'}">
+  </c:if>
+  <c:if test="#{displayAction == 'nothing' and searchType == 'GROUP_TYPE'}">
     <h:outputText value="#{field_0}"/>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'view' and searchType == 'USER_TYPE'}">
+  </c:if>
+  <c:if test="#{displayAction == 'view' and searchType == 'USER_TYPE'}">
     <h:outputLink value="#{nxu:userUrl('user', field_0, null, false)}">
       <h:outputText value="#{field_0}"
         converter="#{userSuggestionActions.userConverter}">
@@ -58,14 +58,16 @@
         <f:attribute name="emailField" value="#{emailField}" />
       </h:outputText>
     </h:outputLink>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'view' and searchType == 'GROUP_TYPE'}">
+  </c:if>
+  <c:if test="#{displayAction == 'view' and searchType == 'GROUP_TYPE'}">
     <h:commandLink action="#{groupManagementActions.viewGroup(field_0)}">
       <h:outputText value="#{field_0}" />
     </h:commandLink>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'edit' and searchType == 'USER_TYPE'}">
-    <a4j:commandLink action="#{userManagementActions.setSelectedUser(field_0)}" actionListener="#{userManagementActions.toggleShowUserOrGroup}" reRender="usersPanel">
+  </c:if>
+  <c:if test="#{displayAction == 'edit' and searchType == 'USER_TYPE'}">
+    <a4j:commandLink action="#{userManagementActions.setSelectedUser(field_0)}"
+      actionListener="#{userManagementActions.toggleShowUserOrGroup}"
+      reRender="usersPanel">
       <h:outputText value="#{field_0}"
         converter="#{userSuggestionActions.userConverter}">
         <f:attribute name="prefixed" value="false" />
@@ -76,12 +78,14 @@
         <f:attribute name="emailField" value="#{emailField}" />
       </h:outputText>
     </a4j:commandLink>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'edit' and searchType == 'GROUP_TYPE'}">
-    <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(field_0)}" actionListener="#{groupManagementActions.toggleShowUserOrGroup}" reRender="groupsPanel">
+  </c:if>
+  <c:if test="#{displayAction == 'edit' and searchType == 'GROUP_TYPE'}">
+    <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(field_0)}"
+      actionListener="#{groupManagementActions.toggleShowUserOrGroup}"
+      reRender="groupsPanel">
       <h:outputText value="#{field_0}" />
     </a4j:commandLink>
-  </f:subview>
+  </c:if>
 </c:if>
 
 <c:if test="#{widget.mode == 'edit'}">

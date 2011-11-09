@@ -23,7 +23,8 @@
               <h:outputText value="#{doc.dublincore.title}" />
               <nxd:restDocumentLink document="#{doc}"
                 newConversation="true" target="_blank"
-                tab="#{widgetProperty_tab}">
+                tab="#{widgetProperty_tab}"
+                subTab="#{widgetProperty_subTab}">
                 <nxu:graphicImage value="/icons/external.gif"
                   style="vertical-align:middle"
                   alt="#{messages['permalink.newTab']}"
@@ -126,7 +127,8 @@
                         <h:outputText value="#{doc.dublincore.title}" />
                         <nxd:restDocumentLink document="#{doc}"
                           newConversation="true" target="_blank"
-                          tab="#{widgetProperty_tab}">
+                          tab="#{widgetProperty_tab}"
+                          subTab="#{widgetProperty_subTab}">
                           <nxu:graphicImage value="/icons/external.gif"
                             style="vertical-align:middle"
                             alt="#{messages['permalink.newTab']}"
