@@ -321,7 +321,7 @@ public class UIValueHolder extends UIInput {
         return comp.getValue();
     }
 
-    protected Object getValueToExpose() {
+    public Object getValueToExpose() {
         Object value = super.getSubmittedValue();
         if (value == null) {
             // get original value bound

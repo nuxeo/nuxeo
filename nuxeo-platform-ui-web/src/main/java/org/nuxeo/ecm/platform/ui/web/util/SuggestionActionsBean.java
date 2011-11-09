@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.Serializable;
 
 import javax.faces.component.EditableValueHolder;
@@ -32,8 +34,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
-
-import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Suggestion actions helpers
@@ -171,7 +171,7 @@ public class SuggestionActionsBean implements Serializable {
      * Must pass request parameters "suggestionSelectionOutputId" holding the
      * value to show, and "suggestionSelectionHiddenId" holding the binding to
      * model. Selection will be retrieved using the {@link #getSelectedValue()}
-     * method.
+     * method. Since 5.5, only one of these two parameters is required.
      * <p>
      * Additional optional request parameter "suggestionSelectionDeleteId" can
      * be used to show an area where the "clear" button is shown.
@@ -182,15 +182,25 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
-                suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = ComponentUtils.getComponent(base,
-                suggestionSelectionOutputId, ValueHolder.class);
+        EditableValueHolder hiddenSelector = null;
+        if (suggestionSelectionHiddenId != null) {
+            hiddenSelector = ComponentUtils.getComponent(base,
+                    suggestionSelectionHiddenId, EditableValueHolder.class);
+        }
+        ValueHolder output = null;
+        if (suggestionSelectionOutputId != null) {
+            output = ComponentUtils.getComponent(base,
+                    suggestionSelectionOutputId, ValueHolder.class);
+        }
 
-        if (hiddenSelector != null && output != null) {
+        if (output != null || hiddenSelector != null) {
             String selectedValue = getSelectedValue();
-            output.setValue(selectedValue);
-            hiddenSelector.setSubmittedValue(selectedValue);
+            if (output != null) {
+                output.setValue(selectedValue);
+            }
+            if (hiddenSelector != null) {
+                hiddenSelector.setSubmittedValue(selectedValue);
+            }
 
             // display delete component if needed
             if (suggestionSelectionDeleteId != null) {
@@ -255,7 +265,7 @@ public class SuggestionActionsBean implements Serializable {
      * <p>
      * Must pass request parameters "suggestionSelectionOutputId" holding the
      * value to show, and "suggestionSelectionHiddenId" holding the binding to
-     * model.
+     * model. Since 5.5, only one of these two parameters is required.
      * <p>
      * Additional optional request parameter "suggestionSelectionDeleteId" can
      * be used to hide an area where the "clear" button is shown.
@@ -266,14 +276,24 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = component;
-        EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
-                suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = ComponentUtils.getComponent(base,
-                suggestionSelectionOutputId, ValueHolder.class);
+        EditableValueHolder hiddenSelector = null;
+        if (suggestionSelectionHiddenId != null) {
+            hiddenSelector = ComponentUtils.getComponent(base,
+                    suggestionSelectionHiddenId, EditableValueHolder.class);
+        }
+        ValueHolder output = null;
+        if (suggestionSelectionOutputId != null) {
+            output = ComponentUtils.getComponent(base,
+                    suggestionSelectionOutputId, ValueHolder.class);
+        }
 
-        if (hiddenSelector != null && output != null) {
-            output.setValue("");
-            hiddenSelector.setSubmittedValue("");
+        if (output != null || hiddenSelector != null) {
+            if (output != null) {
+                output.setValue("");
+            }
+            if (hiddenSelector != null) {
+                hiddenSelector.setSubmittedValue("");
+            }
 
             // hide delete component if needed
             if (suggestionSelectionDeleteId != null) {

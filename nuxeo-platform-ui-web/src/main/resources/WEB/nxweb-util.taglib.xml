@@ -318,7 +318,7 @@
   <tag>
     <tag-name>selectItems</tag-name>
     <component>
-      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need 
+      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need
         to include license -->
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.UISelectItems
@@ -328,7 +328,7 @@
   <tag>
     <tag-name>selectItem</tag-name>
     <component>
-      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need 
+      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need
         to include license -->
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.UISelectItem
@@ -405,7 +405,7 @@
         org.nuxeo.ecm.platform.ui.web.component.holder.UIValueHolder
       </component-type>
       <handler-class>
-        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
+        org.nuxeo.ecm.platform.ui.web.component.holder.ValueHolderTagHandler
       </handler-class>
     </component>
   </tag>
