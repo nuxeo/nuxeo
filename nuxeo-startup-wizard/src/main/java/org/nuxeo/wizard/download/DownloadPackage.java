@@ -36,9 +36,15 @@ public class DownloadPackage {
 
     protected File localFile;
 
-    protected boolean downloading = false;
+    protected String color;
+
+    protected boolean enabled;
 
     protected final String id;
+
+    protected String downloadUrl;
+
+    protected boolean alreadyInLocal = false;
 
     public DownloadPackage(String id) {
         this.id = id;
@@ -65,6 +71,9 @@ public class DownloadPackage {
     }
 
     public void setMd5(String md5) {
+        if ("".equals(md5)) {
+            md5=null;
+        }
         this.md5 = md5;
     }
 
@@ -74,14 +83,6 @@ public class DownloadPackage {
 
     public void setLocalFile(File localFile) {
         this.localFile = localFile;
-    }
-
-    public boolean isDownloading() {
-        return downloading;
-    }
-
-    public void setDownloading(boolean downloading) {
-        this.downloading = downloading;
     }
 
     public String getId() {
@@ -104,9 +105,51 @@ public class DownloadPackage {
         return super.equals(obj);
     }
 
-
     public String getDownloadUrl() {
+        if (downloadUrl != null) {
+            return downloadUrl;
+        }
         return getBaseUrl() + getFilename();
     }
+
+    public void setDownloadUrl(String url) {
+        this.downloadUrl = url;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(id);
+        sb.append(" (");
+        sb.append(label);
+        sb.append(" )]");
+        return sb.toString();
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public boolean isAlreadyInLocal() {
+        return alreadyInLocal;
+    }
+
+    public void setAlreadyInLocal(boolean alreadyInLocal) {
+        this.alreadyInLocal = alreadyInLocal;
+    }
+
 
 }

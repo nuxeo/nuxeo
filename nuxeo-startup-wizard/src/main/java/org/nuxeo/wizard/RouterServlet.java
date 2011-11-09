@@ -25,7 +25,10 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -40,6 +43,8 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
+import org.nuxeo.wizard.download.DownloadablePackageOptions;
+import org.nuxeo.wizard.download.PackageDownloader;
 import org.nuxeo.wizard.helpers.IPValidator;
 import org.nuxeo.wizard.helpers.NumberValidator;
 import org.nuxeo.wizard.nav.Page;
@@ -477,4 +482,43 @@ public class RouterServlet extends HttpServlet {
         }
         resp.sendRedirect(target);
     }
+
+    public void handlePackageOptionsResourceGET(Page currentPage,
+            HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+
+        DownloadablePackageOptions options = PackageDownloader.instance().getPackageOptions();
+        resp.setContentType("text/json");
+        resp.getWriter().write(options.asJson());
+
+    }
+
+    public void handlePackagesSelectionPOST(Page currentPage,
+            HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        List<String> options = new ArrayList<String>();
+        Enumeration<String> params = req.getParameterNames();
+        while (params.hasMoreElements()) {
+            String p = params.nextElement();
+            if (p.startsWith("o")) {
+                options.add(p);
+            }
+        }
+        PackageDownloader.instance().getPackageOptions().select(options);
+
+        currentPage.next().dispatchToJSP(req, resp, true);
+    }
+
+    public void handlePackagesDownloadGET(Page currentPage,
+            HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        if ("true".equals(req.getParameter("startDownload"))) {
+            PackageDownloader.instance().startDownload();
+        } else if (req.getParameter("reStartDownload") != null) {
+            PackageDownloader.instance().reStartDownload(
+                    req.getParameter("reStartDownload"));
+        }
+        currentPage.dispatchToJSP(req, resp);
+    }
+
 }

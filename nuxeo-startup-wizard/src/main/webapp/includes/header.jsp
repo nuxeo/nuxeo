@@ -4,6 +4,9 @@
 <%@page import="org.nuxeo.wizard.context.ParamCollector"%>
 <%@page import="org.nuxeo.wizard.nav.SimpleNavigationHandler"%>
 <%@page import="org.nuxeo.wizard.nav.Page"%>
+<%@page import="org.nuxeo.wizard.download.PackageDownloader"%>
+<%@page import="org.nuxeo.wizard.download.DownloadablePackageOptions"%>
+<%@page import="org.nuxeo.wizard.download.DownloadPackage"%>
 <%@page import="java.util.ResourceBundle"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
@@ -23,7 +26,6 @@ SimpleNavigationHandler nav = SimpleNavigationHandler.instance();
 <title><fmt:message key="label.nuxeo.wizard" /></title>
 <link rel="stylesheet" href="<%=contextPath%>/css/nuxeo.css" type="text/css" media="screen" charset="utf-8" />
 <script src="<%=contextPath%>/scripts/jquery-1.4.3.min.js"></script>
-<script src="<%=contextPath%>/scripts/jquery.simplerss-0.1.0.js"></script>
 <script>
 function navigateTo(page) {
   window.location.href='<%=contextPath%>/' + page;
