@@ -769,7 +769,7 @@ table.registration .header {
     border: 1px solid #207ae4;
     color: #fff;
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);    
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 ul.noBullet {
@@ -874,3 +874,40 @@ ul.noBullet li {
   margin-top: 10px;
   margin-bottom: 30px;
 }
+
+ul#treeul li {
+  list-style:none;
+}
+
+ul.hide {
+  display:none;
+}
+
+.hide {
+  display:none;
+}
+
+.nxpblock {
+  background-color: red;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #555555;
+  height:25px;
+  width:100px;
+  text-align:center;
+  text-transform:uppercase;
+  font-weight:bold;
+  color:black;
+  border-radius: 5px;
+}
+
+.unselectedBloc {
+  opacity:0.3;
+}
+
+.nxprow {
+  margin:2px;
+  height:29px;
+  width:400px;
+}
+

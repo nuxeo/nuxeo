@@ -7,14 +7,18 @@
   <package id="cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf.zip" md5=""/>
  </packageDefinitions>
  <install>
+  <common>
+     <package ref="cap"/>
+  </common>
   <packageOptions>
-   <package ref="cap" exclusive="false">
+   <package label="Basic / Nacked" exclusive="true">
      <package ref="dam" exclusive="false"/>
-     <package ref="dm" exclusive="false">
-       <package ref="collab" exclusive="false"/>
-     </package>
-     <package ref="cmf" exclusive="true"/>
    </package>
+   <package ref="dm" exclusive="true">
+     <package ref="dam" exclusive="false"/>
+     <package ref="collab" exclusive="false"/>
+   </package>
+  <package ref="cmf" exclusive="true"/>
  </packageOptions>
  </install>
 </packages>
