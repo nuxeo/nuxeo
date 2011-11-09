@@ -25,6 +25,7 @@
           home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-1.5.1-SNAPSHOT.jar" />
 
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" />
+  <Listener className="org.nuxeo.runtime.tomcat.ContextSecurityGrabber" />
 
   <!--
       Define JDBC datasaources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME. For example java:comp/env/jdbc/nxsqldirectory
