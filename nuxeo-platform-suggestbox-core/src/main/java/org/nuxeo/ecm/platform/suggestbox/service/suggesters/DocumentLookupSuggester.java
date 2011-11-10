@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -28,6 +30,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentLookupSuggester implements Suggester {
 
+    private static final Log log = LogFactory.getLog(DocumentLookupSuggester.class);
+
     protected String providerName = "DEFAULT_DOCUMENT_SUGGESTION";
 
     protected SuggesterDescriptor descriptor;
@@ -46,6 +50,9 @@ public class DocumentLookupSuggester implements Suggester {
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
         PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        if (ppService == null) {
+            throw new SuggestionException("PageProviderService is not active");
+        }
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) context.session);
@@ -56,11 +63,17 @@ public class DocumentLookupSuggester implements Suggester {
                     new Object[] { userInput });
             for (DocumentModel doc : pp.getCurrentPage()) {
                 String value = doc.getRepositoryName() + "::" + doc.getId();
-                String icon = doc.getAdapter(TypeInfo.class).getIcon();
+                TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
+                if (typeInfo == null) {
+                    log.warn(String.format(
+                            "Missing TypeInfoAdapter for document '%s' with type '%s'",
+                            doc.getTitle(), doc.getType()));
+                    continue;
+                }
                 String description = doc.getProperty("dc:description").getValue(
                         String.class);
                 suggestions.add(new Suggestion(CommonSuggestionTypes.DOCUMENT,
-                        value, doc.getTitle(), icon).withDescription(description));
+                        value, doc.getTitle(), typeInfo.getIcon()).withDescription(description));
             }
             return suggestions;
         } catch (ClientException e) {

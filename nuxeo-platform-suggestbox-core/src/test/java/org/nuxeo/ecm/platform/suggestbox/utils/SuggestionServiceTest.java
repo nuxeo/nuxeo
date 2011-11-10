@@ -44,6 +44,13 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        // PageProvider API
+        deployBundle("org.nuxeo.ecm.platform.query.api");
+        
+        // type icons
+        deployBundle("org.nuxeo.ecm.platform.types.api");
+        deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.webapp.base");
 
         // myself
         deployBundle("org.nuxeo.ecm.platform.suggestbox.core");
@@ -68,7 +75,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         DocumentModel file2 = session.createDocumentModel("/default-domain",
                 "file2", "File");
-        file2.setPropertyValue("dc:title", "First document");
+        file2.setPropertyValue("dc:title", "Second document");
         session.createDocument(file2);
 
         session.save();
@@ -91,7 +98,19 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         // perform some test lookups to check the deployment of extension points
         List<Suggestion> suggestions = sugService.suggest("first", context);
         assertNotNull(suggestions);
-        assertEquals(suggestions.size(), 2);
+        assertEquals(suggestions.size(), 1);
+        
+        Suggestion sugg1 = suggestions.get(0);
+        assertEquals("document", sugg1.getType());
+        assertEquals("First document", sugg1.getLabel());
+        assertEquals("/icons/file.gif", sugg1.getIconURL());
+        assertNotNull(sugg1.getValue());
+        
+//        Suggestion sugg2 = suggestions.get(0);
+//        assertEquals("", sugg2.getType());
+//        assertEquals("", sugg2.getLabel());
+//        assertEquals("", sugg2.getIconURL());
+//        assertNotNull(sugg2.getValue());
     }
 
     protected Map<String, String> getTestMessages() {

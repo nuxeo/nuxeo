@@ -19,6 +19,7 @@ import java.util.List;
  * suggesting next operations / chains</li>
  * </ul>
  * 
+ * @since 5.5
  * @author ogrisel
  */
 public interface SuggestionService {
