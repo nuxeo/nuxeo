@@ -48,15 +48,9 @@ public class ValueHolderTagHandler extends HtmlComponentHandler {
 
     protected final TagAttribute var;
 
-    protected final TagAttribute value;
-
-    protected final TagAttribute defaultValue;
-
     public ValueHolderTagHandler(ComponentConfig config) {
         super(config);
         var = getAttribute("var");
-        value = getAttribute("value");
-        defaultValue = getAttribute("defaultValue");
     }
 
     @Override

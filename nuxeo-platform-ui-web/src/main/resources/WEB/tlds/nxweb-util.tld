@@ -1305,7 +1305,7 @@
       <rtexprvalue>false</rtexprvalue>
       <description>
         Flag indicating whether or not the value held by this component should
-        be submitted to the backing bean.
+        be submitted to the backing bean. Defaults to true.
       </description>
     </attribute>
     <example>
