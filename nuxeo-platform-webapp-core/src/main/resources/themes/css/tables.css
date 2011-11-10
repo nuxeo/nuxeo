@@ -9,11 +9,11 @@ table thead th { padding: 3px; text-align: left }
 .dataList td {
   border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
   padding: 5px 3px }
-.dataList thead th {
+.dataOutput thead th, .dataList thead th {
   background-color: "neutral.light (__FLAVOR__ background)";
   border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
   color: "gray.dark (__FLAVOR__ color)";
-  padding: 5px 3px;
+  padding: 7px 3px;
   text-align: left }
 .dataList thead th a:hover { text-decoration: underline }
 
@@ -28,12 +28,6 @@ table thead th { padding: 3px; text-align: left }
   border-collapse: collapse;
   margin-top: 7px;
   margin-bottom: 5px }
-table.dataOutput thead th {
-  background-color: "neutral.light (__FLAVOR__ background)";
-  border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
-  color: "gray.dark (__FLAVOR__ color)";
-  padding: 5px 3px;
-  text-align: left }
 .dataOutput td {
   border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
   padding: 5px 3px }
