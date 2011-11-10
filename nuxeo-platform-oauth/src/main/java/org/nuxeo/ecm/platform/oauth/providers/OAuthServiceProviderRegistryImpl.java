@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.platform.oauth.providers;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,13 +60,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
                     serviceName, null);
             return provider;
         } catch (Exception e) {
-            // temporary debug log for NXP-7513
-            try {
-                File file = new HeapDumper().dumpHeap();
-                log.error("Unable to read provider from Directory backend, see heap dump at  " + file.getAbsolutePath(), e);
-            } catch (IOException ie) {
-                log.error("Unable to read provider from Directory backend", e);
-            }
+            log.error("Unable to read provider from Directory backend", e);
             return null;
         }
     }
