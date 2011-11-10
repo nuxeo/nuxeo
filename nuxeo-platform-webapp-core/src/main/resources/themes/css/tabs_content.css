@@ -29,6 +29,7 @@ h3.summaryTitle {
   margin: 0 0 10px 0;
   padding: 17px 0 3px 0 }
 .summary_div_1 h3.summaryTitle { color: "gray.medium (__FLAVOR__ color)"; font-size: 1.1em }
+.summary_div_1 .fieldColumn img { float: left; margin-bottom: 15px }
 
 .description_block span { display: block; font-size: .8em; padding-bottom: 10px }
 .dublincore_block table.floatingLeftTable { float: left; margin-right: 100px }
@@ -38,7 +39,7 @@ h3.summaryTitle {
 .content_block table { margin-bottom: 10px; width: 100% }
 .content_block td { padding: 0; vertical-align: top }
 .content_block .labelColumn { width: 100px }
-.content_block .actionsColumn { vertical-align: top; width: 20% }
+.content_block .actionsColumn { text-align: right; vertical-align: top; width: 20% }
 .content_block img { padding: 0 5px }
 
 .note_content_block { border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; margin: 0 0 15px; padding: 15px }

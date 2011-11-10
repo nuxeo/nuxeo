@@ -8,8 +8,8 @@ author: lkemen@nuxeo.com
 */
 
 /* =Frame */
-.documentManagement .nxMainContainer { height: 600px }
-.documentManagement .nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: 5px }
+.nxMainContainer { min-height: 660px; height: auto!important; height: 660px }
+.nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: 5px }
 
 /* =Document list */
 .serverChoice {

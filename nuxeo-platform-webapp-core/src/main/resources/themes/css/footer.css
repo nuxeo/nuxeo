@@ -8,7 +8,7 @@ author: lkemen@nuxeo.com
 /* =Footer */
 .nxFooter {
   background: none "footer (__FLAVOR__ background)";
-  font-size: .7em;
+  font-size: 12px;
 	width:100% }
 .footerDefaultLinks { padding: 15px }
 
@@ -26,7 +26,7 @@ a.twitt:hover { background-position:left bottom }
 a.linkedin:hover { background-position:-16px bottom }
 
  /* =Connect Banner */
-.bannerBottom { font-size: 1em; text-align:left; padding:3px 15px 1px }
+.bannerBottom { font-size: 11px; text-align:left; padding:3px 15px 1px }
 .bannerBottom .links a, .links a:link, .links a:visited { background-color: #108EBD; border: 1px solid #1191C1; color: #EFEFEF; cursor: pointer; display: block; margin: 2px; padding: 0 30px; text-decoration: none }
 .bannerBottom .links a:hover { background-color: #1aabe0; border: 1px solid #3ab6e3; color:#fff; text-decoration: none }
 

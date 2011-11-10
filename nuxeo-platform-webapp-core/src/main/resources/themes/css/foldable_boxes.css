@@ -29,21 +29,6 @@ author: lkemen@nuxeo.com
   float: left;
   padding-right: 10px }
 .foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)" }
-.foldableBox h3 a.action, .foldableBox h3 a.action:visited {
-  box-shadow:inset 0px 1px 0px 0px #fff;
-  background-color:"neutral.medium (__FLAVOR__ background)";
-  border-radius:3px;
-  border:1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
-  color:"black (__FLAVOR__ color)";
-  float: right;
-  font-size: 0.8em;
-  font-weight: bold;
-  margin: 0 5px;
-  padding: 0 6px;
-  text-decoration:none;
-  text-shadow:1px 1px 0px #fff }
-.foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)" }
-
 .foldableBox .boxBody { clear: both; padding: 10px }
 
 /* =Light boxes */

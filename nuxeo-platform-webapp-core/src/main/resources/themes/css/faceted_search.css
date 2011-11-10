@@ -21,15 +21,14 @@ author: lkemen@nuxeo.com
 #facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p {
   background-color:"color.major.light (__FLAVOR__ background)";
   border-width: 1px; border-style: solid none; border-color: "noborder (__FLAVOR__ border)" "noborder (__FLAVOR__ border)" "neutral.light (__FLAVOR__ border)";
-  font-weight: bold;
-  padding: 3px }
+  font-weight: bold; margin-bottom: 2px; padding: 3px }
 
-.facetedSearchBlock .labelColumn { font-weight: normal; width: 70px }
+.facetedSearchBlock .labelColumn { font-weight: normal; min-width: 70px }
 .facetedSearchBlock .tinyLabel { display: inline-block; text-align: right; width: 24px }
 .facetedSearchBlock .dataInput { width: 100% }
 .facetedSearchBlock .dataInput td { padding: 3px 4px 5px 0 }
-.facetedSearchBlock input, .facetedSearchBlock select { width: 100% }
-.facetedSearchBlock input.rich-calendar-input { margin: 1px 3px 1px 5px; width: 68% }
+.facetedSearchBlock input, .facetedSearchBlock select { width: 95% }
+.facetedSearchBlock input.rich-calendar-input { margin: 1px 3px 1px 5px; width: 63% }
 .facetedSearchBlock .dataInputTextDate { font-size: .9em; margin: 0 5px 3px 3px; width: 45px }
 .facetedSearchBlock .widgetContent { border-bottom: 1px solid #dcdcdc; color: "gray.dark (__FLAVOR__ color)" }
 

@@ -13,8 +13,8 @@ author: lkemen@nuxeo.com
   background-color: #fff;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-width: 1px;
-  border-style: solid solid none none;
-  border-radius: 0 10px 0 0;
+  border-style: solid;
+  border-radius: 0 10px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
   color: "black (__FLAVOR__ color)";
   display: block;

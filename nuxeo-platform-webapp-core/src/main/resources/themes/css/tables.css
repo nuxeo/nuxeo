@@ -21,9 +21,6 @@ table thead th { padding: 3px; text-align: left }
 .dataInput td, .rightsAddManager .dataInput td { border: 0 solid; padding: 7px 4px }
 .dataInput td td, .dataInput td td td { padding: 3px 4px }
 .dataInput .button { margin: 0 10px 0 0 }
-.dataInput textarea, .dataInput .dataInputText { width: 500px }
-.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)"; padding: 4px; vertical-align: top }
-.dataInput select { padding: 2px 1px 2px 1px; vertical-align: top }
 .archiveTabContent .dataInput { border: none; margin-bottom: 15px }
 .dataInputGroup { margin: 0; padding: 0; vertical-align: top }
 
@@ -82,8 +79,6 @@ table.dataOutput th a img { margin: 0 0 0 2px; padding: 0; vertical-align: botto
 .vocabularyEntryContent { margin-left: 18px }
 .vocabularyEntryContent .notEditable { background-color: #fff }
 .vocabularyEntryContent .dataInput { border: none; margin-bottom: 15px }
-
-.taskPrincipalSelect select { margin: 5px 0 10px 15px; padding: 2px 1px 2px 1px }
 
 table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background)" }
 

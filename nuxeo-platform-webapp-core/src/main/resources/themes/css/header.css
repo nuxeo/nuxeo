@@ -16,32 +16,35 @@ author: lkemen@nuxeo.com
 	overflow: auto;
 	width:100% }
 .nxHeader .logo {text-align: center; vertical-align:bottom; width: 18% }
-.nxHeader .content { padding: 0 10px 0 0; vertical-align: bottom;	width: 82%; font-size: .75em }
+.nxHeader .content { padding: 0 10px 0 0; vertical-align: bottom;	width: 82%; font-size: 12px; line-height: 16pt; }
 .nxHeader .includes { width: 0 }
 .nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)" }
 
 /* =Search */
 .userSearchBlock { float: right }
-.searchService { padding-top: 5px }
+.searchService { padding-top: 5px; opacity: 0.9 }
+.searchService:focus, .searchService:hover { opacity: 1 }
+.searchService .directoryFilter { border: 1px solid #fff }
 .searchService input.button { margin: 3px 5px 0 3px; padding: 2px }
 .advancedSearchLink a { font-size: .8em }
 
 /* =UserServices */
-.userServicesBlock { float: left; padding-top: 10px }
+.userServicesBlock { float: left; padding: 5px 0 }
 .userServicesBlock a:hover { text-decoration: none }
 
 /* =MainTabs */
 .mainTabs { float: left }
 .mainTabs li {
-    background-color: #207594;
+    background-color: #fff;
     display: inline;
     float: left;
-    margin: 0 5px }
-.mainTabs a, .mainTabs a:visited {
-    color: #d7e3f1;
+    margin: 0 5px;
+    opacity: 0.4 }
+.mainTabs a:link, .mainTabs a:visited {
+    color: #333;
     display: inline-block;
-    padding: 5px 11px 7px }
-.mainTabs li.selected { background-color: #fff }
+    padding: 4px 8px 6px }
+.mainTabs li.selected, .mainTabs li:hover { opacity: 1 }
 .mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited { color: "black (__FLAVOR__ color)"; font-weight: bold }
 
 .userMenuActions {
@@ -55,13 +58,12 @@ author: lkemen@nuxeo.com
 
 .nxHeader .userMenuActions a {
     background-color: #fff;
-    color: #7693a3;
     display: block }
 
 .userMenuActions a.userButton {
     background: url("${basePath}/icons/user.png") no-repeat scroll 3px center transparent;
     padding: 3px 8px 5px 23px }
-.userMenuActions ul li a:hover, .userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)" }
+.userMenuActions ul:hover a, .userMenuActions ul:hover li, .userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)" }
 .userMenuActions li ul {
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
     display: none;
