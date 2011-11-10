@@ -27,6 +27,8 @@ author: lkemen@nuxeo.com
 
 .tabsContent { padding: 0; }
 
+.dataOutput td { vertical-align: top }
+
 /* ActionBar*/
 .actionBar {background-color:#efefef;border-bottom:1px solid #bde7F3;padding:10px;}
 .actionBar span {margin:0 10px 0 0;}
