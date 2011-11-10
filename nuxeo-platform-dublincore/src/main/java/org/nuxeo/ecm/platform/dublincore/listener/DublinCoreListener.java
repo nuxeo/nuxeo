@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -19,6 +19,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -27,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -87,12 +90,9 @@ public class DublinCoreListener implements EventListener {
         if (doc.isProxy()) {
             if (eventId.equals(DOCUMENT_PUBLISHED)) {
                 CoreSession session = event.getContext().getCoreSession();
-                DocumentModel version = session.getSourceDocument(
-                        doc.getRef());
-                if (version != null) {
-                    service.setIssuedDate(version, cEventDate);
-                    session.saveDocument(version);
-                }
+                UnrestrictedPropertySetter setter = new UnrestrictedPropertySetter(
+                        session, doc.getRef(), "dc:issued", cEventDate);
+                setter.runUnrestricted();
             }
         }
 
@@ -104,6 +104,34 @@ public class DublinCoreListener implements EventListener {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
         }
+    }
+
+    protected class UnrestrictedPropertySetter extends
+            UnrestrictedSessionRunner {
+
+        DocumentRef docRef;
+
+        String xpath;
+
+        Serializable value;
+
+        protected UnrestrictedPropertySetter(CoreSession session,
+                DocumentRef docRef, String xpath, Serializable value) {
+            super(session);
+            this.docRef = docRef;
+            this.xpath = xpath;
+            this.value = value;
+        }
+
+        public void run() throws ClientException {
+            DocumentModel doc = session.getSourceDocument(docRef);
+            if (doc != null) {
+                doc.setPropertyValue(xpath, value);
+                session.saveDocument(doc);
+            }
+
+        }
+
     }
 
 }
