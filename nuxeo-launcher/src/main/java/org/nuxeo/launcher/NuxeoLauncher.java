@@ -620,6 +620,7 @@ public abstract class NuxeoLauncher {
                 System.out.println();
             }
             log.error("Starting process is taking too long - giving up.");
+            errorValue = 1;
         }
         return false;
     }
