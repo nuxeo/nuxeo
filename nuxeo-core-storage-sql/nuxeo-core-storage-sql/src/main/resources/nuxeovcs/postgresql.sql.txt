@@ -111,10 +111,12 @@ STABLE;
 
 #IF: pathOptimizationsEnabled
 #TEST:
-SELECT 1 FROM pg_indexes WHERE indexname = 'ancestors_ancestors_is_null_idx';
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'ancestors')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='ancestors_ancestors_is_null_idx');
+
 
 #IF: pathOptimizationsEnabled
-#IF: emptyResult
+#IF: ! emptyResult
 CREATE INDEX ancestors_ancestors_is_null_idx ON ancestors USING btree(ancestors) WHERE ancestors IS NULL;
 
 
