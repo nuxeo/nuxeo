@@ -206,23 +206,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
         try {
-
-            DocumentModel sourceVersion = coreSession.getSourceDocument(proxy.getRef());
-            DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
-            DocumentModelList brothers = coreSession.getProxies(dm.getRef(),
-                    proxy.getParentRef());
-            if (brothers != null && brothers.size() > 1) {
-                // we remove the brothers of the published document if any
-                // the use case is:
-                // v1 is published, v2 is waiting for publication and was just
-                // validated
-                // v1 is removed and v2 is now being published
-                for (DocumentModel doc : brothers) {
-                    if (!doc.getId().equals(proxy.getId())) {
-                        coreSession.removeDocument(doc.getRef());
-                    }
-                }
-            }
+            ProxyCleaner proxyCleaner = new ProxyCleaner(coreSession, proxy);
+            proxyCleaner.runUnrestricted();
         } catch (ClientException e1) {
             throw new PublishingException(e1.getMessage(), e1);
         }
@@ -394,6 +379,37 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             liveDocument = session.getDocument(new IdRef(
                     sourceDocument.getSourceId()));
         }
+    }
+
+    protected class ProxyCleaner extends UnrestrictedSessionRunner {
+
+        DocumentModel proxy;
+
+        public ProxyCleaner(CoreSession session, DocumentModel proxy) {
+            super(session);
+            this.proxy = proxy;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel sourceVersion = session.getSourceDocument(proxy.getRef());
+            DocumentModel dm = session.getSourceDocument(sourceVersion.getRef());
+            DocumentModelList brothers = session.getProxies(dm.getRef(),
+                    proxy.getParentRef());
+            if (brothers != null && brothers.size() > 1) {
+                // we remove the brothers of the published document if any
+                // the use case is:
+                // v1 is published, v2 is waiting for publication and was just
+                // validated
+                // v1 is removed and v2 is now being published
+                for (DocumentModel doc : brothers) {
+                    if (!doc.getId().equals(proxy.getId())) {
+                        session.removeDocument(doc.getRef());
+                    }
+                }
+            }
+        }
+
     }
 
     /**
