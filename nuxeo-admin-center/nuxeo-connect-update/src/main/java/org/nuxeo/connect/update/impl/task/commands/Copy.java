@@ -119,7 +119,7 @@ public class Copy extends AbstractCommand {
                 tofile.getParentFile().mkdirs();
                 dst = tofile;
             }
-            // copy the file - use getContentToCopy to allow parametrization for
+            // copy the file - use getContentToCopy to allow parameterization for
             // subclasses
             String content = getContentToCopy(prefs);
             if (content != null) {
@@ -161,7 +161,7 @@ public class Copy extends AbstractCommand {
                 status.addError("A restart is needed to perform this operation: cleaning "
                         + tofile.getName());
             } else {
-                status.addError("Cannot overwite existing file: "
+                status.addError("Cannot overwrite existing file: "
                         + tofile.getName());
             }
         }
