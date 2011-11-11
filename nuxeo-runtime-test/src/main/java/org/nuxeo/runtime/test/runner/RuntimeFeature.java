@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -38,7 +38,6 @@ import com.google.inject.Scopes;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RuntimeFeature extends SimpleFeature {
 
@@ -49,8 +48,8 @@ public class RuntimeFeature extends SimpleFeature {
     protected final DeploymentSet deploy;
 
     /**
-     * Providers contributed by other features to override the default service provider
-     * used for a nuxeo service.
+     * Providers contributed by other features to override the default service
+     * provider used for a nuxeo service.
      */
     protected final Map<Class<?>, Provider<?>> serviceProviders;
 
@@ -75,22 +74,25 @@ public class RuntimeFeature extends SimpleFeature {
     private void scanDeployments(FeaturesRunner runner) {
         List<RunnerFeature> features = runner.getFeatures();
         if (features == null) {
-            throw new IllegalStateException("Cannot call scanDeployments until features are not loaded");
+            throw new IllegalStateException(
+                    "Cannot call scanDeployments until features are not loaded");
         }
         for (RunnerFeature feature : features) {
             deploy.load(FeaturesRunner.getScanner(), feature.getClass());
         }
         // load deployments from class to run
-        deploy.load(FeaturesRunner.getScanner(), runner.getTestClass().getJavaClass());
+        deploy.load(FeaturesRunner.getScanner(),
+                runner.getTestClass().getJavaClass());
     }
 
-
     public String[] getDeployments() {
-        return deploy.getDeployments().toArray(new String[deploy.getDeployments().size()]);
+        return deploy.getDeployments().toArray(
+                new String[deploy.getDeployments().size()]);
     }
 
     public String[] getLocalDeployments() {
-        return deploy.getLocalDeployments().toArray(new String[deploy.getLocalDeployments().size()]);
+        return deploy.getLocalDeployments().toArray(
+                new String[deploy.getLocalDeployments().size()]);
     }
 
     /**
@@ -106,7 +108,8 @@ public class RuntimeFeature extends SimpleFeature {
                     if (p == -1) {
                         harness.deployBundle(bundle);
                     } else {
-                        harness.deployContrib(bundle.substring(0, p), bundle.substring(p+1));
+                        harness.deployContrib(bundle.substring(0, p),
+                                bundle.substring(p + 1));
                     }
                 } catch (Exception e) {
                     log.error("Unable to deploy artifact: " + bundle, e);
@@ -120,9 +123,12 @@ public class RuntimeFeature extends SimpleFeature {
                 try {
                     int p = bundle.indexOf(':');
                     if (p == -1) {
-                        throw new IllegalArgumentException("Local resources must specify a traget bundle. "+bundle);
+                        throw new IllegalArgumentException(
+                                "Local resources must specify a traget bundle. "
+                                        + bundle);
                     } else {
-                        URL url = getClass().getClassLoader().getResource(bundle.substring(p+1));
+                        URL url = getClass().getClassLoader().getResource(
+                                bundle.substring(p + 1));
                         harness.deployTestContrib(bundle.substring(0, p), url);
                     }
                 } catch (Exception e) {
@@ -153,11 +159,12 @@ public class RuntimeFeature extends SimpleFeature {
         // Stops the harness if needed
         if (harness.isStarted()) {
             harness.stop();
-            //harness = null;
+            // harness = null;
         }
     }
 
-    //TODO this is not ok. we should not force 2 modules layers - we should be able to load any number of module layers.
+    // TODO this is not ok. we should not force 2 modules layers - we should be
+    // able to load any number of module layers.
     @SuppressWarnings("unchecked")
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
@@ -171,26 +178,28 @@ public class RuntimeFeature extends SimpleFeature {
                     bind0(binder, clazz, provider);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Failed to bind service: "+svc, e);
+                throw new RuntimeException("Failed to bind service: " + svc, e);
             }
         }
         binder.bind(RuntimeHarness.class).toInstance(getHarness());
-//        binder.bind(FeaturesRunner.class).toInstance(runner);
-//        binder.bind(NuxeoRunner.class).toInstance(runner);
+        // binder.bind(FeaturesRunner.class).toInstance(runner);
+        // binder.bind(NuxeoRunner.class).toInstance(runner);
     }
 
-
     protected <T> void bind0(Binder binder, Class<T> type) {
-        binder.bind(type).toProvider(new ServiceProvider<T>(type)).in(Scopes.SINGLETON);
+        binder.bind(type).toProvider(new ServiceProvider<T>(type)).in(
+                Scopes.SINGLETON);
     }
 
     protected <T> void bind0(Binder binder, Class<T> type, Provider<T> provider) {
         binder.bind(type).toProvider(provider).in(Scopes.SINGLETON);
     }
 
-    public static void bindDatasource(String key, DataSource ds) throws Exception {
+    public static void bindDatasource(String key, DataSource ds)
+            throws Exception {
         InitialContext initialCtx = new InitialContext();
-        JndiHelper.rebind(initialCtx, DataSourceHelper.getDataSourceJNDIName(key), ds);
+        JndiHelper.rebind(initialCtx,
+                DataSourceHelper.getDataSourceJNDIName(key), ds);
     }
 
 }
