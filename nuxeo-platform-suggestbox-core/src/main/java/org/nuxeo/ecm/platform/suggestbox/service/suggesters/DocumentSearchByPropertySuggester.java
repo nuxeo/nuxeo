@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.suggestbox.service.CommonSuggestionTypes;
 import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
@@ -11,35 +12,35 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
 
-
 /**
- * Simple static suggester that always output the same suggestion based on the
- * descriptor parameters.
+ * Simple stateless document search suggester that propose to use the user input
+ * for searching a specific field.
  */
-public class StaticSuggester implements Suggester {
+public class DocumentSearchByPropertySuggester implements Suggester {
 
-    protected String type;
+    protected String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;
 
-    protected String value;
+    protected String searchField = "fsd:ecm_fulltext";
 
-    protected String label;
+    protected String label = "label.searchDocumentsByKeywords";
 
-    protected String description;
+    protected String description = "";
 
-    protected String iconURL;
+    protected String iconURL = "/img/facetedSearch.png";
 
     protected boolean disabled;
 
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
-        Suggestion suggestion = new Suggestion(type, value,
-                context.messages.get(label), iconURL);
+        I18nHelper i18n = I18nHelper.instanceFor(context.messages);
+        Suggestion suggestion = new Suggestion(type, searchField + ":"
+                + userInput, i18n.translate(label, userInput), iconURL);
         if (disabled) {
             suggestion.disable();
         }
         if (description != null) {
-            suggestion.withDescription(context.messages.get(description));
+            suggestion.withDescription(i18n.translate(description, userInput));
         }
         return Collections.singletonList(suggestion);
     }
@@ -49,19 +50,19 @@ public class StaticSuggester implements Suggester {
             throws ComponentInitializationException {
         Map<String, String> params = descriptor.getParameters();
         type = params.get("type");
-        value = params.get("value");
+        searchField = params.get("searchField");
         label = params.get("label");
         iconURL = params.get("iconURL");
         description = params.get("description");
-        String disabledValue = params.get("disabled");
-        if (disabledValue != null) {
-            disabled = Boolean.valueOf(disabledValue);
+        String disabled = params.get("disabled");
+        if (disabled != null) {
+            this.disabled = Boolean.valueOf(disabled);
         }
-
-        if (type == null || value == null || label == null || iconURL == null) {
+        if (type == null || searchField == null || label == null
+                || iconURL == null) {
             throw new ComponentInitializationException(
                     String.format("Could not initialize suggester '%s': "
-                            + "type, value, label and iconURL"
+                            + "type, propertyPath, label and iconURL"
                             + " are mandatory parameters", descriptor.getName()));
         }
     }

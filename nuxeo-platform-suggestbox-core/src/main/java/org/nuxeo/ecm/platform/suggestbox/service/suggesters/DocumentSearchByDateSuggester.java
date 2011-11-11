@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,13 @@ import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor
 import org.nuxeo.ecm.platform.suggestbox.utils.DateMatcher;
 
 /**
- * Simple static suggester that parses the input and suggest to search document
- * by date if the input can be interpreted as a date in the user locale.
+ * Simple stateless suggester that parses the input and suggest to search
+ * document by date if the input can be interpreted as a date in the user
+ * locale.
  */
 public class DocumentSearchByDateSuggester implements Suggester {
+
+    public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
 
     final static String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;
 
@@ -39,15 +43,17 @@ public class DocumentSearchByDateSuggester implements Suggester {
         // TODO: use SimpleDateFormat and use the locale information from the
         // context
         DateMatcher matcher = DateMatcher.fromInput(userInput);
+        SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_PATTERN);
         if (matcher.hasMatch()) {
+            String formatted = df.format(matcher.getDateSuggestion().getTime());
             for (String field : searchFields) {
-                String valueAfter = field + "_min";
+                String valueAfter = field + "_min:" + formatted;
                 String labelAfter = context.messages.get(LABEL_AFTER_PREFIX
                         + field.replace(':', '_'));
                 suggestions.add(new Suggestion(type, valueAfter, labelAfter,
                         iconURL));
 
-                String valueBefore = field + "_max";
+                String valueBefore = field + "_max:" + formatted;
                 String labelBefore = context.messages.get(LABEL_BEFORE_PREFIX
                         + field.replace(':', '_'));
                 suggestions.add(new Suggestion(type, valueBefore, labelBefore,

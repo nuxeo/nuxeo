@@ -1,24 +1,49 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.suggestbox.core.defaultSuggesters">
 
-  <extension target="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService"
+  <extension
+    target="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService"
     point="suggesters">
 
-      <suggester name="documentLookupByTitle"
-        class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentLookupSuggester">
-        <parameters>
-          <parameter name="providerName">DEFAULT_DOCUMENT_SUGGESTION</parameter>
-        </parameters>
-      </suggester>
+    <suggester name="documentLookupByTitle"
+      class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentLookupSuggester">
+      <parameters>
+        <parameter name="providerName">DEFAULT_DOCUMENT_SUGGESTION
+        </parameter>
+      </parameters>
+    </suggester>
+
+    <suggester name="searchByKeywords"
+      class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentSearchByPropertySuggester">
+      <parameters>
+        <parameter name="type">searchDocuments</parameter>
+        <parameter name="label">label.searchDocumentsByKeyword</parameter>
+        <parameter name="searchField">fsd:ecm_fulltext</parameter>
+        <parameter name="iconURL">/img/facetedSearch.png</parameter>
+        <parameter name="description"></parameter>
+        <parameter name="disabled">false</parameter>
+      </parameters>
+    </suggester>
+
+    <suggester name="searchByDate"
+      class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentSearchByDateSuggester">
+      <parameters>
+        <parameter name="searchFields">fsd:dc_created,fsd:dc_modified</parameter>
+        <parameter name="iconURL">/img/facetedSearch.png</parameter>
+      </parameters>
+    </suggester>
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService"
+  <extension
+    target="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService"
     point="suggesterGroups">
 
-      <suggesterGroup name="searchbox">
-        <suggesterName>documentLookupByTitle</suggesterName>
-      </suggesterGroup>
+    <suggesterGroup name="searchbox">
+      <suggesterName>documentLookupByTitle</suggesterName>
+      <suggesterName>searchByDate</suggesterName>
+      <suggesterName>searchByKeywords</suggesterName>
+    </suggesterGroup>
 
   </extension>
 

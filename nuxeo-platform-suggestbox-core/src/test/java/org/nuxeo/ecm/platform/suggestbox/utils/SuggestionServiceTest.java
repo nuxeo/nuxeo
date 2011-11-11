@@ -39,14 +39,14 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SuggestionServiceTest.class);
 
-    protected SuggestionService sugService;
+    protected SuggestionService suggestionService;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         // PageProvider API
         deployBundle("org.nuxeo.ecm.platform.query.api");
-        
+
         // type icons
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
@@ -58,8 +58,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         // create some documents to be looked up
         makeSomeDocuments();
 
-        sugService = Framework.getService(SuggestionService.class);
-        assertNotNull(sugService);
+        suggestionService = Framework.getService(SuggestionService.class);
+        assertNotNull(suggestionService);
     }
 
     protected void makeSomeDocuments() throws ClientException {
@@ -96,27 +96,29 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
                 Locale.US).withSession(session).withMessages(messages);
 
         // perform some test lookups to check the deployment of extension points
-        List<Suggestion> suggestions = sugService.suggest("first", context);
+        List<Suggestion> suggestions = suggestionService.suggest("first",
+                context);
         assertNotNull(suggestions);
-        assertEquals(suggestions.size(), 1);
-        
+        assertEquals(2, suggestions.size());
+
         Suggestion sugg1 = suggestions.get(0);
         assertEquals("document", sugg1.getType());
         assertEquals("First document", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
         assertNotNull(sugg1.getValue());
-        
-//        Suggestion sugg2 = suggestions.get(0);
-//        assertEquals("", sugg2.getType());
-//        assertEquals("", sugg2.getLabel());
-//        assertEquals("", sugg2.getIconURL());
-//        assertNotNull(sugg2.getValue());
+
+        Suggestion sugg2 = suggestions.get(1);
+        assertEquals("searchDocuments", sugg2.getType());
+        assertEquals("Search document with keywords: 'first'", sugg2.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
+        assertEquals("fsd:ecm_fulltext:first", sugg2.getValue());
     }
 
     protected Map<String, String> getTestMessages() {
         HashMap<String, String> messages = new HashMap<String, String>();
-        
-        return messages;
+        messages.put("label.searchDocumentsByKeyword",
+                "Search document with keywords: '{0}'");
+       return messages;
     }
 
 }
