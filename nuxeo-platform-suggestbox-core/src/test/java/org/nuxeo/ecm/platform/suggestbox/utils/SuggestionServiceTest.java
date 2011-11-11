@@ -78,6 +78,11 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         file2.setPropertyValue("dc:title", "Second document");
         session.createDocument(file2);
 
+        DocumentModel file3 = session.createDocumentModel("/default-domain",
+                "file3", "File");
+        file3.setPropertyValue("dc:title", "The 2012 document");
+        session.createDocument(file3);
+
         session.save();
     }
 
@@ -88,7 +93,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testDefaultSuggestionConfiguration() throws SuggestionException {
+    public void testDefaultSuggestionConfigurationWithKeyword()
+            throws SuggestionException {
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
         Map<String, String> messages = getTestMessages();
@@ -109,16 +115,85 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         Suggestion sugg2 = suggestions.get(1);
         assertEquals("searchDocuments", sugg2.getType());
-        assertEquals("Search document with keywords: 'first'", sugg2.getLabel());
+        assertEquals("Search documents with keywords: 'first'", sugg2.getLabel());
         assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
         assertEquals("fsd:ecm_fulltext:first", sugg2.getValue());
+    }
+
+    @Test
+    public void testDefaultSuggestionConfigurationWithDate()
+            throws SuggestionException {
+        // build a suggestion context
+        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        Map<String, String> messages = getTestMessages();
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(
+                Locale.US).withSession(session).withMessages(messages);
+
+        // 2009 matches a date and no title
+        List<Suggestion> suggestions = suggestionService.suggest("2009",
+                context);
+        assertNotNull(suggestions);
+        assertEquals(5, suggestions.size());
+
+        Suggestion sugg1 = suggestions.get(0);
+        assertEquals("searchDocuments", sugg1.getType());
+        assertEquals("Search documents created after Jan 1, 2009",
+                sugg1.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg1.getIconURL());
+        assertEquals("fsd:dc_created_min:2009-01-01", sugg1.getValue());
+
+        Suggestion sugg2 = suggestions.get(1);
+        assertEquals("searchDocuments", sugg2.getType());
+        assertEquals("Search documents created before Jan 1, 2009",
+                sugg2.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
+        assertEquals("fsd:dc_created_max:2009-01-01", sugg2.getValue());
+
+        Suggestion sugg3 = suggestions.get(2);
+        assertEquals("searchDocuments", sugg3.getType());
+        assertEquals("Search documents modified after Jan 1, 2009",
+                sugg3.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
+        assertEquals("fsd:dc_modified_min:2009-01-01", sugg3.getValue());
+
+        Suggestion sugg4 = suggestions.get(3);
+        assertEquals("searchDocuments", sugg4.getType());
+        assertEquals("Search documents modified before Jan 1, 2009",
+                sugg4.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg4.getIconURL());
+        assertEquals("fsd:dc_modified_max:2009-01-01", sugg4.getValue());
+
+        Suggestion sugg5 = suggestions.get(4);
+        assertEquals("searchDocuments", sugg5.getType());
+        assertEquals("Search documents with keywords: '2009'", sugg5.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg5.getIconURL());
+        assertEquals("fsd:ecm_fulltext:2009", sugg5.getValue());
+
+        // 2012 both matches a title and a date
+        suggestions = suggestionService.suggest("2012", context);
+        assertNotNull(suggestions);
+        assertEquals(6, suggestions.size());
+
+        sugg1 = suggestions.get(0);
+        assertEquals("document", sugg1.getType());
+        assertEquals("The 2012 document", sugg1.getLabel());
+        assertEquals("/icons/file.gif", sugg1.getIconURL());
+        assertNotNull(sugg1.getValue());
     }
 
     protected Map<String, String> getTestMessages() {
         HashMap<String, String> messages = new HashMap<String, String>();
         messages.put("label.searchDocumentsByKeyword",
-                "Search document with keywords: '{0}'");
-       return messages;
+                "Search documents with keywords: '{0}'");
+        messages.put("label.search.beforeDate_fsd_dc_created",
+                "Search documents created before {0}");
+        messages.put("label.search.afterDate_fsd_dc_created",
+                "Search documents created after {0}");
+        messages.put("label.search.beforeDate_fsd_dc_modified",
+                "Search documents modified before {0}");
+        messages.put("label.search.afterDate_fsd_dc_modified",
+                "Search documents modified after {0}");
+        return messages;
     }
 
 }

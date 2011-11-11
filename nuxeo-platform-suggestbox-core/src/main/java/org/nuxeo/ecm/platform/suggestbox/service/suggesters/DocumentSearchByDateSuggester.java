@@ -1,7 +1,9 @@
 package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +27,9 @@ public class DocumentSearchByDateSuggester implements Suggester {
 
     final static String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;
 
-    final static String LABEL_BEFORE_PREFIX = "label.search.beforeDate";
+    final static String LABEL_BEFORE_PREFIX = "label.search.beforeDate_";
 
-    final static String LABEL_AFTER_PREFIX = "label.search.afterDate";
+    final static String LABEL_AFTER_PREFIX = "label.search.afterDate_";
 
     protected String[] searchFields;
 
@@ -39,23 +41,35 @@ public class DocumentSearchByDateSuggester implements Suggester {
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
+        I18nHelper i18n = I18nHelper.instanceFor(context.messages);
 
         // TODO: use SimpleDateFormat and use the locale information from the
         // context
         DateMatcher matcher = DateMatcher.fromInput(userInput);
-        SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+        SimpleDateFormat valueDateFormatter = new SimpleDateFormat(
+                DATE_FORMAT_PATTERN);
+        DateFormat labelDateFormatter = SimpleDateFormat.getDateInstance(
+                SimpleDateFormat.MEDIUM, context.locale);
+
         if (matcher.hasMatch()) {
-            String formatted = df.format(matcher.getDateSuggestion().getTime());
+            Date date = matcher.getDateSuggestion().getTime();
+            String formattedDateValue = valueDateFormatter.format(date);
+            String formattedDateLabel = labelDateFormatter.format(date);
+
             for (String field : searchFields) {
-                String valueAfter = field + "_min:" + formatted;
-                String labelAfter = context.messages.get(LABEL_AFTER_PREFIX
-                        + field.replace(':', '_'));
+                String valueAfter = field + "_min:" + formattedDateValue;
+                String labelAfterPrefix = LABEL_AFTER_PREFIX
+                        + field.replace(':', '_');
+                String labelAfter = i18n.translate(labelAfterPrefix,
+                        formattedDateLabel);
                 suggestions.add(new Suggestion(type, valueAfter, labelAfter,
                         iconURL));
 
-                String valueBefore = field + "_max:" + formatted;
-                String labelBefore = context.messages.get(LABEL_BEFORE_PREFIX
-                        + field.replace(':', '_'));
+                String valueBefore = field + "_max:" + formattedDateValue;
+                String labelBeforePrefix = LABEL_BEFORE_PREFIX
+                        + field.replace(':', '_');
+                String labelBefore = i18n.translate(labelBeforePrefix,
+                        formattedDateLabel);
                 suggestions.add(new Suggestion(type, valueBefore, labelBefore,
                         iconURL));
             }
