@@ -130,7 +130,6 @@ public class RuntimeFeature extends SimpleFeature {
                 }
             }
         }
-        harness.fireFrameworkStarted();
     }
 
     @Override
@@ -146,6 +145,11 @@ public class RuntimeFeature extends SimpleFeature {
         }
         // Deploy bundles
         deployTestClassBundles();
+    }
+
+    @Override
+    public void beforeRun(FeaturesRunner runner) throws Exception {
+        harness.fireFrameworkStarted();
     }
 
     @Override
