@@ -18,7 +18,12 @@
  */
 package org.nuxeo.ecm.platform.picture.convert.test;
 
-import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.*;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_CROP_X;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_CROP_Y;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_DEPTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_ROTATE_ANGLE;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
@@ -61,7 +66,6 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         int resizeHeight = 90;
         int resizeDepth = 8;
 
-
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(OPTION_RESIZE_WIDTH, resizeWidth);
         options.put(OPTION_RESIZE_HEIGHT, resizeHeight);
@@ -80,7 +84,8 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
             BufferedImage image = ImageIO.read(result.getBlob().getStream());
             assertNotNull("Resized image is null", image);
             assertEquals("Resized image width", resizeWidth, image.getWidth());
-            assertEquals("Resized image height", resizeHeight, image.getHeight());
+            assertEquals("Resized image height", resizeHeight,
+                    image.getHeight());
         }
     }
 
@@ -89,7 +94,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         String converter = "pictureRotation";
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
-        options.put(OPTION_ROTATE_ANGLE,90);
+        options.put(OPTION_ROTATE_ANGLE, 90);
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -128,7 +133,6 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         options.put(OPTION_RESIZE_WIDTH, cropWidth);
         options.put(OPTION_RESIZE_HEIGHT, cropHeight);
 
-
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
@@ -145,7 +149,6 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
             int width = image.getWidth();
             int height = image.getHeight();
             assertTrue("Original image size != (0,0)", width > 0 && height > 0);
-
 
             image = ImageIO.read(result.getBlob().getStream());
             assertNotNull("Croped image is null", image);

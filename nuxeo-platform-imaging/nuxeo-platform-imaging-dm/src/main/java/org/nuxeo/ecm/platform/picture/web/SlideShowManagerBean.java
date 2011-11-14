@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.picture.web;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -38,8 +40,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
@@ -76,10 +76,12 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
         repeat = false;
     }
 
+    @Override
     public void firstPic() {
         index = 1;
     }
 
+    @Override
     public void lastPic() {
         index = getChildren().size();
     }
@@ -94,14 +96,17 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
         repeat = null;
     }
 
+    @Override
     public Integer getIndex() {
         return index;
     }
 
+    @Override
     public void decIndex() {
         index--;
     }
 
+    @Override
     public void incIndex() {
         index++;
         if ((index) > getChildrenSize()) {
@@ -113,11 +118,13 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
         }
     }
 
+    @Override
     public void setIndex(Integer idx) {
         index = idx;
     }
 
-    @Observer( { EventNames.DOCUMENT_SELECTION_CHANGED,
+    @Override
+    @Observer({ EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHILDREN_CHANGED })
     @BypassInterceptors
     public void resetIndex() throws ClientException {
@@ -129,6 +136,7 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
         repeat = false;
     }
 
+    @Override
     public void inputValidation(ActionEvent arg0) {
         if (getChildrenSize() < index) {
             index = getChildrenSize();
@@ -138,6 +146,7 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
         }
     }
 
+    @Override
     public Integer getChildrenSize() {
         if (childrenSize == null) {
             childrenSize = getChildren().size();
@@ -145,6 +154,7 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
         return childrenSize;
     }
 
+    @Override
     public DocumentModel getChild() {
         if (index > getChildrenSize()) {
             index = childrenSize;
@@ -167,6 +177,7 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
         return children;
     }
 
+    @Override
     public void setChild(DocumentModel child) {
         this.child = child;
     }

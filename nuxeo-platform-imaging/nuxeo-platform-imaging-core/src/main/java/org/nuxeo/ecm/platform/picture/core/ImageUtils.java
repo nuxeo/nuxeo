@@ -20,21 +20,13 @@
 package org.nuxeo.ecm.platform.picture.core;
 
 import java.io.InputStream;
+
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author Max Stepanov
  */
 public interface ImageUtils {
-
-    @Deprecated
-    InputStream crop(InputStream in, int x, int y, int width, int height);
-
-    @Deprecated
-    InputStream resize(InputStream in, int width, int height);
-
-    @Deprecated
-    InputStream rotate(InputStream in, int angle);
 
     Blob crop(Blob blob, int x, int y, int width, int height);
 

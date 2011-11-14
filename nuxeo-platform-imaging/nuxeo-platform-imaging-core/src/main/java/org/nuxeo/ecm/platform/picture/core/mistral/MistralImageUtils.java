@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thomas Roger <troger@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.picture.core.mistral;
@@ -57,97 +55,7 @@ public class MistralImageUtils implements ImageUtils {
 
     private static final double QUALITY_SCALE = 0.25;
 
-    @Deprecated
-    public InputStream crop(InputStream in, int x, int y, int width, int height) {
-        try {
-            ImplementationFactoryJAI.getInstance();
-            ImplementationFactoryJ2D.getInstance().unregisterImplementation(
-                    ScaleOp.class);
-        } catch (Exception e) {
-        }
-        try {
-            EditableImage image = EditableImage.create(new ReadOp(in,
-                    ReadOp.Type.IMAGE));
-            image = image.execute2(new CropOp(x, y, width, height));
-            File resultFile = writeJpegFile(image);
-            if (resultFile != null) {
-                FileInputStream fis = new FileInputStream(resultFile);
-                Framework.trackFile(resultFile, fis);
-                return fis;
-            }
-        } catch (IOException e) {
-            log.error("Fail to crop image", e);
-        }
-        return null;
-    }
-
-    @Deprecated
-    public InputStream resize(InputStream in, int width, int height) {
-        try {
-            ImplementationFactoryJAI.getInstance();
-            ImplementationFactoryJ2D.getInstance().unregisterImplementation(
-                    ScaleOp.class);
-        } catch (Exception e) {
-        }
-        try {
-            EditableImage image = EditableImage.create(new ReadOp(in,
-                    ReadOp.Type.IMAGE));
-            int imageWidth = image.getWidth();
-            int imageHeight = image.getHeight();
-            if (imageWidth <= width && imageHeight <= height) {
-                return null;
-            }
-            double scale;
-            if (imageWidth * height >= imageHeight * width) {
-                /* scale by width */
-                scale = (double) width / (double) imageWidth;
-            } else {
-                /* scale by height */
-                scale = (double) height / (double) imageHeight;
-            }
-            while (scale < QUALITY_SCALE) {
-                image = image.execute2(new ScaleOp(QUALITY_SCALE, Quality.BEST));
-                imageWidth = image.getWidth();
-                imageHeight = image.getHeight();
-                if (imageWidth * height >= imageHeight * width) {
-                    /* scale by width */
-                    scale = (double) width / (double) imageWidth;
-                } else {
-                    /* scale by height */
-                    scale = (double) height / (double) imageHeight;
-                }
-            }
-            image = image.execute2(new ScaleOp(scale, Quality.BEST));
-            File resultFile = writeJpegFile(image);
-            if (resultFile != null) {
-                FileInputStream fis = new FileInputStream(resultFile);
-                Framework.trackFile(resultFile, fis);
-                return fis;
-            }
-        } catch (IOException e) {
-            log.error("Fail to resize image", e);
-        }
-        return null;
-    }
-
-    @Deprecated
-    public InputStream rotate(InputStream in, int angle) {
-        try {
-            EditableImage image = EditableImage.create(new ReadOp(in,
-                    ReadOp.Type.IMAGE));
-            image = image.execute2(new RotateQuadrantOp(angle));
-            File resultFile = writeJpegFile(image);
-            if (resultFile != null) {
-                FileInputStream fis = new FileInputStream(resultFile);
-                Framework.trackFile(resultFile, fis);
-                return fis;
-            }
-        } catch (IOException e) {
-            log.error("Fail to rotate image", e);
-        }
-        return null;
-    }
-
+    @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
         try {
             ImplementationFactoryJAI.getInstance();
@@ -156,8 +64,8 @@ public class MistralImageUtils implements ImageUtils {
         } catch (Exception e) {
         }
         try {
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
-                    ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.IMAGE));
             image = image.execute2(new CropOp(x, y, width, height));
             File resultFile = writeJpegFile(image);
             if (resultFile != null) {
@@ -171,7 +79,9 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
-    public Blob resize(Blob blob, String finalFormat, int width, int height, int depth) {
+    @Override
+    public Blob resize(Blob blob, String finalFormat, int width, int height,
+            int depth) {
         try {
             ImplementationFactoryJAI.getInstance();
             ImplementationFactoryJ2D.getInstance().unregisterImplementation(
@@ -179,8 +89,8 @@ public class MistralImageUtils implements ImageUtils {
         } catch (Exception e) {
         }
         try {
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
-                    ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.IMAGE));
             int imageWidth = image.getWidth();
             int imageHeight = image.getHeight();
             if (imageWidth <= width && imageHeight <= height) {
@@ -219,10 +129,11 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob rotate(Blob blob, int angle) {
         try {
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
-                    ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.IMAGE));
             image = image.execute2(new RotateQuadrantOp(angle));
             File resultFile = writeJpegFile(image);
             if (resultFile != null) {
@@ -261,6 +172,7 @@ public class MistralImageUtils implements ImageUtils {
 
     }
 
+    @Override
     public boolean isAvailable() {
         return true; // we only need the mistral jar in the classpath
     }

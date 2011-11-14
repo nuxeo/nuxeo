@@ -41,7 +41,8 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
 
     @Override
     public Blob getBlob() throws ClientException {
-        DocumentModel documentModel = getSession().getChildrenIterator(doc.getRef(), "Picture").next();
+        DocumentModel documentModel = getSession().getChildrenIterator(
+                doc.getRef(), "Picture").next();
         PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
         return picture.getPictureFromTitle("Original");
     }
@@ -52,7 +53,8 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     public List<Blob> getBlobs(String title) throws ClientException {
-        DocumentModelList docList = getSession().getChildren(doc.getRef(), "Picture");
+        DocumentModelList docList = getSession().getChildren(doc.getRef(),
+                "Picture");
         List<Blob> blobList = new ArrayList<Blob>(docList.size());
         for (DocumentModel documentModel : docList) {
             PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
@@ -64,9 +66,9 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     @Override
     public String getHash() throws ClientException {
         Blob blob = getBlob();
-        if (blob!=null) {
+        if (blob != null) {
             String h = blob.getDigest();
-            if (h!=null) {
+            if (h != null) {
                 return h;
             }
         }
@@ -74,7 +76,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     private CoreSession getSession() throws ClientException {
-        if (session == null && doc != null ) {
+        if (session == null && doc != null) {
             session = doc.getCoreSession();
         }
         if (session == null) {

@@ -46,86 +46,7 @@ public class IMImageUtils implements ImageUtils {
 
     private static final Log log = LogFactory.getLog(IMImageUtils.class);
 
-    @Deprecated
-    public InputStream crop(InputStream in, int x, int y, int width, int height) {
-        try {
-            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-            CommandAvailability commandAvailability = cles.getCommandAvailability("crop");
-            if (commandAvailability.isAvailable()) {
-                FileBlob fb = new FileBlob(in);
-                String path = fb.getFile().getAbsolutePath();
-                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
-                File img2 = File.createTempFile("target", "."
-                        + imageInfo.getFormat());
-                ImageCropper.crop(path, img2.getAbsolutePath(), width, height,
-                        x, y);
-                InputStream is = new FileInputStream(img2);
-                img2.delete();
-                return is;
-            } else {
-                MistralImageUtils miu = new MistralImageUtils();
-                return miu.crop(in, x, y, width, height);
-            }
-        } catch (Exception e) {
-            log.error("Crop with ImageMagick failed", e);
-            return null;
-        }
-    }
-
-    @Deprecated
-    public InputStream resize(InputStream in, int width, int height) {
-        try {
-            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-            CommandAvailability commandAvailability = cles.getCommandAvailability("resizer");
-            if (commandAvailability.isAvailable()) {
-                FileBlob fb = new FileBlob(in);
-                String path = fb.getFile().getAbsolutePath();
-
-                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
-                File img2 = File.createTempFile("target", "."
-                        + imageInfo.getFormat());
-                ImageResizer.resize(path, img2.getAbsolutePath(), width,
-                        height, imageInfo.getDepth());
-
-                InputStream is = new FileInputStream(img2);
-                img2.delete();
-
-                return is;
-            } else {
-                MistralImageUtils miu = new MistralImageUtils();
-                return miu.resize(in, width, height);
-            }
-        } catch (Exception e) {
-            log.error("Resizing with ImageMagick failed", e);
-        }
-        return null;
-    }
-
-    @Deprecated
-    public InputStream rotate(InputStream in, int angle) {
-        try {
-            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-            CommandAvailability commandAvailability = cles.getCommandAvailability("rotate");
-            if (commandAvailability.isAvailable()) {
-                FileBlob fb = new FileBlob(in);
-                String path = fb.getFile().getAbsolutePath();
-                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
-                File img2 = File.createTempFile("target", "."
-                        + imageInfo.getFormat());
-                ImageRotater.rotate(path, img2.getAbsolutePath(), angle);
-                InputStream is = new FileInputStream(img2);
-                img2.delete();
-                return is;
-            } else {
-                MistralImageUtils miu = new MistralImageUtils();
-                return miu.rotate(in, angle);
-            }
-        } catch (Exception e) {
-            log.error("Rotation with ImageMagick failed", e);
-        }
-        return null;
-    }
-
+    @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -154,6 +75,7 @@ public class IMImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob resize(Blob blob, String finalFormat, int width, int height,
             int depth) {
         try {
@@ -188,6 +110,7 @@ public class IMImageUtils implements ImageUtils {
         return null;
     }
 
+    @Override
     public Blob rotate(Blob blob, int angle) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -226,6 +149,7 @@ public class IMImageUtils implements ImageUtils {
         return suffix;
     }
 
+    @Override
     public boolean isAvailable() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         CommandAvailability commandAvailability = cles.getCommandAvailability("identify");

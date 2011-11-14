@@ -104,6 +104,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
     protected ArrayList<Map<String, Object>> selectItems;
 
+    @Override
     @Create
     public void initialize() throws Exception {
         log.debug("Initializing...");
@@ -114,12 +115,14 @@ public class PictureManagerBean implements PictureManager, Serializable {
         return navigationContext.getCurrentDocument();
     }
 
+    @Override
     public String getFileurlPicture() throws ClientException {
         ArrayList<Map<String, Object>> views = (ArrayList) getCurrentDocument().getProperty(
                 "picture", "views");
         return views.get(index).get("title") + ":content";
     }
 
+    @Override
     public void setFileurlPicture(String fileurlPicture) {
         this.fileurlPicture = fileurlPicture;
     }
@@ -137,6 +140,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         }
     }
 
+    @Override
     public ArrayList getSelectItems() throws ClientException {
         if (selectItems == null) {
             initSelectItems();
@@ -146,10 +150,12 @@ public class PictureManagerBean implements PictureManager, Serializable {
         }
     }
 
+    @Override
     public void setSelectItems(ArrayList selectItems) {
         this.selectItems = selectItems;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public String addPicture() throws Exception {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
@@ -213,6 +219,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         return navigationContext.getActionResult(doc, UserAction.AFTER_CREATE);
     }
 
+    @Override
     public String rotate90left() throws ClientException, IOException {
         DocumentModel doc = getCurrentDocument();
         PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
@@ -223,6 +230,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         return null;
     }
 
+    @Override
     public String rotate90right() throws ClientException, IOException {
         DocumentModel doc = getCurrentDocument();
         PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
@@ -233,6 +241,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         return null;
     }
 
+    @Override
     public String crop() throws ClientException, IOException {
         if (cropCoords != null && !cropCoords.equals("")) {
             DocumentModel doc = getCurrentDocument();
@@ -245,6 +254,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         return null;
     }
 
+    @Override
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED })
     @BypassInterceptors
@@ -270,6 +280,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         return RestHelper.addCurrentConversationParameters(url);
     }
 
+    @Override
     public void download(DocumentView docView) throws ClientException {
         if (docView != null) {
             DocumentLocation docLoc = docView.getDocumentLocation();
@@ -324,6 +335,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         }
     }
 
+    @Override
     @Destroy
     public void destroy() {
         log.debug("Removing Seam action listener...");
@@ -334,34 +346,42 @@ public class PictureManagerBean implements PictureManager, Serializable {
         selectItems = null;
     }
 
+    @Override
     public String getFilename() {
         return filename;
     }
 
+    @Override
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    @Override
     public Blob getFileContent() {
         return fileContent;
     }
 
+    @Override
     public void setFileContent(Blob fileContent) {
         this.fileContent = fileContent;
     }
 
+    @Override
     public Integer getIndex() {
         return index;
     }
 
+    @Override
     public void setIndex(Integer index) {
         this.index = index;
     }
 
+    @Override
     public String getCropCoords() {
         return cropCoords;
     }
 
+    @Override
     public void setCropCoords(String cropCoords) {
         this.cropCoords = cropCoords;
     }

@@ -27,8 +27,8 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Helper to handle the UNDEFINED Exif data type.
  * <p>
- * See
- * {@link http://www.leadtools.com/help/leadtools/v15/Main/API/Dllaux/ExifComments.htm}.
+ * See {@link http
+ * ://www.leadtools.com/help/leadtools/v15/Main/API/Dllaux/ExifComments.htm}.
  *
  * @author btatar
  */
@@ -44,7 +44,7 @@ public class ExifHelper {
 
     // the UNDEFINED data format
     public static final byte[] UNDEFINED = { 0, 0, 0, 0, 0, 0, 0, 0 };
-    
+
     private ExifHelper() {
     }
 

@@ -29,6 +29,7 @@ public class MultiviewPictureAdapterFactory implements DocumentAdapterFactory {
 
     private static final Log log = LogFactory.getLog(MultiviewPictureAdapterFactory.class);
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
         if (doc.hasFacet("MultiviewPicture")) {
             try {

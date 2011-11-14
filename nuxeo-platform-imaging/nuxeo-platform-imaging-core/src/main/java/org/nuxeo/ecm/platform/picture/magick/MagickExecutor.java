@@ -28,8 +28,8 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class to execute an ImageMagic command.
- * Depends on the {@link CommandLineExecutorService} to run external processes.
+ * Helper class to execute an ImageMagic command. Depends on the
+ * {@link CommandLineExecutorService} to run external processes.
  *
  * @author tiry
  */
@@ -37,7 +37,8 @@ public class MagickExecutor {
 
     private static final Log log = LogFactory.getLog(MagickExecutor.class);
 
-    protected static ExecResult execCommand( String commandName, CmdParameters params) throws CommandNotAvailable{
+    protected static ExecResult execCommand(String commandName,
+            CmdParameters params) throws CommandNotAvailable {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         return cles.execCommand(commandName, params);
     }

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.picture.magick.utils;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
@@ -32,7 +31,8 @@ public class ImageConverter extends MagickExecutor {
             throws Exception {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
-        params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
+        params.addNamedParameter("outputFilePath",
+                formatFilePath(outputFilePath));
         execCommand("converter", params);
     }
 

@@ -18,14 +18,12 @@
  */
 package org.nuxeo.ecm.platform.picture.convert.test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
@@ -80,7 +78,8 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
 
         for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(ImagingRessourcesHelper.getFileFromPath(path));
+            Blob blob = new FileBlob(
+                    ImagingRessourcesHelper.getFileFromPath(path));
             assertNotNull(blob);
             boolean ret = adapter.createPicture(blob, filename, "sample",
                     pictureTemplates);

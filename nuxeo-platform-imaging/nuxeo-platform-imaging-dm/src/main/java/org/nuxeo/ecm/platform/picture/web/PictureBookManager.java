@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.picture.web;
 
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,24 +34,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
 public interface PictureBookManager {
-
-    /**
-     * Sets the Time Interval. timeinterval is the time spend before the next
-     * picture is displayed in the slideshow in seconds.
-     *
-     * @param timeinterval an Integer holding the Time Interval
-     */
-    void setTimeinterval(Integer timeinterval);
-
-    /**
-     * Gets the Time Interval. timeinterval is the time spend before the next
-     * picture is displayed in the slideshow in seconds.
-     *
-     * @return an Integer holding the Time Interval
-     * @deprecated The time interval is now handled by the PictureBook layout
-     */
-    @Deprecated
-    Integer getTimeinterval();
 
     /**
      * Sets the title. This is the title of the PictureBook as defined in the
@@ -152,8 +132,8 @@ public interface PictureBookManager {
     Integer getMaxsize();
 
     /**
-     * Adds the current view to the views ArrayList using viewtitle, description,
-     * tag and maxsize.
+     * Adds the current view to the views ArrayList using viewtitle,
+     * description, tag and maxsize.
      */
     void addView();
 
@@ -167,12 +147,11 @@ public interface PictureBookManager {
 
     void initialize() throws Exception;
 
-
     String downloadSelectedBook() throws ClientException, IOException;
 
     String downloadAll() throws ClientException, IOException;
 
-    List<SelectItem> getSelectItems() throws ClientException ;
+    List<SelectItem> getSelectItems() throws ClientException;
 
     void setSelectItems(List<SelectItem> selectItems);
 

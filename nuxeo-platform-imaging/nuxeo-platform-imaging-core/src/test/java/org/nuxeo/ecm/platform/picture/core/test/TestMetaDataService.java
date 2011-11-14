@@ -19,12 +19,10 @@
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
@@ -81,20 +79,20 @@ public class TestMetaDataService extends NXRuntimeTestCase {
         assertNotNull(map.get(MetadataConstants.META_SUPPLEMENTAL_CATEGORIES));
         assertNotNull(map.get(MetadataConstants.META_WIDTH));
 
-//      those metadata are not found by the parser
-//        assertNotNull(map.get(MetadataConstants.META_COMMENT));
-//        assertNotNull(map.get(MetadataConstants.META_COLORSPACE));
-//        assertNotNull(map.get(MetadataConstants.META_COPYRIGHT));
-//        assertNotNull(map.get(MetadataConstants.META_DESCRIPTION));
-//        assertNotNull(map.get(MetadataConstants.META_EQUIPMENT));
-//        assertNotNull(map.get(MetadataConstants.META_EXPOSURE));
-//        assertNotNull(map.get(MetadataConstants.META_FOCALLENGTH));
-//        assertNotNull(map.get(MetadataConstants.META_HRESOLUTION));
-//        assertNotNull(map.get(MetadataConstants.META_ICCPROFILE));
-//        assertNotNull(map.get(MetadataConstants.META_LANGUAGE));
-//        assertNotNull(map.get(MetadataConstants.META_ISOSPEED));
-//        assertNotNull(map.get(MetadataConstants.META_VRESOLUTION));
-//        assertNotNull(map.get(MetadataConstants.META_WHITEBALANCE));
+        // those metadata are not found by the parser
+        // assertNotNull(map.get(MetadataConstants.META_COMMENT));
+        // assertNotNull(map.get(MetadataConstants.META_COLORSPACE));
+        // assertNotNull(map.get(MetadataConstants.META_COPYRIGHT));
+        // assertNotNull(map.get(MetadataConstants.META_DESCRIPTION));
+        // assertNotNull(map.get(MetadataConstants.META_EQUIPMENT));
+        // assertNotNull(map.get(MetadataConstants.META_EXPOSURE));
+        // assertNotNull(map.get(MetadataConstants.META_FOCALLENGTH));
+        // assertNotNull(map.get(MetadataConstants.META_HRESOLUTION));
+        // assertNotNull(map.get(MetadataConstants.META_ICCPROFILE));
+        // assertNotNull(map.get(MetadataConstants.META_LANGUAGE));
+        // assertNotNull(map.get(MetadataConstants.META_ISOSPEED));
+        // assertNotNull(map.get(MetadataConstants.META_VRESOLUTION));
+        // assertNotNull(map.get(MetadataConstants.META_WHITEBALANCE));
     }
 
 }

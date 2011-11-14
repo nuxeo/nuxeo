@@ -160,6 +160,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     private ConversionService converionService;
 
+    @Override
     public void setDocumentModel(DocumentModel doc) {
         this.doc = doc;
     }
@@ -221,8 +222,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.setPropertyValue("picture:" + FIELD_CREDIT,
                 (String) metadata.get(META_CREDIT));
         if (metadata.containsKey(META_DATE_CREATED)) {
-            doc.setPropertyValue("picture:" + FIELD_DATELINE, metadata.get(
-                    META_DATE_CREATED).toString());
+            doc.setPropertyValue("picture:" + FIELD_DATELINE,
+                    metadata.get(META_DATE_CREATED).toString());
         }
         doc.setPropertyValue("picture:" + FIELD_HEADLINE,
                 (String) metadata.get(META_HEADLINE));
@@ -360,16 +361,18 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                     filename, width, height, depth, fileContent);
             createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
                     THUMB_SIZE, filename, width, height, depth, fileContent);
-            createPictureimpl("Original Picture in JPEG format", "originalJpeg", "OriginalJpeg", null,
-                    filename, width, height, depth, fileContent);
+            createPictureimpl("Original Picture in JPEG format",
+                    "originalJpeg", "OriginalJpeg", null, filename, width,
+                    height, depth, fileContent);
 
         }
     }
 
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public void createPictureimpl(String description, String tag, String title,
-            Integer maxsize, String filename, Integer width, Integer height, Integer depth,
-            Blob fileContent) throws IOException, ClientException {
+            Integer maxsize, String filename, Integer width, Integer height,
+            Integer depth, Blob fileContent) throws IOException,
+            ClientException {
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("title", title);
@@ -395,7 +398,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
             Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
                     file, type);
-            String viewFilename = computeViewFilename(filename, JPEG_CONVERSATION_FORMAT);
+            String viewFilename = computeViewFilename(filename,
+                    JPEG_CONVERSATION_FORMAT);
             blob.setFilename(title + "_" + viewFilename);
             map.put("content", blob);
         } else {
@@ -407,14 +411,17 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             options.put(OPTION_RESIZE_WIDTH, size.x);
             options.put(OPTION_RESIZE_HEIGHT, size.y);
             options.put(OPTION_RESIZE_DEPTH, depth);
-            // use the registered conversion format for 'Medium' and 'Thumbnail' views
-            options.put(CONVERSION_FORMAT, imagingService.getConfigurationValue(CONVERSION_FORMAT,
-                JPEG_CONVERSATION_FORMAT));
+            // use the registered conversion format for 'Medium' and 'Thumbnail'
+            // views
+            options.put(CONVERSION_FORMAT,
+                    imagingService.getConfigurationValue(CONVERSION_FORMAT,
+                            JPEG_CONVERSATION_FORMAT));
             BlobHolder bh = new SimpleBlobHolder(fileContent);
             bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
             Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
                     file, type);
-            String viewFilename = computeViewFilename(filename, JPEG_CONVERSATION_FORMAT);
+            String viewFilename = computeViewFilename(filename,
+                    JPEG_CONVERSATION_FORMAT);
             blob.setFilename(title + "_" + viewFilename);
             map.put("content", blob);
         }
