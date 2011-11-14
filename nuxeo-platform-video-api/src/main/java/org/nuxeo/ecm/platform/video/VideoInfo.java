@@ -55,7 +55,7 @@ public final class VideoInfo implements Serializable {
             Pattern.CASE_INSENSITIVE);
 
     public static final Pattern FRAME_RATE_PATTERN = Pattern.compile(
-            "([\\d.]+)\\s+(?:fps|tb\\(r\\))", Pattern.CASE_INSENSITIVE);
+            "([\\d.]+)\\s+(?:fps|tbr)", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern BIT_RATE_PATTERN = Pattern.compile(
             "(\\d+)\\s+kb/s", Pattern.CASE_INSENSITIVE);

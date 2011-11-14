@@ -318,9 +318,11 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertEquals(Stream.VIDEO_TYPE, stream.getType());
         assertEquals("mpeg1video", stream.getCodec());
         assertEquals(104857, stream.getBitRate(), 0.1);
-        assertEquals(
-                "Stream #0.0: Video: mpeg1video, yuv420p, 320x200 [PAR 1:1 DAR 8:5], 104857 kb/s, 23.98 fps, 23.98 tbr, 1200k tbn, 23.98 tbc",
-                stream.getStreamInfo());
+        String streamInfo = stream.getStreamInfo();
+        // assert that the stream info contains common info, to avoid strict equals
+        assertTrue(streamInfo.contains("Video: mpeg1video"));
+        assertTrue(streamInfo.contains("320x200"));
+        assertTrue(streamInfo.contains("23.98 fps"));
     }
 
 }
