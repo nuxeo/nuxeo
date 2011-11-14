@@ -1,5 +1,5 @@
 org.nuxeo.ecm.product.name=Nuxeo DAM
-org.nuxeo.ecm.product.version=5.4.3-SNAPSHOT
+org.nuxeo.ecm.product.version=5.5-SNAPSHOT
 org.nuxeo.ecm.instance.name=Nuxeo DAM
 org.nuxeo.ecm.instance.description=Nuxeo DAM server
 
