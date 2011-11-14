@@ -52,14 +52,15 @@ boolean downloadInProgress = PackageDownloader.instance().isDownloadInProgress()
 <script type="text/javascript">
 
 function refreshDownloadTable() {
-  $("#downloadTable").delay(500).load('<%=currentPage.getAction()%> #downloadTable', function() {
+  setTimeout(function() { $("#downloadTable").load('<%=currentPage.getAction()%> #downloadTable', function() {
+      console.log("Reloading!");
       if ($("#downloadInProgress").html()=="true") {
-      refreshDownloadTable();
+        refreshDownloadTable();
       }
       else if ($("#downloadCompleted").html()=="true") {
         $("#btnNext").css("display","inline");
       }
-    });
+    })}, 1500);
 }
 
 $(document).ready(function(){
@@ -70,6 +71,7 @@ $(document).ready(function(){
    $("#btnNext").css("display","inline");
 <%};
   if (downloadInProgress) {%>
+  console.log("Staring reload!!!!");
   refreshDownloadTable();
 <%}%>
 });
@@ -104,6 +106,7 @@ $(document).ready(function(){
              %><fmt:message key="label.downloadStatus.COMPLETED"/><%
              break;
          case PendingDownload.CORRUPTED:
+         case PendingDownload.MISSING:
              %><fmt:message key="label.downloadStatus.CORRUPTED"/>
              <img src="<%=contextPath%>/images/broken.png" height="18"/><%
              break;
@@ -120,23 +123,34 @@ $(document).ready(function(){
               break;
           case PendingDownload.ABORTED:
           case PendingDownload.CORRUPTED:
+          case PendingDownload.MISSING:
               %>
               <A href="#" onclick="navigateTo('<%=currentPage.getAction()%>?reStartDownload=<%=dw.getPkg().getId()%>');">Retry download</A>
               <%
               break;
           default:
               %>
-         <div style="background-color:green;height:10px;width:<%=2*dw.getProgress()%>px"></div>
+         <div style="width:220px">
+         <div class="downloadProgress" style="width:<%=2*dw.getProgress()%>px"></div>
+         </div>
               <%
        }
        %>
        </div>
+      </td>
+      <td>
+      <%if (dw.getStatus()==PendingDownload.INPROGRESS) {%>
+        <%=dw.getProgress()%> %
+      <%}%>
       </td>
   </tr>
 <%}%>
 </table>
 <div style="display:none" id="downloadInProgress"><%=downloadInProgress%></div>
 <div style="display:none" id="downloadCompleted"><%=downloadCompleted%></div>
+<%if (downloadInProgress) {%>
+<div id="downloadWaiter">Download in progress</div>
+<%}%>
 </div>
 <%}%>
 

@@ -93,6 +93,9 @@ public class DownloadPackage {
     }
 
     public void setBaseUrl(String baseUrl) {
+        if (baseUrl!=null && !baseUrl.endsWith("/")) {
+            baseUrl = baseUrl+ "/";
+        }
         this.baseUrl = baseUrl;
     }
 

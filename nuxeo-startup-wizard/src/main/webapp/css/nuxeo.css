@@ -923,3 +923,9 @@ ul.hide {
   width:50px;
   cursor:pointer;
 }
+
+.downloadProgress {
+  background-color:green;
+  height:12px;
+  border-radius: 2px;
+}

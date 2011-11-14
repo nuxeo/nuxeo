@@ -32,13 +32,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -47,7 +52,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -57,7 +61,7 @@ import org.nuxeo.common.utils.FileUtils;
  */
 public class PackageDownloader {
 
-    protected static Log log = LogFactory.getLog(PackageDownloader.class);
+    protected final static Log log = LogFactory.getLog(PackageDownloader.class);
 
     protected static final int NB_DOWNLOAD_THREADS = 3;
 
@@ -69,7 +73,7 @@ public class PackageDownloader {
 
     protected static PackageDownloader instance;
 
-    protected HttpClient httpClient;
+    protected DefaultHttpClient httpClient;
 
     protected Boolean canReachServer = null;
 
@@ -81,30 +85,33 @@ public class PackageDownloader {
 
     boolean downloadStarted = false;
 
-    // public static final String BASE_URL =
-    // "http://community.nuxeo.com/static/releases/";
-    public static final String BASE_URL = "http://127.0.0.1/pkgs/";
+    protected String lastSelectionDigest;
+
+    public static final String BASE_URL = "http://community.nuxeo.com/static/staging/mp/"; //"http://127.0.0.1/pkgs/";
+
+    protected final AtomicInteger dwThreadCount = new AtomicInteger(0);
+    protected final AtomicInteger checkThreadCount = new AtomicInteger(0);
 
     protected ThreadPoolExecutor download_tpe = new ThreadPoolExecutor(
-            NB_DOWNLOAD_THREADS, NB_DOWNLOAD_THREADS, 60, TimeUnit.SECONDS,
+            NB_DOWNLOAD_THREADS, NB_DOWNLOAD_THREADS, 10L, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(QUEUESIZE), new ThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r);
                     t.setDaemon(false);
-                    t.setName("DownloaderThread");
+                    t.setName("DownloaderThread-" + dwThreadCount.incrementAndGet());
                     return t;
                 }
             });
 
     protected ThreadPoolExecutor check_tpe = new ThreadPoolExecutor(
-            NB_CHECK_THREADS, NB_CHECK_THREADS, 60, TimeUnit.SECONDS,
+            NB_CHECK_THREADS, NB_CHECK_THREADS, 10L, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(QUEUESIZE), new ThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r);
                     t.setDaemon(false);
-                    t.setName("MD5CheckThread");
+                    t.setName("MD5CheckThread-" + checkThreadCount.incrementAndGet());
                     return t;
                 }
             });
@@ -117,19 +124,31 @@ public class PackageDownloader {
                 SSLSocketFactory.getSocketFactory(), 443));
         BasicHttpParams httpParams = new BasicHttpParams();
         HttpProtocolParams.setUseExpectContinue(httpParams, false);
-        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(
-                httpParams, registry), httpParams);
+        ConnManagerParams.setMaxTotalConnections(httpParams, NB_DOWNLOAD_THREADS);
+        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, registry);
+        httpClient = new DefaultHttpClient(cm, httpParams);
     }
 
     public synchronized static PackageDownloader instance() {
         if (instance == null) {
             instance = new PackageDownloader();
             instance.download_tpe.prestartAllCoreThreads();
+            instance.check_tpe.prestartAllCoreThreads();
         }
         return instance;
     }
 
-    protected String lastSelectionDigest;
+    public void setProxy (String proxy, int port, String login, String password) {
+        if (proxy!=null) {
+            HttpHost proxyHost = new HttpHost(proxy, port);
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
+            if (login!=null) {
+                httpClient.getCredentialsProvider().setCredentials(
+                    new AuthScope(proxy, port),
+                    new UsernamePasswordCredentials(login, password));
+            }
+        }
+    }
 
     protected String getSelectionDigest(List<String> ids) {
         ArrayList<String> lst = new ArrayList<String>(ids);
@@ -145,7 +164,7 @@ public class PackageDownloader {
     public void selectOptions(List<String> ids) {
         String newSelectionDigest = getSelectionDigest(ids);
         if (lastSelectionDigest != null) {
-            if (lastSelectionDigest.endsWith(newSelectionDigest)) {
+            if (lastSelectionDigest.equals(newSelectionDigest)) {
                 return;
             }
         }
@@ -167,7 +186,7 @@ public class PackageDownloader {
 
     public boolean canReachServer() {
         if (canReachServer == null) {
-            HttpGet ping = new HttpGet(BASE_URL + "ping.html");
+            HttpGet ping = new HttpGet(BASE_URL + "packages.xml");
             try {
                 HttpResponse response = httpClient.execute(ping);
                 if (response.getStatusLine().getStatusCode() == 200) {
@@ -293,12 +312,18 @@ public class PackageDownloader {
         final PendingDownload download = new PendingDownload(pkg);
         if (pendingDownloads.addIfAbsent(download)) {
             Runnable downloadRunner = new Runnable() {
+
                 @Override
                 public void run() {
+                    log.info("Starting download on Thread " + Thread.currentThread().getName());
                     download.setStatus(PendingDownload.INPROGRESS);
                     String url = pkg.getDownloadUrl();
                     if (!url.startsWith("http")) {
-                        url = BASE_URL + url;
+                        if (!BASE_URL.endsWith("/")) {
+                            url = BASE_URL + "/" + url;
+                        } else {
+                            url = BASE_URL + url;
+                        }
                     }
                     File filePkg = null;
                     HttpGet dw = new HttpGet(url);
@@ -317,7 +342,7 @@ public class PackageDownloader {
                             download.setStatus(PendingDownload.COMPLETED);
                         } else if (response.getStatusLine().getStatusCode() == 404) {
                             log.error("Package " + pkg.filename
-                                    + " not found !");
+                                    + " not found :" + url);
                             download.setStatus(PendingDownload.MISSING);
                             return;
                         } else {
@@ -371,16 +396,27 @@ public class PackageDownloader {
             }
             stream.close();
             byte[] b = md.digest();
-            return Base64.encodeBytes(b);
+            return md5ToHex(b);
         } catch (Exception e) {
             log.error("Error while computing Digest ", e);
             return null;
         }
     }
 
+    protected static String md5ToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xFF & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
     public boolean isDownloadStarted() {
         return downloadStarted;
-        // return pendingDownloads.size() > 0;
     }
 
     public boolean isDownloadCompleted() {
