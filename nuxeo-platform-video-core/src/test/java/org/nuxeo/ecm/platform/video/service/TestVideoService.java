@@ -93,7 +93,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
         assertEquals(768, transcodedVideo.getWidth());
         assertEquals(480, transcodedVideo.getHeight());
         assertEquals(23.98, transcodedVideo.getFrameRate());
-        assertEquals("webm", transcodedVideo.getFormat());
+        assertEquals("matroska,webm", transcodedVideo.getFormat());
     }
 
     protected static Video getTestVideo() throws IOException {

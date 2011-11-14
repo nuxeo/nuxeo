@@ -42,7 +42,7 @@ public class TestVideoInfo {
         VideoInfo videoInfo = VideoInfo.fromFFmpegOutput(Arrays.asList(ffmpegOutput));
         assertNotNull(videoInfo);
 
-        assertEquals("matroska", videoInfo.getFormat());
+        assertEquals("matroska,webm", videoInfo.getFormat());
         assertEquals(21 * 60 + 9 + 2d / 100, videoInfo.getDuration(), 0.1);
         assertEquals(1280, videoInfo.getWidth());
         assertEquals(720, videoInfo.getHeight());

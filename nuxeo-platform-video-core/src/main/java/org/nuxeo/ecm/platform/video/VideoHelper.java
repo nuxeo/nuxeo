@@ -210,10 +210,18 @@ public class VideoHelper {
 
     public static void updateVideoInfo(DocumentModel docModel, Blob video)
             throws ClientException {
-        if (video == null) {
+        VideoInfo videoInfo = getVideoInfo(video);
+        if (videoInfo == null) {
             docModel.setPropertyValue("vid:info",
                     (Serializable) VideoInfo.EMPTY_INFO.toMap());
             return;
+        }
+        docModel.setPropertyValue("vid:info", (Serializable) videoInfo.toMap());
+    }
+
+    public static VideoInfo getVideoInfo(Blob video) throws ClientException {
+        if (video == null) {
+            return null;
         }
 
         File file = null;
@@ -230,9 +238,7 @@ public class VideoHelper {
             // read the duration with a first command to adjust the best rate:
             ExecResult result = cleService.execCommand(
                     FFMPEG_INFO_COMMAND_LINE, params);
-            VideoInfo videoInfo = VideoInfo.fromFFmpegOutput(result.getOutput());
-            docModel.setPropertyValue("vid:info",
-                    (Serializable) videoInfo.toMap());
+            return VideoInfo.fromFFmpegOutput(result.getOutput());
         } catch (Exception e) {
             throw ClientException.wrap(e);
         } finally {

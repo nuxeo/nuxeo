@@ -41,7 +41,7 @@ public final class VideoInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final Pattern FORMAT_PATTERN = Pattern.compile(
-            "^\\s*(Input|Output) #0, (\\w+).+$\\s*", Pattern.CASE_INSENSITIVE);
+            "^\\s*(Input|Output) #0, ([\\w,]+).+$\\s*", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern DURATION_PATTERN = Pattern.compile(
             "Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d+)",
@@ -144,6 +144,9 @@ public final class VideoInfo implements Serializable {
             Matcher matcher = FORMAT_PATTERN.matcher(line);
             if (matcher.find()) {
                 format = matcher.group(2).trim();
+                if (format.endsWith(",")) {
+                    format = format.substring(0, format.length() - 1);
+                }
                 continue;
             }
 

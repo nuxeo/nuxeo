@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
+import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -174,7 +175,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             BlobHolder result = conversionService.convert(
                     conversion.getConverter(), blobHolder, parameters);
             @SuppressWarnings("unchecked")
-            VideoInfo videoInfo = VideoInfo.fromFFmpegOutput((List<String>) result.getProperty("cmdOutput"));
+            VideoInfo videoInfo = VideoHelper.getVideoInfo(result.getBlob());
             return TranscodedVideo.fromBlobAndInfo(conversionName,
                     result.getBlob(), videoInfo);
         } catch (ClientException e) {
