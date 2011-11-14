@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -253,6 +254,7 @@ public class DownloadServlet extends HttpServlet {
 
             OutputStream out = resp.getOutputStream();
             in = blob.getStream();
+            BufferingServletOutputStream.stopBuffering(out);
             byte[] buffer = new byte[BUFFER_SIZE];
             int read;
             while ((read = in.read(buffer)) != -1) {
