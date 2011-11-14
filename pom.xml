@@ -3281,6 +3281,12 @@
         <artifactId>textcat</artifactId>
         <version>${textcat.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>de.schlichtherle.io</groupId>
+        <artifactId>truezip</artifactId>
+        <version>6.6</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
