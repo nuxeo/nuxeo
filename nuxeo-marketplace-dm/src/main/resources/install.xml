@@ -1,8 +1,4 @@
 <install>
-  <copy file="${package.root}/install/artifacts.properties" todir="${env.server.home}/sdk"
-    overwrite="true" />
-  <copy file="${package.root}/install/test-artifacts.properties" todir="${env.server.home}/sdk"
-    overwrite="true" />
   <copy dir="${package.root}/install/bundles" todir="${env.bundles}" />
   <copy dir="${package.root}/install/lib" todir="${env.lib}" />
   <copy dir="${package.root}/install/syslib" todir="${env.syslib}" />
@@ -12,4 +8,6 @@
     ignore="!Platform.isTomcat()" overwrite="true" />
   <append file="${package.root}/install/distribution.properties" todir="${env.templates}/common/config" />
   <append file="${package.root}/install/nuxeo.defaults" todir="${env.templates}" />
+  <append file="${package.root}/install/artifacts.properties" todir="${env.server.home}/sdk" />
+  <append file="${package.root}/install/test-artifacts.properties" todir="${env.server.home}/sdk" />
 </install>
