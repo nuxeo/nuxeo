@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
@@ -176,6 +177,7 @@ public final class Resources extends HttpServlet implements Serializable {
 
         boolean supportsGzip = Utils.supportsGzip(request);
         OutputStream os = response.getOutputStream();
+        BufferingServletOutputStream.stopBuffering(os);
         if (supportsGzip) {
             response.setHeader("Content-Encoding", "gzip");
             // Needed by proxy servers

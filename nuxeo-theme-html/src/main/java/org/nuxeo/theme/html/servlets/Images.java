@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.themes.ThemeException;
@@ -54,6 +55,7 @@ public final class Images extends HttpServlet implements Serializable {
         }
         if (data != null) {
             OutputStream os = response.getOutputStream();
+            BufferingServletOutputStream.stopBuffering(os);
             String ext = FileUtils.getFileExtension(path);
             String mimeType = Utils.getImageMimeType(ext);
             response.addHeader("content-type", mimeType);
