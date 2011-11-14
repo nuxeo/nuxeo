@@ -288,8 +288,7 @@ org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
 org.nuxeo.distribution.server=tomcat
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
-org.nuxeo.distribution.package=zip
-    </echo>
+org.nuxeo.distribution.package=zip</echo>
     <copy file="${distribution.dir}/templates/common/config/distribution.properties"
           todir="${distribution.dir}/sdk" />
   </target>

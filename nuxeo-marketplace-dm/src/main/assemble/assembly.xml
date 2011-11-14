@@ -7,6 +7,7 @@
            uri="urn:nuxeo-artifact" />
 
   <target name="build" description="Build Nuxeo DM Marketplace package">
+    <tstamp />
     <delete failonerror="false"
             dir="${maven.project.build.directory}/marketplace" />
     <mkdir dir="${maven.project.build.directory}/marketplace" />
@@ -22,6 +23,8 @@
     </copy>
     <nx:zipdiff file1="${maven.project.build.directory}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
                 file2="${maven.project.build.directory}/nuxeo-distribution-cap-${nuxeo.distribution.version}.zip"
+                includesfile="${maven.project.build.directory}/includes"
+                excludesfile="${maven.project.build.directory}/excludesfile"
                 patternsetid="dm.versus.cap">
     </nx:zipdiff>
     <unzip src="${maven.project.build.directory}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
@@ -30,6 +33,7 @@
     </unzip>
 
     <!-- System libraries -->
+    <mkdir dir="${maven.project.build.directory}/marketplace/install/syslib" />
     <!-- Move some libraries from lib to syslib ?
     <move todir="${maven.project.build.directory}/marketplace/install/syslib">
       <fileset dir="${maven.project.build.directory}/marketplace/install/lib">
@@ -38,16 +42,26 @@
     -->
 
     <!-- DM templates -->
-    <unzip dest="${maven.project.build.directory}/templates" overwrite="true">
+    <unzip dest="${maven.project.build.directory}/marketplace/install/templates"
+           overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-common-dm" />
     </unzip>
     <!-- DM Tomcat templates -->
-    <unzip dest="${maven.project.build.directory}/templates-tomcat"
+    <unzip dest="${maven.project.build.directory}/marketplace/install/templates-tomcat"
            overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-tomcat-dm" />
     </unzip>
+
+    <!-- DM properties to append -->
+    <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## nuxeo-marketplace-dm
+org.nuxeo.distribution.name=dm
+org.nuxeo.distribution.version=${maven.project.version}
+org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
+org.nuxeo.distribution.package=mp</echo>
+    <echo file="${maven.project.build.directory}/marketplace/install/nuxeo.defaults">## nuxeo-marketplace-dm
+org.nuxeo.ecm.product.name=Nuxeo DM</echo>
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${maven.project.build.directory}/marketplace" />

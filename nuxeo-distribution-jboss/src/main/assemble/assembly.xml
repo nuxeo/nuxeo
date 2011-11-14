@@ -309,14 +309,12 @@ org.nuxeo.ecm.product.name=Nuxeo DM
   </target>
 
   <target name="set-distribution-properties">
-    <echo append="false" file="${distribution.properties.file}">
-## DO NOT MANUALLY EDIT THIS FILE
+    <echo append="false" file="${distribution.properties.file}">## DO NOT MANUALLY EDIT THIS FILE
 org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
 org.nuxeo.distribution.server=jboss
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
-org.nuxeo.distribution.package=zip
-    </echo>
+org.nuxeo.distribution.package=zip</echo>
   </target>
 
   <target name="apply-ear">

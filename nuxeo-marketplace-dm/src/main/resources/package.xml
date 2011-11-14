@@ -1,4 +1,4 @@
-<package type="addon" name="nuxeo-shell" version="1.0.1">
+<package type="addon" name="nuxeo-dm" version="@VERSION@">
   <title>Nuxeo DM</title>
   <description>
     <p>Nuxeo DM.</p>
@@ -11,12 +11,14 @@
   </description>
   <home-page>http://doc.nuxeo.com/x/bIEk</home-page>
   <vendor>Nuxeo</vendor>
-  <hotreload-support>false</hotreload-support>
-  <require-terms-and-conditions-acceptance>false
-  </require-terms-and-conditions-acceptance>
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false -->
+  <!-- </require-terms-and-conditions-acceptance> -->
   <NuxeoValidationState>nuxeo_certified</NuxeoValidationState>
   <ProductionState>production_ready</ProductionState>
   <platforms>
     <platform>cap-@VERSION@</platform>
   </platforms>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
 </package>
