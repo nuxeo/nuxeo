@@ -43,9 +43,12 @@ public class SimpleNavigationHandler {
             "Connect|connectForm.jsp|1|0",
             "ConnectCallback|connectCallback.jsp|0|1",
             "ConnectFinish|connectFinish.jsp|0|0",
+            "PackagesSelection|packagesSelection.jsp|1|0",
+            "PackagesDownload|packagesDownload.jsp|1|0",
             "Recap|recapScreen.jsp|1|0",
             "Restart|reStarting.jsp|1|1",
-            "Reset|Welcome.jsp|1|1"};
+            "Reset|Welcome.jsp|1|1",
+            "PackageOptionsResource||1|1"};
 
     protected List<Page> pages = new ArrayList<Page>();
 
@@ -78,6 +81,7 @@ public class SimpleNavigationHandler {
                 page.prev = previousPage;
             }
 
+            // XXX false !
             page.progress = new Double((idx + 1) * (100.0 / nav.length)).intValue();
             previousPage = page;
 

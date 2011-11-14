@@ -41,9 +41,17 @@ public class DownloadablePackageOption {
 
     protected final String id;
 
-    public DownloadablePackageOption(DownloadPackage pkg) {
+    protected DownloadablePackageOption parent;
+
+    public DownloadablePackageOption(DownloadPackage pkg, int idx) {
         this.pkg = pkg;
-        this.id = UUID.randomUUID().toString();
+        //this.id = UUID.randomUUID().toString();
+        this.id = "o"+idx;
+    }
+
+    public DownloadablePackageOption(DownloadPackage pkg, String id) {
+        this.pkg = pkg;
+        this.id = id;
     }
 
     public boolean isExclusive() {
@@ -78,10 +86,28 @@ public class DownloadablePackageOption {
 
     public void addChildPackage(DownloadablePackageOption child) {
         childrenPackages.add(child);
+        child.setParent(this);
+    }
+
+    protected void setParent(DownloadablePackageOption parent) {
+        this.parent=parent;
+    }
+
+    public List<DownloadablePackageOption> getSiblingPackages() {
+
+        List<DownloadablePackageOption> siblings = new ArrayList<DownloadablePackageOption>();
+        if (parent!=null) {
+            for (DownloadablePackageOption sibling : parent.getChildrenPackages()) {
+                if (sibling.getId()!= this.getId()) {
+                    siblings.add(sibling);
+                }
+            }
+        }
+        return siblings;
     }
 
     public String getLabel() {
-        if (label==null) {
+        if (label==null && pkg!=null) {
             return pkg.getLabel();
         }
         return label;
@@ -98,6 +124,17 @@ public class DownloadablePackageOption {
     public String getId() {
         return id;
     }
-    
-    
+
+    public String getColor() {
+        if (pkg!=null) {
+            return pkg.getColor();
+        }
+        return "";
+    }
+
+    public DownloadablePackageOption getParent() {
+        return parent;
+    }
+
+
 }
