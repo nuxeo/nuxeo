@@ -512,6 +512,10 @@ public class ConfigurationGenerator {
             // template
             userTemplatesList = userConfig.getProperty(PARAM_TEMPLATE_NAME);
         }
+        if (userTemplatesList == null) {
+            log.warn("No template found in configuration! Fallback on 'default'.");
+            userTemplatesList = "default";
+        }
         return userTemplatesList;
     }
 
