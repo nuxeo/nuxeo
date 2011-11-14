@@ -34,7 +34,7 @@ public class DocumentSearchByPropertySuggester implements Suggester {
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
-        Suggestion suggestion = new Suggestion(type, searchField + ":"
+        Suggestion suggestion = new Suggestion(type, searchField + " "
                 + userInput, i18n.translate(label, userInput), iconURL);
         if (disabled) {
             suggestion.disable();

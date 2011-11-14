@@ -1,12 +1,12 @@
 package org.nuxeo.ecm.platform.suggestbox.service;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Base class and default implementation for passing contextual information to
@@ -24,7 +24,7 @@ public class SuggestionContext extends HashMap<String, Object> {
 
     public final String suggesterGroup;
 
-    public final NuxeoPrincipal principal;
+    public final Principal principal;
 
     public final Map<String, String> messages = new HashMap<String, String>();
 
@@ -34,7 +34,7 @@ public class SuggestionContext extends HashMap<String, Object> {
 
     public Locale locale = Locale.ENGLISH;
 
-    public SuggestionContext(String suggesterGroup, NuxeoPrincipal principal)
+    public SuggestionContext(String suggesterGroup, Principal principal)
             throws IllegalArgumentException {
         if (suggesterGroup == null) {
             throw new IllegalArgumentException(

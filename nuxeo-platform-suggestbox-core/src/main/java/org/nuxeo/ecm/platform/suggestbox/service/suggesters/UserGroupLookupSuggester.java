@@ -51,19 +51,25 @@ public class UserGroupLookupSuggester implements Suggester {
         List<Suggestion> searchSuggestions = new ArrayList<Suggestion>();
         try {
             for (DocumentModel user : userManager.searchUsers(userInput)) {
+                // suggest to navigate to the user profile
                 String userLabel = user.getProperty("user:firstName").getValue(
                         String.class);
                 userLabel += " ";
                 userLabel += user.getProperty("user:lastName").getValue(
                         String.class);
+                if (userLabel.trim().isEmpty()) {
+                    userLabel = user.getId();
+                }
                 suggestions.add(new Suggestion(CommonSuggestionTypes.USER,
                         user.getId(), userLabel, userIconURL));
+
+                // suggest to search documents related to the user profile
                 for (String searchField : searchFields) {
                     String i18nLabel = i18n.translate(searchLabelPrefix
                             + searchField.replaceAll(":", "_"), userLabel);
                     Suggestion suggestion = new Suggestion(
                             CommonSuggestionTypes.SEARCH_DOCUMENTS, searchField
-                                    + ":" + user.getId(), i18nLabel,
+                                    + " " + user.getId(), i18nLabel,
                             searchIconURL);
                     searchSuggestions.add(suggestion);
                 }

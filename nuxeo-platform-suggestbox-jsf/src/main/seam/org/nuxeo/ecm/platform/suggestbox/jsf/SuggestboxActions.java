@@ -25,13 +25,12 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -40,14 +39,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.ecm.platform.suggestbox.utils.DateMatcher;
-import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.suggestbox.service.CommonSuggestionTypes;
+import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
+import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
+import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
+import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
@@ -56,10 +56,14 @@ import org.nuxeo.ecm.webapp.security.UserManagementActions;
 import org.nuxeo.ecm.webapp.security.UserSuggestionActionsBean;
 import org.nuxeo.runtime.api.Framework;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 @Name("suggestboxActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
 public class SuggestboxActions implements Serializable {
+
+    private static final Log log = LogFactory.getLog(SuggestboxActions.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -93,6 +97,12 @@ public class SuggestboxActions implements Serializable {
     @In(create = true)
     protected MultiNavTreeManager multiNavTreeManager;
 
+    @In(create = true)
+    protected Map<String, String> messages;
+
+    @In(create = true)
+    protected Locale locale;
+
     public DocumentModel getDocumentModel(String id) throws ClientException {
         return documentManager.getDocument(new IdRef(id));
     }
@@ -108,98 +118,73 @@ public class SuggestboxActions implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public List<SearchBoxSuggestion> getSuggestions(Object input)
-            throws ClientException {
-        List<SearchBoxSuggestion> suggestions = new ArrayList<SearchBoxSuggestion>();
-        if (input == null) {
-            return suggestions;
-        }
+    public List<Suggestion> getSuggestions(Object input) {
+
+        SuggestionService service = Framework.getLocalService(SuggestionService.class);
+        SuggestionContext ctx = new SuggestionContext("searchbox",
+                documentManager.getPrincipal()).withSession(documentManager).withCurrentDocument(
+                navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
+                messages);
         try {
-            // Document repository related suggestions
-            PageProviderService ppService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
-            props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                    (Serializable) documentManager);
-            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    FACETED_SEARCH_SUGGESTION, null, null, null, props,
-                    new Object[] { input });
-            for (DocumentModel doc : pp.getCurrentPage()) {
-                suggestions.add(SearchBoxSuggestion.forDocument(doc));
-            }
-
-            // Users and groups related suggestions
-            List<SearchBoxSuggestion> searchBoxByAuthor = new ArrayList<SearchBoxSuggestion>();
-            for (DocumentModel user : getUsersSuggestions(input)) {
-                suggestions.add(SearchBoxSuggestion.forUser(user));
-                searchBoxByAuthor.add(SearchBoxSuggestion.forDocumentsByAuthor(user));
-            }
-            for (DocumentModel group : getGroupSuggestions(input)) {
-                suggestions.add(SearchBoxSuggestion.forGroup(group));
-            }
-            suggestions.addAll(searchBoxByAuthor);
-
-            // Handle date related suggestions
-            DateMatcher matcher = DateMatcher.fromInput(input.toString());
-            if (matcher != null && matcher.hasMatch()) {
-                Calendar date = matcher.getDateSuggestion();
-                suggestions.add(SearchBoxSuggestion.forDocumentsCreatedAfterDate(date));
-                suggestions.add(SearchBoxSuggestion.forDocumentsModifiedAfterDate(date));
-                suggestions.add(SearchBoxSuggestion.forDocumentsCreatedBeforeDate(date));
-                suggestions.add(SearchBoxSuggestion.forDocumentsModifiedBeforeDate(date));
-                // TODO: handle date ranges too
-            }
-
-            // always add the classical full-text search
-            suggestions.add(SearchBoxSuggestion.forDocumentsByKeyWords(input.toString()));
-        } catch (Exception e) {
-            throw new ClientException(e);
+            return service.suggest(input.toString(), ctx);
+        } catch (SuggestionException e) {
+            // log the exception rather than trying to display it since this
+            // method is called by ajax events when typing in the searchbox.
+            log.error(e, e);
+            return Collections.emptyList();
         }
-        return suggestions;
     }
 
+    // TODO: move this logic in the Suggestion service with pluggable action
+    // handler
     public String handleSelection(String suggestionType, String suggestionValue)
             throws ClientException, ParseException {
         setSearchKeywords("");
-        DateFormat df = new SimpleDateFormat(
-                SearchBoxSuggestion.DATE_FORMAT_PATTERN);
-        if (suggestionType.equals(SearchBoxSuggestion.DOCUMENT_SUGGESTION)) {
+        if (suggestionType.equals(CommonSuggestionTypes.DOCUMENT)) {
             navigationContext.navigateToRef(new IdRef(suggestionValue));
             return "view_documents";
-        } else if (suggestionType.equals(SearchBoxSuggestion.USER_SUGGESTION)) {
+        } else if (suggestionType.equals(CommonSuggestionTypes.USER)) {
             return userManagementActions.viewUser(suggestionValue);
-        } else if (suggestionType.equals(SearchBoxSuggestion.GROUP_SUGGESTION)) {
+        } else if (suggestionType.equals(CommonSuggestionTypes.GROUP)) {
             return groupManagementActions.viewGroup(suggestionValue);
-        } else if (suggestionType.equals(SearchBoxSuggestion.DOCUMENTS_BY_AUTHOR_SUGGESTION)) {
-            return handleFacetedSearch("fsd:dc_creator", suggestionValue);
-        } else if (suggestionType.equals(SearchBoxSuggestion.DOCUMENTS_MODIFIED_AFTER_SUGGESTION)) {
-            return handleFacetedSearch("fsd:dc_modified_min",
-                    df.parse(suggestionValue));
-        } else if (suggestionType.equals(SearchBoxSuggestion.DOCUMENTS_CREATED_AFTER_SUGGESTION)) {
-            return handleFacetedSearch("fsd:dc_created_min",
-                    df.parse(suggestionValue));
-        } else if (suggestionType.equals(SearchBoxSuggestion.DOCUMENTS_MODIFIED_BEFORE_SUGGESTION)) {
-            return handleFacetedSearch("fsd:dc_modified_max",
-                    df.parse(suggestionValue));
-        } else if (suggestionType.equals(SearchBoxSuggestion.DOCUMENTS_CREATED_BEFORE_SUGGESTION)) {
-            return handleFacetedSearch("fsd:dc_created_max",
-                    df.parse(suggestionValue));
+        } else if (suggestionType.equals(CommonSuggestionTypes.SEARCH_DOCUMENTS)) {
+            return handleFacetedSearch(suggestionValue);
         } else {
             // fallback to basic keyword search suggestion
-            return handleFacetedSearch("fsd:ecm_fulltext", suggestionValue);
+            return handleFacetedSearch("fsd:ecm_fulltext");
         }
     }
 
-    protected String handleFacetedSearch(String searchField,
-            Serializable searchValue) throws ClientException {
+    protected String handleFacetedSearch(String suggestionValue)
+            throws ClientException {
+        DateFormat df = new SimpleDateFormat(Suggestion.DATE_FORMAT_PATTERN);
         facetedSearchActions.clearSearch();
         facetedSearchActions.setCurrentContentViewName(null);
         String contentViewName = facetedSearchActions.getCurrentContentViewName();
         ContentView contentView = contentViewActions.getContentView(contentViewName);
         DocumentModel dm = contentView.getSearchDocumentModel();
+        String[] fields = suggestionValue.split(" ", 2);
+        if (fields.length != 2) {
+            log.error("Invalid search value: should be a fieldname and a"
+                    + " value separated by a whitespace, got: "
+                    + suggestionValue);
+            return null;
+        }
+        String searchField = fields[0];
+        String searchValue = fields[1];
+
         Property searchProperty = dm.getProperty(searchField);
         if (searchProperty.isList()) {
+            // list type is used for multi-valued option fields such as
+            // fsd_dc_creator.
             dm.setPropertyValue(searchField,
-                    (Serializable) Arrays.asList(searchValue));
+                    (Serializable) Collections.singleton(searchValue));
+        } else if (searchProperty.getField().getType().equals(DateType.INSTANCE)) {
+            try {
+                dm.setPropertyValue(searchField, df.parse(searchValue));
+            } catch (ParseException e) {
+                log.error("Invalid date value: " + searchValue);
+            }
         } else {
             dm.setPropertyValue(searchField, searchValue);
         }
@@ -208,141 +193,10 @@ public class SuggestboxActions implements Serializable {
     }
 
     public String performKerwordsSearch() throws ClientException {
-        String outcome = handleFacetedSearch("fsd:ecm_fulltext", searchKeywords);
+        String outcome = handleFacetedSearch("fsd:ecm_fulltext "
+                + searchKeywords);
         setSearchKeywords("");
         return outcome;
     }
 
-    public static class SearchBoxSuggestion {
-
-        public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
-
-        public static final String DOCUMENT_SUGGESTION = "document";
-
-        public static final String USER_SUGGESTION = "user";
-
-        public static final String GROUP_SUGGESTION = "group";
-
-        public static final String DOCUMENTS_BY_AUTHOR_SUGGESTION = "documentsByAuthor";
-
-        public static final String DOCUMENTS_WITH_KEY_WORDS_SUGGESTION = "documentsWithKeyWords";
-
-        public static final String DOCUMENTS_CREATED_AFTER_SUGGESTION = "documentsCreatedAfterDate";
-
-        public static final String DOCUMENTS_MODIFIED_AFTER_SUGGESTION = "documentsModifiedAfterDate";
-
-        public static final String DOCUMENTS_CREATED_BEFORE_SUGGESTION = "documentsCreatedBeforeDate";
-
-        public static final String DOCUMENTS_MODIFIED_BEFORE_SUGGESTION = "documentsModifiedBeforeDate";
-
-        private final String type;
-
-        private final String value;
-
-        private final String label;
-
-        private final String iconURL;
-
-        public SearchBoxSuggestion(String type, String value, String label,
-                String iconURL) {
-            this.type = type;
-            this.label = label;
-            this.iconURL = iconURL;
-            this.value = value;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public String getIconURL() {
-            return iconURL;
-        }
-
-        public static SearchBoxSuggestion forDocument(DocumentModel doc)
-                throws ClientException {
-            return new SearchBoxSuggestion(DOCUMENT_SUGGESTION, doc.getId(),
-                    doc.getTitle(), doc.getAdapter(TypeInfo.class).getIcon());
-        }
-
-        public static SearchBoxSuggestion forUser(DocumentModel user)
-                throws ClientException {
-            return new SearchBoxSuggestion(USER_SUGGESTION, user.getId(),
-                    user.getTitle(), "/icons/user.gif");
-        }
-
-        public static SearchBoxSuggestion forGroup(DocumentModel group)
-                throws ClientException {
-            return new SearchBoxSuggestion(GROUP_SUGGESTION, group.getId(),
-                    group.getTitle(), "/icons/group.gif");
-        }
-
-        public static SearchBoxSuggestion forDocumentsByAuthor(
-                DocumentModel user) throws ClientException {
-            // TODO handle i18n
-            return new SearchBoxSuggestion(DOCUMENTS_BY_AUTHOR_SUGGESTION,
-                    user.getId(), "Documents by " + user.getTitle(),
-                    "/img/facetedSearch.png");
-        }
-
-        public static SearchBoxSuggestion forDocumentsByDate(String type,
-                String label, Calendar date) {
-            SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_PATTERN);
-            String formatted = df.format(date.getTime());
-            // TODO handle i18n for label
-            return new SearchBoxSuggestion(type, formatted, label + formatted,
-                    "/img/facetedSearch.png");
-        }
-
-        public static SearchBoxSuggestion forDocumentsModifiedBeforeDate(
-                Calendar date) {
-            return forDocumentsByDate(DOCUMENTS_MODIFIED_BEFORE_SUGGESTION,
-                    "Documents modified before ", date);
-        }
-
-        public static SearchBoxSuggestion forDocumentsCreatedBeforeDate(
-                Calendar date) {
-            return forDocumentsByDate(DOCUMENTS_CREATED_BEFORE_SUGGESTION,
-                    "Documents created before ", date);
-        }
-
-        public static SearchBoxSuggestion forDocumentsModifiedAfterDate(
-                Calendar date) {
-            return forDocumentsByDate(DOCUMENTS_MODIFIED_AFTER_SUGGESTION,
-                    "Documents modified after ", date);
-        }
-
-        public static SearchBoxSuggestion forDocumentsCreatedAfterDate(
-                Calendar date) {
-            return forDocumentsByDate(DOCUMENTS_CREATED_AFTER_SUGGESTION,
-                    "Documents created after ", date);
-        }
-
-        public static SearchBoxSuggestion forDocumentsByKeyWords(String keyWords)
-                throws ClientException {
-            // TODO handle i18n
-            return new SearchBoxSuggestion(DOCUMENTS_WITH_KEY_WORDS_SUGGESTION,
-                    keyWords, "Documents with keywords: '" + keyWords + "'",
-                    "/img/facetedSearch.png");
-        }
-
-    }
-
-    public List<DocumentModel> getUsersSuggestions(Object user)
-            throws Exception, ClientException {
-        return userSuggestionActions.getUserSuggestions(user);
-    }
-
-    public List<DocumentModel> getGroupSuggestions(Object user)
-            throws Exception, ClientException {
-        return userSuggestionActions.getGroupsSuggestions(user);
-    }
 }

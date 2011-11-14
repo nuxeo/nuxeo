@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 public class Suggestion implements Serializable {
 
+    public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
+
     private static final long serialVersionUID = 1L;
 
     protected final String type;
@@ -18,7 +20,7 @@ public class Suggestion implements Serializable {
 
     protected final String label;
 
-    protected final String icon;
+    protected final String iconURL;
 
     protected String description = "";
 
@@ -27,18 +29,31 @@ public class Suggestion implements Serializable {
     public Suggestion(String type, String value, String label, String iconURL) {
         this.type = type;
         this.label = label;
-        this.icon = iconURL;
+        this.iconURL = iconURL;
         this.value = value;
     }
 
+    /**
+     * A string marker to give the type (i.e. category) of the suggested user
+     * action / intent. The type is used to broadcast the selected suggestion to
+     * the correct handler.
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * A string representation of the suggestion instance. This string value can
+     * only be decoded / interpreted by the handler in the context of a given
+     * type.
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * The i18n label to display to the user for this suggestion.
+     */
     public String getLabel() {
         return label;
     }
@@ -49,7 +64,7 @@ public class Suggestion implements Serializable {
      * document suggestion or the avatar icon of a user profile suggestion).
      */
     public String getIconURL() {
-        return icon;
+        return iconURL;
     }
 
     public String getDescription() {
@@ -68,8 +83,6 @@ public class Suggestion implements Serializable {
      * but the description should give information to the user on how to make
      * that suggestion enabled (e.g. by logging in). The SuggestionService will
      * throw an exception if the user selects a disabled suggestion.
-     * 
-     * @return
      */
     public boolean getIsDisabled() {
         return disabled;
