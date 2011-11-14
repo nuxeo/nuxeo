@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,12 +34,10 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -72,6 +69,7 @@ public class NuxeoRequestControllerFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(NuxeoRequestControllerFilter.class);
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         doInitIfNeeded();
     }
@@ -107,6 +105,7 @@ public class NuxeoRequestControllerFilter implements Filter {
                 + ",info=" + info;
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
@@ -158,8 +157,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (useTx) {
                 txStarted = TransactionHelper.startTransaction();
                 if (txStarted) {
-                    response = new CommittingServletResponseWrapper(
-                            httpResponse);
+                    response = new BufferingHttpServletResponse(httpResponse);
                 }
             }
             chain.doFilter(request, response);
@@ -177,8 +175,10 @@ public class NuxeoRequestControllerFilter implements Filter {
             throw new ServletException(e);
         } finally {
             if (txStarted) {
-                if (!((CommittingServletResponseWrapper) response).committedTx) {
+                try {
                     TransactionHelper.commitOrRollbackTransaction();
+                } finally {
+                    ((BufferingHttpServletResponse) response).stopBuffering();
                 }
             }
             if (sessionSynched) {
@@ -188,51 +188,6 @@ public class NuxeoRequestControllerFilter implements Filter {
                 log.debug(doFormatLogMessage(httpRequest,
                         "Exiting NuxeoRequestController filter"));
             }
-        }
-    }
-
-    /**
-     * Response Wrapper that commits the transaction as soon as something is
-     * written to the output.
-     */
-    public static class CommittingServletResponseWrapper extends
-            HttpServletResponseWrapper {
-
-        public boolean committedTx = false;
-
-        public CommittingServletResponseWrapper(HttpServletResponse response) {
-            super(response);
-        }
-
-        public void commitTxIfNeeded() {
-            if (!committedTx) {
-                committedTx = true;
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-        }
-
-        @Override
-        public void setHeader(String name, String value) {
-            commitTxIfNeeded();
-            super.setHeader(name, value);
-        }
-
-        @Override
-        public void addHeader(String name, String value) {
-            commitTxIfNeeded();
-            super.addHeader(name, value);
-        }
-
-        @Override
-        public ServletOutputStream getOutputStream() throws IOException {
-            commitTxIfNeeded();
-            return super.getOutputStream();
-        }
-
-        @Override
-        public PrintWriter getWriter() throws IOException {
-            commitTxIfNeeded();
-            return super.getWriter();
         }
     }
 
@@ -362,6 +317,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         httpResponse.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
     }
 
+    @Override
     public void destroy() {
         rcm = null;
     }

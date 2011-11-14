@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -351,6 +352,7 @@ public class DownloadServlet extends HttpServlet {
 
     public static void writeStream(InputStream in, OutputStream out,
             ByteRange range) throws IOException {
+        BufferingServletOutputStream.stopBuffering(out);
         byte[] buffer = new byte[BUFFER_SIZE];
         int read;
         int offset = range.getStart();
