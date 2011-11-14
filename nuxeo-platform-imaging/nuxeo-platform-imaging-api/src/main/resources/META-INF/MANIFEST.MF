@@ -11,8 +11,7 @@ Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/picture-adapter-contrib.xml,
- OSGI-INF/picture-blobholder-contrib.xml,
- OSGI-INF/picture-config-framework.xml
+ OSGI-INF/picture-blobholder-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  org.apache.commons.logging,

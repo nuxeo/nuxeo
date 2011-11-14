@@ -19,53 +19,25 @@
 
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.platform.picture.config.PictureConfigurationService;
-import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Factory instantiating {@link PictureResourceAdapter} adapter.
+ *
+ */
 public class PictureResourceAdapterFactory implements DocumentAdapterFactory {
-
-    private static PictureConfigurationService configService;
-
-    private static final Log log = LogFactory.getLog(PictureResourceAdapterFactory.class);
-
-    private static PictureConfigurationService getConfigService() {
-        if (configService == null) {
-            configService = (PictureConfigurationService) Framework.getRuntime().getComponent(
-                    PictureConfigurationService.NAME);
-        }
-        return configService;
-    }
 
     @Override
     public Object getAdapter(DocumentModel doc, Class cls) {
-
-        PictureResourceAdapter adapter = null;
-
-        // first try to get Type Adapter
-        try {
-            getConfigService();
-            adapter = PictureConfigurationService.getAdapterForType(doc.getType());
-        } catch (InstantiationException e) {
-            log.error("Error while getting PICTURE adapter for type "
-                    + doc.getType() + ':' + e.getMessage());
-        } catch (IllegalAccessException e) {
-            log.error("Error while getting PICTURE adapter for type "
-                    + doc.getType() + ':' + e.getMessage());
-        } catch (NullPointerException e) {
-            log.error("Error while getting PICTUREAdapter Configuration Service"
-                    + ':' + e.getMessage());
+        if (doc.hasFacet(PICTURE_FACET)) {
+            PictureResourceAdapter adapter = new DefaultPictureAdapter();
+            adapter.setDocumentModel(doc);
+            return adapter;
         }
-
-        if (adapter == null) {
-            adapter = new DefaultPictureAdapter();
-        }
-
-        adapter.setDocumentModel(doc);
-        return adapter;
+        return null;
     }
 
 }

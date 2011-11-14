@@ -20,11 +20,15 @@
 package org.nuxeo.ecm.platform.picture.api;
 
 /**
+ * Imaging constants.
+ *
  * @author Laurent Doguin
  */
 public class ImagingDocumentConstants {
 
     public static final String PICTURE_TYPE_NAME = "Picture";
+
+    public static final String PICTURE_FACET = "Picture";
 
     public static final String PICTURE_SCHEMA_NAME = "picture";
 
@@ -33,6 +37,7 @@ public class ImagingDocumentConstants {
     public static final String PICTURETEMPLATES_PROPERTY_NAME = "picturebook:picturetemplates";
 
     private ImagingDocumentConstants() {
+        // Constants class
     }
 
 }
