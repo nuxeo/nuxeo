@@ -31,7 +31,7 @@
 
      <h:panelGroup rendered="#{!systemInfo.isStatInfoInProgress()}">
 
-        <a4j:commandButton value="#{messages['adminsubtab.sysinfo.repostat.compute.statistics']}"  action="#{systemInfo.startRepoStats()}" reRender="repoInfos" />
+        <a4j:commandButton value="#{messages['adminsubtab.sysinfo.repostat.compute.statistics']}"  action="#{systemInfo.startRepoStats()}" reRender="repoInfos" styleClass="button" />
 
      </h:panelGroup>
     </a4j:form>

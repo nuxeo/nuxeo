@@ -35,7 +35,7 @@
           <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
           </span>
           <c:if test="#{connectServerReachable and registredConnectInstance}">
-            <a4j:commandButton value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing"/>
+            <a4j:commandButton value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing" styleClass="button"/>
             <h:outputText value="#{messages['label.studio.update']}"/>
           </c:if>
           </td>
@@ -62,7 +62,7 @@
           <h:outputText value="#{messages['label.studio.prodmod.desc2']}"/>
         </div>
         <h:form>
-        <a4j:commandButton value="#{messages['admCommand.studio.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" />
+        <a4j:commandButton value="#{messages['admCommand.studio.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" styleClass="button" />
         <h:outputText value="#{messages['label.studio.refresh']}"/>
         </h:form>
     </div>

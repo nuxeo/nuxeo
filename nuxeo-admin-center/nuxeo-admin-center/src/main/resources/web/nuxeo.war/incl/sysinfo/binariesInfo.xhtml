@@ -28,7 +28,8 @@
       <p><a4j:commandButton
         value="#{messages['adminsubtab.sysinfo.binariesinfo.start']}"
         action="#{systemInfo.startBinariesGC()}"
-        reRender="binariesInfos" /></p>
+        reRender="binariesInfos"
+        styleClass="button" /></p>
       <p><h:selectBooleanCheckbox class="dataInputText"
         value="#{systemInfo.binariesGCDelete}">
       </h:selectBooleanCheckbox> <span><h:outputText
