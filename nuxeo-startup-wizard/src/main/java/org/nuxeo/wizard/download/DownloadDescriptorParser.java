@@ -93,6 +93,18 @@ public class DownloadDescriptorParser {
                     options.addOptions(pkg);
                 }
             }
+
+            // get presets
+            if (document.getRootElement().element("presets")!=null) {
+                for (Object el : document.getRootElement().element("presets").elements("preset")) {
+                    Element preset = (Element)el;
+                    String presetId = preset.attribute("id").getValue();
+                    String presetLabel = preset.attribute("label").getValue();
+                    String pkgList = preset.getText();
+                    String[] presetPackages = pkgList.split(",");
+                    options.addPreset(presetId, presetLabel, presetPackages);
+                    }
+                }
         }
         return options;
     }
@@ -149,12 +161,24 @@ public class DownloadDescriptorParser {
             }
             if (targetPkg == null) {
                 log.error("Unable to find package for ref " + ref);
+                return null;
             }
         }
 
+        String id = el.attributeValue("ref");
+        if (id==null) {
+            id = ref;
+        }
+        DownloadablePackageOption pkgOption;
         nodeCounter++;
-        DownloadablePackageOption pkgOption = new DownloadablePackageOption(
-                targetPkg, nodeCounter);
+
+        if (id!=null) {
+            pkgOption = new DownloadablePackageOption(
+                    targetPkg, id);
+        } else {
+            pkgOption = new DownloadablePackageOption(
+                    targetPkg, nodeCounter);
+        }
 
         String label = el.attributeValue("label");
         if (label != null) {

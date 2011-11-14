@@ -23,7 +23,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -77,6 +79,8 @@ public class PackageDownloader {
 
     protected static final int DIGEST_CHUNK = 1024 * 100;
 
+    boolean downloadStarted = false;
+
     // public static final String BASE_URL =
     // "http://community.nuxeo.com/static/releases/";
     public static final String BASE_URL = "http://127.0.0.1/pkgs/";
@@ -124,6 +128,33 @@ public class PackageDownloader {
         }
         return instance;
     }
+
+
+    protected String lastSelectionDigest;
+
+    protected String getSelectionDigest(List<String> ids) {
+        ArrayList<String> lst = new ArrayList<String>(ids);
+        Collections.sort(lst);
+        StringBuffer sb = new StringBuffer();
+        for (String item : lst) {
+            sb.append(item);
+            sb.append(":");
+        }
+        return sb.toString();
+    }
+
+    public void selectOptions(List<String> ids) {
+        String newSelectionDigest = getSelectionDigest(ids);
+        if (lastSelectionDigest!=null) {
+            if (lastSelectionDigest.endsWith(newSelectionDigest)) {
+                return;
+            }
+        }
+        downloadOptions.select(ids);
+        downloadStarted=false;
+        lastSelectionDigest = newSelectionDigest;
+    }
+
 
     protected File getDownloadDirectory() {
         // XXX do better !
@@ -242,6 +273,7 @@ public class PackageDownloader {
     }
 
     public void startDownload(List<DownloadPackage> pkgs) {
+        downloadStarted = true;
         for (DownloadPackage pkg : pkgs) {
             if (needToDownload(pkg)) {
                 startDownloadPackage(pkg);
@@ -349,7 +381,8 @@ public class PackageDownloader {
     }
 
     public boolean isDownloadStarted() {
-        return pendingDownloads.size() > 0;
+        return downloadStarted;
+        //return pendingDownloads.size() > 0;
     }
 
     public boolean isDownloadCompleted() {

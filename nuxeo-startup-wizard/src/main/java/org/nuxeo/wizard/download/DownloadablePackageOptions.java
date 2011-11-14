@@ -19,7 +19,12 @@
 package org.nuxeo.wizard.download;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DownloadablePackageOptions {
 
@@ -28,6 +33,10 @@ public class DownloadablePackageOptions {
     protected List<DownloadPackage> pkg4Download = new ArrayList<DownloadPackage>();
 
     protected List<DownloadPackage> commonPackages = new ArrayList<DownloadPackage>();
+
+    protected List<Preset> presets = new ArrayList<Preset>();
+
+    protected static final Log log = LogFactory.getLog(DownloadablePackageOptions.class);
 
     public List<DownloadablePackageOption> getOptions() {
         return pkgOptions;
@@ -66,6 +75,7 @@ public class DownloadablePackageOptions {
     public List<String> checkSelectionValid(List<String> ids) {
         for (String id : ids) {
             DownloadablePackageOption option = findById(id, pkgOptions);
+            // force selection of parents
             if (option.getParent() != null
                     && !ids.contains(option.getParent().getId())) {
                 ids.add(option.getParent().getId());
@@ -76,6 +86,7 @@ public class DownloadablePackageOptions {
                 for (DownloadablePackageOption sib : option.getSiblingPackages()) {
                     if (ids.contains(sib.getId())) {
                         ids.remove(option.getId());
+                        log.warn("Unsatisfied constraints in selection ... fixing");
                         return checkSelectionValid(ids);
                     }
                 }
@@ -83,6 +94,7 @@ public class DownloadablePackageOptions {
                 for (DownloadablePackageOption sib : option.getSiblingPackages()) {
                     if (ids.contains(sib.getId()) && sib.isExclusive()) {
                         ids.remove(sib.getId());
+                        log.warn("Unsatisfied constraints in selection ... fixing");
                         return checkSelectionValid(ids);
                     }
                 }
@@ -160,6 +172,14 @@ public class DownloadablePackageOptions {
         StringBuffer sb = new StringBuffer();
         asJson(getSelectedRoot(), sb);
         return sb.toString();
+    }
+
+    void addPreset(String id, String label, String[] pkgIds) {
+        presets.add(new Preset(id, label, pkgIds));
+    }
+
+    public List<Preset> getPresets() {
+        return presets;
     }
 
 }

@@ -500,11 +500,12 @@ public class RouterServlet extends HttpServlet {
         Enumeration<String> params = req.getParameterNames();
         while (params.hasMoreElements()) {
             String p = params.nextElement();
-            if (p.startsWith("o")) {
+            if ("on".equals(req.getParameter(p))) {
                 options.add(p);
             }
         }
-        PackageDownloader.instance().getPackageOptions().select(options);
+
+        PackageDownloader.instance().selectOptions(options);
 
         currentPage.next().dispatchToJSP(req, resp, true);
     }

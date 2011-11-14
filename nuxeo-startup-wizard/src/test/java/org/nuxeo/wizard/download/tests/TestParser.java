@@ -66,7 +66,6 @@ public class TestParser extends TestCase {
         System.out.println(pkg4Download.toString());
         assertEquals(4, pkg4Download.size()); // CAP + DM + DAM + COLLAB
 
-
         // test selection CAP + DAM
         ids = new ArrayList<String>();
         ids.add(pkgs.get(0).getId()); // CAP
@@ -93,9 +92,7 @@ public class TestParser extends TestCase {
 
         assertEquals(3, root.getChildrenPackages().size()); // DAM / DM / CMF
 
-
         System.out.println(pkgs.asJson());
-
 
     }
 

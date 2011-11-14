@@ -1,6 +1,7 @@
 <%@ include file="includes/header.jsp" %>
 
-<h1><fmt:message key="label.packagesSelection" /></h1>
+
+<%@page import="org.nuxeo.wizard.download.Preset"%><h1><fmt:message key="label.packagesSelection" /></h1>
 
 <%
 String baseUrl = ctx.getBaseUrl();
@@ -19,6 +20,7 @@ function getTree() {
   $.get('<%=baseUrl%>PackageOptionsResource', function(data) {
      jsonTree = data;
      displayTree();
+     displayBlocs();
   });
 }
 
@@ -77,10 +79,15 @@ function drawRow(container) {
 function drawBloc(container, idx, node2Display, parent, nbSiblings) {
     var selected = node2Display.selected;
     var node = node2Display.node;
+    if (node == null) {
+        //console.log(node2Display);
+        return;
+    }
     var span = $("<div class=\"nxpblock\">" + node.package + "</div>");
-    var width = parent.width()/nbSiblings - 2;
+    span.attr('pkg', node.package);
+    var width = parent.width()/nbSiblings - 3;
     if (node2Display.parent) {
-      width = node2Display.parent.width / nbSiblings -2 ;
+      width = node2Display.parent.width / nbSiblings -3 ;
     }
     node.width=width;
     span.css("width", width +"px");
@@ -115,6 +122,9 @@ function displayNodes(container, parent,  level, nodes, ids) {
   var oneSelected=false;
   for (var j = 0; j < nodes.length; j++) {
     var node = nodes[j];
+    if (node==null) {
+        continue;
+    }
     for (var i = 0; i < node.children.length; i++) {
       var child = node.children[i];
       var child2Display={'node' : child, 'parent' : node};
@@ -133,7 +143,6 @@ function displayNodes(container, parent,  level, nodes, ids) {
       } else {
         if (child.exclusive!='true') {
           childrenNodes2Display.push(child2Display);
-          //childrenNodes.push(child)
         }
       }
       allChildrenNodes2Display.push(child2Display);
@@ -163,11 +172,37 @@ function displayBlocs() {
   var row = drawRow(container);
   parent = drawBloc(row,0,{ 'node':jsonTree, 'selected' : true}, parent,1);
   displayNodes(container, parent, 0, [jsonTree], ids);
+  // bind click
+  $(".nxpblock").click(function(event) {
+    var targetPkg = $(event.target).attr("pkg");
+    var filter = "input[type='checkbox'][name='" + targetPkg + "']";
+    if ( $(filter).attr("checked")==true) {
+        $(filter).removeAttr("checked");
+        $(filter).trigger('click');
+        $(filter).removeAttr("checked");
+    }
+    else {
+        $(filter).attr("checked","true");
+        $(filter).trigger('click');
+        $(filter).attr("checked","true");
+    }
+  });
+
+}
+
+function usePreset(optionArray) {
+  $("input[type='checkbox']").removeAttr("checked");
+  $("input[type='checkbox']").removeAttr("disabled");
+  for (var i = 0; i <optionArray.length; i++) {
+    var filter = "input[type='checkbox'][name='" + optionArray[i] + "']";
+    $(filter).attr("checked","true");
+    $(filter).trigger('click');
+    $(filter).attr("checked","true");
+  }
 }
 
 $(document).ready(function(){
      getTree();
-     displayBlocs();
    });
 </script>
 
@@ -184,17 +219,24 @@ $(document).ready(function(){
 <%@ include file="includes/feedback.jsp" %>
 
  <table>
- <tr>
- <td>
- <div id="tree"></div>
- </td>
- <td>
- <div style="width:310px;height:150px;vertical-align:bottom">
- <div id="blocs" style="position:relative;bottom: 0;width:300px;">
+  <tr>
+   <td>
+    <div id="tree"></div>
+   </td>
+   <td>
+    <div style="width:310px;height:150px;vertical-align:bottom">
+     <div id="blocs" style="position:relative;bottom: 0;width:300px;">
+     </div>
+    </div>
+   </td>
+  </tr>
+  <tr><td colspan="2"> <fmt:message key="label.packagesSelection.presets" /> :
+  <%for (Preset preset : options.getPresets()) { %>
+    <span class="presetBtn" id="preset_<%=preset.getId()%>" onclick="usePreset(<%=preset.getPkgsAsJsonArray()%>)"><%=preset.getLabel()%> </span>
+  <%} %>
+  </td></tr>
+ </table>
 
- </div>
-</div>
-</td></tr></table>
   </td></tr></table>
   </div>
 

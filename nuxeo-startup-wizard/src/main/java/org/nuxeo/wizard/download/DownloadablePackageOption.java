@@ -49,6 +49,11 @@ public class DownloadablePackageOption {
         this.id = "o"+idx;
     }
 
+    public DownloadablePackageOption(DownloadPackage pkg, String id) {
+        this.pkg = pkg;
+        this.id = id;
+    }
+
     public boolean isExclusive() {
         return exclusive;
     }

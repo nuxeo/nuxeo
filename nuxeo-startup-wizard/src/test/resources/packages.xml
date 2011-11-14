@@ -17,4 +17,9 @@
    </package>
  </packageOptions>
  </install>
+ <presets>
+  <preset id="nuxeo-dm" label="Nuxeo DM">cap,dm</preset>
+  <preset id="nuxeo-cmf" label="Nuxeo CMF">cap,cmf</preset>
+  <preset id="nuxeo-dam" label="Nuxeo DAM">cap,dam</preset>
+ </presets>
 </packages>

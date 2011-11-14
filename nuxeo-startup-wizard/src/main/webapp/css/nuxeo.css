@@ -911,3 +911,11 @@ ul.hide {
   width:400px;
 }
 
+.presetBtn {
+  border-width:2px;
+  border-style:outset;
+  border-color:#CCCCCC;
+  padding:3px;
+  margin:2px;
+  width:50px;
+}
