@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.html.Utils;
@@ -82,6 +83,7 @@ public final class Styles extends HttpServlet implements Serializable {
 
         // compression
         OutputStream os = response.getOutputStream();
+        BufferingServletOutputStream.stopBuffering(os);
         if (Utils.supportsGzip(request)) {
             response.setHeader("Content-Encoding", "gzip");
             // Needed by proxy servers
