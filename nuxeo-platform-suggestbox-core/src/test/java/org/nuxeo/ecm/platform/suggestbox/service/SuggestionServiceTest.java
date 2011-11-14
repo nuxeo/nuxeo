@@ -14,32 +14,34 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.ecm.platform.suggestbox.utils;
+package org.nuxeo.ecm.platform.suggestbox.service;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
-import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
-import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
-import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.memory.MemoryDirectory;
+import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
 import org.nuxeo.runtime.api.Framework;
 
 public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(SuggestionServiceTest.class);
-
     protected SuggestionService suggestionService;
+
+    protected MemoryDirectory userdir;
+
+    protected MemoryDirectory groupDir;
 
     @Override
     public void setUp() throws Exception {
@@ -51,19 +53,65 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.webapp.base");
+        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
+        deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployBundle("org.nuxeo.ecm.directory");
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
+
+        // some in memory directories for the users and groups
+        DirectoryService dService = Framework.getLocalService(DirectoryService.class);
+        MemoryDirectoryFactory memoryDirectoryFactory = new MemoryDirectoryFactory();
+        dService.registerDirectory("memdirs", memoryDirectoryFactory);
+
+        Set<String> userSet = new HashSet<String>(Arrays.asList("username",
+                "password", "firstName", "lastName"));
+        userdir = new MemoryDirectory("userDirectory", "user", userSet,
+                "username", "password");
+        memoryDirectoryFactory.registerDirectory(userdir);
+
+        Set<String> groupSet = new HashSet<String>(Arrays.asList("groupname",
+                "grouplabel", "members"));
+        groupDir = new MemoryDirectory("groupDirectory", "group", groupSet,
+                "groupname", null);
+        memoryDirectoryFactory.registerDirectory(groupDir);
 
         // myself
         deployBundle("org.nuxeo.ecm.platform.suggestbox.core");
 
         // create some documents to be looked up
+        openSession();
         makeSomeDocuments();
+
+        // create some users and groups
+        makeSomeUsersAndGroups();
 
         suggestionService = Framework.getService(SuggestionService.class);
         assertNotNull(suggestionService);
     }
 
+    protected void makeSomeUsersAndGroups() throws ClientException {
+        Session userSession = userdir.getSession();
+        HashMap<String, Object> john = new HashMap<String, Object>();
+        john.put("username", "john");
+        john.put("firstName", "John");
+        john.put("lastName", "Lennon");
+        userSession.createEntry(john);
+
+        HashMap<String, Object> bob = new HashMap<String, Object>();
+        bob.put("username", "bob");
+        bob.put("firstName", "Bob");
+        bob.put("lastName", "Marley");
+        userSession.createEntry(bob);
+
+        Session groupSession = groupDir.getSession();
+        HashMap<String, Object> musicians = new HashMap<String, Object>();
+        musicians.put("groupname", "musicians");
+        musicians.put("grouplabel", "Musicians");
+        musicians.put("members", Arrays.asList("john", "bob"));
+        groupSession.createEntry(musicians);
+    }
+
     protected void makeSomeDocuments() throws ClientException {
-        openSession();
         DocumentModel domain = session.createDocumentModel("/",
                 "default-domain", "Folder");
         session.createDocument(domain);
@@ -80,7 +128,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         DocumentModel file3 = session.createDocumentModel("/default-domain",
                 "file3", "File");
-        file3.setPropertyValue("dc:title", "The 2012 document");
+        file3.setPropertyValue("dc:title", "The 2012 document about Bob Marley");
         session.createDocument(file3);
 
         session.save();
@@ -115,7 +163,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         Suggestion sugg2 = suggestions.get(1);
         assertEquals("searchDocuments", sugg2.getType());
-        assertEquals("Search documents with keywords: 'first'", sugg2.getLabel());
+        assertEquals("Search documents with keywords: 'first'",
+                sugg2.getLabel());
         assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
         assertEquals("fsd:ecm_fulltext:first", sugg2.getValue());
     }
@@ -176,9 +225,48 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         sugg1 = suggestions.get(0);
         assertEquals("document", sugg1.getType());
-        assertEquals("The 2012 document", sugg1.getLabel());
+        assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
         assertNotNull(sugg1.getValue());
+    }
+
+    @Test
+    public void testDefaultSuggestionConfigurationWithUsersAndGroups()
+            throws SuggestionException {
+        // build a suggestion context
+        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        Map<String, String> messages = getTestMessages();
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(
+                Locale.US).withSession(session).withMessages(messages);
+
+        // perform some test lookups to check the deployment of extension points
+        List<Suggestion> suggestions = suggestionService.suggest("bob", context);
+        assertNotNull(suggestions);
+        assertEquals(4, suggestions.size());
+
+        Suggestion sugg1 = suggestions.get(0);
+        assertEquals("document", sugg1.getType());
+        assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
+        assertEquals("/icons/file.gif", sugg1.getIconURL());
+        assertNotNull(sugg1.getValue());
+
+        Suggestion sugg2 = suggestions.get(1);
+        assertEquals("user", sugg2.getType());
+        assertEquals("Bob Marley", sugg2.getLabel());
+        assertEquals("/icons/user.gif", sugg2.getIconURL());
+        assertEquals("bob", sugg2.getValue());
+
+        Suggestion sugg3 = suggestions.get(2);
+        assertEquals("searchDocuments", sugg3.getType());
+        assertEquals("Search documents by Bob Marley", sugg3.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
+        assertEquals("fsd:dc_creator:bob", sugg3.getValue());
+
+        Suggestion sugg4 = suggestions.get(3);
+        assertEquals("searchDocuments", sugg4.getType());
+        assertEquals("Search documents with keywords: 'bob'", sugg4.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg4.getIconURL());
+        assertEquals("fsd:ecm_fulltext:bob", sugg4.getValue());
     }
 
     protected Map<String, String> getTestMessages() {
@@ -193,7 +281,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
                 "Search documents modified before {0}");
         messages.put("label.search.afterDate_fsd_dc_modified",
                 "Search documents modified after {0}");
+        messages.put("label.searchDocumentsByUser_fsd_dc_creator",
+                "Search documents by {0}");
         return messages;
     }
-
 }

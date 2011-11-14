@@ -33,6 +33,13 @@
       </parameters>
     </suggester>
 
+    <suggester name="searchByUsersAndGroups"
+      class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.UserGroupLookupSuggester">
+      <parameters>
+        <parameter name="searchFields">fsd:dc_creator</parameter>
+      </parameters>
+    </suggester>
+
   </extension>
 
   <extension
@@ -41,6 +48,7 @@
 
     <suggesterGroup name="searchbox">
       <suggesterName>documentLookupByTitle</suggesterName>
+      <suggesterName>searchByUsersAndGroups</suggesterName>
       <suggesterName>searchByDate</suggesterName>
       <suggesterName>searchByKeywords</suggesterName>
     </suggesterGroup>

@@ -52,17 +52,19 @@ public class DocumentSearchByPropertySuggester implements Suggester {
         type = params.get("type");
         searchField = params.get("searchField");
         label = params.get("label");
-        iconURL = params.get("iconURL");
+        String iconURL = params.get("iconURL");
+        if (iconURL != null) {
+            this.iconURL = iconURL;
+        }
         description = params.get("description");
         String disabled = params.get("disabled");
         if (disabled != null) {
             this.disabled = Boolean.valueOf(disabled);
         }
-        if (type == null || searchField == null || label == null
-                || iconURL == null) {
+        if (type == null || searchField == null || label == null) {
             throw new ComponentInitializationException(
                     String.format("Could not initialize suggester '%s': "
-                            + "type, propertyPath, label and iconURL"
+                            + "type, propertyPath and label"
                             + " are mandatory parameters", descriptor.getName()));
         }
     }

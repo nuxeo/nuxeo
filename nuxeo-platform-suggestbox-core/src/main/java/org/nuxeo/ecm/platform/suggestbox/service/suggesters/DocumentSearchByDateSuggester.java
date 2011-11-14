@@ -81,9 +81,8 @@ public class DocumentSearchByDateSuggester implements Suggester {
     public void initWithParameters(SuggesterDescriptor descriptor)
             throws ComponentInitializationException {
         Map<String, String> params = descriptor.getParameters();
-        String searchFields = params.get("searchFields");
         iconURL = params.get("iconURL");
-
+        String searchFields = params.get("searchFields");
         if (searchFields == null || iconURL == null) {
             throw new ComponentInitializationException(
                     String.format("Could not initialize suggester '%s': "
