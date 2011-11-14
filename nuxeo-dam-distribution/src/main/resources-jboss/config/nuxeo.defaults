@@ -1,8 +1,0 @@
-org.nuxeo.ecm.product.name=Nuxeo DAM
-org.nuxeo.ecm.product.version=5.5-SNAPSHOT
-org.nuxeo.ecm.instance.name=Nuxeo DAM
-org.nuxeo.ecm.instance.description=Nuxeo DAM server
-
-import.root.path=/default-domain/import-root
-
-org.nuxeo.dam.import.async=false

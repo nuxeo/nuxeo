@@ -9,26 +9,10 @@
 
   <target name="init" unless="init.done">
     <tstamp />
-
-    <condition property="no.build">
-      <and>
-        <or>
-          <isset property="maven.profile.jboss" />
-          <isset property="maven.profile.ear" />
-        </or>
-        <not>
-          <or>
-            <isset property="maven.profile.tomcat" />
-            <isset property="maven.profile.all-distributions" />
-          </or>
-        </not>
-      </and>
-    </condition>
-
     <condition property="importer">
       <or>
-          <isset property="maven.profile.all-distributions" />
-          <isset property="maven.profile.http-importer" />
+        <isset property="maven.profile.all-distributions" />
+        <isset property="maven.profile.http-importer" />
       </or>
     </condition>
 
@@ -37,62 +21,53 @@
     <property name="tomcat" value="nuxeo-dam-${maven.project.version}-tomcat" />
     <property name="tomcatdir" value="${stagedir}/${tomcat}" />
     <property name="nxserver" value="${tomcatdir}/nxserver" />
-    <antcall target="expand" />
+    <artifact:nuxeo-expand />
     <property name="init.done" value="true" />
   </target>
 
-  <target name="expand" unless="no.build">
-    <artifact:nuxeo-expand />
-  </target>
-
-  <target name="build" depends="init,cleanstage" unless="no.build">
+  <target name="build" depends="init" unless="no.build">
     <echo>Building Tomcat distribution...</echo>
-
+    <delete dir="${stagedir}" />
     <unzip dest="${stagedir}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.distribution.version}:zip"
                             classifier="nuxeo-cap" />
     </unzip>
+    <move file="${stagedir}/nuxeo-cap-${nuxeo.distribution.version}-tomcat"
+          tofile="${tomcatdir}" />
 
-    <!-- <move file="${stagedir}/nuxeo-dm-${nuxeo.distribution.version}-tomcat.zip" tofile="${tomcatdir}" /> -->
-    <nx:rename from="${stagedir}/nuxeo-cap*" to="${tomcatdir}" />
-    <chmod dir="${tomcatdir}/bin" perm="750" includes="*.sh,*ctl" />
+    <chmod dir="${tomcatdir}"
+           perm="ug+x"
+           includes="*.command,bin/*.sh,bin/*ctl,bin/*.command" />
 
-    <copy todir="${nxserver}/bundles" overwrite="true">
-      <artifact:set>
-        <includes>
-          <artifact groupId="org.nuxeo.dam*" />
-          <artifact artifactId="nuxeo-platform-importer-core" />
-          <artifact artifactId="nuxeo-platform-categorization-*" />
-          <artifact artifactId="nuxeo-platform-imaging-*" />
-          <artifact artifactId="nuxeo-platform-video-*" />
-          <artifact artifactId="nuxeo-platform-audio*" />
-          <artifact artifactId="nuxeo-platform-annotations*" />
-          <artifact artifactId="nuxeo-platform-preview*" />
-        </includes>
-        <excludes>
-          <artifact artifactId="nuxeo-dam-importer-jaxrs" />
-        </excludes>
-      </artifact:set>
-    </copy>
-    <antcall target="third-party-libraries" />
+    <!-- Nuxeo DAM -->
+    <unzip dest="${tomcatdir}/nxserver">
+      <artifact:resolveFile key="org.nuxeo.dam.distribution:nuxeo-dam-distribution::zip" />
+    </unzip>
 
-    <antcall target="copy-resources" />
+    <unzip dest="${tomcatdir}/templates" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.dam.distribution:nuxeo-dam-distribution::zip"
+                            classifier="resources" />
+    </unzip>
+    <echo append="true" file="${tomcatdir}/bin/nuxeo.conf">
+nuxeo.templates=default,dam</echo>
 
     <antcall target="set-distribution-properties">
-      <param name="distribution.properties.file" value="${tomcatdir}/templates/common/config/distribution.properties" />
+      <param name="distribution.properties.file"
+             value="${tomcatdir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="dam" />
-      <param name="org.nuxeo.distribution.server" value="tomcat"/>
-      <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
-      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}"/>
+      <param name="org.nuxeo.distribution.server" value="tomcat" />
+      <param name="org.nuxeo.distribution.version"
+             value="${maven.project.version}" />
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
-      basedir="${stagedir}"
-      includes="${tomcat}/**" />
+         basedir="${stagedir}"
+         includes="${tomcat}/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
-      type="zip"
-      classifier="tomcat"
-      target="${maven.project.groupId}:${maven.project.artifactId}" />
+                     type="zip"
+                     classifier="tomcat"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
 
     <antcall target="create-http-importer-distribution" />
   </target>
@@ -109,58 +84,17 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
 
   <target name="create-http-importer-distribution" if="importer">
     <copy todir="${nxserver}/bundles" overwrite="true">
-        <artifact:set>
-          <includes>
-            <artifact artifactId="nuxeo-platform-importer-jaxrs" />
-            <artifact artifactId="nuxeo-dam-importer-jaxrs" />
-          </includes>
-        </artifact:set>
-      </copy>
-
-      <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
-           basedir="${stagedir}"
-           includes="${tomcat}/**" />
-      <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
-                       type="zip"
-                       classifier="tomcat-importer"
-                       target="${maven.project.groupId}:${maven.project.artifactId}" />
-  </target>
-
-  <target name="third-party-libraries">
-    <copy todir="${nxserver}/lib" overwrite="true">
-      <artifact:resolveFile key="de.schlichtherle.io:truezip" />
-      <artifact:resolveFile key="com.google.gwt:gwt-servlet" />
-
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-importer-jaxrs:${nuxeo.addons.version}" />
+      <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-importer-jaxrs:${nuxeo.dam.version}" />
     </copy>
 
-    <copy todir="${tomcatdir}/lib">
-      <artifact:resolveFile key="postgresql:postgresql" />
-      <artifact:resolveFile key="mysql:mysql-connector-java" />
-    </copy>
-  </target>
-
-  <target name="copy-resources">
-    <concat destfile="${tomcatdir}/templates/common/config/nuxeo.properties"
-            append="true">
-      <filelist dir="src/main/resources-tomcat/config"
-                files="nuxeo.properties" />
-    </concat>
-    <concat destfile="${tomcatdir}/templates/common/nuxeo.defaults"
-            append="true">
-      <filelist dir="src/main/resources-tomcat/config"
-                files="nuxeo.defaults" />
-    </concat>
-    <concat destfile="${tomcatdir}/bin/nuxeo.conf" append="true">
-      <filelist dir="src/main/resources-tomcat/config" files="nuxeo.conf" />
-    </concat>
-
-    <copy todir="${tomcatdir}" overwrite="true">
-      <filelist dir="src/main/resources-common/" files="readme.html" />
-    </copy>
-  </target>
-
-  <target name="cleanstage">
-    <delete dir="${stagedir}" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
+         basedir="${stagedir}"
+         includes="${tomcat}/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
+                     type="zip"
+                     classifier="tomcat-importer"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
 
 </project>

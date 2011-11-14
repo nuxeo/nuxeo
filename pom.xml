@@ -28,8 +28,47 @@
     <nuxeo.dam.version>5.5-SNAPSHOT</nuxeo.dam.version>
   </properties>
 
+  <profiles>
+    <profile>
+      <!-- Build all distributions -->
+      <id>all-distributions</id>
+      <modules>
+        <module>nuxeo-dam-distribution</module>
+        <module>nuxeo-marketplace-dam</module>
+      </modules>
+    </profile>
+  </profiles>
+
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.dam.distribution</groupId>
+        <artifactId>nuxeo-dam-distribution</artifactId>
+        <version>${nuxeo.dam.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam.distribution</groupId>
+        <artifactId>nuxeo-dam-distribution</artifactId>
+        <version>${nuxeo.dam.version}</version>
+        <type>zip</type>
+        <classifier>resources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam.distribution</groupId>
+        <artifactId>nuxeo-dam-distribution</artifactId>
+        <version>${nuxeo.dam.version}</version>
+        <type>zip</type>
+        <classifier>tomcat</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam.distribution</groupId>
+        <artifactId>nuxeo-dam-distribution</artifactId>
+        <version>${nuxeo.dam.version}</version>
+        <type>zip</type>
+        <classifier>tomcat-importer</classifier>
+      </dependency>
+
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-api</artifactId>

@@ -10,37 +10,17 @@
 
   <groupId>org.nuxeo.dam.distribution</groupId>
   <artifactId>nuxeo-dam-distribution</artifactId>
-  <packaging>pom</packaging>
+  <packaging>zip</packaging>
   <name>Nuxeo DAM Distribution</name>
   <description>Build package distributions of Nuxeo DAM applications</description>
 
-  <properties>
-    <nuxeo.distribution.version>5.5-SNAPSHOT</nuxeo.distribution.version>
-  </properties>
-
-  <profiles>
-    <profile>
-      <id>ear</id>
-    </profile>
-    <profile>
-      <id>jboss</id>
-    </profile>
-    <profile>
-      <id>tomcat</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-    </profile>
-    <!-- for deployment purpose -->
-    <profile>
-      <id>all-distributions</id>
-    </profile>
-    <profile>
-      <id>http-importer</id>
-    </profile>
-  </profiles>
-
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-cap</artifactId>
+      <type>pom</type>
+    </dependency>
+
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-api</artifactId>
@@ -61,16 +41,10 @@
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-importer-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.dam</groupId>
-      <artifactId>nuxeo-dam-importer-jaxrs</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
-      <type>rar</type>
-    </dependency>
+    <!-- <dependency> -->
+    <!-- <groupId>org.nuxeo.dam</groupId> -->
+    <!-- <artifactId>nuxeo-dam-importer-jaxrs</artifactId> -->
+    <!-- </dependency> -->
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -172,32 +146,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-importer-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-importer-jaxrs</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>de.schlichtherle.io</groupId>
-      <artifactId>truezip</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-el</groupId>
-      <artifactId>commons-el</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.el</groupId>
-      <artifactId>jboss-el</artifactId>
-    </dependency>
-
+    <!-- <dependency> -->
+    <!-- <groupId>org.nuxeo.ecm.platform</groupId> -->
+    <!-- <artifactId>nuxeo-platform-importer-jaxrs</artifactId> -->
+    <!-- </dependency> -->
   </dependencies>
 
   <build>
@@ -207,20 +159,10 @@
         <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
           <buildFiles>
-            <buildFile>${basedir}/src/main/assemble/assembly-ear.xml</buildFile>
-            <buildFile>${basedir}/src/main/assemble/assembly-jboss.xml</buildFile>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
             <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile>
           </buildFiles>
         </configuration>
-        <executions>
-          <execution>
-            <id>packaging</id>
-            <goals>
-              <goal>build</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
