@@ -63,10 +63,10 @@ public class Page {
         }
         jsp = jspPage;
         if ("0".equals(parts[2])) {
-            active=false;
+            active = false;
         }
         if ("1".equals(parts[3])) {
-            hidden=true;
+            hidden = true;
         }
     }
 
@@ -82,7 +82,7 @@ public class Page {
         if (prev.isActive()) {
             return prev;
         } else {
-          return prev.prev();
+            return prev.prev();
         }
     }
 

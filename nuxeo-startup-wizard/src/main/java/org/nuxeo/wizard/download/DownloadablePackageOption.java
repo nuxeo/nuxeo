@@ -20,12 +20,10 @@ package org.nuxeo.wizard.download;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
- *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.5
  */
 public class DownloadablePackageOption {
 
@@ -41,9 +39,17 @@ public class DownloadablePackageOption {
 
     protected final String id;
 
-    public DownloadablePackageOption(DownloadPackage pkg) {
+    protected DownloadablePackageOption parent;
+
+    public DownloadablePackageOption(DownloadPackage pkg, int idx) {
         this.pkg = pkg;
-        this.id = UUID.randomUUID().toString();
+        // this.id = UUID.randomUUID().toString();
+        this.id = "o" + idx;
+    }
+
+    public DownloadablePackageOption(DownloadPackage pkg, String id) {
+        this.pkg = pkg;
+        this.id = id;
     }
 
     public boolean isExclusive() {
@@ -55,11 +61,11 @@ public class DownloadablePackageOption {
     }
 
     public void setExclusive(String exclusive) {
-        if (exclusive!=null) {
+        if (exclusive != null) {
             if ("true".equalsIgnoreCase(exclusive)) {
-                this.exclusive=true;
+                this.exclusive = true;
             } else {
-                this.exclusive=false;
+                this.exclusive = false;
             }
         }
     }
@@ -78,10 +84,28 @@ public class DownloadablePackageOption {
 
     public void addChildPackage(DownloadablePackageOption child) {
         childrenPackages.add(child);
+        child.setParent(this);
+    }
+
+    protected void setParent(DownloadablePackageOption parent) {
+        this.parent = parent;
+    }
+
+    public List<DownloadablePackageOption> getSiblingPackages() {
+
+        List<DownloadablePackageOption> siblings = new ArrayList<DownloadablePackageOption>();
+        if (parent != null) {
+            for (DownloadablePackageOption sibling : parent.getChildrenPackages()) {
+                if (sibling.getId() != this.getId()) {
+                    siblings.add(sibling);
+                }
+            }
+        }
+        return siblings;
     }
 
     public String getLabel() {
-        if (label==null) {
+        if (label == null && pkg != null) {
             return pkg.getLabel();
         }
         return label;
@@ -98,6 +122,16 @@ public class DownloadablePackageOption {
     public String getId() {
         return id;
     }
-    
-    
+
+    public String getColor() {
+        if (pkg != null) {
+            return pkg.getColor();
+        }
+        return "";
+    }
+
+    public DownloadablePackageOption getParent() {
+        return parent;
+    }
+
 }

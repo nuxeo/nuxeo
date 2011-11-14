@@ -22,26 +22,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-
 import org.nuxeo.wizard.download.DownloadDescriptorParser;
 import org.nuxeo.wizard.download.DownloadPackage;
+import org.nuxeo.wizard.download.DownloadablePackageOption;
 import org.nuxeo.wizard.download.DownloadablePackageOptions;
 
 public class TestParser extends TestCase {
 
 
-    public void testParser() {
+    public void testParser1() {
 
-        InputStream stream = this.getClass().getResourceAsStream("/packages.xml");
+        InputStream stream = this.getClass().getResourceAsStream("/packages_old.xml");
         assertNotNull(stream);
 
         DownloadablePackageOptions pkgs = DownloadDescriptorParser.parsePackages(stream);
         assertNotNull(pkgs);
         assertEquals(3, pkgs.size());
 
-        assertEquals(0, pkgs.get(0).getChildrenPackages().size());
-        assertEquals(2, pkgs.get(1).getChildrenPackages().size());
-        assertEquals(0, pkgs.get(2).getChildrenPackages().size());
+        assertEquals(1, pkgs.get(0).getChildrenPackages().size()); // CAP => DAM
+        assertEquals(2, pkgs.get(1).getChildrenPackages().size()); // DM => DAM, Collab
+        assertEquals(0, pkgs.get(2).getChildrenPackages().size()); // CMF => Nothing
 
         assertEquals(true, pkgs.get(0).isExclusive());
         assertEquals(true, pkgs.get(1).isExclusive());
@@ -49,22 +49,51 @@ public class TestParser extends TestCase {
         assertEquals(false, pkgs.get(1).getChildrenPackages().get(0).isExclusive());
         assertEquals(false, pkgs.get(1).getChildrenPackages().get(1).isExclusive());
 
-        assertNotNull(pkgs.get(0).getPackage());
-        assertNotNull(pkgs.get(0).getPackage().getBaseUrl());
+        assertNull(pkgs.get(0).getPackage()); // Fake package
         assertNotNull(pkgs.get(1).getPackage());
         assertNotNull(pkgs.get(1).getPackage().getBaseUrl());
         assertNotNull(pkgs.get(1).getChildrenPackages().get(0).getPackage());
         assertNotNull(pkgs.get(1).getChildrenPackages().get(0).getPackage().getBaseUrl());
 
+        // test selection DM + DAM + Collab
         List<String> ids = new ArrayList<String>();
-        ids.add(pkgs.get(1).getId());
-        ids.add(pkgs.get(1).getChildrenPackages().get(1).getId());
+        ids.add(pkgs.get(1).getId()); // DM
+        ids.add(pkgs.get(1).getChildrenPackages().get(0).getId()); // DAM
+        ids.add(pkgs.get(1).getChildrenPackages().get(1).getId()); // Collab
 
         pkgs.select(ids);
         List<DownloadPackage> pkg4Download = pkgs.getPkg4Download();
-        assertEquals(2, pkg4Download.size());
+        System.out.println(pkg4Download.toString());
+        assertEquals(4, pkg4Download.size()); // CAP + DM + DAM + COLLAB
 
+        // test selection CAP + DAM
+        ids = new ArrayList<String>();
+        ids.add(pkgs.get(0).getId()); // CAP
+        ids.add(pkgs.get(0).getChildrenPackages().get(0).getId()); // DAM
 
+        pkgs.select(ids);
+        pkg4Download = pkgs.getPkg4Download();
+        System.out.println(pkg4Download.toString());
+        assertEquals(2, pkg4Download.size()); // CAP + DAM
 
     }
+
+    public void testParser2() {
+
+        InputStream stream = this.getClass().getResourceAsStream("/packages.xml");
+        assertNotNull(stream);
+
+        DownloadablePackageOptions pkgs = DownloadDescriptorParser.parsePackages(stream);
+        assertNotNull(pkgs);
+        assertEquals(1, pkgs.size());
+
+        DownloadablePackageOption root = pkgs.get(0);
+        assertEquals("cap", root.getPackage().getId());
+
+        assertEquals(3, root.getChildrenPackages().size()); // DAM / DM / CMF
+
+        System.out.println(pkgs.asJson());
+
+    }
+
 }
