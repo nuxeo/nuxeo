@@ -20,9 +20,8 @@ package org.nuxeo.wizard.download;
 import java.io.File;
 
 /**
- *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.5
  */
 public class DownloadPackage {
 
@@ -72,7 +71,7 @@ public class DownloadPackage {
 
     public void setMd5(String md5) {
         if ("".equals(md5)) {
-            md5=null;
+            md5 = null;
         }
         this.md5 = md5;
     }
@@ -150,6 +149,5 @@ public class DownloadPackage {
     public void setAlreadyInLocal(boolean alreadyInLocal) {
         this.alreadyInLocal = alreadyInLocal;
     }
-
 
 }

@@ -22,12 +22,12 @@ boolean downloadInProgress = PackageDownloader.instance().isDownloadInProgress()
 <fmt:message key="label.packagesDownload.description" /> <br/>
 </span>
 
-<span class="screenExplanations">
-<fmt:message key="label.packagesDownload.explanations" /> <br/>
-</span>
-
 <% if (!downloadStarted) { %>
-Selected packages :
+<table>
+<tr><td>
+<span class="screenExplanations">
+<fmt:message key="label.packagesDownload.selectedPackages" /> <br/>
+</span>
 <ul>
 <%for (DownloadPackage pkg : packages) {%>
   <li><%=pkg.getFilename()%> &nbsp;
@@ -40,6 +40,13 @@ Selected packages :
   </li>
 <%}%>
 </ul>
+</td>
+<td>
+<input style="display:none" type="button" class="glossyButton" id="btnDownload" value="<fmt:message key="label.action.downloadStart"/>"  onclick="navigateTo('<%=currentPage.getAction()%>?startDownload=true');"/>
+</td>
+</tr>
+
+</table>
 <% }%>
 
 <script type="text/javascript">
@@ -68,8 +75,7 @@ $(document).ready(function(){
 });
 </script>
 
-<input style="display:none" type="button" class="glossyButton" id="btnDownload" value="<fmt:message key="label.action.downloadStart"/>"  onclick="navigateTo('<%=currentPage.getAction()%>?startDownload=true');"/>
-
+<% if (downloadStarted) { %>
 <div id="downloadTable">
 <table>
 <%for (PendingDownload dw : downloads) {%>
@@ -132,6 +138,7 @@ $(document).ready(function(){
 <div style="display:none" id="downloadInProgress"><%=downloadInProgress%></div>
 <div style="display:none" id="downloadCompleted"><%=downloadCompleted%></div>
 </div>
+<%}%>
 
   </td></tr></table>
   </div>

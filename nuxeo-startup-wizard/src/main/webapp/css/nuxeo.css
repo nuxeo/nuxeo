@@ -899,9 +899,12 @@ ul.hide {
   font-weight:bold;
   color:black;
   border-radius: 5px;
+  cursor:pointer;
 }
 
 .unselectedBloc {
+  filter: alpha(opacity=30);
+  -moz-opacity:0.3;
   opacity:0.3;
 }
 
@@ -915,7 +918,8 @@ ul.hide {
   border-width:2px;
   border-style:outset;
   border-color:#CCCCCC;
-  padding:3px;
+  padding:10px;
   margin:2px;
   width:50px;
+  cursor:pointer;
 }

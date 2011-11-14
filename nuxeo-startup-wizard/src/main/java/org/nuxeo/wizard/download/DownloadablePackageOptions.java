@@ -19,13 +19,15 @@
 package org.nuxeo.wizard.download;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * @author Tiry (tdelprat@nuxeo.com)
+ * @since 5.5
+ */
 public class DownloadablePackageOptions {
 
     protected List<DownloadablePackageOption> pkgOptions = new ArrayList<DownloadablePackageOption>();
@@ -111,7 +113,8 @@ public class DownloadablePackageOptions {
             option.setSelected(true);
             DownloadPackage pkg = option.getPackage();
             if (pkg != null) {
-                if (!pkg4Download.contains(pkg)) {
+                if (!pkg4Download.contains(pkg) && pkg.getFilename() != null
+                        && !"".equals(pkg.getFilename())) {
                     pkg4Download.add(pkg);
                 }
             }

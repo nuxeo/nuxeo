@@ -129,7 +129,6 @@ public class PackageDownloader {
         return instance;
     }
 
-
     protected String lastSelectionDigest;
 
     protected String getSelectionDigest(List<String> ids) {
@@ -145,16 +144,15 @@ public class PackageDownloader {
 
     public void selectOptions(List<String> ids) {
         String newSelectionDigest = getSelectionDigest(ids);
-        if (lastSelectionDigest!=null) {
+        if (lastSelectionDigest != null) {
             if (lastSelectionDigest.endsWith(newSelectionDigest)) {
                 return;
             }
         }
-        downloadOptions.select(ids);
-        downloadStarted=false;
+        getPackageOptions().select(ids);
+        downloadStarted = false;
         lastSelectionDigest = newSelectionDigest;
     }
-
 
     protected File getDownloadDirectory() {
         // XXX do better !
@@ -284,7 +282,7 @@ public class PackageDownloader {
     protected boolean needToDownload(DownloadPackage pkg) {
         for (File file : getDownloadDirectory().listFiles()) {
             if (file.getName().equals(pkg.getMd5())) {
-                // XXX
+                // recheck md5 ???
                 return false;
             }
         }
@@ -382,7 +380,7 @@ public class PackageDownloader {
 
     public boolean isDownloadStarted() {
         return downloadStarted;
-        //return pendingDownloads.size() > 0;
+        // return pendingDownloads.size() > 0;
     }
 
     public boolean isDownloadCompleted() {

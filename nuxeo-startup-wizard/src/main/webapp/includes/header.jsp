@@ -34,6 +34,12 @@ function showError(id) {
   alert(id);
 }
 
+<% if (ctx.isBrowserInternetAccessChecked()) {%>
+function hasBrowserInternetAccess() {
+  return <%=ctx.hasBrowserInternetAccess()%>;
+}
+<%}%>
+
 function showIframeIfPossible() {
   if (hasBrowserInternetAccess()) {
     $("#connectBannerIframe").css("visibility","visible");

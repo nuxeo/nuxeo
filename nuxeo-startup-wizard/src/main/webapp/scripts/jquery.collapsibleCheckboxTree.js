@@ -36,7 +36,7 @@
       var $root = this;
 
       // Add button
-      $(this).before('<div id="buttons"><button id="expand">Expand All</button><button id="collapse">Collapse All</button></div>');
+      $(this).before('<div id="buttons" style="display:none"><button id="expand">Expand All</button><button id="collapse">Collapse All</button></div>');
 
       // Hide all except top level
       $("ul", $(this)).addClass('hide');
