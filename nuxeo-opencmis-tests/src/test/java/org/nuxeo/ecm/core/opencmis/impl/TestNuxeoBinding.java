@@ -1346,6 +1346,23 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryReturnedStar() throws Exception {
+        String statement = "SELECT * FROM File WHERE cmis:name = 'testfile1_Title'";
+        ObjectList res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        ObjectData data = res.getObjects().get(0);
+        checkValue(PropertyIds.OBJECT_ID, NOT_NULL, data);
+        checkValue(PropertyIds.OBJECT_TYPE_ID, "File", data);
+        checkValue(PropertyIds.BASE_TYPE_ID, "cmis:document", data); // returned
+        checkValue(PropertyIds.NAME, "testfile1_Title", data);
+        checkValue(PropertyIds.CREATED_BY, "michael", data);
+        checkValue(PropertyIds.CREATION_DATE, NOT_NULL, data);
+        checkValue(PropertyIds.LAST_MODIFIED_BY, "john", data);
+        checkValue(PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL, data);
+        checkValue(PropertyIds.CHANGE_TOKEN, null, data);
+    }
+
+    @Test
     public void testQueryLifecycle() throws Exception {
         String statement;
         ObjectList res;
@@ -2229,9 +2246,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // atompub passes just object id, soap just version series id
         List<ObjectData> vers = verService.getAllVersions(null, id, null, null,
                 null, null);
-        assertEquals(2, vers.size());
-        assertEquals(ver2.getId(), vers.get(0).getId());
-        assertEquals(ver.getId(), vers.get(1).getId());
+        assertEquals(3, vers.size());
+        assertEquals(id, vers.get(0).getId());
+        assertEquals(ver2.getId(), vers.get(1).getId());
+        assertEquals(ver.getId(), vers.get(2).getId());
 
         // get latest version
 

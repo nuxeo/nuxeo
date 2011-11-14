@@ -645,9 +645,10 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (col.getPropertyQueryName().equals("*")) {
                 TypeDefinition type = getTypeForQualifier(qual);
                 for (PropertyDefinition<?> pd : type.getPropertyDefinitions().values()) {
-                    if (pd.getCardinality() == Cardinality.SINGLE
-                            && Boolean.TRUE.equals(pd.isQueryable())) {
-                        String id = pd.getId();
+                    String id = pd.getId();
+                    if ((pd.getCardinality() == Cardinality.SINGLE //
+                            && Boolean.TRUE.equals(pd.isQueryable()))
+                            || id.equals(PropertyIds.BASE_TYPE_ID)) {
                         ColumnReference c = new ColumnReference(qual, id);
                         c.setTypeDefinition(id, type);
                         recordSelectSelector(c);

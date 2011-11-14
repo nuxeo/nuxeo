@@ -1774,6 +1774,15 @@ public class NuxeoCmisService extends AbstractCmisService {
                         null, Boolean.FALSE, Boolean.FALSE, null);
                 list.add(od);
             }
+            // PWC last
+            DocumentModel pwc = doc.isVersion() ? coreSession.getWorkingCopy(doc.getRef())
+                    : doc;
+            if (pwc != null && pwc.isCheckedOut()) {
+                NuxeoObjectData od = new NuxeoObjectData(this, pwc, filter,
+                        includeAllowableActions, IncludeRelationships.NONE, null,
+                        Boolean.FALSE, Boolean.FALSE, extension);
+                list.add(od);
+            }
             // CoreSession returns them in creation order,
             // CMIS wants them last first
             Collections.reverse(list);
