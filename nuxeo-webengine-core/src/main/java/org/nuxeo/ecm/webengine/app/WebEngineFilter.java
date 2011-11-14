@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 import org.nuxeo.ecm.webengine.PathDescriptor;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -107,9 +108,12 @@ public class WebEngineFilter implements Filter {
                     req);
             Config config = new Config(req, pd, isAutoTxEnabled, isStatefull);
             AbstractWebContext ctx = initRequest(config, req, resp);
+            if (config.txStarted) {
+                resp = new BufferingHttpServletResponse(resp);
+            }
             try {
                 preRequest(req, resp);
-                chain.doFilter(request, response);
+                chain.doFilter(request, resp);
                 postRequest(req, resp);
             } catch (Throwable e) {
                 TransactionHelper.setTransactionRollbackOnly();
@@ -121,7 +125,13 @@ public class WebEngineFilter implements Filter {
                     throw new ServletException(e);
                 }
             } finally {
-                cleanup(config, ctx, req, resp);
+                try {
+                    cleanup(config, ctx, req, resp);
+                } finally {
+                    if (config.txStarted) {
+                        ((BufferingHttpServletResponse) resp).stopBuffering();
+                    }
+                }
             }
         } else {
             chain.doFilter(request, response);
@@ -191,15 +201,12 @@ public class WebEngineFilter implements Filter {
         if (!config.isStatic && config.autoTx
                 && !TransactionHelper.isTransactionActive()) {
             config.txStarted = TransactionHelper.startTransaction();
-            // log.warn("tx started for " + req.getPathInfo());
         }
     }
 
     public void closeTx(Config config, HttpServletRequest req) {
         if (config.txStarted) {
             TransactionHelper.commitOrRollbackTransaction();
-            config.txStarted = false;
-            // log.warn("tx closed for " + req.getPathInfo());
         }
     }
 
