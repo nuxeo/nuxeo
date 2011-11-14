@@ -582,7 +582,7 @@ public abstract class NuxeoLauncher {
         final StringBuilder startSummary = new StringBuilder();
         final String newLine = System.getProperty("line.separator");
         boolean isReady = false;
-        int count = 0;
+        long deltaTime = 0;
         do {
             try {
                 isReady = statusServletClient.init();
@@ -590,17 +590,17 @@ public abstract class NuxeoLauncher {
                 if (!quiet) {
                     System.out.print(".");
                 }
-                count++;
             }
-        } while (!isReady && count < startMaxWait && isRunning());
+            deltaTime = (new Date().getTime() - startTime) / 1000;
+        } while (!isReady && deltaTime < startMaxWait && isRunning());
         isReady = false;
         do {
             isReady = isStarted();
             if (!quiet) {
                 System.out.print(".");
             }
-            count++;
-        } while (!isReady && count < startMaxWait && isRunning());
+            deltaTime = (new Date().getTime() - startTime) / 1000;
+        } while (!isReady && deltaTime < startMaxWait && isRunning());
         if (isReady) {
             startSummary.append(newLine + getStartupSummary());
             long duration = (new Date().getTime() - startTime) / 1000;
@@ -615,7 +615,7 @@ public abstract class NuxeoLauncher {
                 System.err.println(startSummary);
             }
             return true;
-        } else if (count == startMaxWait) {
+        } else if (deltaTime >= startMaxWait) {
             if (!quiet) {
                 System.out.println();
             }
@@ -852,6 +852,8 @@ public abstract class NuxeoLauncher {
      * between each try, then kill the process if still running.
      */
     public void stop(boolean logProcessOutput) {
+        long startTime = new Date().getTime();
+        long deltaTime;
         try {
             if (!(processManager instanceof PureJavaProcessManager)
                     && getPid() == null) {
@@ -917,13 +919,14 @@ public abstract class NuxeoLauncher {
                         return;
                     }
                     // Wait a few seconds for effective stop
-                    for (int i = 0; !retry && getPid() != null
-                            && i < stopMaxWait; i++) {
+                    deltaTime = 0;
+                    do {
                         if (!quiet) {
                             System.out.print(".");
                         }
                         Thread.sleep(1000);
-                    }
+                        deltaTime = (new Date().getTime() - startTime) / 1000;
+                    } while (!retry && getPid() != null && deltaTime < stopMaxWait);
                 } catch (InterruptedException e) {
                     log.error(e);
                 }

@@ -8,12 +8,13 @@
     <xa-datasource-property name="DatabaseName">${nuxeo.db.name}</xa-datasource-property>
     <xa-datasource-property name="User">${nuxeo.db.user}</xa-datasource-property>
     <xa-datasource-property name="Password">${nuxeo.db.password}</xa-datasource-property>
-    <max-pool-size>${nuxeo.db.max-pool-size}</max-pool-size>  
-    <track-connection-by-tx/>
-<!--
-    <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.PostgreSQLValidConnectionChecker</valid-connection-checker-class-name>
-    <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.PostgreSQLExceptionSorter</execption-sort-class-name>
- -->
+    <max-pool-size>${nuxeo.db.max-pool-size}</max-pool-size>
+    <min-pool-size>${nuxeo.db.min-pool-size}</min-pool-size>
+    <track-connection-by-tx />
+    <!--
+      <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.PostgreSQLValidConnectionChecker</valid-connection-checker-class-name>
+      <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.PostgreSQLExceptionSorter</execption-sort-class-name>
+    -->
   </xa-datasource>
 
   <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxsqldirectory,service=DataSourceBinding">
