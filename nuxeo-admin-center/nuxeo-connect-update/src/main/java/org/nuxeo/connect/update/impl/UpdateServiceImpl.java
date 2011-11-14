@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.impl;
 
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,8 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.Version;
-import org.nuxeo.connect.update.impl.task.Command;
+import org.nuxeo.connect.update.impl.task.commands.Append;
+import org.nuxeo.connect.update.impl.task.commands.Command;
 import org.nuxeo.connect.update.impl.task.commands.Copy;
 import org.nuxeo.connect.update.impl.task.commands.Delete;
 import org.nuxeo.connect.update.impl.task.commands.Deploy;
@@ -47,7 +47,7 @@ import org.nuxeo.connect.update.impl.task.commands.FlushCoreCache;
 import org.nuxeo.connect.update.impl.task.commands.FlushJaasCache;
 import org.nuxeo.connect.update.impl.task.commands.Install;
 import org.nuxeo.connect.update.impl.task.commands.LoadJar;
-import org.nuxeo.connect.update.impl.task.commands.ParametrizedCopy;
+import org.nuxeo.connect.update.impl.task.commands.ParameterizedCopy;
 import org.nuxeo.connect.update.impl.task.commands.ReloadProperties;
 import org.nuxeo.connect.update.impl.task.commands.Undeploy;
 import org.nuxeo.connect.update.impl.task.commands.UndeployConfig;
@@ -60,7 +60,7 @@ import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class UpdateServiceImpl implements PackageUpdateService {
 
@@ -96,6 +96,7 @@ public class UpdateServiceImpl implements PackageUpdateService {
     }
 
     public static XMap createXmap() {
+        @SuppressWarnings("hiding")
         XMap xmap = new XMap();
         xmap.setValueFactory(PackageType.class, new XValueFactory() {
             @Override
@@ -139,7 +140,8 @@ public class UpdateServiceImpl implements PackageUpdateService {
     public void initialize() throws PackageException {
         xmap = createXmap();
         addCommand(Copy.ID, Copy.class);
-        addCommand(ParametrizedCopy.ID, ParametrizedCopy.class);
+        addCommand(Append.ID, Append.class);
+        addCommand(ParameterizedCopy.ID, ParameterizedCopy.class);
         addCommand(Delete.ID, Delete.class);
         addCommand(Install.ID, Install.class);
         addCommand(Uninstall.ID, Uninstall.class);

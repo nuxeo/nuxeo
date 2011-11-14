@@ -20,8 +20,6 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.impl.task.Command;
-import org.nuxeo.connect.update.impl.task.PostInstallCommand;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.runtime.api.Framework;

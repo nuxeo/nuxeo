@@ -24,8 +24,6 @@ import java.util.jar.Manifest;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateComponent;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.impl.task.AbstractCommand;
-import org.nuxeo.connect.update.impl.task.Command;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.osgi.framework.Bundle;
