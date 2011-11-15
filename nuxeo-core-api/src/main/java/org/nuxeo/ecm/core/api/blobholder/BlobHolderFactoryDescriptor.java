@@ -34,6 +34,9 @@ public class BlobHolderFactoryDescriptor implements Serializable {
     @XNode("@docType")
     protected String docType;
 
+    @XNode("@facet")
+    protected String facet;
+
     @XNode("@class")
     private Class adapterClass;
 
@@ -43,6 +46,10 @@ public class BlobHolderFactoryDescriptor implements Serializable {
 
     public String getDocType() {
         return docType;
+    }
+
+    public String getFacet() {
+        return facet;
     }
 
     public BlobHolderFactory getFactory() throws InstantiationException,
