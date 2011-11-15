@@ -31,9 +31,6 @@
       <MetadataUtils
           class="org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils"
           name="Mistral"/>
-      <MimeUtils
-          class="org.nuxeo.ecm.platform.picture.core.imagej.ImageJMimeUtils"
-          name="ImageJ"/>
     </LibrarySelector>
   </extension>
 </component>

@@ -62,7 +62,9 @@ public interface ImagingService {
 
     /**
      * Returns the mime-type for the given input stream.
+     * @deprecated since 5.5
      */
+    @Deprecated
     String getImageMimeType(InputStream in);
 
     /**

@@ -23,13 +23,39 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-convert</artifactId>
-      <scope>test</scope>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-commandline-executor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-filemanager-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
+    </dependency>
+
+    <!-- Mistral -->
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>EditableImage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>Operations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>metadata-extractor</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -43,56 +69,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-commandline-executor</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-filemanager-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
-    </dependency>
-    <!-- ImageJ -->
-    <dependency>
-      <groupId>imagej</groupId>
-      <artifactId>imagej</artifactId>
-    </dependency>
-    <!-- Mistral -->
-    <dependency>
-      <groupId>net.java.dev.mistral</groupId>
-      <artifactId>EditableImage</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.java.dev.mistral</groupId>
-      <artifactId>JAI-Adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.java.dev.mistral</groupId>
-      <artifactId>Operations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.java.dev.mistral</groupId>
-      <artifactId>metadata-extractor</artifactId>
-    </dependency>
-    <!-- JAI -->
-    <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jai_core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.media</groupId>
-      <artifactId>jai_codec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.media</groupId>
-      <artifactId>mlib_jai</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -28,6 +28,11 @@ public interface LibrarySelector {
     ImageUtils getImageUtils() throws InstantiationException,
             IllegalAccessException;
 
+    /**
+     * @deprecated since 5.5. ImagingService use MimetypeRegistry service to get
+     *             the mime type of an image.
+     */
+    @Deprecated
     MimeUtils getMimeUtils() throws InstantiationException,
             IllegalAccessException;
 

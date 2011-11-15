@@ -38,10 +38,18 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
         openRepository();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void testAdapter() throws Exception {

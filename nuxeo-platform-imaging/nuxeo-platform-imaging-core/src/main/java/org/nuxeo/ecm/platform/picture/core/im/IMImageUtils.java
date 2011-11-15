@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
-import org.nuxeo.ecm.platform.picture.core.mistral.MistralImageUtils;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;

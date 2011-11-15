@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -117,19 +118,16 @@ public class ImagingComponent extends DefaultComponent implements
     @Override
     public String getImageMimeType(File file) {
         try {
-            return getLibrarySelectorService().getMimeUtils().getImageMimeType(
-                    file);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageMime Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageMime Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
+            MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+            return mimetypeRegistry.getMimetypeFromFile(file);
+        } catch (Exception e) {
+            log.error("Unable to retrieve mime type", e);
         }
         return null;
     }
 
     @Override
+    @Deprecated
     public String getImageMimeType(InputStream in) {
         try {
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(

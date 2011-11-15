@@ -43,22 +43,16 @@ import it.tidalwave.image.Rational;
 import it.tidalwave.image.metadata.EXIFDirectory;
 import it.tidalwave.image.op.ReadOp;
 
-import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.picture.ExifHelper;
 import org.nuxeo.ecm.platform.picture.IPTCHelper;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import com.drew.imaging.jpeg.JpegProcessingException;
 
@@ -72,7 +66,7 @@ public class MistralMetadataUtils implements MetadataUtils {
 
     private static final Log log = LogFactory.getLog(MistralMetadataUtils.class);
 
-    private static final int BUFFER_LIMIT = 32000000;
+    private static final String JPEG_MIMETYPE = "image/jpeg";
 
     @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
@@ -179,7 +173,7 @@ public class MistralMetadataUtils implements MetadataUtils {
 
         try {
             /* IPTC */
-            if (MistralMimeUtils.MIME_IMAGE_JPEG.equals(blob.getMimeType())) {
+            if (JPEG_MIMETYPE.equals(blob.getMimeType())) {
                 IPTCHelper.extractMetadata(blob.getStream(), metadata);
             }
         } catch (IOException e) {

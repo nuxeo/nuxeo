@@ -24,9 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 import org.nuxeo.ecm.platform.picture.core.MimeUtils;
-import org.nuxeo.ecm.platform.picture.core.mistral.MistralImageUtils;
-import org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils;
-import org.nuxeo.ecm.platform.picture.core.mistral.MistralMimeUtils;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -37,12 +34,6 @@ public class LibrarySelectorService extends DefaultComponent implements
     public static final String LIBRARY_SELECTOR = "LibrarySelector";
 
     private static final Log log = LogFactory.getLog(LibrarySelectorService.class);
-
-    protected static final ImageUtils DEFAULT_IMAGE_UTILS = new MistralImageUtils();
-
-    protected static final MetadataUtils DEFAULT_METADATA_UTILS = new MistralMetadataUtils();
-
-    protected static final MimeUtils DEFAULT_MIME_UTILS = new MistralMimeUtils();
 
     protected ImageUtils imageUtils;
 
@@ -77,13 +68,13 @@ public class LibrarySelectorService extends DefaultComponent implements
     }
 
     protected void registerImageUtils(ImageUtilsDescriptor imageUtilsDescriptor) {
+        if (imageUtilsDescriptor == null) {
+            return;
+        }
+
         try {
             imageUtils = imageUtilsDescriptor.getNewInstance();
         } catch (Exception e) {
-            imageUtils = DEFAULT_IMAGE_UTILS;
-        }
-        if (!imageUtils.isAvailable()) {
-            imageUtils = DEFAULT_IMAGE_UTILS;
         }
         log.debug("Using " + imageUtils.getClass().getName()
                 + " for ImageUtils.");
@@ -91,20 +82,26 @@ public class LibrarySelectorService extends DefaultComponent implements
 
     protected void registerMetadataUtils(
             MetadataUtilsDescriptor metadataUtilsDescriptor) {
+        if (metadataUtilsDescriptor == null) {
+            return;
+        }
+
         try {
             metadataUtils = metadataUtilsDescriptor.getNewInstance();
         } catch (Exception e) {
-            metadataUtils = DEFAULT_METADATA_UTILS;
         }
         log.debug("Using " + metadataUtils.getClass().getName()
                 + " for MetadataUtils.");
     }
 
     protected void registerMimeUtils(MimeUtilsDescriptor mimeUtilsDescriptor) {
+        if (mimeUtilsDescriptor == null) {
+            return;
+        }
+
         try {
             mimeUtils = mimeUtilsDescriptor.getNewInstance();
         } catch (Exception e) {
-            mimeUtils = DEFAULT_MIME_UTILS;
         }
         log.debug("Using " + mimeUtils.getClass().getName() + " for MimeUtils.");
     }
@@ -114,6 +111,7 @@ public class LibrarySelectorService extends DefaultComponent implements
         return imageUtils;
     }
 
+    @Deprecated
     @Override
     public MimeUtils getMimeUtils() {
         return mimeUtils;
