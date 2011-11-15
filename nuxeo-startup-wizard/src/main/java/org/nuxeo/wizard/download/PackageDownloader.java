@@ -43,7 +43,9 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRoute;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -51,6 +53,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.nuxeo.common.utils.FileUtils;
 
@@ -122,9 +125,15 @@ public class PackageDownloader {
                 PlainSocketFactory.getSocketFactory(), 80));
         registry.register(new Scheme("https",
                 SSLSocketFactory.getSocketFactory(), 443));
-        BasicHttpParams httpParams = new BasicHttpParams();
+        HttpParams httpParams = new BasicHttpParams();
         HttpProtocolParams.setUseExpectContinue(httpParams, false);
         ConnManagerParams.setMaxTotalConnections(httpParams, NB_DOWNLOAD_THREADS);
+        ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRoute() {
+            @Override
+            public int getMaxForRoute(HttpRoute arg0) {
+                return NB_DOWNLOAD_THREADS;
+            }
+        });
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, registry);
         httpClient = new DefaultHttpClient(cm, httpParams);
     }
