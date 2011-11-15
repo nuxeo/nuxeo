@@ -30,7 +30,7 @@ public class PictureBlobHolderFactory implements BlobHolderFactory {
         String docType = doc.getType();
         BlobHolder blobHolder;
 
-        if (docType.equals("Picture")) {
+        if (doc.hasFacet("Picture")) {
             blobHolder = new PictureBlobHolder(doc, "");
         } else if (docType.equals("PictureBook")) {
             blobHolder = new PictureBookBlobHolder(doc, "");

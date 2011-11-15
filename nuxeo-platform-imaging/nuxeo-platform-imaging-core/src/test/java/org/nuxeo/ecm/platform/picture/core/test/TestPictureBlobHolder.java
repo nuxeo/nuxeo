@@ -17,6 +17,10 @@
  */
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_TYPE_NAME;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,6 +56,7 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
         service = null;
     }
@@ -75,11 +80,18 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
     }
 
     public void testBasics() {
-        DocumentModel pictureDoc = new DocumentModelImpl("Picture");
+        DocumentModel pictureDoc = new DocumentModelImpl(PICTURE_TYPE_NAME);
+        pictureDoc.addFacet(PICTURE_FACET);
         BlobHolder bh = pictureDoc.getAdapter(BlobHolder.class);
         assertTrue(bh instanceof PictureBlobHolder);
 
-        DocumentModel pictureBookDoc = new DocumentModelImpl("PictureBook");
+        DocumentModel docWithPictureFacet = new DocumentModelImpl("MyType");
+        docWithPictureFacet.addFacet(PICTURE_FACET);
+        bh = docWithPictureFacet.getAdapter(BlobHolder.class);
+        assertTrue(bh instanceof PictureBlobHolder);
+
+        DocumentModel pictureBookDoc = new DocumentModelImpl(
+                PICTUREBOOK_TYPE_NAME);
         BlobHolder pbbh = service.getBlobHolderAdapter(pictureBookDoc);
         assertTrue(pbbh instanceof PictureBookBlobHolder);
         pbbh = pictureBookDoc.getAdapter(BlobHolder.class);
@@ -88,14 +100,14 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
 
     public void testBlobHolder() throws Exception {
         DocumentModel picturebook = new DocumentModelImpl("/", "picturebook",
-                "PictureBook");
+                PICTUREBOOK_TYPE_NAME);
         coreSession.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(
-                picturebook.getPathAsString(), "pic1", "Picture");
+                picturebook.getPathAsString(), "pic1", PICTURE_TYPE_NAME);
         picture.setPropertyValue("picture:views", (Serializable) createViews());
         picture = coreSession.createDocument(picture);
         DocumentModel picture2 = new DocumentModelImpl(
-                picturebook.getPathAsString(), "pic2", "Picture");
+                picturebook.getPathAsString(), "pic2", PICTURE_TYPE_NAME);
         picture2.setPropertyValue("picture:views", (Serializable) createViews());
         coreSession.createDocument(picture2);
         coreSession.save();
