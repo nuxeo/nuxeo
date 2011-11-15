@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
+import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 import org.nuxeo.ecm.webapp.security.GroupManagementActions;
 import org.nuxeo.ecm.webapp.security.UserManagementActions;
@@ -141,7 +142,17 @@ public class SuggestboxActions implements Serializable {
             throws ClientException, ParseException {
         setSearchKeywords("");
         if (suggestionType.equals(CommonSuggestionTypes.DOCUMENT)) {
-            navigationContext.navigateToRef(new IdRef(suggestionValue));
+            String[] fields = suggestionValue.split("::", 2);
+            if (fields.length != 2) {
+                log.error("Invalid document location, should be repo name and"
+                        + " doc id separated by '::' marker, got: "
+                        + suggestionValue);
+                return null;
+            }
+            String repoName = fields[0];
+            String docId = fields[1];
+            navigationContext.navigateTo(new RepositoryLocation(repoName),
+                    new IdRef(docId));
             return "view_documents";
         } else if (suggestionType.equals(CommonSuggestionTypes.USER)) {
             return userManagementActions.viewUser(suggestionValue);
