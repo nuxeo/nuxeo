@@ -2243,6 +2243,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // list all versions
         // TODO check this when no live document exists
 
+        // have a checked out doc
+        idHolder.setValue(id);
+        verService.checkOut(repositoryId, idHolder, null, null);
         // atompub passes just object id, soap just version series id
         List<ObjectData> vers = verService.getAllVersions(null, id, null, null,
                 null, null);
