@@ -711,7 +711,7 @@ public class NXQLQueryMaker implements QueryMaker {
     private final static Pattern INDEX = Pattern.compile("\\d+|\\*|\\*\\d+");
 
     // digits or star or star followed by digits, then slash
-    private final static Pattern INDEX_SLASH = Pattern.compile("(?:\\d+|\\*|\\*\\d+)(/|$)");
+    private final static Pattern INDEX_SLASH = Pattern.compile("/(?:\\d+|\\*|\\*\\d+)(/|$)");
 
     // non-canonical index syntax
     private final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
@@ -748,7 +748,7 @@ public class NXQLQueryMaker implements QueryMaker {
      */
     public static String simpleXPath(String xpath) {
         xpath = canonicalXPath(xpath);
-        return INDEX_SLASH.matcher(xpath).replaceAll("*$1");
+        return INDEX_SLASH.matcher(xpath).replaceAll("/*$1");
     }
 
     protected QueryAnalyzer newQueryAnalyzer(FacetFilter facetFilter) {
