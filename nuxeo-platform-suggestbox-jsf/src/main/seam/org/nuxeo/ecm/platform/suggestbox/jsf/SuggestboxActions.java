@@ -138,9 +138,11 @@ public class SuggestboxActions implements Serializable {
 
     // TODO: move this logic in the Suggestion service with pluggable action
     // handler
-    public String handleSelection(String suggestionType, String suggestionValue)
+    public String handleSelection(Suggestion selectedSuggestion)
             throws ClientException, ParseException {
         setSearchKeywords("");
+        String suggestionValue = selectedSuggestion.getValue();
+        String suggestionType = selectedSuggestion.getType();
         if (suggestionType.equals(CommonSuggestionTypes.DOCUMENT)) {
             String[] fields = suggestionValue.split("::", 2);
             if (fields.length != 2) {

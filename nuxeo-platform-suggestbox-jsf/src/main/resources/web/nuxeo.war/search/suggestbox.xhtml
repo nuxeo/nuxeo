@@ -47,7 +47,7 @@
             value="#{widget.properties['facetedSuggestionSearchType']}" />
           <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
             focus="" bypassUpdates="true" reRender=""
-            action="#{suggestboxActions.handleSelection(result.type, result.value)}">
+            action="#{suggestboxActions.handleSelection(result)}">
           </a4j:support>
           <h:column>
             <h:graphicImage value="#{result.iconURL}" />
