@@ -2270,6 +2270,19 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testCancelCheckout() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+        verService.cancelCheckOut(repositoryId, id, null);
+        try {
+            getObject(id);
+            fail("Document should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+    }
+
+    @Test
     public void testCheckInWithChanges() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();

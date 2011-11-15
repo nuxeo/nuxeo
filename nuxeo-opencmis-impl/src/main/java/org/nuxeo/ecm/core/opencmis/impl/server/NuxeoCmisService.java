@@ -1700,8 +1700,13 @@ public class NuxeoCmisService extends AbstractCmisService {
             DocumentRef docRef = doc.getRef();
             // find last version
             DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
-            // restore and keep checked in
-            coreSession.restoreToVersion(docRef, verRef, true, true);
+            if (verRef == null) {
+                // delete
+                coreSession.removeDocument(docRef);
+            } else {
+                // restore and keep checked in
+                coreSession.restoreToVersion(docRef, verRef, true, true);
+            }
             coreSession.save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
