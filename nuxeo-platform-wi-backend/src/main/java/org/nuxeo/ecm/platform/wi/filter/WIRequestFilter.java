@@ -35,6 +35,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.RemoteHostGuessExtractor;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -81,7 +82,7 @@ public class WIRequestFilter implements Filter {
             try {
                 txStarted = TransactionHelper.startTransaction();
                 if (txStarted) {
-                    response = new NuxeoRequestControllerFilter.CommittingServletResponseWrapper(
+                    response = new BufferingHttpServletResponse(
                             httpResponse);
                 }
                 chain.doFilter(request, response);
@@ -103,7 +104,7 @@ public class WIRequestFilter implements Filter {
                 throw new ServletException(e);
             } finally {
                 if (txStarted) {
-                    if (!((NuxeoRequestControllerFilter.CommittingServletResponseWrapper) response).committedTx) {
+                    if (!((BufferingHttpServletResponse) response).isCommitted()) {
                         TransactionHelper.commitOrRollbackTransaction();
                     }
                 }
