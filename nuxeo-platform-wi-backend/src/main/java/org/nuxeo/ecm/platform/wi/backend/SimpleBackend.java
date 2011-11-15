@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.webdav.resource.ExistingResource;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.UnsupportedEncodingException;
@@ -520,8 +521,11 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public String lock(DocumentRef ref) throws ClientException {
-        Lock lock = getSession().setLock(ref);
-        return lock.getOwner();
+        if (canUnlock(ref)) {
+            Lock lock = getSession().setLock(ref);
+            return lock.getOwner();
+        }
+        return ExistingResource.READONLY_TOKEN;
     }
 
     @Override

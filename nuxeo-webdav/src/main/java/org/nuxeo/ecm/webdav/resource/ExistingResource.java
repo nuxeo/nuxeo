@@ -77,6 +77,8 @@ import org.nuxeo.ecm.webdav.backend.WebDavBackend;
  */
 public class ExistingResource extends AbstractResource {
 
+    public static final String READONLY_TOKEN = "readonly";
+
     private static final Log log = LogFactory.getLog(ExistingResource.class);
 
     protected DocumentModel doc;
@@ -262,7 +264,9 @@ public class ExistingResource extends AbstractResource {
         }
 
         token = backend.lock(doc.getRef());
-        if (StringUtils.isEmpty(token)) {
+        if (READONLY_TOKEN.equals(token)) {
+            return Response.status(423).build();
+        } else if (StringUtils.isEmpty(token)) {
             return Response.status(400).build();
         }
 
