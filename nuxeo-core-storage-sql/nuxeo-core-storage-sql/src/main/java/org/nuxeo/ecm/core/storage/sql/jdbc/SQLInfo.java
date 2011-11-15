@@ -85,20 +85,6 @@ public class SQLInfo {
 
     private List<Column> selectDescendantsInfoWhatColumns;
 
-    private String copyHierSqlExplicitName;
-
-    private String copyHierSqlCreateVersion;
-
-    private String copyHierSql;
-
-    private List<Column> copyHierColumnsExplicitName;
-
-    private List<Column> copyHierColumnsCreateVersion;
-
-    private List<Column> copyHierColumns;
-
-    private Column copyHierWhereColumn;
-
     private final Map<String, String> copySqlMap;
 
     private final Map<String, Column> copyIdColumnMap;
@@ -144,13 +130,6 @@ public class SQLInfo {
 
         deleteSqlMap = new HashMap<String, String>();
 
-        copyHierSqlExplicitName = null;
-        copyHierSqlCreateVersion = null;
-        copyHierSql = null;
-        copyHierColumnsExplicitName = null;
-        copyHierColumnsCreateVersion = null;
-        copyHierColumns = null;
-        copyHierWhereColumn = null;
         copySqlMap = new HashMap<String, String>();
         copyIdColumnMap = new HashMap<String, Column>();
 
@@ -418,22 +397,42 @@ public class SQLInfo {
 
     // ----- copy -----
 
-    public String getCopyHierSql(boolean explicitName, boolean createVersion) {
-        assert !(explicitName && createVersion);
-        return explicitName ? copyHierSqlExplicitName
-                : createVersion ? copyHierSqlCreateVersion : copyHierSql;
-    }
-
-    public List<Column> getCopyHierColumns(boolean explicitName,
-            boolean createVersion) {
-        assert !(explicitName && createVersion);
-        return explicitName ? copyHierColumnsExplicitName
-                : createVersion ? copyHierColumnsCreateVersion
-                        : copyHierColumns;
-    }
-
-    public Column getCopyHierWhereColumn() {
-        return copyHierWhereColumn;
+    public SQLInfoSelect getCopyHier(boolean explicitName) {
+        Table table = database.getTable(model.HIER_TABLE_NAME);
+        Collection<Column> columns = table.getColumns();
+        List<String> selectWhats = new ArrayList<String>(columns.size());
+        List<Column> selectWhatColumns = new ArrayList<Column>(5);
+        Insert insert = new Insert(table);
+        for (Column column : columns) {
+            if (column.isIdentity()) {
+                // identity column is never copied
+                continue;
+            }
+            insert.addColumn(column);
+            String quotedName = column.getQuotedName();
+            String key = column.getKey();
+            if (key.equals(model.MAIN_KEY) //
+                    || key.equals(model.HIER_PARENT_KEY) //
+                    || key.equals(model.MAIN_BASE_VERSION_KEY) //
+                    || key.equals(model.MAIN_CHECKED_IN_KEY) //
+                    || (key.equals(model.HIER_CHILD_NAME_KEY) && explicitName)) {
+                // explicit value set
+                selectWhats.add("?");
+                selectWhatColumns.add(column);
+            } else {
+                // otherwise copy value
+                selectWhats.add(quotedName);
+            }
+        }
+        Column whereColumn = table.getColumn(model.MAIN_KEY);
+        Select select = new Select(null);
+        select.setFrom(table.getQuotedName());
+        select.setWhat(StringUtils.join(selectWhats, ", "));
+        select.setWhere(whereColumn.getQuotedName() + " = ?");
+        insert.setValues(select.getStatement());
+        String sql = insert.getStatement();
+        return new SQLInfoSelect(sql, selectWhatColumns,
+                Collections.singletonList(whereColumn), null);
     }
 
     public String getCopySql(String tableName) {
@@ -758,7 +757,6 @@ public class SQLInfo {
          */
         protected void postProcessHierarchy() {
             postProcessSelectChildrenIdsAndTypes();
-            postProcessCopyHier();
         }
 
         protected void postProcessSelectById() {
@@ -821,74 +819,6 @@ public class SQLInfo {
             }
             delete.setWhere(StringUtils.join(wheres, " AND "));
             deleteSqlMap.put(tableName, delete.getStatement());
-        }
-
-        // copy, with or without explicit name
-        protected void postProcessCopyHier() {
-            Collection<Column> columns = table.getColumns();
-            List<String> selectWhats = new ArrayList<String>(columns.size());
-            List<String> selectWhatsExplicitName = new ArrayList<String>(
-                    columns.size());
-            List<String> selectWhatsCreateVersion = new ArrayList<String>(
-                    columns.size());
-            copyHierColumns = new ArrayList<Column>(2);
-            copyHierColumnsExplicitName = new ArrayList<Column>(3);
-            copyHierColumnsCreateVersion = new ArrayList<Column>(3);
-            Insert insert = new Insert(table);
-            for (Column column : columns) {
-                if (column.isIdentity()) {
-                    // identity column is never copied
-                    continue;
-                }
-                insert.addColumn(column);
-                String quotedName = column.getQuotedName();
-                String key = column.getKey();
-                if (key.equals(model.MAIN_KEY)
-                        || key.equals(model.HIER_PARENT_KEY)) {
-                    // explicit id/parent value (id if not identity column)
-                    selectWhats.add("?");
-                    copyHierColumns.add(column);
-                    selectWhatsExplicitName.add("?");
-                    copyHierColumnsExplicitName.add(column);
-                    selectWhatsCreateVersion.add("?");
-                    copyHierColumnsCreateVersion.add(column);
-                } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
-                    selectWhats.add(quotedName);
-                    // exlicit name value if requested
-                    selectWhatsExplicitName.add("?");
-                    copyHierColumnsExplicitName.add(column);
-                    // version creation copies name
-                    selectWhatsCreateVersion.add(quotedName);
-                } else if (key.equals(model.MAIN_BASE_VERSION_KEY)
-                        || key.equals(model.MAIN_CHECKED_IN_KEY)) {
-                    selectWhats.add(quotedName);
-                    selectWhatsExplicitName.add(quotedName);
-                    // version creation sets those null
-                    selectWhatsCreateVersion.add("?");
-                    copyHierColumnsCreateVersion.add(column);
-                } else {
-                    // otherwise copy value
-                    selectWhats.add(quotedName);
-                    selectWhatsExplicitName.add(quotedName);
-                    selectWhatsCreateVersion.add(quotedName);
-                }
-            }
-            copyHierWhereColumn = table.getColumn(model.MAIN_KEY);
-            Select select = new Select(table);
-            select.setFrom(table.getQuotedName());
-            select.setWhere(copyHierWhereColumn.getQuotedName() + " = ?");
-            // without explicit name nor version creation (normal)
-            select.setWhat(StringUtils.join(selectWhats, ", "));
-            insert.setValues(select.getStatement());
-            copyHierSql = insert.getStatement();
-            // with explicit name
-            select.setWhat(StringUtils.join(selectWhatsExplicitName, ", "));
-            insert.setValues(select.getStatement());
-            copyHierSqlExplicitName = insert.getStatement();
-            // with version creation
-            select.setWhat(StringUtils.join(selectWhatsCreateVersion, ", "));
-            insert.setValues(select.getStatement());
-            copyHierSqlCreateVersion = insert.getStatement();
         }
 
         // copy of a fragment

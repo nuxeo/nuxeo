@@ -951,12 +951,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     protected Serializable copyHier(Serializable id, Serializable parentId,
             String name, Map<Serializable, Serializable> idMap)
             throws SQLException {
-        boolean createVersion = parentId == null;
         boolean explicitName = name != null;
         Serializable newId = null;
 
-        String sql = sqlInfo.getCopyHierSql(explicitName, createVersion);
-        PreparedStatement ps = connection.prepareStatement(sql);
+        SQLInfoSelect copy = sqlInfo.getCopyHier(explicitName);
+        PreparedStatement ps = connection.prepareStatement(copy.sql);
         try {
             // TODO DB_IDENTITY
             newId = model.generateNewId();
@@ -965,11 +964,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             if (logger.isLogEnabled()) {
                 debugValues = new ArrayList<Serializable>(4);
             }
-            List<Column> columns = sqlInfo.getCopyHierColumns(explicitName,
-                    createVersion);
-            Column whereColumn = sqlInfo.getCopyHierWhereColumn();
             int i = 1;
-            for (Column column : columns) {
+            for (Column column : copy.whatColumns) {
                 String key = column.getKey();
                 Serializable v;
                 if (key.equals(model.HIER_PARENT_KEY)) {
@@ -980,8 +976,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 } else if (key.equals(model.MAIN_KEY)) {
                     // present if APP_UUID generation
                     v = newId;
-                } else if (createVersion
-                        && (key.equals(model.MAIN_BASE_VERSION_KEY) || key.equals(model.MAIN_CHECKED_IN_KEY))) {
+                } else if (key.equals(model.MAIN_BASE_VERSION_KEY)
+                        || key.equals(model.MAIN_CHECKED_IN_KEY)) {
                     v = null;
                 } else {
                     throw new RuntimeException(column.toString());
@@ -992,10 +988,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
             // last parameter is for 'WHERE "id" = ?'
+            Column whereColumn = copy.whereColumns.get(0);
             whereColumn.setToPreparedStatement(ps, i, id);
             if (debugValues != null) {
                 debugValues.add(id);
-                logger.logSQL(sql, debugValues);
+                logger.logSQL(copy.sql, debugValues);
             }
             int count = ps.executeUpdate();
             logger.logCount(count);

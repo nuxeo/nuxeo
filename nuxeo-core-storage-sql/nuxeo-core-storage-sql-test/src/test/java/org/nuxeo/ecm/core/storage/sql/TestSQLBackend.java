@@ -1461,6 +1461,28 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // session.copy(ver1, null, "bar"); not possible right now
     }
 
+    public void testVersionCopy() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foldera = session.addChildNode(root, "foldera", null, "TestDoc",
+                false);
+        Node nodea = session.addChildNode(foldera, "nodea", null, "TestDoc",
+                false);
+        session.checkIn(nodea, "1", null);
+        session.save();
+
+        // copy checked in doc
+        assertEquals(Boolean.TRUE,
+                nodea.getSimpleProperty("ecm:isCheckedIn").getValue());
+        Node nodeb = session.copy(nodea, root, "nodeb");
+        assertNull(nodeb.getSimpleProperty("ecm:isCheckedIn").getValue());
+
+        // copy folder including checked in doc
+        Node folderb = session.copy(foldera, root, "folderb");
+        Node nodec = session.getChildNode(folderb, "nodea", false);
+        assertNull(nodec.getSimpleProperty("ecm:isCheckedIn").getValue());
+    }
+
     public void testProxies() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
