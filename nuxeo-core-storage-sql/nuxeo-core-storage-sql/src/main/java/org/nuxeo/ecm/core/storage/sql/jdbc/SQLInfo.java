@@ -985,7 +985,7 @@ public class SQLInfo {
             this(sql, null, mapMaker, null, null);
         }
 
-        protected SQLInfoSelect(String sql, List<Column> whatColumns,
+        public SQLInfoSelect(String sql, List<Column> whatColumns,
                 MapMaker mapMaker, List<Column> whereColumns,
                 List<Column> opaqueColumns) {
             this.sql = sql;

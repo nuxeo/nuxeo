@@ -193,7 +193,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 || queryString.toLowerCase().trim().startsWith("select ");
     }
 
-    private enum DocKind {
+    public enum DocKind {
         DIRECT, PROXY;
     }
 
@@ -217,7 +217,7 @@ public class NXQLQueryMaker implements QueryMaker {
          * Find all relevant types and keys for the criteria.
          */
 
-        QueryAnalyzer info = new QueryAnalyzer(queryFilter.getFacetFilter());
+        QueryAnalyzer info = newQueryAnalyzer(queryFilter.getFacetFilter());
         try {
             info.visitQuery(sqlQuery);
         } catch (QueryCannotMatchException e) {
@@ -350,7 +350,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             WhereBuilder whereBuilder;
             try {
-                whereBuilder = new WhereBuilder(database, model, pathResolver,
+                whereBuilder = newWhereBuilder(database, model, pathResolver,
                         dialect, hierTable, hierId, dataHierTable, dataHierId,
                         docKind == DocKind.PROXY);
             } catch (QueryMakerException e) {
@@ -676,6 +676,10 @@ public class NXQLQueryMaker implements QueryMaker {
         return useIndex;
     }
 
+    protected QueryAnalyzer newQueryAnalyzer(FacetFilter facetFilter) {
+        return new QueryAnalyzer(facetFilter);
+    }
+
     /**
      * Collects various info about the query AST, and rewrites the toplevel AND
      * {@link Predicate}s of the WHERE clause into a single
@@ -998,6 +1002,14 @@ public class NXQLQueryMaker implements QueryMaker {
             return Boolean.valueOf(value).hashCode();
         }
 
+    }
+
+    protected WhereBuilder newWhereBuilder(Database database, Model model,
+            PathResolver pathResolver, Dialect dialect, Table hierTable,
+            String hierId, Table dataHierTable, String dataHierId,
+            boolean isProxies) {
+        return new WhereBuilder(database, model, pathResolver, dialect,
+                hierTable, hierId, dataHierTable, dataHierId, isProxies);
     }
 
     /**
