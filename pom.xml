@@ -276,11 +276,6 @@
       </dependency>
       <!-- <dependency> -->
       <!-- <groupId>org.nuxeo.ecm.core</groupId> -->
-      <!-- <artifactId>nuxeo-core-auth</artifactId> -->
-      <!-- <version>${nuxeo.core.version}</version> -->
-      <!-- </dependency> -->
-      <!-- <dependency> -->
-      <!-- <groupId>org.nuxeo.ecm.core</groupId> -->
       <!-- <artifactId>nuxeo-core-blob</artifactId> -->
       <!-- <version>${nuxeo.core.version}</version> -->
       <!-- </dependency> -->
@@ -767,16 +762,6 @@
         <artifactId>nuxeo-webengine-jaxrs</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
-      <!-- <dependency> -->
-      <!-- <groupId>org.nuxeo.ecm.webengine</groupId> -->
-      <!-- <artifactId>nuxeo-webengine-jersey-adapter</artifactId> -->
-      <!-- <version>${nuxeo.webengine.version}</version> -->
-      <!-- </dependency> -->
-      <!-- <dependency> -->
-      <!-- <groupId>org.nuxeo.ecm.webengine</groupId> -->
-      <!-- <artifactId>nuxeo-webengine-resteasy-adapter</artifactId> -->
-      <!-- <version>${nuxeo.webengine.version}</version> -->
-      <!-- </dependency> -->
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-ui</artifactId>
