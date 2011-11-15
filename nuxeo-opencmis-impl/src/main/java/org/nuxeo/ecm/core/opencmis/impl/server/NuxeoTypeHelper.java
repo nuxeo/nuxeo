@@ -282,7 +282,9 @@ public class NuxeoTypeHelper {
             t.setIsFileable(Boolean.FALSE);
         } else {
             DocumentTypeDefinitionImpl dt = (DocumentTypeDefinitionImpl) t;
-            dt.setIsVersionable(Boolean.FALSE);
+            boolean versionable = documentType == null ? false
+                    : documentType.getFacets().contains(FacetNames.VERSIONABLE);
+            dt.setIsVersionable(Boolean.valueOf(versionable));
             t.setIsFileable(Boolean.TRUE);
             ContentStreamAllowed csa = (documentType != null && supportsBlobHolder(documentType)) ? ContentStreamAllowed.ALLOWED
                     : ContentStreamAllowed.NOTALLOWED;
