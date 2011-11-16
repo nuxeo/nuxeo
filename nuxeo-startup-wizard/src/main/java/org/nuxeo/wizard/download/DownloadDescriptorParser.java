@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -34,6 +36,8 @@ import org.dom4j.io.SAXReader;
  *
  */
 public class DownloadDescriptorParser {
+
+    protected static final Log log = LogFactory.getLog(DownloadDescriptorParser.class);
 
     public static Document parse(InputStream in) {
         Document document = null;
@@ -54,17 +58,34 @@ public class DownloadDescriptorParser {
         Document document = parse(in);
         if (document != null) {
 
-            String baseUrl = document.getRootElement().element("packageDefinitions").attributeValue("baseUrl");
+            String baseUrl = document.getRootElement().element(
+                    "packageDefinitions").attributeValue("baseUrl");
 
+            // parse package definition
             for (Object el : document.getRootElement().element(
                     "packageDefinitions").elements("package")) {
-                DownloadPackage pkg = readPackageDefinition((Element) el, baseUrl);
+                DownloadPackage pkg = readPackageDefinition((Element) el,
+                        baseUrl);
                 if (pkg != null) {
                     pkgs.add(pkg);
                 }
             }
 
-            for (Object el : document.getRootElement().element("packageOptions").elements(
+            Element install = document.getRootElement().element("install");
+
+            // get common packages
+            if (install.element("common") != null) {
+                for (Object el : install.element("common").elements("package")) {
+                    DownloadPackage pkg = readCommonPackage((Element) el, pkgs);
+                    if (pkg != null) {
+                        options.addCommonPackage(pkg);
+                    }
+                }
+            }
+
+            nodeCounter = 0;
+            // get package Options
+            for (Object el : install.element("packageOptions").elements(
                     "package")) {
                 DownloadablePackageOption pkg = readPackageOptions(
                         (Element) el, pkgs);
@@ -72,25 +93,56 @@ public class DownloadDescriptorParser {
                     options.addOptions(pkg);
                 }
             }
-        }
 
+            // get presets
+            if (document.getRootElement().element("presets")!=null) {
+                for (Object el : document.getRootElement().element("presets").elements("preset")) {
+                    Element preset = (Element)el;
+                    String presetId = preset.attribute("id").getValue();
+                    String presetLabel = preset.attribute("label").getValue();
+                    String pkgList = preset.getText();
+                    String[] presetPackages = pkgList.split(",");
+                    options.addPreset(presetId, presetLabel, presetPackages);
+                    }
+                }
+        }
         return options;
     }
 
-    protected static DownloadPackage readPackageDefinition(Element el, String baseUrl) {
+    protected static int nodeCounter = 0;
+
+    protected static DownloadPackage readPackageDefinition(Element el,
+            String baseUrl) {
         String id = el.attribute("id").getValue();
         if (id != null) {
             DownloadPackage pkg = new DownloadPackage(id);
             String bUrl = el.attributeValue("baseUrl");
-            if (bUrl==null) {
+            if (bUrl == null) {
                 bUrl = baseUrl;
             }
             pkg.setLabel(el.attributeValue("label"));
             pkg.setFilename(el.attributeValue("filename"));
             pkg.setMd5(el.attributeValue("md5"));
             pkg.setBaseUrl(bUrl);
+            pkg.setColor(el.attributeValue("color"));
+            String url = el.attributeValue("url");
+            if (url != null) {
+                pkg.setDownloadUrl(url);
+            }
             return pkg;
         }
+        return null;
+    }
+
+    protected static DownloadPackage readCommonPackage(Element el,
+            List<DownloadPackage> pkgs) {
+        String ref = el.attributeValue("ref");
+        for (DownloadPackage pkg : pkgs) {
+            if (pkg.getId().equals(ref)) {
+                return pkg;
+            }
+        }
+        log.error("Unable to find common package for ref " + ref);
         return null;
     }
 
@@ -100,31 +152,47 @@ public class DownloadDescriptorParser {
         String ref = el.attributeValue("ref");
         DownloadPackage targetPkg = null;
 
-        for (DownloadPackage pkg : pkgs) {
-            if (pkg.getId().equals(ref)) {
-                targetPkg = pkg;
-                break;
-            }
-        }
-
-        if (targetPkg != null) {
-            DownloadablePackageOption pkgOption = new DownloadablePackageOption(
-                    targetPkg);
-            String label = el.attributeValue("lasbel");
-            if (label != null) {
-                pkgOption.setLabel(label);
-            }
-            pkgOption.setExclusive(el.attributeValue("exclusive"));
-
-            for (Object child : el.elements()) {
-                DownloadablePackageOption childPkg = readPackageOptions(
-                        (Element) child, pkgs);
-                if (childPkg != null) {
-                    pkgOption.addChildPackage(childPkg);
+        if (ref != null) {
+            for (DownloadPackage pkg : pkgs) {
+                if (pkg.getId().equals(ref)) {
+                    targetPkg = pkg;
+                    break;
                 }
             }
-            return pkgOption;
+            if (targetPkg == null) {
+                log.error("Unable to find package for ref " + ref);
+                return null;
+            }
         }
-        return null;
+
+        String id = el.attributeValue("ref");
+        if (id==null) {
+            id = ref;
+        }
+        DownloadablePackageOption pkgOption;
+        nodeCounter++;
+
+        if (id!=null) {
+            pkgOption = new DownloadablePackageOption(
+                    targetPkg, id);
+        } else {
+            pkgOption = new DownloadablePackageOption(
+                    targetPkg, nodeCounter);
+        }
+
+        String label = el.attributeValue("label");
+        if (label != null) {
+            pkgOption.setLabel(label);
+        }
+        pkgOption.setExclusive(el.attributeValue("exclusive"));
+
+        for (Object child : el.elements()) {
+            DownloadablePackageOption childPkg = readPackageOptions(
+                    (Element) child, pkgs);
+            if (childPkg != null) {
+                pkgOption.addChildPackage(childPkg);
+            }
+        }
+        return pkgOption;
     }
 }
