@@ -29,6 +29,9 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.javasimon.SimonManager;
+import org.javasimon.Split;
+import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -156,11 +159,14 @@ public class GenericThreadedImportTask implements Runnable {
         }
 
         if (uploadedFiles % batchSize == 0 || force) {
+            Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.session_save");
+            Split split = stopwatch.start();
             fslog("Comiting Core Session after " + uploadedFiles + " files",
                     true);
             getCoreSession().save();
             txHelper.commitOrRollbackTransaction();
             txHelper.beginNewTransaction(TX_TIMEOUT);
+            split.stop();
         }
     }
 
@@ -169,7 +175,8 @@ public class GenericThreadedImportTask implements Runnable {
         if (!shouldImportDocument(node)) {
             return null;
         }
-
+        Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.create_folder");
+        Split split = stopwatch.start();
         DocumentModel folder;
         try {
             folder = getFactory().createFolderishNode(getCoreSession(), parent,
@@ -180,6 +187,7 @@ public class GenericThreadedImportTask implements Runnable {
                     + (e.getCause() != null ? e.getCause() : "");
             fslog(errorMsg, true);
             log.error(errorMsg);
+            split.stop();
             throw new Exception(e);
         }
         if (folder != null) {
@@ -188,6 +196,7 @@ public class GenericThreadedImportTask implements Runnable {
             fslog("Created Folder " + folder.getName() + " at " + parentPath,
                     true);
         }
+        split.stop();
         // save session if needed
         commit();
         return folder;
@@ -199,7 +208,8 @@ public class GenericThreadedImportTask implements Runnable {
         if (!shouldImportDocument(node)) {
             return null;
         }
-
+        Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.create_leaf");
+        Split split = stopwatch.start();
         DocumentModel leaf;
         try {
             leaf = getFactory().createLeafNode(getCoreSession(), parent, node);
@@ -209,7 +219,7 @@ public class GenericThreadedImportTask implements Runnable {
                     + (e.getCause() != null ? e.getCause() : "");
             fslog(errMsg, true);
             log.error(errMsg);
-
+            split.stop();
             throw new Exception(e);
         }
         if (leaf != null && node.getBlobHolder() != null) {
@@ -226,6 +236,7 @@ public class GenericThreadedImportTask implements Runnable {
 
             uploadedKO += fileSize;
         }
+        split.stop();
         // save session if needed
         commit();
         return leaf;
@@ -305,7 +316,10 @@ public class GenericThreadedImportTask implements Runnable {
                 commit(true);
                 GenericMultiThreadedImporter.getExecutor().execute(task);
             } else {
+                Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.node_get_children");
+                Split split = stopwatch.start();
                 List<SourceNode> nodes = node.getChildren();
+                split.stop();
                 if (nodes != null) {
                     for (SourceNode child : nodes) {
                         recursiveCreateDocumentFromNode(folder, child);

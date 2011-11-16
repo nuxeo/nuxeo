@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.javasimon.SimonManager;
+import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -342,6 +344,18 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         for (String k : nbCreatedDocsByThreads.keySet()) {
             log.info(k + " --> " + nbCreatedDocsByThreads.get(k));
         }
+        Stopwatch stopwatch;
+        for (String name : SimonManager.simonNames()) {
+            if (name == null || name.isEmpty()
+                    || !name.startsWith("org.nuxeo.ecm.platform.importer")) {
+                continue;
+            }
+            stopwatch = SimonManager.getStopwatch(name);
+            if (stopwatch.getCounter() > 0) {
+                log.info(stopwatch.toString());
+            }
+        }
+
     }
 
     protected DocumentModel getTargetContainer() throws Exception {
