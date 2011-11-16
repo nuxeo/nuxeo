@@ -83,6 +83,7 @@ public class Suggestion implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Suggestion(%s, %s, %s)", type, label, iconURL);
+        return String.format("Suggestion(\"%s\", \"%s\", \"%s\")", type, label,
+                iconURL);
     }
 }
