@@ -96,7 +96,7 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ConnectApps" link="view_admin-fragment.xhtml"
+    <action id="ConnectApps" link="view_updatecenter-fragment.xhtml"
       label="admcommand.appstore" order="30">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
