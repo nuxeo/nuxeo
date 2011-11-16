@@ -2029,6 +2029,42 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    public void testFulltextCompatibilityPostgreSQL() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        if (!(DatabaseHelper.DATABASE instanceof DatabasePostgreSQL)) {
+            return;
+        }
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_FULLTEXT, Boolean.TRUE);
+        try {
+            // first init to create old fulltext table
+            repository.getConnection();
+            repository.close();
+        } finally {
+            JDBCMapper.testProps.clear();
+        }
+
+        // reinit to have a proper sqlInfo and model
+        repository = newRepository(-1, false);
+
+        // test with pre-existing fulltext table in compatibility mode
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.setSimpleProperty("tst:title", "hello world");
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext(); // postgresql, not needed
+
+        PartialList<Serializable> res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
     public void testRelation() throws Exception {
         PartialList<Serializable> res;
 

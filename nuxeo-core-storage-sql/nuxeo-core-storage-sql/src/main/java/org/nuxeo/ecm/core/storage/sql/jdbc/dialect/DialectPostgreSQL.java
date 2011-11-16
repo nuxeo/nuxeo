@@ -73,6 +73,8 @@ public class DialectPostgreSQL extends Dialect {
 
     protected String usersSeparator;
 
+    protected boolean compatibilityFulltextTable;
+
     public DialectPostgreSQL(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
@@ -93,6 +95,26 @@ public class DialectPostgreSQL extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
+        try {
+            compatibilityFulltextTable = getCompatibilityFulltextTable(metadata);
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    protected boolean getCompatibilityFulltextTable(DatabaseMetaData metadata)
+            throws SQLException {
+        ResultSet rs = metadata.getColumns(null, null,
+                Model.FULLTEXT_TABLE_NAME, "%");
+        while (rs.next()) {
+            // COLUMN_NAME=fulltext DATA_TYPE=1111 TYPE_NAME=tsvector
+            String columnName = rs.getString("COLUMN_NAME");
+            if (Model.FULLTEXT_FULLTEXT_KEY.equals(columnName)) {
+                String typeName = rs.getString("TYPE_NAME");
+                return "tsvector".equals(typeName);
+            }
+        }
+        return false;
     }
 
     @Override
@@ -153,9 +175,17 @@ public class DialectPostgreSQL extends Dialect {
         case AUTOINC:
             return jdbcInfo("serial", Types.INTEGER);
         case FTINDEXED:
-            return jdbcInfo("tsvector", Types.OTHER);
+            if (compatibilityFulltextTable) {
+                return jdbcInfo("tsvector", Types.OTHER);
+            } else {
+                return jdbcInfo("text", Types.CLOB);
+            }
         case FTSTORED:
-            return jdbcInfo("tsvector", Types.OTHER);
+            if (compatibilityFulltextTable) {
+                return jdbcInfo("tsvector", Types.OTHER);
+            } else {
+                return jdbcInfo("text", Types.CLOB);
+            }
         case CLUSTERNODE:
             return jdbcInfo("int4", Types.INTEGER);
         case CLUSTERFRAGS:
@@ -179,6 +209,12 @@ public class DialectPostgreSQL extends Dialect {
             return true;
         }
         if (expected == Types.INTEGER && actual == Types.BIGINT) {
+            return true;
+        }
+        // TSVECTOR vs CLOB compatibility during upgrade tests
+        // where column detection is done before upgrade test setup
+        if (expected == Types.CLOB
+                && (actual == Types.OTHER && actualName.equals("tsvector"))) {
             return true;
         }
         return false;
@@ -254,9 +290,14 @@ public class DialectPostgreSQL extends Dialect {
     public String getCreateFulltextIndexSql(String indexName,
             String quotedIndexName, Table table, List<Column> columns,
             Model model) {
-        return String.format("CREATE INDEX %s ON %s USING GIN(%s)",
-                quotedIndexName.toLowerCase(), table.getQuotedName(),
-                columns.get(0).getQuotedName());
+        String sql;
+        if (compatibilityFulltextTable) {
+            sql = "CREATE INDEX %s ON %s USING GIN(%s)";
+        } else {
+            sql = "CREATE INDEX %s ON %s USING GIN(NX_TO_TSVECTOR(%s))";
+        }
+        return String.format(sql, quotedIndexName.toLowerCase(),
+                table.getQuotedName(), columns.get(0).getQuotedName());
     }
 
     @Override
@@ -287,6 +328,7 @@ public class DialectPostgreSQL extends Dialect {
         Column ftMain = ft.getColumn(model.MAIN_KEY);
         Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY
                 + indexSuffix);
+        String ftColumnName = ftColumn.getFullQuotedName();
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String queryAlias = "_nxquery" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
@@ -302,10 +344,15 @@ public class DialectPostgreSQL extends Dialect {
                 queryAlias, // alias
                 fulltextQuery, // param
                 null, null));
-        info.whereExpr = String.format("(%s @@ %s)", queryAlias,
-                ftColumn.getFullQuotedName());
-        info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)",
-                ftColumn.getFullQuotedName(), queryAlias);
+        String tsvector;
+        if (compatibilityFulltextTable) {
+            tsvector = ftColumnName;
+        } else {
+            tsvector = String.format("NX_TO_TSVECTOR(%s)", ftColumnName);
+        }
+        info.whereExpr = String.format("(%s @@ %s)", queryAlias, tsvector);
+        info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)", tsvector,
+                queryAlias);
         info.scoreAlias = "_nxscore" + nthSuffix;
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
@@ -324,7 +371,7 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getFreeVariableSetterForType(ColumnType type) {
-        if (type == ColumnType.FTSTORED) {
+        if (type == ColumnType.FTSTORED && compatibilityFulltextTable) {
             return "NX_TO_TSVECTOR(?)";
         }
         return "?";
@@ -579,10 +626,16 @@ public class DialectPostgreSQL extends Dialect {
                         + suffix);
                 Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
                         + suffix);
-                String line = String.format(
-                        "  NEW.%s := COALESCE(NEW.%s, ''::TSVECTOR) || COALESCE(NEW.%s, ''::TSVECTOR);",
-                        ftft.getQuotedName(), ftst.getQuotedName(),
-                        ftbt.getQuotedName());
+                String concat;
+                if (compatibilityFulltextTable) {
+                    // tsvector
+                    concat = "  NEW.%s := COALESCE(NEW.%s, ''::TSVECTOR) || COALESCE(NEW.%s, ''::TSVECTOR);";
+                } else {
+                    // text with space at beginning and end
+                    concat = "  NEW.%s := ' ' || COALESCE(NEW.%s, '') || ' ' || COALESCE(NEW.%s, '') || ' ';";
+                }
+                String line = String.format(concat, ftft.getQuotedName(),
+                        ftst.getQuotedName(), ftbt.getQuotedName());
                 lines.add(line);
             }
             properties.put("fulltextTriggerStatements",

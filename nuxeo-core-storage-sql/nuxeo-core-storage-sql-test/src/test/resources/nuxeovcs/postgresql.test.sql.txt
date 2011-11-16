@@ -54,6 +54,20 @@ CREATE TABLE locks (
 
 ALTER TABLE locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
 
+# create old-style fulltext table with pre-tsvectored columns
+
+#IF: testUpgradeFulltext
+CREATE TABLE fulltext (
+  id ${idType} NOT NULL PRIMARY KEY, -- foreign key below
+  jobid varchar(250),
+  fulltext tsvector,
+  simpletext tsvector,
+  binarytext tsvector
+);
+
+#IF: testUpgradeFulltext
+CREATE INDEX "fulltext_fulltext_idx" ON "fulltext" USING GIN("fulltext");
+
 
 ############################################################
 
@@ -63,6 +77,10 @@ ALTER TABLE locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
 # old foreign keys
 
 ALTER TABLE locks ADD CONSTRAINT locks_id_hierarchy_fk FOREIGN KEY (id)
+  REFERENCES hierarchy ON DELETE CASCADE;
+
+#IF: testUpgradeFulltext
+ALTER TABLE fulltext ADD CONSTRAINT fulltext_id_hierarchy_fk FOREIGN KEY (id)
   REFERENCES hierarchy ON DELETE CASCADE;
 
 # create old values in old tables

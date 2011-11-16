@@ -86,6 +86,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     public static final String TEST_UPGRADE_LOCKS = "testUpgradeLocks";
 
+    public static final String TEST_UPGRADE_FULLTEXT = "testUpgradeFulltext";
+
     protected TableUpgrader tableUpgrader;
 
     private final QueryMakerService queryMakerService;
