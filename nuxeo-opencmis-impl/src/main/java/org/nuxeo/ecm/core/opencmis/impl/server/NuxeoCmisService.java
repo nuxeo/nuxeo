@@ -532,27 +532,37 @@ public class NuxeoCmisService extends AbstractCmisService {
         np.setValue(value);
     }
 
-    protected NuxeoObjectData setInitialVersioningState(NuxeoObjectData object,
+    /** Sets initial versioning state and returns its id. */
+    protected String setInitialVersioningState(NuxeoObjectData object,
             VersioningState versioningState) {
         try {
             if (versioningState == null) {
                 // default is MAJOR, per spec
                 versioningState = VersioningState.MAJOR;
             }
+            String id;
+            DocumentRef ref = null;
             switch (versioningState) {
             case NONE: // cannot be made non-versionable in Nuxeo
             case CHECKEDOUT:
+                id = object.getId();
                 break;
             case MINOR:
-                object.doc.checkIn(VersioningOption.MINOR, null);
+                ref = object.doc.checkIn(VersioningOption.MINOR, null);
                 object.doc.getCoreSession().save();
+                // id = ref.toString();
+                id = object.getId();
                 break;
             case MAJOR:
-                object.doc.checkIn(VersioningOption.MAJOR, null);
+                ref = object.doc.checkIn(VersioningOption.MAJOR, null);
                 object.doc.getCoreSession().save();
+                // id = ref.toString();
+                id = object.getId();
                 break;
+            default:
+                throw new AssertionError(versioningState);
             }
-            return object;
+            return id;
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -566,8 +576,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         // TODO policies
         NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
                 folderId), null, contentStream);
-        setInitialVersioningState(object, versioningState);
-        return object.getId();
+        return setInitialVersioningState(object, versioningState);
     }
 
     @Override
@@ -578,8 +587,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         // TODO policies, addAces, removeAces
         NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
                 folderId), BaseTypeId.CMIS_DOCUMENT, contentStream);
-        setInitialVersioningState(object, versioningState);
-        return object.getId();
+        return setInitialVersioningState(object, versioningState);
     }
 
     @Override
@@ -629,8 +637,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 copy.doc = coreSession.saveDocument(copyDoc);
             }
             coreSession.save();
-            setInitialVersioningState(copy, versioningState);
-            return copy.getId();
+            return setInitialVersioningState(copy, versioningState);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -651,8 +658,15 @@ public class NuxeoCmisService extends AbstractCmisService {
                 copy.doc = coreSession.saveDocument(copyDoc);
             }
             coreSession.save();
-            setInitialVersioningState(copy, versioningState);
-            return copy;
+            String id = setInitialVersioningState(copy, versioningState);
+            NuxeoObjectData res;
+            if (id.equals(copy.getId())) {
+                res = copy;
+            } else {
+                // return the version
+                res = new NuxeoObjectData(this, getDocumentModel(id));
+            }
+            return res;
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }

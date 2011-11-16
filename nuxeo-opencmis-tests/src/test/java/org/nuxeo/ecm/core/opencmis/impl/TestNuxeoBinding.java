@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -497,13 +498,17 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 getValue(data, PropertyIds.IS_LATEST_MAJOR_VERSION));
         assertEquals(Boolean.FALSE, getValue(data, PropertyIds.IS_IMMUTABLE));
         assertEquals("File", getString(data, PropertyIds.OBJECT_TYPE_ID));
-        assertEquals(Boolean.FALSE,
+        assertEquals(Boolean.FALSE, // ...
                 getValue(data, NuxeoTypeHelper.NX_ISVERSION));
         assertEquals("project",
                 getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
-        assertEquals(Arrays.asList("Commentable", "Downloadable",
-                "HasRelatedText", "Publishable", "Versionable"),
-                getValues(data, NuxeoTypeHelper.NX_FACETS));
+        @SuppressWarnings("unchecked")
+        List<String> facets = (List<String>) getValues(data,
+                NuxeoTypeHelper.NX_FACETS);
+        assertEquals(
+                new HashSet<String>(Arrays.asList("Commentable",
+                        "Downloadable", "HasRelatedText", "Publishable",
+                        "Versionable")), new HashSet<String>(facets));
         assertEquals(null, getString(data, NuxeoTypeHelper.NX_DIGEST));
 
         // creation of a cmis:document (helps simple clients)
@@ -2340,6 +2345,24 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob); // ...
+
+        // copy from checked in source as checked out
+
+        id = objService.createDocumentFromSource(repositoryId, id, null,
+                rootFolderId, VersioningState.CHECKEDOUT, null, null, null,
+                null);
+        ob = getObject(id);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
 
         // creation as minor version
 
@@ -2358,6 +2381,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob); // ...
 
         // creation checked out
 
@@ -2376,7 +2400,23 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
 
+        // copy from checked out source as checked in
+
+        id = objService.createDocumentFromSource(repositoryId, id, null,
+                rootFolderId, VersioningState.MAJOR, null, null, null, null);
+        ob = getObject(id);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob); // ...
     }
 
     @Test
