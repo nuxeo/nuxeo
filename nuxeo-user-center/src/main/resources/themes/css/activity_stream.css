@@ -4,10 +4,9 @@ author: lkemen@nuxeo.com
 */
 /*----  =ActivityStreamTab ----*/
 .userActivityStream { text-align: center }
-.userActivityStream form { margin: 0 auto; padding: 5px 10px; width: 80% }
-.userActivityStream .dataOutput { border-width: 1px; border-style:solid border-color: "neutral.lighter (__FLAVOR__ border)"; padding: 0 }
-.userActivityStream .dataOutput td { border: none; padding: 0 }
-.userActivityStream .activity { padding: 8px 20px; text-align: left }
+.userActivityStream form { margin: 0 auto; width: 80% }
+.userActivityStream .dataOutput, .userActivityStream .dataOutput td { padding: 0 }
+.userActivityStream .activity { padding: .8em 1.5em; text-align: left }
 .userActivityStream .activity:hover { background-color: "color.major.light (__FLAVOR__ background)"; }
 .userActivityStream .timestamp { color: "gray.medium (__FLAVOR__ color)" ; float: left; font-size: 1.1em }
-.userActivityStream .message { font-size: 1.1em; margin-left: 80px }
+.userActivityStream .message { font-size: 1.1em; margin-left: 7em }
