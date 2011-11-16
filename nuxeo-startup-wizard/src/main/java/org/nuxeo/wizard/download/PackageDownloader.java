@@ -21,6 +21,7 @@ package org.nuxeo.wizard.download;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -147,6 +148,14 @@ public class PackageDownloader {
         return instance;
     }
 
+    public static void reset() {
+        if (instance!=null) {
+            instance.download_tpe.shutdownNow();
+            instance.check_tpe.shutdown();
+            instance = null;
+        }
+    }
+
     public void setProxy (String proxy, int port, String login, String password) {
         if (proxy!=null) {
             HttpHost proxyHost = new HttpHost(proxy, port);
@@ -155,7 +164,12 @@ public class PackageDownloader {
                 httpClient.getCredentialsProvider().setCredentials(
                     new AuthScope(proxy, port),
                     new UsernamePasswordCredentials(login, password));
+            } else {
+                httpClient.getCredentialsProvider().clear();
             }
+        } else {
+            httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
+            httpClient.getCredentialsProvider().clear();
         }
     }
 
@@ -277,6 +291,25 @@ public class PackageDownloader {
         return pkgs;
     }
 
+    public void scheduleDownloadedPackagesForInstallation(String installationFilePath) throws IOException {
+        List<String> fileEntries = new ArrayList<String>();
+        for (PendingDownload download : pendingDownloads) {
+            if (download.getStatus() == PendingDownload.VERIFIED) {
+                File file = download.getDowloadingFile();
+                fileEntries.add("file:" + file.getAbsolutePath());
+            }
+        }
+        File installLog = new File(installationFilePath);
+        if (!installLog.exists()) {
+            File parent = installLog.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+            installLog.createNewFile();
+        }
+        FileUtils.writeLines(installLog, fileEntries);
+    }
+
     public List<PendingDownload> getPendingDownloads() {
         return pendingDownloads;
     }
@@ -387,8 +420,10 @@ public class PackageDownloader {
                             + expectedDigest + " computed :" + digest);
                     return;
                 }
-                filePkg.renameTo(new File(getDownloadDirectory(), digest));
+                File newFile = new File(getDownloadDirectory(), digest);
+                filePkg.renameTo(newFile);
                 download.setStatus(PendingDownload.VERIFIED);
+                download.setFile(newFile.length(),newFile);
             }
         };
         check_tpe.execute(checkRunner);

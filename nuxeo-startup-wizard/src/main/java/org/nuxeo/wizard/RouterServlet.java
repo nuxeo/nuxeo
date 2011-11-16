@@ -437,6 +437,7 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.password", null);
             collector.addConfigurationParam("nuxeo.http.proxy.host", null);
             collector.addConfigurationParam("nuxeo.http.proxy.port", null);
+            PackageDownloader.instance().setProxy(null, 0, null, null);
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
                 ctx.trackError("nuxeo.http.proxy.port",
@@ -450,10 +451,20 @@ public class RouterServlet extends HttpServlet {
                 collector.addConfigurationParam("nuxeo.http.proxy.login", null);
                 collector.addConfigurationParam("nuxeo.http.proxy.password",
                         null);
+                PackageDownloader.instance().setProxy(
+                        collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
+                        Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.host")),
+                        null, null);
             } else {
                 if (collector.getConfigurationParam("nuxeo.http.proxy.login").isEmpty()) {
                     ctx.trackError("nuxeo.http.proxy.login",
                             "error.nuxeo.http.proxy.emptyLogin");
+                } else {
+                    PackageDownloader.instance().setProxy(
+                            collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
+                            Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.host")),
+                            collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
+                            collector.getConfigurationParamValue("nuxeo.http.proxy.password"));
                 }
             }
         }
@@ -471,6 +482,7 @@ public class RouterServlet extends HttpServlet {
         // reset
         Context.reset();
         SimpleNavigationHandler.reset();
+        PackageDownloader.reset();
 
         // return to first page
         String target = "/"
@@ -491,6 +503,13 @@ public class RouterServlet extends HttpServlet {
         resp.setContentType("text/json");
         resp.getWriter().write(options.asJson());
 
+    }
+
+    public void handlePackagesSelectionGET(Page currentPage,
+            HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        handleDefaultGET(currentPage, req, resp);
     }
 
     public void handlePackagesSelectionPOST(Page currentPage,
@@ -520,6 +539,20 @@ public class RouterServlet extends HttpServlet {
                     req.getParameter("reStartDownload"));
         }
         currentPage.dispatchToJSP(req, resp);
+    }
+
+    public void handlePackagesDownloadPOST(Page currentPage,
+            HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
+        configurationGenerator.init();
+
+        String installationFilePath = configurationGenerator.getInstallFile().getAbsolutePath();
+        PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(
+                installationFilePath);
+
+        currentPage.next().dispatchToJSP(req, resp, true);
     }
 
 }
