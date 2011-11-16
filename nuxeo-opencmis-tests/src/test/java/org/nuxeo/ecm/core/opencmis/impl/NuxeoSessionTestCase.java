@@ -288,6 +288,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         closeSession();
         super.session = openSessionAs(SecurityConstants.SYSTEM_USERNAME);
         tearDownCmisSession();
+        Thread.sleep(1000); // otherwise sometimes fails to set up again
         setUpCmisSession();
 
         ItemIterable<Relationship> rels = session.getRelationships(session.createObjectId(id1), false,
