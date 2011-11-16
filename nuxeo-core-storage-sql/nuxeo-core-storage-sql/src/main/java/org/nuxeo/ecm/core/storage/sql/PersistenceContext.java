@@ -1322,7 +1322,7 @@ public class PersistenceContext {
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
         Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);
-        if (!oldParentId.equals(parentId)) {
+        if (oldParentId != null && !oldParentId.equals(parentId)) {
             checkNotUnder(parentId, id, "copy");
         }
         checkFreeName(parentId, name, complexProp(hierFragment));
@@ -1331,7 +1331,7 @@ public class PersistenceContext {
                 name, null);
         Serializable newId = copyResult.copyId;
         // read new child in this session (updates children Selection)
-        getHier(newId, false);
+        SimpleFragment copy = getHier(newId, false);
         // invalidate child in other sessions' children Selection
         markInvalidated(copyResult.invalidations);
         // read new proxies in this session (updates Selections)
@@ -1345,6 +1345,10 @@ public class PersistenceContext {
         for (Fragment fragment : fragments) {
             seriesProxies.recordExisting((SimpleFragment) fragment, true);
             targetProxies.recordExisting((SimpleFragment) fragment, true);
+        }
+        // version copy fixup
+        if (source.isVersion()) {
+            copy.put(model.MAIN_IS_VERSION_KEY, null);
         }
         return newId;
     }

@@ -1468,19 +1468,29 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 false);
         Node nodea = session.addChildNode(foldera, "nodea", null, "TestDoc",
                 false);
-        session.checkIn(nodea, "1", null);
+        Node ver = session.checkIn(nodea, "1", "ver 1");
         session.save();
 
         // copy checked in doc
         assertEquals(Boolean.TRUE,
                 nodea.getSimpleProperty("ecm:isCheckedIn").getValue());
+        assertNotNull(nodea.getSimpleProperty("ecm:baseVersion").getValue());
         Node nodeb = session.copy(nodea, root, "nodeb");
         assertNull(nodeb.getSimpleProperty("ecm:isCheckedIn").getValue());
+        assertNull(nodeb.getSimpleProperty("ecm:baseVersion").getValue());
 
         // copy folder including checked in doc
         Node folderb = session.copy(foldera, root, "folderb");
         Node nodec = session.getChildNode(folderb, "nodea", false);
         assertNull(nodec.getSimpleProperty("ecm:isCheckedIn").getValue());
+
+        // copy version as new doc
+        assertTrue(ver.isVersion());
+        assertEquals("1", ver.getSimpleProperty("ecm:versionLabel").getValue());
+        Node vercop = session.copy(ver, root, "vercop");
+        assertFalse(vercop.isVersion());
+        assertNull(vercop.getSimpleProperty("ecm:versionLabel").getValue());
+        assertNull(vercop.getSimpleProperty("ecm:isCheckedIn").getValue());
     }
 
     public void testProxies() throws Exception {
