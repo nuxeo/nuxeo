@@ -96,10 +96,6 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     protected String proxyValidatorClassName = "edu.yale.its.tp.cas.client.ProxyTicketValidator";
 
-    protected ProxyTicketValidator proxyValidator;
-
-    protected ServiceTicketValidator ticketValidator;
-
     protected boolean promptLogin = true;
 
     protected List<String> excludePromptURLs;
@@ -280,6 +276,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             return null;
         }
 
+        ProxyTicketValidator proxyValidator;
         try {
             proxyValidator = (ProxyTicketValidator) Framework.getRuntime().getContext().loadClass(
                     proxyValidatorClassName).newInstance();
@@ -329,6 +326,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     // Cas2 Ticket management
     protected String checkCasTicket(String ticket,
             HttpServletRequest httpRequest) {
+        ServiceTicketValidator ticketValidator;
         try {
             ticketValidator = (ServiceTicketValidator) Framework.getRuntime().getContext().loadClass(
                     ticketValidatorClassName).newInstance();
