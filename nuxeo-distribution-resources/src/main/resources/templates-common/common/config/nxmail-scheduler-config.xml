@@ -6,8 +6,6 @@
     point="schedule">
 
     <schedule id="mailReceivedSchedule">
-      <username>Administrator</username>
-      <password>Administrator</password>
       <eventId>MailReceivedEvent</eventId>
       <eventCategory>default</eventCategory>
       <!-- every half hour of every day -->
