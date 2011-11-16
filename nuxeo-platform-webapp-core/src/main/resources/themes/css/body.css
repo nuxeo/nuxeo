@@ -4,9 +4,9 @@ author: lkemen@nuxeo.com
 */
 
 .nxMainContainer { width: 100%; font-size: .8em }
-.nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: 5px; width: 18% }
+.nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: .5em; width: 18% }
 .nxMainContainer .content { padding: 0 }
-.mainFragment { padding: 7px }
+.mainFragment { padding: .6em }
 
-.currentDocumentDescription { font-size: .8em; padding: 4px 0 }
+.currentDocumentDescription { font-size: .8em; padding: .3em 0 }
 .currentItemDescription { display: block; font-size: 13px }

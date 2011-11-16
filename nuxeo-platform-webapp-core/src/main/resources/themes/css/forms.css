@@ -6,12 +6,14 @@ author: lkemen@nuxeo.com
 */
 
 /* =Forms elements */
-textarea { font-family: "default (__FLAVOR__ font)"; padding: 5px; font-size: .95em }
-.selectDocumentType { margin-top: 10px }
-.checkBox { margin-right: 3px }
-.required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 10px 0 0 }
+textarea { font-family: "default (__FLAVOR__ font)"; padding: .4em; font-size: .95em }
+.selectDocumentType { margin-top: 1em }
+.checkBox { margin-right: .3em; border: none }
+.required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 1em 0 0 }
 
-input, input[type="file"], textarea, select { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; line-height: 18px; padding: 3px;}
+input, input[type="file"], textarea, select { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; line-height: 18px; padding: .3em }
+input[type="file"] { margin-left: .6em }
+input[type="checkbox"], input[type="radio"], input[type="image"] { border: none !important; box-shadow: none; }
 
 select:focus > option:checked, select:focus > optgroup > option:checked { background-color: "color.major.stronger (__FLAVOR__ background)"; }
 input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ border)"; }
@@ -19,9 +21,9 @@ input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ bord
 /* in Tables */
 .dataInput textarea, .dataInput .dataInputText { width: 500px }
 .dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { vertical-align: top }
-.dataInput select { box-shadow: 1px 1px 2px #e0e0e0 inset; padding: 3px; vertical-align: top }
+.dataInput select { box-shadow: 1px 1px 2px #e0e0e0 inset; padding: .3em; vertical-align: top }
 
-.taskPrincipalSelect select { margin: 5px 0 10px 15px; padding: 2px 1px 2px 1px }
+.taskPrincipalSelect select { margin: 4em 0 1em 1.4em; padding: .2em .1em .2em .1em }
 
 /* =Calendar */
-.calendarTrigger { cursor: pointer; margin: 0 0 5px; vertical-align: bottom }
+.calendarTrigger { cursor: pointer; margin: 0 0 .4em; vertical-align: bottom }

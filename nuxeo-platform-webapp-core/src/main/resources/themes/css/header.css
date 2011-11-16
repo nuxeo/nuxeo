@@ -9,63 +9,48 @@ author: lkemen@nuxeo.com
 */
 
 /* =Header */
-.nxHeader {
-  background-color: "header (__FLAVOR__ background)";
-  border-width: 2px; border-style: none none solid; border-color: "noborder (__FLAVOR__ border)";
-	height:36px;
-	overflow: auto;
-	width:100% }
-.nxHeader .logo {text-align: center; vertical-align:bottom; width: 18% }
-.nxHeader .content { padding: 0 10px 0 0; vertical-align: bottom;	width: 82%; font-size: 12px; line-height: 16pt; }
+.nxHeader { background-color: "header (__FLAVOR__ background)";	height: 36px;	overflow: auto; width:100% }
+.nxHeader .logo { text-align: center; vertical-align: middle; width: 18% }
+.nxHeader .content { padding: 0 1em 0 0; line-height: 280%; vertical-align: middle;	width: 82%; font-size: 12px }
 .nxHeader .includes { width: 0 }
-.nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)" }
+.nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)"; opacity: 0.75; text-shadow: 1px 1px 0 #000; text-decoration: none }
+.nxHeader a:hover, .nxHeader a:active { opacity: 1 }
 
 /* =Search */
 .userSearchBlock { float: right }
-.searchService { padding-top: 5px; opacity: 0.9 }
-.searchService:focus, .searchService:hover { opacity: 1 }
-.searchService .directoryFilter { border: 1px solid #fff }
-.searchService input.button { margin: 3px 5px 0 3px; padding: 2px }
+.searchService { opacity: 0.9 }
+.searchService .directoryFilter:focus, .searchService:hover { opacity: 1 }
+.searchService .directoryFilter { border: 1px solid #fff; margin: 0 .3em 0 0 }
+.searchService input.button { margin: .3em .5em 0 .3em; padding: .2em }
 .advancedSearchLink a { font-size: .8em }
 
 /* =UserServices */
-.userServicesBlock { float: left; padding: 5px 0 }
+.userServicesBlock { float: left }
 .userServicesBlock a:hover { text-decoration: none }
 
 /* =MainTabs */
 .mainTabs { float: left }
-.mainTabs li {
-    background-color: #fff;
-    display: inline;
-    float: left;
-    margin: 0 5px;
-    opacity: 0.4 }
-.mainTabs a:link, .mainTabs a:visited {
-    color: #333;
-    display: inline-block;
-    padding: 4px 8px 6px }
-.mainTabs li.selected, .mainTabs li:hover { opacity: 1 }
-.mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited { color: "black (__FLAVOR__ color)"; font-weight: bold }
+.mainTabs li { border-right: 1px solid #999; display: inline; float: left }
+.mainTabs a:link, .mainTabs a:visited { color: #fff; display: inline-block; font-size: 1.1em; font-weight: bold; padding: .2em .6em; text-shadow: 1px 1px 0 #000; }
+.mainTabs li.selected a, .mainTabs li a:hover, .mainTabs li.selected a:visited { color: white; background: url("${basePath}/img/white50.png") repeat-x 0 0 transparent; font-weight: bold; opacity: 1 }
 
 .userMenuActions {
     color: "gray.light (__FLAVOR__ color)";
     float: left;
     font-size: .9em;
-    margin: 0 0 0 15px;
+    margin: 0 0 0 .4em;
     text-align: left }
-.userMenuActions ul { height: 28px }
 .userMenuActions ul li { float: left; text-align: left }
 
-.nxHeader .userMenuActions a {
-    background-color: #fff;
-    display: block }
+.nxHeader .userMenuActions a { background-color: #fff; font-size: 1.1em; display: block }
 
 .userMenuActions a.userButton {
     background: url("${basePath}/icons/user.png") no-repeat scroll 3px center transparent;
-    padding: 3px 8px 5px 23px }
-.userMenuActions ul:hover a, .userMenuActions ul:hover li, .userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)" }
+    padding: .15em .4em 0 2em }
+.userMenuActions ul:hover a, .userMenuActions ul:hover li, .userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)"; text-shadow: none }
 .userMenuActions li ul {
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+    border-color: #ddd;  border-style: none solid solid; border-width: 1px;
     display: none;
     height: auto;
     position: absolute;
@@ -73,9 +58,9 @@ author: lkemen@nuxeo.com
     z-index: 1000 }
 .userMenuActions li:hover ul { display:block }
 .userMenuActions ul li li { width: 180px }
-.userMenuActions li ul a { padding: 4px 4px 4px 22px }
-.userMenuActions ul ul a:hover { background-color: "color.major.medium (__FLAVOR__ background)" }
+.userMenuActions li ul a { padding: .4em .4em .4em 2em }
+.userMenuActions ul ul a:hover { background-color: "color.major.medium (__FLAVOR__ background)"; text-shadow: none }
 
 /* =Studio header link */
-.studioButton a { background-color: #00a5b8; display: block; padding: 2px 10px; color: #f1f5f7; text-decoration: none; border-radius: 4px; margin:0 0 0 10px;}
-.studioButton a:hover { background-color: #00b6cb; color: #fff; text-decoration:none !important }
+.studioButton { border-right: 1px solid #999 }
+.studioButton a { background-color: #000; border: none; color: #fff; display: inline-block; font-size: 1.1em; line-height: 280%; margin: 0; padding: 0 .6em .15em; text-shadow: 1px 1px 0 #000;}

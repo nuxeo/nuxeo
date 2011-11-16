@@ -26,6 +26,9 @@ author: lkemen@nuxeo.com
 .warningMessage, .warningFeedback { background-color: "info (__FLAVOR__ background)"; border-color:"warning (__FLAVOR__ border)" }
 .error { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
 
+/* Help messages in forms */
+.help { color: "gray.medium (__FLAVOR__ color)" }
+
 /* =Tips */
 .tooltip {
   background-color: "color.major.light (__FLAVOR__ background)";
@@ -34,10 +37,10 @@ author: lkemen@nuxeo.com
   display: none;
   font-weight: normal;
   max-width: 20%;
-  padding: 5px;
+  padding: .5em;
   z-index: 1000 }
 .tips {
   border: 1px dashed;  border-color: "neutral.light (__FLAVOR__ border)";
 	color: "gray.medium (__FLAVOR__ color)";
-	padding: 10px;
+	padding: 1em;
 	text-align: center }

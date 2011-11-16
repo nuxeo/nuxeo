@@ -11,15 +11,15 @@ div { background-color: #fff; float: none }
 a:link, a:visited { background: transparent; color: "black (__FLAVOR__ color)"; text-decoration: none }
 
 /* Breadcrumb */
-.breadcrumbs { float:left; font-size: .8em; margin-bottom: 20px }
+.breadcrumbs { float:left; font-size: .8em; margin-bottom: 1.8em }
 
 /* Tables */
 .fieldColumn { padding-left: 5px }
-.dataOutput th, .dataList th { background-color: "neutral.lighter (__FLAVOR__ background)"; color:; padding: 4px 5px; text-align: left;  }
+.dataOutput th, .dataList th { background-color: "neutral.lighter (__FLAVOR__ background)"; padding: .4em .5em; text-align: left;  }
 .dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img { display: block }
 .dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
-.dataOutput td, .dataList td { border-width: 1px; border-style: solid none; border-color: "light (__FLAVOR__ border)"; padding: 5px 3px }
-.dataOutput2Columns td { padding: 5px 3px; vertical-align: top }
+.dataOutput td, .dataList td { border-width: 1px; border-style: solid none; border-color: "light (__FLAVOR__ border)"; padding: .5em .3em }
+.dataOutput2Columns td { padding: .5em .3em; vertical-align: top }
 
 /* Images */
 .smallIcon { height: 16px; width: 16px }

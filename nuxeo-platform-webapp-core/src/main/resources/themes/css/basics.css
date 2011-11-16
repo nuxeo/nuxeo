@@ -24,7 +24,7 @@ h1, h2, h3 { color: "title.major (__FLAVOR__ color)"; font-weight: bold }
 h1 { font-size: 1.6em; padding: .4em 0 .5em }
 h2 { font-size: 1.3em; padding: .5em 1em .5em 0 }
 h3 { font-size: 1.2em; padding: .8em 0 1em }
-h4, h5, h6 { color: "title.minor (__FLAVOR__ color)";font-size: .8em; margin: .2em 0 .2em 0 }
+h4, h5, h6 { color: "title.minor (__FLAVOR__ color)"; font-size: .8em; margin: .2em 0 .2em 0 }
 
 /* =Helpers */
 .boldLabel, .bold { font-weight: bold }

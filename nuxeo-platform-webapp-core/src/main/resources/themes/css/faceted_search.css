@@ -3,33 +3,33 @@ Faceted Search styles, used in the left column.
 author: lkemen@nuxeo.com
 */
 
-.facetedSearchActionBar { border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)"; padding: 2px; color: "default (__FLAVOR__ color)" }
-.facetedSearchActionBar a { float: left; padding-top: 3px }
+.facetedSearchActionBar { border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)"; padding: .2em; color: "default (__FLAVOR__ color)" }
+.facetedSearchActionBar a { float: left; padding-top: .3em }
 
 .facetedSearchActionBar input.button {
   float: right;
   font-weight: bold;
-  margin: 0 0 0 5px;
-  padding: 0 5px 0 7px;
+  margin: 0 0 0 4em;
+  padding: 0 .4em 0 .6em;
   width: auto }
 
 #facetedSearchSelectorDiv, #savedFacetedSearchSelectorDiv {
   border-width: 1px; border-style: none none solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   margin: 0;
-  padding: 0 0 5px }
+  padding: 0 0 .4em }
 #facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p {
   background-color:"color.major.light (__FLAVOR__ background)";
   border-width: 1px; border-style: solid none; border-color: "noborder (__FLAVOR__ border)" "noborder (__FLAVOR__ border)" "neutral.light (__FLAVOR__ border)";
-  font-weight: bold; margin-bottom: 2px; padding: 3px }
+  font-weight: bold; margin-bottom: .2em; padding: .3em }
 
 .facetedSearchBlock .labelColumn { font-weight: normal; min-width: 70px }
 .facetedSearchBlock .tinyLabel { display: inline-block; text-align: right; width: 24px }
 .facetedSearchBlock .dataInput { width: 100% }
-.facetedSearchBlock .dataInput td { padding: 3px 4px 5px 0 }
+.facetedSearchBlock .dataInput td { padding: .3em .4em .5em 0 }
 .facetedSearchBlock input, .facetedSearchBlock select { width: 95% }
-.facetedSearchBlock input.rich-calendar-input { margin: 1px 3px 1px 5px; width: 63% }
-.facetedSearchBlock .dataInputTextDate { font-size: .9em; margin: 0 5px 3px 3px; width: 45px }
+.facetedSearchBlock input.rich-calendar-input { margin: .1em .3em .1em .5em; width: 63% }
+.facetedSearchBlock .dataInputTextDate { font-size: .9em; margin: 0 .4em .3em .3em; width: 45px }
 .facetedSearchBlock .widgetContent { border-bottom: 1px solid #dcdcdc; color: "gray.dark (__FLAVOR__ color)" }
 
 .facetedSearchBlock h5 {
@@ -38,14 +38,14 @@ author: lkemen@nuxeo.com
   color: "default (__FLAVOR__ color)";
   font-size: 1em;
   margin: 0;
-  padding: 3px }
+  padding: .3em }
 
 .facetedSearchBlock .widgetContent .labelOpenPopUp {
   border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)";
   color: "default (__FLAVOR__ color)";
   display: block;
-  margin: 0 0 5px;
-  padding: 0 0 1px }
+  margin: 0 0 .5em;
+  padding: 0 0 .1em }
 
 .facetedSearchPopUp {
   background-color: #fff;
@@ -60,16 +60,16 @@ author: lkemen@nuxeo.com
 .facetedSearchPopUp .closePopUpHeader {
   background-color: "color.major.light (__FLAVOR__ background)";
   border-width: 1px; border-style: none none dotted;  border-color: "neutral.light (__FLAVOR__ border)";
-  padding: 3px;
+  padding: .3em;
   text-align: right }
 
 .facetedSearchPopUp .closePopUpHeader .closePopUp { cursor: pointer; float: right }
 .facetedSearchPopUp .closePopUpHeader .popUpTitle { float: left; font-size: 1.1em }
-.facetedSearchPopUp .popUpContent { height: 390px; overflow: auto; padding: 10px }
+.facetedSearchPopUp .popUpContent { height: 390px; overflow: auto; padding: 1em }
 
-.facetedSearchBlock .dataInput .facetedSearchPopUp td, .facetedSearchBlock .thin td { padding: 1px }
+.facetedSearchBlock .dataInput .facetedSearchPopUp td, .facetedSearchBlock .thin td { padding: .1em }
 .facetedSearchBlock .widgetContent .labelOpenPopUp .labelTool { cursor: pointer; float: right }
-.facetedSearchBlock table.thin { margin: 0 0 7px 0 }
+.facetedSearchBlock table.thin { margin: 0 0 .6em 0 }
 
 .UserSuggestionInput table { width: 100% }
-#saveFacetedSearchForm input { margin-left: 3px }
+#saveFacetedSearchForm input { margin-left: .3em }
