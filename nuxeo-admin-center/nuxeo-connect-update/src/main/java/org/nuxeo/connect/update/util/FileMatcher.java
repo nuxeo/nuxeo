@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.util;
 
@@ -59,7 +59,13 @@ public class FileMatcher {
     }
 
     /**
-     * The pattern variable will be put in the given map if any.
+     * Look for a matching file for the given path.
+     *
+     * @param path Searched file path, optionally including the pattern.
+     * @param map The pattern variable will be put in the given map if any.
+     *            Since 5.5, map can be null.
+     *
+     * @return File found. Null if none.
      */
     public static File getMatchingFile(String path, Map<String, Object> map) {
         File file = new File(path);
@@ -73,8 +79,9 @@ public class FileMatcher {
         if (list != null) {
             for (File f : list) {
                 if (matcher.match(f.getName())) {
-                    matcher.getKey();
-                    matcher.getValue();
+                    if (map != null) {
+                        map.put(matcher.getKey(), matcher.getValue());
+                    }
                     return f;
                 }
             }
@@ -120,26 +127,4 @@ public class FileMatcher {
         return false;
     }
 
-    public static void main(String[] args) {
-        FileMatcher fm = FileMatcher.getMatcher("nuxeo-automation-1.2.jar");
-        if (fm.match("nuxeo-automation-1.2.jar")) {
-            System.out.println(fm.getKey() + " = " + fm.getValue());
-        }
-        fm = FileMatcher.getMatcher("nuxeo-automation-{v:.+}.jar");
-        if (fm.match("nuxeo-automation-1.2.jar")) {
-            System.out.println(fm.getKey() + " = " + fm.getValue());
-        }
-        fm = FileMatcher.getMatcher("nuxeo-automation-{v:.+}");
-        if (fm.match("nuxeo-automation-1.2.jar")) {
-            System.out.println(fm.getKey() + " = " + fm.getValue());
-        }
-        fm = FileMatcher.getMatcher("{v:.+}.jar");
-        if (fm.match("nuxeo-automation-1.2.jar")) {
-            System.out.println(fm.getKey() + " = " + fm.getValue());
-        }
-        fm = FileMatcher.getMatcher("{v:.+}");
-        if (fm.match("nuxeo-automation-1.2.jar")) {
-            System.out.println(fm.getKey() + " = " + fm.getValue());
-        }
-    }
 }
