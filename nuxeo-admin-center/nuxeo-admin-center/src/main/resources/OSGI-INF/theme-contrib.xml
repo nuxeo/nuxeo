@@ -11,8 +11,8 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <src>themes/theme-galaxy-admin.xml</src>
-      <!--src>themes/theme-galaxy-admin-new.xml</src-->
+      <!--src>themes/theme-galaxy-admin.xml</src-->
+      <src>themes/theme-galaxy-admin-new.xml</src>
     </theme>
 
   </extension>
@@ -47,7 +47,7 @@
   </extension>
   
   <!-- mapping between theme pages and resources -->
-  <!--
+  <!-- -->
 
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
@@ -78,7 +78,7 @@
       </styles>
     </themePage>
 
-  </extension> -->
+  </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_admincenter_specific">

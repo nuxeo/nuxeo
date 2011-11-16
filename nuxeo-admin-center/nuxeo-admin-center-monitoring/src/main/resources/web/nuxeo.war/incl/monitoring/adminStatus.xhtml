@@ -26,8 +26,7 @@
 
  <br/>
 
-  <h:dataTable var="status" value="#{monitoringAction.getAdministrativeStatuses()}" class="dataOutput"
-    rowClasses="dataRowEven,dataRowOdd" rendered="#{monitoringAction.editableStatus==null}">
+  <h:dataTable var="status" value="#{monitoringAction.getAdministrativeStatuses()}" class="dataOutput" rendered="#{monitoringAction.editableStatus==null}">
     <h:column>
       <f:facet name="header">
         <h:outputText value="#{messages['label.monitoring.status.label']}" />
@@ -61,7 +60,7 @@
       </f:facet>
 
      <a4j:form>
-        <a4j:commandButton  value="#{messages['action.monitoring.edit']}" action="#{monitoringAction.editStatus()}" reRender="admStatusPanel">
+        <a4j:commandButton  value="#{messages['action.monitoring.edit']}" action="#{monitoringAction.editStatus()}" reRender="admStatusPanel" styleClass="button">
             <f:param name="serviceIdentifier" value="#{status.serviceIdentifier}" />
         </a4j:commandButton>
      </a4j:form>
@@ -72,26 +71,26 @@
   <h:panelGroup rendered="#{monitoringAction.editableStatus!=null}">
     <h:form>
       <h:outputText value="#{messages['label.monitoring.status.currentState']}" />
-      <table>
-        <tr><td><h:outputText value="#{messages['label.monitoring.status.label']}" /></td>
+      <table class="dataOutput">
+        <tr><td class="labelColumn"><h:outputText value="#{messages['label.monitoring.status.label']}" /></td>
             <td><h:outputText value="#{monitoringAction.editableStatus.label}"/></td>
         </tr>
-        <tr><td><h:outputText value="#{messages['label.monitoring.status.state']}" /></td>
+        <tr><td class="labelColumn"><h:outputText value="#{messages['label.monitoring.status.state']}" /></td>
             <td><h:outputText value="#{monitoringAction.editableStatus.state}"/></td>
         </tr>
-        <tr><td><h:outputText value="#{messages['label.monitoring.status.description']}" /></td>
+        <tr><td class="labelColumn"><h:outputText value="#{messages['label.monitoring.status.description']}" /></td>
             <td><h:outputText value="#{monitoringAction.editableStatus.description}"/></td>
         </tr>
-        <tr><td><h:outputText value="#{messages['label.monitoring.status.lastUpdate']}" /></td>
+        <tr><td class="labelColumn"><h:outputText value="#{messages['label.monitoring.status.lastUpdate']}" /></td>
             <td><h:outputText value="#{monitoringAction.editableStatus.modificationDate.time}">
                   <f:convertDateTime type="both" dateStyle="short" timeStyle="short"/>
                 </h:outputText>
             </td>
         </tr>
-        <tr><td><h:outputText value="#{messages['label.monitoring.status.login']}" /></td>
+        <tr><td class="labelColumn"><h:outputText value="#{messages['label.monitoring.status.login']}" /></td>
             <td><h:outputText value="#{monitoringAction.editableStatus.userLogin}"/></td>
         </tr>
-        <tr><td><h:outputText value="#{messages['label.monitoring.status.message']}" /></td>
+        <tr><td class="labelColumn"><h:outputText value="#{messages['label.monitoring.status.message']}" /></td>
             <td><h:outputText value="#{monitoringAction.editableStatus.message}"/></td>
         </tr>
 
@@ -101,7 +100,7 @@
 
       <h:outputText value="#{messages['label.monitoring.status.newState']}" />
 
-      <table>
+      <table class="dataInput">
         <tr>
             <td><h:outputText value="#{messages['label.monitoring.status.message']}"/></td>
             <td><h:inputText value="#{monitoringAction.newStatusMessage}" size="100"/></td>
@@ -117,8 +116,8 @@
         </tr>
       </table>
 
-      <a4j:commandButton  value="#{messages['action.monitoring.save']}" action="#{monitoringAction.saveStatus()}" reRender="admStatusPanel"/>
-      <a4j:commandButton  value="#{messages['action.monitoring.cancel']}" action="#{monitoringAction.cancelEdit()}" reRender="admStatusPanel"/>
+      <a4j:commandButton  value="#{messages['action.monitoring.save']}" action="#{monitoringAction.saveStatus()}" reRender="admStatusPanel" styleClass="button" />
+      <a4j:commandButton  value="#{messages['action.monitoring.cancel']}" action="#{monitoringAction.cancelEdit()}" reRender="admStatusPanel" styleClass="button" />
 
     </h:form>
   </h:panelGroup>
