@@ -103,18 +103,12 @@ public class SuggestboxActions implements Serializable {
         return ctx;
     }
 
-    public Object handleSelection(Suggestion selectedSuggestion) {
+    public Object handleSelection(Suggestion selectedSuggestion)
+            throws SuggestionHandlingException {
         setSearchKeywords("");
         SuggestionService service = Framework.getLocalService(SuggestionService.class);
         SuggestionContext ctx = getSuggestionContext();
-        try {
-            return service.handleSelection(selectedSuggestion, ctx);
-        } catch (SuggestionHandlingException e) {
-            // log the exception rather than trying to display it since this
-            // method is called by ajax events when typing in the searchbox.
-            log.error(e, e);
-            return "";
-        }
+        return service.handleSelection(selectedSuggestion, ctx);
     }
 
 }
