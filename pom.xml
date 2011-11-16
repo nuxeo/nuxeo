@@ -120,7 +120,7 @@
     <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
-    <chemistry.opencmis.version>0.4.0-r1096750</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.6.0-r1201655</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
 
     <!-- JBoss properties -->
