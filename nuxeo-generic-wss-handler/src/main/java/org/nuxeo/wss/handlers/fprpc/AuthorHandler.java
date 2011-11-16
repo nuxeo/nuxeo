@@ -18,7 +18,6 @@
 package org.nuxeo.wss.handlers.fprpc;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +25,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.wss.WSSConfig;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.fprpc.FPError;
 import org.nuxeo.wss.fprpc.FPRPCCall;
@@ -48,19 +45,21 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                                int callIndex, WSSBackend backend) throws WSSException {
 
         FPRPCCall call = request.getCalls().get(callIndex);
+        String methodName = call.getMethodName();
+        Map<String, String> parameters = call.getParameters();
 
         fpResponse.addRenderingParameter("siteRoot", request.getSitePath());
         fpResponse.addRenderingParameter("request", request);
-        fpResponse.addRenderingParameter("serviceName", call.getParameters().get("service_name"));
+        fpResponse.addRenderingParameter("serviceName", parameters.get("service_name"));
 
-        log.debug("Handling FP Author call on method " + call.getMethodName());
+        log.debug("Handling FP Author call on method " + methodName);
 
-        if ("open service".equals(call.getMethodName())) {
+        if ("open service".equals(methodName)) {
             fpResponse.setRenderingTemplateName("open-service.ftl");
 
-        } else if ("list documents".equals(call.getMethodName())) {
+        } else if ("list documents".equals(methodName)) {
 
-            String location = call.getParameters().get("initialUrl").trim();
+            String location = parameters.get("initialUrl").trim();
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
             boolean listFiles = false;
@@ -70,15 +69,15 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             List<WSSListItem> files = null;
             WSSListItem parent = null;
 
-            if ("true".equals(call.getParameters().get("listFiles"))) {
+            if ("true".equals(parameters.get("listFiles"))) {
                 listFiles = true;
                 files = backend.listLeafItems(location);
             }
-            if ("true".equals(call.getParameters().get("listFolders"))) {
+            if ("true".equals(parameters.get("listFolders"))) {
                 listFolders = true;
                 folders = backend.listFolderishItems(location);
             }
-            if ("true".equals(call.getParameters().get("listIncludeParent"))) {
+            if ("true".equals(parameters.get("listIncludeParent"))) {
                 listIncludeParent = true;
                 parent = backend.getItem(location);
             }
@@ -92,8 +91,8 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
             fpResponse.setRenderingTemplateName("list-documents.ftl");
 
-        } else if ("get document".equals(call.getMethodName())) {
-            String location = call.getParameters().get("document_name");
+        } else if ("get document".equals(methodName)) {
+            String location = parameters.get("document_name");
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
             WSSListItem doc = backend.getItem(location);
@@ -109,7 +108,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 return;
             }
 
-            if ("chkoutExclusive".equalsIgnoreCase(call.getParameters().get("get_option"))) {
+            if ("chkoutExclusive".equalsIgnoreCase(parameters.get("get_option"))) {
                 if (doc.canCheckOut(request.getUserName())) {
                     doc.checkOut(request.getUserName());
                     fpResponse.addRenderingParameter("doc", doc);
@@ -128,9 +127,9 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 fpResponse.addBinaryStream(doc.getStream());
             }
 
-        } else if ("put document".equals(call.getMethodName())) {
+        } else if ("put document".equals(methodName)) {
 
-            String url = call.getParameters().get("document/document_name");
+            String url = parameters.get("document/document_name");
             String location = WSSUrlMapper.getUrlWithSitePath(request, url);
             WSSListItem doc;
             String fileName;
@@ -162,8 +161,8 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             fpResponse.addRenderingParameter("doc", doc);
             fpResponse.setRenderingTemplateName("put-document.ftl");
 
-        } else if ("checkout document".equals(call.getMethodName())) {
-            String location = call.getParameters().get("document_name");
+        } else if ("checkout document".equals(methodName)) {
+            String location = parameters.get("document_name");
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
             if (!backend.exists(location)) {
@@ -187,8 +186,8 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 return;
             }
 
-        } else if ("uncheckout document".equals(call.getMethodName())) {
-            String location = call.getParameters().get("document_name");
+        } else if ("uncheckout document".equals(methodName)) {
+            String location = parameters.get("document_name");
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
             if (!backend.exists(location)) {
@@ -232,9 +231,9 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             fpResponse.addRenderingParameter("folder", folder);
             fpResponse.setRenderingTemplateName("create-url-directories.ftl");
 
-        } else if ("move document".equals(call.getMethodName())) {
-            String location = call.getParameters().get("oldUrl");
-            String newLocation = call.getParameters().get("newUrl");
+        } else if ("move document".equals(methodName)) {
+            String location = parameters.get("oldUrl");
+            String newLocation = parameters.get("newUrl");
 
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
             newLocation = WSSUrlMapper.getUrlWithSitePath(request, newLocation);
@@ -250,8 +249,8 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             fpResponse.addRenderingParameter("newUrl", location);
             fpResponse.setRenderingTemplateName("move-document.ftl");
 
-        } else if ("remove documents".equals(call.getMethodName())) {
-            String urllist = call.getParameters().get("url_list");
+        } else if ("remove documents".equals(methodName)) {
+            String urllist = parameters.get("url_list");
             List<String> urls = unpackValues(urllist);
 
             List<String> removedDocUrls = new ArrayList<String>();
@@ -292,17 +291,17 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
             fpResponse.setRenderingTemplateName("remove-documents.ftl");
 
-        } else if ("getDocsMetaInfo".equals(call.getMethodName())) {
+        } else if ("getDocsMetaInfo".equals(methodName)) {
 
             List<WSSListItem> docs = new ArrayList<WSSListItem>();
             List<WSSListItem> folders = new ArrayList<WSSListItem>();
             List<String> failedUrls = new ArrayList<String>();
 
-            String url = call.getParameters().get("document_name");
+            String url = parameters.get("document_name");
             List<String> urls = new ArrayList<String>();
 
             if (url == null) {
-                url = call.getParameters().get("url_list");
+                url = parameters.get("url_list");
                 if (url.startsWith("[")) {
                     urls = unpackValues(url);
                 } else {
