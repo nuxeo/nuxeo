@@ -160,8 +160,8 @@ public class SuggestionServiceImpl extends DefaultComponent implements
                                 emptyContext);
                     } catch (Throwable t) {
                         throw new SuggestionHandlingException(String.format(
-                                "Error executing chain '%s' on %s", chainName,
-                                suggestion.toString()), t);
+                                "Error executing operation '%s' on %s",
+                                operationName, suggestion.toString()), t);
                     }
                 } else {
                     throw new SuggestionHandlingException(String.format(
