@@ -294,19 +294,19 @@ public class GenericThreadedImportTask implements Runnable {
                 }
             }
 
-            List<SourceNode> nodes = node.getChildren();
-            if (nodes != null && nodes.size() > 0) {
-                // get a new TaskImporter if available to start
-                // processing the sub-tree
-                GenericThreadedImportTask task = null;
-                if (!newThread) {
-                    task = createNewTaskIfNeeded(folder, node);
-                }
-                if (task != null) {
-                    // force comit before starting new thread
-                    commit(true);
-                    GenericMultiThreadedImporter.getExecutor().execute(task);
-                } else {
+            // get a new TaskImporter if available to start
+            // processing the sub-tree
+            GenericThreadedImportTask task = null;
+            if (!newThread) {
+                task = createNewTaskIfNeeded(folder, node);
+            }
+            if (task != null) {
+                // force comit before starting new thread
+                commit(true);
+                GenericMultiThreadedImporter.getExecutor().execute(task);
+            } else {
+                List<SourceNode> nodes = node.getChildren();
+                if (nodes != null) {
                     for (SourceNode child : nodes) {
                         recursiveCreateDocumentFromNode(folder, child);
                     }
