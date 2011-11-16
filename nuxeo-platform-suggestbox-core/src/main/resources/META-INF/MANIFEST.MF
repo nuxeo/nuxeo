@@ -6,3 +6,4 @@ Nuxeo-Component: OSGI-INF/suggestbox-pageproviders-contrib.xml,
  OSGI-INF/suggestbox-service.xml,OSGI-INF/suggestbox-suggesters-contrib.xml
 Bundle-ManifestVersion: 1
 Bundle-SymbolicName: org.nuxeo.ecm.platform.suggestbox.core;singleton:=true
+
