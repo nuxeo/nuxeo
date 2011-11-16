@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,18 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.impl.task.commands;
 
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.impl.task.AbstractCommand;
-import org.nuxeo.connect.update.impl.task.Command;
 import org.nuxeo.connect.update.impl.task.UninstallTask;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
@@ -35,6 +35,8 @@ import org.w3c.dom.Element;
  * Copy a file to the given target directory or file. If the target is a
  * directory the file name is preserved. If the target file exists it will be
  * replaced if overwrite is true otherwise the command validation fails.
+ * If the source file is a directory, then the files it contents will be
+ * recursively copied.
  * <p>
  * If md5 is set then the copy command will be validated only if the target file
  * has the same md5 as the one specified in the command.
@@ -42,7 +44,7 @@ import org.w3c.dom.Element;
  * The Copy command has as inverse either Delete either another Copy command. If
  * the file was copied without overwriting then Delete is the inverse (with a
  * md5 set to the one of the copied file). If the file was overwritten then the
- * Copy command has an inverse another copy command with the md5 to the one of
+ * inverse of Copy command is another copy command with the md5 to the one of
  * the copied file and the overwrite flag to true. The file to copy will be the
  * backup of the overwritten file.
  *
@@ -50,12 +52,17 @@ import org.w3c.dom.Element;
  */
 public class Copy extends AbstractCommand {
 
+    protected static final Log log = LogFactory.getLog(Copy.class);
+
     public static final String ID = "copy";
 
+    /**
+     * The source file. It can be a file or a directory.
+     */
     protected File file;
 
     /**
-     * the target file - cannot be a directory
+     * The target file. It can be a directory since 5.5
      */
     protected File tofile;
 
@@ -65,25 +72,28 @@ public class Copy extends AbstractCommand {
 
     protected boolean removeOnExit;
 
+    protected boolean append = false;
+
     protected Copy(String id) {
         super(id);
     }
 
     public Copy() {
-        super(ID);
+        this(ID);
     }
 
     public Copy(File file, File tofile, String md5, boolean overwrite) {
         this(ID, file, tofile, md5, overwrite, false);
     }
 
-    public Copy(File file, File tofile, String md5, boolean overwrite, boolean removeOnExit) {
+    public Copy(File file, File tofile, String md5, boolean overwrite,
+            boolean removeOnExit) {
         this(ID, file, tofile, md5, overwrite, removeOnExit);
     }
 
     protected Copy(String id, File file, File tofile, String md5,
             boolean overwrite, boolean removeOnExit) {
-        super(id);
+        this(id);
         this.file = file;
         this.tofile = tofile;
         this.md5 = md5;
@@ -93,57 +103,76 @@ public class Copy extends AbstractCommand {
 
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        String md5 = null;
+        if (!file.exists()) {
+            log.warn("Can't copy " + file + " . File missing.");
+            return null;
+        }
+        return doCopy(task, prefs, file, tofile);
+    }
+
+    /**
+     * @since 5.5
+     */
+    protected Command doCopy(Task task, Map<String, String> prefs,
+            File fileToCopy, File dst) throws PackageException {
+        String dstmd5;
         File bak = null;
-        File dst = null;
+        if (fileToCopy.isDirectory()) {
+            CompositeCommand rollbackCommand = new CompositeCommand();
+            if (fileToCopy != file) {
+                dst = new File(dst, fileToCopy.getName());
+            }
+            for (File childFile : fileToCopy.listFiles()) {
+                rollbackCommand.addCommand(doCopy(task, prefs, childFile, dst));
+            }
+            return rollbackCommand;
+        }
+        if (dst.isDirectory()) {
+            dst = new File(dst, fileToCopy.getName());
+        }
         try {
             // backup the destination file if exist.
-            if (tofile.isFile()) {
+            if (dst.exists()) {
                 if (!overwrite) { // force a rollback
                     throw new PackageException(
                             "Copy command has override flag on false but destination file exists: "
-                                    + tofile);
+                                    + dst);
                 }
                 if (task instanceof UninstallTask) {
                     // no backup for uninstall task
                 } else {
-                    bak = IOUtils.backup(task.getPackage(), tofile);
-                }
-                dst = tofile;
-            } else if (tofile.isDirectory()) {
-                dst = new File(tofile, file.getName());
-                if (dst.isFile()) {
                     bak = IOUtils.backup(task.getPackage(), dst);
                 }
             } else { // target file doesn't exists - it will be created
-                tofile.getParentFile().mkdirs();
-                dst = tofile;
+                dst.getParentFile().mkdirs();
             }
-            // copy the file - use getContentToCopy to allow parametrization for
-            // subclasses
+
+            // copy the file - use getContentToCopy to allow parameterization
+            // for subclasses
             String content = getContentToCopy(prefs);
             if (content != null) {
-                FileUtils.writeFile(dst, content);
+                FileUtils.writeFile(dst, content, append);
             } else {
                 File tmp = new File(dst.getPath() + ".tmp");
-                FileUtils.copy(file, tmp);
+                FileUtils.copy(fileToCopy, tmp);
                 if (!tmp.renameTo(dst)) {
                     tmp.delete();
-                    FileUtils.copy(file, dst);
+                    FileUtils.copy(fileToCopy, dst);
                 }
             }
             // get the md5 of the copied file.
-            md5 = IOUtils.createMd5(dst);
+            dstmd5 = IOUtils.createMd5(dst);
         } catch (Exception e) {
-            throw new PackageException("Failed to copy " + dst, e);
+            throw new PackageException("Failed to copy " + fileToCopy, e);
         }
         if (bak == null) { // no file was replaced
-            return new Delete(dst, md5, removeOnExit);
+            return new Delete(dst, dstmd5, removeOnExit);
         } else {
-            return new Copy(bak, dst, md5, true);
+            return new Copy(bak, dst, dstmd5, true);
         }
     }
 
+    @SuppressWarnings("unused")
     protected String getContentToCopy(Map<String, String> prefs)
             throws PackageException {
         return null;
@@ -152,7 +181,8 @@ public class Copy extends AbstractCommand {
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
         if (file == null || tofile == null) {
-            status.addError("Cannot execute command in installer. No file or tofile specified.");
+            status.addError("Cannot execute command in installer."
+                    + " Invalid copy syntax: file, dir, tofile or todir was not specified.");
         }
         if (tofile.isFile() && !overwrite) {
             if (removeOnExit) {
@@ -161,15 +191,15 @@ public class Copy extends AbstractCommand {
                 status.addError("A restart is needed to perform this operation: cleaning "
                         + tofile.getName());
             } else {
-                status.addError("Cannot overwite existing file: "
+                status.addError("Cannot overwrite existing file: "
                         + tofile.getName());
             }
         }
         if (md5 != null) {
             try {
                 if (tofile.isFile() && !md5.equals(IOUtils.createMd5(tofile))) {
-                    status.addError("Cannot copy file to: " + tofile.getName()
-                            + ". The md5 check failed");
+                    status.addError("MD5 check failed. File: " + tofile
+                            + " has changed since its backup");
                 }
             } catch (Exception e) {
                 throw new PackageException(e);
@@ -178,17 +208,35 @@ public class Copy extends AbstractCommand {
     }
 
     public void readFrom(Element element) throws PackageException {
-        String v = element.getAttribute("file");
+        boolean sourceIsDir = false;
+        File dir = null;
+        String v = element.getAttribute("dir");
         if (v.length() > 0) {
-            file = new File(v);
-        } else {
-            throw new PackageException(
-                    "Invalid copy syntax: file was not specified");
+            dir = new File(v);
         }
+        v = element.getAttribute("file");
+        if (v.length() > 0) {
+            if (dir != null) {
+                file = new File(dir, v);
+            } else {
+                file = new File(v);
+            }
+            guardVars.put("file", file);
+        } else {
+            sourceIsDir = true;
+            file = dir;
+            guardVars.put("dir", dir);
+        }
+
         v = element.getAttribute("todir");
         if (v.length() > 0) {
-            tofile = new File(v, file.getName());
-            guardVars.put("tofile", tofile);
+            if (sourceIsDir) {
+                tofile = new File(v);
+                guardVars.put("todir", tofile);
+            } else {
+                tofile = new File(v, file.getName());
+                guardVars.put("tofile", tofile);
+            }
         } else {
             v = element.getAttribute("tofile");
             if (v.length() > 0) {
@@ -198,6 +246,7 @@ public class Copy extends AbstractCommand {
                 ref.fillPatternVariables(guardVars);
             }
         }
+
         v = element.getAttribute("md5");
         if (v.length() > 0) {
             md5 = v;

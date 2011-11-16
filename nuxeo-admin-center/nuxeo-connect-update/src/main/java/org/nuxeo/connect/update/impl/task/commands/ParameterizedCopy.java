@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,6 +17,7 @@
 package org.nuxeo.connect.update.impl.task.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -41,17 +42,18 @@ import org.nuxeo.connect.update.PackageException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ParametrizedCopy extends Copy {
+public class ParameterizedCopy extends Copy {
 
+    @SuppressWarnings("hiding")
     public static final String ID = "pcopy";
 
-    public ParametrizedCopy() {
+    public ParameterizedCopy() {
         super(ID);
     }
 
-    public ParametrizedCopy(File file, File tofile, String md5,
+    public ParameterizedCopy(File file, File tofile, String md5,
             boolean overwrite) {
-        super(ID);
+        this();
         this.file = file;
         this.tofile = tofile;
         this.md5 = md5;
@@ -64,8 +66,8 @@ public class ParametrizedCopy extends Copy {
         try {
             String content = FileUtils.readFile(file);
             return StringUtils.expandVars(content, prefs);
-        } catch (Exception e) {
-            throw new PackageException("Failed to run parametrized copy for: "
+        } catch (IOException e) {
+            throw new PackageException("Failed to run parameterized copy for: "
                     + file.getName(), e);
         }
     }

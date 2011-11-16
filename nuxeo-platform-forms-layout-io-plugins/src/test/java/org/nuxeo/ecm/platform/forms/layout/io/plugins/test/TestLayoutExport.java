@@ -74,7 +74,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml");
         // default dirs
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.default.config");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.io.plugins.tests",
+                "test-directories-contrib.xml");
 
         service = Framework.getService(LayoutStore.class);
         assertNotNull(service);

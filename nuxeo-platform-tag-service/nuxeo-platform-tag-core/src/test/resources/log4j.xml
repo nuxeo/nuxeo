@@ -4,7 +4,7 @@
   debug="false">
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
     <param name="Threshold" value="TRACE" />
     <layout class="org.apache.log4j.PatternLayout">

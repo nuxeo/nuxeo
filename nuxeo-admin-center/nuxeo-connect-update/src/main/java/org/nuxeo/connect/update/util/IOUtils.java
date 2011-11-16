@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -27,14 +27,13 @@ import org.nuxeo.connect.update.LocalPackage;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class IOUtils {
-    
+
     private IOUtils() {
     }
 
     /**
-     * Backup the given file to the package backuo directory. The backup file
-     * will be returned. The name of the backup file will be:
-     * filepathMD5_filename.
+     * Backup the given file to the package backup directory. The backup file
+     * will be returned. The backup file will be named: MD5ofFilepath_filename.
      *
      * @return the name of the backup file.
      */

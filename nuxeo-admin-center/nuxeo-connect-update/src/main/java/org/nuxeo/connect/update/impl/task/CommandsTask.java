@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.impl.task;
 
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.impl.UpdateServiceImpl;
+import org.nuxeo.connect.update.impl.task.commands.Command;
 import org.nuxeo.connect.update.impl.task.commands.Flush;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.runtime.api.Framework;
@@ -140,15 +140,8 @@ public abstract class CommandsTask extends AbstractTask {
     }
 
     public void doValidate(ValidationStatus status) throws PackageException {
-        // first check the target platforms are ok
-        String[] platforms = pkg.getTargetPlatforms();
-        if (platforms != null) {
-            for (String platform : platforms) {
-                // TODO
-            }
-            // TODO status.addError("Platform doesn't match");
-        } // else we assume the platform is ok
-          // now check that commands can be run
+        // the target platform is not checked at install
+        // check that commands can be run
         for (Command cmd : commands) {
             cmd.validate(this, status);
         }
@@ -183,7 +176,7 @@ public abstract class CommandsTask extends AbstractTask {
                     Element element = (Element) node;
                     String id = node.getNodeName();
                     Command cmd = reg.getCommand(id);
-                    if (cmd == null) { // my be the name of a embedded class
+                    if (cmd == null) { // may be the name of an embedded class
                         try {
                             cmd = (Command) pkg.getData().loadClass(id).getConstructor().newInstance();
                         } catch (Throwable t) {

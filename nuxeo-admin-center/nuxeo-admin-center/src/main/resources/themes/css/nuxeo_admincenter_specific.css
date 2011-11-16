@@ -1,0 +1,77 @@
+/*
+Specific styles for the Administrator View
+=Frame -> specifiy left column style
+=Document list -> specifics to document browsing
+=Advanced Search -> for advanced search view
+=Clipboard & Worklist -> styles in the left column
+author: lkemen@nuxeo.com
+*/
+
+/* =Vertical Tabs in left column */
+.adminTabsColumn { background: "neutral.stronger (__FLAVOR__ background)"; box-shadow: -2px -1px 5px #333 inset; min-height: 660px; height: auto!important; height: 660px; padding: 0; width: 210px; vertical-align: top; }
+.adminTabBlock { height: 100%; margin: 0 }
+
+.adminTabsColumn ul {  margin: 0; padding: 20px 0 30px }
+.adminTabsColumn li { box-shadow: -5px 2px 5px #333; margin: 0 0 3px; padding: 0 }
+.adminTabsColumn li a { color: "gray.light (__FLAVOR__ color)"; display: block; padding: 7px 0 8px 10px; text-decoration: none }
+.adminTabsColumn li a img { margin: 0 5px -1px 0 }
+
+.adminTabsColumn li.selected, .adminTabsColumn li.selected:hover { background-color: #fff; margin: 0 -1px 3px }
+.adminTabsColumn li:hover { background-color: #fff }
+.adminTabsColumn li.selected a, .adminTabsColumn li:hover a { color: "black (__FLAVOR__ color)"; }
+
+/* Main fragment*/
+.adminViewContent { width: 100% }
+.adminViewContent p { padding: 5px 0 }
+.adminContentColumn { padding: 20px; vertical-align: top;}
+
+.tabsContent { padding: 0; }
+
+.dataOutput td { vertical-align: top }
+
+/* ActionBar*/
+.actionBar {background-color:#efefef;border-bottom:1px solid #bde7F3;padding:10px;}
+.actionBar span {margin:0 10px 0 0;}
+.actionBar form {display:inline;}
+.actionBar form select, .actionBar form input {margin:0px 5px;}
+.actionBar h3 {padding:3px 0;}
+
+/* =Marketplace, Nuxeo Connect & Updates */
+.marketplace { background-color: #fbfbfb }
+.marketplace .marketplaceLogo {}
+.marketplace .label { color: #1d91ce; display: inline-block; margin: 0 10px 0 50px; padding: 5px 0 0; vertical-align: top }
+
+.login { width: 100% }
+.login td, .repoInfos .dataOuput td { vertical-align: top }
+.loginBlock { background-color: #f6f6f6; border: 1px solid #f0f0f0; margin: 10px auto 40px; padding: 10px; width: 93%; }
+.loginBlock .title h3 { border-bottom: 1px solid #f0f0f0; margin: 0 0 10px; padding: 0 0 10px }
+.loginBlock .loginTable .labelColumn { font-weight: normal; width: 200px }
+
+.loginInfos { padding: 15px 0 25px }
+.loginInfos .connectNotRegistered { font-weight: bold }
+.loginInfos p, .registerHelp p { margin: 5px 0px }
+.registerHelp { border-top: 1px solid #f0f0f0; color: #848484; margin: 5px 0px; padding: 5px 0px }
+.detail p { color: #b7b7b7; margin-bottom: 10px }
+
+.downloadConfirmation { border: 1px solid #dedede; margin: 70px auto 100px; padding: 20px 30px; width: 500px }
+.downloadConfirmation h1 { border-bottom: 1px solid #dedede; margin-bottom: 20px; padding: 0px 0px 10px }
+.downloadConfirmation table { margin: 15px 0 }
+
+.studioUpdateActions { margin: 5px 0px }
+.studioUpdateActions span { color: #000; font-weight: bold; margin: 0 }
+
+.hostInfos pre { border: 1px solid #eee; padding: 10px }
+.repoInfos .dataOutput th { padding: 0 0 5px 7px; text-align: left }
+
+/* =Setup Panel */
+.setupPanel .dataOutput th { border-bottom: 1px solid #C7C7C7; font-size: 1.05em; padding: 0 0 5px; text-align: left }
+.setupPanel .dataOutput td { border: none; padding: 0 0 5px 7px }
+.setupPanel .dataOutput td.wideLabel { width: 340px }
+.setupPanel .dataOutput td table { margin-top: 10px }
+
+.setupPanel .actionBar { background-color: transparent }
+.packageUploadBlock { padding: 0 0 10px }
+
+/* =Packages */
+.packageUploadBlock { padding: 0 0 10px }
+h5 { color: #848484; font-weight: bold; font-size: 1.1em; margin: 10px 0 5px }

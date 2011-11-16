@@ -106,6 +106,7 @@ pre {
               <a href="${baseURL}widgetTypes/${cat}?version=5.4.0&all=true">5.4.0</a>
               <a href="${baseURL}widgetTypes/${cat}?version=5.4.1&all=true">5.4.1</a>
               <a href="${baseURL}widgetTypes/${cat}?version=5.4.2&all=true">5.4.2</a>
+              <a href="${baseURL}widgetTypes/${cat}?version=5.5&all=true">5.5</a>
             </div>
             <div class="category_content">
               <#list categories["${cat}"] as widgetType>
@@ -122,6 +123,7 @@ pre {
             <a href="${baseURL}widgetTypes?version=5.4.0&all=true">5.4.0</a>
             <a href="${baseURL}widgetTypes?version=5.4.1&all=true">5.4.1</a>
             <a href="${baseURL}widgetTypes?version=5.4.2&all=true">5.4.2</a>
+            <a href="${baseURL}widgetTypes?version=5.5&all=true">5.5</a>
           </div>
         </div>
       </td>

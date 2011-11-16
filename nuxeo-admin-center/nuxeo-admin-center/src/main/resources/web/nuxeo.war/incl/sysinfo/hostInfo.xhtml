@@ -26,7 +26,7 @@
    <h:outputText value="#{systemInfo.hostInfo}"/>
  </pre>
  <h:form>
- <h:outputText value="#{systemInfo.uptime}"/> <h:commandButton onclick="return confirmRestart();" action="#{systemInfo.restartServer()}" value="#{messages['label.action.restart']}"/>
+ <h:outputText value="#{systemInfo.uptime}"/> <h:commandButton onclick="return confirmRestart();" action="#{systemInfo.restartServer()}" value="#{messages['label.action.restart']}" styleClass="button"/>
  </h:form>
 
 </div>
