@@ -159,14 +159,12 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("document", sugg1.getType());
         assertEquals("First document", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
-        assertNotNull(sugg1.getValue());
 
         Suggestion sugg2 = suggestions.get(1);
         assertEquals("searchDocuments", sugg2.getType());
         assertEquals("Search documents with keywords: 'first'",
                 sugg2.getLabel());
         assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
-        assertEquals("fsd:ecm_fulltext first", sugg2.getValue());
     }
 
     @Test
@@ -189,34 +187,29 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("Search documents created after Jan 1, 2009",
                 sugg1.getLabel());
         assertEquals("/img/facetedSearch.png", sugg1.getIconURL());
-        assertEquals("fsd:dc_created_min 2009-01-01", sugg1.getValue());
 
         Suggestion sugg2 = suggestions.get(1);
         assertEquals("searchDocuments", sugg2.getType());
         assertEquals("Search documents created before Jan 1, 2009",
                 sugg2.getLabel());
         assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
-        assertEquals("fsd:dc_created_max 2009-01-01", sugg2.getValue());
 
         Suggestion sugg3 = suggestions.get(2);
         assertEquals("searchDocuments", sugg3.getType());
         assertEquals("Search documents modified after Jan 1, 2009",
                 sugg3.getLabel());
         assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
-        assertEquals("fsd:dc_modified_min 2009-01-01", sugg3.getValue());
 
         Suggestion sugg4 = suggestions.get(3);
         assertEquals("searchDocuments", sugg4.getType());
         assertEquals("Search documents modified before Jan 1, 2009",
                 sugg4.getLabel());
         assertEquals("/img/facetedSearch.png", sugg4.getIconURL());
-        assertEquals("fsd:dc_modified_max 2009-01-01", sugg4.getValue());
 
         Suggestion sugg5 = suggestions.get(4);
         assertEquals("searchDocuments", sugg5.getType());
         assertEquals("Search documents with keywords: '2009'", sugg5.getLabel());
         assertEquals("/img/facetedSearch.png", sugg5.getIconURL());
-        assertEquals("fsd:ecm_fulltext 2009", sugg5.getValue());
 
         // 2012 both matches a title and a date
         suggestions = suggestionService.suggest("2012", context);
@@ -227,7 +220,6 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("document", sugg1.getType());
         assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
-        assertNotNull(sugg1.getValue());
     }
 
     @Test
@@ -248,25 +240,21 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("document", sugg1.getType());
         assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
-        assertNotNull(sugg1.getValue());
 
         Suggestion sugg2 = suggestions.get(1);
         assertEquals("user", sugg2.getType());
         assertEquals("Bob Marley", sugg2.getLabel());
         assertEquals("/icons/user.gif", sugg2.getIconURL());
-        assertEquals("bob", sugg2.getValue());
 
         Suggestion sugg3 = suggestions.get(2);
         assertEquals("searchDocuments", sugg3.getType());
         assertEquals("Search documents by Bob Marley", sugg3.getLabel());
         assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
-        assertEquals("fsd:dc_creator bob", sugg3.getValue());
 
         Suggestion sugg4 = suggestions.get(3);
         assertEquals("searchDocuments", sugg4.getType());
         assertEquals("Search documents with keywords: 'bob'", sugg4.getLabel());
         assertEquals("/img/facetedSearch.png", sugg4.getIconURL());
-        assertEquals("fsd:ecm_fulltext bob", sugg4.getValue());
     }
 
     protected Map<String, String> getTestMessages() {

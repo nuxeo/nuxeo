@@ -7,11 +7,13 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.suggestbox.service.CommonSuggestionTypes;
+import org.nuxeo.ecm.platform.suggestbox.service.GroupSuggestion;
+import org.nuxeo.ecm.platform.suggestbox.service.SearchDocumentsSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
+import org.nuxeo.ecm.platform.suggestbox.service.UserSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -60,17 +62,16 @@ public class UserGroupLookupSuggester implements Suggester {
                 if (userLabel.trim().isEmpty()) {
                     userLabel = user.getId();
                 }
-                suggestions.add(new Suggestion(CommonSuggestionTypes.USER,
-                        user.getId(), userLabel, userIconURL));
+                suggestions.add(new UserSuggestion(user.getId(), userLabel,
+                        userIconURL));
 
                 // suggest to search documents related to the user profile
                 for (String searchField : searchFields) {
                     String i18nLabel = i18n.translate(searchLabelPrefix
                             + searchField.replaceAll(":", "_"), userLabel);
-                    Suggestion suggestion = new Suggestion(
-                            CommonSuggestionTypes.SEARCH_DOCUMENTS, searchField
-                                    + " " + user.getId(), i18nLabel,
-                            searchIconURL);
+                    Suggestion suggestion = new SearchDocumentsSuggestion(
+                            i18nLabel, searchIconURL).withSearchCriterion(
+                            searchField, user.getId());
                     searchSuggestions.add(suggestion);
                 }
             }
@@ -81,8 +82,8 @@ public class UserGroupLookupSuggester implements Suggester {
                     label = group.getProperty("group:groupname").getValue(
                             String.class);
                 }
-                suggestions.add(new Suggestion(CommonSuggestionTypes.GROUP,
-                        group.getId(), label, groupIconURL));
+                suggestions.add(new GroupSuggestion(group.getId(), label,
+                        groupIconURL));
             }
             suggestions.addAll(searchSuggestions);
             return suggestions;

@@ -16,8 +16,6 @@ public class Suggestion implements Serializable {
 
     protected final String type;
 
-    protected final String value;
-
     protected final String label;
 
     protected final String iconURL;
@@ -26,11 +24,10 @@ public class Suggestion implements Serializable {
 
     protected boolean disabled = false;
 
-    public Suggestion(String type, String value, String label, String iconURL) {
+    public Suggestion(String type, String label, String iconURL) {
         this.type = type;
         this.label = label;
         this.iconURL = iconURL;
-        this.value = value;
     }
 
     /**
@@ -40,15 +37,6 @@ public class Suggestion implements Serializable {
      */
     public String getType() {
         return type;
-    }
-
-    /**
-     * A string representation of the suggestion instance. This string value can
-     * only be decoded / interpreted by the handler in the context of a given
-     * type.
-     */
-    public String getValue() {
-        return value;
     }
 
     /**
@@ -91,5 +79,10 @@ public class Suggestion implements Serializable {
     public Suggestion disable() {
         this.disabled = true;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Suggestion(%s, %s, %s)", type, label, iconURL);
     }
 }

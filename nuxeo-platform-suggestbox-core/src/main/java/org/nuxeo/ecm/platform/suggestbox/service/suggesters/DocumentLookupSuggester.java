@@ -6,20 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.ecm.platform.suggestbox.service.CommonSuggestionTypes;
+import org.nuxeo.ecm.platform.suggestbox.service.DocumentSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
-import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -29,8 +26,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author ogrisel
  */
 public class DocumentLookupSuggester implements Suggester {
-
-    private static final Log log = LogFactory.getLog(DocumentLookupSuggester.class);
 
     protected String providerName = "DEFAULT_DOCUMENT_SUGGESTION";
 
@@ -62,18 +57,7 @@ public class DocumentLookupSuggester implements Suggester {
                     providerName, null, null, null, props,
                     new Object[] { userInput });
             for (DocumentModel doc : pp.getCurrentPage()) {
-                String value = doc.getRepositoryName() + "::" + doc.getId();
-                TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
-                if (typeInfo == null) {
-                    log.warn(String.format(
-                            "Missing TypeInfoAdapter for document '%s' with type '%s'",
-                            doc.getTitle(), doc.getType()));
-                    continue;
-                }
-                String description = doc.getProperty("dc:description").getValue(
-                        String.class);
-                suggestions.add(new Suggestion(CommonSuggestionTypes.DOCUMENT,
-                        value, doc.getTitle(), typeInfo.getIcon()).withDescription(description));
+                suggestions.add(DocumentSuggestion.fromDocumentModel(doc));
             }
             return suggestions;
         } catch (ClientException e) {

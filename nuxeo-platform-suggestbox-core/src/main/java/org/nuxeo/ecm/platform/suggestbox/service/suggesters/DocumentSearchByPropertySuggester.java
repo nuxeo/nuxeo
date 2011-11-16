@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.platform.suggestbox.service.CommonSuggestionTypes;
 import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
+import org.nuxeo.ecm.platform.suggestbox.service.SearchDocumentsSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
@@ -17,8 +17,6 @@ import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor
  * for searching a specific field.
  */
 public class DocumentSearchByPropertySuggester implements Suggester {
-
-    protected String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;
 
     protected String searchField = "fsd:ecm_fulltext";
 
@@ -34,8 +32,9 @@ public class DocumentSearchByPropertySuggester implements Suggester {
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
-        Suggestion suggestion = new Suggestion(type, searchField + " "
-                + userInput, i18n.translate(label, userInput), iconURL);
+        String i18nLabel = i18n.translate(label, userInput);
+        Suggestion suggestion = new SearchDocumentsSuggestion(i18nLabel,
+                iconURL).withSearchCriterion(searchField, userInput);
         if (disabled) {
             suggestion.disable();
         }
@@ -49,7 +48,6 @@ public class DocumentSearchByPropertySuggester implements Suggester {
     public void initWithParameters(SuggesterDescriptor descriptor)
             throws ComponentInitializationException {
         Map<String, String> params = descriptor.getParameters();
-        type = params.get("type");
         searchField = params.get("searchField");
         label = params.get("label");
         String iconURL = params.get("iconURL");
@@ -61,7 +59,7 @@ public class DocumentSearchByPropertySuggester implements Suggester {
         if (disabled != null) {
             this.disabled = Boolean.valueOf(disabled);
         }
-        if (type == null || searchField == null || label == null) {
+        if (searchField == null || label == null) {
             throw new ComponentInitializationException(
                     String.format("Could not initialize suggester '%s': "
                             + "type, propertyPath and label"

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.platform.suggestbox.service.CommonSuggestionTypes;
 import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
+import org.nuxeo.ecm.platform.suggestbox.service.SearchDocumentsSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
@@ -22,8 +23,6 @@ import org.nuxeo.ecm.platform.suggestbox.utils.DateMatcher;
  * locale.
  */
 public class DocumentSearchByDateSuggester implements Suggester {
-
-    public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
 
     final static String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;
 
@@ -46,32 +45,29 @@ public class DocumentSearchByDateSuggester implements Suggester {
         // TODO: use SimpleDateFormat and use the locale information from the
         // context
         DateMatcher matcher = DateMatcher.fromInput(userInput);
-        SimpleDateFormat valueDateFormatter = new SimpleDateFormat(
-                DATE_FORMAT_PATTERN);
         DateFormat labelDateFormatter = SimpleDateFormat.getDateInstance(
                 SimpleDateFormat.MEDIUM, context.locale);
 
         if (matcher.hasMatch()) {
             Date date = matcher.getDateSuggestion().getTime();
-            String formattedDateValue = valueDateFormatter.format(date);
             String formattedDateLabel = labelDateFormatter.format(date);
 
             for (String field : searchFields) {
-                String valueAfter = field + "_min " + formattedDateValue;
+                String searchFieldAfter = field + "_min ";
                 String labelAfterPrefix = LABEL_AFTER_PREFIX
                         + field.replace(':', '_');
                 String labelAfter = i18n.translate(labelAfterPrefix,
                         formattedDateLabel);
-                suggestions.add(new Suggestion(type, valueAfter, labelAfter,
-                        iconURL));
+                suggestions.add(new SearchDocumentsSuggestion(labelAfter,
+                        iconURL).withSearchCriterion(searchFieldAfter, date));
 
-                String valueBefore = field + "_max " + formattedDateValue;
+                String searchFieldBefore = field + "_max ";
                 String labelBeforePrefix = LABEL_BEFORE_PREFIX
                         + field.replace(':', '_');
                 String labelBefore = i18n.translate(labelBeforePrefix,
                         formattedDateLabel);
-                suggestions.add(new Suggestion(type, valueBefore, labelBefore,
-                        iconURL));
+                suggestions.add(new SearchDocumentsSuggestion(labelBefore,
+                        iconURL).withSearchCriterion(searchFieldBefore, date));
             }
         }
         return suggestions;

@@ -35,4 +35,18 @@ public interface SuggestionService {
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException;
 
+    /**
+     * Call the Content Automation Operation chain matching the suggestion
+     * selected by the user.
+     * 
+     * @param suggestion the selected suggestion to execute
+     * @param context the suggestion context that is also passed to as Content
+     *            Automation context.
+     * @return the outcome of the selected operation chain. In a JSF / Seam
+     *         environment, the ouctome is passed as a String to the JSF
+     *         runtime. In a JAX-RS environment the outcome could be passed as a
+     *         resource path for redirect navigation.
+     */
+    public Object handleSelection(Suggestion suggestion,
+            SuggestionContext context) throws SuggestionHandlingException;
 }

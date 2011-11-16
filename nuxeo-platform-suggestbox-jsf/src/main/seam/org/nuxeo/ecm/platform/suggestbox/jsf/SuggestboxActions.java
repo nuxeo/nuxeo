@@ -22,9 +22,6 @@ package org.nuxeo.ecm.platform.suggestbox.jsf;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,23 +35,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.schema.types.primitives.DateType;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
-import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
-import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
-import org.nuxeo.ecm.platform.suggestbox.service.CommonSuggestionTypes;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
+import org.nuxeo.ecm.platform.suggestbox.service.SuggestionHandlingException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
-import org.nuxeo.ecm.webapp.security.GroupManagementActions;
-import org.nuxeo.ecm.webapp.security.UserManagementActions;
-import org.nuxeo.ecm.webapp.security.UserSuggestionActionsBean;
 import org.nuxeo.runtime.api.Framework;
 
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -68,35 +55,11 @@ public class SuggestboxActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String FACETED_SEARCH_SUGGESTION = "DEFAULT_DOCUMENT_SUGGESTION";
-
-    public static final String FACETED_SEARCH_DEFAULT_CONTENT_VIEW_NAME = "faceted_search_default";
-
-    public static final String FACETED_SEARCH_DEFAULT_DOCUMENT_TYPE = "FacetedSearchDefault";
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected FacetedSearchActions facetedSearchActions;
-
-    @In(create = true)
-    protected ContentViewActions contentViewActions;
-
-    @In(create = true)
     protected transient NavigationContext navigationContext;
-
-    @In(create = true)
-    protected transient UserSuggestionActionsBean userSuggestionActions;
-
-    @In(create = true)
-    protected UserManagementActions userManagementActions;
-
-    @In(create = true)
-    protected GroupManagementActions groupManagementActions;
-
-    @In(create = true)
-    protected MultiNavTreeManager multiNavTreeManager;
 
     @In(create = true)
     protected Map<String, String> messages;
@@ -120,12 +83,8 @@ public class SuggestboxActions implements Serializable {
 
     @SuppressWarnings("unchecked")
     public List<Suggestion> getSuggestions(Object input) {
-
         SuggestionService service = Framework.getLocalService(SuggestionService.class);
-        SuggestionContext ctx = new SuggestionContext("searchbox",
-                documentManager.getPrincipal()).withSession(documentManager).withCurrentDocument(
-                navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
-                messages);
+        SuggestionContext ctx = getSuggestionContext();
         try {
             return service.suggest(input.toString(), ctx);
         } catch (SuggestionException e) {
@@ -136,80 +95,26 @@ public class SuggestboxActions implements Serializable {
         }
     }
 
-    // TODO: move this logic in the Suggestion service with pluggable action
-    // handler
-    public String handleSelection(Suggestion selectedSuggestion)
-            throws ClientException, ParseException {
-        setSearchKeywords("");
-        String suggestionValue = selectedSuggestion.getValue();
-        String suggestionType = selectedSuggestion.getType();
-        if (suggestionType.equals(CommonSuggestionTypes.DOCUMENT)) {
-            String[] fields = suggestionValue.split("::", 2);
-            if (fields.length != 2) {
-                log.error("Invalid document location, should be repo name and"
-                        + " doc id separated by '::' marker, got: "
-                        + suggestionValue);
-                return null;
-            }
-            String repoName = fields[0];
-            String docId = fields[1];
-            navigationContext.navigateTo(new RepositoryLocation(repoName),
-                    new IdRef(docId));
-            return "view_documents";
-        } else if (suggestionType.equals(CommonSuggestionTypes.USER)) {
-            return userManagementActions.viewUser(suggestionValue);
-        } else if (suggestionType.equals(CommonSuggestionTypes.GROUP)) {
-            return groupManagementActions.viewGroup(suggestionValue);
-        } else if (suggestionType.equals(CommonSuggestionTypes.SEARCH_DOCUMENTS)) {
-            return handleFacetedSearch(suggestionValue);
-        } else {
-            // fallback to basic keyword search suggestion
-            return handleFacetedSearch("fsd:ecm_fulltext");
-        }
+    protected SuggestionContext getSuggestionContext() {
+        SuggestionContext ctx = new SuggestionContext("searchbox",
+                documentManager.getPrincipal()).withSession(documentManager).withCurrentDocument(
+                navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
+                messages);
+        return ctx;
     }
 
-    protected String handleFacetedSearch(String suggestionValue)
-            throws ClientException {
-        DateFormat df = new SimpleDateFormat(Suggestion.DATE_FORMAT_PATTERN);
-        facetedSearchActions.clearSearch();
-        facetedSearchActions.setCurrentContentViewName(null);
-        String contentViewName = facetedSearchActions.getCurrentContentViewName();
-        ContentView contentView = contentViewActions.getContentView(contentViewName);
-        DocumentModel dm = contentView.getSearchDocumentModel();
-        String[] fields = suggestionValue.split(" ", 2);
-        if (fields.length != 2) {
-            log.error("Invalid search value: should be a fieldname and a"
-                    + " value separated by a whitespace, got: "
-                    + suggestionValue);
-            return null;
-        }
-        String searchField = fields[0];
-        String searchValue = fields[1];
-
-        Property searchProperty = dm.getProperty(searchField);
-        if (searchProperty.isList()) {
-            // list type is used for multi-valued option fields such as
-            // fsd_dc_creator.
-            dm.setPropertyValue(searchField,
-                    (Serializable) Collections.singleton(searchValue));
-        } else if (searchProperty.getField().getType().equals(DateType.INSTANCE)) {
-            try {
-                dm.setPropertyValue(searchField, df.parse(searchValue));
-            } catch (ParseException e) {
-                log.error("Invalid date value: " + searchValue);
-            }
-        } else {
-            dm.setPropertyValue(searchField, searchValue);
-        }
-        multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
-        return "faceted_search_results";
-    }
-
-    public String performKerwordsSearch() throws ClientException {
-        String outcome = handleFacetedSearch("fsd:ecm_fulltext "
-                + searchKeywords);
+    public Object handleSelection(Suggestion selectedSuggestion) {
         setSearchKeywords("");
-        return outcome;
+        SuggestionService service = Framework.getLocalService(SuggestionService.class);
+        SuggestionContext ctx = getSuggestionContext();
+        try {
+            return service.handleSelection(selectedSuggestion, ctx);
+        } catch (SuggestionHandlingException e) {
+            // log the exception rather than trying to display it since this
+            // method is called by ajax events when typing in the searchbox.
+            log.error(e, e);
+            return "";
+        }
     }
 
 }

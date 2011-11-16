@@ -8,15 +8,13 @@
     <suggester name="documentLookupByTitle"
       class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentLookupSuggester">
       <parameters>
-        <parameter name="providerName">DEFAULT_DOCUMENT_SUGGESTION
-        </parameter>
+        <parameter name="providerName">DEFAULT_DOCUMENT_SUGGESTION</parameter>
       </parameters>
     </suggester>
 
     <suggester name="searchByKeywords"
       class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentSearchByPropertySuggester">
       <parameters>
-        <parameter name="type">searchDocuments</parameter>
         <parameter name="label">label.searchDocumentsByKeyword</parameter>
         <parameter name="searchField">fsd:ecm_fulltext</parameter>
         <parameter name="iconURL">/img/facetedSearch.png</parameter>
