@@ -70,6 +70,8 @@
   </description>
   <home-page>http://doc.nuxeo.com/x/bIEk</home-page>
   <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
   <!-- <hotreload-support>false</hotreload-support> -->
   <!-- <require-terms-and-conditions-acceptance>false -->
   <!-- </require-terms-and-conditions-acceptance> -->
