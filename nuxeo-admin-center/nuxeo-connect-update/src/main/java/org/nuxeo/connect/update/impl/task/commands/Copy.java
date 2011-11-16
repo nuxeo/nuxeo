@@ -19,6 +19,7 @@ package org.nuxeo.connect.update.impl.task.commands;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -27,7 +28,9 @@ import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.impl.task.UninstallTask;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.connect.update.util.FileMatcher;
 import org.nuxeo.connect.update.util.FileRef;
+import org.nuxeo.connect.update.util.FileVersion;
 import org.nuxeo.connect.update.util.IOUtils;
 import org.w3c.dom.Element;
 
@@ -73,6 +76,8 @@ public class Copy extends AbstractCommand {
     protected boolean removeOnExit;
 
     protected boolean append = false;
+
+    private boolean overwriteIfNewerVersion = false;
 
     protected Copy(String id) {
         super(id);
@@ -131,11 +136,63 @@ public class Copy extends AbstractCommand {
             dst = new File(dst, fileToCopy.getName());
         }
         try {
-            // backup the destination file if exist.
-            if (dst.exists()) {
+            if (overwriteIfNewerVersion) {
+                // Compare source and destination versions set in filename
+                FileVersion fileToCopyVersion, dstVersion = null;
+                FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
+                if (!filenameMatcher.match(fileToCopy.getName())) {
+
+                }
+                String filenameWithoutVersion = filenameMatcher.getValue();
+                FileMatcher versionMatcher = FileMatcher.getMatcher(filenameWithoutVersion
+                        + "{v:[0-9]+.*}\\.jar");
+                // Get new file version
+                if (versionMatcher.match(fileToCopy.getName())) {
+                    fileToCopyVersion = new FileVersion(
+                            versionMatcher.getValue());
+                    // Get original file name and version
+                    File dir = dst.getParentFile();
+                    File[] list = dir.listFiles();
+                    if (list != null) {
+                        for (File f : list) {
+                            if (versionMatcher.match(f.getName())) {
+                                dst = f;
+                                dstVersion = new FileVersion(
+                                        versionMatcher.getValue());
+                                break;
+                            }
+                        }
+                    }
+                    if (dstVersion == null) {
+                        // dst doesn't exist, new file will be copied
+                        dst.getParentFile().mkdirs();
+                    } else if (fileToCopyVersion.greaterThan(dstVersion)
+                            || (fileToCopyVersion.isSnapshot() && fileToCopyVersion.equals(dstVersion))) {
+                        // dst will be replaced with newer version
+                        bak = IOUtils.backup(task.getPackage(), dst);
+                        File newDst = new File(dst.getParentFile(),
+                                fileToCopy.getName());
+                        // Delete old dst if its name differs from new version
+                        if (!dst.equals(newDst)) {
+                            if (!ArrayUtils.contains(
+                                    FILES_TO_DELETE_ONLY_ON_EXIT,
+                                    filenameWithoutVersion)) {
+                                dst.delete();
+                            } else {
+                                dst.deleteOnExit();
+                            }
+                            dst = newDst;
+                        }
+                    } else {
+                        log.info("Ignore " + fileToCopy
+                                + " because a newer file is already present.");
+                        return null;
+                    }
+                }
+            } else if (dst.exists()) { // backup the destination file if exist.
                 if (!overwrite) { // force a rollback
                     throw new PackageException(
-                            "Copy command has override flag on false but destination file exists: "
+                            "Copy command has overwrite flag on false but destination file exists: "
                                     + dst);
                 }
                 if (task instanceof UninstallTask) {
@@ -258,6 +315,10 @@ public class Copy extends AbstractCommand {
         v = element.getAttribute("removeOnExit");
         if (v.length() > 0) {
             removeOnExit = Boolean.parseBoolean(v);
+        }
+        v = element.getAttribute("overwriteIfNewerVersion");
+        if (v.length() > 0) {
+            overwriteIfNewerVersion = Boolean.parseBoolean(v);
         }
     }
 
