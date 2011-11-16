@@ -209,6 +209,12 @@ public class Main {
         try {
             Environment.setDefault(targetEnv);
             for (String pkgId : packages) {
+                if (pkgId.startsWith("file:")) {
+                    String packageFileName = pkgId.substring(5);
+                    log.info("Getting Installation package " + packageFileName );
+                    LocalPackage pkg = pus.addPackage(new File(packageFileName));
+                    pkgId = pkg.getId();
+                }
                 updatePackage(pkgId);
             }
         } finally {
