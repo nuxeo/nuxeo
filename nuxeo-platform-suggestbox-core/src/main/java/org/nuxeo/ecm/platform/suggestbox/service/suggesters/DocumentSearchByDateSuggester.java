@@ -53,7 +53,7 @@ public class DocumentSearchByDateSuggester implements Suggester {
             String formattedDateLabel = labelDateFormatter.format(date);
 
             for (String field : searchFields) {
-                String searchFieldAfter = field + "_min ";
+                String searchFieldAfter = field + "_min";
                 String labelAfterPrefix = LABEL_AFTER_PREFIX
                         + field.replace(':', '_');
                 String labelAfter = i18n.translate(labelAfterPrefix,
@@ -61,7 +61,7 @@ public class DocumentSearchByDateSuggester implements Suggester {
                 suggestions.add(new SearchDocumentsSuggestion(labelAfter,
                         iconURL).withSearchCriterion(searchFieldAfter, date));
 
-                String searchFieldBefore = field + "_max ";
+                String searchFieldBefore = field + "_max";
                 String labelBeforePrefix = LABEL_BEFORE_PREFIX
                         + field.replace(':', '_');
                 String labelBefore = i18n.translate(labelBeforePrefix,
