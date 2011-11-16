@@ -14,6 +14,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.platform.suggestbox.service.DocumentSuggestion;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.webapp.context.NavigationContextBean;
 
 /**
  * Handle DocumentSuggestion using a simple navigation in the JSF UI.
@@ -31,10 +32,11 @@ public class NavigateToDocumentSuggestionHandler {
                             + " got '%s'", input));
         }
         DocumentSuggestion suggestion = (DocumentSuggestion) input;
-        NavigationContext navigationContext = (NavigationContext) Component.getInstance(NavigationContext.class);
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance(NavigationContextBean.class);
         DocumentLocation docLoc = suggestion.getDocumentLocation();
-        return navigationContext.navigateTo(new RepositoryLocation(
-                docLoc.getServerName()), docLoc.getDocRef());
+        return navigationContext.navigateTo(
+                new RepositoryLocation(docLoc.getServerName()),
+                docLoc.getDocRef());
     }
 
 }
