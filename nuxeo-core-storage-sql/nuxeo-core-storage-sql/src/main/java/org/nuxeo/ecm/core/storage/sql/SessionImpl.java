@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -394,7 +395,7 @@ public class SessionImpl implements Session, XAResource {
         String documentType = document.getPrimaryType();
         String[] mixinTypes = document.getMixinTypes();
 
-        List<String> strings = new LinkedList<String>();
+        List<String> strings = new ArrayList<String>();
 
         for (String path : paths) {
             ModelProperty pi = model.getPathPropertyInfo(documentType,
@@ -426,13 +427,13 @@ public class SessionImpl implements Session, XAResource {
                             if (pi.propertyType == PropertyType.STRING) {
                                 String v = node.getSimpleProperty(name).getString();
                                 if (v != null) {
-                                    strings.add(v);
+                                    addNormalizedFulltext(strings, v);
                                 }
                             } else /* ARRAY_STRING */{
                                 for (Serializable v : node.getCollectionProperty(
                                         name).getValue()) {
                                     if (v != null) {
-                                        strings.add((String) v);
+                                        addNormalizedFulltext(strings, (String) v);
                                     }
                                 }
                             }
@@ -454,6 +455,23 @@ public class SessionImpl implements Session, XAResource {
 
         }
         return StringUtils.join(strings, " ");
+    }
+
+    protected static final String WORD_SPLIT_PROP = "org.nuxeo.vcs.fulltext.wordsplit";
+
+    protected static final String WORD_SPLIT_DEF = "[\\s\\p{Punct}]+";
+
+    protected static final Pattern WORD_SPLIT_PATTERN = Pattern.compile(Framework.getProperty(
+            WORD_SPLIT_PROP, WORD_SPLIT_DEF));
+
+    // normalize fulltext to lowercase and no punctuation
+    // to allow for manual phrase search using LIKE
+    protected static void addNormalizedFulltext(List<String> strings, String s) {
+        for (String word : WORD_SPLIT_PATTERN.split(s)) {
+            if (!word.isEmpty()) {
+                strings.add(word.toLowerCase());
+            }
+        }
     }
 
     /**
