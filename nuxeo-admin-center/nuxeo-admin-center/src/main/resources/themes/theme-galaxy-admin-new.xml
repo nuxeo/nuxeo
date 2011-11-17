@@ -51,7 +51,7 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[1]/section[1]/cell[1]/fragment[1]">
-      <view>Nuxeo DM logo (Galaxy Admin Theme)</view>
+      <view>Nuxeo DM logo (Galaxy Theme)</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>Nuxeo header</view>
