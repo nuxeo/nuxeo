@@ -10,13 +10,13 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <src>themes/theme-galaxy-user-center.xml</src>
-      <!--src>themes/theme-galaxy-user-center-new.xml</src-->
+      <!--src>themes/theme-galaxy-user-center.xml</src-->
+      <src>themes/theme-galaxy-user-center-new.xml</src>
     </theme>
 
   </extension>
 
-  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+  <!--extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
     <view name="Nuxeo DM logo (Galaxy User Center Theme)"
       template-engine="jsf-facelets">
@@ -24,11 +24,11 @@
       <template>incl/logo_DM_galaxy_user_center.xhtml</template>
     </view>
 
-  </extension>
+  </extension-->
 
   <!-- mapping between theme pages and resources -->
   <!-- Register mapping between theme pages and resources -->
-  <!--
+  <!-- -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <themePage name="userCenter/default">
@@ -58,7 +58,7 @@
       </styles>
     </themePage>
 
-  </extension>-->
+  </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <!-- Addons -->
