@@ -12,68 +12,18 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
-import junit.framework.TestCase;
-
-import org.nuxeo.ecm.core.model.Session;
+import org.jmock.Mock;
+import org.jmock.MockObjectTestCase;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
-public class TestDialectQuerySyntax extends TestCase {
-
-    protected static class DatabaseMetaDataInvocationHandler implements
-            InvocationHandler {
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
-            String name = method.getName();
-            if (name.equals("storesUpperCaseIdentifiers")) {
-                return Boolean.FALSE;
-            } else if (name.equals("getDatabaseMajorVersion")) {
-                return Integer.valueOf(0);
-            } else if (name.equals("getDatabaseMinorVersion")) {
-                return Integer.valueOf(0);
-            } else if (name.equals("getColumns")) {
-                return getEmptyResultSet();
-            }
-            return null;
-        }
-    }
-
-    public static DatabaseMetaData getDatabaseMetaData() {
-        return (DatabaseMetaData) Proxy.newProxyInstance(
-                Session.class.getClassLoader(),
-                new Class<?>[] { DatabaseMetaData.class },
-                new DatabaseMetaDataInvocationHandler());
-    }
-
-    protected static class EmptyResultSetInvocationHandler implements
-            InvocationHandler {
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
-            String name = method.getName();
-            if (name.equals("next")) {
-                return Boolean.FALSE;
-            }
-            return null;
-        }
-    }
-
-    public static ResultSet getEmptyResultSet() {
-        return (ResultSet) Proxy.newProxyInstance(
-                Session.class.getClassLoader(),
-                new Class<?>[] { ResultSet.class },
-                new EmptyResultSetInvocationHandler());
-    }
+public class TestDialectQuerySyntax extends MockObjectTestCase {
 
     public DatabaseMetaData metadata;
 
@@ -88,6 +38,21 @@ public class TestDialectQuerySyntax extends TestCase {
         metadata = getDatabaseMetaData();
         binaryManager = null;
         repositoryDescriptor = new RepositoryDescriptor();
+    }
+
+    public DatabaseMetaData getDatabaseMetaData() {
+        Mock m = mock(DatabaseMetaData.class);
+        m.stubs().method("storesUpperCaseIdentifiers").will(returnValue(false));
+        m.stubs().method("getDatabaseMajorVersion").will(returnValue(9));
+        m.stubs().method("getDatabaseMinorVersion").will(returnValue(0));
+        m.stubs().method("getColumns").will(returnValue(getEmptyResultSet()));
+        return (DatabaseMetaData) m.proxy();
+    }
+
+    public ResultSet getEmptyResultSet() {
+        Mock m = mock(ResultSet.class);
+        m.stubs().method("next").will(returnValue(false));
+        return (ResultSet) m.proxy();
     }
 
     protected static void assertFulltextException(String query) {
