@@ -390,21 +390,23 @@ public final class CSSUtils {
         if (basePath != null) {
             text = text.replaceAll("\\$\\{basePath\\}",
                     Matcher.quoteReplacement(basePath));
+            text = text.replaceAll("\\$\\{org.nuxeo.ecm.contextPath\\}",
+                    Matcher.quoteReplacement(basePath));
         }
 
         String contextPath = VirtualHostHelper.getContextPathProperty();
 
         // Replace global presets
         for (PresetType preset : PresetManager.getGlobalPresets(null, null)) {
-            text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
-                    preset.getTypeName())),
+            text = text.replaceAll(
+                    Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
                     Matcher.quoteReplacement(preset.getValue()));
         }
 
         // Replace custom presets
         for (PresetType preset : PresetManager.getCustomPresets(themeName)) {
-            text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
-                    preset.getTypeName())),
+            text = text.replaceAll(
+                    Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
                     Matcher.quoteReplacement(preset.getValue()));
         }
 

@@ -176,7 +176,10 @@ public final class Resources extends HttpServlet implements Serializable {
                     // expand ${basePath}
                     source = source.replaceAll("\\$\\{basePath\\}",
                             Matcher.quoteReplacement(basePath));
-                    // TODO: also expand ${org.nuxeo.ecm.contextPath}?
+                    // also expand ${org.nuxeo.ecm.contextPath}
+                    source = source.replaceAll(
+                            "\\$\\{org.nuxeo.ecm.contextPath\\}",
+                            Matcher.quoteReplacement(basePath));
 
                     if (resource.isShrinkable()) {
                         try {
