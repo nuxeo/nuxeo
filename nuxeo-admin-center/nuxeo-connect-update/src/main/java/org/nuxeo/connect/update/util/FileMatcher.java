@@ -30,12 +30,7 @@ public class FileMatcher {
     private static final Pattern VAR = Pattern.compile("(.*)?\\{(.+):(.+)\\}(.*)?");
 
     public static FileMatcher getMatcher(String path) {
-        return getMatcher(new File(path));
-    }
-
-    public static FileMatcher getMatcher(File file) {
-        String name = file.getName();
-        Matcher m = VAR.matcher(name);
+        Matcher m = VAR.matcher(path);
         if (m.matches()) {
             String prefix = m.group(1);
             String key = m.group(2).trim();
@@ -55,7 +50,11 @@ public class FileMatcher {
             }
             return new FileMatcher(pattern, key);
         }
-        return new FileMatcher(null, name);
+        return new FileMatcher(null, path);
+    }
+
+    public static FileMatcher getMatcher(File file) {
+        return getMatcher(file.getName());
     }
 
     /**
