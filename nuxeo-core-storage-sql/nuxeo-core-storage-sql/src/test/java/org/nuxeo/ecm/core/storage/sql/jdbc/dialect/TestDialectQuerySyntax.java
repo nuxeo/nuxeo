@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 
 import junit.framework.TestCase;
 
@@ -40,6 +41,8 @@ public class TestDialectQuerySyntax extends TestCase {
                 return Integer.valueOf(0);
             } else if (name.equals("getDatabaseMinorVersion")) {
                 return Integer.valueOf(0);
+            } else if (name.equals("getColumns")) {
+                return getEmptyResultSet();
             }
             return null;
         }
@@ -50,6 +53,26 @@ public class TestDialectQuerySyntax extends TestCase {
                 Session.class.getClassLoader(),
                 new Class<?>[] { DatabaseMetaData.class },
                 new DatabaseMetaDataInvocationHandler());
+    }
+
+    protected static class EmptyResultSetInvocationHandler implements
+            InvocationHandler {
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+            String name = method.getName();
+            if (name.equals("next")) {
+                return Boolean.FALSE;
+            }
+            return null;
+        }
+    }
+
+    public static ResultSet getEmptyResultSet() {
+        return (ResultSet) Proxy.newProxyInstance(
+                Session.class.getClassLoader(),
+                new Class<?>[] { ResultSet.class },
+                new EmptyResultSetInvocationHandler());
     }
 
     public DatabaseMetaData metadata;
