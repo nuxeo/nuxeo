@@ -27,7 +27,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.webengine.sites.listeners.SitesWikiListener.WikiProcessingResult;
 
-import com.google.inject.internal.Lists;
+import com.google.common.collect.Lists;
 
 public class TestWikiProcessing extends NXRuntimeTestCase {
 
