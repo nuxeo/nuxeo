@@ -50,6 +50,8 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     protected String name = "";
 
+    protected String docType;
+
     protected List<String> filters = new ArrayList<String>();
 
     protected List<Pattern> patterns;
@@ -89,6 +91,14 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDocType() {
+        return docType;
+    }
+
+    public void setDocType(String docType) {
+        this.docType = docType;
     }
 
     public DocumentModel create(CoreSession documentManager, File file,

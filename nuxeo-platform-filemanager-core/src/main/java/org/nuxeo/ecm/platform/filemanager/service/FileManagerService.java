@@ -351,32 +351,73 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private void registerFileImporter(FileImporterDescriptor pluginExtension,
             Extension extension) throws Exception {
         String name = pluginExtension.getName();
-        String className = pluginExtension.getClassName();
+        if (name == null) {
+            log.error("Cannot register file importer without a name");
+            return;
+        }
 
-        FileImporter plugin;
+        String className = pluginExtension.getClassName();
         if (fileImporters.containsKey(name)) {
             log.info("Overriding file importer plugin " + name);
-            if (className != null) {
-                plugin = (FileImporter) extension.getContext().loadClass(
-                        className).newInstance();
-                fileImporters.put(name, plugin);
+            FileImporter oldPlugin = fileImporters.get(name);
+            FileImporter newPlugin = className != null ? (FileImporter) extension.getContext().loadClass(
+                    className).newInstance()
+                    : oldPlugin;
+            if (pluginExtension.isMerge()) {
+                newPlugin = mergeFileImporters(oldPlugin, newPlugin,
+                        pluginExtension);
             } else {
-                plugin = fileImporters.get(name);
+                newPlugin = fillImporterWithDescriptor(newPlugin,
+                        pluginExtension);
             }
+            fileImporters.put(name, newPlugin);
+            log.info("Registered file importer " + name);
+        } else if (className != null) {
+            FileImporter plugin = (FileImporter) extension.getContext().loadClass(
+                    className).newInstance();
+            plugin = fillImporterWithDescriptor(plugin, pluginExtension);
+            fileImporters.put(name, plugin);
+            log.info("Registered file importer " + name);
         } else {
-            plugin = (FileImporter) extension.getContext().loadClass(className).newInstance();
+            log.info("Unable to register file importer " + name
+                    + ", className is null or plugin is not yet registered");
         }
+    }
 
-        List<String> filters = pluginExtension.getFilters();
+    private FileImporter mergeFileImporters(FileImporter oldPlugin,
+            FileImporter newPlugin, FileImporterDescriptor desc) {
+        List<String> filters = desc.getFilters();
         if (filters != null && !filters.isEmpty()) {
-            plugin.setFilters(filters);
+            List<String> oldFilters = oldPlugin.getFilters();
+            oldFilters.addAll(filters);
+            newPlugin.setFilters(oldFilters);
         }
-        plugin.setName(name);
-        plugin.setFileManagerService(this);
-        plugin.setEnabled(pluginExtension.isEnabled());
-        plugin.setOrder(pluginExtension.getOrder());
-        fileImporters.put(name, plugin);
-        log.info("Registered file importer " + name);
+        newPlugin.setName(desc.getName());
+        String docType = desc.getDocType();
+        if (docType != null) {
+            newPlugin.setDocType(docType);
+        }
+        newPlugin.setFileManagerService(this);
+        newPlugin.setEnabled(desc.isEnabled());
+        Integer order = desc.getOrder();
+        if (order != null) {
+            newPlugin.setOrder(desc.getOrder());
+        }
+        return newPlugin;
+    }
+
+    private FileImporter fillImporterWithDescriptor(FileImporter fileImporter,
+            FileImporterDescriptor desc) {
+        List<String> filters = desc.getFilters();
+        if (filters != null && !filters.isEmpty()) {
+            fileImporter.setFilters(filters);
+        }
+        fileImporter.setName(desc.getName());
+        fileImporter.setDocType(desc.getDocType());
+        fileImporter.setFileManagerService(this);
+        fileImporter.setEnabled(desc.isEnabled());
+        fileImporter.setOrder(desc.getOrder());
+        return fileImporter;
     }
 
     private void unregisterFileImporter(FileImporterDescriptor pluginExtension) {

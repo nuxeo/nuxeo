@@ -48,6 +48,18 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     String getName();
 
     /**
+     * Returns the document type configured for this {@code FileImporter},
+     * {@code null} if no document type is configured.
+     */
+    String getDocType();
+
+    /**
+     * Sets the document type configured for this importer.
+     * <p>
+     */
+    void setDocType(String docType);
+
+    /**
      * Gets filters.
      * <p>
      * The filters are all the mime/type this plugin can deal with.

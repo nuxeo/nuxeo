@@ -43,6 +43,9 @@ public class FileImporterDescriptor implements Serializable {
     @XNode("@class")
     protected String className;
 
+    @XNode("@docType")
+    protected String docType;
+
     @XNodeList(value = "filter", type = ArrayList.class, componentType = String.class)
     protected List<String> filters = DEFAULT_FILTER;
 
@@ -51,6 +54,9 @@ public class FileImporterDescriptor implements Serializable {
 
     @XNode("@order")
     private Integer order;
+
+    @XNode("@merge")
+    private boolean merge = false;
 
     public String getName() {
         return name;
@@ -66,6 +72,10 @@ public class FileImporterDescriptor implements Serializable {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getDocType() {
+        return docType;
     }
 
     public String getFilter() {
@@ -90,5 +100,9 @@ public class FileImporterDescriptor implements Serializable {
 
     public Integer getOrder() {
         return order;
+    }
+
+    public boolean isMerge() {
+        return merge;
     }
 }

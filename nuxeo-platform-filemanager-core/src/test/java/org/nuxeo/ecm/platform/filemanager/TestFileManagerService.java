@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
+import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -222,4 +224,39 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         versions = coreSession.getVersions(docRef);
         assertEquals(1, versions.size());
     }
+
+    public void testFileImporterDocType() {
+        FileManagerService fileManagerService = (FileManagerService) service;
+        FileImporter plugin = fileManagerService.getPluginByName("plug");
+        assertNull(plugin.getDocType());
+
+        plugin = fileManagerService.getPluginByName("pluginWithDocType");
+        assertNotNull(plugin.getDocType());
+        assertEquals("File", plugin.getDocType());
+    }
+
+    public void testFileImportersMerge() throws Exception {
+        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
+                        "nxfilemanager-test-override.xml");
+
+        FileManagerService fileManagerService = (FileManagerService) service;
+
+        FileImporter plugin = fileManagerService.getPluginByName("pluginWithDocType");
+        assertNotNull(plugin.getDocType());
+        assertEquals("Picture", plugin.getDocType());
+        assertEquals(2, plugin.getFilters().size());
+        List<String> filters = plugin.getFilters();
+        assertTrue(filters.contains("image/jpeg"));
+        assertTrue(filters.contains("image/png"));
+
+        plugin = fileManagerService.getPluginByName("plug");
+        assertNotNull(plugin.getDocType());
+        assertEquals("Note", plugin.getDocType());
+        assertEquals(3, plugin.getFilters().size());
+        filters = plugin.getFilters();
+        assertTrue(filters.contains("text/plain"));
+        assertTrue(filters.contains("text/rtf"));
+        assertTrue(filters.contains("text/xml"));
+    }
+
 }

@@ -7,7 +7,12 @@
       <filter>text/plain</filter>
       <filter>text/rtf</filter>
     </plugin>
+
+    <plugin name="pluginWithDocType" class="org.nuxeo.ecm.platform.filemanager.FooPlugin" docType="File">
+      <filter>text/plain</filter>
+      <filter>text/rtf</filter>
+    </plugin>
   </extension>
-  
+
 </component>
 
