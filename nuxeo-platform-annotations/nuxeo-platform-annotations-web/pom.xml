@@ -91,6 +91,7 @@
           </excludes>
         </configuration>
       </plugin>
+<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -117,6 +118,7 @@
           <buildOutputDirectory>src/main/resources/web/nuxeo.war/WEB-INF/classes</buildOutputDirectory>
         </configuration>
       </plugin>
+ -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
