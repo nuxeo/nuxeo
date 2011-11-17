@@ -74,6 +74,12 @@ public class FileImporterDescriptor implements Serializable {
         this.className = className;
     }
 
+    /**
+     * Returns the configured document type to be created when using the
+     * importer
+     *
+     * @since 5.5
+     */
     public String getDocType() {
         return docType;
     }
@@ -102,6 +108,12 @@ public class FileImporterDescriptor implements Serializable {
         return order;
     }
 
+    /**
+     * Returns {@code true} if this {@code FileImporterDescriptor} should be
+     * merged with an existing one, {@code false} otherwise.
+     *
+     * @since 5.5
+     */
     public boolean isMerge() {
         return merge;
     }

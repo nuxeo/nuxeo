@@ -50,12 +50,14 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     /**
      * Returns the document type configured for this {@code FileImporter},
      * {@code null} if no document type is configured.
+     * @since 5.5
      */
     String getDocType();
 
     /**
      * Sets the document type configured for this importer.
      * <p>
+     * @since 5.5
      */
     void setDocType(String docType);
 
