@@ -125,6 +125,10 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         expected = getTestFileContent("css_dark_rendering.txt");
         assertEquals(expected, res);
 
+        res = getRenderedCssFileContent("subDark");
+        expected = getTestFileContent("css_sub_dark_rendering.txt");
+        assertEquals(expected, res);
+
         ResourceManager rm = Manager.getResourceManager();
         List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
         assertNotNull(resources);
@@ -153,6 +157,10 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering2.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("subDark");
+        expected = getTestFileContent("css_sub_dark_rendering2.txt");
         assertEquals(expected, res);
 
         ResourceManager rm = Manager.getResourceManager();
@@ -188,6 +196,12 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals(expected, res);
 
         res = getRenderedCssFileContent("dark");
+        expected = getTestFileContent("css_dark_rendering3.txt");
+        assertEquals(expected, res);
+
+        res = getRenderedCssFileContent("subDark");
+        // no change wrt to dark as the same property is overriden with same
+        // value
         expected = getTestFileContent("css_dark_rendering3.txt");
         assertEquals(expected, res);
 
@@ -241,6 +255,9 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals(emptyCss, res);
 
         res = getRenderedCssFileContent("dark");
+        assertEquals(emptyCss, res);
+
+        res = getRenderedCssFileContent("subDark");
         assertEquals(emptyCss, res);
     }
 

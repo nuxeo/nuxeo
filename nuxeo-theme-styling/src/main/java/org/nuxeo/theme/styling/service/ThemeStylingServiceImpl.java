@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -190,7 +191,38 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         flavorReg.addContribution(flavor);
         String flavorName = flavor.getName();
         Flavor newFlavor = flavorReg.getContribution(flavorName);
-        List<FlavorPresets> presets = newFlavor.getPresets();
+        registerFlavorToThemeService(newFlavor, extensionContext);
+        // register again all flavors extending it
+        for (Flavor f : flavorReg.getFlavorsExtending(flavorName)) {
+            log.info(String.format("Register again flavor '%s' "
+                    + "as it extends flavor '%s'", f.getName(), flavorName));
+            registerFlavorToThemeService(f, extensionContext);
+        }
+    }
+
+    protected void registerFlavorToThemeService(Flavor flavor,
+            RuntimeContext extensionContext) {
+        String flavorName = flavor.getName();
+        List<FlavorPresets> presets = new ArrayList<FlavorPresets>();
+        String extendsFlavorName = flavor.getExtendsFlavor();
+        if (!StringUtils.isBlank(extendsFlavorName)) {
+            // check if it's registered already
+            Flavor extendFlavor = flavorReg.getContribution(extendsFlavorName);
+            if (extendFlavor == null) {
+                log.warn(String.format("Extended flavor '%s' " + "not found",
+                        extendsFlavorName));
+            } else {
+                List<FlavorPresets> extendedPresets = extendFlavor.getPresets();
+                if (extendedPresets != null) {
+                    presets.addAll(extendedPresets);
+                }
+            }
+        }
+
+        List<FlavorPresets> localPresets = flavor.getPresets();
+        if (localPresets != null) {
+            presets.addAll(localPresets);
+        }
         Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
         if (presets != null) {
             for (FlavorPresets myPreset : presets) {
@@ -221,7 +253,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         }
 
         // register all presets to the standard theme service registries
-        unregisterFlavorToThemeService(newFlavor);
+        unregisterFlavorToThemeService(flavor);
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Register flavor '%s' to the theme service", flavorName));

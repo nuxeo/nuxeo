@@ -7,6 +7,7 @@
       <flavors>
         <flavor>default</flavor>
         <flavor>dark</flavor>
+        <flavor>subDark</flavor>
       </flavors>
       <styles>
         <style>nuxeo_dm_default</style>
@@ -39,6 +40,14 @@
           src="themes/palettes/default-backgrounds.properties" />
         <presets category="font" src="themes/palettes/default-fonts.properties" />
         <presets category="color" src="themes/palettes/default-colors.properties" />
+      </presetsList>
+    </flavor>
+
+    <!-- register it before and to check registration order has no impact
+      on final result -->
+    <flavor name="subDark" extends="dark">
+      <presetsList>
+        <presets category="color" src="themes/palettes/dark-colors2.properties" />
       </presetsList>
     </flavor>
 

@@ -33,6 +33,9 @@ public class Flavor {
     @XNode("@name")
     String name;
 
+    @XNode("@extends")
+    String extendsFlavor;
+
     @XNode("presetsList@append")
     boolean appendPresets;
 
@@ -45,6 +48,14 @@ public class Flavor {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getExtendsFlavor() {
+        return extendsFlavor;
+    }
+
+    public void setExtendsFlavor(String extendsFlavor) {
+        this.extendsFlavor = extendsFlavor;
     }
 
     public boolean getAppendPresets() {

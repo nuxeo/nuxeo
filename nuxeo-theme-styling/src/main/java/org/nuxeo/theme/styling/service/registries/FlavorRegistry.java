@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
@@ -55,6 +56,7 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
     public Flavor clone(Flavor orig) {
         Flavor clone = new Flavor();
         clone.setName(orig.getName());
+        clone.setExtendsFlavor(orig.getExtendsFlavor());
         List<FlavorPresets> presets = orig.getPresets();
         if (presets != null) {
             List<FlavorPresets> newPresets = new ArrayList<FlavorPresets>();
@@ -69,6 +71,11 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
     @Override
     public void merge(Flavor src, Flavor dst) {
         if (src.getAppendPresets()) {
+            String newExtend = dst.getExtendsFlavor();
+            if (newExtend != null) {
+                dst.setExtendsFlavor(newExtend);
+            }
+
             List<FlavorPresets> newPresets = dst.getPresets();
             if (newPresets == null) {
                 newPresets = new ArrayList<FlavorPresets>();
@@ -80,6 +87,21 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
             }
             dst.setPresets(newPresets);
         }
+    }
+
+    public List<Flavor> getFlavorsExtending(String flavor) {
+        List<Flavor> res = new ArrayList<Flavor>();
+        for (String fName : themePageFlavors.keySet()) {
+            Flavor f = getContribution(fName);
+            if (f != null) {
+                String extendsFlavor = f.getExtendsFlavor();
+                if (!StringUtils.isBlank(extendsFlavor)
+                        && extendsFlavor.equals(flavor)) {
+                    res.add(f);
+                }
+            }
+        }
+        return res;
     }
 
 }
