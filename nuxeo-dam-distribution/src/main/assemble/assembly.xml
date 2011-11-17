@@ -86,7 +86,7 @@
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
-         basedir="${nuxeo.ear}" />
+         basedir="${outdir}/template-dam" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip"
