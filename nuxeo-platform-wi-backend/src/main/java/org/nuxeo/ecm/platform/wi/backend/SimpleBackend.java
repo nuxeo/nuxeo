@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -522,7 +523,7 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public String lock(DocumentRef ref) throws ClientException {
-        if (canUnlock(ref)) {
+        if (getSession().hasPermission(ref, SecurityConstants.WRITE_PROPERTIES)) {
             Lock lock = getSession().setLock(ref);
             return lock.getOwner();
         }
