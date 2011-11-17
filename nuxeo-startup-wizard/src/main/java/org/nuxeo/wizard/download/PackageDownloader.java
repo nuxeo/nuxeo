@@ -293,10 +293,23 @@ public class PackageDownloader {
 
     public void scheduleDownloadedPackagesForInstallation(String installationFilePath) throws IOException {
         List<String> fileEntries = new ArrayList<String>();
-        for (PendingDownload download : pendingDownloads) {
-            if (download.getStatus() == PendingDownload.VERIFIED) {
-                File file = download.getDowloadingFile();
+
+        List<DownloadPackage> pkgs = downloadOptions.getPkg4Download();
+        for (DownloadPackage pkg : pkgs) {
+            if (pkg.isAlreadyInLocal()) {
+                File file = pkg.getLocalFile();
                 fileEntries.add("file:" + file.getAbsolutePath());
+            } else {
+                for (PendingDownload download : pendingDownloads) {
+                    if (download.getPkg().equals(pkg)) {
+                        if (download.getStatus() == PendingDownload.VERIFIED ) {
+                            File file = download.getDowloadingFile();
+                            fileEntries.add("file:" + file.getAbsolutePath());
+                        } else {
+                            log.error("One selected package has not been downloaded : " + pkg.getId());
+                        }
+                    }
+                }
             }
         }
         File installLog = new File(installationFilePath);
@@ -344,6 +357,7 @@ public class PackageDownloader {
         for (File file : getDownloadDirectory().listFiles()) {
             if (file.getName().equals(pkg.getMd5())) {
                 // recheck md5 ???
+                pkg.setLocalFile(file);
                 return false;
             }
         }

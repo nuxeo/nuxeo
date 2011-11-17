@@ -67,7 +67,7 @@ $(document).ready(function(){
 <%if (needDownload) {%>
    $("#btnDownload").css("display","inline");
 <% };
-  if (downloadCompleted) {%>
+  if (downloadCompleted || !needDownload) {%>
    $("#btnNext").css("display","inline");
 <%};
   if (downloadInProgress) {%>
