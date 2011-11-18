@@ -146,7 +146,7 @@ CREATE TABLE ANCESTORS (
 
 
 #TEST
-SELECT 1 FROM user_tab_columns WHERE table_name = 'ANCESTORS' AND column_name = 'need_update'
+SELECT 1 FROM user_tab_columns WHERE table_name = 'ANCESTORS' AND column_name = 'NEED_UPDATE'
 
 #IF: emptyResult
 ALTER TABLE ANCESTORS ADD need_update NUMBER (1)
