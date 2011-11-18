@@ -9,16 +9,17 @@ author: lkemen@nuxeo.com
 */
 
 /* =Header */
-.nxHeader { background-color: "header (__FLAVOR__ background)";	height: 36px;	overflow: auto; width:100% }
+.nxHeader { background-color: "header (__FLAVOR__ background)"; overflow: auto; width:100% }
 .nxHeader .logo { text-align: center; vertical-align: middle; width: 18% }
-.nxHeader .content { padding: 0 1em 0 0; line-height: 280%; vertical-align: middle;	width: 82%; font-size: 12px }
+.nxHeader .content { padding: 0; line-height: 280%; vertical-align: middle; width: 82%; font-size: 12px }
 .nxHeader .includes { width: 0 }
 .nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)"; opacity: 0.75; text-shadow: 1px 1px 0 #000; text-decoration: none }
 .nxHeader a:hover, .nxHeader a:active { opacity: 1 }
+.nxHeader .logo a:link, .nxHeader .logo a:hover, .nxHeader .logo a:visited { opacity: 1 }
 
 /* =Search */
 .userSearchBlock { float: right }
-.searchService { opacity: 0.9 }
+.searchService { opacity: 0.9; margin: 0 1em 0 .5em }
 .searchService .directoryFilter:focus, .searchService:hover { opacity: 1 }
 .searchService .directoryFilter { border: 1px solid #fff; margin: 0 .3em 0 0 }
 .searchService input.button { margin: .3em .5em 0 .3em; padding: .2em }
@@ -32,7 +33,8 @@ author: lkemen@nuxeo.com
 .mainTabs { float: left }
 .mainTabs li { border-right: 1px solid #999; display: inline; float: left }
 .mainTabs a:link, .mainTabs a:visited { color: #fff; display: inline-block; font-size: 1.1em; font-weight: bold; padding: .2em .6em; text-shadow: 1px 1px 0 #000; }
-.mainTabs li.selected a, .mainTabs li a:hover, .mainTabs li.selected a:visited { color: white; background: url("${basePath}/img/white50.png") repeat-x 0 0 transparent; font-weight: bold; opacity: 1 }
+.mainTabs li.selected, .mainTabs li:hover { background: url("${basePath}/img/white50.png") repeat-x 0 0 transparent } 
+.mainTabs li.selected a, .mainTabs li a:hover, .mainTabs li.selected a:visited { color: white; font-weight: bold; opacity: 1 }
 
 .userMenuActions {
     color: "gray.light (__FLAVOR__ color)";
@@ -55,7 +57,7 @@ author: lkemen@nuxeo.com
     height: auto;
     position: absolute;
     width: 180px;
-    z-index: 1000 }
+    z-index: 10000 }
 .userMenuActions li:hover ul { display:block }
 .userMenuActions ul li li { width: 180px }
 .userMenuActions li ul a { padding: .4em .4em .4em 2em }

@@ -93,6 +93,8 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .globalActionBar .actionList .actionSubList li a { background: none; border: none; display: block; margin: 0; padding: .5em 1em; text-decoration: none }
 .globalActionBar .actionList .actionSubList li a:hover { background-color:"color.major.medium (__FLAVOR__ background)";}
 
+.separator { border-bottom: 1px solid #ddd }
+
 /* Foldablebox Action for Local Configuration*/
 .foldableBox h3 a.action, .foldableBox h3 a.action:visited {
   box-shadow: 0 8px 8px #fff inset;

@@ -29,7 +29,7 @@ author: lkemen@nuxeo.com
   color: "gray.dark (__FLAVOR__ color)";
   display: block;
   float: left;
-  padding: .2em .4em;
+  padding: .19em 0.4em;
   text-decoration:none }
 .tabsBar li.selected a,.tabsBar li a:hover,.tabsBar li.selected a:visited {
   background: none repeat scroll 0 0 #fff;

@@ -24,8 +24,8 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <src>themes/theme-galaxy.xml</src>
-      <!--src>themes/theme-galaxy-new.xml</src-->
+      <!--src>themes/theme-galaxy.xml</src-->
+      <src>themes/theme-galaxy-new.xml</src>
     </theme>
 
   </extension>
@@ -160,7 +160,7 @@
   </extension>
 
   <!-- Register mapping between theme pages and resources -->
-  <!--
+  <!-- -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <themePage name="galaxy/print">
@@ -197,7 +197,6 @@
       <defaultFlavor>default</defaultFlavor>
       <flavors append="true">
         <flavor>default</flavor>
-        <flavor>dark</flavor>
       </flavors>
       <styles append="true">
         <style>basics</style>
@@ -221,7 +220,7 @@
       </styles>
     </themePage>
 
-  </extension>  -->
+  </extension>
 
   <!-- Register flavors (collections of presets) -->
   <extension target="org.nuxeo.theme.styling.service" point="flavors">
@@ -233,15 +232,6 @@
           src="themes/palettes/default-backgrounds.properties" />
         <presets category="font" src="themes/palettes/default-fonts.properties" />
         <presets category="color" src="themes/palettes/default-colors.properties" />
-      </presetsList>
-    </flavor>
-
-    <flavor name="dark">
-      <presetsList append="true">
-        <presets category="border" src="themes/palettes/dark-borders.properties" />
-        <presets category="background" src="themes/palettes/dark-backgrounds.properties" />
-        <presets category="font" src="themes/palettes/dark-fonts.properties" />
-        <presets category="color" src="themes/palettes/dark-colors.properties" />
       </presetsList>
     </flavor>
 

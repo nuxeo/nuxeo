@@ -38,221 +38,16 @@ String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 <head>
 <title><%=productName%></title>
 <link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
-<style type="text/css">
-<!--
- body {
-  font: normal 11px "Lucida Grande", sans-serif;
-  background: url("<%=context%>/img/theme_galaxy/seattle.jpg") no-repeat scroll center -350px black;
-  color: #343434;
-  }
-
-.topBar {
-  background:#000 none;
-  width:100%;
-  height:36px;
-  border:0;
-  }
-
-.topBar img {
-  margin-left:20px;
-  }
-
-table.loginForm {
-  border-spacing:3px;
-  padding:3px;
-  }
-
-.leftColumn {
-  width:400px;
-  }
-
-H1 {
-  color:#343434;
-  font:bold 14px "Lucida Grande", sans-serif;
-  padding:0;
-  margin:2px 0 15px 0;
-  border-bottom:1px dotted #8B8B8B;
-  }
-
-H2 {
-  color:#999;
-  font:bold 10px "Lucida Grande", sans-serif;
-  padding:0;
-  margin:0 0 0 0;
-  }
-
-.extensionButtons {
-  padding:0;
-  margin:0 0 0 0;
-  }
-
-.linkButtons {
-  padding:0;
-  margin:0 0 0 0;
-  }
-
-.login {
-  background:#fff;
-  opacity:0.8;
-  filter : alpha(opacity=80);
-  border: 1px solid #4E9AE1;
-  padding:20px 75px 5px 70px;
-  width:250px;
-  }
-
-.maintenanceModeMessage {
-  color:red;
-  font-size:12px;
- }
-
-.warnMessage, .infoMessage {
-  margin:0 0 10px;
-}
-
-.infoMessage {
-  color:#b31500;
-}
-
-.login_label {
-  font:bold 10px "Lucida Grande", sans-serif;
-  text-align: right;
-  color: #454545;
-  margin:0 4px 0 0;
-  width:70px;
-  }
-
-.login_input {
-  border:1px inset #454545;
-  background: white;
-  padding:3px;
-  color: #454545;
-  margin:0 10px 5px 0px;
-  font:normal 10px "Lucida Grande", sans-serif;
-  }
-
-/* this class is a repeat because defined in nxthemes-setup.xml but
-nxthemes css is not used in login.jsp */
-.login_button {
-  cursor:pointer;
-  color: #454545;
-  font-size: 10px;
-  background: #CECFD1 url(<%=context%>/img/theme_galaxy/buttons.png) repeat-x scroll left top;
-  border:1px solid #BFC5CB;
-  padding: 2px 5px 2px 5px;
-  margin: 5px 10px 10px 0;
-  }
-
-.login_button:hover {
-  border:1px solid #92999E;
-  color:#000000;
-  }
-
-.formTitle {
-  margin:0 0 20px 0;
-  text-align:center;
-  color:#4a4a4a;
-  font-size:14px;
-  }
-
-.footer {
-  color: #d6d6d6;
-  font-size: 9px;
-  }
-
-.loginLegal {
-  padding: 0;
-  margin: 0 0 10px 0;
-  }
-
-.version {
-  padding-right:50px;
-  }
-
-
-.labelCorp {
-  margin:0;
-  width:400px;
-  padding-top:0px;
-  }
-
-.labelCorp ul{
-  margin:0;
-  padding:0 42px 0 0;
-  }
-
-.labelCorp li {
-  margin:0;
-  padding:0px 8px;
-  list-style:none;
-  float:right;
-  }
-
-
-.labelCorp a {
-  text-decoration:none;
-  color:#d7d7d7;
-  font:normal 11px "Lucida Grande", sans-serif;
-  padding-top:0px;
-  }
-
-.labelCorp a:hover {
-  text-decoration:underline;
-  }
-
-.news_container {
-  text-align:left;
-}
-
-.block_container {
-  border:none;
-  height:500px;
-  width:365px;
-  overflow:auto;
-  background-color:#ffffff;
-  opacity:0.8;
-  filter : alpha(opacity=80);
-  }
-
-.errorMessage {
-  color:#000;
-  font:bold 10px "Lucida Grande", sans-serif;
-  border:1px solid #666;
-  background: url(<%=context%>/icons/warning.gif) 2px 3px no-repeat #FFCC33;
-  margin-bottom:12px;
-  display:block;
-  padding:5px 5px 5px 23px;
-  text-align: center;
-  }
-
-.welcome {
-  background:#fff;
-  opacity:0.8;
-  filter : alpha(opacity=80);
-  border: 1px solid #4E9AE1;
-  width:400px;
-  padding:20px;
-  margin: 10px;
-}
-
-.welcomeText {
-  font: 12px "Lucida Grande", sans-serif;
-  text-align: left;
-  color: #454545;
-  margin:0 0 0.8em 0;
-}
-
--->
-
-</style>
+<link rel="stylesheet" type="text/css" href="<%=context%>/css/login.css" />
 </head>
 
-<body style="margin:0;text-align:center;">
+<body>
 
 <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
   <tbody>
     <tr class="topBar">
       <td>
-        <img width="316" height="36" alt="Nuxeo Document Management" src="<%=context%>/img/theme_galaxy/nuxeo_5.2_login.png"/>
+        <img width="92" height="36" alt="Nuxeo" src="<%=context%>/img/nuxeo_logo.png"/>
       </td>
       <td align="right" class="leftColumn">
         <div class="labelCorp">
@@ -265,13 +60,13 @@ nxthemes css is not used in login.jsp */
             </li>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://forum.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="http://answers.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.forums" />
               </a>
             </li>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="https://doc.nuxeo.com/display/DMDOC/Nuxeo+DM+-+Documentation+Center?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="http://doc.nuxeo.com/display/MAIN/Nuxeo+Documentation+Center+Home?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.documentation" />
               </a>
             </li>
