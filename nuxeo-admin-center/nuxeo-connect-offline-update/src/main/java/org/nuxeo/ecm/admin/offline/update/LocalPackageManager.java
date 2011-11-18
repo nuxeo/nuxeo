@@ -177,7 +177,7 @@ public class LocalPackageManager {
         log.error("\t\t list\t\t\tLists local packages and their status.");
         log.error("\t\t install /path/to/upgrade/file\t\t\tReads the given upgrade file and performs install.");
         log.error("\t\t installpkg [/path/to/package|packageId]\t\t\tInstalls the given package (as a file or its ID).");
-        log.error("\t\t uninstall package_id\t\t\tUninstalls the specified package.");
+        log.error("\t\t uninstall packageId\t\t\tUninstalls the specified package.");
     }
 
     protected void initEnvironment() {
