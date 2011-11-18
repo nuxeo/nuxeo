@@ -8,7 +8,7 @@
 </script>
 <script type="text/javascript">
   <h:outputText
-   value="var currentConversationId='#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}';"/>
+    value="var currentConversationId='#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}';"/>
   <h:outputText
     value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
   // set the conversation id before doing any call
@@ -24,53 +24,7 @@
 </script>
 
 <c:if test="#{useHtml5DragAndDrop}">
-
-  <script type="text/javascript"
-    src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js|dnd/nxinternaldnd.js">
-  </script>
-
-  <ui:include src="/incl/dnd/dnd-ui.xhtml" />
-
-  <script>
-    var baseURL='#{baseURL}';
-    function getBaseURL() {
-      return baseURL;
-    }
-    
-    var ctx = {
-      currentDocument : '#{currentDocument.id}',
-      <c:if test="#{currentDomain!=null}">
-       currentDomain : '#{currentDomain.id}',
-      </c:if>
-      <c:if test="#{currentWorkspace!=null}">
-        currentWorkspace : '#{currentWorkspace.id}',
-      </c:if>
-      conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
-      lang : '#{localeSelector.localeString}',
-      repository : '#{currentDocument.repositoryName}'
-    };
-    
-    function initNXDrapAndDropOnPage(scope) {
-      // init Browser Drag out support (Chrome only);
-      jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
-      // initernal DnD
-      jQuery(".nxDraggable",scope).nxInitDraggables();
-      jQuery(".nxDropTarget",scope).nxInitDropTargets();
-    }
-    
-    jQuery(document).ready(function(){
-      // init Browser DnD import
-      jQuery(".dropzone").nxDropZone({
-        url : "/nuxeo/site/automation/batch/",
-        uploadRateRefreshTime : 500,
-        numConcurrentUploads : 3,
-        dropContext : ctx
-      });
-      // init Dropout and Internal DnD
-      initNXDrapAndDropOnPage(null);
-    });
-  </script>
-
+  <ui:include src="/incl/dnd/dnd.xhtml" />
 </c:if>
 
 <c:if test="#{!useHtml5DragAndDrop}">
