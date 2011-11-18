@@ -25,11 +25,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 
 public class PictureBlobHolder extends DocumentBlobHolder {
 
@@ -39,29 +43,41 @@ public class PictureBlobHolder extends DocumentBlobHolder {
 
     @Override
     public Blob getBlob() throws ClientException {
-        return getBlob("Original");
+        Blob blob = super.getBlob();
+        return blob != null ? blob : getBlob("Original");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void setBlob(Blob blob) throws ClientException {
         xPathFilename = null;
+        super.setBlob(blob);
         // check if there are templates
         ArrayList<Map<String, Object>> pictureTemplates = null;
-        DocumentModel parent = doc.getCoreSession().getParentDocument(
-                doc.getRef());
-        if (parent.getType().equals("PictureBook")) {
+
+        CoreSession session = doc.getCoreSession();
+        DocumentModel parent;
+        if (session.exists(doc.getRef())) {
+            parent = session.getParentDocument(
+                    doc.getRef());
+        } else {
+            Path parentPath = doc.getPath().removeLastSegments(1);
+            parent = session.getDocument(new PathRef(parentPath.toString()));
+        }
+
+        if (parent != null && ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME.equals(parent.getType())) {
             // use PictureBook Properties
-            pictureTemplates = (ArrayList<Map<String, Object>>) parent.getProperty(
-                    "picturebook", "picturetemplates");
+            pictureTemplates = (ArrayList<Map<String, Object>>) parent.getPropertyValue(
+                    "picturebook:picturetemplates");
             if (pictureTemplates.isEmpty()) {
                 pictureTemplates = null;
             }
         }
+
         // upload blob and create views
         PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
         String filename = blob == null ? null : blob.getFilename();
-        String title = (String) doc.getProperty("dublincore", "title"); // re-set
+        String title = (String) doc.getPropertyValue("dc:title"); // re-set
         try {
             picture.createPicture(blob, filename, title, pictureTemplates);
         } catch (IOException e) {

@@ -50,8 +50,12 @@ public class ImagePlugin extends AbstractFileImporter {
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
         path = getNearestContainerPath(documentManager, path);
-        doSecurityCheck(documentManager, path,
-                ImagingDocumentConstants.PICTURE_TYPE_NAME, typeService);
+
+        String docType = getDocType();
+        if (docType == null) {
+            docType = ImagingDocumentConstants.PICTURE_TYPE_NAME;
+        }
+        doSecurityCheck(documentManager, path, docType, typeService);
 
         String filename = FileManagerUtils.fetchFileName(fullname);
         content.setFilename(filename);
@@ -81,7 +85,7 @@ public class ImagePlugin extends AbstractFileImporter {
                 throw new ClientException(e);
             }
             String title = FileManagerUtils.fetchTitle(filename);
-            docModel = documentManager.createDocumentModel(ImagingDocumentConstants.PICTURE_TYPE_NAME);
+            docModel = documentManager.createDocumentModel(docType);
             try {
                 DocumentModel parent = documentManager.getDocument(new PathRef(
                         path));

@@ -31,7 +31,7 @@ public class PictureBlobHolderFactory implements BlobHolderFactory {
         BlobHolder blobHolder;
 
         if (doc.hasFacet("Picture")) {
-            blobHolder = new PictureBlobHolder(doc, "");
+            blobHolder = new PictureBlobHolder(doc, "file:content");
         } else if (docType.equals("PictureBook")) {
             blobHolder = new PictureBookBlobHolder(doc, "");
         } else {

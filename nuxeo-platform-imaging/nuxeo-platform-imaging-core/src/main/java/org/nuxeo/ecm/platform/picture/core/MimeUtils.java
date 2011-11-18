@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 /**
  * @author Max Stepanov
- * @deprecated  since 5.5.
+ * @deprecated since 5.5.
  */
 @Deprecated
 public interface MimeUtils {

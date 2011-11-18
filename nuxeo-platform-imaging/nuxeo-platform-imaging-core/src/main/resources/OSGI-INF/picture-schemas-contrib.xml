@@ -15,6 +15,7 @@
              point="doctype">
 
     <facet name="Picture">
+      <schema name="file"/>
       <schema name="picture"/>
       <schema name="image_metadata"/>
       <schema name="iptc"/>
