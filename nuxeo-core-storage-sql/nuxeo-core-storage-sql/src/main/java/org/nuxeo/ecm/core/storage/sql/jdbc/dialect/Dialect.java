@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
@@ -592,7 +593,9 @@ public abstract class Dialect {
         }
 
         public static void translate(FulltextQuery ft, StringBuilder buf,
-                String or, String and, String andNot, String phraseQuote) {
+                String or, String and, String andNot, String wordStart,
+                String wordEnd, Set<Character> wordCharsReserved,
+                String phraseStart, String phraseEnd, boolean quotePhraseWords) {
             if (ft.op == Op.AND || ft.op == Op.OR) {
                 buf.append('(');
                 for (int i = 0; i < ft.terms.size(); i++) {
@@ -610,18 +613,47 @@ public abstract class Dialect {
                         }
                         buf.append(' ');
                     }
-                    translate(term, buf, or, and, andNot, phraseQuote);
+                    translate(term, buf, or, and, andNot, wordStart, wordEnd,
+                            wordCharsReserved, phraseStart, phraseEnd, quotePhraseWords);
                 }
                 buf.append(')');
                 return;
             } else {
-                boolean isPhrase = ft.isPhrase();
-                if (isPhrase) {
-                    buf.append(phraseQuote);
-                }
-                buf.append(ft.word);
-                if (isPhrase) {
-                    buf.append(phraseQuote);
+                String word = ft.word.toLowerCase();
+                if (ft.isPhrase()) {
+                    if (quotePhraseWords) {
+                        boolean first = true;
+                        for (String w : word.split(" ")) {
+                            if (!first) {
+                                buf.append(" ");
+                            }
+                            first = false;
+                            buf.append(wordStart);
+                            buf.append(w);
+                            buf.append(wordEnd);
+                        }
+                    } else {
+                        buf.append(phraseStart);
+                        buf.append(word);
+                        buf.append(phraseEnd);
+                    }
+                } else {
+                    boolean quoteWord = true;
+                    if (!wordCharsReserved.isEmpty()) {
+                        for (char c : word.toCharArray()) {
+                            if (wordCharsReserved.contains(Character.valueOf(c))) {
+                                quoteWord = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (quoteWord) {
+                        buf.append(wordStart);
+                    }
+                    buf.append(word);
+                    if (quoteWord) {
+                        buf.append(wordEnd);
+                    }
                 }
             }
         }
@@ -647,7 +679,23 @@ public abstract class Dialect {
     public static String translateFulltext(FulltextQuery ft, String or,
             String and, String andNot, String phraseQuote) {
         StringBuilder buf = new StringBuilder();
-        FulltextQueryAnalyzer.translate(ft, buf, or, and, andNot, phraseQuote);
+        FulltextQueryAnalyzer.translate(ft, buf, or, and, andNot, "", "",
+                Collections.<Character> emptySet(), phraseQuote, phraseQuote,
+                false);
+        return buf.toString();
+    }
+
+    /**
+     * Translate fulltext into a common pattern used by many servers.
+     */
+    public static String translateFulltext(FulltextQuery ft, String or,
+            String and, String andNot, String wordStart, String wordEnd,
+            Set<Character> wordCharsReserved, String phraseStart,
+            String phraseEnd, boolean quotePhraseWords) {
+        StringBuilder buf = new StringBuilder();
+        FulltextQueryAnalyzer.translate(ft, buf, or, and, andNot, wordStart,
+                wordEnd, wordCharsReserved, phraseStart, phraseEnd,
+                quotePhraseWords);
         return buf.toString();
     }
 
