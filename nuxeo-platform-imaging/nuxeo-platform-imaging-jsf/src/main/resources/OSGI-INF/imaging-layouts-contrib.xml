@@ -2,7 +2,116 @@
 <component name="org.nuxeo.ecm.platform.picture.jsf.layouts">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+      point="widgettypes">
+
+    <widgetType name="picture_view">
+      <configuration>
+        <title>Picture view</title>
+        <description>
+          <p>
+            The image widget displays the configured View of a document
+            having the Picture facet.
+          </p>
+          <p>
+            It accepts the following properties:
+            <ul>
+              <li>
+                pictureView: the name of the view. Defaults to the 'Medium' view.
+              </li>
+              <li>
+                width: the width of the img tag.
+              </li>
+              <li>
+                height: the height of the img tag.
+              </li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/picture_view_widget_template.xhtml</property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+      point="widgets">
+
+    <widget name="imageFile" type="image">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:filename</field>
+      </fields>
+    </widget>
+
+    <widget name="summary_picture_view" type="picture_view">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field></field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pictureView">Thumbnail</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
+
+    <layout name="picture_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_picture_view</widget>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_dublincore</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_lc_and_version</widget>
+          <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_custom_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="picture">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>imageFile</widget>
+        </row>
+      </rows>
+    </layout>
 
     <layout name="picturebook">
       <templates>

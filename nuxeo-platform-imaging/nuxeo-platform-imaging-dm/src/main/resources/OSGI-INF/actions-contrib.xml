@@ -9,11 +9,7 @@
     <action id="tab_bookview" link="/incl/tabs/book_view.xhtml"
             enabled="true" label="action.view.book" order="1">
       <category>VIEW_ACTION_LIST</category>
-      <filter id="grantpicturebook">
-        <rule grant="true">
-          <type>PictureBook</type>
-        </rule>
-      </filter>
+      <filter-id>grantpicturebook</filter-id>
     </action>
 
     <action id="tab_slideshow" link="/incl/tabs/slide_view.xhtml"
@@ -23,20 +19,16 @@
     </action>
 
     <action id="tab_imageview" link="/incl/tabs/picture_view.xhtml"
-            enabled="true" label="action.view.picture" order="-10">
+            enabled="true" label="action.view.picture" order="22">
       <category>VIEW_ACTION_LIST</category>
-      <filter id="grantpicture">
-        <rule grant="true">
-          <type>Picture</type>
-        </rule>
-      </filter>
+      <filter-id>hasPictureFacet</filter-id>
     </action>
 
     <action id="tab_metadata_picture"
             link="/incl/tabs/metadata_picture.xhtml" enabled="true"
-            label="action.view.metadata_picture" order="3">
+            label="action.view.metadata_picture" order="24">
       <category>VIEW_ACTION_LIST</category>
-      <filter-id>grantpicture</filter-id>
+      <filter-id>hasPictureFacet</filter-id>
     </action>
 
   </extension>
@@ -44,11 +36,29 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 
+    <filter id="grantpicturebook">
+      <rule grant="true">
+        <type>PictureBook</type>
+      </rule>
+    </filter>
+
+    <!-- not used since 5.5, keep it for compatibility -->
+    <filter id="grantpicture">
+      <rule grant="true">
+        <type>Picture</type>
+      </rule>
+    </filter>
+
+    <filter id="hasPictureFacet">
+      <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
     <filter id="create" append="true">
       <rule grant="true">
         <permission>AddChildren</permission>
         <type>PictureBook</type>
-        <type>Picture</type>
       </rule>
     </filter>
 
@@ -56,7 +66,6 @@
       <rule grant="true">
         <permission>AddChildren</permission>
         <type>PictureBook</type>
-        <type>Picture</type>
       </rule>
     </filter>
 

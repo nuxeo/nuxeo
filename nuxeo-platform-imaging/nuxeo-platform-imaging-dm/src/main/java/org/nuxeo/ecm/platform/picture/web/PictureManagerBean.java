@@ -156,6 +156,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
+    @Deprecated
     @SuppressWarnings("unchecked")
     public String addPicture() throws Exception {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);

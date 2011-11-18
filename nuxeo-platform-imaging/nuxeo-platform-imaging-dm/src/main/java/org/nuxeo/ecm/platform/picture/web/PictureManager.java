@@ -35,7 +35,9 @@ public interface PictureManager {
 
     /**
      * Creates and saves a picture document.
+     * @deprecated since 5.5
      */
+    @Deprecated
     String addPicture() throws Exception;
 
     String crop() throws ClientException, IOException;
