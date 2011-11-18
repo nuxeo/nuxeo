@@ -140,8 +140,23 @@ SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS'
 CREATE TABLE ANCESTORS (
   hierarchy_id VARCHAR2(36) NOT NULL,
   ancestors NX_STRING_TABLE,
+  need_update NUMBER(1),
   CONSTRAINT ANCESTORS_HIERARCHY_ID_FK FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE
 ) NESTED TABLE ancestors STORE AS ancestors_ancestors
+
+
+#TEST
+SELECT 1 FROM user_tab_columns WHERE table_name = 'ANCESTORS' AND column_name = 'NEED_UPDATE'
+
+#IF: emptyResult
+ALTER TABLE ANCESTORS ADD need_update NUMBER (1)
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_NEED_UPDATE_IDX'
+
+#IF: emptyResult
+CREATE INDEX ANCESTORS_NEED_UPDATE_IDX ON ANCESTORS(need_update)
 
 
 #TEST:
@@ -196,7 +211,7 @@ CREATE OR REPLACE TRIGGER nx_trig_ancestors_insert
   FOR EACH ROW
   WHEN (NEW.isproperty = 0 AND NEW.parentid IS NOT NULL)
 BEGIN
-  INSERT INTO ANCESTORS VALUES(:NEW.id, NULL);
+  INSERT INTO ANCESTORS VALUES(:NEW.id, NULL, 1);
 END;
 
 
@@ -208,7 +223,7 @@ CREATE OR REPLACE TRIGGER nx_trig_ancestors_update
   AFTER UPDATE ON hierarchy
   FOR EACH ROW  WHEN (NEW.isproperty = 0 AND NEW.parentid <> OLD.parentid)
 BEGIN
-  UPDATE ancestors SET ancestors = NULL
+  UPDATE ancestors SET ancestors = NULL, need_update = 1
     WHERE hierarchy_id IN (SELECT hierarchy_id FROM ancestors a
                            WHERE :NEW.id MEMBER OF a.ancestors OR  hierarchy_id = :NEW.id);
 END;
@@ -222,8 +237,8 @@ CREATE OR REPLACE TRIGGER nx_trig_ancestors_process
   AFTER INSERT OR UPDATE ON hierarchy
   -- statement level is required to be able to read hierarchy table with updated values
 BEGIN
-  UPDATE ancestors SET ancestors=nx_get_ancestors(hierarchy_id)
-    WHERE ancestors IS NULL;
+  UPDATE ancestors SET ancestors = nx_get_ancestors(hierarchy_id), need_update = NULL
+    WHERE need_update = 1;
 END;
 
 
@@ -236,7 +251,7 @@ IS
 BEGIN
   EXECUTE IMMEDIATE 'TRUNCATE TABLE ancestors';
   INSERT INTO ancestors
-    SELECT id, nx_get_ancestors(id)
+    SELECT id, nx_get_ancestors(id), 1
     FROM (SELECT id FROM hierarchy WHERE isproperty=0);
 END;
 
@@ -751,21 +766,21 @@ BEGIN
     WHERE id IN (SELECT DISTINCT(hierarchy_id) FROM aclr_modified);
   DELETE FROM aclr_modified;
   --
-  -- 3/ Mark all children with the NULL marker
+  -- 3/ Mark all children with a marker
   -- TODO use CONNECT BY ?
   LOOP
-    UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+    UPDATE hierarchy_read_acl SET acl_id = '-' WHERE id IN (
       SELECT r.id
         FROM hierarchy_read_acl r
         JOIN hierarchy h ON h.id = r.id
         JOIN hierarchy_read_acl rr ON rr.id = h.parentid
-        WHERE r.acl_id IS NOT NULL AND rr.acl_id IS NULL);
+        WHERE r.acl_id IS NOT NULL AND rr.acl_id = '-');
     EXIT WHEN SQL%ROWCOUNT = 0;
   END LOOP;
   --
   -- 4/ Compute the new read ACLs for updated documents
   UPDATE hierarchy_read_acl SET acl_id = nx_get_read_acl_id(id)
-    WHERE acl_id IS NULL;
+    WHERE acl_id = '-';
   --
 END;
 

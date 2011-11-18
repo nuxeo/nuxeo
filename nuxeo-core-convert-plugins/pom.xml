@@ -77,7 +77,7 @@
       <artifactId>nekohtml</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache</groupId>
+      <groupId>org.apache.xmlbeans</groupId>
       <artifactId>xmlbeans</artifactId>
     </dependency>
     <dependency>
