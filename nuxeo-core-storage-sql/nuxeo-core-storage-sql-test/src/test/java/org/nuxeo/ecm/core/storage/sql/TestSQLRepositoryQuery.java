@@ -1481,29 +1481,50 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size());
     }
 
+    // don't use small words, they are eliminated by some fulltext engines
     public void testFulltextExpressionPhrase() throws Exception {
-        if (database instanceof DatabasePostgreSQL) {
-            System.out.println("Skipping fulltext phrase test for unsupported database: "
-                    + database.getClass().getName());
-            return;
-        }
         String query;
-        DocumentModelList dml;
 
         DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
         file1.setPropertyValue("dc:title",
-                "you can learn international law easily");
+                "bobby can learn international commerce easily");
         file1 = session.createDocument(file1);
+        // other files with data to avoid words being present in
+        // too high a percentage of the indexes
+        for (int i = 0; i < 10; i++) {
+            DocumentModel f = new DocumentModelImpl("/", "otherfile" + i,
+                    "File");
+            f.setPropertyValue("dc:title", "some other text never matched");
+            f.setPropertyValue("dc:description", "desc" + i);
+            f = session.createDocument(f);
+        }
         session.save();
         sleepForFulltext();
 
-        query = "SELECT * FROM File WHERE ecm:fulltext = '\"international law\"'";
-        dml = session.query(query);
-        assertEquals(1, dml.size());
+        query = "SELECT * FROM File WHERE ecm:fulltext = '\"international commerce\"'";
+        assertEquals(1, session.query(query).size());
 
-        query = "SELECT * FROM File WHERE ecm:fulltext = '\"learn law\"'";
-        dml = session.query(query);
-        assertEquals(0, dml.size());
+        query = "SELECT * FROM File WHERE ecm:fulltext = '\"learn commerce\"'";
+        assertEquals(0, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'bobby \"can learn\"'";
+        assertEquals(1, session.query(query).size());
+
+        // negative phrase search
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'bobby -\"commerce easily\"'";
+        assertEquals(0, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'bobby -\"hello world\"'";
+        assertEquals(1, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'bobby -\"hello world\" commerce'";
+        assertEquals(1, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'bobby -\"hello world\" \"commerce easily\"'";
+        assertEquals(1, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'bobby \"commerce easily\" -\"hello world\"'";
+        assertEquals(1, session.query(query).size());
     }
 
     public void testFulltextSecondary() throws Exception {

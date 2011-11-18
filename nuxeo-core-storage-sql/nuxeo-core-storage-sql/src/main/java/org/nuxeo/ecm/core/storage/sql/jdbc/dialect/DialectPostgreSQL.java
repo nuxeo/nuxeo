@@ -49,6 +49,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 /**
  * PostgreSQL-specific dialect.
@@ -300,6 +302,16 @@ public class DialectPostgreSQL extends Dialect {
                 table.getQuotedName(), columns.get(0).getQuotedName());
     }
 
+    // must not be interpreted as a regexp, we split on it
+    protected static final String FT_LIKE_SEP = " @#AND#@ ";
+
+    protected static final String FT_LIKE_COL = "??";
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The result of this is passed to {@link #getFulltextScoredMatchInfo}.
+     */
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
@@ -307,17 +319,172 @@ public class DialectPostgreSQL extends Dialect {
         if (ft == null) {
             return ""; // won't match anything
         }
-        if (fulltextHasPhrase(ft)) {
-            throw new QueryMakerException(
-                    "Invalid fulltext query (phrase search): " + query);
+        if (!fulltextHasPhrase(ft)) {
+            return translateFulltext(ft, "|", "&", "& !", "");
         }
-        return translateFulltext(ft, "|", "&", "& !", "");
+        if (compatibilityFulltextTable) {
+            throw new QueryMakerException(
+                    "Cannot use phrase search in fulltext compatibilty mode. "
+                            + "Please upgrade the fulltext table: " + query);
+        }
+        /*
+         * Phrase search.
+         *
+         * We have to do the phrase query using a LIKE, but for performance we
+         * pre-filter using as many fulltext matches as possible by breaking
+         * some of the phrases into words. We do an AND of the two.
+         *
+         * 1. pre-filter using fulltext on a query that is a superset of the
+         * original query,
+         */
+        FulltextQuery broken = breakPhrases(ft);
+        String ftsql = translateFulltext(broken, "|", "&", "& !", "");
+        /*
+         * 2. AND with a LIKE-based search for all terms, except those that are
+         * already exactly matched by the first part, i.e., toplevel ANDed
+         * non-phrases.
+         */
+        FulltextQuery noand = removeToplevelAndedWords(ft);
+        if (noand != null) {
+            StringBuilder buf = new StringBuilder();
+            generateLikeSql(noand, buf);
+            ftsql += FT_LIKE_SEP + buf.toString();
+
+        }
+        return ftsql;
+    }
+
+    /**
+     * Returns a fulltext query that is a superset of the original one and does
+     * not have phrase searches.
+     * <p>
+     * Negative phrases (which are at AND level) are removed, positive phrases
+     * are split into ANDed words.
+     */
+    protected static FulltextQuery breakPhrases(FulltextQuery ft) {
+        FulltextQuery newFt = new FulltextQuery();
+        if (ft.op == Op.AND || ft.op == Op.OR) {
+            List<FulltextQuery> newTerms = new LinkedList<FulltextQuery>();
+            for (FulltextQuery term : ft.terms) {
+                FulltextQuery broken = breakPhrases(term);
+                if (broken == null) {
+                    // remove negative phrase
+                } else if (ft.op == Op.AND && broken.op == Op.AND) {
+                    // associativity (sub-AND hoisting)
+                    newTerms.addAll(broken.terms);
+                } else {
+                    newTerms.add(broken);
+                }
+            }
+            if (newTerms.size() == 1) {
+                // single-term parenthesis elimination
+                newFt = newTerms.get(0);
+            } else {
+                newFt.op = ft.op;
+                newFt.terms = newTerms;
+            }
+        } else {
+            boolean isPhrase = ft.isPhrase();
+            if (!isPhrase) {
+                newFt = ft;
+            } else if (ft.op == Op.WORD) {
+                // positive phrase
+                // split it
+                List<FulltextQuery> newTerms = new LinkedList<FulltextQuery>();
+                for (String subword : ft.word.split(" ")) {
+                    FulltextQuery sft = new FulltextQuery();
+                    sft.op = Op.WORD;
+                    sft.word = subword;
+                    newTerms.add(sft);
+                }
+                newFt.op = Op.AND;
+                newFt.terms = newTerms;
+            } else {
+                // negative phrase
+                // removed
+                newFt = null;
+            }
+        }
+        return newFt;
+    }
+
+    /**
+     * Removes toplevel ANDed simple words from the query.
+     */
+    protected static FulltextQuery removeToplevelAndedWords(FulltextQuery ft) {
+        if (ft.op == Op.OR || ft.op == Op.NOTWORD) {
+            return ft;
+        }
+        if (ft.op == Op.WORD) {
+            if (ft.isPhrase()) {
+                return ft;
+            }
+            return null;
+        }
+        List<FulltextQuery> newTerms = new LinkedList<FulltextQuery>();
+        for (FulltextQuery term : ft.terms) {
+            if (term.op == Op.NOTWORD) {
+                newTerms.add(term);
+            } else { // Op.WORD
+                if (term.isPhrase()) {
+                    newTerms.add(term);
+                }
+            }
+        }
+        if (newTerms.isEmpty()) {
+            return null;
+        } else if (newTerms.size() == 1) {
+            // single-term parenthesis elimination
+            return newTerms.get(0);
+        } else {
+            FulltextQuery newFt = new FulltextQuery();
+            newFt.op = Op.AND;
+            newFt.terms = newTerms;
+            return newFt;
+        }
+    }
+
+    // turn non-toplevel ANDed single words into SQL
+    // abc "foo bar" -"gee man"
+    // -> ?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %'
+    // ?? is a pseudo-parameter for the col
+    protected static void generateLikeSql(FulltextQuery ft, StringBuilder buf) {
+        if (ft.op == Op.AND || ft.op == Op.OR) {
+            buf.append('(');
+            boolean first = true;
+            for (FulltextQuery term : ft.terms) {
+                if (!first) {
+                    if (ft.op == Op.AND) {
+                        buf.append(" AND ");
+                    } else { // Op.OR
+                        buf.append(" OR ");
+                    }
+                }
+                first = false;
+                generateLikeSql(term, buf);
+            }
+            buf.append(')');
+        } else {
+            buf.append(FT_LIKE_COL);
+            if (ft.op == Op.NOTWORD) {
+                buf.append(" NOT");
+            }
+            buf.append(" LIKE '% ");
+            String word = ft.word.toLowerCase();
+            // SQL escaping
+            word = word.replace("'", "''");
+            word = word.replace("\\", ""); // don't take chances
+            buf.append(word);
+            buf.append(" %'");
+        }
     }
 
     // SELECT ..., TS_RANK_CD(fulltext, nxquery, 32) as nxscore
     // FROM ... LEFT JOIN fulltext ON fulltext.id = hierarchy.id
     // , TO_TSQUERY('french', ?) as nxquery
-    // WHERE ... AND fulltext @@ nxquery
+    // WHERE ...
+    // AND NX_TO_TSVECTOR(fulltext) @@ nxquery
+    // AND fulltext LIKE '% foo bar %' -- when phrase search
     // ORDER BY nxscore DESC
     @Override
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
@@ -338,6 +505,17 @@ public class DialectPostgreSQL extends Dialect {
             info.joins.add(new Join(Join.INNER, ft.getQuotedName(), null, null,
                     ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
         }
+        /*
+         * for phrase search, fulltextQuery may contain a LIKE part
+         */
+        String like;
+        if (fulltextQuery.contains(FT_LIKE_SEP)) {
+            String[] tmp = fulltextQuery.split(FT_LIKE_SEP, 2);
+            fulltextQuery = tmp[0];
+            like = tmp[1].replace(FT_LIKE_COL, ftColumnName);
+        } else {
+            like = null;
+        }
         info.joins.add(new Join(
                 Join.IMPLICIT, //
                 String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
@@ -350,7 +528,11 @@ public class DialectPostgreSQL extends Dialect {
         } else {
             tsvector = String.format("NX_TO_TSVECTOR(%s)", ftColumnName);
         }
-        info.whereExpr = String.format("(%s @@ %s)", queryAlias, tsvector);
+        String where = String.format("(%s @@ %s)", queryAlias, tsvector);
+        if (like != null) {
+            where += " AND (" + like + ")";
+        }
+        info.whereExpr = where;
         info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)", tsvector,
                 queryAlias);
         info.scoreAlias = "_nxscore" + nthSuffix;

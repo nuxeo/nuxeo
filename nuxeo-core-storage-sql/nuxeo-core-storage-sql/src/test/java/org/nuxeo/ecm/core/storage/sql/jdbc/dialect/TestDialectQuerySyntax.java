@@ -95,15 +95,42 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     }
 
     protected static void assertFulltextQuery(String expected, String query) {
-        StringBuilder buf = new StringBuilder();
-        FulltextQuery ftQuery = Dialect.analyzeFulltextQuery(query);
-        if (ftQuery == null) {
+        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+        if (ft == null) {
             assertNull(expected);
-            return;
         } else {
-            dumpFulltextQuery(ftQuery, buf);
+            StringBuilder buf = new StringBuilder();
+            dumpFulltextQuery(ft, buf);
             assertEquals(expected, buf.toString());
         }
+    }
+
+    protected static void assertPGPhraseBreak(String expected, String query) {
+        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+        FulltextQuery broken = DialectPostgreSQL.breakPhrases(ft);
+        StringBuilder buf = new StringBuilder();
+        dumpFulltextQuery(broken, buf);
+        assertEquals(expected, buf.toString());
+    }
+
+    protected static void assertPGRemoveToplevelAndedWord(String expected,
+            String query) {
+        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+        FulltextQuery simplified = DialectPostgreSQL.removeToplevelAndedWords(ft);
+        if (simplified == null) {
+            assertNull(expected);
+        } else {
+            StringBuilder buf = new StringBuilder();
+            dumpFulltextQuery(simplified, buf);
+            assertEquals(expected, buf.toString());
+        }
+    }
+
+    protected static void assertPGLikeSql(String expected, String query) {
+        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+        StringBuilder buf = new StringBuilder();
+        DialectPostgreSQL.generateLikeSql(ft, buf);
+        assertEquals(expected, buf.toString());
     }
 
     public void testAnalyzeFulltextQuery() throws Exception {
@@ -208,6 +235,53 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("(\"foo bar\" OR baz)", "\"foo bar\" OR baz");
         assertDialectFT("((\"foo bar\" AND baz) OR \"gee man\")",
                 "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("(\"foo bar\" NOT \"gee man\")",
+                "\"foo bar\" -\"gee man\"");
+    }
+
+    public void testPostgreSQLPhraseBreak() throws Exception {
+        assertPGPhraseBreak("foo", "foo");
+        assertPGPhraseBreak("[foo AND bar]", "\"foo bar\"");
+        assertPGPhraseBreak("[foo AND bar AND baz]", "\"foo bar\" baz");
+        assertPGPhraseBreak("[foo AND bar AND baz]", "foo \"bar baz\"");
+        assertPGPhraseBreak("[[foo AND bar] OR baz]", "\"foo bar\" OR baz");
+        assertPGPhraseBreak("[[foo AND bar] OR [gee AND man]]",
+                "\"foo bar\" OR \"gee man\"");
+        assertPGPhraseBreak("foo", "foo -\"bar baz\"");
+        assertPGPhraseBreak("foo", "foo OR -\"bar baz\"");
+    }
+
+    public void testPostgreSQLToplevelAndedWordRemoval() throws Exception {
+        assertPGRemoveToplevelAndedWord(null, "foo");
+        assertPGRemoveToplevelAndedWord(null, "foo bar");
+        assertPGRemoveToplevelAndedWord("{foo bar}", "\"foo bar\"");
+        assertPGRemoveToplevelAndedWord("{foo bar}", "\"foo bar\" baz");
+        assertPGRemoveToplevelAndedWord("{bar baz}", "foo \"bar baz\"");
+        assertPGRemoveToplevelAndedWord("[{foo bar} OR baz]",
+                "\"foo bar\" OR baz");
+        assertPGRemoveToplevelAndedWord("[{foo bar} OR {gee man}]",
+                "\"foo bar\" OR \"gee man\"");
+        assertPGRemoveToplevelAndedWord("~{bar baz}", "foo -\"bar baz\"");
+        assertPGRemoveToplevelAndedWord(null, "foo OR -\"bar baz\"");
+    }
+
+    public void testPostgreSQLLikeSql() throws Exception {
+        assertPGLikeSql("?? LIKE '% foo %'", "foo");
+        assertPGLikeSql("?? LIKE '% foo %'", "FOO");
+        assertPGLikeSql("?? LIKE '% caf\u00e9 %'", "CAF\u00c9");
+        assertPGLikeSql("(?? LIKE '% foo %' AND ?? LIKE '% bar %')", "foo bar");
+        assertPGLikeSql("?? LIKE '% foo bar %'", "\"foo bar\"");
+        assertPGLikeSql("(?? LIKE '% foo bar %' AND ?? LIKE '% baz %')",
+                "\"foo bar\" baz");
+        assertPGLikeSql("(?? LIKE '% foo %' AND ?? LIKE '% bar baz %')",
+                "foo \"bar baz\"");
+        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% baz %')",
+                "\"foo bar\" OR baz");
+        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% gee man %')",
+                "\"foo bar\" OR \"gee man\"");
+        assertPGLikeSql("(?? LIKE '% foo %' AND ?? NOT LIKE '% bar baz %')",
+                "foo -\"bar baz\"");
+        assertPGLikeSql("?? LIKE '% foo %'", "foo OR -\"bar baz\"");
     }
 
     public void testPostgreSQL() throws Exception {
@@ -224,6 +298,22 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("((foo & bar) | baz)", "foo bar OR baz");
         assertDialectFT("((bar & ! foo) | baz)", "-foo bar OR baz");
         assertDialectFT("((foo & ! bar) | baz)", "foo -bar OR baz");
+        assertDialectFT("(foo & bar) @#AND#@ ?? LIKE '% foo bar %'",
+                "\"foo bar\"");
+        assertDialectFT("(foo & bar & baz) @#AND#@ ?? LIKE '% foo bar %'",
+                "\"foo bar\" baz");
+        assertDialectFT(
+                "(foo & bar & baz) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
+                "\"foo bar\" baz -\"gee man\"");
+        assertDialectFT(
+                "((foo & bar) | baz) @#AND#@ (?? LIKE '% foo bar %' OR ?? LIKE '% baz %')",
+                "\"foo bar\" OR baz");
+        assertDialectFT(
+                "((foo & bar & baz) | (gee & man)) @#AND#@ ((?? LIKE '% foo bar %' AND ?? LIKE '% baz %') OR ?? LIKE '% gee man %')",
+                "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT(
+                "(foo & bar) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
+                "\"foo bar\" -\"gee man\"");
     }
 
     public void testMySQL() throws Exception {
@@ -244,6 +334,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("(\"foo bar\" baz)", "\"foo bar\" OR baz");
         assertDialectFT("((+\"foo bar\" +baz) \"gee man\")",
                 "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("(+\"foo bar\" -\"gee man\")",
+                "\"foo bar\" -\"gee man\"");
     }
 
     public void testOracle() throws Exception {
@@ -265,6 +357,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("(foo bar OR baz)", "\"foo bar\" OR baz");
         assertDialectFT("((foo bar AND baz) OR gee man)",
                 "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("(foo bar NOT gee man)", "\"foo bar\" -\"gee man\"");
     }
 
     public void testSQLServer() throws Exception {
@@ -285,6 +378,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("(\"foo bar\" OR baz)", "\"foo bar\" OR baz");
         assertDialectFT("((\"foo bar\" AND baz) OR \"gee man\")",
                 "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("(\"foo bar\" AND NOT \"gee man\")",
+                "\"foo bar\" -\"gee man\"");
     }
 
 }

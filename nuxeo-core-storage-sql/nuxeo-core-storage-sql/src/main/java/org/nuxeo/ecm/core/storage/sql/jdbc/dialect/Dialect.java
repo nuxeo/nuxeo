@@ -407,6 +407,8 @@ public abstract class Dialect {
             OR, AND, WORD, NOTWORD
         };
 
+        public static final String SPACE = " ";
+
         public Op op;
 
         /** The list of terms, if op is OR or AND */
@@ -414,6 +416,13 @@ public abstract class Dialect {
 
         /** The word, if op is WORD or NOTWORD */
         public String word;
+
+        /**
+         * Checks if the word is a phrase.
+         */
+        public boolean isPhrase() {
+            return word != null && word.contains(SPACE);
+        }
     }
 
     /**
@@ -433,11 +442,11 @@ public abstract class Dialect {
 
         public static final String MINUS = "-";
 
-        public static final String SPACE = " ";
-
         public static final char CSPACE = ' ';
 
         public static final String DOUBLE_QUOTES = "\"";
+
+        public static final String OR = "OR";
 
         public FulltextQuery ft = new FulltextQuery();
 
@@ -500,7 +509,7 @@ public abstract class Dialect {
                         continue;
                     }
                     word = phrase.toString();
-                } else if (word.equalsIgnoreCase("OR")) {
+                } else if (word.equalsIgnoreCase(OR)) {
                     if (wasOr) {
                         throw new QueryMakerException(
                                 "Invalid fulltext query (OR OR): " + query);
@@ -606,7 +615,7 @@ public abstract class Dialect {
                 buf.append(')');
                 return;
             } else {
-                boolean isPhrase = ft.word.contains(SPACE);
+                boolean isPhrase = ft.isPhrase();
                 if (isPhrase) {
                     buf.append(phraseQuote);
                 }
@@ -626,7 +635,7 @@ public abstract class Dialect {
                 }
                 return false;
             } else {
-                return ft.word.contains(SPACE);
+                return ft.isPhrase();
             }
         }
 
