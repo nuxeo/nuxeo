@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -35,6 +36,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
+import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
@@ -42,6 +47,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionHandlingException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
+import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 import org.nuxeo.runtime.api.Framework;
 
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -66,6 +72,15 @@ public class SuggestboxActions implements Serializable {
 
     @In(create = true)
     protected Locale locale;
+
+    @In(create = true)
+    protected MultiNavTreeManager multiNavTreeManager;
+
+    @In(create = true)
+    protected FacetedSearchActions facetedSearchActions;
+
+    @In(create = true)
+    protected ContentViewActions contentViewActions;
 
     public DocumentModel getDocumentModel(String id) throws ClientException {
         return documentManager.getDocument(new IdRef(id));
@@ -109,6 +124,18 @@ public class SuggestboxActions implements Serializable {
         SuggestionService service = Framework.getLocalService(SuggestionService.class);
         SuggestionContext ctx = getSuggestionContext();
         return service.handleSelection(selectedSuggestion, ctx);
+    }
+
+    public String performKerwordsSearch() throws ClientException {
+        facetedSearchActions.clearSearch();
+        facetedSearchActions.setCurrentContentViewName(null);
+        String contentViewName = facetedSearchActions.getCurrentContentViewName();
+        ContentView contentView = contentViewActions.getContentView(contentViewName);
+        DocumentModel dm = contentView.getSearchDocumentModel();
+        dm.setPropertyValue("fsd:ecm_fulltext", searchKeywords);
+        setSearchKeywords("");
+        multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
+        return "faceted_search_results";
     }
 
 }
