@@ -14,21 +14,10 @@
   <name>Marketplace package of Nuxeo DAM</name>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.nuxeo.build</groupId>
-          <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>1.11-SNAPSHOT</version>
-          <extensions>true</extensions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <version>1.11-SNAPSHOT</version>
         <configuration>
           <buildFiles>
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
