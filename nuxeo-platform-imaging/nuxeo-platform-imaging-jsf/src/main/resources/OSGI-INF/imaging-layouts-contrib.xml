@@ -9,7 +9,7 @@
         <title>Picture view</title>
         <description>
           <p>
-            The image widget displays the configured View of a document
+            The picture_view widget displays the configured View of a document
             having the Picture facet.
           </p>
           <p>
@@ -65,7 +65,7 @@
         <field></field>
       </fields>
       <properties widgetMode="any">
-        <property name="pictureView">Thumbnail</property>
+        <property name="pictureView">Medium</property>
       </properties>
     </widget>
 

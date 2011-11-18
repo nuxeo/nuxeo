@@ -6,7 +6,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <c:set var="pictureView" value="#{nxu:test(!empty widgetProperties_pictureView, widgetProperties_pictureView, 'Medium')}" />
+  <c:set var="pictureView" value="#{nxu:test(!empty widgetProperty_pictureView, widgetProperty_pictureView, 'Medium')}" />
   <c:set var="blobPropertyName" value="#{pictureView}:content" />
 
   <c:if test="#{value.hasFacet('Picture')}">
@@ -16,7 +16,7 @@
       <c:if test="#{not empty image_url}">
         <img src="#{image_url}"
           title="#{value.title}" alt="#{value.title}"
-          width="#{widgetProperties_width}" height="#{widgetProperties_height}" />
+          width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
       </c:if>
     </nxu:set>
   </c:if>
