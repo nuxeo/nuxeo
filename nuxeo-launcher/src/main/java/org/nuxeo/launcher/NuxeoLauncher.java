@@ -1217,7 +1217,7 @@ public abstract class NuxeoLauncher {
         log.error("\t\t mp-list\t\tList marketplace packages.");
         log.error("\t\t mp-install\t\tRun marketplace package installation. "
                 + "It is automatically called at startup if installAfterRestart.log exists. "
-                + "Else you must provide the package file as parameter.");
+                + "Else you must provide the package file or ID as parameter.");
         log.error("\t\t mp-uninstall\t\tUninstall a marketplace package. You must provide the package id as parameter (see \"mp-status\" command).");
         log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
     }
