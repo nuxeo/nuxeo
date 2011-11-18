@@ -30,7 +30,7 @@
     </layout>
   </appender>
 
-  <logger name="org.nuxeo.launcher">
+  <logger name="org.nuxeo">
     <level value="INFO" />
   </logger>
 
