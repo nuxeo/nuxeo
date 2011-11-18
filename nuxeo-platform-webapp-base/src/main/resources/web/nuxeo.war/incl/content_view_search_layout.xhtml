@@ -33,7 +33,7 @@ Needed parameters:
               id="#{contentViewRenderId}_resetFilterSubmit"
               ajaxSingle="true"
               rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
-              reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+              reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm, #{contentViewRenderId}_contentViewActionsPanel"
               oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
               styleClass="button warningLink">
               <nxu:actionListenerMethod
@@ -53,7 +53,7 @@ Needed parameters:
           <a4j:commandButton
             value="#{messages['label.contentview.filter.filterAction']}"
             id="#{contentViewRenderId}_filterSubmit"
-            reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+            reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm, #{contentViewRenderId}_contentViewActionsPanel"
             oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
             styleClass="button">
             <nxu:actionListenerMethod
@@ -63,7 +63,7 @@ Needed parameters:
             value="#{messages['label.contentview.filter.clearFilterButton']}"
             id="#{contentViewRenderId}_filterClear"
             immediate="true" ajaxSingle="true"
-            reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+            reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm, #{contentViewRenderId}_contentViewActionsPanel"
             oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
             styleClass="button">
             <nxu:actionListenerMethod
