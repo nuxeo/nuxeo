@@ -145,7 +145,7 @@ CREATE TABLE ANCESTORS (
 ) NESTED TABLE ancestors STORE AS ancestors_ancestors
 
 
-#TEST
+#TEST:
 SELECT 1 FROM user_tab_columns WHERE table_name = 'ANCESTORS' AND column_name = 'NEED_UPDATE'
 
 #IF: emptyResult
