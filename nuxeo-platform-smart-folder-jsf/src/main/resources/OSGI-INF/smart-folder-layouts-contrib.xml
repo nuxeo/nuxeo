@@ -6,9 +6,9 @@
     point="layouts">
 
     <documentation>
-      Layouts configuration for a smart folder, displaying the query builder
-      (for the smart folder edition page) and the content view results (for the
-      smart folder view page).
+      Layouts configuration for a smart folder, displaying the
+      query builder (for the smart folder edition page) and the content view
+      results (for the smart folder view page).
     </documentation>
 
     <layout name="nxql_incremental_smart_folder">
@@ -117,7 +117,7 @@
           <widget>content_view</widget>
         </row>
       </rows>
-      <widget name="content_view" type="template">
+      <widget name="content_view" type="contentView">
         <labels>
           <label mode="any">label.contentview.pageSize</label>
         </labels>
@@ -127,13 +127,9 @@
           <mode value="edit">hidden</mode>
         </widgetModes>
         <properties mode="any">
-          <property name="template">
-            /widgets/content_view_widget.xhtml
-          </property>
           <property name="contentViewName">
             nxql_incremental_smart_folder
           </property>
-          <property name="showHeaderAfterSelector">true</property>
         </properties>
       </widget>
     </layout>
