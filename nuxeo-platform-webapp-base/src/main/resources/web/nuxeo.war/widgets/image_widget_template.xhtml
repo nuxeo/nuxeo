@@ -8,7 +8,7 @@
 
   <c:if test="#{widget.mode == 'edit'}">
 
-    <c:set var="acceptedExtensions" value="#{nxu:test(!empty widgetProperties_acceptedExtensions, widgetProperties_acceptedExtensions, '.jpg, .jpeg, .png, .gif')}" />
+    <c:set var="acceptedExtensions" value="#{nxu:test(!empty widgetProperty_acceptedExtensions, widgetProperty_acceptedExtensions, '.jpg, .jpeg, .png, .gif')}" />
 
     <nxu:inputFile id="#{widget.id}_file" value="#{field}"
       filename="#{field.filename}" required="#{widget.required}" editFilename="false"
@@ -28,7 +28,7 @@
       <c:if test="#{not empty image_url}">
         <img src="#{image_url}"
           title="#{field.filename}" alt="#{field.filename}"
-          width="#{widgetProperties_width}" height="#{widgetProperties_height}" />
+          width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
       </c:if>
     </nxu:set>
 
