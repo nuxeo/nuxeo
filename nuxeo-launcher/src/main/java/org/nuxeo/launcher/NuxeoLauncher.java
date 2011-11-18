@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher;
@@ -101,7 +100,7 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_NUXEO_URL = "nuxeo.url";
 
-    private static final String INSTALLER_CLASS = "org.nuxeo.ecm.admin.offline.update.Main";
+    private static final String PKG_MANAGER_CLASS = "org.nuxeo.ecm.admin.offline.update.LocalPackageManager";
 
     private static final long STREAM_MAX_WAIT = 3000;
 
@@ -478,7 +477,14 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = false;
             }
         } else if ("pack".equalsIgnoreCase(launcher.command)) {
+            log.error("Not implemented. Use \"pack\" Shell script.");
             exitStatus = 3;
+        } else if ("mp-list".equalsIgnoreCase(launcher.command)) {
+            commandSucceeded = launcher.pkgList();
+        } else if ("mp-install".equalsIgnoreCase(launcher.command)) {
+            commandSucceeded = launcher.pkgInstall();
+        } else if ("mp-uninstall".equalsIgnoreCase(launcher.command)) {
+            commandSucceeded = launcher.pkgUninstall();
         } else {
             printHelp();
             commandSucceeded = false;
@@ -691,11 +697,8 @@ public abstract class NuxeoLauncher {
             }
 
             log.debug("Check if install in progress...");
-            if ((PlatformUtils.isWindows() || "true".equalsIgnoreCase(configurationGenerator.getUserConfig().getProperty(
-                    ConfigurationGenerator.PARAM_FAKE_WINDOWS, "false")))
-                    && configurationGenerator.isInstallInProgress()) {
-                log.debug("Install in progress...");
-                install();
+            if (configurationGenerator.isInstallInProgress()) {
+                pkgInstall();
             }
 
             start(logProcessOutput);
@@ -722,28 +725,77 @@ public abstract class NuxeoLauncher {
         return serverStarted;
     }
 
-    private void install() throws IOException, InterruptedException {
-        List<String> startCommand = new ArrayList<String>();
-        startCommand.add(getJavaExecutable().getPath());
-        startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
-        startCommand.add("-cp");
-        File tmpDir = File.createTempFile("install", null);
-        startCommand.add(getInstallClassPath(tmpDir));
-        startCommand.addAll(getNuxeoProperties());
-        startCommand.add("-Dnuxeo.runtime.home="
-                + configurationGenerator.getRuntimeHome().getPath());
-        startCommand.add(INSTALLER_CLASS);
-        startCommand.add(tmpDir.getPath());
-        startCommand.add(configurationGenerator.getInstallFile().getPath());
-        ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
-        pb.directory(configurationGenerator.getNuxeoHome());
-        log.debug("Install command: " + pb.command());
-        Process installProcess = pb.start();
-        ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
-                installProcess, false);
-        Thread.sleep(100);
-        installProcess.waitFor();
-        waitForProcessStreams(sgArray);
+    private boolean pkgList() {
+        callPackageManager("list", null);
+        return errorValue == 0;
+    }
+
+    private boolean pkgUninstall() {
+        log.info("Package(s) uninstall in progress...");
+        callPackageManager("uninstall", params);
+        return errorValue == 0;
+    }
+
+    private boolean pkgInstall() {
+        log.info("Package(s) install in progress...");
+        if (params.length > 0) {
+            callPackageManager("installpkg", params);
+        } else if (!configurationGenerator.isInstallInProgress()) {
+            log.error("No package to install.");
+            errorValue = 1;
+        } else {
+            callPackageManager(
+                    "install",
+                    new String[] { configurationGenerator.getInstallFile().getPath() });
+        }
+        return errorValue == 0;
+    }
+
+    /**
+     * @since 5.5
+     * @param pkgParams Parameters passed to the package manager
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    protected void callPackageManager(String pkgCommand, String[] pkgParams) {
+        try {
+            // checkNoRunningServer();
+            List<String> startCommand = new ArrayList<String>();
+            startCommand.add(getJavaExecutable().getPath());
+            startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
+            startCommand.add("-cp");
+            File tmpDir = File.createTempFile("install", null);
+            startCommand.add(getInstallClassPath(tmpDir));
+            startCommand.addAll(getNuxeoProperties());
+            startCommand.add("-Dnuxeo.runtime.home="
+                    + configurationGenerator.getRuntimeHome().getPath());
+            startCommand.add(PKG_MANAGER_CLASS);
+            startCommand.add(tmpDir.getPath());
+            startCommand.add(pkgCommand);
+            if (pkgParams != null) {
+                for (String param : pkgParams) {
+                    startCommand.add(param);
+                }
+            }
+            ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
+            pb.directory(configurationGenerator.getNuxeoHome());
+            log.debug("Package manager command: " + pb.command());
+            Process process = pb.start();
+            ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
+                    process, true);
+            Thread.sleep(100);
+            process.waitFor();
+            waitForProcessStreams(sgArray);
+        } catch (IOException e) {
+            errorValue = 1;
+            log.error("Could not start process", e);
+        } catch (InterruptedException e) {
+            errorValue = 1;
+            log.error("Could not start process", e);
+            // } catch (IllegalStateException e) {
+            // errorValue = 1;
+            // log.error("The server must not be running while managing marketplace packages",e);
+        }
     }
 
     /**
@@ -866,7 +918,7 @@ public abstract class NuxeoLauncher {
             int nbTry = 0;
             boolean retry = false;
             int stopMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
-                STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT));
+                    STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT));
             do {
                 List<String> stopCommand = new ArrayList<String>();
                 stopCommand.add(getJavaExecutable().getPath());
@@ -926,7 +978,8 @@ public abstract class NuxeoLauncher {
                         }
                         Thread.sleep(1000);
                         deltaTime = (new Date().getTime() - startTime) / 1000;
-                    } while (!retry && getPid() != null && deltaTime < stopMaxWait);
+                    } while (!retry && getPid() != null
+                            && deltaTime < stopMaxWait);
                 } catch (InterruptedException e) {
                     log.error(e);
                 }
@@ -1112,7 +1165,7 @@ public abstract class NuxeoLauncher {
      * @since 5.5
      */
     protected void setDebug(boolean activateDebug) {
-        Log4JHelper.setDebug("org.nuxeo.launcher", activateDebug);
+        Log4JHelper.setDebug("org.nuxeo", activateDebug);
     }
 
     /**
@@ -1121,7 +1174,8 @@ public abstract class NuxeoLauncher {
      * @throws URISyntaxException
      */
     public static void printHelp() {
-        log.error("\nnuxeoctl usage:\n\tnuxeoctl [options] [gui|nogui] [help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack] [additional parameters]");
+        log.error("\nnuxeoctl usage:\n\tnuxeoctl [options] [gui|nogui] "
+                + "[help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack] [additional parameters]");
         log.error("\njava usage:\n\tjava [-D"
                 + JAVA_OPTS_PROPERTY
                 + "=\"JVM options\"] [-D"
@@ -1149,7 +1203,8 @@ public abstract class NuxeoLauncher {
         log.error("\t\t nogui\t\t\tDeactivate gui option which is set by default under Windows.");
         log.error("\n\t Commands:");
         log.error("\t\t help\t\t\tPrint this message.");
-        log.error("\t\t start\t\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.");
+        log.error("\t\t start\t\t\tStart Nuxeo server in background, waiting for effective start. "
+                + "Useful for batch executions requiring the server being immediately available after the script returned.");
         log.error("\t\t stop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
         log.error("\t\t restart\t\tRestart Nuxeo server.");
         log.error("\t\t configure\t\tConfigure Nuxeo server with parameters from nuxeo.conf.");
@@ -1159,6 +1214,11 @@ public abstract class NuxeoLauncher {
         log.error("\t\t startbg\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
         log.error("\t\t restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
         log.error("\t\t pack\t\t\tNot implemented. Use \"pack\" Shell script.");
+        log.error("\t\t mp-list\t\tList marketplace packages.");
+        log.error("\t\t mp-install\t\tRun marketplace package installation. "
+                + "It is automatically called at startup if installAfterRestart.log exists. "
+                + "Else you must provide the package file as parameter.");
+        log.error("\t\t mp-uninstall\t\tUninstall a marketplace package. You must provide the package id as parameter (see \"mp-status\" command).");
         log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
     }
 
