@@ -61,9 +61,7 @@ public class CompositeCommand extends AbstractCommand {
             throws PackageException {
         CompositeCommand rollbackCommand = new CompositeCommand();
         for (Command command : commands) {
-            if (command != null) {
-                rollbackCommand.addCommand(command.run(task, prefs));
-            }
+            rollbackCommand.addCommand(command.run(task, prefs));
         }
         return rollbackCommand;
     }
@@ -72,9 +70,7 @@ public class CompositeCommand extends AbstractCommand {
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
         for (Command command : commands) {
-            if (command != null) {
-                command.validate(task, status);
-            }
+            command.validate(task, status);
         }
     }
 
@@ -85,7 +81,9 @@ public class CompositeCommand extends AbstractCommand {
     }
 
     public void addCommand(Command command) {
-        commands.add(command);
+        if (command != null) {
+            commands.add(command);
+        }
     }
 
 }
