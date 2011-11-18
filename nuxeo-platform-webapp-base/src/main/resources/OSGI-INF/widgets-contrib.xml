@@ -53,6 +53,55 @@
 
     </widgetType>
 
+    <widgetType name="image">
+      <configuration>
+        <title>Image</title>
+        <description>
+          <p>
+            The image widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors, and an &lt;img&gt; tag
+            displaying the image in other modes.
+          </p>
+          <p>
+            The widget accepts the following properties:
+            <ul>
+              <li>
+                acceptedExtensions: comma separated list of supported file extensions
+                in edit mode. (".jpg, .jpeg, .png")
+              </li>
+              <li>
+                width: the width of the img tag in view mode.
+              </li>
+              <li>
+                height: the height of the img tag in view mode.
+              </li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>blob</type>
+          </defaultTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/image_widget_template.xhtml</property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
