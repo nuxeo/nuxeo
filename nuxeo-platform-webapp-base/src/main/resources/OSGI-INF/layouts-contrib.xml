@@ -986,6 +986,50 @@
       </property>
     </widgetType>
 
+    <widgetType name="contentView">
+      <configuration>
+        <sinceVersion>5.5</sinceVersion>
+        <title>Content view</title>
+        <description>
+          This widget displays a content view.
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="contentView_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>contentViewName</widget>
+                </row>
+              </rows>
+              <widget name="contentViewName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Content View name</label>
+                </labels>
+                <fields>
+                  <field>contentViewName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">contentViews</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/content_view_widget.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
