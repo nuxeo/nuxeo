@@ -149,7 +149,7 @@ CREATE TABLE ANCESTORS (
 SELECT 1 FROM user_tab_columns WHERE table_name = 'ANCESTORS' AND column_name = 'need_update'
 
 #IF: emptyResult
-ALTER TABLE ANCESTORS ADD need_update NUMBER (1) DEFAULT 1
+ALTER TABLE ANCESTORS ADD need_update NUMBER (1)
 
 
 #TEST:
