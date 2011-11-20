@@ -24,7 +24,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <!--src>themes/theme-galaxy.xml</src-->
+      <!--src>themes/theme-galaxy.xml</src -->
       <src>themes/theme-galaxy-new.xml</src>
     </theme>
 
@@ -165,20 +165,20 @@
 
     <themePage name="galaxy/print">
       <defaultFlavor>default</defaultFlavor>
-      <flavors append="true">
+      <flavors>
         <flavor>default</flavor>
       </flavors>
-      <styles append="true">
+      <styles>
         <style>print_generic</style>
       </styles>
     </themePage>
 
     <themePage name="galaxy/popup">
       <defaultFlavor>default</defaultFlavor>
-      <flavors append="true">
+      <flavors>
         <flavor>default</flavor>
       </flavors>
-      <styles append="true">
+      <styles>
         <style>basics</style>
         <style>buttons_and_actions</style>
         <style>body</style>
@@ -195,10 +195,10 @@
 
     <themePage name="galaxy/default">
       <defaultFlavor>default</defaultFlavor>
-      <flavors append="true">
+      <flavors>
         <flavor>default</flavor>
       </flavors>
-      <styles append="true">
+      <styles>
         <style>basics</style>
         <style>buttons_and_actions</style>
         <style>header</style>
@@ -227,7 +227,14 @@
   <extension target="org.nuxeo.theme.styling.service" point="flavors">
 
     <flavor name="default">
-      <presetsList append="true">
+      <label>label.theme.flavor.nuxeo.default</label>
+      <logo>
+        <path>/img/nuxeo_logo.png</path>
+        <width>92</width>
+        <height>36</height>
+        <title>Nuxeo</title>
+      </logo>
+      <presetsList>
         <presets category="border" src="themes/palettes/default-borders.properties" />
         <presets category="background"
           src="themes/palettes/default-backgrounds.properties" />
@@ -399,17 +406,14 @@
       <scheme>
         org.nuxeo.theme.jsf.negotiation.collection.ViewId
       </scheme>
+      <!-- local flavor/collection (specific to nuxeo5) -->
+      <scheme>
+        org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalThemeFlavor
+      </scheme>
       <!-- default flavor/collection (specific to nuxeo5) -->
       <scheme>
-        org.nuxeo.ecm.platform.localconfiguration.theme.negociation.DefaultThemeFlavor
+        org.nuxeo.ecm.webapp.webcontainer.DefaultThemeFlavor
       </scheme>
-      <!-- local collection (specific to nuxeo5) -->
-      <!-- TODO -->
-      <!--
-        <scheme>
-        org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalThemeFlavor
-        </scheme>
-      -->
       <scheme>
         org.nuxeo.theme.jsf.negotiation.collection.UnspecifiedCollection
       </scheme>

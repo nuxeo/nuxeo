@@ -17,15 +17,29 @@
 
 package org.nuxeo.ecm.webapp.webcontainer;
 
-import java.util.List;
+import java.io.Serializable;
 
-import javax.faces.model.SelectItem;
+import org.nuxeo.theme.styling.service.descriptors.Logo;
 
-public interface ThemeActions {
+public interface ThemeActions extends Serializable {
 
-    List<SelectItem> getAvailableThemes();
-
-    List<SelectItem> getAvailablePages(String page);
-
+    /**
+     * Returns negotiated default theme to handle print action
+     */
     String getDefaultTheme();
+
+    /**
+     * Returns the logo configured for negotiated flavor
+     *
+     * @since 5.5.
+     */
+    Logo getLogo();
+
+    /**
+     * Returns the logo configured for given flavor
+     *
+     * @since 5.5.
+     */
+    Logo getLogo(String flavorName);
+
 }
