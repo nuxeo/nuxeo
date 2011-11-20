@@ -152,7 +152,7 @@
     </action>
 
     <action id="print"
-      link="#{restHelper.doPrint(WebcontainerThemeActions.defaultTheme)}"
+      link="#{restHelper.doPrint(themeActions.defaultTheme)}"
       order="100" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION_BLANK_TARGET</category>
     </action>
