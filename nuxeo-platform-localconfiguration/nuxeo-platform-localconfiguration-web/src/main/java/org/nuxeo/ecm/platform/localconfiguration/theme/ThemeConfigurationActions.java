@@ -33,9 +33,13 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.localconfiguration.LocalThemeConfig;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
+import org.nuxeo.theme.styling.service.ThemeStylingService;
+import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.themes.ThemeManager;
 
 @Name("themeConfigurationActions")
@@ -49,6 +53,13 @@ public class ThemeConfigurationActions implements Serializable {
 
     protected String theme;
 
+    protected String selectedFlavor;
+
+    /**
+     * @deprecated since 5.5: local theme configuration now only handles
+     *             flavors.
+     */
+    @Deprecated
     public List<SelectItem> getAvailableThemes() {
         List<SelectItem> themes = new ArrayList<SelectItem>();
         for (String theme : ThemeManager.getThemeNames("jsf-facelets")) {
@@ -57,6 +68,11 @@ public class ThemeConfigurationActions implements Serializable {
         return themes;
     }
 
+    /**
+     * @deprecated since 5.5: local theme configuration now only handles
+     *             flavors.
+     */
+    @Deprecated
     public List<SelectItem> getAvailablePages() {
         List<SelectItem> pages = new ArrayList<SelectItem>();
         if (theme != null && !theme.equals("")) {
@@ -67,6 +83,11 @@ public class ThemeConfigurationActions implements Serializable {
         return pages;
     }
 
+    /**
+     * @deprecated since 5.5: local theme configuration now only handles
+     *             flavors.
+     */
+    @Deprecated
     public List<SelectItem> getAvailablePerspectives() {
         List<SelectItem> selectItemList = new ArrayList<SelectItem>();
         for (PerspectiveType perspectiveType : PerspectiveManager.listPerspectives()) {
@@ -76,12 +97,11 @@ public class ThemeConfigurationActions implements Serializable {
         return selectItemList;
     }
 
-    public List<SelectItem> getAvailableEngines() {
-        List<SelectItem> engines = new ArrayList<SelectItem>();
-        // TODO
-        return engines;
-    }
-
+    /**
+     * @deprecated since 5.5: local theme configuration now only handles
+     *             flavors.
+     */
+    @Deprecated
     public void themeChange(ActionEvent event) {
         UIComponent select = event.getComponent().getParent();
         if (select instanceof ValueHolder) {
@@ -92,4 +112,77 @@ public class ThemeConfigurationActions implements Serializable {
                     + select);
         }
     }
+
+    /**
+     * Returns the layout to use for local configuration, to handle migration
+     * to a flavor model
+     *
+     * @since 5.5
+     * @return
+     */
+    public String getConfigurationLayout() {
+        Boolean useOldThemeConf = Boolean.valueOf(Framework.getProperty(LocalThemeConfig.OLD_THEME_CONFIGURATION_PROPERTY));
+        if (Boolean.TRUE.equals(useOldThemeConf)) {
+            return "old_theme_configuration";
+        }
+        return "theme_configuration";
+    }
+
+    public List<Flavor> getAvailableFlavors(String themePage) {
+        ThemeStylingService service = getStylingService();
+        if (service == null) {
+            return null;
+        }
+        return service.getFlavors(themePage);
+    }
+
+    public String getDefaultFlavorName(String themePage) {
+        ThemeStylingService service = getStylingService();
+        if (service == null) {
+            return null;
+        }
+        return service.getDefaultFlavorName(themePage);
+    }
+
+    public Flavor getDefaultFlavor(String themePage) {
+        ThemeStylingService service = getStylingService();
+        if (service == null) {
+            return null;
+        }
+        String flavorName = service.getDefaultFlavorName(themePage);
+        if (flavorName != null) {
+            return service.getFlavor(flavorName);
+        }
+        return null;
+    }
+
+    protected ThemeStylingService getStylingService() {
+        try {
+            ThemeStylingService service = Framework.getService(ThemeStylingService.class);
+            if (service == null) {
+                log.error("Missing ThemeStylingService");
+                return null;
+            }
+            return service;
+        } catch (Exception e) {
+            log.error(e);
+            return null;
+        }
+    }
+
+    public String getSelectedFlavor() {
+        return selectedFlavor;
+    }
+
+    public void onFlavorSelection(ActionEvent event) {
+        UIComponent select = event.getComponent().getParent();
+        if (select instanceof ValueHolder) {
+            selectedFlavor = (String) ((ValueHolder) select).getValue();
+        } else {
+            log.error("Bad component returned " + select);
+            throw new AbortProcessingException("Bad component returned "
+                    + select);
+        }
+    }
+
 }

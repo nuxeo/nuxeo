@@ -1,0 +1,56 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <nxu:set var="defaultFlavorName"
+    value="#{themeConfigurationActions.getDefaultFlavorName(themeActions.defaultTheme)}"
+    cache="true">
+    
+    <a4j:region renderRegionOnly="true">
+      <h:panelGrid columns="2">
+        <nxu:set var="flavors"
+          value="#{themeConfigurationActions.getAvailableFlavors(themeActions.defaultTheme)}"
+          cache="true">
+          <h:selectOneListbox id="#{widget.id}" value="#{field}">
+            <nxu:selectItems
+              var="flavor" value="#{flavors}"
+              itemValue="#{flavor.name}" itemLabel="#{messages[flavor.label]}"
+              itemSelected="#{empty field and flavor.name == defaultFlavorName}" />
+            <a4j:support event="onchange"
+              bypassUpdates="true"
+              actionListener="#{themeConfigurationActions.onFlavorSelection}"
+              reRender="#{widget.id}_flavorPreview"
+              id="#{widget.id}_ajax_select">
+            </a4j:support>
+          </h:selectOneListbox>
+        </nxu:set>
+
+        <a4j:outputPanel id="#{widget.id}_flavorPreview">
+          <nxu:set var="selectedFlavorNameInBean"
+            value="#{themeConfigurationActions.selectedFlavor}">
+          <nxu:set var="selectedFlavorName"
+            value="#{empty selectedFlavorNameInBean ? defaultFlavorName : selectedFlavorNameInBean}">
+          <nxu:set var="selectedFlavor"
+            value="#{themeActions.getFlavor(selectedFlavorName)}">
+            <c:choose>
+              <c:when test="#{! empty selectedFlavor.logo.path}">
+                <h:graphicImage value="#{selectedFlavor.logo.path}" width="100" />
+              </c:when>
+              <c:otherwise>
+                No preview available
+              </c:otherwise>
+            </c:choose>
+          </nxu:set>
+          </nxu:set>
+          </nxu:set>
+        </a4j:outputPanel>
+      
+      </h:panelGrid>
+    </a4j:region>
+
+  </nxu:set>
+
+</div>

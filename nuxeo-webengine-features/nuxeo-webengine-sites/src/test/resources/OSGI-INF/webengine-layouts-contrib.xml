@@ -4,6 +4,7 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
+
     <layout name="webpage">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -12,54 +13,31 @@
         <row>
           <widget>pushtomenu</widget>
         </row>
-       <!--  Not needed yet        
-        <row>
-          <widget>theme</widget>
-        </row> -->
         <row>
           <widget>content</widget>
-        </row>        
+        </row>
       </rows>
-
-       <!--  Not needed yet        
-      <widget name="theme" type="template">
-        <translated>true</translated>
-        <fields>
-          <field>webp:theme</field>
-          <field>webp:themePage</field>
-        </fields>
-        <properties mode="any">
-          <property name="template">
-            /widgets/site_theme_widget.xhtml
-          </property>
-        </properties>
-      </widget> -->
-
       <widget name="pushtomenu" type="template">
         <translated>true</translated>
         <fields>
           <field>webp:pushtomenu</field>
         </fields>
-         <properties mode="any">
-         <property name="required">true</property>
-         <property name="template">
-           /widgets/boolean_radio_widget_template.xhtml
-         </property>
-         </properties>
+        <properties mode="any">
+          <property name="required">true</property>
+          <property name="template">
+            /widgets/boolean_radio_widget_template.xhtml
+          </property>
+        </properties>
       </widget>
-
-
-
       <widget name="content" type="htmltext">
         <translated>true</translated>
         <fields>
           <field>webp:content</field>
         </fields>
       </widget>
-
     </layout>
-    
-    <!-- ContextualLink layout definition  -->
+
+    <!-- ContextualLink layout definition -->
     <layout name="contextualLink">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -67,7 +45,7 @@
       <rows>
         <row>
           <widget>link</widget>
-        </row>        
+        </row>
       </rows>
       <widget name="link" type="text">
         <translated>true</translated>
@@ -78,8 +56,8 @@
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
-      </widget>      
-    </layout>    
+      </widget>
+    </layout>
 
   </extension>
 

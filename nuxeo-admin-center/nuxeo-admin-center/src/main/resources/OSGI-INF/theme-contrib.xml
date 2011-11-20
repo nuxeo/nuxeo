@@ -55,7 +55,6 @@
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
-        <flavor>dark</flavor>
       </flavors>
       <styles>
         <style>basics</style>
