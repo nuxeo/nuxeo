@@ -59,6 +59,7 @@ h3.summaryTitle {
 .comments_block .commentQuote { margin: .4em 0 .4em 2em }
 
 .metadata_block .dataInput td { padding: .2em }
+.metadata_block .dataInput td.fieldColumn { padding-left: 2em }
 
 /*  =Manage tab */
 .rightsAdd { margin: 1em 0 }

@@ -11,6 +11,7 @@ textarea { font-family: "default (__FLAVOR__ font)"; padding: .4em; font-size: .
 .checkBox { margin-right: .3em; border: none }
 .required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 1em 0 0 }
 option { background-color: white }
+optgroup { background-color: background-color: "color.major.light (__FLAVOR__ background)"; }
 
 input, input[type="file"], textarea, select { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; line-height: 18px; padding: .3em }
 input[type="file"] { margin-left: .6em }
@@ -22,7 +23,7 @@ input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ bord
 /* in Tables */
 .dataInput textarea, .dataInput .dataInputText { width: 500px }
 .dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { vertical-align: top }
-.dataInput select { box-shadow: 1px 1px 2px #e0e0e0 inset; padding: .3em; vertical-align: top }
+.dataInput select { box-shadow: 1px 1px 2px #e0e0e0 inset; min-width: 9em; padding: .3em; vertical-align: top }
 
 .taskPrincipalSelect select { margin: 4em 0 1em 1.4em; padding: .2em .1em .2em .1em }
 

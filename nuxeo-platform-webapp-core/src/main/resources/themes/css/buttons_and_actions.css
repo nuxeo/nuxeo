@@ -102,7 +102,7 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
   border-radius: 3px;
   border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
-  float: right;
+  float: right !important;
   font-size: 0.8em;
   font-weight: bold;
   margin: 0 .5em;

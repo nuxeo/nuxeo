@@ -56,7 +56,7 @@ table.dataOutput th a img { margin: 0 0 0 .2em; padding: 0; vertical-align: bott
 .buttonsGadget { margin: .4em 0 .4em 3.2em }
 .smallButtonsGadget { margin: 0 0 .4em 7em }
 
-.labelColumn { font-weight: bold; vertical-align: top; width: 120px }
+.labelColumn { font-weight: bold; vertical-align: top; min-width: 8em; max-width: 18em }
 .labelColumn span { display: block; padding-right: .7em }
 .workflowLabelColumn { width: 120px }
 
@@ -75,5 +75,7 @@ table.dataOutput th a img { margin: 0 0 0 .2em; padding: 0; vertical-align: bott
 .vocabularyEntryContent .dataInput { border: none; margin-bottom: 1.4em }
 
 table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background)" }
+
+.listShuttleTable { margin-left: 3em }
 
 .dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.light (__FLAVOR__ background)" }

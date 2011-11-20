@@ -207,6 +207,7 @@
         <style>navigation</style>
         <style>tables</style>
         <style>forms</style>
+        <style>popups</style>
         <style>breadcrumb</style>
         <style>messages_and_tooltips</style>
         <style>foldable_boxes</style>
@@ -267,6 +268,9 @@
     </style>
     <style name="navigation">
       <path>themes/css/navigation.css</path>
+    </style>
+    <style name="popups">
+      <path>themes/css/popups.css</path>
     </style>
     <style name="richfaces_components">
       <path>themes/css/richfaces_components.css</path>
