@@ -44,6 +44,7 @@ import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
+import org.nuxeo.theme.styling.service.descriptors.Logo;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
 import org.nuxeo.theme.styling.service.registries.FlavorRegistry;
@@ -188,6 +189,21 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     protected void registerFlavor(Flavor flavor, RuntimeContext extensionContext)
             throws Exception {
+        // set flavor presets files content
+        List<FlavorPresets> presets = flavor.getPresets();
+        if (presets != null) {
+            for (FlavorPresets myPreset : presets) {
+                String src = myPreset.getSrc();
+                URL url = getUrlFromPath(src, extensionContext);
+                if (url == null) {
+                    log.error(String.format("Could not find resource at '%s'",
+                            src));
+                } else {
+                    String content = new String(FileUtils.readBytes(url));
+                    myPreset.setContent(content);
+                }
+            }
+        }
         flavorReg.addContribution(flavor);
         String flavorName = flavor.getName();
         Flavor newFlavor = flavorReg.getContribution(flavorName);
@@ -226,11 +242,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
         if (presets != null) {
             for (FlavorPresets myPreset : presets) {
-                String src = myPreset.getSrc();
-                URL url = getUrlFromPath(src, extensionContext);
-                if (url == null) {
-                    log.error(String.format("Could not find resource at '%s'",
-                            src));
+                String content = myPreset.getContent();
+                if (content == null) {
+                    log.error(String.format("Null content for preset with "
+                            + "source '%s' in flavor '%s'", myPreset.getSrc(),
+                            flavorName));
                 } else {
                     String cat = myPreset.getCategory();
                     Map<String, String> allEntries;
@@ -239,26 +255,34 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     } else {
                         allEntries = new HashMap<String, String>();
                     }
-                    Map<String, String> newEntries = PaletteParser.parse(url);
-                    if (newEntries != null) {
-                        allEntries.putAll(newEntries);
-                    }
-                    if (allEntries.isEmpty()) {
-                        presetsByCat.remove(cat);
-                    } else {
-                        presetsByCat.put(cat, allEntries);
+                    try {
+                        Map<String, String> newEntries = PaletteParser.parse(
+                                content.getBytes(), myPreset.getSrc());
+                        if (newEntries != null) {
+                            allEntries.putAll(newEntries);
+                        }
+                        if (allEntries.isEmpty()) {
+                            presetsByCat.remove(cat);
+                        } else {
+                            presetsByCat.put(cat, allEntries);
+                        }
+                    } catch (Exception e) {
+                        log.error(String.format("Could not parse palette for "
+                                + "preset with source '%s' in flavor '%s'",
+                                myPreset.getSrc(), flavorName), e);
                     }
                 }
             }
         }
 
-        // register all presets to the standard theme service registries
+        // unregister potential existing presets
         unregisterFlavorToThemeService(flavor);
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Register flavor '%s' to the theme service", flavorName));
         }
 
+        // register all presets to the standard theme service registries
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (String cat : presetsByCat.keySet()) {
             String paletteName = getPaletteName(flavorName, cat);
@@ -396,7 +420,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
             List<String> styleNames = page.getStyles();
             if (styleNames != null) {
-
                 Style style = themeManager.createStyle();
                 style.setExternal(true);
                 for (String styleName : styleNames) {
@@ -487,12 +510,98 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     // service API
 
     @Override
-    public String getDefaultFlavor(String themePageName) {
+    public String getDefaultFlavorName(String themePageName) {
         if (pageReg != null) {
             ThemePage themePage = pageReg.getContribution(themePageName);
             if (themePage != null) {
                 return themePage.getDefaultFlavor();
             }
+        }
+        return null;
+    }
+
+    @Override
+    public Flavor getFlavor(String flavorName) {
+        if (flavorReg != null) {
+            Flavor flavor = flavorReg.getContribution(flavorName);
+            if (flavor != null && flavor.getLogo() == null) {
+                // resolve and attach the computed logo from extended flavor
+                Flavor clone = flavor.clone();
+                clone.setLogo(computeLogo(flavor, new ArrayList<String>()));
+                return clone;
+            }
+            return flavor;
+        }
+        return null;
+    }
+
+    @Override
+    public Logo getLogo(String flavorName) {
+        Flavor flavor = getFlavor(flavorName);
+        if (flavor != null) {
+            return flavor.getLogo();
+        }
+        return null;
+    }
+
+    protected Logo computeLogo(Flavor flavor, List<String> flavors) {
+        if (flavor != null) {
+            Logo localLogo = flavor.getLogo();
+            if (localLogo == null) {
+                String extendsFlavorName = flavor.getExtendsFlavor();
+                if (!StringUtils.isBlank(extendsFlavorName)) {
+                    if (flavors.contains(extendsFlavorName)) {
+                        // cyclic dependency => abort
+                        return null;
+                    } else {
+                        // retrieved the extended logo
+                        flavors.add(flavor.getName());
+                        Flavor extendedFlavor = getFlavor(extendsFlavorName);
+                        if (extendedFlavor != null) {
+                            localLogo = computeLogo(extendedFlavor, flavors);
+                        }
+                    }
+                }
+            }
+            return localLogo;
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getFlavorNames(String themePageName) {
+        if (pageReg != null) {
+            ThemePage themePage = pageReg.getContribution(themePageName);
+            if (themePage != null) {
+                List<String> flavors = themePage.getFlavors();
+                // add default flavor if it's not listed there
+                String defaultFlavor = themePage.getDefaultFlavor();
+                if (defaultFlavor != null) {
+                    if (flavors == null) {
+                        flavors = new ArrayList<String>();
+                    }
+                    if (!flavors.contains(defaultFlavor)) {
+                        flavors.add(0, defaultFlavor);
+                    }
+                }
+                return flavors;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Flavor> getFlavors(String themePageName) {
+        List<String> flavorNames = getFlavorNames(themePageName);
+        if (flavorNames != null) {
+            List<Flavor> flavors = new ArrayList<Flavor>();
+            for (String flavorName : flavorNames) {
+                Flavor flavor = getFlavor(flavorName);
+                if (flavor != null) {
+                    flavors.add(flavor);
+                }
+            }
+            return flavors;
         }
         return null;
     }

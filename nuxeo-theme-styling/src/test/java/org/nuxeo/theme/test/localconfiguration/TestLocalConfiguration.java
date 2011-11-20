@@ -44,8 +44,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = LocalConfigurationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({"org.nuxeo.theme.styling",
-    "org.nuxeo.theme.styling.tests:local-configuration-config.xml"})
+@Deploy({ "org.nuxeo.theme.styling",
+        "org.nuxeo.theme.styling.tests:local-configuration-config.xml" })
 public class TestLocalConfiguration {
 
     public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef(
@@ -65,17 +65,25 @@ public class TestLocalConfiguration {
     @Test
     public void testLocalTheme() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        workspace.setPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_THEME_PROPERTY, "galaxy");
-        workspace.setPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_PAGE_PROPERTY, "default");
+        workspace.setPropertyValue(
+                LocalThemeConfigConstants.THEME_CONFIGURATION_THEME_PROPERTY,
+                "galaxy");
+        workspace.setPropertyValue(
+                LocalThemeConfigConstants.THEME_CONFIGURATION_PAGE_PROPERTY,
+                "default");
+        workspace.setPropertyValue(
+                LocalThemeConfigConstants.THEME_CONFIGURATION_FLAVOR_PROPERTY,
+                "dark");
         session.saveDocument(workspace);
         session.save();
 
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
         LocalThemeConfig configuration = localConfigurationService.getConfiguration(
-                LocalThemeConfig.class, LocalThemeConfigConstants.THEME_CONFIGURATION_FACET,
-                workspace);
+                LocalThemeConfig.class,
+                LocalThemeConfigConstants.THEME_CONFIGURATION_FACET, workspace);
         Assert.assertNotNull(configuration);
         Assert.assertEquals("galaxy/default", configuration.computePagePath());
+        Assert.assertEquals("dark", configuration.getFlavor());
     }
 
 }

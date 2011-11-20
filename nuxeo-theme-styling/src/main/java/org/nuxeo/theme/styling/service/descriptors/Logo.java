@@ -16,34 +16,30 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
+import java.io.Serializable;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @since 5.5
  */
-@XObject("style")
-public class SimpleStyle {
+@XObject("logo")
+public class Logo implements Serializable {
 
-    @XNode("@name")
-    String name;
+    private static final long serialVersionUID = 1L;
 
-    // FIXME: rename "src" as file is not in the war
     @XNode("path")
     String path;
 
-    /**
-     * Resolved source content
-     */
-    String content;
+    @XNode("width")
+    String width;
 
-    public String getName() {
-        return name;
-    }
+    @XNode("height")
+    String height;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @XNode("title")
+    String title;
 
     public String getPath() {
         return path;
@@ -53,12 +49,37 @@ public class SimpleStyle {
         this.path = path;
     }
 
-    public String getContent() {
-        return content;
+    public String getWidth() {
+        return width;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Logo clone() {
+        Logo cLogo = new Logo();
+        cLogo.setHeight(getHeight());
+        cLogo.setWidth(getWidth());
+        cLogo.setTitle(getTitle());
+        cLogo.setPath(getPath());
+        return cLogo;
     }
 
 }

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,17 +25,37 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * A flavor represents the set of information that can be used to switch the
+ * theme styling on a given page.
+ * <p>
+ * It holds presets that can be referenced in CSS files, as well as logo
+ * information. It can extend another flavor, in case it will its logo and
+ * presets. The name and label are not inherited.
+ * <p>
+ * At registration, presets and log information are merged of a previous
+ * contribution with the same name already held that kind of information. When
+ * emptying the list of presets.
+ *
  * @since 5.5
  */
-// TODO: use one file for all categories with a custom parser
 @XObject("flavor")
-public class Flavor {
+public class Flavor implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     String name;
 
+    // TODO: add palette preview
+
+    @XNode("label")
+    String label;
+
     @XNode("@extends")
     String extendsFlavor;
+
+    @XNode("logo")
+    Logo logo;
 
     @XNode("presetsList@append")
     boolean appendPresets;
@@ -48,6 +69,14 @@ public class Flavor {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getExtendsFlavor() {
@@ -68,6 +97,40 @@ public class Flavor {
 
     public void setPresets(List<FlavorPresets> presets) {
         this.presets = presets;
+    }
+
+    public Logo getLogo() {
+        return logo;
+    }
+
+    public void setLogo(Logo logo) {
+        this.logo = logo;
+    }
+
+    public void setAppendPresets(boolean appendPresets) {
+        this.appendPresets = appendPresets;
+    }
+
+    @Override
+    public Flavor clone() {
+        Flavor clone = new Flavor();
+        clone.setName(getName());
+        clone.setLabel(getLabel());
+        Logo logo = getLogo();
+        if (logo != null) {
+            clone.setLogo(logo.clone());
+        }
+        clone.setExtendsFlavor(getExtendsFlavor());
+        clone.setAppendPresets(getAppendPresets());
+        List<FlavorPresets> presets = getPresets();
+        if (presets != null) {
+            List<FlavorPresets> newPresets = new ArrayList<FlavorPresets>();
+            for (FlavorPresets item : presets) {
+                newPresets.add(item.clone());
+            }
+            clone.setPresets(newPresets);
+        }
+        return clone;
     }
 
 }

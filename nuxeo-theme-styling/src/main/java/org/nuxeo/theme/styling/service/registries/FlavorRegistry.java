@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
+import org.nuxeo.theme.styling.service.descriptors.Logo;
 
 /**
  * Registry for theme flavors, handling merge of registered {@link Flavor}
@@ -54,38 +55,59 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
 
     @Override
     public Flavor clone(Flavor orig) {
-        Flavor clone = new Flavor();
-        clone.setName(orig.getName());
-        clone.setExtendsFlavor(orig.getExtendsFlavor());
-        List<FlavorPresets> presets = orig.getPresets();
-        if (presets != null) {
-            List<FlavorPresets> newPresets = new ArrayList<FlavorPresets>();
-            for (FlavorPresets item : presets) {
-                newPresets.add(item.clone());
-            }
-            clone.setPresets(newPresets);
+        if (orig == null) {
+            return null;
         }
-        return clone;
+        return orig.clone();
     }
 
     @Override
     public void merge(Flavor src, Flavor dst) {
-        if (src.getAppendPresets()) {
-            String newExtend = dst.getExtendsFlavor();
-            if (newExtend != null) {
-                dst.setExtendsFlavor(newExtend);
+        String newExtend = dst.getExtendsFlavor();
+        if (newExtend != null) {
+            dst.setExtendsFlavor(newExtend);
+        }
+        String newLabel = src.getLabel();
+        if (newLabel != null) {
+            dst.setLabel(newLabel);
+        }
+        Logo logo = src.getLogo();
+        if (logo != null) {
+            Logo newLogo = dst.getLogo();
+            if (newLogo == null) {
+                newLogo = logo.clone();
+            } else {
+                // merge logo info
+                if (logo.getHeight() != null) {
+                    newLogo.setHeight(logo.getHeight());
+                }
+                if (logo.getWidth() != null) {
+                    newLogo.setWidth(logo.getWidth());
+                }
+                if (logo.getTitle() != null) {
+                    newLogo.setTitle(logo.getTitle());
+                }
+                if (logo.getPath() != null) {
+                    newLogo.setPath(logo.getPath());
+                }
             }
+            dst.setLogo(newLogo);
+        }
 
-            List<FlavorPresets> newPresets = dst.getPresets();
-            if (newPresets == null) {
-                newPresets = new ArrayList<FlavorPresets>();
+        List<FlavorPresets> newPresets = src.getPresets();
+        if (newPresets != null) {
+            List<FlavorPresets> merged = new ArrayList<FlavorPresets>();
+            merged.addAll(newPresets);
+            boolean keepOld = src.getAppendPresets()
+                    || (newPresets.isEmpty() && !src.getAppendPresets());
+            if (keepOld) {
+                // add back old contributions
+                List<FlavorPresets> oldPresets = dst.getPresets();
+                if (oldPresets != null) {
+                    merged.addAll(0, oldPresets);
+                }
             }
-            // merge
-            List<FlavorPresets> presets = src.getPresets();
-            if (presets != null) {
-                newPresets.addAll(presets);
-            }
-            dst.setPresets(newPresets);
+            dst.setPresets(merged);
         }
     }
 

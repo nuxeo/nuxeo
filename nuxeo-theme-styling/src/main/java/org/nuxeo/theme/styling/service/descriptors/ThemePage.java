@@ -144,4 +144,16 @@ public class ThemePage {
         this.loaded = loaded;
     }
 
+    public void setAppendStyles(boolean appendStyles) {
+        this.appendStyles = appendStyles;
+    }
+
+    public void setAppendFlavors(boolean appendFlavors) {
+        this.appendFlavors = appendFlavors;
+    }
+
+    public void setAppendResources(boolean appendResources) {
+        this.appendResources = appendResources;
+    }
+
 }

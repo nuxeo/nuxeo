@@ -8,5 +8,6 @@
   <xs:element name="perspective" type="xs:string"/>
   <xs:element name="engine" type="xs:string"/>
   <xs:element name="mode" type="xs:string"/>
+  <xs:element name="flavor" type="xs:string"/>
 
 </xs:schema>

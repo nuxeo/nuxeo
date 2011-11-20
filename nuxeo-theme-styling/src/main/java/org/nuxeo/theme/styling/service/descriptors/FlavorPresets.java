@@ -31,6 +31,11 @@ public class FlavorPresets {
     @XNode("@src")
     String src;
 
+    /**
+     * Resolved source content
+     */
+    String content;
+
     public String getCategory() {
         return category;
     }
@@ -47,10 +52,19 @@ public class FlavorPresets {
         this.src = src;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public FlavorPresets clone() {
         FlavorPresets clone = new FlavorPresets();
         clone.setSrc(src);
         clone.setCategory(category);
+        clone.setContent(content);
         return clone;
     }
 

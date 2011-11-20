@@ -27,12 +27,20 @@
         <style>print_default</style>
       </styles>
     </themePage>
+
   </extension>
 
   <!-- Register flavors (collections of presets) -->
   <extension target="org.nuxeo.theme.styling.service" point="flavors">
 
     <flavor name="default">
+      <label>Default flavor</label>
+      <logo>
+        <path>/img/nuxeo_logo.png</path>
+        <width>92</width>
+        <height>36</height>
+        <title>Nuxeo</title>
+      </logo>
       <presetsList>
         <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/default-borders.properties" />
@@ -46,12 +54,20 @@
     <!-- register it before and to check registration order has no impact
       on final result -->
     <flavor name="subDark" extends="dark">
+      <label>SubDark flavor</label>
       <presetsList>
         <presets category="color" src="themes/palettes/dark-colors2.properties" />
       </presetsList>
     </flavor>
 
     <flavor name="dark">
+      <label>Dark flavor</label>
+      <logo>
+        <path>/img/nuxeo_dark_logo.png</path>
+        <width>100</width>
+        <height>666</height>
+        <title>Dark Nuxeo</title>
+      </logo>
       <presetsList>
         <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/dark-borders.properties" />

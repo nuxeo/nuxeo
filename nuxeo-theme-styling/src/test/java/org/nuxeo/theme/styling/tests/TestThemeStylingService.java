@@ -31,6 +31,8 @@ import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
+import org.nuxeo.theme.styling.service.descriptors.Flavor;
+import org.nuxeo.theme.styling.service.descriptors.Logo;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -110,24 +112,78 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
     }
 
     protected void checkOriginalTheme() throws Exception {
-        assertEquals("default", service.getDefaultFlavor(DEFAULT_PAGE_NAME));
-        assertEquals("default", service.getDefaultFlavor(PRINT_PAGE_NAME));
+        assertEquals("default", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
+        List<String> flavorNames = service.getFlavorNames(DEFAULT_PAGE_NAME);
+        assertNotNull(flavorNames);
+        assertEquals(3, flavorNames.size());
+        assertEquals("default", flavorNames.get(0));
+        assertEquals("dark", flavorNames.get(1));
+        assertEquals("subDark", flavorNames.get(2));
+        List<Flavor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
+        assertNotNull(flavors);
+        assertEquals(3, flavors.size());
+        assertEquals("default", flavors.get(0).getName());
+        assertEquals("dark", flavors.get(1).getName());
+        assertEquals("subDark", flavors.get(2).getName());
+
+        assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
+        flavorNames = service.getFlavorNames(PRINT_PAGE_NAME);
+        assertNotNull(flavorNames);
+        assertEquals(2, flavorNames.size());
+        assertEquals("default", flavorNames.get(0));
+        assertEquals("dark", flavorNames.get(1));
+        flavors = service.getFlavors(PRINT_PAGE_NAME);
+        assertNotNull(flavors);
+        assertEquals(2, flavors.size());
+        assertEquals("default", flavors.get(0).getName());
+        assertEquals("dark", flavors.get(1).getName());
 
         String res = getRenderedCssFileContent("*");
         String expected = getTestFileContent("css_no_flavor_rendering.txt");
         assertEquals(expected, res);
+        Flavor flavor = service.getFlavor("*");
+        assertNull(flavor);
+        Logo logo = service.getLogo("*");
+        assertNull(logo);
 
         res = getRenderedCssFileContent("default");
         expected = getTestFileContent("css_default_rendering.txt");
         assertEquals(expected, res);
+        flavor = service.getFlavor("default");
+        assertEquals("default", flavor.getName());
+        assertEquals("Default flavor", flavor.getLabel());
+        logo = flavor.getLogo();
+        assertNotNull(logo);
+        assertEquals("/img/nuxeo_logo.png", logo.getPath());
+        assertEquals("92", logo.getWidth());
+        assertEquals("36", logo.getHeight());
+        assertEquals("Nuxeo", logo.getTitle());
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering.txt");
         assertEquals(expected, res);
+        flavor = service.getFlavor("dark");
+        assertEquals("dark", flavor.getName());
+        assertEquals("Dark flavor", flavor.getLabel());
+        logo = flavor.getLogo();
+        assertNotNull(logo);
+        assertEquals("/img/nuxeo_dark_logo.png", logo.getPath());
+        assertEquals("100", logo.getWidth());
+        assertEquals("666", logo.getHeight());
+        assertEquals("Dark Nuxeo", logo.getTitle());
 
         res = getRenderedCssFileContent("subDark");
         expected = getTestFileContent("css_sub_dark_rendering.txt");
         assertEquals(expected, res);
+        flavor = service.getFlavor("subDark");
+        assertEquals("subDark", flavor.getName());
+        assertEquals("SubDark flavor", flavor.getLabel());
+        logo = flavor.getLogo();
+        assertNotNull(logo);
+        assertEquals("/img/nuxeo_dark_logo.png", logo.getPath());
+        assertEquals("100", logo.getWidth());
+        assertEquals("666", logo.getHeight());
+        assertEquals("Dark Nuxeo", logo.getTitle());
 
         ResourceManager rm = Manager.getResourceManager();
         List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
@@ -144,8 +200,8 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.styling.tests",
                 "theme-styling-test-config2.xml");
 
-        assertEquals("default", service.getDefaultFlavor(DEFAULT_PAGE_NAME));
-        assertEquals("default", service.getDefaultFlavor(PRINT_PAGE_NAME));
+        assertEquals("default", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
+        assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
 
         String res = getRenderedCssFileContent("*");
         String expected = getTestFileContent("css_no_flavor_rendering2.txt");
@@ -184,26 +240,82 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.styling.tests",
                 "theme-styling-test-config3.xml");
 
-        assertEquals("dark", service.getDefaultFlavor(DEFAULT_PAGE_NAME));
-        assertEquals("default", service.getDefaultFlavor(PRINT_PAGE_NAME));
+        assertEquals("dark", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
+        List<String> flavorNames = service.getFlavorNames(DEFAULT_PAGE_NAME);
+        assertNotNull(flavorNames);
+        assertEquals(1, flavorNames.size());
+        assertEquals("dark", flavorNames.get(0));
+        List<Flavor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
+        assertNotNull(flavors);
+        assertEquals(1, flavors.size());
+        assertEquals("dark", flavors.get(0).getName());
+
+        assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
+        flavorNames = service.getFlavorNames(PRINT_PAGE_NAME);
+        assertNotNull(flavorNames);
+        assertEquals("fl: " + flavorNames, 4, flavorNames.size());
+        assertEquals("default", flavorNames.get(0));
+        assertEquals("dark", flavorNames.get(1));
+        assertEquals("subDark", flavorNames.get(2));
+        assertEquals("nonExistingFlavor", flavorNames.get(3));
+        flavors = service.getFlavors(PRINT_PAGE_NAME);
+        assertNotNull(flavors);
+        assertEquals(3, flavors.size());
+        assertEquals("default", flavors.get(0).getName());
+        assertEquals("dark", flavors.get(1).getName());
+        assertEquals("subDark", flavors.get(2).getName());
+        // non existing flavors are omitted
 
         String res = getRenderedCssFileContent("*");
         String expected = getTestFileContent("css_no_flavor_rendering3.txt");
         assertEquals(expected, res);
+        Flavor flavor = service.getFlavor("*");
+        assertNull(flavor);
+        Logo logo = service.getLogo("*");
+        assertNull(logo);
 
         res = getRenderedCssFileContent("default");
         expected = getTestFileContent("css_default_rendering3.txt");
         assertEquals(expected, res);
+        flavor = service.getFlavor("default");
+        assertEquals("default", flavor.getName());
+        assertEquals("Default flavor", flavor.getLabel());
+        logo = flavor.getLogo();
+        assertNotNull(logo);
+        assertEquals("/img/nuxeo_logo.png", logo.getPath());
+        assertEquals("92", logo.getWidth());
+        assertEquals("36", logo.getHeight());
+        assertEquals("Nuxeo", logo.getTitle());
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering3.txt");
         assertEquals(expected, res);
+        flavor = service.getFlavor("dark");
+        assertEquals("dark", flavor.getName());
+        assertEquals("Dark flavor", flavor.getLabel());
+        logo = flavor.getLogo();
+        assertNotNull(logo);
+        assertEquals("/img/nuxeo_dark_logo.png", logo.getPath());
+        assertEquals("100", logo.getWidth());
+        assertEquals("666", logo.getHeight());
+        // title merged
+        assertEquals("Darxeo", logo.getTitle());
 
         res = getRenderedCssFileContent("subDark");
         // no change wrt to dark as the same property is overriden with same
         // value
         expected = getTestFileContent("css_dark_rendering3.txt");
         assertEquals(expected, res);
+        flavor = service.getFlavor("subDark");
+        assertEquals("subDark", flavor.getName());
+        assertEquals("SubDark flavor", flavor.getLabel());
+        logo = flavor.getLogo();
+        assertNotNull(logo);
+        assertEquals("/img/nuxeo_dark_logo.png", logo.getPath());
+        assertEquals("100", logo.getWidth());
+        assertEquals("666", logo.getHeight());
+        // title merged
+        assertEquals("Darxeo", logo.getTitle());
 
         // undeploy, check theme styling is back to first definition
         undeployContrib("org.nuxeo.theme.styling.tests",
@@ -218,8 +330,13 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         undeployContrib("org.nuxeo.theme.styling.tests",
                 "theme-styling-test-config.xml");
 
-        assertNull(service.getDefaultFlavor(DEFAULT_PAGE_NAME));
-        assertNull(service.getDefaultFlavor(PRINT_PAGE_NAME));
+        assertNull(service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
+        assertNull(service.getFlavorNames(DEFAULT_PAGE_NAME));
+        assertNull(service.getFlavors(DEFAULT_PAGE_NAME));
+
+        assertNull(service.getDefaultFlavorName(PRINT_PAGE_NAME));
+        assertNull(service.getFlavorNames(PRINT_PAGE_NAME));
+        assertNull(service.getFlavors(PRINT_PAGE_NAME));
 
         // check styles are not registered on theme service anymore
         ThemeManager themeManager = Manager.getThemeManager();
@@ -250,15 +367,23 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         String emptyCss = "<style type=\"text/css\">\n"
                 + "/* CSS styles for theme 'testStyling' */\n\n" + "</style>";
         assertEquals(emptyCss, res);
+        assertNull(service.getFlavor("*"));
+        assertNull(service.getLogo("*"));
 
         res = getRenderedCssFileContent("default");
         assertEquals(emptyCss, res);
+        assertNull(service.getFlavor("default"));
+        assertNull(service.getLogo("default"));
 
         res = getRenderedCssFileContent("dark");
         assertEquals(emptyCss, res);
+        assertNull(service.getFlavor("dark"));
+        assertNull(service.getLogo("dark"));
 
         res = getRenderedCssFileContent("subDark");
         assertEquals(emptyCss, res);
+        assertNull(service.getFlavor("subDark"));
+        assertNull(service.getLogo("subDark"));
     }
 
 }

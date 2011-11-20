@@ -16,7 +16,6 @@
 
 package org.nuxeo.theme.localconfiguration;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -43,6 +42,8 @@ public class LocalThemeConfigAdapter extends
 
     protected String mode;
 
+    protected String flavor;
+
     public LocalThemeConfigAdapter(DocumentModel doc) {
         documentRef = doc.getRef();
         try {
@@ -51,6 +52,7 @@ public class LocalThemeConfigAdapter extends
             perspective = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_PERSPECTIVE_PROPERTY);
             engine = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_ENGINE_PROPERTY);
             mode = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_MODE_PROPERTY);
+            flavor = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_FLAVOR_PROPERTY);
         } catch (ClientException e) {
         }
     }
@@ -95,10 +97,12 @@ public class LocalThemeConfigAdapter extends
         return mode;
     }
 
+    /**
+     * @since 5.5
+     */
     @Override
-    public String getCollection() {
-        // TODO
-        throw new NotImplementedException();
+    public String getFlavor() {
+        return flavor;
     }
 
     @Override

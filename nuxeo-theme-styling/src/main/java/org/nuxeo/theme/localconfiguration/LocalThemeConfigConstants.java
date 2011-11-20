@@ -34,4 +34,6 @@ public class LocalThemeConfigConstants {
 
     public static final String THEME_CONFIGURATION_MODE_PROPERTY = "themeconf:mode";
 
+    public static final String THEME_CONFIGURATION_FLAVOR_PROPERTY = "themeconf:flavor";
+
 }
