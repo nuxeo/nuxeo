@@ -4,8 +4,6 @@
   <implementation
     class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
 
-  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
-
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
     point="directories">
 
