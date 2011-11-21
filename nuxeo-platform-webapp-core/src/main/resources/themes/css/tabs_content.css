@@ -67,7 +67,6 @@ h3.summaryTitle {
 .rightsAddLabel { font-weight: bold; padding: 0 .4em 0 0 }
 .rightsAddSelect { margin-top: 0}
 .rightsAddManager {
-  background: transparent url("${basePath}/img/rightsadd_bar.gif") no-repeat center;
   margin: .2em 0 0 0;
   width: 100% }
 .rightsAddManager td {

@@ -13,14 +13,14 @@ author: lkemen@nuxeo.com
 .nxHeader .logo { text-align: center; vertical-align: middle; width: 18% }
 .nxHeader .content { padding: 0; line-height: 280%; vertical-align: middle; width: 82%; font-size: 12px }
 .nxHeader .includes { width: 0 }
-.nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)"; filter:alpha(opacity=75); opacity: 0.75; text-shadow: 1px 1px 0 #000; text-decoration: none }
-.nxHeader a:hover, .nxHeader a:active { filter:alpha(opacity=100); opacity: 1 }
-.nxHeader .logo a:link, .nxHeader .logo a:hover, .nxHeader .logo a:visited { filter:alpha(opacity=100); opacity: 1 }
+.nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)"; opacity: 0.75; text-shadow: 1px 1px 0 #000; text-decoration: none }
+.nxHeader a:hover, .nxHeader a:active { opacity: 1 }
+.nxHeader .logo a:link, .nxHeader .logo a:hover, .nxHeader .logo a:visited { opacity: 1 }
 
 /* =Search */
 .userSearchBlock { float: right }
-.searchService { opacity: 0.9; margin: 0 1em 0 .5em }
-.searchService .directoryFilter:focus, .searchService:hover { filter:alpha(opacity=100); opacity: 1 }
+.searchService { opacity: 0.85; margin: 0 1em 0 .5em }
+.searchService .directoryFilter:focus, .searchService:hover { opacity: 1 }
 .searchService .directoryFilter { border: 1px solid #fff; margin: 0 .3em 0 0 }
 .searchService input.button { margin: .3em .5em 0 .3em; padding: .2em }
 .advancedSearchLink a { font-size: .8em }
@@ -34,21 +34,21 @@ author: lkemen@nuxeo.com
 .mainTabs li { border-right: 1px solid #999; display: inline; float: left }
 .mainTabs a:link, .mainTabs a:visited { color: #fff; display: inline-block; font-size: 1.1em; font-weight: bold; padding: .2em .6em; text-shadow: 1px 1px 0 #000; }
 .mainTabs li.selected, .mainTabs li:hover { background: url("${basePath}/img/white50.png") repeat-x 0 0 transparent } 
-.mainTabs li.selected a, .mainTabs li a:hover, .mainTabs li.selected a:visited { font-weight: bold; filter:alpha(opacity=100); opacity: 1 }
+.mainTabs li.selected a, .mainTabs li a:hover, .mainTabs li.selected a:visited { font-weight: bold; opacity: 1 }
 
 .userMenuActions {
     color: "gray.light (__FLAVOR__ color)";
     float: left;
     font-size: .9em;
-    margin: 0 0 0 .4em;
+    margin: 0;
     text-align: left }
 .userMenuActions ul li { float: left; text-align: left }
 
 .nxHeader .userMenuActions a { background-color: #fff; font-size: 1.1em; display: block }
 
 .userMenuActions a.userButton {
-    background: url("${basePath}/icons/user.png") no-repeat scroll 3px center transparent;
-    padding: .15em .4em 0 2em }
+    background: url("${basePath}/icons/user.png") no-repeat scroll 5px center transparent;
+    padding: .15em .4em 0 2.1em }
 .userMenuActions ul:hover a, .userMenuActions ul:hover li, .userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)"; text-shadow: none }
 .userMenuActions li ul {
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
