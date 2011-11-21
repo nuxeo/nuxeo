@@ -33,14 +33,6 @@
       <category>DAM_VIEW_ASSET_ACTION_LIST</category>
     </action>
 
-
-    <!-- ADMIN TABS -->
-    <action id="ADMIN_FOLDERS" link="/dam/incl/admin/folders.xhtml" order="60"
-      label="action.admin.folders">
-      <category>ADMIN_ACTION_LIST</category>
-    </action>
-
-
     <!-- BUTTONS -->
     <action id="DAM_CURRENT_SELECTION_EDIT" link="javascript:showBulkEditPopup();"
       label="command.bulk.edit" icon="" help="command.bulk.edit.help">
