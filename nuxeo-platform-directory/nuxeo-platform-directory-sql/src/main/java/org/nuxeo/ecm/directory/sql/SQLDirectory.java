@@ -110,7 +110,7 @@ public class SQLDirectory extends AbstractDirectory {
             storedFieldNames = new LinkedList<String>();
             boolean hasPrimary = false;
             for (Field f : schema.getFields()) {
-                String fieldName = f.getName().toString();
+                String fieldName = f.getName().getLocalName();
                 schemaFieldMap.put(fieldName, f);
 
                 if (!isReference(fieldName)) {

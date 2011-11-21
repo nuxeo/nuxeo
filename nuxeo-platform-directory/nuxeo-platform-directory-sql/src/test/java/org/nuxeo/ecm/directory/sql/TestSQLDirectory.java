@@ -700,4 +700,17 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             }
         }
     }
+
+    public void testSchemaWithPrefix() throws Exception {
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "test-sql-directories-schema-prefix.xml");
+        Session session = getSession();
+        try {
+            DocumentModel dm = session.getEntry("user_1");
+            assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
+        } finally {
+            session.close();
+        }
+    }
+
 }

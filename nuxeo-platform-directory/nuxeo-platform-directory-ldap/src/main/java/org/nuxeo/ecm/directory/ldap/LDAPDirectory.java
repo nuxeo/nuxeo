@@ -109,7 +109,7 @@ public class LDAPDirectory extends AbstractDirectory {
         }
         schemaFieldMap = new LinkedHashMap<String, Field>();
         for (Field f : schema.getFields()) {
-            schemaFieldMap.put(f.getName().toString(), f);
+            schemaFieldMap.put(f.getName().getLocalName(), f);
         }
 
         // init field mapper before search fields
