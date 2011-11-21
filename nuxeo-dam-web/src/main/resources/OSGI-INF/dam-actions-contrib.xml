@@ -13,24 +13,24 @@
     </action>
 
     <!-- TABS -->
-    <action id="TAB_ASSET_VIEW" link="/dam/incl/tabs/asset_view.xhtml" order="10"
+    <action id="DAM_TAB_ASSET_VIEW" link="/dam/incl/tabs/asset_view.xhtml" order="10"
       label="action.asset.view" icon="/icons/file.gif">
-      <category>VIEW_ASSET_ACTION_LIST</category>
+      <category>DAM_VIEW_ASSET_ACTION_LIST</category>
     </action>
 
-    <action id="TAB_IP_RIGHTS" link="/dam/incl/tabs/ip_rights.xhtml" order="20"
+    <action id="DAM_TAB_IP_RIGHTS" link="/dam/incl/tabs/ip_rights.xhtml" order="20"
       label="action.ip.rights" icon="/icons/file.gif">
-      <category>VIEW_ASSET_ACTION_LIST</category>
+      <category>DAM_VIEW_ASSET_ACTION_LIST</category>
     </action>
 
-    <action id="TAB_DELIVERY" link="/dam/incl/tabs/delivery.xhtml" order="30"
+    <action id="DAM_TAB_DELIVERY" link="/dam/incl/tabs/delivery.xhtml" order="30"
       label="action.delivery" icon="/icons/file.gif">
-      <category>VIEW_ASSET_ACTION_LIST</category>
+      <category>DAM_VIEW_ASSET_ACTION_LIST</category>
     </action>
 
-    <action id="TAB_HISTORY" link="/dam/incl/tabs/asset_history.xhtml" order="40"
+    <action id="DAM_TAB_HISTORY" link="/dam/incl/tabs/asset_history.xhtml" order="40"
       label="action.asset.history" icon="/icons/file.gif">
-      <category>VIEW_ASSET_ACTION_LIST</category>
+      <category>DAM_VIEW_ASSET_ACTION_LIST</category>
     </action>
 
 
@@ -42,7 +42,7 @@
 
 
     <!-- BUTTONS -->
-    <action id="CURRENT_SELECTION_EDIT" link="javascript:showBulkEditPopup();"
+    <action id="DAM_CURRENT_SELECTION_EDIT" link="javascript:showBulkEditPopup();"
       label="command.bulk.edit" icon="" help="command.bulk.edit.help">
       <category>DAM_CURRENT_SELECTION_LIST_HREF</category>
       <filter id="canBulkEdit">
@@ -52,7 +52,7 @@
       </filter>
     </action>
 
-    <action id="CURRENT_SELECTION_DELETE" link="#{bulkSelectActions.deleteSelection}"
+    <action id="DAM_CURRENT_SELECTION_DELETE" link="#{bulkSelectActions.deleteSelection}"
       label="command.delete" icon="" help="command.delete.help"
       confirm="if( !confirmDeleteAssets() ) return false;">
       <category>DAM_CURRENT_SELECTION_LIST</category>
@@ -63,7 +63,7 @@
       </filter>
     </action>
 
-    <action id="CURRENT_SELECTION_EXPORT" link="#{bulkSelectActions.exportSelection}"
+    <action id="DAM_CURRENT_SELECTION_EXPORT" link="#{bulkSelectActions.exportSelection}"
       label="command.export" icon="" help="command.export.help"
       confirm="if( !confirmExportAssets() ) return false;">
       <category>DAM_CURRENT_SELECTION_NOA4J_LIST</category>
@@ -74,20 +74,12 @@
       </filter>
     </action>
 
-    <!-- Actions in Nuxeo DM -->
-    <action id="damNewDocument"
-            link="javascript:Richfaces.showModalPanel('selectDocTypePanel');"
-            label="action.new.document" icon="/icons/action_add.gif">
-      <category>SUBVIEW_UPPER_LIST_HREF</category>
-      <filter-id>damCreate</filter-id>
-    </action>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 
-    <filter id="damCreate">
+    <filter id="create" append="true">
       <rule grant="true">
         <permission>AddChildren</permission>
         <facet>Folderish</facet>

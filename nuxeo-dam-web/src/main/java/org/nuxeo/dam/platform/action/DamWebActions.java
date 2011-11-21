@@ -57,7 +57,7 @@ public class DamWebActions implements Serializable {
 
     @Factory(value = "assetActionsList", scope = EVENT)
     public List<Action> getAssetActionsList() {
-        return webActions.getActionsList("VIEW_ASSET_ACTION_LIST");
+        return webActions.getActionsList("DAM_VIEW_ASSET_ACTION_LIST");
     }
 
     @Factory(value = "adminActionsList", scope = EVENT)
@@ -66,7 +66,7 @@ public class DamWebActions implements Serializable {
     }
 
     public Action getCurrentTabAction() {
-        return webActions.getCurrentTabAction("VIEW_ASSET_ACTION_LIST");
+        return webActions.getCurrentTabAction("DAM_VIEW_ASSET_ACTION_LIST");
     }
 
     public Action getCurrentAdminTabAction() {

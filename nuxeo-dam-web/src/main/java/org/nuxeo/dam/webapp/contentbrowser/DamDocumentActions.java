@@ -72,8 +72,6 @@ public class DamDocumentActions implements Serializable {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(DamDocumentActions.class);
 
-    protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
-
     protected static final String DEFAULT_PICTURE_DOWNLOAD_PROPERTY = "Original";
 
     @In(create = true, required = false)
@@ -113,11 +111,11 @@ public class DamDocumentActions implements Serializable {
 
     public void setCurrentSelection(DocumentModel selection) {
         // Reset the tabs list and the display mode
-        webActions.resetCurrentTabs("VIEW_ASSET_ACTION_LIST");
+        webActions.resetCurrentTabs("DAM_VIEW_ASSET_ACTION_LIST");
         displayMode = BuiltinModes.VIEW;
         currentSelection = selection;
         currentSelectionLink = webActions.getCurrentTabAction(
-                "VIEW_ASSET_ACTION_LIST").getLink();
+                "DAM_VIEW_ASSET_ACTION_LIST").getLink();
         resetData();
         raiseEvents(currentSelection);
     }
@@ -130,7 +128,7 @@ public class DamDocumentActions implements Serializable {
     }
 
     public void setCurrentTabAction(Action currentTabAction) {
-        webActions.setCurrentTabAction("VIEW_ASSET_ACTION_LIST",
+        webActions.setCurrentTabAction("DAM_VIEW_ASSET_ACTION_LIST",
                 currentTabAction);
         currentSelectionLink = currentTabAction.getLink();
     }
