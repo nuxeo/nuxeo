@@ -76,10 +76,10 @@
     <td> ${pkg.targetPlatform} &nbsp;</td>
     <td> ${pkg.type} </td>
     <#if showCommunityInfo>
-      <td>  rate : ${pkg.rating} | downloads : ${pkg.downloadsCount} | ${pkg.commentsNumber} comments
+      <td>  downloads : ${pkg.downloadsCount}
       </td>
     </#if>
-    <#if showCommunityInfo>
+    <#if !showCommunityInfo>
       <td>  </td>
     </#if>
     <td> ${This.getStateLabel(pkg)} </td>
