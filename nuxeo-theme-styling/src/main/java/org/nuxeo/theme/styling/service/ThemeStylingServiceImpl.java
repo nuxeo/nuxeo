@@ -216,29 +216,47 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected void registerFlavorToThemeService(Flavor flavor,
-            RuntimeContext extensionContext) {
-        String flavorName = flavor.getName();
+    protected List<FlavorPresets> computePresets(Flavor flavor,
+            List<String> flavors) {
         List<FlavorPresets> presets = new ArrayList<FlavorPresets>();
-        String extendsFlavorName = flavor.getExtendsFlavor();
-        if (!StringUtils.isBlank(extendsFlavorName)) {
-            // check if it's registered already
-            Flavor extendFlavor = flavorReg.getContribution(extendsFlavorName);
-            if (extendFlavor == null) {
-                log.warn(String.format("Extended flavor '%s' " + "not found",
-                        extendsFlavorName));
-            } else {
-                List<FlavorPresets> extendedPresets = extendFlavor.getPresets();
-                if (extendedPresets != null) {
-                    presets.addAll(extendedPresets);
+        if (flavor != null) {
+            List<FlavorPresets> localPresets = flavor.getPresets();
+            if (localPresets != null) {
+                presets.addAll(localPresets);
+            }
+            String extendsFlavorName = flavor.getExtendsFlavor();
+            if (!StringUtils.isBlank(extendsFlavorName)) {
+                if (flavors.contains(extendsFlavorName)) {
+                    // cyclic dependency => abort
+                    log.error(String.format(
+                            "Cyclic dependency detected in flavor '%s' hierarchy",
+                            flavor.getName()));
+                    return presets;
+                } else {
+                    // retrieve the extended presets
+                    flavors.add(flavor.getName());
+                    Flavor extendedFlavor = getFlavor(extendsFlavorName);
+                    if (extendedFlavor != null) {
+                        List<FlavorPresets> parentPresets = computePresets(
+                                extendedFlavor, flavors);
+                        if (parentPresets != null) {
+                            presets.addAll(0, parentPresets);
+                        }
+                    } else {
+                        log.warn(String.format("Extended flavor '%s' "
+                                + "not found", extendsFlavorName));
+                    }
                 }
             }
         }
+        return presets;
+    }
 
-        List<FlavorPresets> localPresets = flavor.getPresets();
-        if (localPresets != null) {
-            presets.addAll(localPresets);
-        }
+    protected void registerFlavorToThemeService(Flavor flavor,
+            RuntimeContext extensionContext) {
+        String flavorName = flavor.getName();
+        List<FlavorPresets> presets = computePresets(flavor,
+                new ArrayList<String>());
         Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
         if (presets != null) {
             for (FlavorPresets myPreset : presets) {
@@ -552,6 +570,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 if (!StringUtils.isBlank(extendsFlavorName)) {
                     if (flavors.contains(extendsFlavorName)) {
                         // cyclic dependency => abort
+                        log.error(String.format(
+                                "Cyclic dependency detected in flavor '%s' hierarchy",
+                                flavor.getName()));
                         return null;
                     } else {
                         // retrieved the extended logo
@@ -559,6 +580,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                         Flavor extendedFlavor = getFlavor(extendsFlavorName);
                         if (extendedFlavor != null) {
                             localLogo = computeLogo(extendedFlavor, flavors);
+                        } else {
+                            log.warn(String.format("Extended flavor '%s' "
+                                    + "not found", extendsFlavorName));
                         }
                     }
                 }
