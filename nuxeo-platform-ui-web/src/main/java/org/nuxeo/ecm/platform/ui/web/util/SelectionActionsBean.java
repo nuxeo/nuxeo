@@ -19,9 +19,11 @@ package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.Serializable;
 
+import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.UISelectMany;
+import javax.faces.component.ValueHolder;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
@@ -36,7 +38,8 @@ import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 
 /**
  * Helper for selection actions, useful when performing ajax calls on a "liste
- * shuttle" widget.
+ * shuttle" widget for instance, or to retrieve the selected value on a JSF
+ * component and set it on another.
  */
 @Name("selectionActions")
 @Scope(ScopeType.EVENT)
@@ -64,6 +67,22 @@ public class SelectionActionsBean implements Serializable {
 
     @RequestParameter
     protected String submittedList;
+
+    /**
+     * Id of the input selector
+     * <p>
+     * Component must be an instance of {@link ValueHolder}
+     */
+    @RequestParameter
+    protected String selectorId;
+
+    /**
+     * Id of the value holder that will receive the selected value.
+     * <p>
+     * Component must be an instance of {@link ValueHolder}
+     */
+    @RequestParameter
+    protected String valueHolderId;
 
     public SelectItem[] getEmptySelection() {
         return new SelectItem[0];
@@ -270,4 +289,30 @@ public class SelectionActionsBean implements Serializable {
         }
     }
 
+    /**
+     * Adds selection retrieved from a selector to another component
+     * <p>
+     * Retrieves Must pass request parameters "valueHolderId" holding the value
+     * to pass to the binding component,
+     *
+     * @since 5.5
+     * @param event
+     */
+    public void onSelection(ActionEvent event) {
+        UIComponent eventComp = event.getComponent();
+        ValueHolder selectComp = ComponentUtils.getComponent(eventComp,
+                selectorId, ValueHolder.class);
+        if (selectComp != null) {
+            Object value = selectComp.getValue();
+            ValueHolder valueHolderComp = ComponentUtils.getComponent(
+                    eventComp, valueHolderId, ValueHolder.class);
+            if (valueHolderComp != null) {
+                if (valueHolderComp instanceof EditableValueHolder) {
+                    ((EditableValueHolder) valueHolderComp).setSubmittedValue(value);
+                } else {
+                    valueHolderComp.setValue(value);
+                }
+            }
+        }
+    }
 }
