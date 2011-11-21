@@ -20,8 +20,9 @@ all: start rest page test-nuxeo webengine dav stop
 
 start:
 	-mkdir -p $(REPORT) $(LOG_HOME)
-	-$(MONCTL) restart
 	$(CREDCTL) restart
+	-$(MONCTL) restart
+	sleep 2 # sometime credential server is not yet listening
 	fl-run-test test_pages.py --simple-fetch -v -e testAvailable $(FLOPS)
 
 
