@@ -17,6 +17,10 @@
 
 package org.nuxeo.dam.importer.core;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -31,6 +35,7 @@ import org.nuxeo.dam.Constants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -42,17 +47,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
-@Deploy( { "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.platform.picture.api",
+@Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.video.core",
         "org.nuxeo.ecm.platform.audio.core", "org.nuxeo.dam.core" })
@@ -81,7 +82,7 @@ public class TestMetadataFileHelper {
         assertEquals(5, properties.size());
         assertEquals("testAuthor",
                 properties.get(Constants.DAM_COMMON_AUTHOR_PROPERTY));
-        Date date = ((Calendar) properties.get(Constants.DAM_COMMON_AUTHORING_DATE_PROPERTY)).getTime();
+        Date date = ((Calendar) new DateType().decode((String) properties.get(Constants.DAM_COMMON_AUTHORING_DATE_PROPERTY))).getTime();
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
         assertEquals("testDescription",
@@ -90,7 +91,7 @@ public class TestMetadataFileHelper {
                 properties.get(Constants.DUBLINCORE_DESCRIPTION_PROPERTY));
         assertEquals("testCoverage",
                 properties.get(Constants.DUBLINCORE_COVERAGE_PROPERTY));
-        date = ((Calendar) properties.get(Constants.DUBLINCORE_EXPIRED_PROPERTY)).getTime();
+        date = ((Calendar) new DateType().decode((String) properties.get(Constants.DUBLINCORE_EXPIRED_PROPERTY))).getTime();
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
 

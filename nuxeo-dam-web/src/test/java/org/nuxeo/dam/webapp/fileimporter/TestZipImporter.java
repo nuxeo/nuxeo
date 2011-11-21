@@ -118,7 +118,7 @@ public class TestZipImporter {
 
         DocumentModel child = session.getChild(importSet.getRef(), "plain.txt");
         assertNotNull(child);
-        assertEquals("File", child.getType());
+        assertEquals("Note", child.getType());
 
         /*
         child = session.getChild(importSet.getRef(), "image-jpg");
