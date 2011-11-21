@@ -30,12 +30,17 @@ import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.localconfiguration.LocalThemeConfig;
+import org.nuxeo.theme.localconfiguration.LocalThemeHelper;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
@@ -51,9 +56,10 @@ public class ThemeConfigurationActions implements Serializable {
 
     private static final Log log = LogFactory.getLog(ThemeConfigurationActions.class);
 
-    protected String theme;
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
 
-    protected String selectedFlavor;
+    protected String theme;
 
     /**
      * @deprecated since 5.5: local theme configuration now only handles
@@ -170,19 +176,17 @@ public class ThemeConfigurationActions implements Serializable {
         }
     }
 
-    public String getSelectedFlavor() {
-        return selectedFlavor;
-    }
-
-    public void onFlavorSelection(ActionEvent event) {
-        UIComponent select = event.getComponent().getParent();
-        if (select instanceof ValueHolder) {
-            selectedFlavor = (String) ((ValueHolder) select).getValue();
-        } else {
-            log.error("Bad component returned " + select);
-            throw new AbortProcessingException("Bad component returned "
-                    + select);
+    public String getCurrentLocalFlavorName() throws ClientException {
+        DocumentModel currentSuperSpace = navigationContext.getCurrentSuperSpace();
+        if (currentSuperSpace != null) {
+            LocalThemeConfig localThemeConfig = LocalThemeHelper.getLocalThemeConfig(currentSuperSpace);
+            if (localThemeConfig != null) {
+                // extract the flavor
+                String flavor = localThemeConfig.getFlavor();
+                return flavor;
+            }
         }
+        return null;
     }
 
 }

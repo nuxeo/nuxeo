@@ -81,7 +81,7 @@
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_admincenter_specific">
-      <path>themes/css/nuxeo_admincenter_specific.css</path>
+      <src>themes/css/nuxeo_admincenter_specific.css</src>
     </style>
   </extension>
 
