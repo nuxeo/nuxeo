@@ -235,22 +235,33 @@
       <label>label.theme.flavor.nuxeo.default</label>
       <logo>
         <path>/img/nuxeo_logo.png</path>
+        <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
         <width>92</width>
         <height>36</height>
         <title>Nuxeo</title>
       </logo>
       <presetsList>
         <presets category="border" src="themes/palettes/default-borders.properties" />
-        <presets category="background" src="themes/palettes/default-backgrounds.properties" />
+        <presets category="background"
+          src="themes/palettes/default-backgrounds.properties" />
         <presets category="font" src="themes/palettes/default-fonts.properties" />
         <presets category="color" src="themes/palettes/default-colors.properties" />
       </presetsList>
     </flavor>
 
     <flavor name="rainbow">
+      <label>label.theme.flavor.nuxeo.raimbow</label>
+      <logo>
+        <path>/img/nuxeo_logo.png</path>
+        <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
+        <width>92</width>
+        <height>36</height>
+        <title>Nuxeo</title>
+      </logo>
       <presetsList append="true">
         <presets category="border" src="themes/palettes/rainbow-borders.properties" />
-        <presets category="background" src="themes/palettes/rainbow-backgrounds.properties" />
+        <presets category="background"
+          src="themes/palettes/rainbow-backgrounds.properties" />
         <presets category="font" src="themes/palettes/rainbow-fonts.properties" />
         <presets category="color" src="themes/palettes/rainbow-colors.properties" />
       </presetsList>
@@ -263,70 +274,70 @@
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <!-- Global styles -->
     <style name="breadcrumb">
-      <path>themes/css/breadcrumb.css</path>
+      <src>themes/css/breadcrumb.css</src>
     </style>
     <style name="buttons_and_actions">
-      <path>themes/css/buttons_and_actions.css</path>
+      <src>themes/css/buttons_and_actions.css</src>
     </style>
     <style name="basics">
-      <path>themes/css/basics.css</path>
+      <src>themes/css/basics.css</src>
     </style>
     <style name="body">
-      <path>themes/css/body.css</path>
+      <src>themes/css/body.css</src>
     </style>
     <style name="drag_and_drop">
-      <path>themes/css/drag_and_drop.css</path>
+      <src>themes/css/drag_and_drop.css</src>
     </style>
     <style name="foldable_boxes">
-      <path>themes/css/foldable_boxes.css</path>
+      <src>themes/css/foldable_boxes.css</src>
     </style>
     <style name="forms">
-      <path>themes/css/forms.css</path>
+      <src>themes/css/forms.css</src>
     </style>
     <style name="messages_and_tooltips">
-      <path>themes/css/messages_and_tooltips.css</path>
+      <src>themes/css/messages_and_tooltips.css</src>
     </style>
     <style name="navigation">
-      <path>themes/css/navigation.css</path>
+      <src>themes/css/navigation.css</src>
     </style>
     <style name="popups">
-      <path>themes/css/popups.css</path>
+      <src>themes/css/popups.css</src>
     </style>
     <style name="richfaces_components">
-      <path>themes/css/richfaces_components.css</path>
+      <src>themes/css/richfaces_components.css</src>
     </style>
     <style name="tables">
-      <path>themes/css/tables.css</path>
+      <src>themes/css/tables.css</src>
     </style>
     <style name="tabs_content">
-      <path>themes/css/tabs_content.css</path>
+      <src>themes/css/tabs_content.css</src>
     </style>
 
     <!-- Header and Footer -->
     <style name="header">
-      <path>themes/css/header.css</path>
+      <src>themes/css/header.css</src>
     </style>
     <style name="footer">
-      <path>themes/css/footer.css</path>
+      <src>themes/css/footer.css</src>
     </style>
 
     <!-- Addons -->
     <style name="picture_book">
-      <path>themes/css/picture_book.css</path>
+      <src>themes/css/picture_book.css</src>
     </style>
     <style name="polls">
-      <path>themes/css/polls.css</path>
+      <src>themes/css/polls.css</src>
     </style>
     <style name="faceted_search">
-      <path>themes/css/faceted_search.css</path>
+      <src>themes/css/faceted_search.css</src>
     </style>
 
     <!-- Specific to pages -->
     <style name="nuxeo_dm_specific">
-      <path>themes/css/nuxeo_dm_specific.css</path>
+      <src>themes/css/nuxeo_dm_specific.css</src>
     </style>
     <style name="print_generic">
-      <path>themes/css/print_generic.css</path>
+      <src>themes/css/print_generic.css</src>
     </style>
   </extension>
 

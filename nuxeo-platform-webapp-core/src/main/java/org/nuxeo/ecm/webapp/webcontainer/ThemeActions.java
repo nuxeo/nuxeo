@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webapp.webcontainer;
 
 import java.io.Serializable;
 
+import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
 
 public interface ThemeActions extends Serializable {
@@ -41,5 +42,7 @@ public interface ThemeActions extends Serializable {
      * @since 5.5.
      */
     Logo getLogo(String flavorName);
+
+    Flavor getFlavor(String flavorName);
 
 }
