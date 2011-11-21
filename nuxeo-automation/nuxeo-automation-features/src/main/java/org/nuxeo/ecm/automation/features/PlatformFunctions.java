@@ -121,24 +121,38 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public StringList getEmails(List<String> usernames) throws Exception {
+        return getEmails(usernames, false);
+    }
+
+    /**
+     *
+     * Returns user emails
+     *
+     * @param usernames list of user names
+     * @param usePrefix indicates if user resolution takes into account nuxeo
+     *            prefix <b>user:</b>
+     *
+     * @since 5.5
+     */
+    public StringList getEmails(List<String> usernames, boolean usePrefix)
+            throws Exception {
         UserManager userManager = getUserManager();
         StringList result = new StringList(usernames.size());
         String schemaName = getUserManager().getUserSchemaName();
         String fieldName = getUserManager().getUserEmailField();
         for (String username : usernames) {
             NuxeoPrincipal principal = null;
-            if (username.startsWith(NuxeoPrincipal.PREFIX)) {
-                principal = userManager.getPrincipal(username.replace(
-                        NuxeoPrincipal.PREFIX, ""));
-            } else if (username.startsWith(NuxeoGroup.PREFIX)) {
-                // TODO: quite complicated to compute all members from a group
+            if (usePrefix) {
+                if (username.startsWith(NuxeoPrincipal.PREFIX)) {
+                    principal = userManager.getPrincipal(username.replace(
+                            NuxeoPrincipal.PREFIX, ""));
+                }
             } else {
-                // assume it's not a group
                 principal = userManager.getPrincipal(username);
             }
             if (principal != null) {
                 String email = getEmail(principal, schemaName, fieldName);
-                if (!StringUtils.isEmpty(email) && !result.contains(email)) {
+                if (!StringUtils.isEmpty(email)) {
                     result.add(email);
                 }
             }
