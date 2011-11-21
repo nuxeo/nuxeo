@@ -80,6 +80,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         startHandlingException(request, response, t);
         try {
             ErrorHandler handler = getHandler(t);
+            Integer code = handler.getCode();
+            boolean is404 = Integer.valueOf(404).equals(code);
             parameters.getListener().startHandling(t, request, response);
 
             Throwable unwrappedException = unwrapException(t);
@@ -87,8 +89,10 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             PrintWriter pwriter = new PrintWriter(swriter);
             t.printStackTrace(pwriter);
             String stackTrace = swriter.getBuffer().toString();
-            log.error(stackTrace);
-            parameters.getLogger().error(stackTrace);
+            if (!is404) {
+                log.error(stackTrace);
+                parameters.getLogger().error(stackTrace);
+            }
 
             parameters.getListener().beforeSetErrorPageAttribute(
                     unwrappedException, request, response);
@@ -101,15 +105,16 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                     ExceptionHelper.isSecurityError(unwrappedException));
             String dumpedRequest = parameters.getRequestDumper().getDump(
                     request);
-            parameters.getLogger().error(dumpedRequest);
+            if (!is404) {
+                parameters.getLogger().error(dumpedRequest);
+            }
             request.setAttribute("request_dump", dumpedRequest);
 
             parameters.getListener().beforeForwardToErrorPage(
                     unwrappedException, request, response);
             if (!response.isCommitted()) {
-                Integer error = handler.getCode();
-                if (error != null) {
-                    response.setStatus(error);
+                if (code != null) {
+                    response.setStatus(code);
                 }
                 String errorPage = handler.getPage();
                 errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
