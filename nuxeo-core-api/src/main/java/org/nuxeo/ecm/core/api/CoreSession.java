@@ -1275,6 +1275,8 @@ public interface CoreSession {
      *            there was no limit or offset)
      * @return the query result
      * @throws ClientException
+     *
+     * @since 5.5
      */
     DocumentModelList query(String query, String queryType, Filter filter,
             long limit, long offset, boolean countTotal) throws ClientException;
