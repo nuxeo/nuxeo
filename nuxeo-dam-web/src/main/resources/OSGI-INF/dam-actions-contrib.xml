@@ -37,39 +37,45 @@
     <action id="DAM_CURRENT_SELECTION_EDIT" link="javascript:showBulkEditPopup();"
       label="command.bulk.edit" icon="" help="command.bulk.edit.help">
       <category>DAM_CURRENT_SELECTION_LIST_HREF</category>
-      <filter id="canBulkEdit">
-        <rule grant="true">
-          <condition>#{bulkSelectActions.isSelectionNotEmpty}</condition>
-        </rule>
-      </filter>
+      <filter-id>damCanBulkEdit</filter-id>
     </action>
 
-    <action id="DAM_CURRENT_SELECTION_DELETE" link="#{bulkSelectActions.deleteSelection}"
+    <action id="DAM_CURRENT_SELECTION_TRASH" link="#{bulkSelectActions.deleteSelection}"
       label="command.delete" icon="" help="command.delete.help"
       confirm="if( !confirmDeleteAssets() ) return false;">
       <category>DAM_CURRENT_SELECTION_LIST</category>
-      <filter id="canDelete">
-        <rule grant="true">
-          <condition>#{bulkSelectActions.canDelete}</condition>
-        </rule>
-      </filter>
+      <filter-id>damCanDelete</filter-id>
     </action>
 
     <action id="DAM_CURRENT_SELECTION_EXPORT" link="#{bulkSelectActions.exportSelection}"
       label="command.export" icon="" help="command.export.help"
       confirm="if( !confirmExportAssets() ) return false;">
       <category>DAM_CURRENT_SELECTION_NOA4J_LIST</category>
-      <filter id="canExport">
-        <rule grant="true">
-          <condition>#{bulkSelectActions.isSelectionNotEmpty}</condition>
-        </rule>
-      </filter>
+      <filter-id>damCanExport</filter-id>
     </action>
 
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
+
+    <filter id="damCanBulkEdit">
+      <rule grant="true">
+        <condition>#{bulkSelectActions.canEditAssets}</condition>
+      </rule>
+    </filter>
+
+    <filter id="damCanDelete">
+      <rule grant="true">
+        <condition>#{deleteActions.canDelete}</condition>
+      </rule>
+    </filter>
+
+    <filter id="damCanExport">
+      <rule grant="true">
+        <condition>#{bulkSelectActions.isSelectionNotEmpty}</condition>
+      </rule>
+    </filter>
 
     <filter id="create" append="true">
       <rule grant="true">

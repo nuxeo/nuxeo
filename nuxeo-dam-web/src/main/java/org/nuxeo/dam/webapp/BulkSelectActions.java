@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
 import org.nuxeo.ecm.platform.ui.web.util.DocumentsListsUtils;
+import org.nuxeo.ecm.webapp.action.DeleteActions;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -84,6 +85,9 @@ public class BulkSelectActions implements Serializable {
     @In(create = true)
     protected DocumentsListsManager documentsListsManager;
 
+    @In(create = true)
+    protected DeleteActions deleteActions;
+
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
@@ -104,136 +108,8 @@ public class BulkSelectActions implements Serializable {
 
     public void deleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
-            deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION));
+            deleteActions.deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION));
         }
-    }
-
-    public void deleteSelection(List<DocumentModel> docsToDelete)
-            throws ClientException {
-        if (null != docsToDelete) {
-
-            if (docsToDelete.contains(damDocumentActions.getCurrentSelection())) {
-                damDocumentActions.setCurrentSelection(null);
-            }
-
-            List<DocumentModel> docsThatCanBeDeleted = filterDeleteListAccordingToPerms(docsToDelete);
-
-            // Keep only topmost documents (see NXP-1411)
-            // This is not strictly necessary with Nuxeo Core >= 1.3.2
-            Collections.sort(docsThatCanBeDeleted, new PathComparator());
-            List<DocumentModel> rootDocsToDelete = new LinkedList<DocumentModel>();
-            Path previousPath = null;
-            for (DocumentModel doc : docsThatCanBeDeleted) {
-                if (previousPath == null
-                        || !previousPath.isPrefixOf(doc.getPath())) {
-                    rootDocsToDelete.add(doc);
-                    previousPath = doc.getPath();
-                }
-            }
-
-            // Three auxiliary collections deduced from rootDocsToDelete:
-            // references, paths, and references of parents.
-            // Computed before actual removal for robustness
-            List<DocumentRef> references = DocumentsListsUtils.getDocRefs(rootDocsToDelete);
-            Set<Path> paths = new HashSet<Path>();
-            for (DocumentModel doc : rootDocsToDelete) {
-                paths.add(doc.getPath());
-            }
-            Set<DocumentRef> parentsRefs = new HashSet<DocumentRef>();
-            parentsRefs.addAll(DocumentsListsUtils.getParentRefFromDocumentList(rootDocsToDelete));
-
-            // remove from all lists
-            documentsListsManager.removeFromAllLists(docsThatCanBeDeleted);
-
-            // TODO: factorize trash management from Nuxeo DM
-            documentManager.removeDocuments(references.toArray(new DocumentRef[references.size()]));
-            documentManager.save();
-
-            // Notify parents
-            for (DocumentRef parentRef : parentsRefs) {
-                DocumentModel parent = documentManager.getDocument(parentRef);
-                if (parent != null) {
-                    Events.instance().raiseEvent(
-                            EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
-                }
-            }
-
-            // User feedback
-            Object[] params = { references.size() };
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_deleted_docs"), params);
-            facesMessages.add(message);
-        }
-    }
-
-    protected List<DocumentModel> filterDeleteListAccordingToPerms(
-            List<DocumentModel> docsToDelete) throws ClientException {
-        // first filter on parents
-        List<DocumentModel> docsThatCanBeDeletedOnParent = filterDeleteListAccordingToPermsOnParents(docsToDelete);
-        List<DocumentModel> docsThatCanBeDeleted = new ArrayList<DocumentModel>();
-
-        int forbiddenDocs = docsToDelete.size()
-                - docsThatCanBeDeletedOnParent.size();
-
-        // FIXME: lockedDocs is never set!
-        int lockedDocs = 0;
-        for (DocumentModel docToDelete : docsThatCanBeDeletedOnParent) {
-            if (documentManager.hasPermission(docToDelete.getRef(),
-                    SecurityConstants.REMOVE)) {
-
-                // TODO: factorize locked document filtering from DAM
-                docsThatCanBeDeleted.add(docToDelete);
-            } else {
-                forbiddenDocs += 1;
-            }
-        }
-
-        if (lockedDocs > 0) {
-            Object[] params = { lockedDocs };
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_locked_docs_can_not_delete"), params);
-        }
-
-        if (forbiddenDocs > 0) {
-            Object[] params2 = { forbiddenDocs };
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_forbidden_docs_can_not_delete"), params2);
-        }
-
-        return docsThatCanBeDeleted;
-    }
-
-    private List<DocumentModel> filterDeleteListAccordingToPermsOnParents(
-            List<DocumentModel> docsToDelete) throws ClientException {
-
-        List<DocumentModel> docsThatCanBeDeleted = new ArrayList<DocumentModel>();
-        List<DocumentRef> parentRefs = DocumentsListsUtils.getParentRefFromDocumentList(docsToDelete);
-
-        for (DocumentRef parentRef : parentRefs) {
-            if (documentManager.hasPermission(parentRef, REMOVE_CHILDREN)) {
-                for (DocumentModel doc : docsToDelete) {
-                    if (doc.getParentRef().equals(parentRef)) {
-                        docsThatCanBeDeleted.add(doc);
-                    }
-                }
-            }
-        }
-        return docsThatCanBeDeleted;
-    }
-
-    private static class PathComparator implements Comparator<DocumentModel>,
-            Serializable {
-
-        private static final long serialVersionUID = -6449747704324789701L;
-
-        public int compare(DocumentModel o1, DocumentModel o2) {
-            return o1.getPathAsString().compareTo(o2.getPathAsString());
-        }
-
     }
 
     /**
@@ -315,24 +191,6 @@ public class BulkSelectActions implements Serializable {
         selectedDocumentsList.clear();
     }
 
-    // TODO: move this API to documentsListsManager directly
-    /**
-     * Tests whether the current working list of selected documents is empty.
-     *
-     * @param listName The name of the working list of selected documents. If
-     *            null, the default list will be used.
-     * @return true if empty, false otherwise
-     */
-    public boolean getIsCurrentWorkingListEmpty(String listName) {
-        String lName = (listName == null) ? CURRENT_DOCUMENT_SELECTION
-                : listName;
-        List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
-        if (selectedDocumentsList == null) {
-            return true;
-        }
-        return selectedDocumentsList.isEmpty();
-    }
-
     public void toggleDocumentSelection(DocumentModel doc, String listName) {
         listName = (listName == null) ? CURRENT_DOCUMENT_SELECTION : listName;
         List<DocumentModel> list = documentsListsManager.getWorkingList(listName);
@@ -376,31 +234,18 @@ public class BulkSelectActions implements Serializable {
         }
     }
 
-    public boolean getCanDelete() {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
-
-        if (docsToDelete == null || docsToDelete.isEmpty()) {
+    public boolean getCanEditAssets() throws ClientException {
+        if (!getIsSelectionNotEmpty()) {
             return false;
         }
-
-        // do simple filtering
-        return checkDeletePermOnParents(docsToDelete);
-    }
-
-    public boolean checkDeletePermOnParents(List<DocumentModel> docsToDelete) {
-
-        List<DocumentRef> parentRefs = DocumentsListsUtils.getParentRefFromDocumentList(docsToDelete);
-
-        for (DocumentRef parentRef : parentRefs) {
-            try {
-                if (documentManager.hasPermission(parentRef, REMOVE_CHILDREN)) {
-                    return true;
-                }
-            } catch (ClientException e) {
-                log.error(e);
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
+        for (DocumentModel doc : docs) {
+            if(!documentManager.hasPermission(doc.getRef(),
+                            SecurityConstants.WRITE)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public boolean getIsSelectionNotEmpty() {
