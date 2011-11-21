@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 
 /**
  * Handle properties file creation from a {@code DocumentModel}.
@@ -96,8 +96,8 @@ public class MetadataFile {
     }
 
     /**
-     * Create a {@code MetadataFile} from the listed properties of a {@code
-     * DocumentModel}
+     * Create a {@code MetadataFile} from the listed properties of a
+     * {@code DocumentModel}
      *
      * @return a new MetadataFile object
      */
@@ -172,8 +172,7 @@ public class MetadataFile {
                         MetadataCollector.ARRAY_SEPARATOR));
             }
         } else if (value instanceof Calendar) {
-            Date date = ((Calendar) value).getTime();
-            metadataProperties.put(propertyKey, DATE_FORMAT.format(date));
+            metadataProperties.put(propertyKey, new DateType().encode(value));
         } else if (value instanceof Number) {
             metadataProperties.put(propertyKey, value.toString());
         }
