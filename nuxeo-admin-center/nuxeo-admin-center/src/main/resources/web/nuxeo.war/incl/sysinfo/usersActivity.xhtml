@@ -46,7 +46,7 @@
           <h:outputText value="#{messages['label.event.date']}"/>
         </f:facet>
         <h:outputText value="#{row.eventDate}">
-            <f:convertDateTime type="both" dateStyle="medium" timeStyle="medium"/>
+            <f:convertDateTime type="both" dateStyle="medium" timeStyle="medium" timeZone="#{timeZone}" />
         </h:outputText>
       </nxu:column>
 
