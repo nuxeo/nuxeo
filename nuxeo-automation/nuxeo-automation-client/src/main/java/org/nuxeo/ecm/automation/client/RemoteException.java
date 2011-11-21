@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.client;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -24,15 +25,26 @@ public class RemoteException extends AutomationException {
     protected final int status;
 
     protected final String type;
-
-    protected final String strace;
-
+    
+    protected final String info;
+    
+    protected final Throwable remoteCause;
+    
     public RemoteException(int status, String type, String message,
-            String stackTrace) {
+            Throwable cause) {
+        super(message, cause);
+        this.status = status;
+        this.type = type;
+        this.info = extractInfo(cause);
+        this.remoteCause = cause;
+    }
+
+    public RemoteException(int status, String type, String message, String info) {
         super(message);
         this.status = status;
         this.type = type;
-        this.strace = stackTrace;
+        this.info = info;
+        this.remoteCause = null;
     }
 
     public int getStatus() {
@@ -43,8 +55,19 @@ public class RemoteException extends AutomationException {
         return type;
     }
 
+    protected static String extractInfo(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        return sw.getBuffer().toString();
+    }
+    
+    public Throwable getRemoteCause() {
+        return remoteCause;
+    }
+
     public String getRemoteStackTrace() {
-        return status + " - " + getMessage() + "\n" + strace;
+        return status + " - " + getMessage() + "\n" + info;
     }
 
     @Override
@@ -74,7 +97,7 @@ public class RemoteException extends AutomationException {
     }
 
     public static RemoteException wrap(String message, Throwable t, int status) {
-        RemoteException e = new RemoteException(status, t.getClass().getName(), message, "");
+        RemoteException e = new RemoteException(status, t.getClass().getName(), message, t);
         e.initCause(t);
         return e;
     }

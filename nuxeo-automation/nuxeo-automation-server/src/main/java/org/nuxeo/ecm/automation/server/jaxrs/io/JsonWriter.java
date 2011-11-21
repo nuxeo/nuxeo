@@ -23,8 +23,19 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.JsonSerializer;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.SerializerProvider;
+import org.codehaus.jackson.map.introspect.BasicBeanDescription;
+import org.codehaus.jackson.map.module.SimpleModule;
+import org.codehaus.jackson.map.ser.BeanSerializer;
+import org.codehaus.jackson.map.ser.BeanSerializerModifier;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
@@ -35,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class JsonWriter {
 
@@ -44,6 +55,8 @@ public class JsonWriter {
     public static JsonFactory createFactory() {
         factory = new JsonFactory();
         factory.enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
+        final ObjectMapper oc = new ObjectMapper(factory);
+        factory.setCodec(oc);
         return factory;
     }
 
@@ -51,16 +64,18 @@ public class JsonWriter {
         return factory;
     }
 
-    public static JsonGenerator createGenerator(OutputStream out) throws IOException {
+    public static JsonGenerator createGenerator(OutputStream out)
+            throws IOException {
         return factory.createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
-
-    public static void writeAutomationInfo(OutputStream out, AutomationInfo info, boolean prettyPrint) throws IOException {
+    public static void writeAutomationInfo(OutputStream out,
+            AutomationInfo info, boolean prettyPrint) throws IOException {
         writeAutomationInfo(createGenerator(out), info, prettyPrint);
     }
 
-    public static void writeAutomationInfo(JsonGenerator jg, AutomationInfo info, boolean prettyPrint) throws IOException {
+    public static void writeAutomationInfo(JsonGenerator jg,
+            AutomationInfo info, boolean prettyPrint) throws IOException {
         if (prettyPrint) {
             jg.useDefaultPrettyPrinter();
         }
@@ -92,12 +107,14 @@ public class JsonWriter {
 
     /**
      * Used to export operations to studio
+     * 
      * @param info
      * @return
      * @throws IOException
      */
     public static String exportOperations() throws IOException {
-        List<OperationDocumentation> ops = Framework.getLocalService(AutomationService.class).getDocumentation();
+        List<OperationDocumentation> ops = Framework.getLocalService(
+                AutomationService.class).getDocumentation();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = factory.createJsonGenerator(out);
         jg.useDefaultPrettyPrinter();
@@ -112,7 +129,8 @@ public class JsonWriter {
         return out.toString("UTF-8");
     }
 
-    private static void writeOperations(JsonGenerator jg, AutomationInfo info) throws IOException {
+    private static void writeOperations(JsonGenerator jg, AutomationInfo info)
+            throws IOException {
         jg.writeArrayFieldStart("operations");
         for (OperationDocumentation op : info.getOperations()) {
             writeOperation(jg, op);
@@ -120,7 +138,8 @@ public class JsonWriter {
         jg.writeEndArray();
     }
 
-    private static void writeChains(JsonGenerator jg, AutomationInfo info) throws IOException {
+    private static void writeChains(JsonGenerator jg, AutomationInfo info)
+            throws IOException {
         jg.writeArrayFieldStart("chains");
         for (OperationDocumentation op : info.getChains()) {
             writeOperation(jg, op, "Chain." + op.id);
@@ -128,15 +147,18 @@ public class JsonWriter {
         jg.writeEndArray();
     }
 
-    public static void writeOperation(OutputStream out, OperationDocumentation op) throws IOException {
+    public static void writeOperation(OutputStream out,
+            OperationDocumentation op) throws IOException {
         writeOperation(createGenerator(out), op, op.url);
     }
 
-    public static void writeOperation(JsonGenerator jg, OperationDocumentation op) throws IOException {
+    public static void writeOperation(JsonGenerator jg,
+            OperationDocumentation op) throws IOException {
         writeOperation(jg, op, op.url);
     }
 
-    public static void writeOperation(JsonGenerator jg, OperationDocumentation op, String url) throws IOException {
+    public static void writeOperation(JsonGenerator jg,
+            OperationDocumentation op, String url) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("id", op.id);
         jg.writeStringField("label", op.label);
@@ -157,7 +179,8 @@ public class JsonWriter {
         jg.flush();
     }
 
-    private static void writeParams(JsonGenerator jg, List<Param> params) throws IOException {
+    private static void writeParams(JsonGenerator jg, List<Param> params)
+            throws IOException {
         jg.writeArrayFieldStart("params");
         for (Param p : params) {
             jg.writeStartObject();
@@ -177,11 +200,13 @@ public class JsonWriter {
         jg.writeEndArray();
     }
 
-    public static void writeLogin(OutputStream out, LoginInfo login) throws IOException {
+    public static void writeLogin(OutputStream out, LoginInfo login)
+            throws IOException {
         writeLogin(createGenerator(out), login);
     }
 
-    public static void writeLogin(JsonGenerator jg, LoginInfo login) throws IOException {
+    public static void writeLogin(JsonGenerator jg, LoginInfo login)
+            throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "login");
         jg.writeStringField("username", login.getUsername());
@@ -195,27 +220,29 @@ public class JsonWriter {
         jg.flush();
     }
 
-    public static void writePrimitive(OutputStream out, Object value) throws IOException {
+    public static void writePrimitive(OutputStream out, Object value)
+            throws IOException {
         writePrimitive(createGenerator(out), value);
     }
 
-    public static void writePrimitive(JsonGenerator jg, Object value) throws IOException {
+    public static void writePrimitive(JsonGenerator jg, Object value)
+            throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "primitive");
         if (value != null) {
             Class<?> type = value.getClass();
             if (type == String.class) {
-                jg.writeStringField("value", (String)value);
+                jg.writeStringField("value", (String) value);
             } else if (type == Boolean.class) {
-                jg.writeBooleanField("value", (Boolean)value);
+                jg.writeBooleanField("value", (Boolean) value);
             } else if (type == Long.class) {
-                jg.writeNumberField("value", ((Number)value).longValue());
+                jg.writeNumberField("value", ((Number) value).longValue());
             } else if (type == Double.class) {
-                jg.writeNumberField("value", ((Number)value).doubleValue());
+                jg.writeNumberField("value", ((Number) value).doubleValue());
             } else if (type == Integer.class) {
-                jg.writeNumberField("value", ((Number)value).intValue());
+                jg.writeNumberField("value", ((Number) value).intValue());
             } else if (type == Float.class) {
-                jg.writeNumberField("value", ((Number)value).floatValue());
+                jg.writeNumberField("value", ((Number) value).floatValue());
             }
         } else {
             jg.writeNullField("value");
@@ -224,17 +251,20 @@ public class JsonWriter {
         jg.flush();
     }
 
-    public static void writeException(OutputStream out, ExceptionHandler eh) throws IOException {
+    public static void writeException(OutputStream out, ExceptionHandler eh)
+            throws IOException {
         writeException(createGenerator(out), eh);
     }
 
-    public static void writeException(JsonGenerator jg, ExceptionHandler eh) throws IOException {
+    public static void writeException(JsonGenerator jg, ExceptionHandler eh)
+            throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
         jg.writeStringField("type", eh.getType());
         jg.writeNumberField("status", eh.getStatus());
         jg.writeStringField("message", eh.getMessage());
         jg.writeStringField("stack", eh.getSerializedStackTrace());
+        jg.writeObjectField("cause", eh.getCause());
         jg.writeEndObject();
         jg.flush();
     }

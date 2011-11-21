@@ -17,12 +17,10 @@ import java.io.StringWriter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.ConflictOperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-
-import com.sun.jersey.api.ConflictException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -130,6 +128,11 @@ public class ExceptionHandler {
         cause.printStackTrace(pw);
         pw.flush();
         return writer.toString();
+    }
+
+
+    public Throwable getCause() {
+        return cause;
     }
 
 }
