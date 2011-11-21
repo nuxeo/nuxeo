@@ -10,6 +10,8 @@
       <redirect/>
     </navigation-case>
 
+  </extension>
+
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
