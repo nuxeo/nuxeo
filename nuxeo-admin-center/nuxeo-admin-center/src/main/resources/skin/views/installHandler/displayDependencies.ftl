@@ -103,67 +103,75 @@ function updateProgress(pkgId, progress) {
    <h1> Installation of ${pkg.title} (${pkg.id}) </h1>
 
    <div class="installWarningsTitle">
-     The package you want to install has some dependencies :
+     The package you want to install requires some dependencies changes:
 
-      <#if (resolution.getRemovePackageIds()?size>0) >
       <br/><br/>
       Packages that need to be removed from your instance :
-      <ul class="installWarning">
+      <#if (resolution.getRemovePackageIds()?size>0) >
+      <table>
         <#list resolution.getRemovePackageIds() as pkgId>
-          <li> ${pkgId} <A href="javascript:rmPackage('${pkgId}')">Manual removal</A></li>
+          <tr>
+          <td> ${pkgId} </td>
+          <td><A href="javascript:rmPackage('${pkgId}')">Manual removal</A></td>
+          </tr>
         </#list>
-      </ul>
+      </table>
+      <#else>
+       None.
       </#if>
 
       <#if (resolution.getUpgradePackageIds()?size>0) >
       <br/><br/>
       Already installed packages that need to be upgraded :
-      <ul class="installInfo">
+      <table>
         <#list resolution.getUpgradePackageIds() as pkgId>
-          <li> ${pkgId} <A href="javascript:installPackage('${pkgId}', true)">Manual upgrade</A>
-          <div id="progress_${pkgId}" class="progressDownloadContainer"> </div>
-          </li>
+        <tr><td> ${pkgId} </td>
+            <td><A href="javascript:installPackage('${pkgId}', true)">Manual upgrade</A></td>
+            <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </div></td>
+        </tr>
         </#list>
-      </ul>
+      </table>
       </#if>
 
       <#if (resolution.getInstallPackageIds()?size>0) >
       <br/><br/>
       Already downloaded packages that need to be installed :
-      <ul class="installInfo">
+      <table>
         <#list resolution.getInstallPackageIds() as pkgId>
-          <li> ${pkgId} <A href="javascript:installPackage('${pkgId}', false)">Manual installation</A>
-          </li>
+          <tr><td> ${pkgId} </td><td><A href="javascript:installPackage('${pkgId}', false)">Manual installation</A></td></tr>
         </#list>
-      </ul>
+      </table>
       </#if>
 
       <#if (resolution.getDownloadPackageIds()?size>0) >
       <br/><br/>
       New packages that need to be  downloaded and installed :
-      <ul class="installInfo">
+      <table>
         <#list resolution.getDownloadPackageIds() as pkgId>
-          <li> ${pkgId} <A href="javascript:installPackage('${pkgId}', true)">Manual download and install</A>
-          <div id="progress_${pkgId}" class="progressDownloadContainer"> </div>
-          </li>
+          <tr>
+          <td> ${pkgId} </td>
+          <td><A href="javascript:installPackage('${pkgId}', true)">Manual download and install</A></td>
+          <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </td>
+          </tr>
         </#list>
-      </ul>
-      <A href="javascript:downloadAllPackages()"> Download all packages </A>
+      </table>
       </#if>
 
       <#if (resolution.getUnchangedPackageIds()?size>0) >
       <br/><br/>
       Dependencies that are already installed on your instance and won't be changed :
-      <ul class="installWarning">
+      <table>
         <#list resolution.getUnchangedPackageIds() as pkgId>
-          <li> ${pkgId}</li>
+          <tr><td> ${pkgId}</td></tr>
         </#list>
-      </ul>
+      </table>
       </#if>
 
    </div>
 
    <br/><br/>
+   <A href="javascript:downloadAllPackages()"> Download all needed packages </A>
+   <A href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}"class="installButton"> Installation of package ${pkg.id} and dependencies </a>
    <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
    <A href="${Root.path}/install/start/${pkg.id}/?source=${source}"class="installButton"> Continue installation of package ${pkg.id} </a>
 
