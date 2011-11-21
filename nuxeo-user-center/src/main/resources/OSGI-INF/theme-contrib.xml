@@ -63,20 +63,20 @@
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <!-- Addons -->
     <style name="activity_stream">
-      <path>themes/css/activity_stream.css</path>
+      <src>themes/css/activity_stream.css</src>
     </style>
     <style name="mini_messages">
-      <path>themes/css/mini_messages.css</path>
+      <src>themes/css/mini_messages.css</src>
     </style>
     <style name="relationship_network">
-      <path>themes/css/relationship_network.css</path>
+      <src>themes/css/relationship_network.css</src>
     </style>
     <style name="user_profile">
-      <path>themes/css/user_profile.css</path>
+      <src>themes/css/user_profile.css</src>
     </style>
     <!-- Specific to pages -->
     <style name="nuxeo_usercenter_specific">
-      <path>themes/css/nuxeo_usercenter_specific.css</path>
+      <src>themes/css/nuxeo_usercenter_specific.css</src>
     </style>
   </extension>
 
