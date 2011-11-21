@@ -168,6 +168,9 @@
       <flavors>
         <flavor>default</flavor>
       </flavors>
+      <flavors>
+        <flavor>rainbow</flavor>
+      </flavors>
       <styles>
         <style>print_generic</style>
       </styles>
@@ -177,6 +180,7 @@
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
+        <flavor>rainbow</flavor>
       </flavors>
       <styles>
         <style>basics</style>
@@ -197,6 +201,7 @@
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
+        <flavor>rainbow</flavor>
       </flavors>
       <styles>
         <style>basics</style>
@@ -236,10 +241,18 @@
       </logo>
       <presetsList>
         <presets category="border" src="themes/palettes/default-borders.properties" />
-        <presets category="background"
-          src="themes/palettes/default-backgrounds.properties" />
+        <presets category="background" src="themes/palettes/default-backgrounds.properties" />
         <presets category="font" src="themes/palettes/default-fonts.properties" />
         <presets category="color" src="themes/palettes/default-colors.properties" />
+      </presetsList>
+    </flavor>
+
+    <flavor name="rainbow">
+      <presetsList append="true">
+        <presets category="border" src="themes/palettes/rainbow-borders.properties" />
+        <presets category="background" src="themes/palettes/rainbow-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/rainbow-fonts.properties" />
+        <presets category="color" src="themes/palettes/rainbow-colors.properties" />
       </presetsList>
     </flavor>
 
@@ -372,9 +385,7 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
       <!-- local theme (specific to nuxeo5) -->
-      <scheme>
-        org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalTheme
-      </scheme>
+      <scheme>org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalTheme</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
     </negotiation>
 
