@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
@@ -125,10 +126,19 @@ public class PlatformFunctions extends CoreFunctions {
         String schemaName = getUserManager().getUserSchemaName();
         String fieldName = getUserManager().getUserEmailField();
         for (String username : usernames) {
-            NuxeoPrincipal principal = userManager.getPrincipal(username);
+            NuxeoPrincipal principal = null;
+            if (username.startsWith(NuxeoPrincipal.PREFIX)) {
+                principal = userManager.getPrincipal(username.replace(
+                        NuxeoPrincipal.PREFIX, ""));
+            } else if (username.startsWith(NuxeoGroup.PREFIX)) {
+                // TODO: quite complicated to compute all members from a group
+            } else {
+                // assume it's not a group
+                principal = userManager.getPrincipal(username);
+            }
             if (principal != null) {
                 String email = getEmail(principal, schemaName, fieldName);
-                if (!StringUtils.isEmpty(email)) {
+                if (!StringUtils.isEmpty(email) && !result.contains(email)) {
                     result.add(email);
                 }
             }
