@@ -41,11 +41,11 @@
 
     <!-- Nuxeo DAM -->
     <unzip dest="${tomcatdir}/nxserver">
-      <artifact:resolveFile key="org.nuxeo.dam.distribution:nuxeo-dam-distribution::zip" />
+      <artifact:resolveFile key="org.nuxeo.dam.distribution:nuxeo-distribution-dam::zip" />
     </unzip>
 
     <unzip dest="${tomcatdir}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.dam.distribution:nuxeo-dam-distribution::zip"
+      <artifact:resolveFile key="org.nuxeo.dam.distribution:nuxeo-distribution-dam::zip"
                             classifier="resources" />
     </unzip>
     <echo append="true" file="${tomcatdir}/bin/nuxeo.conf">
@@ -60,13 +60,14 @@ nuxeo.templates=default,dam</echo>
              value="${maven.project.version}" />
       <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
+    
+    <antcall target="reorganize-libs" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
          basedir="${stagedir}"
          includes="${tomcat}/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
                      type="zip"
-                     classifier="tomcat"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
 
     <antcall target="create-http-importer-distribution" />
@@ -93,8 +94,61 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
          includes="${tomcat}/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
                      type="zip"
-                     classifier="tomcat-importer"
+                     classifier="importer"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+  
+  <target name="reorganize-libs">
+    <!-- Add Tomcat specific requirements -->
+    <copy todir="${tomcatdir}/nxserver/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+      </artifact:set>
+     </copy>
+     <copy todir="${tomcatdir}/nxserver/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+
+    <nx:rmdups dir="${tomcatdir}/nxserver/lib" />
+
+    <!-- remove libraries already provided by Tomcat or unneeded -->
+    <delete>
+      <fileset dir="${tomcatdir}/nxserver/lib">
+        <!-- jetty is needed by vcs remote -->
+        <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
+        <!-- jetty-naming has jndi properties conflicting with Tomcat -->
+        <include name="jetty-naming*" />
+        <include name="servlet-api*" />
+        <include name="el-api*" />
+        <include name="jsp-*" />
+        <include name="juel-api-*" />
+      </fileset>
+    </delete>
+
+    <!-- Move some libraries from nxserver to Tomcat default lib directory -->
+    <move todir="${tomcatdir}/lib">
+      <fileset dir="${tomcatdir}/nxserver/lib">
+        <include name="log4j-*" />
+        <include name="lucene-*" />
+        <include name="commons-logging-*" />
+        <include name="commons-lang-*" />
+        <include name="freemarker-*" />
+        <include name="mail-*" />
+        <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
+        <include name="nuxeo-generic-wss-front*" />
+     </fileset>
+     <fileset dir="${tomcatdir}/nxserver/bundles">
+       <include name="nuxeo-core-storage-sql-extensions-*" />
+       <include name="nuxeo-runtime-tomcat-adapter*" />
+     </fileset>
+    </move>
+    <nx:rmdups dir="${tomcatdir}/lib" />
   </target>
 
 </project>

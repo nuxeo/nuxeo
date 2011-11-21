@@ -33,7 +33,8 @@
       <!-- Build all distributions -->
       <id>all-distributions</id>
       <modules>
-        <module>nuxeo-dam-distribution</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-distribution-dam-tomcat</module>
         <module>nuxeo-marketplace-dam</module>
       </modules>
     </profile>
@@ -43,27 +44,27 @@
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-dam-distribution</artifactId>
+        <artifactId>nuxeo-distribution-dam</artifactId>
         <version>${nuxeo.dam.version}</version>
         <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-dam-distribution</artifactId>
+        <artifactId>nuxeo-distribution-dam</artifactId>
         <version>${nuxeo.dam.version}</version>
         <type>zip</type>
         <classifier>resources</classifier>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-dam-distribution</artifactId>
+        <artifactId>nuxeo-distribution-dam</artifactId>
         <version>${nuxeo.dam.version}</version>
         <type>zip</type>
         <classifier>tomcat</classifier>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-dam-distribution</artifactId>
+        <artifactId>nuxeo-distribution-dam</artifactId>
         <version>${nuxeo.dam.version}</version>
         <type>zip</type>
         <classifier>tomcat-importer</classifier>

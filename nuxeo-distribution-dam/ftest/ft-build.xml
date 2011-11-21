@@ -14,29 +14,12 @@
     <echo message="stop-tomcat                   => stop the Tomcat server" />
   </target>
 
-  <target name="make-distribution">
+  <target name="make-distributions">
     <exec executable="mvn" failonerror="true">
-      <arg value="-f" />
-      <arg value="${pom.file}" />
       <arg value="clean" />
-      <arg value="package" />
       <arg value="install" />
       <arg value="-P" />
-      <arg value="jboss" />
-      <arg value="-P" />
-      <arg value="${mvn.profiles}" />
-    </exec>
-  </target>
-
-  <target name="make-tomcat-distribution">
-    <exec executable="mvn" failonerror="true">
-      <arg value="-f" />
-      <arg value="${pom.file}" />
-      <arg value="clean" />
-      <arg value="package" />
-      <arg value="install" />
-      <arg value="-P" />
-      <arg value="tomcat" />
+      <arg value="all-distributions" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
     </exec>

@@ -61,13 +61,6 @@
         <includes>
           <artifact groupId="!org.nuxeo*" scope="!test" />
         </includes>
-        <excludes>
-          <artifact artifactId="gwt-dev" />
-          <artifact artifactId="gwt-dnd" />
-          <artifact artifactId="gwt-log" />
-          <artifact artifactId="gwt-presenter" />
-          <artifact artifactId="gwt-user" />
-        </excludes>
       </artifact:set>
     </copy>
     <move todir="${nuxeo.ear}/lib">
