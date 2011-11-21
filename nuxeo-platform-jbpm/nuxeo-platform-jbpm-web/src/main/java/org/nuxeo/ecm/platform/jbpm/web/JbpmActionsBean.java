@@ -821,9 +821,11 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     @Override
     public boolean hasProcessDefinitions(String documentType) {
-        List<String> defNames = jbpmService.getTypeFilterConfiguration().get(
-                documentType);
-        return defNames != null && !defNames.isEmpty();
+        Map<String, List<String>> conf = jbpmService.getTypeFilterConfiguration();
+        if (conf != null) {
+            List<String> defNames = conf.get(documentType);
+            return defNames != null && !defNames.isEmpty();
+        }
+        return false;
     }
-
 }
