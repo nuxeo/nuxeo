@@ -89,7 +89,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             PrintWriter pwriter = new PrintWriter(swriter);
             t.printStackTrace(pwriter);
             String stackTrace = swriter.getBuffer().toString();
-            if (!is404) {
+            if (is404) {
+                log.debug(t.getMessage());
+            } else {
                 log.error(stackTrace);
                 parameters.getLogger().error(stackTrace);
             }
