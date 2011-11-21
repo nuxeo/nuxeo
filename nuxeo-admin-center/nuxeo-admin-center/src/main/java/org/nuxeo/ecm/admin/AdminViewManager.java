@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam Bean used to manage navigation inside the Admin Center.
@@ -142,4 +143,7 @@ public class AdminViewManager implements Serializable {
         return id;
     }
 
+    public boolean isUpdateCenterDisabled() {
+        return "true".equals(Framework.getProperty("nuxeo.updatecenter.disabled",""));
+    }
 }

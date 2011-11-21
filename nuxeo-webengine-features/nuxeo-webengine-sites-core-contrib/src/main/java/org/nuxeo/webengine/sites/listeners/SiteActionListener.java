@@ -17,6 +17,14 @@
  */
 package org.nuxeo.webengine.sites.listeners;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_ISWEBCONTAINER;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_NAME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_SCHEMA;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_URL;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WORKSPACE;
+
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -24,9 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
 /**
  * Site related actions listener. It performs when a mini-site is created.
@@ -54,12 +59,16 @@ public class SiteActionListener implements EventListener {
             return;
         }
 
+        // avoid error if document does not hold the webcontainer schema
+        if (!doc.hasSchema(WEBCONTAINER_SCHEMA)) {
+            return;
+        }
+
         if (ABOUT_TO_CREATE.equals(eventId)) {
             String url = doc.getName();
             url = URIUtils.quoteURIPathComponent(url, false);
             String documentWithSameURLQuery = "SELECT * FROM DOCUMENT where "
-                    + WEBCONTAINER_URL + " STARTSWITH \"" + url
-                    + "\"";
+                    + WEBCONTAINER_URL + " STARTSWITH \"" + url + "\"";
             DocumentModelList documentWithSameURL = docCtx.getCoreSession().query(
                     documentWithSameURLQuery);
             if (!documentWithSameURL.isEmpty()) {
@@ -75,13 +84,11 @@ public class SiteActionListener implements EventListener {
                 // CB: Because, at least for a while, Workspaces need to work
                 // together with WebSites, "isWebContainer" flag needs to be
                 // kept and set to "true" for all new created WebSites.
-                doc.setPropertyValue(WEBCONTAINER_ISWEBCONTAINER,
-                        Boolean.TRUE);
+                doc.setPropertyValue(WEBCONTAINER_ISWEBCONTAINER, Boolean.TRUE);
             }
         }
 
         // Set WebSite title
         doc.setPropertyValue(WEBCONTAINER_NAME, doc.getTitle());
     }
-
 }

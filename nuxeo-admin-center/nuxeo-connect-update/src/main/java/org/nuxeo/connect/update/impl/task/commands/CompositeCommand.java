@@ -81,7 +81,9 @@ public class CompositeCommand extends AbstractCommand {
     }
 
     public void addCommand(Command command) {
-        commands.add(command);
+        if (command != null) {
+            commands.add(command);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -75,8 +75,8 @@ public class Delete extends AbstractCommand {
         try {
             if (file.isFile()) {
                 if (md5 != null && !md5.equals(IOUtils.createMd5(file))) {
-                    return null; // ignore the command since the md5 doesn't
-                    // match
+                    // ignore the command since the md5 doesn't match
+                    return null;
                 }
                 File bak = IOUtils.backup(task.getPackage(), file);
                 if (onExit) {

@@ -11,14 +11,34 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.DeserializationProblemHandler;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonCachable;
+import org.codehaus.jackson.map.deser.BeanDeserializer;
+import org.codehaus.jackson.map.deser.BeanDeserializerModifier;
+import org.codehaus.jackson.map.introspect.BasicBeanDescription;
+import org.codehaus.jackson.map.module.SimpleModule;
+import org.codehaus.jackson.map.type.TypeBindings;
+import org.codehaus.jackson.map.type.TypeFactory;
+import org.codehaus.jackson.map.type.TypeModifier;
+import org.codehaus.jackson.type.JavaType;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentMarshaller;
@@ -35,19 +55,124 @@ import org.nuxeo.ecm.automation.client.model.OperationRegistry;
  */
 public class JsonMarshalling {
 
+    /**
+     * 
+     * @author matic
+     * @since 5.5
+     */
+    public static class ThowrableTypeModifier extends TypeModifier {
+        @Override
+        public JavaType modifyType(JavaType type, Type jdkType,
+                TypeBindings context, TypeFactory typeFactory) {
+            Class<?> raw = type.getRawClass();
+            if (raw.isAssignableFrom(Throwable.class)) {
+                return typeFactory.constructType(RemoteThrowable.class);
+            }
+            return type;
+        }
+    }
+
+    public static class RemoteThrowable extends Throwable {
+
+        private static final long serialVersionUID = 1L;
+
+        protected RemoteThrowable(String message) {
+            super(message);
+        }
+
+        protected final HashMap<String, JsonNode> otherNodes = new HashMap<String, JsonNode>();
+
+        public Map<String,JsonNode> getOtherNodes() {
+            return Collections.unmodifiableMap(otherNodes);
+        }
+    }
+
+    @JsonCachable(false)
+    public static class ThrowableDeserializer extends
+            org.codehaus.jackson.map.deser.ThrowableDeserializer {
+
+        protected HashMap<String, JsonNode> otherNodes = new HashMap<String, JsonNode>();
+
+        public ThrowableDeserializer(BeanDeserializer src) {
+            super(src);
+        }
+
+        @Override
+        public Object deserializeFromObject(JsonParser jp,
+                DeserializationContext ctxt) throws IOException,
+                JsonProcessingException {
+
+            RemoteThrowable t = (RemoteThrowable) super.deserializeFromObject(
+                    jp, ctxt);
+            t.otherNodes.putAll(otherNodes);
+            return t;
+        }
+    }
+
     private JsonMarshalling() {
     }
 
-    protected static JsonFactory factory = new JsonFactory();
+    protected static JsonFactory factory = newJsonFactory();
 
-    protected static final HashMap<String,JsonMarshaller<?>> marshallersByType =
-            new HashMap<String,JsonMarshaller<?>>();
+    protected static final HashMap<String, JsonMarshaller<?>> marshallersByType = new HashMap<String, JsonMarshaller<?>>();
 
-    protected static final HashMap<Class<?>,JsonMarshaller<?>> marshallersByJavaType =
-            new HashMap<Class<?>,JsonMarshaller<?>>();
+    protected static final HashMap<Class<?>, JsonMarshaller<?>> marshallersByJavaType = new HashMap<Class<?>, JsonMarshaller<?>>();
 
     public static JsonFactory getFactory() {
         return factory;
+    }
+
+    public static JsonFactory newJsonFactory() {
+        JsonFactory jf = new JsonFactory();
+        ObjectMapper oc = new ObjectMapper(jf);
+        final TypeFactory typeFactoryWithModifier = oc.getTypeFactory().withModifier(
+                new ThowrableTypeModifier());
+        oc.setTypeFactory(typeFactoryWithModifier);
+        oc.getDeserializationConfig().addHandler(
+                new DeserializationProblemHandler() {
+                    @Override
+                    public boolean handleUnknownProperty(
+                            DeserializationContext ctxt,
+                            JsonDeserializer<?> deserializer,
+                            Object beanOrClass, String propertyName)
+                            throws IOException, JsonProcessingException {
+                        if (deserializer instanceof ThrowableDeserializer) {
+                            JsonParser jp = ctxt.getParser();
+                            JsonNode propertyNode = jp.readValueAsTree();
+                            ((ThrowableDeserializer) deserializer).otherNodes.put(
+                                    propertyName, propertyNode);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+        final SimpleModule module = new SimpleModule("automation",
+                Version.unknownVersion()) {
+
+            @Override
+            public void setupModule(SetupContext context) {
+                super.setupModule(context);
+
+                context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+
+                    @Override
+                    public JsonDeserializer<?> modifyDeserializer(
+                            DeserializationConfig config,
+                            BasicBeanDescription beanDesc,
+                            JsonDeserializer<?> deserializer) {
+                        if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
+                            return super.modifyDeserializer(config, beanDesc,
+                                    deserializer);
+                        }
+                        return new ThrowableDeserializer(
+                                (BeanDeserializer) deserializer);
+                    }
+                });
+            }
+        };
+        oc.registerModule(module);
+        jf.setCodec(oc);
+        return jf;
     }
 
     static {
@@ -64,15 +189,16 @@ public class JsonMarshalling {
 
     @SuppressWarnings("unchecked")
     public static <T> JsonMarshaller<T> getMarshaller(String type) {
-        return (JsonMarshaller<T>)marshallersByType.get(type);
+        return (JsonMarshaller<T>) marshallersByType.get(type);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> JsonMarshaller<T> getMarshaller(Class<T> clazz) {
-        return (JsonMarshaller<T>)marshallersByJavaType.get(clazz);
+        return (JsonMarshaller<T>) marshallersByJavaType.get(clazz);
     }
 
-    public static OperationRegistry readRegistry(String content) throws Exception {
+    public static OperationRegistry readRegistry(String content)
+            throws Exception {
         HashMap<String, OperationDocumentation> ops = new HashMap<String, OperationDocumentation>();
         HashMap<String, OperationDocumentation> chains = new HashMap<String, OperationDocumentation>();
         HashMap<String, String> paths = new HashMap<String, String>();
@@ -94,7 +220,8 @@ public class JsonMarshalling {
         return new OperationRegistry(paths, ops, chains);
     }
 
-    private static void readOperations(JsonParser jp, Map<String, OperationDocumentation> ops) throws Exception {
+    private static void readOperations(JsonParser jp,
+            Map<String, OperationDocumentation> ops) throws Exception {
         jp.nextToken(); // skip [
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
@@ -104,7 +231,8 @@ public class JsonMarshalling {
         }
     }
 
-    private static void readChains(JsonParser jp, Map<String, OperationDocumentation> chains) throws Exception {
+    private static void readChains(JsonParser jp,
+            Map<String, OperationDocumentation> chains) throws Exception {
         jp.nextToken(); // skip [
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
@@ -114,7 +242,8 @@ public class JsonMarshalling {
         }
     }
 
-    private static void readPaths(JsonParser jp, Map<String, String> paths) throws Exception {
+    private static void readPaths(JsonParser jp, Map<String, String> paths)
+            throws Exception {
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
@@ -132,7 +261,8 @@ public class JsonMarshalling {
         jp.nextToken(); // will return JsonToken.START_OBJECT (verify?)
         jp.nextToken();
         if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
-            throw new RuntimeException("unuspported respone type. No entity-type key found at top of the object");
+            throw new RuntimeException(
+                    "unuspported respone type. No entity-type key found at top of the object");
         }
         jp.nextToken();
         String etype = jp.getText();
@@ -165,13 +295,14 @@ public class JsonMarshalling {
         return writer.toString();
     }
 
-    public static void writeMap(JsonGenerator jg, Map<String,Object> map) throws Exception {
+    public static void writeMap(JsonGenerator jg, Map<String, Object> map)
+            throws Exception {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             Object obj = entry.getValue();
             if (obj.getClass() == String.class) {
-                jg.writeStringField(entry.getKey(), (String)entry.getValue());
+                jg.writeStringField(entry.getKey(), (String) entry.getValue());
             } else {
-                throw new UnsupportedOperationException("Not yet implemented"); //TODO
+                throw new UnsupportedOperationException("Not yet implemented"); // TODO
             }
         }
     }

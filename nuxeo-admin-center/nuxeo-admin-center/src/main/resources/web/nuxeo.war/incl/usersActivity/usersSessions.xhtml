@@ -89,7 +89,7 @@
         </f:facet>
         <h:outputText value="#{row.lastAccessDate}">
           <f:convertDateTime type="both" dateStyle="medium"
-            timeStyle="medium" />
+            timeStyle="medium" timeZone="#{timeZone}" />
         </h:outputText>
       </nxu:column>
     </nxu:dataTable>

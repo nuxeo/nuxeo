@@ -41,6 +41,13 @@ import org.w3c.dom.Element;
  */
 public abstract class AbstractCommand implements Command {
 
+    /**
+     * List of files which must never be deleted at runtime.
+     *
+     * @since 5.5
+     */
+    protected static final String[] FILES_TO_DELETE_ONLY_ON_EXIT = { "nuxeo-core-storage-sql" };
+
     protected final String id;
 
     protected final Map<String, Object> guardVars;

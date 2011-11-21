@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.audit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +19,6 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.runtime.api.Framework;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class TestPageProvider extends RepositoryOSGITestCase {
 

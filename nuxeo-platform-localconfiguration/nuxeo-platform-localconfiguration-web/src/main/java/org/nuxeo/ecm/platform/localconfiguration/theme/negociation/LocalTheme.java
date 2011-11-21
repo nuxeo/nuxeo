@@ -16,6 +16,7 @@ package org.nuxeo.ecm.platform.localconfiguration.theme.negociation;
 
 import org.jboss.seam.Component;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.localconfiguration.LocalThemeConfig;
@@ -26,7 +27,7 @@ import org.nuxeo.theme.negotiation.Scheme;
  * Negotiation scheme for obtaining the local theme from the current space.
  *
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * @deprecated since 5.5: use local theme flavour instead
+ * @deprecated since 5.5: use local theme flavor instead
  */
 @Deprecated
 public class LocalTheme implements Scheme {
@@ -38,12 +39,18 @@ public class LocalTheme implements Scheme {
      *         section, ...) as a 'theme/page' string. Return null otherwise.
      */
     public String getOutcome(Object context) {
+        Boolean useOldThemeConf = Boolean.valueOf(Framework.getProperty(LocalThemeConfig.OLD_THEME_CONFIGURATION_PROPERTY));
+        if (Boolean.FALSE.equals(useOldThemeConf)) {
+            return null;
+        }
+
         DocumentModel currentSuperSpace = (DocumentModel) Component.getInstance("currentSuperSpace");
         if (currentSuperSpace == null) {
             return null;
         }
 
-        // Get the placeful local theme configuration for the current workspace.
+        // Get the placeful local theme configuration for the current
+        // workspace.
         LocalThemeConfig localThemeConfig = LocalThemeHelper.getLocalThemeConfig(currentSuperSpace);
         if (localThemeConfig == null) {
             return null;

@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
@@ -120,12 +121,35 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public StringList getEmails(List<String> usernames) throws Exception {
+        return getEmails(usernames, false);
+    }
+
+    /**
+     *
+     * Returns user emails
+     *
+     * @param usernames list of user names
+     * @param usePrefix indicates if user resolution takes into account nuxeo
+     *            prefix <b>user:</b>
+     *
+     * @since 5.5
+     */
+    public StringList getEmails(List<String> usernames, boolean usePrefix)
+            throws Exception {
         UserManager userManager = getUserManager();
         StringList result = new StringList(usernames.size());
         String schemaName = getUserManager().getUserSchemaName();
         String fieldName = getUserManager().getUserEmailField();
         for (String username : usernames) {
-            NuxeoPrincipal principal = userManager.getPrincipal(username);
+            NuxeoPrincipal principal = null;
+            if (usePrefix) {
+                if (username.startsWith(NuxeoPrincipal.PREFIX)) {
+                    principal = userManager.getPrincipal(username.replace(
+                            NuxeoPrincipal.PREFIX, ""));
+                }
+            } else {
+                principal = userManager.getPrincipal(username);
+            }
             if (principal != null) {
                 String email = getEmail(principal, schemaName, fieldName);
                 if (!StringUtils.isEmpty(email)) {

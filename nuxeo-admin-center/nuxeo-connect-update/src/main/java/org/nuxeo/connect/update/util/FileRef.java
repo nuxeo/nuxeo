@@ -19,7 +19,6 @@ package org.nuxeo.connect.update.util;
 import java.io.File;
 import java.util.Map;
 
-
 /**
  * A file reference that can handle file name patterns. A file pattern can use
  * named variable that will be substituted with the actual value of the file

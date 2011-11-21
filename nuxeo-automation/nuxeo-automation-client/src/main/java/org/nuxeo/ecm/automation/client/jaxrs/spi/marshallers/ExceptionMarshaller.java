@@ -48,7 +48,8 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
 
     public static RemoteException _read(JsonParser jp) throws Exception {
         int status = 0;
-        String type = null, message = null, stack = null;
+        String type = null, message = null;
+        Throwable cause = null;
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
@@ -63,12 +64,12 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
                 type = jp.getText();
             } else if ("message".equals(key)) {
                 message = jp.getText();
-            } else if ("stack".equals(key)) {
-                stack = jp.getText();
-            }
+            } else if ("cause".equals(key)) {
+                cause = jp.readValueAs(Throwable.class);
+            } 
             tok = jp.nextToken();
         }
-        return new RemoteException(status, type, message, stack);
+        return new RemoteException(status, type, message, cause);
     }
 
     @Override

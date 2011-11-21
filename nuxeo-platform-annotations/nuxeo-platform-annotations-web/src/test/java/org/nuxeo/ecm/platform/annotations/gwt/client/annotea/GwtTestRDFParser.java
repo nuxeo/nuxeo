@@ -37,7 +37,7 @@ public class GwtTestRDFParser extends GWTTestCase {
 
     @Override
     public String getModuleName() {
-        return "org.nuxeo.ecm.platform.annotations.gwt.AnnotationPanel";
+        return "org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule";
     }
 
     public void testGetAnnotationList() {

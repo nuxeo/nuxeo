@@ -11,26 +11,20 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import junit.framework.Assert;
 
+import org.codehaus.jackson.JsonNode;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -148,6 +142,29 @@ public class RestTest {
         }
     }
 
+    @Test 
+    public void testRemoteErrorHandling() throws Exception {
+           // assert document removed
+        try {
+            session.newRequest(FetchDocument.ID).set("value", "/myfolder").execute();
+            fail("request is suposed to return 404");
+        } catch (RemoteException e) {
+            Throwable remoteCause = e.getRemoteCause();
+            assertEquals(404, e.getStatus());
+            assertThat(remoteCause, is(notNullValue()));
+            final StackTraceElement[] remoteStack = remoteCause.getStackTrace();
+            assertThat(remoteStack, is(notNullValue()));
+            while (remoteCause.getCause() != remoteCause && remoteCause.getCause() != null) {
+                remoteCause = remoteCause.getCause();
+            }
+            Map<String,JsonNode> otherNodes = ((JsonMarshalling.RemoteThrowable)remoteCause).getOtherNodes();
+            String className = otherNodes.get("className").getTextValue();
+            assertThat(className, is("org.nuxeo.ecm.core.model.NoSuchDocumentException"));
+            Boolean rollback = otherNodes.get("rollback").getBooleanValue();
+            assertThat(rollback, is(Boolean.TRUE));
+        }
+    }
+  
     @Test
     public void testMultiValued() throws Exception {
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
