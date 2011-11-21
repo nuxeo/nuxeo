@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ##
-## (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+## (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
@@ -16,72 +16,74 @@
 ##     Stefane Fermigier
 ##     Julien Carsique
 ##
-## This script clone or update Nuxeo addons source code from Mercurial and GitHub
+## This script clones or updates Nuxeo addons source code from Mercurial and GitHub
 ## repositories.
 ##
 
 import re, os, sys, subprocess, urllib
 #from pprint import pprint
 
-git_url = "https://github.com/nuxeo"
-
 def system(cmd):
     print "$> " + cmd
     retcode = os.system(cmd)
 
 def check_output(cmd):
-    p =  subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p.communicate()
     if err != None:
-        print "[ERROR]: command",str(cmd)," returned an error:"
+        print "[ERROR]: command", str(cmd), " returned an error:"
         print err
     return out.strip()
 
-def hg_fetch(module, root_url=None):
-    if root_url is None:
-        hg_fetch(module, "https://hg.nuxeo.org/addons")
-        return
-
+def hg_fetch(module):
+    cwd = os.getcwd()
     if os.path.isdir(module):
         print "Updating " + module + "..."
-        cwd = os.getcwd()
         os.chdir(module)
         system("hg pull")
-        os.chdir(cwd)
     else:
         print "Cloning " + module + "..."
-        system("hg clone %s/%s %s" % (root_url, module, module))
-    cwd = os.getcwd()
-    os.chdir(module)
+        system("hg clone %s/%s %s" % (hg_url, module, module))
+        os.chdir(module)
     system("hg up %s" % (branch))
     os.chdir(cwd)
     print
 
 def git_fetch(module):
+    cwd = os.getcwd()
     if os.path.isdir(module):
         print "Updating " + module + "..."
-        cwd = os.getcwd()
         os.chdir(module)
-        retcode = system("git pull %s/%s.git %s" % (git_url, module, branch))
-        os.chdir(cwd)
-        if retcode != 0:
-            cwd = os.getcwd()
-            os.chdir(module)
-            system("git pull %s/%s.git %s" % (git_url, module, "master"))
-            os.chdir(cwd)
+        system("git fetch")
     else:
         print "Cloning " + module
-        system("git clone -b %s %s/%s.git %s" % (branch, git_url, module, module))
+        if git_url.startswith("http"):
+            system("git clone %s/%s.git %s" % (git_url, module, module))
+        else:
+            system("git clone %s/%s %s" % (git_url, module, module))
+        os.chdir(module)
+    retcode = system("git checkout %s" % (branch))
+    if retcode != 0:
+        print branch + " not found. Fallback on master"
+        system("git checkout %s" % ("master"))
+    os.chdir(cwd)
     print
 
-if len(sys.argv) == 2:
+if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
-    branch = check_output(["hg","id","-b"])
+    branch = check_output(["hg", "id", "-b"])
 
 system("hg pull")
 system("hg up %s" % branch)
 print
+
+hg_url = check_output(["hg", "path", "default"])
+if hg_url.startswith("http"):
+    git_url = hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo")
+else:
+    git_url = hg_url
+
 lines = urllib.urlopen("https://hg.nuxeo.org/?sort=name").readlines()
 hg_addons = []
 for line in lines:
