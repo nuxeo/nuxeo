@@ -83,10 +83,10 @@
     "__FLAVOR__") -->
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dm_default">
-      <path>themes/css/nuxeo_dm_default.css</path>
+      <src>themes/css/nuxeo_dm_default.css</src>
     </style>
     <style name="print_default">
-      <path>themes/css/print_default.css</path>
+      <src>themes/css/print_default.css</src>
     </style>
   </extension>
 

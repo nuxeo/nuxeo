@@ -342,7 +342,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     protected void registerStyle(SimpleStyle style,
             RuntimeContext extensionContext) throws Exception {
         // load the style content
-        String src = style.getPath();
+        String src = style.getSrc();
         URL url = getUrlFromPath(src, extensionContext);
         if (url == null) {
             log.error(String.format("Could not find resource at '%s'", src));

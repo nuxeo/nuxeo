@@ -32,6 +32,9 @@ public class Logo implements Serializable {
     @XNode("path")
     String path;
 
+    @XNode("previewPath")
+    String previewPath;
+
     @XNode("width")
     String width;
 
@@ -47,6 +50,14 @@ public class Logo implements Serializable {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getPreviewPath() {
+        return previewPath;
+    }
+
+    public void setPreviewPath(String previewPath) {
+        this.previewPath = previewPath;
     }
 
     public String getWidth() {
@@ -79,6 +90,7 @@ public class Logo implements Serializable {
         cLogo.setWidth(getWidth());
         cLogo.setTitle(getTitle());
         cLogo.setPath(getPath());
+        cLogo.setPreviewPath(getPreviewPath());
         return cLogo;
     }
 

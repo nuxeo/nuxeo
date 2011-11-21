@@ -52,7 +52,7 @@ public class StyleRegistry extends ContributionFragmentRegistry<SimpleStyle> {
     public SimpleStyle clone(SimpleStyle orig) {
         SimpleStyle clone = new SimpleStyle();
         clone.setName(orig.getName());
-        clone.setPath(orig.getPath());
+        clone.setSrc(orig.getSrc());
         clone.setContent(orig.getContent());
         return clone;
     }
@@ -60,7 +60,7 @@ public class StyleRegistry extends ContributionFragmentRegistry<SimpleStyle> {
     @Override
     public void merge(SimpleStyle src, SimpleStyle dst) {
         // no merge => replace content
-        dst.setPath(src.getPath());
+        dst.setSrc(src.getSrc());
         dst.setContent(src.getContent());
     }
 

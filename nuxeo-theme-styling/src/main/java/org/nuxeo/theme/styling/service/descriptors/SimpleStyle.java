@@ -28,9 +28,8 @@ public class SimpleStyle {
     @XNode("@name")
     String name;
 
-    // FIXME: rename "src" as file is not in the war
-    @XNode("path")
-    String path;
+    @XNode("src")
+    String src;
 
     /**
      * Resolved source content
@@ -45,12 +44,12 @@ public class SimpleStyle {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public String getSrc() {
+        return src;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setSrc(String src) {
+        this.src = src;
     }
 
     public String getContent() {
