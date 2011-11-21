@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -285,15 +286,17 @@ public class DialectOracle extends Dialect {
                 columns.get(0).getQuotedName(), fulltextParameters);
     }
 
+    protected static Set<Character> CHARS_RESERVED = Collections.singleton(Character.valueOf('%'));
+
     @Override
     public String getDialectFulltextQuery(String query) {
-        query = query.replace("*", "%");
-        query = query.replace("_", "\\_");
+        query = query.replace("*", "%"); // reserved, words with it not quoted
         FulltextQuery ft = analyzeFulltextQuery(query);
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return translateFulltext(ft, "OR", "AND", "NOT", "");
+        return translateFulltext(ft, "OR", "AND", "NOT", "{", "}",
+                CHARS_RESERVED, "", "", true);
     }
 
     // SELECT ..., (SCORE(1) / 100) AS "_nxscore"
