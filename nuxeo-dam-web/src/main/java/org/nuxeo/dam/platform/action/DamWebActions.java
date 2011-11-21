@@ -46,6 +46,8 @@ public class DamWebActions implements Serializable {
 
     private static final Log log = LogFactory.getLog(DamWebActions.class);
 
+    public static final String DAM_VIEW_ASSET_ACTION_LIST_CATEGORY = "DAM_VIEW_ASSET_ACTION_LIST";
+
     @In(create = true)
     protected transient WebActions webActions;
 
@@ -57,25 +59,11 @@ public class DamWebActions implements Serializable {
 
     @Factory(value = "assetActionsList", scope = EVENT)
     public List<Action> getAssetActionsList() {
-        return webActions.getActionsList("DAM_VIEW_ASSET_ACTION_LIST");
-    }
-
-    @Factory(value = "adminActionsList", scope = EVENT)
-    public List<Action> getAdminTabsList() {
-        return webActions.getActionsList("ADMIN_ACTION_LIST");
+        return webActions.getActionsList(DAM_VIEW_ASSET_ACTION_LIST_CATEGORY);
     }
 
     public Action getCurrentTabAction() {
-        return webActions.getCurrentTabAction("DAM_VIEW_ASSET_ACTION_LIST");
-    }
-
-    public Action getCurrentAdminTabAction() {
-        return webActions.getCurrentTabAction("ADMIN_ACTION_LIST");
-    }
-
-    public void setCurrentAdminTabAction(Action currentAdminTabAction) {
-        webActions.setCurrentTabAction("ADMIN_ACTION_LIST",
-                currentAdminTabAction);
+        return webActions.getCurrentTabAction(DAM_VIEW_ASSET_ACTION_LIST_CATEGORY);
     }
 
     public void showListLink() {
