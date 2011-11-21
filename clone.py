@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ##
-## (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+## (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
@@ -15,8 +15,7 @@
 ## Contributors:
 ##     Julien Carsique
 ##
-## This script clone or update Nuxeo source code from Mercurial and GitHub
-## repositories.
+## This script clones or updates Nuxeo source code from Mercurial repositories.
 ##
 
 import re, os, sys, subprocess
@@ -26,41 +25,38 @@ def system(cmd):
     retcode = os.system(cmd)
 
 def check_output(cmd):
-    p =  subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p.communicate()
     if err != None:
-        print "[ERROR]: command",str(cmd)," returned an error:"
+        print "[ERROR]: command", str(cmd), " returned an error:"
         print err
     return out.strip()
 
-def fetch(module, root_url=None):
-    if root_url is None:
-        fetch(module, "https://hg.nuxeo.org/nuxeo")
-        return
-
+def fetch(module):
+    cwd = os.getcwd()
     if os.path.isdir(module):
         print "Updating " + module + "..."
-        cwd = os.getcwd()
         os.chdir(module)
         system("hg pull")
-        os.chdir(cwd)
     else:
         print "Cloning " + module + "..."
         system("hg clone %s/%s %s" % (root_url, module, module))
-    cwd = os.getcwd()
-    os.chdir(module)
+        os.chdir(module)
     system("hg up %s" % (branch))
     os.chdir(cwd)
     print
 
-if len(sys.argv) == 2:
+if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
-    branch = check_output(["hg","id","-b"])
+    branch = check_output(["hg", "id", "-b"])
 
 system("hg pull")
 system("hg up %s" % branch)
 print
+
+root_url = check_output(["hg", "path", "default"])
+
 for line in os.popen("mvn -N help:effective-pom"):
     line = line.strip()
     m = re.match("<module>(.*?)</module>", line)
@@ -70,7 +66,9 @@ for line in os.popen("mvn -N help:effective-pom"):
     fetch(module)
 
 fetch("nuxeo-distribution")
-fetch("addons", "https://hg.nuxeo.org")
+if root_url.startswith("http"):
+    root_url = root_url.replace("/nuxeo", "")
+fetch("addons")
 
 cwd = os.getcwd()
 os.chdir("addons")
