@@ -151,7 +151,7 @@ h3 {
 /* Download screen */
 
 .genericBox {
-  width:500px;
+  width:600px;
   margin:30px auto;
   padding:20px 30px;
   text-align:center;
@@ -246,3 +246,14 @@ ul.installInfo li{
 .alignCenter {
   text-align:center;
   }
+
+.progressDownloadContainer {
+  width:100px;
+  height:10px;
+  background-color:grey;
+  display:none;
+ }
+ .progressDownload {
+  height:8px;
+  background-color:green;
+ }
