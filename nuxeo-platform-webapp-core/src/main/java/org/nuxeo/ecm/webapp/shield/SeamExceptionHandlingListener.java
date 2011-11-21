@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.mock.MockApplication;
@@ -58,6 +59,13 @@ public class SeamExceptionHandlingListener extends
         // patch following https://jira.jboss.org/browse/JBPAPP-1427
         // Ensure that the call in which the exception occurred was cleaned up
         // - it might not be, and there is no harm in trying
+
+        // we keep around the synchronization component because
+        // SeSynchronizations expects it to be unchanged when called by
+        // the finally block of UTTransaction.rollback
+        String SEAM_TX_SYNCS = "org.jboss.seam.transaction.synchronizations";
+        Object syncs = Contexts.getEventContext().get(SEAM_TX_SYNCS);
+
         Lifecycle.endRequest();
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -101,6 +109,11 @@ public class SeamExceptionHandlingListener extends
         // : manager.getCurrentConversationId();
 
         FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
+
+        // restore syncs
+        if (syncs != null) {
+            Contexts.getEventContext().set(SEAM_TX_SYNCS, syncs);
+        }
 
         // If there is an existing long-running conversation on
         // the failed request, propagate it
