@@ -122,10 +122,6 @@
                       value="#{damDocumentActions.currentSelection}"/>
           <nxl:layout name="dublincore" mode="view"
                       value="#{damDocumentActions.currentSelection}"/>
-          <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('streamable_media')}">
-          <nxl:layout name="streamable_media" mode="view"
-                      value="#{damDocumentActions.currentSelection}" />
-          </f:subview>
           </f:subview>
           <f:subview id="editSubView" rendered="#{damDocumentActions.displayMode == 'edit'}">
           <nxl:layout name="heading" mode="edit"
@@ -134,10 +130,6 @@
                       value="#{damDocumentActions.currentSelection}"/>
           <nxl:layout name="dublincore" mode="edit"
                       value="#{damDocumentActions.currentSelection}"/>
-          <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('streamable_media')}">
-          <nxl:layout name="streamable_media" mode="view"
-                      value="#{damDocumentActions.currentSelection}" />
-          </f:subview>
           </f:subview>
 
           <h:panelGrid class="dataOutput"

@@ -75,37 +75,7 @@
       </layouts>
     </type>
 
-    <type id="Folder">
-      <label>Folder</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.png</bigIcon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
-      <category>Collaborative</category>
-      <description>Folder.description</description>
-      <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Folder</type>
-        <type>File</type>
-        <type>Picture</type>
-        <type>Video</type>
-        <type>Audio</type>
-      </subtypes>
-      <layouts mode="any">
-        <layout>heading</layout>
-      </layouts>
-      <layouts mode="edit">
-        <layout>heading</layout>
-        <layout>dublincore</layout>
-      </layouts>
-    </type>
-
     <type id="File">
-      <label>File</label>
-      <icon>/icons/file.gif</icon>
-      <bigIcon>/icons/file_100.png</bigIcon>
-      <category>SimpleDocument</category>
-      <description>File.description</description>
-      <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>dam_common</layout>
@@ -117,18 +87,9 @@
         <layout>file</layout>
         <layout>dublincore</layout>
       </layouts>
-      <!-- all content already on summary page -->
-      <layouts mode="view" />
     </type>
 
     <type id="Picture">
-      <label>Picture</label>
-      <default-view>view_documents</default-view>
-      <create-view>create_picture</create-view>
-      <icon>/icons/image.gif</icon>
-      <bigIcon>/icons/image_100.png</bigIcon>
-      <category>SimpleDocument</category>
-      <description>Picture.description</description>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>dam_common</layout>
@@ -141,12 +102,6 @@
     </type>
 
     <type id="Video">
-      <label>Video</label>
-      <default-view>view_documents</default-view>
-      <icon>/dam/icons/video.png</icon>
-      <bigIcon>/dam/icons/video_big.png</bigIcon>
-      <category>SimpleDocument</category>
-      <description>Video.description</description>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>dam_common</layout>
@@ -160,8 +115,6 @@
     </type>
 
     <type id="Audio">
-      <icon>/dam/icons/audio.png</icon>
-      <bigIcon>/dam/icons/audio_big.png</bigIcon>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>dam_common</layout>
