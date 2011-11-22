@@ -19,6 +19,7 @@ package org.nuxeo.dam.webapp.fileimporter;
 
 import java.io.File;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -29,9 +30,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,13 +56,16 @@ import static org.junit.Assert.assertTrue;
         "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.picture.convert",
+        "org.nuxeo.ecm.platform.video.api",
         "org.nuxeo.ecm.platform.video.core",
+        "org.nuxeo.ecm.platform.video.convert",
         "org.nuxeo.ecm.platform.audio.core",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.importer.core", "org.nuxeo.dam.importer.core",
         "org.nuxeo.ecm.platform.content.template", "org.nuxeo.dam.core",
         "org.nuxeo.ecm.webapp.base", "org.nuxeo.ecm.webapp.core",
-        "org.nuxeo.ecm.platform.picture.jsf", "org.nuxeo.dam.webapp.common" })
+        "org.nuxeo.ecm.platform.picture.jsf" })
 @LocalDeploy( { "org.nuxeo.dam.core:OSGI-INF/test-dam-content-template.xml" })
 public class TestZipImporter {
 
@@ -71,6 +77,13 @@ public class TestZipImporter {
 
     @Inject
     protected CoreSession session;
+
+    @Before
+    public void deactivateBinaryTextListener() {
+        EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text",
+                false);
+    }
 
     protected File getTestFile(String relativePath) {
         return new File(FileUtils.getResourcePathFromContext(relativePath));
