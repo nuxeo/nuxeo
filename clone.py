@@ -20,63 +20,78 @@
 ## repositories.
 ##
 
-import re, os, sys, subprocess, urllib
+import re, os, sys, shlex, subprocess, urllib
 #from pprint import pprint
 
-def system(cmd):
-    print "$> " + cmd
-    retcode = os.system(cmd)
+def log(message):
+    sys.stdout.write(message)
+    sys.stdout.write(os.linesep)
+    sys.stdout.flush()
+
+def system(cmd, failonerror = True):
+    log("$> " + cmd)
+    args = shlex.split(cmd)
+    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, err = p.communicate()
+    log(out)
+    retcode = p.returncode
+    if retcode != 0:
+        log("Command returned non-zero exit code: %s" % (cmd,))
+        if failonerror:
+            sys.exit(retcode)
+    return retcode
 
 def check_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p.communicate()
     if err != None:
-        print "[ERROR]: command", str(cmd), " returned an error:"
-        print err
+        log("[ERROR]: command", str(cmd), " returned an error:")
+        log(err)
     return out.strip()
 
 def hg_fetch(module):
     cwd = os.getcwd()
     if os.path.isdir(module):
-        print "Updating " + module + "..."
+        log("Updating " + module + "...")
         os.chdir(module)
         system("hg pull")
     else:
-        print "Cloning " + module + "..."
+        log("Cloning " + module + "...")
         system("hg clone %s/%s %s" % (hg_url, module, module))
         os.chdir(module)
     system("hg up %s" % (branch))
     os.chdir(cwd)
-    print
+    log("")
 
 def git_fetch(module):
     cwd = os.getcwd()
     if os.path.isdir(module):
-        print "Updating " + module + "..."
+        log("Updating " + module + "...")
         os.chdir(module)
         system("git fetch")
     else:
-        print "Cloning " + module
+        log("Cloning " + module)
         if git_url.startswith("http"):
             system("git clone %s/%s.git %s" % (git_url, module, module))
         else:
             system("git clone %s/%s %s" % (git_url, module, module))
         os.chdir(module)
-    retcode = system("git checkout %s" % (branch))
+    retcode = system("git checkout %s" % (branch), False)
     if retcode != 0:
-        print branch + " not found. Fallback on master"
+        log(branch + " not found. Fallback on master")
         system("git checkout %s" % ("master"))
     os.chdir(cwd)
-    print
+    log("")
 
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
     branch = check_output(["hg", "id", "-b"])
 
+log("Cloning/updating addons pom")
 system("hg pull")
 system("hg up %s" % branch)
-print
+log("")
 
 hg_url = check_output(["hg", "path", "default"])
 if hg_url.startswith("http"):
@@ -91,7 +106,7 @@ for line in lines:
         continue
     hg_addon = line[len("<b>addons/"):-len("</b>\n")]
     hg_addons.append(hg_addon)
-#print hg_addons
+#log(hg_addons)
 
 all_lines = os.popen("mvn -N help:effective-pom").readlines()
 all_lines += os.popen("mvn -N help:effective-pom -f pom-optionals.xml").readlines()
