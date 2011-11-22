@@ -61,8 +61,8 @@ public class ScalarCollectionIO implements CollectionIO {
     @Override
     public void executeInserts(PreparedStatement ps, List<Row> rows,
             List<Column> columns, boolean supportsBatchUpdates, String sql,
-            JDBCLogger logger) throws SQLException {
-        List<Serializable> debugValues = logger.isLogEnabled() ? new ArrayList<Serializable>()
+            JDBCConnection connection) throws SQLException {
+        List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<Serializable>()
                 : null;
         String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql
                 + " -- BATCHED" : sql;
@@ -92,21 +92,24 @@ public class ScalarCollectionIO implements CollectionIO {
                     }
                 }
                 if (debugValues != null) {
-                    logger.logSQL(loggedSql, debugValues);
+                    connection.logger.logSQL(loggedSql, debugValues);
                     debugValues.clear();
                 }
                 if (supportsBatchUpdates) {
                     ps.addBatch();
                     if (batch % JDBCRowMapper.UPDATE_BATCH_SIZE == 0) {
                         ps.executeBatch();
+                        connection.countExecute();
                     }
                 } else {
                     ps.execute();
+                    connection.countExecute();
                 }
             }
         }
         if (supportsBatchUpdates) {
             ps.executeBatch();
+            connection.countExecute();
         }
     }
 

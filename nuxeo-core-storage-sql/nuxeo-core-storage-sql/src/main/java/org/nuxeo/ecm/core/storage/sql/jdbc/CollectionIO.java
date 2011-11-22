@@ -41,6 +41,6 @@ public interface CollectionIO {
      */
     void executeInserts(PreparedStatement ps, List<Row> rows,
             List<Column> columns, boolean supportsBatchUpdates, String sql,
-            JDBCLogger logger) throws SQLException;
+            JDBCConnection connection) throws SQLException;
 
 }

@@ -143,8 +143,16 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      */
 
     @Override
-    public List<? extends RowId> read(Collection<RowId> rowIds)
-            throws StorageException {
+    public List<? extends RowId> read(Collection<RowId> rowIds,
+            boolean cacheOnly) throws StorageException {
+        List<RowId> res = new ArrayList<RowId>(rowIds.size());
+        if (cacheOnly) {
+            // return no data
+            for (RowId rowId : rowIds) {
+                res.add(new RowId(rowId));
+            }
+            return res;
+        }
         // reorganize by table
         Map<String, Set<Serializable>> tableIds = new HashMap<String, Set<Serializable>>();
         for (RowId rowId : rowIds) {
@@ -155,7 +163,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             ids.add(rowId.id);
         }
         // read on each table
-        List<RowId> res = new ArrayList<RowId>(rowIds.size());
         for (Entry<String, Set<Serializable>> en : tableIds.entrySet()) {
             String tableName = en.getKey();
             Set<Serializable> ids = new HashSet<Serializable>(en.getValue());
@@ -252,6 +259,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     ps.setObject(i++, id);
                 }
                 ResultSet rs = ps.executeQuery();
+                countExecute();
 
                 // get all values from result set, separate by ids
                 // the result set is ordered by id, pos
@@ -389,6 +397,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
              * Execute query.
              */
             ResultSet rs = ps.executeQuery();
+            countExecute();
 
             /*
              * Construct the maps from the result set.
@@ -543,13 +552,16 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         ps.addBatch();
                         if (batch % UPDATE_BATCH_SIZE == 0) {
                             ps.executeBatch();
+                            countExecute();
                         }
                     } else {
                         ps.execute();
+                        countExecute();
                     }
                 }
                 if (supportsBatchUpdates) {
                     ps.executeBatch();
+                    countExecute();
                 }
             } finally {
                 closeStatement(ps);
@@ -575,7 +587,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
                 io.executeInserts(ps, rows, columns, supportsBatchUpdates, sql,
-                        logger);
+                        this);
             } finally {
                 closeStatement(ps);
             }
@@ -635,15 +647,18 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                             ps.addBatch();
                             if (batch % UPDATE_BATCH_SIZE == 0) {
                                 int[] counts = ps.executeBatch();
+                                countExecute();
                                 logger.logCounts(counts);
                             }
                         } else {
                             int count = ps.executeUpdate();
+                            countExecute();
                             logger.logCount(count);
                         }
                     }
                     if (supportsBatchUpdates) {
                         int[] counts = ps.executeBatch();
+                        countExecute();
                         logger.logCounts(counts);
                     }
                 } finally {
@@ -709,6 +724,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     ps.setObject(i++, id);
                 }
                 int count = ps.executeUpdate();
+                countExecute();
                 logger.logCount(count);
             } finally {
                 closeStatement(ps);
@@ -745,6 +761,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 List<Column> columns = sqlInfo.selectFragmentById.get(tableName).whatColumns;
                 ps.setObject(1, id); // assumes only one primary column
                 ResultSet rs = ps.executeQuery();
+                countExecute();
 
                 // construct the resulting collection using each row
                 CollectionIO io = getCollectionIO(tableName);
@@ -892,6 +909,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 ps.setObject(i, row.id); // id last in SQL
                 int count = ps.executeUpdate();
+                countExecute();
                 logger.logCount(count);
             } finally {
                 closeStatement(ps);
@@ -995,6 +1013,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 logger.logSQL(copy.sql, debugValues);
             }
             int count = ps.executeUpdate();
+            countExecute();
             logger.logCount(count);
 
             // TODO DB_IDENTITY
@@ -1026,6 +1045,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             ps.setObject(1, id); // parent id
             ResultSet rs = ps.executeQuery();
+            countExecute();
             while (rs.next()) {
                 Serializable childId = null;
                 String childPrimaryType = null;
@@ -1091,6 +1111,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     }
                     deletePs.setObject(1, newId);
                     int delCount = deletePs.executeUpdate();
+                    countExecute();
                     logger.logCount(delCount);
                     before = delCount > 0;
                 }
@@ -1100,6 +1121,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     logger.logSQL(copySql, Arrays.asList(newId, id));
                 }
                 int copyCount = copyPs.executeUpdate();
+                countExecute();
                 logger.logCount(copyCount);
                 if (overwrite) {
                     after = copyCount > 0;
@@ -1141,6 +1163,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             ps.setObject(1, rootId); // parent id
             ResultSet rs = ps.executeQuery();
+            countExecute();
             while (rs.next()) {
                 Serializable id = null;
                 Serializable parentId = null;

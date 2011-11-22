@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
@@ -3149,6 +3150,29 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 moo.getId()));
         assertEquals("/foo/bar/gee", nodes.get(0).getPath());
         assertEquals("/foo/moo", nodes.get(1).getPath());
+    }
+
+    public void testPathCached() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foo = session.addChildNode(root, "foo", null, "TestDoc", false);
+        Node bar = session.addChildNode(foo, "bar", null, "TestDoc", false);
+        session.save();
+        session.close();
+        session = repository.getConnection();
+
+        Node node = session.getNodeById(bar.getId());
+        assertEquals("/foo/bar", node.getPath());
+
+        // clear context, the mapper cache should still be used
+        ((SessionImpl) session).context.pristine.clear();
+        JDBCConnection jdbc = (JDBCConnection) ((CachingMapper) ((SessionImpl) session).getMapper()).mapper;
+        jdbc.countExecutes = true;
+        jdbc.executeCount = 0;
+
+        node = session.getNodeById(bar.getId());
+        assertEquals("/foo/bar", node.getPath());
+        assertEquals(0, jdbc.executeCount);
     }
 
     public void testPathDeep() throws Exception {

@@ -292,29 +292,35 @@ public class CachingRowMapper implements RowMapper {
      * Use those from the cache if available, read from the mapper for the rest.
      */
     @Override
-    public List<? extends RowId> read(Collection<RowId> rowIds)
-            throws StorageException {
+    public List<? extends RowId> read(Collection<RowId> rowIds,
+            boolean cacheOnly) throws StorageException {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
         // find which are in cache, and which not
         List<RowId> todo = new LinkedList<RowId>();
         for (RowId rowId : rowIds) {
             Row row = cacheGet(rowId);
             if (row == null) {
-                todo.add(rowId);
+                if (cacheOnly) {
+                    res.add(new RowId(rowId));
+                } else {
+                    todo.add(rowId);
+                }
             } else if (isAbsent(row)) {
                 res.add(new RowId(rowId));
             } else {
                 res.add(row);
             }
         }
-        // ask missing ones to underlying row mapper
-        List<? extends RowId> fetched = rowMapper.read(todo);
-        // add them to the cache
-        for (RowId rowId : fetched) {
-            cachePutAbsentIfRowId(rowId);
+        if (!todo.isEmpty()) {
+            // ask missing ones to underlying row mapper
+            List<? extends RowId> fetched = rowMapper.read(todo, cacheOnly);
+            // add them to the cache
+            for (RowId rowId : fetched) {
+                cachePutAbsentIfRowId(rowId);
+            }
+            // merge results
+            res.addAll(fetched);
         }
-        // merge results
-        res.addAll(fetched);
         return res;
     }
 

@@ -86,6 +86,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
             }
         }
         rs = ps.executeQuery();
+        mapper.countExecute();
         // rs.setFetchDirection(ResultSet.FETCH_UNKNOWN); fails in H2
     }
 

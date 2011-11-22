@@ -500,18 +500,26 @@ public class PersistenceContext {
             throws StorageException {
         Fragment fragment = getIfPresent(rowId);
         if (fragment == null) {
-            fragment = getFromMapper(rowId, allowAbsent);
+            fragment = getFromMapper(rowId, allowAbsent, false);
         }
-        // if (fragment != null && fragment.getState() == State.DELETED) {
-        // fragment = null;
-        // }
         return fragment;
     }
 
-    protected Fragment getFromMapper(RowId rowId, boolean allowAbsent)
-            throws StorageException {
+    /**
+     * Gets a fragment from the context or the mapper cache or the underlying
+     * database.
+     *
+     * @param rowId the fragment id
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
+     * @param cacheOnly only check memory, not the database
+     * @return the fragment, or when {@code allowAbsent} is {@code false}, a
+     *         {@code null} if not found
+     */
+    protected Fragment getFromMapper(RowId rowId, boolean allowAbsent,
+            boolean cacheOnly) throws StorageException {
         List<Fragment> fragments = getFromMapper(Collections.singleton(rowId),
-                allowAbsent);
+                allowAbsent, cacheOnly);
         return fragments.isEmpty() ? null : fragments.get(0);
     }
 
@@ -523,7 +531,7 @@ public class PersistenceContext {
      * {@code false}.
      */
     protected List<Fragment> getFromMapper(Collection<RowId> rowIds,
-            boolean allowAbsent) throws StorageException {
+            boolean allowAbsent, boolean cacheOnly) throws StorageException {
         List<Fragment> res = new ArrayList<Fragment>(rowIds.size());
 
         // find fragments we really want to fetch
@@ -547,7 +555,7 @@ public class PersistenceContext {
         }
 
         // fetch these fragments in bulk
-        List<? extends RowId> rows = mapper.read(todo);
+        List<? extends RowId> rows = mapper.read(todo, cacheOnly);
         res.addAll(getFragmentsFromFetchedRows(rows, allowAbsent));
 
         return res;
@@ -591,7 +599,7 @@ public class PersistenceContext {
         }
 
         // fetch missing ones, return union
-        List<Fragment> fetched = getFromMapper(todo, allowAbsent);
+        List<Fragment> fetched = getFromMapper(todo, allowAbsent, false);
         res.addAll(fetched);
         return res;
     }
@@ -1033,7 +1041,8 @@ public class PersistenceContext {
      * If {@code fetch} is {@code false}, does not touch the mapper, only the
      * context, therefore may return a missing parent id instead of the path.
      *
-     * @param fetch {@code true} if we can use the mapper
+     * @param fetch {@code true} if we can use the database, {@code false} if
+     *            only caches should be used
      */
     public PathAndId getPathOrMissingParentId(SimpleFragment hierFragment,
             boolean fetch) throws StorageException {
@@ -1055,10 +1064,15 @@ public class PersistenceContext {
             RowId rowId = new RowId(model.HIER_TABLE_NAME, parentId);
             hierFragment = (SimpleFragment) getIfPresent(rowId);
             if (hierFragment == null) {
-                if (!fetch) {
-                    return new PathAndId(null, parentId);
+                // try in mapper cache
+                hierFragment = (SimpleFragment) getFromMapper(rowId, false, true);
+                if (hierFragment == null) {
+                    if (!fetch) {
+                        return new PathAndId(null, parentId);
+                    }
+                    hierFragment = (SimpleFragment) getFromMapper(rowId, true,
+                            false);
                 }
-                hierFragment = (SimpleFragment) getFromMapper(rowId, true);
             }
         }
         String path;

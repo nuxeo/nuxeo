@@ -47,12 +47,13 @@ public interface RowMapper {
      * absent row.
      *
      * @param rowIds the row ids (including their table name)
+     * @param cacheOnly if {@code true}, only hit memory
      * @return the collection of {@link Row}s (or {@link RowId}s if the row was
      *         absent from the database). Order is not the same as the input
      *         {@code rowIds}
      * @throws StorageException
      */
-    List<? extends RowId> read(Collection<RowId> rowIds)
+    List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly)
             throws StorageException;
 
     /**

@@ -54,6 +54,12 @@ public class JDBCConnection {
     /** If there's a chance the connection may be closed. */
     protected volatile boolean checkConnectionValid;
 
+    // for tests
+    public boolean countExecutes;
+
+    // for tests
+    public int executeCount;
+
     // for debug
     private static final AtomicLong instanceCounter = new AtomicLong(0);
 
@@ -66,7 +72,7 @@ public class JDBCConnection {
 
     /**
      * Creates a new Mapper.
-     * 
+     *
      * @param model the model
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
@@ -85,6 +91,12 @@ public class JDBCConnection {
 
     public Identification getIdentification() {
         return new Identification(null, "" + instanceNumber);
+    }
+
+    protected void countExecute() {
+        if (countExecutes) {
+            executeCount++;
+        }
     }
 
     protected void open() throws StorageException {

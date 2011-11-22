@@ -210,6 +210,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 logger.log(sql);
                 try {
                     st.execute(sql);
+                    countExecute();
                 } catch (SQLException e) {
                     throw new SQLException("Error creating table: " + sql
                             + " : " + e.getMessage(), e);
@@ -218,6 +219,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     logger.log(s);
                     try {
                         st.execute(s);
+                        countExecute();
                     } catch (SQLException e) {
                         throw new SQLException("Error post creating table: "
                                 + s + " : " + e.getMessage(), e);
@@ -228,6 +230,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     logger.log(s);
                     try {
                         st.execute(s);
+                        countExecute();
                     } catch (SQLException e) {
                         throw new SQLException("Error post creating table: "
                                 + s + " : " + e.getMessage(), e);
@@ -275,6 +278,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     logger.log(sql);
                     try {
                         st.execute(sql);
+                        countExecute();
                     } catch (SQLException e) {
                         throw new SQLException("Error adding column: " + sql
                                 + " : " + e.getMessage(), e);
@@ -283,6 +287,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         logger.log(s);
                         try {
                             st.execute(s);
+                            countExecute();
                         } catch (SQLException e) {
                             throw new SQLException("Error post adding column: "
                                     + s + " : " + e.getMessage(), e);
@@ -417,6 +422,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     columns.get(2).setToPreparedStatement(ps, 3,
                             Long.valueOf(kind));
                     ps.execute();
+                    countExecute();
                 }
                 if (kind == Invalidations.MODIFIED) {
                     kind = Invalidations.DELETED;
@@ -472,6 +478,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 logger.log(sql);
             }
             ResultSet rs = st.executeQuery(sql);
+            countExecute();
             int n = 0;
             while (rs.next()) {
                 n++;
@@ -496,6 +503,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     logger.log(sqldel);
                 }
                 n = st.executeUpdate(sqldel);
+                countExecute();
                 if (logger.isLogEnabled()) {
                     logger.logCount(n);
                 }
@@ -527,6 +535,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             try {
                 ps.setObject(1, repositoryId);
                 ResultSet rs = ps.executeQuery();
+                countExecute();
                 if (!rs.next()) {
                     if (logger.isLogEnabled()) {
                         logger.log("  -> (none)");
@@ -587,6 +596,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     debugValues.clear();
                 }
                 ps.execute();
+                countExecute();
             } finally {
                 closeStatement(ps);
             }
@@ -628,6 +638,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             cs.setString(1, principals);
             cs.executeUpdate();
+            countExecute();
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to prepare user read acl cache",
@@ -707,6 +718,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
             }
             ResultSet rs = ps.executeQuery();
+            countExecute();
 
             // limit/offset
             long totalSize = -1;
@@ -819,6 +831,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 ps.setString(1, (String) whereIds);
             }
             ResultSet rs = ps.executeQuery();
+            countExecute();
             List<Serializable> debugIds = null;
             if (logger.isLogEnabled()) {
                 debugIds = new LinkedList<Serializable>();
@@ -886,6 +899,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     where.setToPreparedStatement(ps, i++, id);
                 }
                 ResultSet rs = ps.executeQuery();
+                countExecute();
                 todo = new LinkedList<Serializable>();
                 List<Serializable> debugIds = null;
                 if (logger.isLogEnabled()) {
@@ -937,6 +951,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             String sql = sqlInfo.dialect.getUpdateReadAclsSql();
             logger.log(sql);
             st.execute(sql);
+            countExecute();
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to update read acls", e);
@@ -964,6 +979,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             String sql = sqlInfo.dialect.getRebuildReadAclsSql();
             logger.log(sql);
             st.execute(sql);
+            countExecute();
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to rebuild read acls", e);
@@ -1040,6 +1056,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     logger.log(sql);
                 }
                 ResultSet rs = st.executeQuery(sql);
+                countExecute();
                 int n = 0;
                 while (rs.next()) {
                     n++;
