@@ -144,6 +144,11 @@
     point="widgettypes">
 
     <widgetType name="listing_task_name">
+      <configuration>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -153,6 +158,11 @@
     </widgetType>
 
     <widgetType name="listing_process_name">
+      <configuration>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -255,8 +265,7 @@
       </fields>
     </widget>
 
-    <widget name="listing_process_document_title_link"
-      type="listing_title_link">
+    <widget name="listing_process_document_title_link" type="listing_title_link">
       <labels>
         <label mode="any">label.title</label>
       </labels>

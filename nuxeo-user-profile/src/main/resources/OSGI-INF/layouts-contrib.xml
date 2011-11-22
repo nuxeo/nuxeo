@@ -13,7 +13,7 @@
           <p>This widget displays the user profile layout.</p>
         </description>
         <categories>
-          <category>summary</category>
+          <category>configuration_not_ready</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
@@ -35,6 +35,9 @@
         <description>
           Widget allowing to upload a picture for the user avatar.
         </description>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
