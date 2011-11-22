@@ -20,9 +20,11 @@
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_SCHEMA_NAME;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 
 /**
  * Factory instantiating {@link PictureResourceAdapter} adapter.
@@ -32,7 +34,7 @@ public class PictureResourceAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class cls) {
-        if (doc.hasFacet(PICTURE_FACET)) {
+        if (doc.hasFacet(PICTURE_FACET) || doc.hasSchema(PICTURE_SCHEMA_NAME)) {
             PictureResourceAdapter adapter = new DefaultPictureAdapter();
             adapter.setDocumentModel(doc);
             return adapter;

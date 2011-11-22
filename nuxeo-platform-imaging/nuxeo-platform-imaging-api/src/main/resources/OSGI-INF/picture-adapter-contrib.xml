@@ -11,8 +11,7 @@
       facet="MultiviewPicture"/>
 
     <adapter class="org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter"
-      factory="org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapterFactory"
-      facet="Picture"/>
+      factory="org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapterFactory" />
   </extension>
 
 </component>
