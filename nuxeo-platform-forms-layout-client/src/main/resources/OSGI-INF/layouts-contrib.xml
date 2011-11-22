@@ -1689,6 +1689,7 @@
         <description></description>
         <categories>
           <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
           <!--
             <category>document</category>
           -->
@@ -1719,6 +1720,7 @@
         <description></description>
         <categories>
           <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
           <!--
             <category>document</category>
           -->

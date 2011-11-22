@@ -6,44 +6,50 @@
     point="widgettypes">
 
     <widgetType name="life_cycle_transitions">
-
-      <documentation>
-        This widget type displays a selection of available life cycle transitions
-        given a life cycle state and a life cycle policy.
-        <br />
-        It requires the configuration of the first field to map to a String
-        value storing the chosen life cycle transition.
-        <br />
-        It needs the following properties configuration:
-        <ul>
-          <li>
-            currentLifeCycleState: the current state from where to start finding
-            the available transitions.
-          </li>
-          <li>
-            lifeCycleName: represents the life cycle from which to retrieve the
-            transitions.
-          </li>
-        </ul>
-        <br />
-        A standard definition could be:
-        <code>
-          <widget name="life_cycle_transitions"
-            type="life_cycle_transitions">
-            <labels>
-              <label mode="any"></label>
-            </labels>
-            <fields>
-              <field>contextData['request/lifeCycleTransition']</field>
-            </fields>
-            <properties widgetMode="edit">
-              <property name="currentLifeCycleState">#{layoutValue.currentLifeCycleState}</property>
-              <property name="lifeCycleName">#{layoutValue.lifeCyclePolicy}</property>
-            </properties>
-          </widget>
-        </code>
-      </documentation>
-
+      <configuration>
+        <title>Life cycle transitions</title>
+        <description>
+          This widget type displays a selection of available life cycle
+          transitions
+          given a life cycle state and a life cycle policy.
+          <br />
+          It requires the configuration of the first field to map to a String
+          value storing the chosen life cycle transition.
+          <br />
+          It needs the following properties configuration:
+          <ul>
+            <li>
+              currentLifeCycleState: the current state from where to start
+              finding
+              the available transitions.
+            </li>
+            <li>
+              lifeCycleName: represents the life cycle from which to retrieve
+              the
+              transitions.
+            </li>
+          </ul>
+          <br />
+          A standard definition could be:
+          <pre>
+            <widget name="life_cycle_transitions" type="life_cycle_transitions">
+              <labels>
+                <label mode="any"></label>
+              </labels>
+              <fields>
+                <field>contextData['request/lifeCycleTransition']</field>
+              </fields>
+              <properties widgetMode="edit">
+                <property name="currentLifeCycleState">#{layoutValue.currentLifeCycleState}</property>
+                <property name="lifeCycleName">#{layoutValue.lifeCyclePolicy}</property>
+              </properties>
+            </widget>
+          </pre>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -55,6 +61,7 @@
 
     <widgetType name="image">
       <configuration>
+        <sinceVersion>5.5</sinceVersion>
         <title>Image</title>
         <description>
           <p>
@@ -62,22 +69,72 @@
             mode, with additional message tag for errors, and an &lt;img&gt; tag
             displaying the image in other modes.
           </p>
-          <p>
-            The widget accepts the following properties:
-            <ul>
-              <li>
-                acceptedExtensions: comma separated list of supported file extensions
-                in edit mode. (".jpg, .jpeg, .png")
-              </li>
-              <li>
-                width: the width of the img tag in view mode.
-              </li>
-              <li>
-                height: the height of the img tag in view mode.
-              </li>
-            </ul>
-          </p>
+          <li>
+            width: the width of the img tag in view mode.
+          </li>
+          <li>
+            height: the height of the img tag in view mode.
+          </li>
         </description>
+        <properties>
+          <layouts mode="view">
+            <layout name="image_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>height</widget>
+                </row>
+              </rows>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="text">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="image_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget>acceptedExtensions</widget>
+                </row>
+              </rows>
+              <widget name="acceptedExtensions" type="text">
+                <labels>
+                  <label mode="any">Accepted extensions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    A comma separated list of supported file
+                    extensions. Default value: '.jpg, .jpeg, .png, .gif'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>acceptedExtensions</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
         <categories>
           <category>document</category>
         </categories>
@@ -107,8 +164,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="life_cycle_transitions"
-      type="life_cycle_transitions">
+    <widget name="life_cycle_transitions" type="life_cycle_transitions">
 
       <documentation>
         Default widget listing available life cycle transitions from the

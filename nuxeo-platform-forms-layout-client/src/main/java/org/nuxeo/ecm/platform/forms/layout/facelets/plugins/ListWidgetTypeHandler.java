@@ -29,7 +29,7 @@ import com.sun.facelets.tag.TagAttribute;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @deprecated widget type can be declared as using
- *             {@link TemplateWidgetTypeHandler} class, seeting property value
+ *             {@link TemplateWidgetTypeHandler} class, setting property value
  *             in XML configuration.
  */
 @Deprecated
