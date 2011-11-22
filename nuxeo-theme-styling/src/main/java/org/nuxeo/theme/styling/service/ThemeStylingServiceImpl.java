@@ -361,6 +361,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             RuntimeContext extensionContext) throws Exception {
         // load the style content
         String src = style.getSrc();
+        if (src == null) {
+            log.error(String.format("Null source for style '%s'",
+                    style.getName()));
+            return;
+        }
         URL url = getUrlFromPath(src, extensionContext);
         if (url == null) {
             log.error(String.format("Could not find resource at '%s'", src));
@@ -378,6 +383,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     }
 
     protected URL getUrlFromPath(String path, RuntimeContext extensionContext) {
+        if (path == null) {
+            return null;
+        }
         URL url = null;
         try {
             url = new URL(path);
