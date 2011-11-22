@@ -2230,6 +2230,7 @@
         </description>
         <categories>
           <!-- do not export with documents -->
+          <category>configuration_not_ready</category>
           <!--
             <category>document</category>
           -->
