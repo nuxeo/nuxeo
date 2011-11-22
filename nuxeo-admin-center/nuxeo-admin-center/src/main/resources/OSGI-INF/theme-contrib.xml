@@ -28,11 +28,9 @@
   </extension-->
 
   <!-- application settings -->
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="applications">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
 
-    <application root="${org.nuxeo.ecm.contextPath}"
-      template-engine="jsf-facelets">
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
 
       <view id="/view_admin.xhtml">
         <theme>admin/default</theme>
@@ -55,6 +53,7 @@
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
+        <flavor>rainbow</flavor>
       </flavors>
       <styles>
         <style>basics</style>
@@ -65,6 +64,7 @@
         <style>navigation</style>
         <style>tables</style>
         <style>forms</style>
+        <style>popups</style>
         <style>messages_and_tooltips</style>
         <style>foldable_boxes</style>
         <style>richfaces_components</style>
@@ -89,15 +89,10 @@
   <!-- Styles presets -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
 
-    <palette name="Galaxy Admin borders"
-      src="themes/palettes/galaxy-admin-borders.properties" category="border" />
-    <palette name="Galaxy Admin backgrounds"
-      src="themes/palettes/galaxy-admin-backgrounds.properties"
-      category="background" />
-    <palette name="Galaxy Admin fonts"
-      src="themes/palettes/galaxy-admin-fonts.properties" category="font" />
-    <palette name="Galaxy Admin colors"
-      src="themes/palettes/galaxy-admin-colors.properties" category="color" />
+    <palette name="Galaxy Admin borders" src="themes/palettes/galaxy-admin-borders.properties" category="border" />
+    <palette name="Galaxy Admin backgrounds" src="themes/palettes/galaxy-admin-backgrounds.properties" category="background" />
+    <palette name="Galaxy Admin fonts" src="themes/palettes/galaxy-admin-fonts.properties" category="font" />
+    <palette name="Galaxy Admin colors" src="themes/palettes/galaxy-admin-colors.properties" category="color" />
 
   </extension>
 
