@@ -7,6 +7,11 @@
     point="widgettypes">
 
     <widgetType name="relation_listing_title_link">
+      <configuration>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
