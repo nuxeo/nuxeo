@@ -18,42 +18,55 @@
 ## This script clones or updates Nuxeo source code from Mercurial repositories.
 ##
 
-import re, os, sys, subprocess
+import re, os, sys, shlex, subprocess
+
+def log(message):
+    sys.stdout.write(message)
+    sys.stdout.write(os.linesep)
+    sys.stdout.flush()
 
 def system(cmd):
-    print "$> " + cmd
-    retcode = os.system(cmd)
+    log("$> " + cmd)
+    args = shlex.split(cmd)
+    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, err = p.communicate()
+    log(out)
+    retcode = p.returncode
+    if retcode != 0:
+        log("Command returned non-zero exit code: %s" % (cmd,))
+        sys.exit(retcode)
 
 def check_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p.communicate()
     if err != None:
-        print "[ERROR]: command", str(cmd), " returned an error:"
-        print err
+        log("[ERROR]: command", str(cmd), " returned an error:")
+        log(err)
     return out.strip()
 
 def fetch(module):
     cwd = os.getcwd()
     if os.path.isdir(module):
-        print "Updating " + module + "..."
+        log("Updating " + module + "...")
         os.chdir(module)
         system("hg pull")
     else:
-        print "Cloning " + module + "..."
+        log("Cloning " + module + "...")
         system("hg clone %s/%s %s" % (root_url, module, module))
         os.chdir(module)
     system("hg up %s" % (branch))
     os.chdir(cwd)
-    print
+    log("")
 
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
     branch = check_output(["hg", "id", "-b"])
 
+log("Cloning/updating parent pom")
 system("hg pull")
 system("hg up %s" % branch)
-print
+log("")
 
 root_url = check_output(["hg", "path", "default"])
 
@@ -66,6 +79,7 @@ for line in os.popen("mvn -N help:effective-pom"):
     fetch(module)
 
 fetch("nuxeo-distribution")
+
 if root_url.startswith("http"):
     root_url = root_url.replace("/nuxeo", "")
 fetch("addons")
