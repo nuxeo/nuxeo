@@ -109,7 +109,7 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
   padding: 0 .7em;
   text-decoration: none;
   text-shadow: 1px 1px 0px #fff }
-.foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none "color.major.medium (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)" }
+.foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none "color.major.medium (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)"; float: right !important; }
 
 /* =RightClick menu */
 #contextMenu {

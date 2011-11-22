@@ -39,6 +39,7 @@ author: lkemen@nuxeo.com
   font-weight: normal;
   max-width: 20%;
   padding: .5em;
+  white-space: normal;
   z-index: 1000 }
 .tips {
   border: 1px dashed;  border-color: "neutral.light (__FLAVOR__ border)";

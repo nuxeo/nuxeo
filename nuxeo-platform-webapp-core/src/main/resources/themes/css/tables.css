@@ -79,4 +79,4 @@ table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background
 
 .listShuttleTable { margin-left: 3em }
 
-.dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.light (__FLAVOR__ background)" }
+.dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.medium (__FLAVOR__ background)" }

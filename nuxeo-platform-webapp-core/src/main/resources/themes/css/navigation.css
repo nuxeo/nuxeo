@@ -23,10 +23,10 @@ author: lkemen@nuxeo.com
   margin: 0 0 -0.1em .3em;
   padding: 0 }
 .tabsBar a,.tabsBar a:visited {
-  background: none "tabs.unselected (__FLAVOR__ background)";
+  background: none "color.major.light (__FLAVOR__ background)";
   border: 1px solid; border-color: "tabs.unselected (__FLAVOR__ border)";
   border-radius: 2px 2px 0 0;
-  color: "tabs.unselected (__FLAVOR__ color)";
+  color: "link (__FLAVOR__ color)";
   display: block;
   float: left;
   padding: .19em 0.4em;
