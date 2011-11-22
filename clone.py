@@ -68,7 +68,7 @@ system("hg pull")
 system("hg up %s" % branch)
 log("")
 
-root_url = check_output(["hg", "path", "default"])
+root_url = os.path.normpath(check_output(["hg", "path", "default"]))
 
 for line in os.popen("mvn -N help:effective-pom"):
     line = line.strip()
@@ -81,7 +81,7 @@ for line in os.popen("mvn -N help:effective-pom"):
 fetch("nuxeo-distribution")
 
 if root_url.startswith("http"):
-    root_url = root_url.replace("/nuxeo", "")
+    root_url = os.path.normpath(root_url.replace("/nuxeo", ""))
 fetch("addons")
 
 cwd = os.getcwd()
