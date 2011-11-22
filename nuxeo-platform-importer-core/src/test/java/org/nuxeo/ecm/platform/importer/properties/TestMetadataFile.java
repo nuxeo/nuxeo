@@ -36,6 +36,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -53,8 +54,6 @@ import com.google.inject.Inject;
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
 @Deploy( { "org.nuxeo.ecm.core.api" })
 public class TestMetadataFile {
-
-    public static String DATE_FORMAT = "MM/dd/yyyy";
 
     @Inject
     protected CoreSession session;
@@ -176,10 +175,7 @@ public class TestMetadataFile {
     }
 
     protected Calendar formatDate(String value) throws ParseException {
-        Date date = new SimpleDateFormat(DATE_FORMAT).parse(value);
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(date);
-        return cal;
+        return (Calendar) new DateType().decode(value);
     }
 
 }
