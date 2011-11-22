@@ -44,7 +44,7 @@
             <a4j:commandLink id="titleLink"
               onclick="if (event.ctrlKey || event.metaKey) {return false;} try {event.stopPropagation();} catch (err) {event.cancelBubble = true;}"
               action="#{damDocumentActions.setCurrentSelection(row.data)}" reRender="dataThumbnailContainer, selectionView">
-              <nxh:outputText value="#{damDocumentActions.getTitleCropped(row.data, 15)}"
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                 title="#{row.data.dc.title}"
                 styleClass="thumbViewTitle"/>
               </a4j:commandLink>
