@@ -68,4 +68,20 @@
         class="org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor"/>
   </extension-point>
 
+  <extension-point name="postContentCreationHandlers">
+    <documentation>
+      @author Thomas Roger (troger@nuxeo.com)
+
+      <code>
+        <postContentCreationHandler name="collaborationPostHandler"
+          enabled="true" order="1"
+          class="org.nuxeo.ecm.platform.content.template.service.CollaborationPostHandler" />
+      </code>
+
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.content.template.service.PostContentCreationHandlerDescriptor"/>
+  </extension-point>
+
 </component>

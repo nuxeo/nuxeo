@@ -20,12 +20,21 @@
 package org.nuxeo.ecm.platform.content.template.service;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface ContentTemplateService {
 
     ContentFactory getFactoryForType(String documentType);
 
-    void executeFactoryForType(DocumentModel createdDocument) throws ClientException;
+    void executeFactoryForType(DocumentModel createdDocument)
+            throws ClientException;
+
+    /**
+     * Executes all the registered {@code PostContentCreationHandler}s.
+     *
+     * @since 5.5
+     */
+    void executePostContentCreationHandlers(CoreSession session);
 
 }

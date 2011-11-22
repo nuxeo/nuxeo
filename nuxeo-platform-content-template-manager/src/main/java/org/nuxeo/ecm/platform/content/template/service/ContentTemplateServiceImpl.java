@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.content.template.listener.RepositoryInitializationListener;
@@ -42,6 +43,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     public static final String FACTORY_BINDING_EP = "factoryBinding";
 
+    public static final String POST_CONTENT_CREATION_HANDLERS_EP = "postContentCreationHandlers";
+
     private static final Log log = LogFactory.getLog(ContentTemplateServiceImpl.class);
 
     private final Map<String, ContentFactoryDescriptor> factories = new HashMap<String, ContentFactoryDescriptor>();
@@ -52,6 +55,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     private final Map<String, ContentFactory> factoryInstancesByFacet = new HashMap<String, ContentFactory>();
 
+    private PostContentCreationHandlerRegistry postContentCreationHandlers;
+
     private RepositoryInitializationHandler initializationHandler;
 
     @Override
@@ -59,6 +64,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         // register our Repo init listener
         initializationHandler = new RepositoryInitializationListener();
         initializationHandler.install();
+
+        postContentCreationHandlers = new PostContentCreationHandlerRegistry();
     }
 
     @Override
@@ -129,6 +136,9 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                         + " can not be registered since Factory "
                         + descriptor.getFactoryName() + " is not registered");
             }
+        } else if (POST_CONTENT_CREATION_HANDLERS_EP.equals(extensionPoint)) {
+            PostContentCreationHandlerDescriptor descriptor = (PostContentCreationHandlerDescriptor) contribution;
+            postContentCreationHandlers.addContribution(descriptor);
         }
     }
 
@@ -174,6 +184,13 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
             if (factory != null) {
                 factory.createContentStructure(createdDocument);
             }
+        }
+    }
+
+    @Override
+    public void executePostContentCreationHandlers(CoreSession session) {
+        for (PostContentCreationHandler handler : postContentCreationHandlers.getOrderedHandlers()) {
+            handler.execute(session);
         }
     }
 

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component
+    name="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.test.handlers">
+
+  <extension target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="postContentCreationHandlers">
+
+    <postContentCreationHandler name="testHandler"
+      class="org.nuxeo.ecm.platform.content.template.tests.SimplePostContentCreationHandler" />
+
+  </extension>
+
+</component>
