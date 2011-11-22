@@ -93,9 +93,9 @@ system("hg pull")
 system("hg up %s" % branch)
 log("")
 
-hg_url = check_output(["hg", "path", "default"])
+hg_url = os.path.normpath(check_output(["hg", "path", "default"]))
 if hg_url.startswith("http"):
-    git_url = hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo")
+    git_url = os.path.normpath(hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo"))
 else:
     git_url = hg_url
 
