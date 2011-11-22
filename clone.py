@@ -20,15 +20,14 @@
 ## repositories.
 ##
 
-import re, os, sys, shlex, subprocess, urllib
-#from pprint import pprint
+import re, os, sys, shlex, subprocess, urllib, urlparse, posixpath
 
 def log(message):
     sys.stdout.write(message)
     sys.stdout.write(os.linesep)
     sys.stdout.flush()
 
-def system(cmd, failonerror = True):
+def system(cmd, failonerror=True):
     log("$> " + cmd)
     args = shlex.split(cmd)
     p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -83,6 +82,11 @@ def git_fetch(module):
     os.chdir(cwd)
     log("")
 
+def url_normpath(url):
+    parsed = urlparse.urlparse(url)
+    path = posixpath.normpath(parsed.path)
+    return urlparse.urlunparse(parsed[:2] + (path,) + parsed[3:])
+
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
@@ -93,9 +97,9 @@ system("hg pull")
 system("hg up %s" % branch)
 log("")
 
-hg_url = os.path.normpath(check_output(["hg", "path", "default"]))
+hg_url = url_normpath(check_output(["hg", "path", "default"]))
 if hg_url.startswith("http"):
-    git_url = os.path.normpath(hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo"))
+    git_url = url_normpath(hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo"))
 else:
     git_url = hg_url
 
