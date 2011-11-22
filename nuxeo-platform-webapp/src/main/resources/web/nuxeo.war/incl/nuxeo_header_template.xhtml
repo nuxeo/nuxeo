@@ -102,7 +102,8 @@
               <h:outputText value="#{messages['label.loggedAsUser']}" />
             </nxd:restDocumentLink>
             <nxu:set var="actions"
-              value="#{webActions.getActionsList('USER_MENU_ACTIONS')}"
+              value="#{nxu:combineLists(webActions.getActionsList('USER_MENU_ACTIONS'),
+                                        webActions.getActionsList('USER_SERVICES'))}"
               cache="true">
               <nxu:dataList layout="unorderedList"
                 var="action"
@@ -130,23 +131,6 @@
 
       <ui:insert name="header_user_actions">
       <div class="userActions">
-        <nxu:set var="actions"
-          value="#{webActions.getActionsList('USER_SERVICES')}"
-          cache="true">
-          <nxu:dataList layout="simple"
-            var="action"
-            value="#{actions}"
-            rowIndexVar="row"
-            rowCountVar="rowCount"
-            id="userServicesActionsTable">
-            <h:outputText value=" | " rendered="#{row!=rowCount}"/>
-            <nxh:commandLink action="#{action.getLink()}"
-              id="userServicesActionCommandLink"
-              immediate="#{action.immediate}">
-              <h:outputText value="#{messages[action.label]}" />
-            </nxh:commandLink>
-          </nxu:dataList>
-        </nxu:set>
 
         <nxu:set var="actions"
           value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}"
