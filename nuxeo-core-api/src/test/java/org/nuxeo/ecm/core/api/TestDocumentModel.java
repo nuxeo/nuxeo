@@ -14,11 +14,17 @@
 
 package org.nuxeo.ecm.core.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
 
 public class TestDocumentModel extends NXRuntimeTestCase {
 
@@ -74,4 +80,12 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertNotNull(model.toString());
     }
 
+    public void testSerialize() throws IOException, ClassNotFoundException {
+        DocumentModelImpl original = new DocumentModelImpl("my type");
+        original.setPrefetch(new Prefetch());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        new ObjectOutputStream(bos).writeObject(original);
+       DocumentModel rehydrated = (DocumentModel) new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray())).readObject();
+       assertNotNull(rehydrated);
+    }
 }

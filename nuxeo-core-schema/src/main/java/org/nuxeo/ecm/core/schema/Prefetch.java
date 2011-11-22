@@ -27,7 +27,9 @@ import org.nuxeo.runtime.api.Framework;
  * Information about what's to be prefetched: individual properties and whole
  * schemas.
  */
-public class Prefetch {
+public class Prefetch implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * map of prefix:name -> value
