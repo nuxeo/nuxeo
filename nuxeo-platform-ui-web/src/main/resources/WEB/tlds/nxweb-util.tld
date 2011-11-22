@@ -140,6 +140,10 @@
         basicDateAndTimeFormater(String): returns a date and time format pattern
         using the default format "short".
       </li>
+      <li>
+        combineLists(List...): returns an aggregate list with the elements all
+        the lists past as argument preserving the global ordering.
+      </li>
     </ul>
   </description>
 

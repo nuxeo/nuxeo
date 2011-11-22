@@ -5,8 +5,8 @@
     point="actions">
 
     <action id="seamReload" link="#{seamReload.doReload}" enabled="true"
-      label="SeamReload" order="10">
-      <category>USER_SERVICES</category>
+      label="Reload Seam" order="10">
+      <category>USER_MENU_ACTIONS</category>
       <filter-id>seamHotReloadIsEnabled</filter-id>
     </action>
 

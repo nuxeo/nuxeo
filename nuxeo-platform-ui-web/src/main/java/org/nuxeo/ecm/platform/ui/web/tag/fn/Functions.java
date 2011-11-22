@@ -21,10 +21,12 @@ package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -642,4 +644,11 @@ public final class Functions {
         return null;
     }
 
+    public static List<Object> combineLists(List<? extends Object>... lists) {
+        List<Object> combined = new ArrayList<Object>();
+        for (List<? extends Object> list: lists) {
+            combined.addAll(list);
+        }
+        return combined;
+    }
 }

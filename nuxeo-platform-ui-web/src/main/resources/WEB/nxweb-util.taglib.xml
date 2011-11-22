@@ -290,6 +290,16 @@
     </function-signature>
   </function>
 
+  <function>
+    <function-name>combineLists</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String combineLists(java.util.List[])
+    </function-signature>
+  </function>
+
   <tag>
     <tag-name>methodResult</tag-name>
     <handler-class>
