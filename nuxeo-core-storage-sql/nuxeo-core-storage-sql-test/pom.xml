@@ -188,6 +188,19 @@
       <version>10.2.0.3.0</version> <scope>runtime</scope> </dependency> -->
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/TestSQLBackendNet.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <profiles>
     <profile>
       <id>itest</id>
