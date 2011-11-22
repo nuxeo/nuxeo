@@ -84,7 +84,10 @@ def git_fetch(module):
 
 def url_normpath(url):
     parsed = urlparse.urlparse(url)
-    path = posixpath.normpath(parsed.path)
+    if parsed.path == "":
+        path = ""
+    else:
+        path = posixpath.normpath(parsed.path)
     return urlparse.urlunparse(parsed[:2] + (path,) + parsed[3:])
 
 if len(sys.argv) > 1:
@@ -125,3 +128,4 @@ for line in all_lines:
         hg_fetch(addon)
     else:
         git_fetch(addon)
+
