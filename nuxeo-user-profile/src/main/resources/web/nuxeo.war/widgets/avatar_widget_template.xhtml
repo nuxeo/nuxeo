@@ -9,7 +9,7 @@
     <nxu:inputFile id="#{widget.id}_file" value="#{field_1}"
       filename="#{field_1.filename}" required="#{widget.required}"
       editFilename="false">
-      <nxu:validateFileMimetype extensions=".jpg, .png, .gif" />
+      <nxu:validateFileMimetype extensions=".jpg, .jpeg, .png, .gif" />
     </nxu:inputFile>
     <h:message for="#{widget.id}_file" id="#{widget.id}_message"
       styleClass="errorMessage" />
