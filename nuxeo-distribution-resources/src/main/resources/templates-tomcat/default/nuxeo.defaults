@@ -11,6 +11,7 @@ nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
 nuxeo.db.jdbc.url=jdbc:derby:${nuxeo.data.dir}/derby/${nuxeo.db.name};create=true
+nuxeo.db.validationQuery=
 nuxeo.db.driver=org.apache.derby.jdbc.EmbeddedDriver
 nuxeo.db.commonds=jdbc/nuxeo
 
