@@ -35,7 +35,7 @@
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
-        <flavor>dark</flavor>
+        <flavor>rainbow</flavor>
       </flavors>
       <styles>
         <style>basics</style>
@@ -46,6 +46,7 @@
         <style>navigation</style>
         <style>tables</style>
         <style>forms</style>
+        <style>popups</style>
         <style>messages_and_tooltips</style>
         <style>foldable_boxes</style>
         <style>richfaces_components</style>
