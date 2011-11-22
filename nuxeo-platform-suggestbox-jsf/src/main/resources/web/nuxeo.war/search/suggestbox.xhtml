@@ -16,7 +16,7 @@
     value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
 
   <a4j:region renderRegionOnly="true">
-    <h:panelGrid id="#{widget.id}_mailbox_panel" columns="3">
+    <h:panelGrid id="#{widget.id}_suggestbox_panel" columns="3">
       <h:panelGroup>
         <h:inputText id="faceted_search_suggest_box"
             class="search_suggest_box directoryFilter"
@@ -41,8 +41,8 @@
           for="faceted_search_suggest_box" tokens=""
           suggestionAction="#{suggestboxActions.getSuggestions}"
           var="result" fetchValue="" width="300"
-          nothingLabel="Search with key words" minChars="#{minChars}"
-          frequency="#{frequency}" requestDelay="#{requestDelay}">
+          nothingLabel="Search with key words"
+          requestDelay="200" ajaxSingle="true">
           <f:param name="facetedSuggestionSearchType"
             value="#{widget.properties['facetedSuggestionSearchType']}" />
           <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
