@@ -18,7 +18,7 @@
 ## This script clones or updates Nuxeo source code from Mercurial repositories.
 ##
 
-import re, os, sys, shlex, subprocess
+import re, os, sys, shlex, subprocess, urlparse, posixpath
 
 def log(message):
     sys.stdout.write(message)
@@ -63,13 +63,18 @@ if len(sys.argv) > 1:
 else:
     branch = check_output(["hg", "id", "-b"])
 
+def url_normpath(url):
+    parsed = urlparse.urlparse(url)
+    path = posixpath.normpath(parsed.path)
+    return urlparse.urlunparse(parsed[:2] + (path,) + parsed[3:])
+
+
 log("Cloning/updating parent pom")
 system("hg pull")
 system("hg up %s" % branch)
 log("")
 
-root_url = os.path.normpath(check_output(["hg", "path", "default"]))
-
+root_url = url_normpath(check_output(["hg", "path", "default"]))
 for line in os.popen("mvn -N help:effective-pom"):
     line = line.strip()
     m = re.match("<module>(.*?)</module>", line)
@@ -81,7 +86,7 @@ for line in os.popen("mvn -N help:effective-pom"):
 fetch("nuxeo-distribution")
 
 if root_url.startswith("http"):
-    root_url = os.path.normpath(root_url.replace("/nuxeo", ""))
+    root_url = url_normpath(root_url.replace("/nuxeo", ""))
 fetch("addons")
 
 cwd = os.getcwd()
