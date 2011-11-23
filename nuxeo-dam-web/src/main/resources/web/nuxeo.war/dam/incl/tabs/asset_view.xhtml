@@ -40,9 +40,7 @@
             </f:subview>
 
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-            <ui:include src="/incl/video/video_player.xhtml">
-              <ui:param name="videoDoc" value="#{damDocumentActions.currentSelection}" />
-            </ui:include>
+            <nxl:widgetType name="summary_video_player" mode="view" value="#{damDocumentActions.currentSelection}" />
           </f:subview>
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('audio')}">
             <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
@@ -81,8 +79,12 @@
       </div>
 
       <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-        <ui:include src="/dam/incl/tabs/asset_view_panels/asset_view_video_storyboard.xhtml" />
+        <nxl:widgetType name="summary_video_storyboard" mode="view" value="#{damDocumentActions.currentSelection}" />
       </f:subview>
+
+      <script type="text/javascript">
+        NXVideo.loadVideoPlayer();
+      </script>
 
       <div class="togglePanel">
         <div class="togglePanelTitleBox">
