@@ -22,11 +22,10 @@
 
 import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath
 
-driveletter="G"
+driveletter = "G"
 
 def log(message):
-    sys.stdout.write(message)
-    sys.stdout.write(os.linesep)
+    sys.stdout.write(message + os.linesep)
     sys.stdout.flush()
 
 def system(cmd, failonerror=True):
@@ -34,7 +33,8 @@ def system(cmd, failonerror=True):
     args = shlex.split(cmd)
     p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, err = p.communicate()
-    log(out)
+    sys.stdout.write(out)
+    sys.stdout.flush()
     retcode = p.returncode
     if retcode != 0:
         log("Command returned non-zero exit code: %s" % (cmd,))
