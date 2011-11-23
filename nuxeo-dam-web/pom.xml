@@ -142,13 +142,6 @@
       <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.richfaces.framework</groupId>
-      <artifactId>richfaces-impl</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
 </project>
