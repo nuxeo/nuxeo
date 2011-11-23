@@ -1,11 +1,11 @@
 <!--
   (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
-  
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
-  
+
   Contributors:
   Nuxeo - initial API and implementation
 -->
@@ -144,11 +144,21 @@
       </description>
     </attribute>
     <attribute>
+      <name>field</name>
+      <required>false</required>
+      <description>
+        The field definition on which the widget will apply. Must resolve to a
+        FieldDefinition instances, or String item. If fields is also defined,
+        this field definitions is added to the list. Available since 5.5.
+      </description>
+    </attribute>
+    <attribute>
       <name>fields</name>
       <required>false</required>
       <description>
         The field definitions on which the widget will apply. Must resolve to a
         list of FieldDefinition instances, or a list of String items.
+        Available since 5.4.2.
       </description>
     </attribute>
     <attribute>
@@ -157,24 +167,27 @@
       <description>
         The widget properties. Must resolve to an instance of Map&lt;String,
         Serializable&gt;. Any other tag attributes are accepted and will be
-        added on top of these properties.
+        added on top of these properties. Available since 5.4.2.
       </description>
     </attribute>
     <attribute>
       <name>label</name>
       <required>false</required>
-      <description>The String widget label.</description>
+      <description>The String widget label. Available since 5.4.2.</description>
     </attribute>
     <attribute>
       <name>helpLabel</name>
       <required>false</required>
-      <description>The String widget help label.</description>
+      <description>
+        The String widget help label. Available since 5.4.2.
+      </description>
     </attribute>
     <attribute>
       <name>translated</name>
       <required>false</required>
       <description>
         The boolean value stating it the widget labels have to be translated.
+        Available since 5.4.2.
       </description>
     </attribute>
     <example>

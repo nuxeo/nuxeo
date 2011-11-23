@@ -71,6 +71,8 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected final TagAttribute value;
 
+    protected final TagAttribute field;
+
     protected final TagAttribute fields;
 
     protected final TagAttribute label;
@@ -92,6 +94,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         name = getRequiredAttribute("name");
         mode = getRequiredAttribute("mode");
         value = getAttribute("value");
+        field = getAttribute("field");
         fields = getAttribute("fields");
         label = getAttribute("label");
         helpLabel = getAttribute("helpLabel");
@@ -139,6 +142,16 @@ public class WidgetTypeTagHandler extends TagHandler {
             }
         }
         List<FieldDefinition> fieldsValue = new ArrayList<FieldDefinition>();
+        if (field != null) {
+            Object fieldValue = field.getValue(ctx);
+            if (fieldValue instanceof FieldDefinition) {
+                fieldsValue.add((FieldDefinition) fieldValue);
+            } else if (fieldValue instanceof String) {
+                fieldsValue.add(new FieldDefinitionImpl(null, (String) fieldValue));
+            } else {
+                log.error("Invalid field item => discard: " + fieldValue);
+            }
+        }
         if (fields != null) {
             List resolvedfields = (List) fields.getObject(ctx, List.class);
             for (Object item : resolvedfields) {
