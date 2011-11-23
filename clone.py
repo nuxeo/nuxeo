@@ -20,7 +20,9 @@
 ## repositories.
 ##
 
-import re, os, sys, shlex, subprocess, urllib, urlparse, posixpath
+import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath
+
+driveletter="G"
 
 def log(message):
     sys.stdout.write(message)
@@ -37,8 +39,24 @@ def system(cmd, failonerror=True):
     if retcode != 0:
         log("Command returned non-zero exit code: %s" % (cmd,))
         if failonerror:
+            long_path_workaround_cleanup()
             sys.exit(retcode)
     return retcode
+
+def long_path_workaround_init():
+    # On Windows, try to map the current directory to an unused drive letter to shorten path names
+    if platform.system() != "Windows": return
+    for letter in "GHIJKLMNOPQRSTUVWXYZ":
+        if not os.path.isdir("%s:\\" % (letter,)):
+            driveletter = letter
+            cwd = os.getcwd()
+            system("SUBST %s: \"%s\"" % (driveletter, cwd))
+            os.chdir("%s:\\" % (driveletter,))
+            break
+
+def long_path_workaround_cleanup():
+    if platform.system() != "Windows": return
+    system("SUBST %s: /D" % (driveletter,), False)
 
 def check_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -90,6 +108,9 @@ def url_normpath(url):
         path = posixpath.normpath(parsed.path)
     return urlparse.urlunparse(parsed[:2] + (path,) + parsed[3:])
 
+
+long_path_workaround_init()
+
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
@@ -128,4 +149,6 @@ for line in all_lines:
         hg_fetch(addon)
     else:
         git_fetch(addon)
+
+long_path_workaround_cleanup()
 
