@@ -14,7 +14,7 @@ function closePopup() {
        <br/>
        <p>Since installation of all packages will be done automatically, you are advised to read the warnings and package description before starting the installation process.</p>
        <br/>
-       <div style="width:100%;height:250px;overflow:scroll">
+       <div style="width:100%;height:300px;overflow:scroll">
        <#list pkgIds as pkgId>
          <hr/>
          <h2>${pkgId}</h2>
@@ -24,7 +24,7 @@ function closePopup() {
          <div style="white-space:pre">${descs[pkgId_index]}</div>
        </#list>
        </div>
-   <br/>
+   <br/><br/>
    <a href="${This.path}/bulkRun/${pkgId}/?source=${source}&confirm=true" class="installButton"> Confirm install </a>
   </div>
 </@block>

@@ -7,6 +7,8 @@ var subWin;
 var installBaseUrl="${Root.path}/install/start/";
 var uninstallBaseUrl="${Root.path}/uninstall/start/";
 var downloadBaseUrl="${Root.path}/download/start/";
+var autoMode = ${autoMode};
+var lastDownloadStatus;
 
 function display(url) {
  if (subWin!=null) {
@@ -52,8 +54,6 @@ function jqEscapeId(myid) {
    return '#' + myid.replace(/(:|\.)/g,'\\$1');
  }
 
-var lastDownloadStatus;
-
 function refreshDownloadProgress(downloadStatus) {
   var updatedPkgIds=[];
   // update all progressbars
@@ -77,7 +77,8 @@ function refreshDownloadProgress(downloadStatus) {
         });
     }, 1000);
   } else {
-    alert("All downloads completed!");
+    // refresh
+    window.location.href="${Root.path}/install/start/${pkg.id}/?source=${source}";
   }
 }
 
@@ -85,7 +86,8 @@ function updateProgress(pkgId, progress) {
   var progressBarContainer = $(jqEscapeId("progress_" +  pkgId));
   if (progressBarContainer!=null) {
      progressBarContainer.html("");
-     var progressBar = $("<div>" + progress + "</div>");
+     //var progressBar = $("<div>" + progress + "</div>");
+     var progressBar = $("<div></div>");
      progressBar.addClass("progressDownload");
      progressBar.css("width", progress + "px");
      progressBarContainer.append(progressBar);
@@ -93,40 +95,78 @@ function updateProgress(pkgId, progress) {
   }
 }
 
+<#if resolution.getRemovePackageIds()>0 >
+function switchMode() {
+   $("#manualModeCheckBox").attr("checked", "true");
+}
+<#else>
+function switchMode() {
+  autoMode = ! autoMode;
+  setMode();
+}
+
+</#if>
+function setMode() {
+ if (autoMode) {
+   $(".manualModeCmd").css("display","none");
+   $("#installManualButton").css("display","none");
+   $("#installAutoButton").css("display","inline");
+   $("#manualModeCheckBox").removeAttr("checked");
+ } else {
+   $(".manualModeCmd").css("display","block");
+   $("#installManualButton").css("display","block");
+   $("#installAutoButton").css("display","none");
+   $("#manualModeCheckBox").attr("checked", "true");
+ }
+}
+
+function displayDownloadButtonIfNeeded() {
+  if ($(".progressDownloadContainer").size()>0) {
+     $("#downloadAllButton").css("display","inline");
+     $("#installAutoButton").css("visibility","hidden");
+  } else {
+     $("#downloadAllButton").css("display","none");
+     $("#installAutoButton").css("visibility","visible");
+  }
+}
+
+$(document).ready(function() {
+  setMode();
+  displayDownloadButtonIfNeeded();
+});
+
 </script>
 </@block>
 
 <@block name="body">
 
   <div class="genericBox">
-
    <h1> Installation of ${pkg.title} (${pkg.id}) </h1>
 
    <div class="installWarningsTitle">
      The package you want to install requires some dependencies changes:
 
-      <br/><br/>
-      Packages that need to be removed from your instance :
+      <br/>
+      <input type="checkbox" id="manualModeCheckBox" onClick="switchMode()"> Manual installation mode</input>
+      <br/>
       <#if (resolution.getRemovePackageIds()?size>0) >
+      <h2>Packages that need to be removed from your instance :</h2>
       <table>
         <#list resolution.getRemovePackageIds() as pkgId>
           <tr>
           <td> ${pkgId} </td>
-          <td><A href="javascript:rmPackage('${pkgId}')">Manual removal</A></td>
+          <td><A href="javascript:rmPackage('${pkgId}')" class="manualModeCmd">Manual removal</A></td>
           </tr>
         </#list>
       </table>
-      <#else>
-       None.
       </#if>
 
       <#if (resolution.getUpgradePackageIds()?size>0) >
-      <br/><br/>
-      Already installed packages that need to be upgraded :
+      <h2>Already installed packages that need to be upgraded :</h2>
       <table>
         <#list resolution.getUpgradePackageIds() as pkgId>
         <tr><td> ${pkgId} </td>
-            <td><A href="javascript:installPackage('${pkgId}', true)">Manual upgrade</A></td>
+            <td><A href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual upgrade</A></td>
             <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </div></td>
         </tr>
         </#list>
@@ -134,23 +174,21 @@ function updateProgress(pkgId, progress) {
       </#if>
 
       <#if (resolution.getInstallPackageIds()?size>0) >
-      <br/><br/>
-      Already downloaded packages that need to be installed :
+      <h2>Already downloaded packages that need to be installed :</h2>
       <table>
         <#list resolution.getInstallPackageIds() as pkgId>
-          <tr><td> ${pkgId} </td><td><A href="javascript:installPackage('${pkgId}', false)">Manual installation</A></td></tr>
+          <tr><td> ${pkgId} </td><td><A href="javascript:installPackage('${pkgId}', false)" class="manualModeCmd">Manual installation</A></td></tr>
         </#list>
       </table>
       </#if>
 
       <#if (resolution.getDownloadPackageIds()?size>0) >
-      <br/><br/>
-      New packages that need to be  downloaded and installed :
+      <h2>New packages that need to be  downloaded and installed :</h2>
       <table>
         <#list resolution.getDownloadPackageIds() as pkgId>
           <tr>
           <td> ${pkgId} </td>
-          <td><A href="javascript:installPackage('${pkgId}', true)">Manual download and install</A></td>
+          <td><A href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual download and install</A></td>
           <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </td>
           </tr>
         </#list>
@@ -158,22 +196,20 @@ function updateProgress(pkgId, progress) {
       </#if>
 
       <#if (resolution.getUnchangedPackageIds()?size>0) >
-      <br/><br/>
-      Dependencies that are already installed on your instance and won't be changed :
+      <h2>Dependencies that are already installed on your instance and won't be changed :</h2>
       <table>
         <#list resolution.getUnchangedPackageIds() as pkgId>
           <tr><td> ${pkgId}</td></tr>
         </#list>
       </table>
       </#if>
-
    </div>
 
-   <br/><br/>
-   <A href="javascript:downloadAllPackages()"> Download all needed packages </A>
-   <A href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}"class="installButton"> Installation of package ${pkg.id} and dependencies </a>
+   <br/>
+   <A href="javascript:downloadAllPackages()" id="downloadAllButton" class="installButton" style="display:none"> Download all packages </A>
    <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
-   <A href="${Root.path}/install/start/${pkg.id}/?source=${source}"class="installButton"> Continue installation of package ${pkg.id} </a>
+   <A href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}"class="installButton" id="installAutoButton"> Installation of package ${pkg.id} and dependencies </a>
+   <A href="${Root.path}/install/start/${pkg.id}/?source=${source}"class="installButton" id="installManualButton"> Continue installation of package ${pkg.id} </a>
 
   </div>
 

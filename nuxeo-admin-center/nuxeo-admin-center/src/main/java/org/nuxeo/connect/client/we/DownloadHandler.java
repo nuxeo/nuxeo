@@ -160,14 +160,30 @@ public class DownloadHandler extends DefaultObject {
                 PackageManager pm = Framework.getLocalService(PackageManager.class);
                 for (String pkg : pkgs) {
                     try {
+                        log.info("Starting download for package " + pkg);
                         pm.download(pkg);
                     } catch (Exception e) {
                         log.error("Unable to start download for package " + pkg, e);
                     }
                 }
+                // here we generate a fake progress report
+                // so that if some download are very fast,
+                // they will still be visible on the client side
+                StringBuffer sb = new StringBuffer();
+                sb.append("[");
+                for (int i= 0; i < pkgs.length; i++) {
+                    if (i>0) {
+                        sb.append(",");
+                    }
+                    sb.append("{ \"pkgid\" : ");
+                    sb.append("\"" + pkgs[i]+ "\",");
+                    sb.append(" \"progress\" : 0}");
+                }
+                sb.append("]");
+                return sb.toString();
             }
         }
-        return getDownloadsProgress();
+        return "[]";
     }
 
 }

@@ -111,7 +111,8 @@ public class InstallHandler extends DefaultObject {
     public Object startInstall(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source,
             @QueryParam("tacAccepted") Boolean acceptedTAC,
-            @QueryParam("depCheck") Boolean depCheck) {
+            @QueryParam("depCheck") Boolean depCheck,
+            @QueryParam("autoMode") Boolean autoMode) {
 
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
@@ -148,9 +149,12 @@ public class InstallHandler extends DefaultObject {
                                 source);
                     } else {
                         if (resolution.requireChanges()) {
+                            if (autoMode==null) {
+                                autoMode = resolution.getLocalPackagesToRemove().size()==0;
+                            }
                             return getView("displayDependencies").arg(
                                     "resolution", resolution).arg("pkg", pkg).arg(
-                                    "source", source);
+                                    "source", source).arg("autoMode",autoMode);
                         }
                         // no dep changes => can continue standard install
                         // process
