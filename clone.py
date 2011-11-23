@@ -21,8 +21,7 @@
 import re, os, sys, shlex, subprocess, urlparse, posixpath
 
 def log(message):
-    sys.stdout.write(message)
-    sys.stdout.write(os.linesep)
+    sys.stdout.write(message + os.linesep)
     sys.stdout.flush()
 
 def system(cmd):
@@ -30,7 +29,8 @@ def system(cmd):
     args = shlex.split(cmd)
     p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, err = p.communicate()
-    log(out)
+    sys.stdout.write(out)
+    sys.stdout.flush()
     retcode = p.returncode
     if retcode != 0:
         log("Command returned non-zero exit code: %s" % (cmd,))
@@ -94,6 +94,10 @@ fetch("addons")
 
 cwd = os.getcwd()
 os.chdir("addons")
-system("python clone.py %s" % branch)
+print "$> cd addons; clone.py %s" % branch
+retcode = os.system("python clone.py %s" % branch)
+if retcode != 0:
+    log("Command returned non-zero exit code: %s" % (cmd,))
+    sys.exit(retcode)
 os.chdir(cwd)
 

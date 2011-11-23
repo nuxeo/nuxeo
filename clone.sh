@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./clone.py $@
+./clone.py
 
