@@ -94,8 +94,8 @@
   <target name="deploy-tomcat" depends="build">
     <copy todir="${tomcat.bundles.dir}" overwrite="true" flatten="true">
       <fileset dir="${basedir}">
-        <include name="*/target/*.jar" />
-        <exclude name="*/target/*-sources.jar" />
+        <include name="**/target/*.jar" />
+        <exclude name="**/target/*-sources.jar" />
       </fileset>
     </copy>
   </target>
