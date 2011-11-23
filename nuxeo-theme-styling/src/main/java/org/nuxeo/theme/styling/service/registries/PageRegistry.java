@@ -130,12 +130,15 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         }
     }
 
+    public ThemePage getThemePage(String id) {
+        return themePageResources.get(id);
+    }
+
     public List<ThemePage> getThemePages() {
         List<ThemePage> res = new ArrayList<ThemePage>();
-        for (String themePageName : themePageResources.keySet()) {
-            ThemePage item = getContribution(themePageName);
-            if (item != null) {
-                res.add(item);
+        for (ThemePage page : themePageResources.values()) {
+            if (page != null) {
+                res.add(page);
             }
         }
         return res;

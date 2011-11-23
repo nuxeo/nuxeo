@@ -129,7 +129,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (contribution instanceof Flavor) {
             Flavor flavor = (Flavor) contribution;
             flavorReg.removeContribution(flavor);
-            Flavor newFlavor = flavorReg.getContribution(flavor.getName());
+            Flavor newFlavor = flavorReg.getFlavor(flavor.getName());
             if (newFlavor == null) {
                 unregisterFlavorToThemeService(flavor);
             } else {
@@ -141,7 +141,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         } else if (contribution instanceof ResourceType) {
             ResourceType resource = (ResourceType) contribution;
             resourceReg.removeContribution(resource);
-            ResourceType newResource = resourceReg.getContribution(resource.getName());
+            ResourceType newResource = resourceReg.getResource(resource.getName());
             if (newResource == null) {
                 unregisterResourceToThemeService(resource);
             } else {
@@ -160,7 +160,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         } else if (contribution instanceof ThemePage) {
             ThemePage themePage = (ThemePage) contribution;
             pageReg.removeContribution(themePage);
-            ThemePage newThemePage = pageReg.getContribution(themePage.getName());
+            ThemePage newThemePage = pageReg.getThemePage(themePage.getName());
             if (newThemePage == null) {
                 unRegisterThemePageResources(themePage);
             } else {
@@ -178,11 +178,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     protected void registerPage(ThemePage themePage) throws Exception {
         String themePageName = themePage.getName();
-        ThemePage existingPage = pageReg.getContribution(themePageName);
+        ThemePage existingPage = pageReg.getThemePage(themePageName);
         pageReg.addContribution(themePage);
         if (existingPage != null && existingPage.isLoaded()) {
             // reload
-            ThemePage newPage = pageReg.getContribution(themePageName);
+            ThemePage newPage = pageReg.getThemePage(themePageName);
             postRegisterThemePageResources(newPage);
         }
     }
@@ -206,7 +206,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         }
         flavorReg.addContribution(flavor);
         String flavorName = flavor.getName();
-        Flavor newFlavor = flavorReg.getContribution(flavorName);
+        Flavor newFlavor = flavorReg.getFlavor(flavorName);
         registerFlavorToThemeService(newFlavor, extensionContext);
         // register again all flavors extending it
         for (Flavor f : flavorReg.getFlavorsExtending(flavorName)) {
@@ -338,14 +338,14 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     protected void registerResource(ResourceType resource,
             RuntimeContext extensionContext) throws Exception {
-        ResourceType oldResource = resourceReg.getContribution(resource.getName());
+        ResourceType oldResource = resourceReg.getResource(resource.getName());
         if (oldResource != null) {
             // unregister it in case it was there
             unregisterResourceToThemeService(oldResource);
         }
         resourceReg.addContribution(resource);
         String resourceName = resource.getName();
-        ResourceType newResource = resourceReg.getContribution(resourceName);
+        ResourceType newResource = resourceReg.getResource(resourceName);
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         typeRegistry.register(newResource);
     }
@@ -449,7 +449,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 Style style = themeManager.createStyle();
                 style.setExternal(true);
                 for (String styleName : styleNames) {
-                    SimpleStyle simpleStyle = styleReg.getContribution(styleName);
+                    SimpleStyle simpleStyle = styleReg.getStyle(styleName);
                     if (simpleStyle == null) {
                         log.warn("Style unknown: " + styleName);
                     } else {
@@ -538,7 +538,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     @Override
     public String getDefaultFlavorName(String themePageName) {
         if (pageReg != null) {
-            ThemePage themePage = pageReg.getContribution(themePageName);
+            ThemePage themePage = pageReg.getThemePage(themePageName);
             if (themePage != null) {
                 return themePage.getDefaultFlavor();
             }
@@ -549,7 +549,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     @Override
     public Flavor getFlavor(String flavorName) {
         if (flavorReg != null) {
-            Flavor flavor = flavorReg.getContribution(flavorName);
+            Flavor flavor = flavorReg.getFlavor(flavorName);
             if (flavor != null && flavor.getLogo() == null) {
                 // resolve and attach the computed logo from extended flavor
                 Flavor clone = flavor.clone();
@@ -603,7 +603,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     @Override
     public List<String> getFlavorNames(String themePageName) {
         if (pageReg != null) {
-            ThemePage themePage = pageReg.getContribution(themePageName);
+            ThemePage themePage = pageReg.getThemePage(themePageName);
             if (themePage != null) {
                 List<String> flavors = themePage.getFlavors();
                 // add default flavor if it's not listed there
@@ -662,13 +662,13 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         // get all resources for given theme url and add them to the
         // ResourceManager instance
         String themePageName = ThemeManager.getPagePathByUrl(themeUrl);
-        ThemePage themePage = pageReg.getContribution(themePageName);
+        ThemePage themePage = pageReg.getThemePage(themePageName);
         if (themePage != null) {
             List<String> resources = themePage.getResources();
             if (resources != null && !resources.isEmpty()) {
                 ResourceManager resourceManager = Manager.getResourceManager();
                 for (String r : resources) {
-                    ResourceType resource = resourceReg.getContribution(r);
+                    ResourceType resource = resourceReg.getResource(r);
                     if (resource == null) {
                         log.warn(String.format(
                                 "Missing resource '%s' referenced "

@@ -111,10 +111,13 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
         }
     }
 
+    public Flavor getFlavor(String id) {
+        return themePageFlavors.get(id);
+    }
+
     public List<Flavor> getFlavorsExtending(String flavor) {
         List<Flavor> res = new ArrayList<Flavor>();
-        for (String fName : themePageFlavors.keySet()) {
-            Flavor f = getContribution(fName);
+        for (Flavor f : themePageFlavors.values()) {
             if (f != null) {
                 String extendsFlavor = f.getExtendsFlavor();
                 if (!StringUtils.isBlank(extendsFlavor)

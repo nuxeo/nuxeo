@@ -63,4 +63,7 @@ public class ResourceRegistry extends
         throw new UnsupportedOperationException();
     }
 
+    public ResourceType getResource(String id) {
+        return resources.get(id);
+    }
 }

@@ -64,4 +64,7 @@ public class StyleRegistry extends ContributionFragmentRegistry<SimpleStyle> {
         dst.setContent(src.getContent());
     }
 
+    public SimpleStyle getStyle(String id) {
+        return themePageStyles.get(id);
+    }
 }
