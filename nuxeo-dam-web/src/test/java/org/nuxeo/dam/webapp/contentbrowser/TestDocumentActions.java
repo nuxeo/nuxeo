@@ -17,6 +17,9 @@
 
 package org.nuxeo.dam.webapp.contentbrowser;
 
+import org.ajax4jsf.Messages;
+import org.ajax4jsf.resource.util.URLToStreamHelper;
+import org.ajax4jsf.webapp.tidy.TidyParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -34,6 +37,12 @@ import com.google.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Properties;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -119,5 +128,67 @@ public class TestDocumentActions {
         croppedTitle = damDocumentActions.getTitleCropped(doc, 21);
         assertEquals(idStart + "..." + idEnd, croppedTitle);
     }
+
+    @Test
+    public void testParser() throws IOException {
+        TidyParser parser = new TidyParser(getTidyProperties());
+
+        StringReader reader = new StringReader("<div>blabla</div>");
+        StringWriter writer = new StringWriter();
+        parser.parseHtml(reader, writer);
+        System.out.println(writer.toString());
+    }
+
+    private Properties _tidyProperties;
+
+        private Properties getTidyProperties() {
+    	if (null == _tidyProperties) {
+    	    _tidyProperties = new Properties();
+    	    InputStream defaultprops = null;
+    	    InputStream props = null;
+    	    try {
+    		defaultprops = URLToStreamHelper.urlToStreamSafe(TidyParser.class
+                    .getResource("tidy.properties"));
+    		if (null != defaultprops) {
+    		    _tidyProperties.load(defaultprops);
+    		    if (log.isDebugEnabled()) {
+    			log.debug("default tidy parser properties loaded");
+    		    }
+    		} else if (log.isDebugEnabled()) {
+    			log.debug("No default tidy parser properties found");
+    		    }
+
+    		// Second part - user-defined properties.
+    		props = URLToStreamHelper.urlToStreamSafe(Thread.currentThread().getContextClassLoader()
+    			.getResource("tidy.properties"));
+    		if (null != props) {
+    		    _tidyProperties.load(props);
+    		    if (log.isDebugEnabled()) {
+    			log.debug("application-specific tidy parser properties loaded");
+    		    }
+    		}
+    	    } catch (IOException e) {
+    		// TODO Auto-generated catch block
+    		log.warn(Messages
+    			.getMessage(Messages.READING_TIDY_PROPERTIES_ERROR), e);
+    	    } finally {
+    		if (null != props) {
+    		    try {
+    			props.close();
+    		    } catch (IOException e) {
+    			// can be ignored
+    		    }
+    		}
+    		if (null != defaultprops) {
+    		    try {
+    			defaultprops.close();
+    		    } catch (IOException e) {
+    			// can be ignored
+    		    }
+    		}
+    	    }
+    	}
+    	return _tidyProperties;
+        }
 
 }

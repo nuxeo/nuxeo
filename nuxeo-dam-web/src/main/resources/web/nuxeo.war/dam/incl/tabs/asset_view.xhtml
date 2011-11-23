@@ -43,16 +43,8 @@
             <nxl:widgetType name="summary_video_player" mode="view" value="#{damDocumentActions.currentSelection}" />
           </f:subview>
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('audio')}">
-            <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
-              <param name='src' value="#{nxd:bigFileUrl(damDocumentActions.currentSelection, 'file:content', damDocumentActions.currentSelection.file.filename)}"/>
-              <param name='autoplay' value="false"/>
-              <param name='controller' value="true"/>
-              <param name='loop' value="false"/>
-              <param name='scale' value="aspect"/>
-              <embed src="#{nxd:bigFileUrl(damDocumentActions.currentSelection, 'file:content', damDocumentActions.currentSelection.file.filename)}" autoplay="false"
-                controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage="http://www.apple.com/quicktime/download/">
-              </embed>
-            </object>
+            <nxl:widgetType name="summary_audio_player" mode="view"
+              value="#{damDocumentActions.currentSelection}" field="file:content" />
          </f:subview>
        </td>
      </tr>
