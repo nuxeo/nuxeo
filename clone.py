@@ -20,7 +20,7 @@
 ## repositories.
 ##
 
-import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath
+import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath, time
 
 driveletter = "G"
 
@@ -127,7 +127,17 @@ if hg_url.startswith("http"):
 else:
     git_url = hg_url
 
-lines = urllib.urlopen("https://hg.nuxeo.org/?sort=name").readlines()
+retries = 0
+while True:
+    retries += 1
+    lines = urllib.urlopen("https://hg.nuxeo.org/?sort=name").readlines()
+    if len(lines) > 1000: break
+    if retries > 10:
+        log("Error retrieving addons list from hg.nuxeo.org - giving up")
+        sys.exit(-1)
+    log("Error retrieving addons list from hg.nuxeo.org - retrying in 10 seconds")
+    time.sleep(10)
+
 hg_addons = []
 for line in lines:
     if not line.startswith("<b>addons/"):
