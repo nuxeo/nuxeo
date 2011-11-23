@@ -5,7 +5,7 @@ NXVideo.loadVideoPlayer = function() {
 
 };
 
-NXVideo.initializeStoryBoard() = function() {
+NXVideo.initializeStoryBoard = function() {
   var videoJsElement = jQuery(".video-js");
   if (videoJsElement.length > 0 && videoJsElement[0].player !== 'undefined') {
     var videoPlayer = videoJsElement[0].player;
