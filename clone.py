@@ -94,7 +94,7 @@ fetch("addons")
 
 cwd = os.getcwd()
 os.chdir("addons")
-print "$> cd addons; clone.py %s" % branch
+log("$> cd addons; clone.py %s" % branch)
 retcode = os.system("python clone.py %s" % branch)
 if retcode != 0:
     log("Command returned non-zero exit code: %s" % (cmd,))
