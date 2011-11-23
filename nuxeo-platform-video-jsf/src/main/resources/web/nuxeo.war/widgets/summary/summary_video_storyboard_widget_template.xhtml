@@ -9,11 +9,11 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <c:if test="#{currentDocument.hasFacet('Video')}">
+  <c:if test="#{value.hasFacet('Video')}">
 
   <h3 class="summaryTitle">#{messages['heading.storyboard']}</h3>
 
-  <ui:repeat var="item" value="#{storyboardActions.getItems(currentDocument)}">
+  <ui:repeat var="item" value="#{storyboardActions.getItems(value)}">
     <span class="videoStoryboardItem" timecode="#{item.timecode}">
       <nxh:graphicImage url="#{item.url}" />
     </span>

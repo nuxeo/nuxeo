@@ -9,15 +9,15 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <c:if test="#{currentDocument.hasFacet('Video')}">
+  <c:if test="#{value.hasFacet('Video')}">
 
-  <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(currentDocument)}">
-  <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'MP4 480p')}">
-  <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'WebM 480p')}">
+  <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(value)}">
+  <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(value, 'MP4 480p')}">
+  <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(value, 'WebM 480p')}">
 
     <c:if test="#{empty mp4URL}">
       <nxu:set var="conversionStatus"
-        value="#{videoActions.getVideoConversionStatus(currentDocument, 'MP4 480p')}">
+        value="#{videoActions.getVideoConversionStatus(value, 'MP4 480p')}">
         <c:if test="#{not empty conversionStatus}">
           <p class="tips">
             #{videoActions.getStatusMessageFor(conversionStatus)}
@@ -30,10 +30,10 @@
         <!-- HTML5 player -->
         <video class="video-js" width="450" height="337" controls="controls" preload="auto" poster="#{staticPreview}">
           <c:if test="#{not empty mp4URL}">
-            <source src="#{videoActions.getTranscodedVideoURL(currentDocument, 'MP4 480p')}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
+            <source src="#{videoActions.getTranscodedVideoURL(value, 'MP4 480p')}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
           </c:if>
           <c:if test="#{not empty webmURL}">
-            <source src="#{videoActions.getTranscodedVideoURL(currentDocument, 'WebM 480p')}" type='video/webm; codecs="vp8, vorbis"' />
+            <source src="#{videoActions.getTranscodedVideoURL(value, 'WebM 480p')}" type='video/webm; codecs="vp8, vorbis"' />
           </c:if>
           <c:if test="#{not empty mp4URL}">
             <object type="application/x-shockwave-flash" data="#{baseURL}swf/JarisFLVPlayer.swf" width="450px" height="337px">
@@ -44,7 +44,7 @@
               <param name="bgcolor" value="#000000"/>
               <param name="quality" value="high"/>
               <param name="wmode" value="opaque"/>
-              <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(currentDocument)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"/>
+              <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"/>
               <img src="#{staticPreview}" height="480" alt="Poster Image"
                 title="No video playback capabilities." />
             </object>

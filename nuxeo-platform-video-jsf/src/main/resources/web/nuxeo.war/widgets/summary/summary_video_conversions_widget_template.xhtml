@@ -9,7 +9,7 @@
      xmlns:nxd="http://nuxeo.org/nxweb/document"
      class="content_block">
 
-  <c:if test="#{currentDocument.hasFacet('Video')}">
+  <c:if test="#{value.hasFacet('Video')}">
 
    <style>
      .videoConversionRow:hover {
@@ -34,21 +34,21 @@
           </td>
           <td class="actionsColumn">
             <nxu:set var="conversionStatus"
-              value="#{videoActions.getVideoConversionStatus(currentDocument, conversion.name)}">
+              value="#{videoActions.getVideoConversionStatus(value, conversion.name)}">
               <c:if test="#{not empty conversionStatus}">
                 #{videoActions.getStatusMessageFor(conversionStatus)}
               </c:if>
               <c:if test="#{empty conversionStatus}">
                 <nxu:set var="transcodedVideo"
-                  value="#{videoActions.getTranscodedVideo(currentDocument, conversion.name)}">
+                  value="#{videoActions.getTranscodedVideo(value, conversion.name)}">
                 <c:if test="#{not empty transcodedVideo}">
-                  <h:outputLink value="#{videoActions.getTranscodedVideoURL(currentDocument, conversion.name)}">
+                  <h:outputLink value="#{videoActions.getTranscodedVideoURL(value, conversion.name)}">
                     <h:graphicImage url="/icons/download.png" />
                   </h:outputLink>
                 </c:if>
                 <c:if test="#{empty transcodedVideo}">
                   <h:commandButton value="#{messages['action.video.launch.conversion']}"
-                    action="#{videoActions.launchConversion(currentDocument, conversion.name)}" />
+                    action="#{videoActions.launchConversion(value, conversion.name)}" />
                 </c:if>
                 </nxu:set>
               </c:if>

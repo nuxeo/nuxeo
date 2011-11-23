@@ -1,4 +1,6 @@
-jQuery(document).ready(function() {
+NXVideo = {};
+
+NXVideo.loadVideoPlayer = function() {
   jQuery(".video-js").VideoJS();
   var videoJsElement = jQuery(".video-js");
   if (videoJsElement.length > 0 && videoJsElement[0].player !== 'undefined') {
@@ -10,4 +12,8 @@ jQuery(document).ready(function() {
       return false;
     });
   }
+};
+
+jQuery(document).ready(function() {
+  NXVideo.loadVideoPlayer();
 });
