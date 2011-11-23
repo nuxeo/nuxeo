@@ -22,7 +22,7 @@ public class DefaultDatabaseFactory implements DatabaseHelperFactory {
         // type is ignored, the config inferred by DatabaseHelper from
         // system properties will be used
         DatabaseHelper helper = DatabaseHelper.DATABASE;
-        helper.setDatabaseName(databaseName);
+        // helper.setDatabaseName(databaseName);
         helper.setRepositoryName(repositoryName);
         return helper;
     }
