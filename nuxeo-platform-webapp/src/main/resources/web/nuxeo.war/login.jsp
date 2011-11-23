@@ -213,9 +213,15 @@ body {
 -->
 </style>
 
+<script type="text/javascript">
+function focusOn(eltId) {
+  document.getElementById(eltId).focus();
+}
+</script>
+
 </head>
 
-<body>
+<body onload="focusOn('username')">
 
 <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
   <tbody>
