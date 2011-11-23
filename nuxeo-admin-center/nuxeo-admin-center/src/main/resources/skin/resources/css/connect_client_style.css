@@ -39,10 +39,22 @@ table {
   width:100%;
   }
 
+h1 {
+ font-size:1.6em;
+ font-weight:bold;
+ margin:0.5em 0;
+}
+
+h2 {
+ font-size:1.3em;
+ font-weight:bold;
+ margin:0.5em 0;
+}
+
 h3 {
  font-size:1.17em;
  font-weight:bold;
- margin:1em 0;
+ margin:0.3em 0;
 }
 
 /* Messages */
@@ -151,15 +163,17 @@ h3 {
 /* Download screen */
 
 .genericBox {
-  width:500px;
-  margin:30px auto;
-  padding:20px 30px;
+  width:600px;
+  margin:20px auto;
+  padding:10px 20px;
   text-align:center;
   border:1px solid #dedede;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
   }
 
 .genericBox table {
-  margin:15px 0;
+  margin:10px 0;
   }
 
 .inProgressDownloadBox {
@@ -246,3 +260,18 @@ ul.installInfo li{
 .alignCenter {
   text-align:center;
   }
+
+.progressDownloadContainer {
+  width:100px;
+  height:10px;
+  background-color:grey;
+  display:none;
+ }
+ .progressDownload {
+  height:8px;
+  background-color:green;
+ }
+
+ .manualModeCmd{
+  display:none;
+ }

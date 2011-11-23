@@ -18,7 +18,9 @@
  */
 package org.nuxeo.connect.client.we;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -85,18 +87,19 @@ public class InstallHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "showTermsAndConditions/{pkgId}")
-    public Object showTermsAndConditions(@PathParam("pkgId") String pkgId,@QueryParam("source") String source,
+    public Object showTermsAndConditions(@PathParam("pkgId") String pkgId,
+            @QueryParam("source") String source,
             @QueryParam("depCheck") Boolean depCheck) {
-        if (depCheck==null) {
-            depCheck=true;
+        if (depCheck == null) {
+            depCheck = true;
         }
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
             String content = pkg.getTermsAndConditionsContent();
-            return getView("termsAndConditions").arg("pkg", pkg).arg("source", source).arg("content", content).arg("depCheck", depCheck);
-        }
-        catch (Exception e) {
+            return getView("termsAndConditions").arg("pkg", pkg).arg("source",
+                    source).arg("content", content).arg("depCheck", depCheck);
+        } catch (Exception e) {
             log.error("Error during terms and conditions phase ", e);
             return getView("installError").arg("e", e).arg("source", source);
         }
@@ -106,43 +109,55 @@ public class InstallHandler extends DefaultObject {
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
     public Object startInstall(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source,@QueryParam("tacAccepted") Boolean acceptedTAC,
-            @QueryParam("depCheck") Boolean depCheck) {
+            @QueryParam("source") String source,
+            @QueryParam("tacAccepted") Boolean acceptedTAC,
+            @QueryParam("depCheck") Boolean depCheck,
+            @QueryParam("autoMode") Boolean autoMode) {
 
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
-            if (pkg==null) {
+            if (pkg == null) {
                 throw new ClientException("Can not find package " + pkgId);
             }
 
-//            if (InstallAfterRestart.isNeededForPackage(pkg)) {
-//                InstallAfterRestart.addPackage(pkg.getId());
-//                return getView("installOnRestart").arg(
-//                        "pkg", pkg).arg("source", source);
-//            }
+            // if (InstallAfterRestart.isNeededForPackage(pkg)) {
+            // InstallAfterRestart.addPackage(pkg.getId());
+            // return getView("installOnRestart").arg(
+            // "pkg", pkg).arg("source", source);
+            // }
 
-            if (pkg.requireTermsAndConditionsAcceptance() && !Boolean.TRUE.equals(acceptedTAC)) {
+            if (pkg.requireTermsAndConditionsAcceptance()
+                    && !Boolean.TRUE.equals(acceptedTAC)) {
                 return showTermsAndConditions(pkgId, source, depCheck);
             }
             if (!Boolean.FALSE.equals(depCheck)) {
                 // check deps requirements
-                if (pkg.getDependencies()!=null && pkg.getDependencies().length>0) {
+                if (pkg.getDependencies() != null
+                        && pkg.getDependencies().length > 0) {
                     PackageManager pm = Framework.getLocalService(PackageManager.class);
-                    DependencyResolution resolution = pm.resolveDependencies(pkgId, PlatformVersionHelper.getPlatformFilter());
-                    if (resolution.isFailed() && PlatformVersionHelper.getPlatformFilter()!=null) {
+                    DependencyResolution resolution = pm.resolveDependencies(
+                            pkgId, PlatformVersionHelper.getPlatformFilter());
+                    if (resolution.isFailed()
+                            && PlatformVersionHelper.getPlatformFilter() != null) {
                         // retry without PF filter ...
                         resolution = pm.resolveDependencies(pkgId, null);
                     }
                     if (resolution.isFailed()) {
-                        return getView("dependencyError").arg("resolution", resolution).arg(
-                                "pkg", pkg).arg("source", source);
+                        return getView("dependencyError").arg("resolution",
+                                resolution).arg("pkg", pkg).arg("source",
+                                source);
                     } else {
                         if (resolution.requireChanges()) {
-                            return getView("displayDependencies").arg("resolution", resolution).arg(
-                                    "pkg", pkg).arg("source", source);
+                            if (autoMode==null) {
+                                autoMode = resolution.getLocalPackagesToRemove().size()==0;
+                            }
+                            return getView("displayDependencies").arg(
+                                    "resolution", resolution).arg("pkg", pkg).arg(
+                                    "source", source).arg("autoMode",autoMode);
                         }
-                        // no dep changes => can continue standard install process
+                        // no dep changes => can continue standard install
+                        // process
                     }
                 }
             }
@@ -253,14 +268,90 @@ public class InstallHandler extends DefaultObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "bulkRun/{pkgId}")
+    public Object doBulkInstall(@PathParam("pkgId") String pkgId,
+            @QueryParam("source") String source,
+            @QueryParam("confirm") Boolean confirm) {
+
+        if (!RequestHelper.isInternalLink(getContext())) {
+            return getView("installError").arg(
+                    "e",
+                    new ClientException(
+                            "Installation seems to have been started from an external link.")).arg(
+                    "source", source);
+        }
+        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        try {
+            DependencyResolution resolution = pm.resolveDependencies(pkgId,
+                    PlatformVersionHelper.getPlatformFilter());
+            if (resolution.isFailed()
+                    && PlatformVersionHelper.getPlatformFilter() != null) {
+                // retry without PF filter ...
+                resolution = pm.resolveDependencies(pkgId, null);
+            }
+
+            List<String> downloadPackagesIds = resolution.getDownloadPackageIds();
+            if (downloadPackagesIds.size() > 0) {
+                return getView("installError").arg(
+                        "e",
+                        new ClientException(
+                                "Somes packages need to be downloaded before running bulk installation")).arg(
+                        "source", source);
+            }
+
+            List<String> pkgIds = resolution.getOrderedPackageIdsToInstall();
+            List<String> warns = new ArrayList<String>();
+            List<String> descs = new ArrayList<String>();
+            if (!pkgIds.contains(pkgId)) {
+                pkgIds.add(pkgId);
+            }
+
+            for (String id : pkgIds) {
+                Package pkg = pus.getPackage(id);
+                if (pkg == null) {
+                    return getView("installError").arg(
+                            "e",
+                            new ClientException("Unable to find local package "
+                                    + id)).arg("source", source);
+                }
+                if (!PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
+                    warns.add("Package " + id
+                            + " is not validated for your current platform");
+                }
+                descs.add(pkg.getDescription());
+            }
+
+            if (confirm != null && true == confirm) {
+                for (String id : pkgIds) {
+                    InstallAfterRestart.addPackage(id);
+                }
+                return getView("bulkInstallOnRestart").arg("pkgIds", pkgIds).arg(
+                        "source", source);
+            } else {
+                return getView("bulkInstallOnRestartConfirm").arg("pkgIds",
+                        pkgIds).arg("warns", warns).arg("descs", descs).arg(
+                        "source", source).arg("pkgId", pkgId);
+            }
+
+        } catch (Exception e) {
+            log.error("Error during installation of " + pkgId, e);
+            return getView("installError").arg("e", e).arg("source", source);
+        }
+    }
+
+    @GET
+    @Produces("text/html")
     @Path(value = "run/{pkgId}")
     public Object doInstall(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source) {
 
         if (!RequestHelper.isInternalLink(getContext())) {
-            return getView("installError")
-                    .arg("e", new ClientException("Installation seems to have been started from an external link."))
-                    .arg("source", source);
+            return getView("installError").arg(
+                    "e",
+                    new ClientException(
+                            "Installation seems to have been started from an external link.")).arg(
+                    "source", source);
         }
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
 
@@ -269,8 +360,8 @@ public class InstallHandler extends DefaultObject {
 
             if (InstallAfterRestart.isNeededForPackage(pkg)) {
                 InstallAfterRestart.addPackage(pkg.getId());
-                return getView("installOnRestart").arg(
-                        "pkg", pkg).arg("source", source);
+                return getView("installOnRestart").arg("pkg", pkg).arg(
+                        "source", source);
             }
 
             Task installTask = pkg.getInstallTask();
