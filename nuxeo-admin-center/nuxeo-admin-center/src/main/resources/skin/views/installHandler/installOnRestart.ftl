@@ -9,14 +9,14 @@ function closePopup() {
 </@block>
 
 <@block name="body">
-  <div class="errorDownloadBox">
-   <h1> Installation of ${pkg.title} (${pkg.id}) can not be completed now.</h1>
+  <div class="successfulDownloadBox">
+   <h1> Installation of ${pkg.title} (${pkg.id}) will be done at next restart.</h1>
     <br/>
     <div>
-     Because your current Operating System locks the resources loaded by the JVM, we can not complete the installation now.
+     <h3>Server restart required</h3>
     </div>
     <div>
-     Installation will be completed on next server restart.
+     To complete the installation of the package, please restart your server.
     </div>
     <div>
      <string>Please read carefully the description of the package, in case any manual update is needed.</strong>
