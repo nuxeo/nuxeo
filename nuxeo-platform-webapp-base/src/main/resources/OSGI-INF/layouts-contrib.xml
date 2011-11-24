@@ -1036,6 +1036,28 @@
       </property>
     </widgetType>
 
+    <widgetType name="userVirtualGroups">
+      <configuration>
+        <sinceVersion>5.5</sinceVersion>
+        <title>User virtual groups</title>
+        <description>
+          This widget displays the user virtual groups.
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/user_vgoups_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -1232,7 +1254,7 @@
           <property name="userSuggestionSearchType">GROUP_TYPE</property>
         </properties>
       </widget>
-      <widget name="vgroups" type="template">
+      <widget name="vgroups" type="userVirtualGroups">
         <labels>
           <label mode="any">label.userManager.userVirtualGroups</label>
         </labels>
@@ -1244,11 +1266,6 @@
           <mode value="create">hidden</mode>
           <mode value="editPassword">hidden</mode>
         </widgetModes>
-        <properties widgetMode="any">
-          <property name="template">
-            /widgets/user_vgoups_widget_template.xhtml
-          </property>
-        </properties>
       </widget>
     </layout>
 
