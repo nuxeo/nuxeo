@@ -189,11 +189,16 @@ public abstract class ContributionFragmentRegistry<T> {
      * Get a merged contribution directly from the internal registry - and
      * avoid passing by the implementation registry. Note that this operation
      * will invoke a merge of existing fragments if needed.
+     * <p>
+     * Since 5.5, this method has made protected as it should not be used by
+     * the service retrieving merged resources (otherwise merge will be done
+     * again). If you'd really like to call it, add a public method on your
+     * registry implementation that will call it.
      *
      * @param id
      * @return
      */
-    public synchronized T getContribution(String id) {
+    protected synchronized T getContribution(String id) {
         FragmentList<T> head = contribs.get(id);
         return head != null ? head.merge(this) : null;
     }
