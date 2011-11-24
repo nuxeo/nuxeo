@@ -966,6 +966,15 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="video/webm" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/webm</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>webm</extension>
+      </extensions>
+    </mimetype>
+
     <mimetype normalized="video/x-ms-asf" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/x-ms-asf</mimetype>
