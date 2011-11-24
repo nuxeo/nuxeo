@@ -351,6 +351,9 @@ function focusOn(eltId) {
                     <option value="eu" <%="eu".equals(selectedLanguage)?"selected":""%>>
                       Basque
                     </option>
+                    <option value="sr" <%="sr".equals(selectedLanguage)?"selected":""%>>
+                      Serbian - Cyrillic
+                    </option>
                     <option value="ru" <%="ru".equals(selectedLanguage)?"selected":""%>>
                       &#1088;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;
                     </option>
