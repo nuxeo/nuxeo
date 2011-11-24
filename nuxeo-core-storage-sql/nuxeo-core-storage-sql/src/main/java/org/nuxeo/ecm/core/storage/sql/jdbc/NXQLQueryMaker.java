@@ -1052,11 +1052,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
         // internal fields
 
-        private boolean allowArray;
+        protected boolean allowArray;
 
-        private boolean inSelect;
+        protected boolean inSelect;
 
-        private boolean inOrderBy;
+        protected boolean inOrderBy;
 
         private int nalias = 0;
 
