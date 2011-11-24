@@ -16,7 +16,9 @@
             styleClass="directoryFilter">
             <a4j:support event="onkeyup"
               reRender="usersListingPanel"
-              requestDelay="1000" action="#{contentViewActions.refreshAndRewind(contentViewName)}"
+              requestDelay="1000" 
+              onsubmit="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
+              action="#{contentViewActions.refreshAndRewind(contentViewName)}"
               ignoreDupResponses="true" eventsQueue="userSearchQueue" />
           </h:inputText>
           <f:verbatim>&amp;nbsp;</f:verbatim>
