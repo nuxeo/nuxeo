@@ -10,46 +10,15 @@ Requirements
 * xvfb for HIDE_FF mode using fake X server
 
 
-Running test suites (DEPRECATED: see https://github.com/nuxeo/tools-nuxeo-ftest)
+Running test suites
 ===================
 
-* Default suites (suite1, suite2, suite-dm, suite-webengine, suite-webengine-website, suite-webengine-tags) on localhost
+See: https://github.com/nuxeo/tools-nuxeo-ftest
 
-  ./run.sh
+For instance, for the nuxeo-cap function test suite:
 
-* Default suites on a remote site
+    mvn verify -Pqa,tomcat -Dclassifier=nuxeo-cap -Dsuites=suite1,suite2,suite-cap,suite-webengine
 
-  URL=http://server:8080/nuxeo ./run.sh
-
-* Custom suites on localhost
-
-  SUITES="suite-publication suite-jbpm" ./run.sh
-
-* Run without a X server hiding firefox
-
-  HIDE_FF=true ./run.sh
-
-
-If firefox is not hidden, an application will open providing the tests suite
-with an embedded firefox navigator. Tests can be stopped, restarted,
-etc,... Breakpoints can be added clicking on a test or a line of the test.
-
-You can setup a configuration file with your default options, look at
-run.conf.sample. Copy it to a file named 'run.conf' for these parameters to
-be taken into account.
-
-The run.sh creates or updates the ffprofile/pref.js and user-extensions.js
-files.
-
-ffprofile/prefs.js holds the base url. It should be used/changed in command
-line option (not useful when using Selenium IDE).
-It also holds the current language (en). When using Selenium IDE, make sure
-English is your default language.
-
-user-extensions.js.sample holds the current folder absolute path. It should
-be copied to user-extensions.js and modified accordingly when launching the
-suite via Selenium IDE. Via command line, replacement is done in the run.sh
-script.
 
 Running test suites
 ===================
