@@ -18,6 +18,7 @@
 package org.nuxeo.dam.webapp.contentbrowser;
 
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.platform.action.DamWebActions.DAM_VIEW_ASSET_ACTION_LIST_CATEGORY;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
+import org.nuxeo.dam.platform.action.DamWebActions;
 import org.nuxeo.dam.webapp.chainselect.ChainSelectCleaner;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
 import org.nuxeo.ecm.core.api.Blob;
@@ -71,8 +73,6 @@ public class DamDocumentActions implements Serializable {
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(DamDocumentActions.class);
-
-    protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
 
     protected static final String DEFAULT_PICTURE_DOWNLOAD_PROPERTY = "Original";
 
@@ -113,11 +113,11 @@ public class DamDocumentActions implements Serializable {
 
     public void setCurrentSelection(DocumentModel selection) {
         // Reset the tabs list and the display mode
-        webActions.resetCurrentTabs("VIEW_ASSET_ACTION_LIST");
+        webActions.resetCurrentTabs(DAM_VIEW_ASSET_ACTION_LIST_CATEGORY);
         displayMode = BuiltinModes.VIEW;
         currentSelection = selection;
         currentSelectionLink = webActions.getCurrentTabAction(
-                "VIEW_ASSET_ACTION_LIST").getLink();
+                DAM_VIEW_ASSET_ACTION_LIST_CATEGORY).getLink();
         resetData();
         raiseEvents(currentSelection);
     }
@@ -130,7 +130,7 @@ public class DamDocumentActions implements Serializable {
     }
 
     public void setCurrentTabAction(Action currentTabAction) {
-        webActions.setCurrentTabAction("VIEW_ASSET_ACTION_LIST",
+        webActions.setCurrentTabAction(DAM_VIEW_ASSET_ACTION_LIST_CATEGORY,
                 currentTabAction);
         currentSelectionLink = currentTabAction.getLink();
     }

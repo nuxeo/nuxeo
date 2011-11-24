@@ -73,10 +73,6 @@
       <path>dam/scripts/nuxeo-dam.js</path>
     </resource>
 
-    <resource name="video-controller.js">
-      <path>jsvideo/video-controller.js</path>
-    </resource>
-
   </extension>
 
   <!-- application settings -->

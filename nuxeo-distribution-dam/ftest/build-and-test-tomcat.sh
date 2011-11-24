@@ -4,7 +4,7 @@
 ant -f ft-build.xml make-tomcat-distribution -Dmvn.profiles=$MAVEN_PROFILES,http-importer || exit 1
 
 # Start Tomcat
-(cd ../target && unzip nuxeo-dam-distribution-*-tomcat-importer.zip && mv nuxeo-dam-*-tomcat tomcat) || exit 1
+(cd ../target && unzip nuxeo-distribution-dam-*-tomcat-importer.zip && mv nuxeo-dam-*-tomcat tomcat) || exit 1
 ant -f ft-build.xml start-tomcat || exit 1
 
 # Unzip assets to import

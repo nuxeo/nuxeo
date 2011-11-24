@@ -40,21 +40,11 @@
             </f:subview>
 
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-            <ui:include src="/incl/video/video_player.xhtml">
-              <ui:param name="videoDoc" value="#{damDocumentActions.currentSelection}" />
-            </ui:include>
+            <nxl:widgetType name="summary_video_player" mode="view" value="#{damDocumentActions.currentSelection}" />
           </f:subview>
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('audio')}">
-            <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
-              <param name='src' value="#{nxd:bigFileUrl(damDocumentActions.currentSelection, 'file:content', damDocumentActions.currentSelection.file.filename)}"/>
-              <param name='autoplay' value="false"/>
-              <param name='controller' value="true"/>
-              <param name='loop' value="false"/>
-              <param name='scale' value="aspect"/>
-              <embed src="#{nxd:bigFileUrl(damDocumentActions.currentSelection, 'file:content', damDocumentActions.currentSelection.file.filename)}" autoplay="false"
-                controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage="http://www.apple.com/quicktime/download/">
-              </embed>
-            </object>
+            <nxl:widgetType name="summary_audio_player" mode="view"
+              value="#{damDocumentActions.currentSelection}" field="file:content" />
          </f:subview>
        </td>
      </tr>
@@ -81,7 +71,7 @@
       </div>
 
       <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-        <ui:include src="/dam/incl/tabs/asset_view_panels/asset_view_video_storyboard.xhtml" />
+        <nxl:widgetType name="summary_video_storyboard" mode="view" value="#{damDocumentActions.currentSelection}" />
       </f:subview>
 
       <div class="togglePanel">
@@ -122,10 +112,6 @@
                       value="#{damDocumentActions.currentSelection}"/>
           <nxl:layout name="dublincore" mode="view"
                       value="#{damDocumentActions.currentSelection}"/>
-          <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('streamable_media')}">
-          <nxl:layout name="streamable_media" mode="view"
-                      value="#{damDocumentActions.currentSelection}" />
-          </f:subview>
           </f:subview>
           <f:subview id="editSubView" rendered="#{damDocumentActions.displayMode == 'edit'}">
           <nxl:layout name="heading" mode="edit"
@@ -134,10 +120,6 @@
                       value="#{damDocumentActions.currentSelection}"/>
           <nxl:layout name="dublincore" mode="edit"
                       value="#{damDocumentActions.currentSelection}"/>
-          <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('streamable_media')}">
-          <nxl:layout name="streamable_media" mode="view"
-                      value="#{damDocumentActions.currentSelection}" />
-          </f:subview>
           </f:subview>
 
           <h:panelGrid class="dataOutput"
