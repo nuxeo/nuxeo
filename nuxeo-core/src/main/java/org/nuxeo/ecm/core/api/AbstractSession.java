@@ -2271,12 +2271,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             DocumentRef checkedInVersionRef, Map<String, Serializable> options,
             String checkinComment) throws ClientException {
         String label = getVersioningService().getVersionLabel(docModel);
-        if (options == null) {
-            options = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        if (options != null) {
+            props.putAll(options);
         }
-        options.put("versionLabel", label);
-        options.put("checkInComment", checkinComment);
-        options.put("checkedInVersionRef", checkedInVersionRef);
+        props.put("versionLabel", label);
+        props.put("checkInComment", checkinComment);
+        props.put("checkedInVersionRef", checkedInVersionRef);
         if (checkinComment == null) {
             // check if there's a comment already in options
             Object optionsComment = options.get("comment");
@@ -2286,8 +2287,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         }
         String comment = checkinComment == null ? label : label + ' '
                 + checkinComment;
-        options.put("comment", comment); // compat, used in audit
-        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel, options,
+        props.put("comment", comment); // compat, used in audit
+        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel, props,
                 null, null, true, false);
     }
 
