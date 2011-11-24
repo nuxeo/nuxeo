@@ -16,6 +16,9 @@
   <property name="vcsprops" value="${user.home}/nuxeo-test-vcs.properties" />
 
   <target name="vcs-tests-setup" depends="_init">
+    <nx:profile name="default">
+      <echo file="${vcsprops}" append="false" />
+    </nx:profile>
     <nx:profile name="pgsql">
       <echo file="${vcsprops}" append="false">
         nuxeo.test.vcs.db=PostgreSQL
