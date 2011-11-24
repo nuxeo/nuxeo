@@ -64,7 +64,10 @@ public class SeamExceptionHandlingListener extends
         // SeSynchronizations expects it to be unchanged when called by
         // the finally block of UTTransaction.rollback
         String SEAM_TX_SYNCS = "org.jboss.seam.transaction.synchronizations";
-        Object syncs = Contexts.getEventContext().get(SEAM_TX_SYNCS);
+        Object syncs = null;
+        if (Contexts.isEventContextActive()) {
+            syncs = Contexts.getEventContext().get(SEAM_TX_SYNCS);
+        }
 
         Lifecycle.endRequest();
 
