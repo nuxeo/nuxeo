@@ -60,11 +60,25 @@ public class ActionService extends DefaultComponent implements ActionManager {
         filters = null;
     }
 
-    protected final ActionRegistry getActionRegistry() {
+    /**
+     * Return the action registry
+     *
+     * @deprecated since 5.5: use interface methods on ActionManager instead of
+     *             public methods on ActionService.
+     */
+    @Deprecated
+    public final ActionRegistry getActionRegistry() {
         return actions.getRegistry();
     }
 
-    protected final ActionFilterRegistry getFilterRegistry() {
+    /**
+     * Return the action filter registry
+     *
+     * @deprecated since 5.5: use interface methods on ActionManager instead of
+     *             public methods on ActionService.
+     */
+    @Deprecated
+    public final ActionFilterRegistry getFilterRegistry() {
         return filters.getRegistry();
     }
 
