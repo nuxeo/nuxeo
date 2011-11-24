@@ -2,11 +2,47 @@
 <component name="org.nuxeo.platform.audit.layoutContrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="audit_comments">
+      <configuration>
+        <sinceVersion>5.5</sinceVersion>
+        <title>Audit comments</title>
+        <description>
+          <p>
+            This widget type displays comments for a log entry, displaying
+            links to documents if they are referenced in it.
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.preprocessedComment</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>audit</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/auditcomment_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
     <layout name="basicauditsearch">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
         </template>
       </templates>
       <rows>
@@ -43,7 +79,9 @@
 
     <layout name="history_listing">
       <templates>
-        <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
         <template mode="csv">
           /layouts/layout_listing_csv_template.xhtml
         </template>
@@ -90,7 +128,7 @@
           </properties>
           <widget>taskDirective</widget>
         </column>
-         <column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
@@ -102,7 +140,7 @@
           </properties>
           <widget>eventComment</widget>
         </column>
-         <column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
@@ -132,8 +170,13 @@
           <field>data.eventDate</field>
         </fields>
         <properties widgetMode="any">
-          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
-          <property name="timezone">#{timeZone}</property>
+          <property name="pattern">
+            #{nxu:basicDateAndTimeFormater()}
+          </property>
+          <!-- need to check if this is needed -->
+          <property name="timezone">
+            #{timeZone}
+          </property>
         </properties>
       </widget>
 
@@ -147,8 +190,7 @@
         </fields>
       </widget>
 
-      <!-- XXX use directory to get the labels, but should use i18n text widget -->
-       <widget name="eventCategory" type="selectOneDirectory">
+      <widget name="eventCategory" type="text">
         <labels>
           <label mode="any">label.category</label>
         </labels>
@@ -157,14 +199,11 @@
           <field>data:category</field>
         </fields>
         <properties mode="any">
-          <property name="directoryName">eventCategories</property>
           <property name="localize">true</property>
         </properties>
       </widget>
 
-
-      <!-- XXX use i18n text widget instead of widget template-->
-      <widget name="taskDirective" type="template">
+      <widget name="taskDirective" type="text">
         <labels>
           <label mode="any">label.workflow.task.directive</label>
         </labels>
@@ -173,9 +212,7 @@
           <field>data.extendedInfos['directive'].serializableValue</field>
         </fields>
         <properties mode="any">
-        <property name="template">
-          /widgets/auditdirective_widget_template.xhtml
-        </property>
+          <property name="localize">true</property>
         </properties>
       </widget>
 
@@ -188,12 +225,17 @@
           <field>data.extendedInfos['dueDate'].serializableValue</field>
         </fields>
         <properties widgetMode="any">
-          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
-          <property name="timezone">#{timeZone}</property>
+          <property name="pattern">
+            #{nxu:basicDateAndTimeFormater()}
+          </property>
+          <!-- need to check if this is needed -->
+          <property name="timezone">
+            #{timeZone}
+          </property>
         </properties>
       </widget>
 
-      <widget name="eventComment" type="template">
+      <widget name="eventComment" type="audit_comments">
         <labels>
           <label mode="any">label.comment</label>
         </labels>
@@ -201,15 +243,9 @@
         <fields>
           <field>data.preprocessedComment</field>
         </fields>
-        <properties mode="any">
-        <property name="template">
-          /widgets/auditcomment_widget_template.xhtml
-        </property>
-        </properties>
       </widget>
 
-      <!-- XXX use i18n text widget instead of widget template-->
-      <widget name="eventLC" type="template">
+      <widget name="eventLC" type="text">
         <labels>
           <label mode="any">label.lifecycle</label>
         </labels>
@@ -218,9 +254,7 @@
           <field>data.docLifeCycle</field>
         </fields>
         <properties mode="any">
-        <property name="template">
-          /widgets/auditlc_widget_template.xhtml
-        </property>
+          <property name="localize">true</property>
         </properties>
       </widget>
 
