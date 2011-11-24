@@ -18,8 +18,8 @@
     <div class="loginInfos">
     <p class="connectNotRegistered">
     #{messages['connect.message.notregistred']} <a
-      href="https://doc.nuxeo.com/x/l4FH"
-      class="connectLink" target="NuxeoConnectSite">#{messages['connect.message.discoverconnect']}</a>
+      href="https://doc.nuxeo.com/x/l4FH" class="connectLink"
+      target="NuxeoConnectSite">#{messages['connect.message.discoverconnect']}</a>
     </p>
     </div>
 
@@ -126,7 +126,8 @@
         <p><h:outputText
           value="#{messages['label.nuxeo.connect.offlineRegistrationDescription']}" /></p>
         <p><h:outputText
-          value="#{messages['label.nuxeo.connect.offlineReg.message1']}" /> <a
+          value="#{messages['label.nuxeo.connect.offlineReg.message1']}" />
+        <a
           href="https://connect.nuxeo.com/nuxeo/site/connect/registerInstance"
           target="NuxeoConnectSite"> <h:outputText
           value="#{messages['label.nuxeo.connect.offlineReg.webSite']}" /></a></p>
@@ -182,7 +183,8 @@
           <td class="labelColumn"><h:outputText
             value="#{messages['label.nuxeo.connect.contractStatus']}" /></td>
           <td id="contractStatus"><h:outputText
-            value="#{messages[connectStatus.status.contractStatusLabel]}" /></td>
+            value="#{messages[connectStatus.status.contractStatusLabel]}" />
+          </td>
         </tr>
         <tr>
           <td class="labelColumn"><h:outputText
@@ -226,6 +228,18 @@
             value="#{messages['label.nuxeo.connect.id.CTID']}" /></td>
           <td><h:outputText value="#{connectStatus.getCTID()}" /></td>
         </tr>
+        <tr>
+          <td class="labelColumn"></td>
+          <td><h:form>
+            <h:outputText
+              value="#{messages['label.nuxeo.connect.unregister']}" />
+            <h:outputText value="&#160;" />
+            <a4j:commandButton
+              value="#{messages['action.connect.unregister']}"
+              styleClass="button" action="#{connectStatus.unregister}"
+              reRender="connectStatusPanel" />
+          </h:form></td>
+        </tr>
       </table>
     </c:if>
     <c:if test="#{connectStatus.status.isError()}">
@@ -251,6 +265,13 @@
         <h:outputText value="#{messages['label.nuxeo.connect.statusError']}" />
         <h:outputText value="#{connectStatus.status.errorMessage}" />
       </c:if>
+      <h:form>
+        <h:outputText value="#{messages['label.nuxeo.connect.unregister']}" />
+        <h:outputText value="&#160;" />
+        <a4j:commandButton value="#{messages['action.connect.unregister']}"
+          styleClass="button" action="#{connectStatus.unregister}"
+          reRender="connectStatusPanel" />
+      </h:form>
     </c:if>
 
   </h:panelGroup>

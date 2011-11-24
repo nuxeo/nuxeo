@@ -116,6 +116,12 @@ public class ConnectStatusActionBean implements Serializable {
         CLID = cLID;
     }
 
+    public String unregister() {
+        LogicalInstanceIdentifier.cleanUp();
+        resetRegister();
+        return null;
+    }
+
     public List<SelectItem> getInstanceTypes() {
 
         List<SelectItem> types = new ArrayList<SelectItem>();
