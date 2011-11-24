@@ -19,44 +19,61 @@
 
 package org.nuxeo.ecm.platform.filemanager;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CSVZipImporter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestCSVImporter extends RepositoryOSGITestCase {
+import com.google.inject.Inject;
+
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template",
+        "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.platform.types.api",
+        "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core" })
+public class TestCSVImporter {
+
+    @Inject
+    protected CoreSession coreSession;
 
     protected DocumentModel destWS;
+
     protected DocumentModel wsRoot;
 
     private static File getArchiveFile() {
-        return new File(FileUtils.getResourcePathFromContext("test-data/testCSVArchive.zip"));
+        return new File(
+                FileUtils.getResourcePathFromContext("test-data/testCSVArchive.zip"));
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-        openRepository();
-        createTestDocuments();
-    }
-
-    private void createTestDocuments() throws Exception {
+    @Before
+    public void createTestDocuments() throws Exception {
         wsRoot = coreSession.getDocument(new PathRef(
                 "default-domain/workspaces"));
 
@@ -67,22 +84,25 @@ public class TestCSVImporter extends RepositoryOSGITestCase {
         destWS = ws;
     }
 
+    @Test
     public void testArchiveDetection() throws IOException {
         ZipFile archive = CSVZipImporter.getArchiveFileIfValid(getArchiveFile());
         assertNotNull(archive);
         archive.close();
     }
 
+    @Test
     public void testImportViaFileManager() throws Exception {
         File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archive);
-        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto");
+        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(),
+                true, "toto");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertSame(2, children.size());
 
-        DocumentModel MyFile =  coreSession.getChild(destWS.getRef(), "myfile");
-        DocumentModel MyNote =  coreSession.getChild(destWS.getRef(), "mynote");
+        DocumentModel MyFile = coreSession.getChild(destWS.getRef(), "myfile");
+        DocumentModel MyNote = coreSession.getChild(destWS.getRef(), "mynote");
 
         assertEquals("My File", MyFile.getTitle());
         assertEquals("My Note", MyNote.getTitle());
