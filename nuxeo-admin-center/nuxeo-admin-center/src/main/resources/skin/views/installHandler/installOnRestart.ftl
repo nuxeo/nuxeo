@@ -13,16 +13,12 @@ function closePopup() {
    <h1> Installation of ${pkg.title} (${pkg.id}) will be done at next restart.</h1>
     <br/>
     <div>
-     <h3>Server restart required</h3>
-    </div>
-    <div>
      To complete the installation of the package, please restart your server.
     </div>
     <div>
      <string>Please read carefully the description of the package, in case any manual update is needed.</strong>
     </div>
     <br/>
-
     <#if source=="installer">
       <a href="javascript:closePopup()" class="installButton"> Finish </a>
     <#else>

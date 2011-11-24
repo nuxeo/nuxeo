@@ -47,7 +47,7 @@ public class InstallAfterRestart {
 
     protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
-    public static boolean isNeeded() {
+    protected static boolean isNeededByOs() {
         if ("true".equals(Framework.getProperty(FAKE_VIDOZ, "false"))) {
             return true;
         }
@@ -55,7 +55,7 @@ public class InstallAfterRestart {
     }
 
     public static boolean isNeededForPackage(Package pkg) {
-        return PackageType.STUDIO != pkg.getType() && isNeeded();
+        return (PackageType.STUDIO != pkg.getType() && isNeededByOs()) || (PackageType.HOT_FIX == pkg.getType());
     }
 
     protected static boolean isVindozBox() {
