@@ -17,8 +17,8 @@
 
   <target name="expand">
     <artifact:nuxeo-expand includeTestScope="true" />
-    <artifact:print output="${outdir}/artifacts.properties" mode="sdk" />
-    <artifact:print output="${outdir}/test-artifacts.properties"
+    <artifact:print output="${outdir}/artifacts-cap.properties" mode="sdk" />
+    <artifact:print output="${outdir}/test-artifacts-cap.properties"
                     mode="sdk"
                     scopes="test" />
     <artifact:print output="${outdir}/dependency-tree.log" />
@@ -44,8 +44,8 @@
 
     <antcall target="third-party-libraries" />
 
-    <copy file="${outdir}/artifacts.properties" todir="${nuxeo.ear}" />
-    <copy file="${outdir}/test-artifacts.properties" todir="${nuxeo.ear}" />
+    <copy file="${outdir}/artifacts-cap.properties" todir="${nuxeo.ear}" />
+    <copy file="${outdir}/test-artifacts-cap.properties" todir="${nuxeo.ear}" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${nuxeo.ear}" />

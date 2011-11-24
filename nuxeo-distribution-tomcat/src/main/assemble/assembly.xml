@@ -27,6 +27,7 @@
         <isset property="maven.profile.nuxeo-dm" />
         <isset property="maven.profile.all" />
         <isset property="maven.profile.all-distributions" />
+        <isset property="maven.profile.sdk" />
       </or>
     </condition>
     <condition property="build.sdk">
@@ -43,7 +44,7 @@
 
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
-    <artifact:print output="${outdir}/artifacts.properties" mode="sdk" />
+    <artifact:print output="${outdir}/artifacts-tomcat.properties" mode="sdk" />
     <artifact:print output="${outdir}/dependency-tree.log" />
   </target>
 
@@ -294,25 +295,24 @@ org.nuxeo.distribution.package=zip</echo>
   </target>
 
   <target name="copy-sdk-resources">
-    <move file="${distribution.dir}/nxserver/artifacts.properties"
+    <copy file="${outdir}/artifacts-tomcat.properties"
           todir="${distribution.dir}/sdk" />
-    <concat append="true"
-            destfile="${distribution.dir}/sdk/artifacts.properties">
-      <fileset file="${outdir}/artifacts.properties" />
-    </concat>
-    <move file="${distribution.dir}/nxserver/test-artifacts.properties"
-          todir="${distribution.dir}/sdk" />
+    <move todir="${distribution.dir}/sdk">
+      <fileset dir="${distribution.dir}/nxserver/">
+        <filename name="*artifacts-*.properties" />
+      </fileset>
+    </move>
   </target>
 
   <target name="build-sdk" if="build.sdk">
     <mkdir dir="${distribution.dir}/sdk/sources" />
     <copy todir="${distribution.dir}/sdk/sources">
-      <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts.properties"
+      <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts*.properties"
                              classifier="sources" />
     </copy>
     <mkdir dir="${distribution.dir}/sdk/tests" />
     <copy todir="${distribution.dir}/sdk/tests">
-      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts.properties" />
+      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties" />
     </copy>
     <copy todir="${distribution.dir}/nxserver/bundles">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
