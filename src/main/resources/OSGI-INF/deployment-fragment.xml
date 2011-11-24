@@ -21,6 +21,7 @@
       <supported-locale>pt</supported-locale>
       <supported-locale>pt_BR</supported-locale>
       <supported-locale>ru</supported-locale>
+      <supported-locale>sr</supported-locale>
       <supported-locale>vn</supported-locale>
     </locale-config>
   </extension>
