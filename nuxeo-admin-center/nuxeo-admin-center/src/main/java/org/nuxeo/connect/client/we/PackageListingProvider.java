@@ -230,7 +230,7 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public boolean needsRestart(Package pkg) {
-        return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
+        return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId()) || PackageState.INSTALLED == pkg.getState();
     }
 
     public boolean canUnInstall(Package pkg) {

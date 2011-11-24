@@ -8,7 +8,8 @@ author: lkemen@nuxeo.com
 */
 
 /* =Vertical Tabs in left column */
-.adminTabsColumn { background: "neutral.light (__FLAVOR__ background)"; box-shadow: -2px -1px 5px #9F9F9F inset; min-height: 660px; height: auto!important; height: 660px; padding: 0; vertical-align: top; width: 210px }
+.adminTabsColumn { background: "neutral.light (__FLAVOR__ background)"; box-shadow: -2px -1px 5px #9F9F9F inset;  height: auto!important; padding: 0; vertical-align: top; width: 210px }
+
 .adminTabBlock { height: 100%; margin: 0 }
 
 .adminTabsColumn ul {  margin: 0; padding: 2em 0 }

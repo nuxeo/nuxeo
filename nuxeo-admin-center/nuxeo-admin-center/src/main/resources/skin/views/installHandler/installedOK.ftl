@@ -10,8 +10,7 @@ function closePopup() {
 
 <@block name="body">
   <div class="successfulDownloadBox">
-   <h1> Installation of ${pkg.title} (${pkg.id}) completed </h1>
-
+   <h3> Installation of ${pkg.title} (${pkg.id}) completed </h3>
 
     <#if installTask.isRestartRequired()>
      <div>
@@ -24,7 +23,6 @@ function closePopup() {
     </#if>
 
     <br/>
-
     <#if source=="installer">
       <a href="javascript:closePopup()" class="installButton"> Finish </a>
     <#else>
