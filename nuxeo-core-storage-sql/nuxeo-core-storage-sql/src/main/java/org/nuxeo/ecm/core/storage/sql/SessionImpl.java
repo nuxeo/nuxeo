@@ -1233,7 +1233,17 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public int prepare(Xid xid) throws XAException {
-        return mapper.prepare(xid);
+        int res = mapper.prepare(xid);
+        if (res == XA_RDONLY) {
+            // Read-only optimization, commit() won't be called by the TM.
+            // It's important to nevertheless send invalidations because
+            // Oracle, in tightly-coupled transaction mode, can return
+            // this status even when some changes were actually made
+            // (they just will be committed by another resource).
+            // See NXP-7943
+            commitDone();
+        }
+        return res;
     }
 
     @Override
@@ -1241,17 +1251,21 @@ public class SessionImpl implements Session, XAResource {
         try {
             mapper.commit(xid, onePhase);
         } finally {
-            inTransaction = false;
+            commitDone();
+        }
+    }
+
+    protected void commitDone() throws XAException {
+        inTransaction = false;
+        try {
             try {
-                try {
-                    sendInvalidationsToOthers();
-                } finally {
-                    checkThreadEnd();
-                }
-            } catch (Exception e) {
-                log.error("Could not commit transaction", e);
-                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+                sendInvalidationsToOthers();
+            } finally {
+                checkThreadEnd();
             }
+        } catch (Exception e) {
+            log.error("Could not send invalidations", e);
+            throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         }
     }
 
