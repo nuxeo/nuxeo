@@ -251,10 +251,16 @@
       </templates>
       <rows>
         <row>
-          <widget>caption</widget>
+          <widget>object_name</widget>
         </row>
         <row>
-          <widget>category</widget>
+          <widget>headline</widget>
+        </row>
+        <row>
+          <widget>keywords</widget>
+        </row>
+        <row>
+          <widget>date_created</widget>
         </row>
         <row>
           <widget>country_or_primary_location</widget>
@@ -264,6 +270,9 @@
         </row>
         <row>
           <widget>city</widget>
+        </row>
+        <row>
+          <widget>caption</widget>
         </row>
         <row>
           <widget>by_line</widget>
@@ -278,34 +287,7 @@
           <widget>credit</widget>
         </row>
         <row>
-          <widget>date_created</widget>
-        </row>
-        <row>
-          <widget>headline</widget>
-        </row>
-        <row>
-          <widget>keywords</widget>
-        </row>
-        <row>
-          <widget>object_name</widget>
-        </row>
-        <row>
-          <widget>original_transmission_ref</widget>
-        </row>
-        <row>
-          <widget>originating_program</widget>
-        </row>
-        <row>
-          <widget>release_date</widget>
-        </row>
-        <row>
           <widget>source</widget>
-        </row>
-        <row>
-          <widget>special_instructions</widget>
-        </row>
-        <row>
-          <widget>supplemental_categories</widget>
         </row>
         <row>
           <widget>writer</widget>
@@ -315,15 +297,6 @@
         <translated>true</translated>
         <fields>
           <field>iptc:caption</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="category" type="text">
-        <translated>true</translated>
-        <fields>
-          <field>iptc:category</field>
         </fields>
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
@@ -432,59 +405,10 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
-      <widget name="original_transmission_ref" type="text">
-        <translated>true</translated>
-        <fields>
-          <field>iptc:original_transmission_ref</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="originating_program" type="text">
-        <translated>true</translated>
-        <fields>
-          <field>iptc:originating_program</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="release_date" type="datetime">
-        <translated>true</translated>
-        <fields>
-          <field>iptc:release_date</field>
-        </fields>
-        <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-        </properties>
-        <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateFormater()}</property>
-          <property name="styleClass">dataInputTextDate</property>
-        </properties>
-      </widget>
       <widget name="source" type="text">
         <translated>true</translated>
         <fields>
           <field>iptc:source</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="special_instructions" type="text">
-        <translated>true</translated>
-        <fields>
-          <field>iptc:special_instructions</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="supplemental_categories" type="text">
-        <translated>true</translated>
-        <fields>
-          <field>iptc:supplemental_categories</field>
         </fields>
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
