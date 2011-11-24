@@ -19,24 +19,53 @@
 
 package org.nuxeo.ecm.platform.filemanager;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-public class TestFileManagerService extends RepositoryOSGITestCase {
+import com.google.inject.Inject;
+
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.types.api",
+        "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core",
+})
+@LocalDeploy({
+        FileManagerUTConstants.FILEMANAGER_BUNDLE
+                + ":ecm-types-test-contrib.xml",
+        FileManagerUTConstants.FILEMANAGER_BUNDLE
+                + ":nxfilemanager-test-contribs.xml" })
+public class TestFileManagerService {
 
     protected FileManager service;
 
@@ -44,64 +73,31 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
 
     protected DocumentModel workspace;
 
-    @Override
+    @Inject
+    protected CoreSession coreSession;
+
+    @Inject
+    protected RuntimeHarness harness;
+
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle(FileManagerUTConstants.TYPESERVICE_BUNDLE);
-        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
-                "ecm-types-test-contrib.xml");
-        deployBundle(FileManagerUTConstants.MIMETYPE_BUNDLE);
-
-        deployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
-                "OSGI-INF/nxfilemanager-service.xml");
-        deployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
-                "OSGI-INF/nxfilemanager-plugins-contrib.xml");
-
-        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
-                "nxfilemanager-test-contribs.xml");
-
-        openRepository();
-        service = Framework.getService(FileManager.class);
+        service = Framework.getLocalService(FileManager.class);
         root = coreSession.getRootDocument();
         createWorkspaces();
     }
 
     private void createWorkspaces() throws ClientException {
-        DocumentModel workspace = coreSession.createDocumentModel(root.getPathAsString(), "workspace", "Workspace");
+        DocumentModel workspace = coreSession.createDocumentModel(
+                root.getPathAsString(), "workspace", "Workspace");
         coreSession.createDocument(workspace);
         this.workspace = workspace;
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        if (coreSession != null) {
-            CoreInstance.getInstance().close(coreSession);
-            coreSession = null;
-        }
-        service = null;
-        root = null;
-
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
-                "nxfilemanager-test-contribs.xml");
-
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
-                "OSGI-INF/nxfilemanager-plugins-contrib.xml");
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
-                "OSGI-INF/nxfilemanager-service.xml");
-        // undeployBundle(TestConstants.MIMETYPE_BUNDLE);
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
-                "ecm-types-test-contrib.xml");
-        // undeployBundle(TestConstants.TYPESERVICE_BUNDLE);
-
-        super.tearDown();
     }
 
     protected File getTestFile(String relativePath) {
         return new File(FileUtils.getResourcePathFromContext(relativePath));
     }
 
+    @Test
     public void testDefaultCreateFromBlob() throws Exception {
         File file = getTestFile("test-data/hello.doc");
 
@@ -116,6 +112,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertNotNull(doc.getProperty("file", "content"));
     }
 
+    @Test
     public void testDefaultCreateTwiceFromSameBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.doc");
@@ -150,6 +147,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertEquals(1, versions.size());
     }
 
+    @Test
     public void testDefaultUpdateFromBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.doc");
@@ -178,9 +176,9 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertNotNull(doc.getProperty("file", "content"));
     }
 
-    protected static final String NOTE_HTML_CONTENT
-            = "<html>\n<body>\n  <p>Hello from HTML document</p>\n</body>\n</html>";
+    protected static final String NOTE_HTML_CONTENT = "<html>\n<body>\n  <p>Hello from HTML document</p>\n</body>\n</html>";
 
+    @Test
     public void testCreateNote() throws Exception {
         File file = getTestFile("test-data/hello.html");
 
@@ -194,6 +192,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertEquals(NOTE_HTML_CONTENT, doc.getProperty("note", "note"));
     }
 
+    @Test
     public void testCreateNoteTwiceFromSameBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.html");
@@ -225,9 +224,11 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertEquals(1, versions.size());
     }
 
+    @Test
     public void testFileImporterDocType() {
         FileManagerService fileManagerService = (FileManagerService) service;
         FileImporter plugin = fileManagerService.getPluginByName("plug");
+        assertNotNull(plugin);
         assertNull(plugin.getDocType());
 
         plugin = fileManagerService.getPluginByName("pluginWithDocType");
@@ -235,13 +236,19 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertEquals("File", plugin.getDocType());
     }
 
+    @Test
     public void testFileImportersMerge() throws Exception {
-        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
-                        "nxfilemanager-test-override.xml");
+        assertNotNull(harness);
+        URL url = getClass().getClassLoader().getResource(
+                "nxfilemanager-test-override.xml");
+        assertNotNull(url);
+        harness.deployTestContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
+                url);
 
         FileManagerService fileManagerService = (FileManagerService) service;
 
         FileImporter plugin = fileManagerService.getPluginByName("pluginWithDocType");
+        assertNotNull(plugin);
         assertNotNull(plugin.getDocType());
         assertEquals("Picture", plugin.getDocType());
         assertEquals(2, plugin.getFilters().size());

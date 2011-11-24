@@ -119,6 +119,7 @@ public class ExportedZipImporter extends AbstractFileImporter {
             pipe.setWriter(writer);
             pipe.run();
         } catch (Exception e) {
+            log.warn(e, e);
         } finally {
             reader.close();
             writer.close();
