@@ -19,7 +19,9 @@ package org.nuxeo.dam.importer.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.Constants;
+import org.nuxeo.dam.DamService;
 import org.nuxeo.dam.importer.core.filter.DamImporterFilter;
 import org.nuxeo.dam.importer.core.filter.DamImportingDocumentFilter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
@@ -29,6 +31,7 @@ import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -66,8 +69,9 @@ public class DamImporterExecutor extends AbstractImporterExecutor {
         java.io.File srcFile = new java.io.File(inputPath);
         SourceNode source = new FileWithMetadataSourceNode(srcFile);
 
+        DamService damService = Framework.getLocalService(DamService.class);
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
-                source, Constants.IMPORT_ROOT_PATH, getLogger()).skipRootContainerCreation(
+                source, damService.getAssetLibraryPath(), getLogger()).skipRootContainerCreation(
                 true).build();
         DamMultiThreadedImporter runner = DamMultiThreadedImporter.createWithImportFolderPath(
                 configuration, importFolderPath, importSetTitle,

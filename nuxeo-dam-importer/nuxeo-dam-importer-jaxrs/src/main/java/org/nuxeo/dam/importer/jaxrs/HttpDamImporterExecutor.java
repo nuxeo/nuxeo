@@ -26,6 +26,8 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.dam.AssetLibrary;
+import org.nuxeo.dam.DamService;
 import org.nuxeo.dam.importer.core.DamMultiThreadedImporter;
 import org.nuxeo.dam.importer.core.filter.DamImporterFilter;
 import org.nuxeo.dam.importer.core.filter.DamImportingDocumentFilter;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -45,8 +48,6 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
 
     private static final Log log = LogFactory.getLog(HttpDamImporterExecutor.class);
-
-    public static final String TARGET_PATH = "/default-domain/import-root";
 
     @Override
     protected Log getJavaLogger() {
@@ -66,8 +67,9 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
         File srcFile = new File(inputPath);
         SourceNode source = new FileWithMetadataSourceNode(srcFile);
 
+        DamService damService = Framework.getLocalService(DamService.class);
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
-                source, TARGET_PATH, getLogger()).batchSize(batchSize).nbThreads(
+                source, damService.getAssetLibraryPath(), getLogger()).batchSize(batchSize).nbThreads(
                 nbThreads).build();
 
         DamMultiThreadedImporter runner;

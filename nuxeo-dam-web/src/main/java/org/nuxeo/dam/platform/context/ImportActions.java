@@ -42,6 +42,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.dam.Constants;
+import org.nuxeo.dam.DamService;
 import org.nuxeo.dam.importer.core.DamImporterExecutor;
 import org.nuxeo.dam.importer.core.MetadataFileHelper;
 import org.nuxeo.dam.importer.core.helper.UnrestrictedSessionRunnerHelper;
@@ -297,13 +298,15 @@ public class ImportActions implements Serializable {
 
     public List<SelectItem> getImportFolders() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
+        DamService damService = Framework.getLocalService(DamService.class);
+        String assetLibraryPath = damService.getAssetLibraryPath();
         if (documentManager.hasPermission(new PathRef(
-                Constants.IMPORT_ROOT_PATH), SecurityConstants.ADD_CHILDREN)) {
+                assetLibraryPath), SecurityConstants.ADD_CHILDREN)) {
             items.add(new SelectItem(null, resourcesAccessor.getMessages().get(
                     "label.widget.newFolder")));
         }
         DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
-                documentManager);
+                documentManager, new Object[] { assetLibraryPath });
         for (DocumentModel doc : docs) {
             if (documentManager.hasPermission(doc.getRef(),
                     SecurityConstants.ADD_CHILDREN)) {
@@ -352,7 +355,8 @@ class ContainerFolderCreator extends UnrestrictedSessionRunner {
     public void run() throws ClientException {
         TransactionHelper.startTransaction();
         try {
-            folder = session.createDocumentModel(Constants.IMPORT_ROOT_PATH,
+            DamService damService = Framework.getLocalService(DamService.class);
+            folder = session.createDocumentModel(damService.getAssetLibraryPath(),
                     IdUtils.generateId(folderTitle),
                     Constants.IMPORT_FOLDER_TYPE);
             folder.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,

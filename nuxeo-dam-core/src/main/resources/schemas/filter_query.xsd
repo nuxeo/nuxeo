@@ -16,6 +16,7 @@
   <xs:element name="dc_coverage" type="nxs:stringList" />
   <xs:element name="dc_subjects" type="nxs:stringList"/>
   <xs:element name="ecm_path" type="xs:string" />
+  <xs:element name="asset_library_path" type="xs:string" />
   <xs:element name="created_min" type="xs:date" />
   <xs:element name="created_max" type="xs:date" />
 

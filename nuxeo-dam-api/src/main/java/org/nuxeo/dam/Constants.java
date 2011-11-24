@@ -17,12 +17,8 @@
 
 package org.nuxeo.dam;
 
-import org.nuxeo.runtime.api.Framework;
 
 public interface Constants {
-
-    String IMPORT_ROOT_PATH = Framework.getProperty("import.root.path",
-            "/default-domain/import-root");
 
     String DAM_COMMON_SCHEMA = "dam_common";
 

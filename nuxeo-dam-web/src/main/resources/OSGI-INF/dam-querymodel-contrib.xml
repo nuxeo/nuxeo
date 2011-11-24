@@ -32,6 +32,10 @@
           <field schema="filter_query" name="ecm_path" />
         </predicate>
 
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="filter_query" name="asset_library_path" />
+        </predicate>
+
         <predicate parameter="damc:authoringDate" operator="BETWEEN">
           <field schema="filter_query" name="created_min" />
           <field schema="filter_query" name="created_max" />
@@ -40,7 +44,6 @@
         <fixedPart>
           ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType = 'Asset'
           AND ecm:currentLifeCycleState != 'deleted' AND ecm:mixinType != 'Folderish'
-          AND ecm:path STARTSWITH '/default-domain/import-root'
         </fixedPart>
 
       </whereClause>
@@ -57,7 +60,7 @@
     <queryModel name="USER_IMPORT_SETS">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'ImportSet' AND ecm:currentLifeCycleState != 'deleted'
-        AND ecm:path STARTSWITH '/default-domain/import-root' and dc:creator = ?
+        AND ecm:path STARTSWITH ? and dc:creator = ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:created"
         defaultSortAscending="false" />
@@ -66,7 +69,7 @@
     <queryModel name="IMPORT_FOLDERS">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'ImportFolder' AND ecm:currentLifeCycleState != 'deleted'
-        AND ecm:path STARTSWITH '/default-domain/import-root'
+        AND ecm:path STARTSWITH ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />

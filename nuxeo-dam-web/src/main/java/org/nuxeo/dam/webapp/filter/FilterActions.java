@@ -17,6 +17,9 @@
 
 package org.nuxeo.dam.webapp.filter;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +38,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.dam.Constants;
+import org.nuxeo.dam.DamService;
 import org.nuxeo.dam.webapp.contentbrowser.DamDocumentActions;
 import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -53,9 +57,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import org.nuxeo.runtime.api.Framework;
 
 @Scope(CONVERSATION)
 @Name("filterActions")
@@ -79,6 +81,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     public static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
 
     public static final String PATH_FIELD_XPATH = "filter_query:ecm_path";
+
+    public static final String ASSET_LIBRARY_PATH_FIELD_XPATH = "filter_query:asset_library_path";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -109,6 +113,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     public DocumentModel getFilterDocument() throws ClientException {
         if (filterDocument == null) {
             filterDocument = queryModelActions.get(QUERY_MODEL_NAME).getDocumentModel();
+            DamService damService = Framework.getLocalService(DamService.class);
+            filterDocument.setPropertyValue(ASSET_LIBRARY_PATH_FIELD_XPATH, damService.getAssetLibraryPath());
         }
         return filterDocument;
     }
@@ -167,12 +173,11 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     @Factory(value = "userImportSetsSelectItems", scope = ScopeType.EVENT)
     public List<SelectItem> getUserImportSetsSelectItems()
             throws ClientException {
-        DocumentModel filterDocument = getFilterDocument();
-        String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
-        List<SelectItem> items = new ArrayList<SelectItem>();
+        DamService damService = Framework.getLocalService(DamService.class);
         String currentUser = documentManager.getPrincipal().getName();
         DocumentModelList docs = queryModelActions.get("USER_IMPORT_SETS").getDocuments(
-                documentManager, new Object[] { currentUser });
+                documentManager,
+                new Object[] { damService.getAssetLibraryPath(), currentUser });
         List<DocumentModel> lastUserImportSets;
         if (docs.size() > 2) {
             lastUserImportSets = docs.subList(0, 3);
@@ -180,24 +185,29 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
             lastUserImportSets = docs;
         }
 
+        DocumentModel filterDocument = getFilterDocument();
+        String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
+        List<SelectItem> items = new ArrayList<SelectItem>();
         for (DocumentModel doc : lastUserImportSets) {
             String docPath = doc.getPathAsString();
             items.add(new SelectItem(docPath, doc.getTitle(), "",
                     docPath.equals(folderSelection)));
         }
-
         return items;
     }
 
     @Factory(value = "folderSelectItems", scope = ScopeType.EVENT)
     public List<SelectItem> getFolderSelectItems() throws ClientException {
+        DamService damService = Framework.getLocalService(DamService.class);
+        DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
+                documentManager,
+                new Object[] { damService.getAssetLibraryPath() });
+
         DocumentModel filterDocument = getFilterDocument();
         String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
         List<SelectItem> items = new ArrayList<SelectItem>();
         items.add(new SelectItem("All", resourcesAccessor.getMessages().get(
                 "label.type.All"), "", folderSelection == null));
-        DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
-                documentManager);
         for (DocumentModel doc : docs) {
             String docPath = doc.getPathAsString();
             items.add(new SelectItem(docPath, doc.getTitle(), "",
@@ -242,8 +252,11 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         if (sortInfo == null) {
             sortInfo = new SortInfo(Constants.DUBLINCORE_TITLE_PROPERTY, true);
         }
+
+        DamService damService = Framework.getLocalService(DamService.class);
         PagedDocumentsProvider provider = model.getResultsProvider(
-                documentManager, null, sortInfo);
+                documentManager,
+                new Object[] { damService.getAssetLibraryPath() }, sortInfo);
         provider.setName(queryModelName);
 
         // CB: DAM-235 - On a page, first asset must be always selected

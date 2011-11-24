@@ -21,7 +21,7 @@
     <factoryBinding name="DomainFactory"
       factoryName="SimpleTemplateFactory" targetType="Domain">
       <template>
-        <templateItem typeName="ImportRoot" id="import-root" title="Import Root" description="Import Root"/>
+        <templateItem typeName="ImportRoot" id="asset-library" title="Asset Library" description="Asset Library"/>
       </template>
     </factoryBinding>
 

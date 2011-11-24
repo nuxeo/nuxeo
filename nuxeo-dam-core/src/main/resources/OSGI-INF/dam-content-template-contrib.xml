@@ -1,56 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.dam.contentTemplate">
 
-  <!-- overriding the DM folder structure (workspaces, sections, templates) -->
-  <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib</require>
+  <require>
+    org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib
+  </require>
 
   <extension
-      target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
-      point="factory">
+    target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="factoryBinding">
 
-    <contentFactory
-        name="SimpleTemplateFactory"
-        class="org.nuxeo.ecm.platform.content.template.factories.SimpleTemplateBasedFactory"/>
+    <factoryBinding name="RootFactory" factoryName="SimpleTemplateRootFactory" targetType="Root" append="true">
+      <template>
+        <templateItem typeName="ImportRoot" id="asset-library" title="Asset Library" />
+      </template>
+    </factoryBinding>
 
-    <contentFactory
-        name="SimpleTemplateRootFactory"
-        class="org.nuxeo.ecm.platform.content.template.factories.SimpleTemplateBasedRootFactory"/>
-
-    <contentFactory
-        name="ImportFactory"
-        class="org.nuxeo.ecm.platform.content.template.factories.ImportBasedFactory"/>
   </extension>
 
-  <extension
-      target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
-      point="factoryBinding">
+  <extension target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="postContentCreationHandlers">
 
-    <factoryBinding name="RootFactory" factoryName="SimpleTemplateRootFactory" targetType="Root">
-      <acl>
-        <ace principal="Administrator" permission="Everything" granted="true"/>
-        <ace principal="administrators" permission="Everything" granted="true"/>
-        <ace principal="members" permission="Read" granted="true"/>
-        <ace principal="members" permission="Version" granted="true"/>
-        <ace principal="members" permission="Write" granted="true"/>
-        <ace principal="members" permission="WriteSecurity" granted="true"/>
-      </acl>
-      <template>
-        <templateItem typeName="Domain" id="default-domain" title="Default domain"
-            description="Nuxeo 5 default domain"/>
-      </template>
-    </factoryBinding>
-
-    <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Domain">
-      <template>
-        <templateItem typeName="WorkspaceRoot" id="workspaces" title="Workspaces"
-            description="Workspaces"/>
-        <templateItem typeName="SectionRoot" id="sections" title="Sections" description="Sections"/>
-        <templateItem typeName="TemplateRoot" id="templates" title="Templates"
-            description="Root of workspaces templates"/>
-        <templateItem typeName="ImportRoot" id="import-root" title="Assets Library"
-            description="Assets Library"/>
-      </template>
-    </factoryBinding>
+    <postContentCreationHandler name="assetLibraryHandler"
+      class="org.nuxeo.dam.AssetLibraryHandler" />
 
   </extension>
 
