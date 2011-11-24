@@ -83,4 +83,8 @@ public class LayoutDefinitionRegistry extends
         throw new UnsupportedOperationException();
     }
 
+    public LayoutDefinition getLayoutDefinition(String id) {
+        return layoutDefs.get(id);
+    }
+
 }

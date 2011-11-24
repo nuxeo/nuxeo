@@ -75,4 +75,8 @@ public class WidgetDefinitionRegistry extends
         throw new UnsupportedOperationException();
     }
 
+    public WidgetDefinition getWidgetDefinition(String id) {
+        return widgetDefs.get(id);
+    }
+
 }

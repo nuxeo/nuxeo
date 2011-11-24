@@ -46,17 +46,6 @@ public class WidgetTypeDefinitionRegistry extends
         return category;
     }
 
-    public List<WidgetTypeDefinition> getDefinitions() {
-        List<WidgetTypeDefinition> res = new ArrayList<WidgetTypeDefinition>();
-        for (String id : widgetTypeDefs.keySet()) {
-            WidgetTypeDefinition item = getContribution(id);
-            if (item != null) {
-                res.add(item);
-            }
-        }
-        return res;
-    }
-
     @Override
     public String getContributionId(WidgetTypeDefinition contrib) {
         return contrib.getName();
@@ -86,6 +75,20 @@ public class WidgetTypeDefinitionRegistry extends
     @Override
     public void merge(WidgetTypeDefinition src, WidgetTypeDefinition dst) {
         throw new UnsupportedOperationException();
+    }
+
+    public List<WidgetTypeDefinition> getDefinitions() {
+        List<WidgetTypeDefinition> res = new ArrayList<WidgetTypeDefinition>();
+        for (WidgetTypeDefinition item : widgetTypeDefs.values()) {
+            if (item != null) {
+                res.add(item);
+            }
+        }
+        return res;
+    }
+
+    public WidgetTypeDefinition getDefinition(String id) {
+        return widgetTypeDefs.get(id);
     }
 
 }

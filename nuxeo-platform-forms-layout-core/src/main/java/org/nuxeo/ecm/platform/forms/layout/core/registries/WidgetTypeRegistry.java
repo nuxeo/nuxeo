@@ -75,4 +75,8 @@ public class WidgetTypeRegistry extends
         throw new UnsupportedOperationException();
     }
 
+    public WidgetType getWidgetType(String id) {
+        return widgetTypes.get(id);
+    }
+
 }

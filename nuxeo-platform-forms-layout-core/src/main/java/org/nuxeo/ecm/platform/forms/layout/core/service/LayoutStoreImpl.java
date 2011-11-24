@@ -408,7 +408,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
     public WidgetType getWidgetType(String category, String typeName) {
         WidgetTypeRegistry reg = widgetTypesByCat.get(category);
         if (reg != null) {
-            return reg.getContribution(typeName);
+            return reg.getWidgetType(typeName);
         }
         return null;
     }
@@ -418,7 +418,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             String typeName) {
         WidgetTypeDefinitionRegistry reg = widgetTypeDefsByCat.get(category);
         if (reg != null) {
-            return reg.getContribution(typeName);
+            return reg.getDefinition(typeName);
         }
         return null;
     }
@@ -440,7 +440,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             String layoutName) {
         LayoutDefinitionRegistry reg = layoutsByCat.get(category);
         if (reg != null) {
-            return reg.getContribution(layoutName);
+            return reg.getLayoutDefinition(layoutName);
         }
         return null;
     }
@@ -457,7 +457,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             String widgetName) {
         WidgetDefinitionRegistry reg = widgetsByCat.get(category);
         if (reg != null) {
-            return reg.getContribution(widgetName);
+            return reg.getWidgetDefinition(widgetName);
         }
         return null;
     }

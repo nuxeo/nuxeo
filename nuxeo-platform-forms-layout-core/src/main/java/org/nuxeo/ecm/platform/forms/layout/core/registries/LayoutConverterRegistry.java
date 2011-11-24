@@ -86,13 +86,16 @@ public class LayoutConverterRegistry extends
 
     public List<LayoutConverterDescriptor> getConverters() {
         List<LayoutConverterDescriptor> res = new ArrayList<LayoutConverterDescriptor>();
-        for (String name : converters.keySet()) {
-            LayoutConverterDescriptor item = getContribution(name);
+        for (LayoutConverterDescriptor item : converters.values()) {
             if (item != null) {
                 res.add(item);
             }
         }
         return res;
+    }
+
+    public LayoutConverterDescriptor getConverter(String id) {
+        return converters.get(id);
     }
 
 }

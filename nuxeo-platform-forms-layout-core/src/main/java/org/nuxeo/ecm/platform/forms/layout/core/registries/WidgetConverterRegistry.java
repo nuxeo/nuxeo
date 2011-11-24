@@ -86,13 +86,16 @@ public class WidgetConverterRegistry extends
 
     public List<WidgetConverterDescriptor> getConverters() {
         List<WidgetConverterDescriptor> res = new ArrayList<WidgetConverterDescriptor>();
-        for (String name : converters.keySet()) {
-            WidgetConverterDescriptor item = getContribution(name);
+        for (WidgetConverterDescriptor item : converters.values()) {
             if (item != null) {
                 res.add(item);
             }
         }
         return res;
+    }
+
+    public WidgetConverterDescriptor getConverter(String id) {
+        return converters.get(id);
     }
 
 }
