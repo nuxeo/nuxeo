@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.dam.Constants;
+import org.nuxeo.dam.DamService;
 import org.nuxeo.dam.platform.context.ImportActions;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -101,7 +102,8 @@ public class TestZipImporter {
         assertNotNull(defaultTitle);
         assertTrue(defaultTitle.startsWith("Administrator"));
 
-        Path importFolderPath = new Path(Constants.IMPORT_ROOT_PATH);
+        DamService damService = Framework.getLocalService(DamService.class);
+        Path importFolderPath = new Path(damService.getAssetLibraryPath());
         importFolderPath = importFolderPath.append(IMPORT_FOLDER_NAME);
         DocumentModel importSetRoot = session.getDocument(new PathRef(
                 importFolderPath.toString()));
