@@ -58,8 +58,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core",
-})
+        "org.nuxeo.ecm.platform.filemanager.core"})
 @LocalDeploy({
         FileManagerUTConstants.FILEMANAGER_BUNDLE
                 + ":ecm-types-test-contrib.xml",
