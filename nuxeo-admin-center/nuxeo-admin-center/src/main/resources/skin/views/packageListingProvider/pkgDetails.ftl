@@ -1,4 +1,4 @@
-<div style="pkgDetail">
+<div class="pkgDetail">
   <table>
     <tr>
       <td>
@@ -7,8 +7,8 @@
            <img src="${pkg.pictureUrl}" alt="Picture Not Available">
           </#if>
           <#if pkg.pictureUrl==null>
-           <img class="pkgLogo" id="placeholder-${pkg.id}" src="${Root.path}/skin/images/package.png" alt="Loading"/>
-           <img class="pkgLogo" id="logo-${pkg.id}" src="${This.getConnectBaseUrl()}marketplace/package/${pkg.id}/logo" onload="showRealLogo('${pkg.id}')" style="display:none">
+           <img class="pkgLogo" width="95px" id="placeholder-${pkg.id}" src="${Root.path}/skin/images/package.png" alt="Loading"/>
+           <img class="pkgLogo" width="95px" id="logo-${pkg.id}" src="${This.getConnectBaseUrl()}marketplace/package/${pkg.id}/logo" onload="showRealLogo('${pkg.id}')" style="display:none">
           </#if>
         </span>
       </td>
@@ -57,14 +57,14 @@
         <span class="packageInfo">
           <table>
             <tr>
-      <td>Target platforms</td>
-            <td><#list pkg.getTargetPlatforms() as pf>
+      <td><span class="boldLabel">Target platforms</span></td>
+            <td class="packageField"><#list pkg.getTargetPlatforms() as pf>
                 ${pf} &nbsp;
                 </#list>
             </td>
             </tr><tr>
-          <td>Package dependencies</td>
-          <td>
+          <td><span class="boldLabel">Package dependencies</span></td>
+          <td class="packageField">
           <#if (pkg.getDependencies()?size==0)>
               None
               <#else>
@@ -76,13 +76,13 @@
       </tr>
       <tr>
         <td><span class="boldLabel">Production state</span></td>
-        <td> ${Context.getMessage('label.productionState.'+pkg.productionState)}</td>
+        <td class="packageField"> ${Context.getMessage('label.productionState.'+pkg.productionState)}</td>
       </tr><tr>
         <td><span class="boldLabel">Certification status</span></td>
-        <td> ${Context.getMessage('label.validationState.'+pkg.validationState)}</td>
+        <td class="packageField"> ${Context.getMessage('label.validationState.'+pkg.validationState)}</td>
       <tr>
         <td><span class="boldLabel">Nuxeo support</span></td>
-        <td><#if pkg.isSupported()>
+        <td class="packageField"><#if pkg.isSupported()>
              Yes
           <#else>
              No

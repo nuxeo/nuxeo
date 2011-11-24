@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
@@ -39,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
@@ -62,16 +62,22 @@ public class AppCenterViewsManager implements Serializable {
 
     protected static final Log log = LogFactory.getLog(AppCenterViewsManager.class);
 
-    protected final Map<String, String> packageTypeFilters = new HashMap<String, String>();
-
-    protected final Map<String, Boolean> platformFilters = new HashMap<String, Boolean>();
-
     @In(create = true)
     protected String currentAdminSubViewId;
 
-    protected boolean onlyRemote = false;
-
     protected String searchString;
+
+    protected StudioAutoInstaller studioAutoInstaller;
+
+    protected int studioSnapshotDownloadProgress;
+
+    protected String studioSnapshotStatus;
+
+    protected boolean isStudioSnapshopUpdateInProgress = false;
+
+    protected Calendar lastStudioSnapshotUpdate;
+
+    protected String studioSnapshotUpdateError;
 
     public String getSearchString() {
         if (searchString == null) {
@@ -85,39 +91,48 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     public boolean getOnlyRemote() {
-        return onlyRemote;
+        return SharedPackageListingsSettings.instance().get("remote").isOnlyRemote();
     }
 
     public void setOnlyRemote(boolean onlyRemote) {
-        this.onlyRemote = onlyRemote;
+        SharedPackageListingsSettings.instance().get("remote").setOnlyRemote(
+                onlyRemote);
+    }
+
+    protected String getListName() {
+        if ("ConnectAppsUpdates".equals(currentAdminSubViewId)) {
+            return "updates";
+        }
+        else if ("ConnectAppsStudio".equals(currentAdminSubViewId)) {
+            return "studio";
+        }
+        else if ("ConnectAppsRemote".equals(currentAdminSubViewId)) {
+            return "remote";
+        }
+        else if ("ConnectAppsLocal".equals(currentAdminSubViewId)) {
+            return "local";
+        }
+        return null;
     }
 
     public void setPlatformFilter(boolean doFilter) {
-        platformFilters.put(currentAdminSubViewId, doFilter);
+        SharedPackageListingsSettings.instance().get(getListName()).setPlatformFilter(
+                doFilter);
     }
 
     public boolean getPlatformFilter() {
-        Boolean dofilter = platformFilters.get(currentAdminSubViewId);
-        if (dofilter == null) {
-            if ("ConnectAppsUpdates".equals(currentAdminSubViewId)) {
-                return true; // filter on platform by default for updates
-            } else {
-                return false;
-            }
-        }
-        return dofilter.booleanValue();
+        return SharedPackageListingsSettings.instance().get(
+                getListName()).getPlatformFilter();
     }
 
     public String getPackageTypeFilter() {
-        String filter = packageTypeFilters.get(currentAdminSubViewId);
-        if (filter == null) {
-            filter = "";
-        }
-        return filter;
+        return SharedPackageListingsSettings.instance().get(
+                getListName()).getPackageTypeFilter();
     }
 
     public void setPackageTypeFilter(String filter) {
-        packageTypeFilters.put(currentAdminSubViewId, filter);
+        SharedPackageListingsSettings.instance().get(getListName()).setPackageTypeFilter(
+                filter);
     }
 
     public List<SelectItem> getPackageTypes() {
@@ -159,8 +174,8 @@ public class AppCenterViewsManager implements Serializable {
                     downloadingStudioSnapshot);
 
             studioAutoInstaller.run();
-            //Thread thread = new Thread(studioAutoInstaller);
-            //thread.start();
+            // Thread thread = new Thread(studioAutoInstaller);
+            // thread.start();
         } else {
             studioSnapshotUpdateError = "No snapshot package found";
         }
@@ -191,24 +206,12 @@ public class AppCenterViewsManager implements Serializable {
                     + df.format(lastStudioSnapshotUpdate.getTime());
         }
 
-        if (studioSnapshotStatus==null) {
+        if (studioSnapshotStatus == null) {
             return " No previous Studio package installation";
         }
 
         return studioSnapshotStatus;
     }
-
-    protected StudioAutoInstaller studioAutoInstaller;
-
-    protected int studioSnapshotDownloadProgress;
-
-    protected String studioSnapshotStatus;
-
-    protected boolean isStudioSnapshopUpdateInProgress = false;
-
-    protected Calendar lastStudioSnapshotUpdate;
-
-    protected String studioSnapshotUpdateError;
 
     protected class StudioAutoInstaller implements Runnable {
 

@@ -40,19 +40,19 @@ table {
   }
 
 h1 {
- font-size:1.6em;
+ font-size:1.5em;
  font-weight:bold;
  margin:0.5em 0;
 }
 
 h2 {
- font-size:1.3em;
+ font-size:1.2em;
  font-weight:bold;
  margin:0.5em 0;
 }
 
 h3 {
- font-size:1.17em;
+ font-size:1.0em;
  font-weight:bold;
  margin:0.3em 0;
 }
@@ -86,15 +86,13 @@ h3 {
 .packagePic {
   border:1px solid #DEDEDE;
   display:block;
-  height:97px;
-  margin:5px 15px 10px 0;
-  padding:3px;
-  width:97px;
+  background-color:white;
+  width:95px;
   }
 
 .packagePic img{
-  width:90px;
-  max-height:90px;
+  width:95px;
+  max-height:95px;
   }
 
 .packageInfo {
@@ -105,11 +103,27 @@ h3 {
   margin:4px 0px;
   }
 
+.boldLabel {
+  font-size: 11px;
+  font-weight: bold;
+  color: #555555;
+}
 
 .packageLabel {
-  width:160px;
-  display:inline-block;
-  }
+    color: #555555;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 0;
+    width: 160px;
+}
+
+
+.packageField {
+ background-color: white;
+ border: 3px solid #F7F7F7;
+ border-radius: 5px 5px 5px 5px;
+}
 
 .button  {
   -moz-border-radius:3px 3px 3px 3px;
@@ -168,8 +182,8 @@ h3 {
   padding:10px 20px;
   text-align:center;
   border:1px solid #dedede;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   }
 
 .genericBox table {
@@ -204,7 +218,9 @@ h3 {
   padding:20px 30px 20px 50px;
   margin: 20px 0px;
   border:1px solid #dedede;
-  background-color:#fffcf5;
+  background-color:#F7F7F7;
+  border-radius : 3px;
+
 }
 
 ul.installInfo {
@@ -275,3 +291,11 @@ ul.installInfo li{
  .manualModeCmd{
   display:none;
  }
+
+ .pkgDetail {
+    border-color: #CCCCCC;
+    border-radius: 0 0 0 10px;
+    border-style: solid;
+    border-width: 0 1px 1px;
+    background-color: #F7F7F7;
+}

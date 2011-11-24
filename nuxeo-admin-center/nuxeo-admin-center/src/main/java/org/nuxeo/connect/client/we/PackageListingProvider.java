@@ -29,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
+import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
@@ -101,6 +102,13 @@ public class PackageListingProvider extends DefaultObject {
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
+        if (type==null) {
+            type = SharedPackageListingsSettings.instance().get("updates").getPackageTypeFilter();
+        }
+        if (filterOnPlatform==null) {
+            filterOnPlatform = SharedPackageListingsSettings.instance().get("updates").getPlatformFilter();
+        }
+
         List<DownloadablePackage> pkgs;
         if (type == null || "".equals(type.trim())) {
             pkgs = pm.listUpdatePackages();
@@ -120,6 +128,10 @@ public class PackageListingProvider extends DefaultObject {
     public Object getLocal(@QueryParam("type") String type) {
 
         PackageManager pm = Framework.getLocalService(PackageManager.class);
+
+        if (type==null) {
+            type = SharedPackageListingsSettings.instance().get("local").getPackageTypeFilter();
+        }
 
         List<DownloadablePackage> pkgs;
         if (type == null || "".equals(type.trim())) {
@@ -144,8 +156,14 @@ public class PackageListingProvider extends DefaultObject {
 
         boolean useSearch = true;
 
+        if (type==null) {
+            type = SharedPackageListingsSettings.instance().get("remote").getPackageTypeFilter();
+        }
+        if (filterOnPlatform==null) {
+            filterOnPlatform = SharedPackageListingsSettings.instance().get("remote").getPlatformFilter();
+        }
         if (onlyRemote == null) {
-            onlyRemote = false;
+            onlyRemote = SharedPackageListingsSettings.instance().get("remote").isOnlyRemote();
         }
         if (searchString == null || "".equals(searchString)) {
             useSearch = false;
@@ -193,7 +211,7 @@ public class PackageListingProvider extends DefaultObject {
         case PackageState.REMOTE:
             return "remote";
         case PackageState.DOWNLOADED:
-            return "downloaded (but not installed)";
+            return "downloaded";
         case PackageState.DOWNLOADING:
             DownloadingPackage dpkg = (DownloadingPackage) pkg;
             return "downloading (" + dpkg.getDownloadProgress() + "%)";
@@ -202,7 +220,7 @@ public class PackageListingProvider extends DefaultObject {
         case PackageState.INSTALLED:
             return "installed";
         case PackageState.STARTED:
-            return "installed and started";
+            return "running";
         }
         return "!?!";
     }

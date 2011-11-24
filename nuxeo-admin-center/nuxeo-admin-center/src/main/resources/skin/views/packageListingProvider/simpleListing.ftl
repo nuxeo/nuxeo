@@ -70,16 +70,15 @@
   <tr class="${rowCss}" id="row_${pkg.id}">
     <td class="opentd" onclick="javascript:toggleDetails('${pkg.id}', this)">&nbsp;&nbsp;&nbsp;</A> </td>
     <td> ${pkg.id} </td>
-    <td> ${pkg.name} </td>
+    <!--<td> ${pkg.name} </td>-->
     <td> ${pkg.title} </td>
     <td> ${pkg.version} &nbsp;</td>
     <td> ${pkg.targetPlatform} &nbsp;</td>
     <td> ${pkg.type} </td>
-    <#if showCommunityInfo>
+    <#if showCommunityInfo &&  This.canDownload(pkg)>
       <td>  downloads : ${pkg.downloadsCount}
       </td>
-    </#if>
-    <#if !showCommunityInfo>
+    <#else>
       <td>  </td>
     </#if>
     <td> ${This.getStateLabel(pkg)} </td>
