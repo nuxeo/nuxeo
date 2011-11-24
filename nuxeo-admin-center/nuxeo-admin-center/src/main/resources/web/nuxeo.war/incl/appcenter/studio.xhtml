@@ -35,8 +35,9 @@
           <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
           </span>
           <c:if test="#{connectServerReachable and registredConnectInstance}">
-            <a4j:commandButton onclick="alert('yo')" value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing" styleClass="button"/>
+            <a4j:commandButton id="updateStudioButton" onclick="showUpdateInProgress()" value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing" styleClass="button"/>
             <h:outputText value="#{messages['label.studio.update']}"/>
+            <img src="#{contextPath}/img/big_loading.gif" id="studioUpdateWaiter" style="display:none" height="20"/>
           </c:if>
           </td>
           <td style="text-align:center;vertical-align:middle">
@@ -77,6 +78,11 @@
   <script>
   function hideWaiter() {
     jQuery('#connectLoaderWaiter').css('display','none');
+  }
+  function showUpdateInProgress() {
+    jQuery("input[type='button'][class='button'][id$='updateStudioButton']").attr("disabled",true);
+    jQuery("input[type='button'][class='button'][id$='updateStudioButton']").css("color","#CCCCCC")
+    jQuery('#studioUpdateWaiter').css('display','inline');
   }
   </script>
 
