@@ -37,16 +37,16 @@ public class TestAction extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-service.xml");
+        deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
         deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 
     public void testActionExtensionPoint() {
         Collection<Action> actions = as.getActionRegistry().getActions();
-        assertEquals(4, actions.size());
+        assertEquals(5, actions.size());
 
-        Action newDocument = as.getActionRegistry().getAction("newDocument");
+        Action newDocument = as.getAction("newDocument");
         assertEquals("newDocument", newDocument.getId());
         assertEquals("select_document_type", newDocument.getLink());
         assertEquals("action.new.document", newDocument.getLabel());
@@ -60,7 +60,7 @@ public class TestAction extends NXRuntimeTestCase {
         filterIds.add("createChild");
         assertEquals(filterIds, newDocument.getFilterIds());
 
-        Action logout = as.getActionRegistry().getAction("logout");
+        Action logout = as.getAction("logout");
         assertEquals("logout", logout.getId());
         assertEquals("logout", logout.getLink());
         assertEquals("Logout", logout.getLabel());
@@ -73,8 +73,7 @@ public class TestAction extends NXRuntimeTestCase {
         filterIds.clear();
         assertEquals(filterIds, logout.getFilterIds());
 
-        Action viewHiddenInfo = as.getActionRegistry().getAction(
-                "viewHiddenInfo");
+        Action viewHiddenInfo = as.getAction("viewHiddenInfo");
         assertEquals("viewHiddenInfo", viewHiddenInfo.getId());
         assertEquals("view_hidden_info", viewHiddenInfo.getLink());
         assertEquals("viewHiddenInfo", viewHiddenInfo.getLabel());
@@ -86,7 +85,7 @@ public class TestAction extends NXRuntimeTestCase {
         filterIds.clear();
         assertEquals(filterIds, viewHiddenInfo.getFilterIds());
 
-        Action view = as.getActionRegistry().getAction("TAB_VIEW");
+        Action view = as.getAction("TAB_VIEW");
         assertEquals("TAB_VIEW", view.getId());
         assertEquals("view", view.getLink());
         assertEquals("View", view.getLabel());
@@ -103,7 +102,7 @@ public class TestAction extends NXRuntimeTestCase {
 
     public void testFilterExtensionPoint() {
         Collection<ActionFilter> filters = as.getFilterRegistry().getFilters();
-        assertEquals(3, filters.size());
+        assertEquals(4, filters.size());
 
         ActionFilter f1 = as.getFilterRegistry().getFilter("MyCustomFilter");
         DefaultActionFilter f2 = (DefaultActionFilter) as.getFilterRegistry().getFilter(
@@ -165,23 +164,46 @@ public class TestAction extends NXRuntimeTestCase {
     }
 
     public void testActionOverride() throws Exception {
-        Action act1 = as.getActionRegistry().getAction("TAB_VIEW");
-        assertNotNull(act1);
-        assertEquals(2, act1.getCategories().length);
-        assertFalse(Arrays.asList(act1.getCategories()).contains("OVERRIDE"));
-        assertEquals(1, act1.getFilterIds().size());
-        assertTrue(act1.getFilterIds().contains("MyCustomFilter"));
+        Action viewAction = as.getAction("TAB_VIEW");
+        assertNotNull(viewAction);
+        assertEquals(2, viewAction.getCategories().length);
+        assertFalse(Arrays.asList(viewAction.getCategories()).contains(
+                "OVERRIDE"));
+        assertEquals(1, viewAction.getFilterIds().size());
+        assertTrue(viewAction.getFilterIds().contains("MyCustomFilter"));
 
+        // NXP-7287: test override of inner filter
+        Action previewAction = as.getAction("TAB_PREVIEW");
+        assertNotNull(previewAction);
+        assertEquals(1, previewAction.getCategories().length);
+        assertTrue(Arrays.asList(previewAction.getCategories()).contains(
+                "VIEW_ACTION_LIST"));
+        assertFalse(Arrays.asList(previewAction.getCategories()).contains(
+                "OVERRIDE"));
+        List<String> previewFilterIds = previewAction.getFilterIds();
+        assertEquals(1, previewFilterIds.size());
+        assertTrue(previewFilterIds.contains("view_preview"));
+        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter(
+                "view_preview");
+        FilterRule[] previewRules = previewFilter.getRules();
+        assertNotNull(previewRules);
+        assertEquals(1, previewRules.length);
+        assertTrue(previewRules[0].grant);
+        assertEquals("SeamContext.get(\"previewActions\").hasPreview",
+                previewRules[0].conditions[0]);
+
+        // deploy override
         deployContrib("org.nuxeo.ecm.actions.tests",
                 "test-actions-override-contrib.xml");
 
-        act1 = as.getActionRegistry().getAction("TAB_VIEW");
-        assertNotNull(act1);
-        assertEquals("newConfirm", act1.getConfirm());
-        assertEquals(3, act1.getCategories().length);
-        assertTrue(Arrays.asList(act1.getCategories()).contains("OVERRIDE"));
-        assertTrue(Arrays.asList(act1.getCategories()).contains("view"));
-        List<String> filterIds = act1.getFilterIds();
+        Action oviewAction = as.getAction("TAB_VIEW");
+        assertNotNull(oviewAction);
+        assertEquals("newConfirm", oviewAction.getConfirm());
+        assertEquals(3, oviewAction.getCategories().length);
+        assertTrue(Arrays.asList(oviewAction.getCategories()).contains(
+                "OVERRIDE"));
+        assertTrue(Arrays.asList(oviewAction.getCategories()).contains("view"));
+        List<String> filterIds = oviewAction.getFilterIds();
         assertNotNull(filterIds);
         assertEquals(5, filterIds.size());
         assertEquals("MyCustomFilter", filterIds.get(0));
@@ -207,6 +229,26 @@ public class TestAction extends NXRuntimeTestCase {
         filter = as.getFilterRegistry().getFilter("newFilter3");
         assertNotNull(filter);
 
+        // NXP-7287: test override of inner filter
+        Action opreviewAction = as.getAction("TAB_PREVIEW");
+        assertNotNull(opreviewAction);
+        assertEquals(1, opreviewAction.getCategories().length);
+        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains(
+                "VIEW_ACTION_LIST"));
+        assertFalse(Arrays.asList(opreviewAction.getCategories()).contains(
+                "OVERRIDE"));
+        assertEquals(1, opreviewAction.getFilterIds().size());
+        assertTrue(opreviewAction.getFilterIds().contains("view_preview"));
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter(
+                "view_preview");
+        FilterRule[] opreviewRules = opreviewFilter.getRules();
+        assertNotNull(opreviewRules);
+        assertEquals(2, opreviewRules.length);
+        assertTrue(opreviewRules[0].grant);
+        assertEquals("SeamContext.get(\"previewActions\").hasPreview",
+                opreviewRules[0].conditions[0]);
+        assertFalse(opreviewRules[1].grant);
+        assertEquals("Survey", opreviewRules[1].types[0]);
     }
 
     public void testFilter() {

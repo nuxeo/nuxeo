@@ -51,7 +51,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     @Override
     public void activate(ComponentContext context) {
         filters = new FilterContributionHandler();
-        actions = new ActionContributionHandler(filters.getRegistry());
+        actions = new ActionContributionHandler(filters);
     }
 
     @Override
@@ -60,11 +60,11 @@ public class ActionService extends DefaultComponent implements ActionManager {
         filters = null;
     }
 
-    public final ActionRegistry getActionRegistry() {
+    protected final ActionRegistry getActionRegistry() {
         return actions.getRegistry();
     }
 
-    public final ActionFilterRegistry getFilterRegistry() {
+    protected final ActionFilterRegistry getFilterRegistry() {
         return filters.getRegistry();
     }
 

@@ -24,9 +24,9 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class FilterContributionHandler extends ContributionFragmentRegistry<DefaultActionFilter> {
+public class FilterContributionHandler extends
+        ContributionFragmentRegistry<DefaultActionFilter> {
 
     protected ActionFilterRegistry filterReg;
 
@@ -50,7 +50,6 @@ public class FilterContributionHandler extends ContributionFragmentRegistry<Defa
     @Override
     public void contributionUpdated(String id, DefaultActionFilter filter,
             DefaultActionFilter origContrib) {
-        filterReg.removeFilter(id); // be sure filter doesn't already exists
         filterReg.addFilter(filter);
     }
 

@@ -36,11 +36,11 @@ public class ActionContributionHandler extends
 
     protected ActionRegistry actionReg;
 
-    protected ActionFilterRegistry filterReg;
+    protected FilterContributionHandler filters;
 
-    public ActionContributionHandler(ActionFilterRegistry filterReg) {
+    public ActionContributionHandler(FilterContributionHandler filters) {
         actionReg = new ActionRegistry();
-        this.filterReg = filterReg;
+        this.filters = filters;
     }
 
     public ActionRegistry getRegistry() {
@@ -64,41 +64,28 @@ public class ActionContributionHandler extends
     @Override
     public void contributionUpdated(String actionId, Action action,
             Action origAction) {
-        // given action is already merged, do nothing with origAction
-
-        Action registeredAction = actionReg.getAction(actionId);
-        if (registeredAction != null) {
-            log.debug("Upgrading web action with id " + actionId);
-            actionReg.removeAction(actionId);
-        }
-
+        // given action is already merged, just retrieve its inner filters to
+        // register them to the filter registry
         List<String> newFilterIds = new ArrayList<String>();
+        List<String> existingFilterIds = action.getFilterIds();
+        if (existingFilterIds != null) {
+            newFilterIds.addAll(existingFilterIds);
+        }
         ActionFilter[] newFilters = action.getFilters();
         if (newFilters != null) {
             // register embedded filters and save corresponding filter ids
             for (ActionFilter filter : newFilters) {
                 String filterId = filter.getId();
-                filterReg.removeFilter(filterId);
-                filterReg.addFilter(filter);
-                newFilterIds.add(filterId);
+                filters.addContribution((DefaultActionFilter) filter);
+                if (!newFilterIds.contains(filterId)) {
+                    newFilterIds.add(filterId);
+                }
             }
             // XXX: Remove filters from action as it was just temporary,
             // filters are now in their own registry.
             action.setFilters(null);
         }
-
-        List<String> actionFilterIds = action.getFilterIds();
-        if (actionFilterIds == null) {
-            action.setFilterIds(newFilterIds);
-        } else {
-            actionFilterIds.addAll(newFilterIds);
-            action.setFilterIds(actionFilterIds);
-        }
-
-        // set a default label
-        if (action.getLabel() == null) {
-            action.setLabel(action.getId());
-        }
+        action.setFilterIds(newFilterIds);
 
         actionReg.addAction(action);
     }
@@ -176,6 +163,5 @@ public class ActionContributionHandler extends
             filters.addAll(Arrays.asList(newFilters));
         }
         dest.setFilters(filters.toArray(new ActionFilter[] {}));
-
     }
 }

@@ -31,4 +31,17 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <!-- NXP-7287: test override of inner filter -->
+    <filter id="view_preview" append="true">
+      <rule grant="false">
+        <type>Survey</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+
 </component>

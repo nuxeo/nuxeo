@@ -30,12 +30,12 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ActionFilterRegistry implements Serializable {
 
     private static final Log log = LogFactory.getLog(ActionFilterRegistry.class);
-    private static final long serialVersionUID = 4838253869020090052L;
+
+    private static final long serialVersionUID = 1L;
 
     private final Map<String, ActionFilter> filters;
 
@@ -45,14 +45,12 @@ public class ActionFilterRegistry implements Serializable {
 
     public synchronized void addFilter(ActionFilter filter) {
         String id = filter.getId();
-
         if (log.isDebugEnabled()) {
-            log.debug("Registering action filter: " + id);
-        }
-
-        if (filters.containsKey(id)) {
-            // do not add twice an action
-            return;
+            if (filters.containsKey(id)) {
+                log.debug("Overriding action filter: " + id);
+            } else {
+                log.debug("Registering action filter: " + id);
+            }
         }
         filters.put(id, filter);
     }

@@ -34,11 +34,11 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ActionRegistry implements Serializable {
 
     private static final Log log = LogFactory.getLog(ActionRegistry.class);
+
     private static final long serialVersionUID = 8425627293154848041L;
 
     private final Map<String, Action> actions;
@@ -51,13 +51,17 @@ public class ActionRegistry implements Serializable {
     }
 
     public synchronized void addAction(Action action) {
-        if (log.isDebugEnabled()) {
-            log.debug("Registering action: " + action);
-        }
-
         String id = action.getId();
-        if (actions.containsKey(id)) {
-            return; // do not add twice an action
+        if (log.isDebugEnabled()) {
+            if (actions.containsKey(id)) {
+                log.debug("Overriding action: " + action);
+            } else {
+                log.debug("Registering action: " + action);
+            }
+        }
+        // add a default label if not set
+        if (action.getLabel() == null) {
+            action.setLabel(action.getId());
         }
         actions.put(id, action);
         for (String category : action.getCategories()) {
@@ -88,8 +92,7 @@ public class ActionRegistry implements Serializable {
     }
 
     public synchronized Collection<Action> getActions() {
-        return Collections
-                .unmodifiableCollection(sortActions(actions.values()));
+        return Collections.unmodifiableCollection(sortActions(actions.values()));
     }
 
     public List<Action> getActions(String category) {
@@ -118,8 +121,7 @@ public class ActionRegistry implements Serializable {
         if (actions == null) {
             sortedActions = new ArrayList<Action>();
         } else {
-            Action[] sortedActionsArray = actions
-                    .toArray(new Action[actions.size()]);
+            Action[] sortedActionsArray = actions.toArray(new Action[actions.size()]);
             Arrays.sort(sortedActionsArray);
             sortedActions = Arrays.asList(sortedActionsArray);
         }
