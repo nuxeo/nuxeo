@@ -1044,7 +1044,7 @@
           This widget displays the user virtual groups.
         </description>
         <categories>
-          <category>document</category>
+          <category>configuration_not_ready</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
