@@ -72,17 +72,7 @@
      <rich:panelMenuGroup label="#{messages['heading.filter.folders']}"
        expanded="true" id="folders">
 
-       <c:forEach varStatus="status" items="#{folderSelectItems}" var="item">
-
-         <rich:panelMenuItem label="#{item.label}"
-           styleClass="#{item.disabled ? 'selected' : ''}"
-           mode="ajax" action="#{filterActions.toggleSelectFolder}"
-           reRender="filterResultTable,filterFormPanel,selectionView"
-           eventsQueue="filterFormQueue">
-           <f:param name="folderPath" value="#{item.value}" />
-         </rich:panelMenuItem>
-
-       </c:forEach>
+       <ui:include src="/dam/incl/folder_tree.xhtml" />
 
      </rich:panelMenuGroup>
 
@@ -110,31 +100,31 @@
       expanded="true" id="topicFilterPanel">
 
       <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true" id="topicRichPanelMenuItem">
-	    <rich:tree id="topicRichTreeId"
-	      adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
-	      changeExpandListener="#{directoryTreeManager.changeExpandListener}"
-	      icon="#{nodeState.isExpanded(rowKey)?'/dam/icons/yellow-folder-open.png':'/dam/icons/yellow-folder-closed.png'}"
-	      iconExpanded="/icons/toggle_minus.png"
-	      iconCollapsed="/icons/toggle_plus.png"
-	      rowKeyVar="rowKey"
-	      stateVar="nodeState">
-	      <rich:recursiveTreeNodesAdaptor id="topicRecursiveTreeNodesAdaptorId"
-	        roots="#{filterActions.topicTreeRoots}"
-	        nodes="#{node.children}"
-	        var="node">
-	        <rich:treeNode id="topicTreeNodeId"
-	          highlightedClass="treeNodeHighlightedClass"
-	          selectedClass="treeNodeSelectedClass">
-	          <div class="#{nxu:test(node.selected, 'selected', '')}" id="#{node.path}">
-	            <a4j:commandLink immediate="true" id="topicLinkId"
-	              action="#{node.selectNode}" styleClass="treeLink"
-	               reRender="filterResultTable,filterFormPanel,selectionView">
-	              <h:outputText value="#{messages[node.description]}" />
-	            </a4j:commandLink>
-	          </div>
-	        </rich:treeNode>
-	      </rich:recursiveTreeNodesAdaptor>
-	    </rich:tree>
+        <rich:tree id="topicRichTreeId"
+          adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
+          changeExpandListener="#{directoryTreeManager.changeExpandListener}"
+          icon="#{nodeState.isExpanded(rowKey)?'/dam/icons/yellow-folder-open.png':'/dam/icons/yellow-folder-closed.png'}"
+          iconExpanded="/icons/toggle_minus.png"
+          iconCollapsed="/icons/toggle_plus.png"
+          rowKeyVar="rowKey"
+          stateVar="nodeState">
+          <rich:recursiveTreeNodesAdaptor id="topicRecursiveTreeNodesAdaptorId"
+            roots="#{filterActions.topicTreeRoots}"
+            nodes="#{node.children}"
+            var="node">
+            <rich:treeNode id="topicTreeNodeId"
+              highlightedClass="treeNodeHighlightedClass"
+              selectedClass="treeNodeSelectedClass">
+              <div class="#{nxu:test(node.selected, 'selected', '')}" id="#{node.path}">
+                <a4j:commandLink immediate="true" id="topicLinkId"
+                  action="#{node.selectNode}" styleClass="treeLink"
+                   reRender="filterResultTable,filterFormPanel,selectionView">
+                  <h:outputText value="#{messages[node.description]}" />
+                </a4j:commandLink>
+              </div>
+            </rich:treeNode>
+          </rich:recursiveTreeNodesAdaptor>
+        </rich:tree>
       </rich:panelMenuItem>
 
     </rich:panelMenuGroup>
@@ -143,31 +133,31 @@
       expanded="true" id="coverageFilterPanel">
 
       <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true" id="coverageRichPanelMenuItem">
-	    <rich:tree id="coverageRichTreeId"
-	      adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
-	      changeExpandListener="#{directoryTreeManager.changeExpandListener}"
-	      icon="#{nodeState.isExpanded(rowKey)?'/dam/icons/yellow-folder-open.png':'/dam/icons/yellow-folder-closed.png'}"
-	      iconExpanded="/icons/toggle_minus.png"
-	      iconCollapsed="/icons/toggle_plus.png"
-	      rowKeyVar="rowKey"
-	      stateVar="nodeState">
-	      <rich:recursiveTreeNodesAdaptor id="coverageRecursiveTreeNodesAdaptorId"
-	        roots="#{filterActions.coverageTreeRoots}"
-	        nodes="#{node.children}"
-	        var="node">
-	        <rich:treeNode id="coverageTreeNodeId"
-	          highlightedClass="treeNodeHighlightedClass"
-	          selectedClass="treeNodeSelectedClass">
-	          <div class="#{nxu:test(node.selected, 'selected', '')}" id="#{node.path}">
-	            <a4j:commandLink immediate="true" id="coverageLinkId"
-	              action="#{node.selectNode}" styleClass="treeLink"
-	               reRender="filterResultTable,filterFormPanel,selectionView">
-	              <h:outputText value="#{messages[node.description]}" />
-	            </a4j:commandLink>
-	          </div>
-	        </rich:treeNode>
-	      </rich:recursiveTreeNodesAdaptor>
-	    </rich:tree>
+        <rich:tree id="coverageRichTreeId"
+          adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
+          changeExpandListener="#{directoryTreeManager.changeExpandListener}"
+          icon="#{nodeState.isExpanded(rowKey)?'/dam/icons/yellow-folder-open.png':'/dam/icons/yellow-folder-closed.png'}"
+          iconExpanded="/icons/toggle_minus.png"
+          iconCollapsed="/icons/toggle_plus.png"
+          rowKeyVar="rowKey"
+          stateVar="nodeState">
+          <rich:recursiveTreeNodesAdaptor id="coverageRecursiveTreeNodesAdaptorId"
+            roots="#{filterActions.coverageTreeRoots}"
+            nodes="#{node.children}"
+            var="node">
+            <rich:treeNode id="coverageTreeNodeId"
+              highlightedClass="treeNodeHighlightedClass"
+              selectedClass="treeNodeSelectedClass">
+              <div class="#{nxu:test(node.selected, 'selected', '')}" id="#{node.path}">
+                <a4j:commandLink immediate="true" id="coverageLinkId"
+                  action="#{node.selectNode}" styleClass="treeLink"
+                   reRender="filterResultTable,filterFormPanel,selectionView">
+                  <h:outputText value="#{messages[node.description]}" />
+                </a4j:commandLink>
+              </div>
+            </rich:treeNode>
+          </rich:recursiveTreeNodesAdaptor>
+        </rich:tree>
       </rich:panelMenuItem>
 
     </rich:panelMenuGroup>
@@ -178,30 +168,30 @@
       <table class="DateSelectors">
         <tr>
           <td class="labels">
-	      		<span><h:outputText value=" #{messages['label.search.between']}" /></span>
-	        </td>
-	        <td>
-	     		  <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_min}"
-	          	showsTime="true" format="#{nxu:basicDateFormater()}">
-	          <a4j:support event="onchange" reRender="filterResultTable,selectionView"
-	         	 action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
-	      		</nxu:inputDateTime>
-	    		</td>
-	      </tr>
-	      <tr>
-	        <td class="labels">
-	 		      <span><h:outputText value="#{messages['label.search.and']}" /></span>
-	 		    </td>
-	 		    <td>
-			      <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_max}"
-			        showsTime="true" format="#{nxu:basicDateFormater()}">
-			        <a4j:support event="onchange" reRender="filterResultTable,selectionView"
-			          action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
-			      </nxu:inputDateTime>
-			    </td>
-			  </tr>
-			</table>
-			</rich:panelMenuItem>
+                  <span><h:outputText value=" #{messages['label.search.between']}" /></span>
+            </td>
+            <td>
+                   <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_min}"
+                  showsTime="true" format="#{nxu:basicDateFormater()}">
+              <a4j:support event="onchange" reRender="filterResultTable,selectionView"
+                  action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
+                  </nxu:inputDateTime>
+                </td>
+          </tr>
+          <tr>
+            <td class="labels">
+                   <span><h:outputText value="#{messages['label.search.and']}" /></span>
+                 </td>
+                 <td>
+                  <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_max}"
+                    showsTime="true" format="#{nxu:basicDateFormater()}">
+                    <a4j:support event="onchange" reRender="filterResultTable,selectionView"
+                      action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
+                  </nxu:inputDateTime>
+                </td>
+              </tr>
+            </table>
+            </rich:panelMenuItem>
      </rich:panelMenuGroup>
 
    </rich:panelMenu>

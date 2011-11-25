@@ -70,7 +70,7 @@
 
   <target name="assemble-tomcat" depends="build,assemble-tomcat-unix,assemble-tomcat-windows" />
   <target name="assemble-tomcat-unix" if="osfamily-unix">
-    <exec executable="/opt/apache-maven-2.2.1/bin/mvn" failonerror="true">
+    <exec executable="mvn" failonerror="true">
       <arg line="clean install -Dmaven.test.skip=true -Pall-distributions,${mvn.profiles} -pl nuxeo-distribution-dam,nuxeo-distribution-dam-tomcat ${mvn.opts}" />
     </exec>
   </target>

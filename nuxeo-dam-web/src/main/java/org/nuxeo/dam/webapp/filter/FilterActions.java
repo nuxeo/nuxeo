@@ -19,6 +19,7 @@ package org.nuxeo.dam.webapp.filter;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.Constants.IMPORT_ROOT_TYPE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -46,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
@@ -57,6 +60,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+import org.nuxeo.ecm.webapp.tree.DocumentTreeNodeImpl;
 import org.nuxeo.runtime.api.Framework;
 
 @Scope(CONVERSATION)
@@ -196,24 +200,20 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         return items;
     }
 
-    @Factory(value = "folderSelectItems", scope = ScopeType.EVENT)
-    public List<SelectItem> getFolderSelectItems() throws ClientException {
-        DamService damService = Framework.getLocalService(DamService.class);
-        DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
-                documentManager,
-                new Object[] { damService.getAssetLibraryPath() });
-
+    public SelectItem getFolderSelectedItem() throws ClientException {
         DocumentModel filterDocument = getFilterDocument();
         String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
-        List<SelectItem> items = new ArrayList<SelectItem>();
-        items.add(new SelectItem("All", resourcesAccessor.getMessages().get(
-                "label.type.All"), "", folderSelection == null));
-        for (DocumentModel doc : docs) {
-            String docPath = doc.getPathAsString();
-            items.add(new SelectItem(docPath, doc.getTitle(), "",
-                    docPath.equals(folderSelection)));
+        DamService damService = Framework.getLocalService(DamService.class);
+        if (StringUtils.isBlank(folderSelection)
+                || damService.getAssetLibraryPath().equals(folderSelection)) {
+            return new SelectItem("All", resourcesAccessor.getMessages().get(
+                    "label.type.All"), "", false);
+        } else {
+            DocumentModel doc = documentManager.getDocument(new PathRef(
+                    folderSelection));
+            return new SelectItem(doc.getPathAsString(), doc.getTitle(), "",
+                    false);
         }
-        return items;
     }
 
     public void toggleSelectFolder() throws ClientException {
@@ -287,6 +287,21 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         filterDocument = null;
         queryModelActions.get(QUERY_MODEL_NAME).reset();
         invalidateProvider();
+    }
+
+    public boolean isFolderToHighlight(DocumentTreeNodeImpl node)
+            throws ClientException {
+        DocumentModel filterDocument = getFilterDocument();
+        String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
+        DamService damService = Framework.getLocalService(DamService.class);
+        if (StringUtils.isBlank(folderSelection)
+                || damService.getAssetLibraryPath().equals(folderSelection)) {
+            return (IMPORT_ROOT_TYPE.equals(node.getDocument().getType()));
+        } else {
+            DocumentModel doc = documentManager.getDocument(new PathRef(
+                    folderSelection));
+            return node.getDocument().equals(doc);
+        }
     }
 
 }
