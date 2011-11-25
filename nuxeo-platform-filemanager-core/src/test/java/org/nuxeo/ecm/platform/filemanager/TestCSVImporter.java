@@ -24,10 +24,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.zip.ZipFile;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -72,7 +70,6 @@ public class TestCSVImporter {
                 FileUtils.getResourcePathFromContext("test-data/testCSVArchive.zip"));
     }
 
-    @Before
     public void createTestDocuments() throws Exception {
         wsRoot = coreSession.getDocument(new PathRef(
                 "default-domain/workspaces"));
@@ -85,7 +82,8 @@ public class TestCSVImporter {
     }
 
     @Test
-    public void testArchiveDetection() throws IOException {
+    public void testArchiveDetection() throws Exception {
+        createTestDocuments();
         ZipFile archive = CSVZipImporter.getArchiveFileIfValid(getArchiveFile());
         assertNotNull(archive);
         archive.close();
@@ -93,6 +91,7 @@ public class TestCSVImporter {
 
     @Test
     public void testImportViaFileManager() throws Exception {
+        createTestDocuments();
         File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archive);
