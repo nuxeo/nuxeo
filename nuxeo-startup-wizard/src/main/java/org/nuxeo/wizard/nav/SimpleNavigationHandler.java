@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SimpleNavigationHandler {
 
+    public static final String SKIP_PAGES_KEY = "nuxeo.wizard.skippedpages";
+
     // I am too lazy to load a file
     // navCode / jsp Page / active flag / hidden flag
     protected static final String[] nav = { "Home|welcome.jsp|1|0",
@@ -43,9 +45,12 @@ public class SimpleNavigationHandler {
             "Connect|connectForm.jsp|1|0",
             "ConnectCallback|connectCallback.jsp|0|1",
             "ConnectFinish|connectFinish.jsp|0|0",
+            "PackagesSelection|packagesSelection.jsp|1|0",
+            "PackagesDownload|packagesDownload.jsp|1|0",
             "Recap|recapScreen.jsp|1|0",
             "Restart|reStarting.jsp|1|1",
-            "Reset|Welcome.jsp|1|1"};
+            "Reset|Welcome.jsp|1|1",
+            "PackageOptionsResource||1|1" };
 
     protected List<Page> pages = new ArrayList<Page>();
 
@@ -61,7 +66,7 @@ public class SimpleNavigationHandler {
     }
 
     public static void reset() {
-        instance=null;
+        instance = null;
     }
 
     protected SimpleNavigationHandler() {
@@ -78,9 +83,18 @@ public class SimpleNavigationHandler {
                 page.prev = previousPage;
             }
 
+            // XXX false !
             page.progress = new Double((idx + 1) * (100.0 / nav.length)).intValue();
             previousPage = page;
 
+        }
+
+        String skipPages = System.getProperty(SKIP_PAGES_KEY, null);
+        if (skipPages!=null) {
+            String[] pages2Skip = skipPages.split(",");
+            for (String pageKey : pages2Skip) {
+                deactivatePage(pageKey);
+            }
         }
     }
 
@@ -90,19 +104,19 @@ public class SimpleNavigationHandler {
 
     public int getProgress(String action) {
 
-        int activePageIdx=0;
-        int totalActivePages=0;
+        int activePageIdx = 0;
+        int totalActivePages = 0;
 
         for (int idx = 0; idx < pages.size(); idx++) {
 
             if (pages.get(idx).isVisibleInNavigationMenu()) {
-                totalActivePages+=1;
+                totalActivePages += 1;
             }
             if (pages.get(idx).getAction().equals(action)) {
-                activePageIdx=totalActivePages;
+                activePageIdx = totalActivePages;
             }
         }
-        if (totalActivePages==0) {
+        if (totalActivePages == 0) {
             return 0;
         }
         return new Double((activePageIdx) * (100.0 / totalActivePages)).intValue();
@@ -113,19 +127,18 @@ public class SimpleNavigationHandler {
         Page currentPage = null;
 
         if (action == null || action.isEmpty()) {
-            currentPage =  pages.get(0);
-        }
-        else {
+            currentPage = pages.get(0);
+        } else {
             currentPage = findPageByAction(action);
         }
 
-        if (currentPage==null) {
+        if (currentPage == null) {
             log.warn("No Page found for action " + action);
             return null;
         }
 
         // mark as navigated
-        currentPage.navigated=true;
+        currentPage.navigated = true;
 
         return currentPage;
     }
@@ -140,11 +153,17 @@ public class SimpleNavigationHandler {
     }
 
     public void activatePage(String action) {
-        findPageByAction(action).active=true;
+        Page page =findPageByAction(action);
+        if (page!=null) {
+            page.active = true;
+        }
     }
 
     public void deactivatePage(String action) {
-        findPageByAction(action).active=false;
+        Page page =findPageByAction(action);
+        if (page!=null) {
+            page.active = false;
+        }
     }
 
     public List<Page> getPages() {
