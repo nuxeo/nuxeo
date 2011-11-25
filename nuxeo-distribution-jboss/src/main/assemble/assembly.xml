@@ -276,7 +276,6 @@ org.nuxeo.ecm.product.name=Nuxeo DM
         <include name="jboss-seam-debug*" />
         <include name="hibernate*" />
         <include name="javaassist*" />
-        <include name="commons-collections*" />
         <include name="commons-logging*" />
         <include name="geronimo-*" />
         <include name="jta-*" />
@@ -291,6 +290,11 @@ org.nuxeo.ecm.product.name=Nuxeo DM
         <include name="quartz*" />
       </fileset>
     </delete>
+
+    <!-- upgrade commons-collections.jar -->
+    <nx:rename
+      from="${distribution.dir}/server/default/deploy/nuxeo.ear/lib/commons-collections*"
+      to="${distribution.dir}/common/lib/commons-collections.jar" />
 
     <move todir="${distribution.dir}/server/default/lib">
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
