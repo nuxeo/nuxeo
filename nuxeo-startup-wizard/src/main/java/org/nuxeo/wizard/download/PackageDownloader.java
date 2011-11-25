@@ -78,7 +78,7 @@ public class PackageDownloader {
 
     public static final String BASE_URL_KEY = "nuxeo.wizard.packages.url";
 
-    public static final String DEFAULT_BASE_URL = "http://community.nuxeo.com/static/staging/mp/";
+    public static final String DEFAULT_BASE_URL = "http://community.nuxeo.com/static/releases/"; // nuxeo-XXX/mp
 
     public static final String WORKDING_DIR_NAME = "setupWizardDownloads";
 
@@ -120,7 +120,10 @@ public class PackageDownloader {
     protected String getBaseUrl() {
         if (baseUrl == null) {
             String base = getConfig().getUserConfig().getProperty(
-                    BASE_URL_KEY, DEFAULT_BASE_URL);
+                    BASE_URL_KEY, "");
+            if ("".equals(base)) {
+                base = DEFAULT_BASE_URL + "nuxeo-" + getConfig().getUserConfig().getProperty("org.nuxeo.ecm.product.version") + "/mp/";
+            }
             if (!base.endsWith("/")) {
                 base = base + "/";
             }
