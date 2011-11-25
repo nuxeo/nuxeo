@@ -241,9 +241,9 @@ public abstract class NuxeoLauncher {
         logProcessStreams(nuxeoProcess, logProcessOutput);
         Thread.sleep(1000);
         if (getPid() != null) {
-            log.info("Server started with process ID " + pid + ".");
+            log.warn("Server started with process ID " + pid + ".");
         } else {
-            log.info("Sent server start command but could not get process ID.");
+            log.warn("Sent server start command but could not get process ID.");
         }
     }
 
@@ -909,7 +909,7 @@ public abstract class NuxeoLauncher {
         try {
             if (!(processManager instanceof PureJavaProcessManager)
                     && getPid() == null) {
-                log.info("Server is not running.");
+                log.warn("Server is not running.");
                 return;
             }
             if (!quiet) {
@@ -967,7 +967,7 @@ public abstract class NuxeoLauncher {
                     }
                     // Exit if there's no way to check for server stop
                     if (processManager instanceof PureJavaProcessManager) {
-                        log.info("Can't check server status on your OS.");
+                        log.warn("Can't check server status on your OS.");
                         return;
                     }
                     // Wait a few seconds for effective stop
@@ -985,13 +985,13 @@ public abstract class NuxeoLauncher {
                 }
             } while (retry);
             if (getPid() == null) {
-                log.info("Server stopped.");
+                log.warn("Server stopped.");
             } else {
                 log.info("No answer from server, try to kill process " + pid
                         + "...");
                 processManager.kill(nuxeoProcess, pid);
                 if (getPid() == null) {
-                    log.info("Server forcibly stopped.");
+                    log.warn("Server forcibly stopped.");
                 }
             }
         } catch (IOException e) {
