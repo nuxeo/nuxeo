@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
  *
  */
-public class RepositoryInit extends DefaultRepositoryInit{
+public class RepositoryInit extends DefaultRepositoryInit {
 
     public static final String PATH_WORKSPACE_ROOT = "/default-domain/workspaces";
 
@@ -37,7 +37,8 @@ public class RepositoryInit extends DefaultRepositoryInit{
     public void populate(CoreSession session) throws ClientException {
         super.populate(session);
 
-        DocumentModel doc = session.createDocumentModel(PATH_WORKSPACE_ROOT, "ws1", "Workspace");
+        DocumentModel doc = session.createDocumentModel(PATH_WORKSPACE_ROOT,
+                "ws1", "Workspace");
         doc.setProperty("dublincore", "title", "workspace");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
@@ -46,7 +47,6 @@ public class RepositoryInit extends DefaultRepositoryInit{
         doc.setProperty("dublincore", "title", "a folder");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
-
     }
 
 }
