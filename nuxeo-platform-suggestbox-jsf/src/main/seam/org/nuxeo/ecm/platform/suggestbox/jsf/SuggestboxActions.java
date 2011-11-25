@@ -123,7 +123,7 @@ public class SuggestboxActions implements Serializable {
         return service.handleSelection(selectedSuggestion, ctx);
     }
 
-    public String performKerwordsSearch() throws ClientException {
+    public String performKeywordsSearch() throws ClientException {
         facetedSearchActions.clearSearch();
         facetedSearchActions.setCurrentContentViewName(null);
         String contentViewName = facetedSearchActions.getCurrentContentViewName();
