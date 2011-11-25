@@ -769,7 +769,7 @@ table.registration .header {
     border: 1px solid #207ae4;
     color: #fff;
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);    
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 ul.noBullet {
@@ -873,4 +873,59 @@ ul.noBullet li {
 .progressbar {
   margin-top: 10px;
   margin-bottom: 30px;
+}
+
+ul#treeul li {
+  list-style:none;
+}
+
+ul.hide {
+  display:none;
+}
+
+.hide {
+  display:none;
+}
+
+.nxpblock {
+  background-color: red;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #555555;
+  height:25px;
+  width:100px;
+  text-align:center;
+  text-transform:uppercase;
+  font-weight:bold;
+  color:black;
+  border-radius: 5px;
+  cursor:pointer;
+}
+
+.unselectedBloc {
+  filter: alpha(opacity=30);
+  -moz-opacity:0.3;
+  opacity:0.3;
+}
+
+.nxprow {
+  margin:2px;
+  height:29px;
+  width:400px;
+}
+
+.presetBtn {
+  border-width:2px;
+  border-style:outset;
+  border-color:#CCCCCC;
+  padding:10px;
+  margin:2px;
+  width:50px;
+  cursor:pointer;
+}
+
+.downloadProgress {
+  background-color:green;
+  height:12px;
+  border-radius: 2px;
 }
