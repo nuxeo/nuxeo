@@ -7,6 +7,7 @@ syntax:glob
 .project
 .project.ok
 .settings
+.idea
 bin
 build.properties
 target
