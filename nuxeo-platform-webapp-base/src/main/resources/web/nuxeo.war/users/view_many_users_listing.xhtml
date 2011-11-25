@@ -22,7 +22,8 @@
                 <li class="#{cssClass}">
                   <a4j:commandLink action="#{userManagementActions.setSelectedLetter(letter)}"
                     ajaxSingle="true"
-                    reRender="usersListingPanel">
+                    reRender="usersListingPanel"
+                    eventsQueue="adminCenterQueue">
                     <h:outputText value="#{letter}" />
                   </a4j:commandLink>
                 </li>

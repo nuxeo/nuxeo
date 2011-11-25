@@ -24,7 +24,8 @@
               value="#{messages['command.saveAndCreate']}"
               action="#{userManagementActions.createUser(true)}"
               styleClass="button"
-              reRender="usersPanel,facesStatusMessagePanel">
+              reRender="usersPanel,facesStatusMessagePanel"
+              eventsQueue="adminCenterQueue">
               <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
             </a4j:commandButton>
             <a4j:commandButton
@@ -32,13 +33,15 @@
               value="#{messages['command.save']}"
               action="#{userManagementActions.createUser}"
               styleClass="button"
-              reRender="usersPanel,facesStatusMessagePanel">
+              reRender="usersPanel,facesStatusMessagePanel"
+              eventsQueue="adminCenterQueue">
               <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
             </a4j:commandButton>
             <a4j:commandButton
               action="#{userManagementActions.toggleShowCreateForm}" immediate="true"
               value="#{messages['command.cancel']}" styleClass="button"
-              reRender="usersPanel" />
+              reRender="usersPanel"
+              eventsQueue="adminCenterQueue" />
           </td>
         </tr>
       </tbody>

@@ -17,17 +17,20 @@
             <a4j:support event="onkeyup"
               reRender="usersListingPanel"
               requestDelay="1000" action="#{contentViewActions.refreshAndRewind(contentViewName)}"
-              ignoreDupResponses="true" eventsQueue="userSearchQueue" />
+              ignoreDupResponses="true" 
+              eventsQueue="adminCenterQueue" />
           </h:inputText>
           <f:verbatim>&amp;nbsp;</f:verbatim>
           <a4j:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}" styleClass="button"
-            reRender="usersListingPanel" />
+            reRender="usersListingPanel" 
+            eventsQueue="adminCenterQueue" />
           <a4j:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{userManagementActions.clearSearch}" styleClass="button"
-            reRender="usersListingPanel,searchForm" />
+            reRender="usersListingPanel,searchForm" 
+            eventsQueue="adminCenterQueue" />
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />

@@ -21,7 +21,8 @@
               <ul>
                 <li class="selected">
                   <a4j:commandLink action="#{userManagementActions.toggleShowCreateForm}"
-                    immediate="true" id="createUserButton" reRender="usersPanel">
+                    immediate="true" id="createUserButton" reRender="usersPanel"
+                    eventsQueue="adminCenterQueue">
                     <h:graphicImage value="/icons/action_add_user.gif" />
                     <h:outputText value="#{messages['command.createUser']}"  />
                   </a4j:commandLink>
