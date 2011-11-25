@@ -444,27 +444,32 @@ public class RouterServlet extends HttpServlet {
                         "error.nuxeo.http.proxy.port");
             }
             if (collector.getConfigurationParam("nuxeo.http.proxy.host").isEmpty()) {
-                ctx.trackError("nuxeo.http.proxy.port",
+                ctx.trackError("nuxeo.http.proxy.host",
                         "error.nuxeo.http.proxy.emptyHost");
             }
             if ("anonymous".equals(proxyType)) {
                 collector.addConfigurationParam("nuxeo.http.proxy.login", null);
                 collector.addConfigurationParam("nuxeo.http.proxy.password",
                         null);
-                PackageDownloader.instance().setProxy(
+
+                if (!ctx.hasErrors()) {
+                    PackageDownloader.instance().setProxy(
                         collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
-                        Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.host")),
+                        Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
                         null, null);
+                }
             } else {
                 if (collector.getConfigurationParam("nuxeo.http.proxy.login").isEmpty()) {
                     ctx.trackError("nuxeo.http.proxy.login",
                             "error.nuxeo.http.proxy.emptyLogin");
                 } else {
-                    PackageDownloader.instance().setProxy(
+                    if (!ctx.hasErrors()) {
+                        PackageDownloader.instance().setProxy(
                             collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
-                            Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.host")),
+                            Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
                             collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
                             collector.getConfigurationParamValue("nuxeo.http.proxy.password"));
+                    }
                 }
             }
         }
