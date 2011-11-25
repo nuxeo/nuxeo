@@ -34,6 +34,12 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         database.setUp();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     protected Calendar getCalendar(int year, int month, int day, int hours,
             int minutes, int seconds) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
@@ -50,7 +56,8 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
                 "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
-        folder1.setPropertyValue("dc:description", "first test folder description");
+        folder1.setPropertyValue("dc:description",
+                "first test folder description");
         folder1 = session.createDocument(folder1);
 
         DocumentModel file1 = new DocumentModelImpl("/testfolder1",
@@ -84,15 +91,15 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
                 "testfile3", "Note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
-        file3.setPropertyValue("dc:description",
-                "test note description");
+        file3.setPropertyValue("dc:description", "test note description");
         file3.setPropertyValue("dc:contributors",
                 new String[] { "bob", "john" });
         file3 = session.createDocument(file3);
 
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
                 "Folder");
-        folder2.setPropertyValue("dc:description", "second test folder description");
+        folder2.setPropertyValue("dc:description",
+                "second test folder description");
         folder2 = session.createDocument(folder2);
 
         DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
@@ -111,12 +118,12 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         session.save();
     }
 
-
     public void testFulltextOnlyNoteFile() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             return;
         }
-        // deploy contrib where only Note and File documents are fulltext indexed
+        // deploy contrib where only Note and File documents are fulltext
+        // indexed
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 "OSGI-INF/test-repo-fulltext-note-file-only-contrib.xml");
 

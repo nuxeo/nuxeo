@@ -65,6 +65,12 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     // ---------------------------------------
 
     protected Calendar getCalendar(int year, int month, int day, int hours,
@@ -1034,7 +1040,6 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isCheckedInVersion = 1");
         assertIdSet(dml, versionId);
 
-
         // "deep" isProxy
         dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
         assertIdSet(dml, proxyId);
@@ -1559,7 +1564,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // check secondary fulltext index, just for title field
         query = "SELECT * FROM Document WHERE ecm:fulltext_title = 'world'";
         dml = session.query(query);
-        assertIdSet(dml, file1.getId(), file3.getId()); // file2 has it in descr
+        assertIdSet(dml, file1.getId(), file3.getId()); // file2 has it in
+                                                        // descr
 
         // field-based fulltext
         // index exists

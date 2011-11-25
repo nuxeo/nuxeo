@@ -50,6 +50,12 @@ public class RepositoryOSGITestCase extends SQLRepositoryTestCase {
         coreSession = null;
     }
 
+    @Override
+    public void closeSession() {
+        super.closeSession();
+        coreSession = null;
+    }
+
     public void changeUser(String username) throws ClientException {
         releaseCoreSession();
         openCoreSession(username);
