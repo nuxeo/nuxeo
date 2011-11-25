@@ -287,6 +287,82 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
                 "thebar"));
     }
 
+    public void testUpdateReadonlyMultidir() throws Exception {
+        MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
+        MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession();
+        Session dir1 = memdir1.getSession();
+        Session dir2 = memdir2.getSession();
+        Session dir3 = memdir3.getSession();
+
+        // multi-subdirs update
+        DocumentModel e = readonlyDir.getEntry("1");
+        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
+        assertEquals("bar1", e.getProperty("schema3", "thebar"));
+        e.setProperty("schema3", "thefoo", "fffooo1");
+        e.setProperty("schema3", "thebar", "babar1");
+
+        readonlyDir.updateEntry(e);
+        e = readonlyDir.getEntry("1");
+        // the multidirectory entry was not updated
+        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
+        assertEquals("bar1", e.getProperty("schema3", "thebar"));
+
+        // neither the underlying directories
+        assertEquals("foo1",
+                dir1.getEntry("1").getProperty("schema1", "foo"));
+        assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
+        assertNull(dir3.getEntry("1"));
+    }
+
+    public void testUpdatePartialReadOnlyMultidir() throws Exception {
+        Session dir1 = memdir1.getSession();
+        Session dir2 = memdir2.getSession();
+        Session dir3 = memdir3.getSession();
+
+        memdir2.setReadOnly(true);
+        memdir3.setReadOnly(true);
+
+        // multi-subdirs update
+        DocumentModel e = dir.getEntry("1");
+        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
+        assertEquals("bar1", e.getProperty("schema3", "thebar"));
+        e.setProperty("schema3", "thefoo", "fffooo1");
+        e.setProperty("schema3", "thebar", "babar1");
+        dir.updateEntry(e);
+        e = dir.getEntry("1");
+        assertEquals("fffooo1", e.getProperty("schema3", "thefoo"));
+        assertEquals("bar1", e.getProperty("schema3", "thebar"));
+
+        // check underlying directories
+        // update not done on readonly dir2
+        assertEquals("fffooo1",
+                dir1.getEntry("1").getProperty("schema1", "foo"));
+        assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
+        assertNull(dir3.getEntry("1"));
+
+        // single subdir update
+        e = dir.getEntry("3");
+        assertEquals("foo3", e.getProperty("schema3", "thefoo"));
+        assertEquals("bar3", e.getProperty("schema3", "thebar"));
+        e.setProperty("schema3", "thefoo", "fffooo3");
+        e.setProperty("schema3", "thebar", "babar3");
+        dir.updateEntry(e);
+
+        e = dir.getEntry("3");
+        assertEquals("foo3", e.getProperty("schema3", "thefoo"));
+        assertEquals("bar3", e.getProperty("schema3", "thebar"));
+
+        // check underlying directories
+        // check update is not effective on readonly subdir
+        assertNull(dir1.getEntry("3"));
+        assertNull(dir2.getEntry("3"));
+        assertNotNull(dir3.getEntry("3"));
+        assertEquals("foo3", dir3.getEntry("3").getProperty("schema3",
+                "thefoo"));
+        assertEquals("bar3", dir3.getEntry("3").getProperty("schema3",
+                "thebar"));
+    }
+
     public void testDeleteEntry() throws Exception {
         Session dir1 = memdir1.getSession();
         Session dir2 = memdir2.getSession();
@@ -495,6 +571,17 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         assertFalse(dir.hasEntry("foo"));
     }
 
+    public void testReadOnlyEntryFromMultidirectory() throws Exception {
+        MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
+        MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession();
+
+        // all should be readonly
+        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("1")));
+        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("2")));
+        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("3")));
+        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("4")));
+    }
+
     public void testReadOnlyEntryFromGetEntry() throws Exception {
 
         // by default no backing dir is readonly
@@ -506,16 +593,16 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         memdir1.setReadOnly(true);
         memdir2.setReadOnly(false);
         memdir3.setReadOnly(false);
-        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
-        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
         assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
         assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
 
         memdir1.setReadOnly(false);
         memdir2.setReadOnly(true);
         memdir3.setReadOnly(true);
-        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
-        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
         assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
         assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
 
@@ -526,6 +613,14 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
         assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
         assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+
+        memdir1.setReadOnly(true);
+        memdir2.setReadOnly(true);
+        memdir3.setReadOnly(false);
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
     }
 
     public void testReadOnlyEntryInQueryResults() throws Exception {
