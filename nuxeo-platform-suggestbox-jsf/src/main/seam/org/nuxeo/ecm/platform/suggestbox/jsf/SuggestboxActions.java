@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
@@ -120,7 +118,6 @@ public class SuggestboxActions implements Serializable {
 
     public Object handleSelection(Suggestion selectedSuggestion)
             throws SuggestionHandlingException {
-        setSearchKeywords("");
         SuggestionService service = Framework.getLocalService(SuggestionService.class);
         SuggestionContext ctx = getSuggestionContext();
         return service.handleSelection(selectedSuggestion, ctx);
@@ -133,7 +130,6 @@ public class SuggestboxActions implements Serializable {
         ContentView contentView = contentViewActions.getContentView(contentViewName);
         DocumentModel dm = contentView.getSearchDocumentModel();
         dm.setPropertyValue("fsd:ecm_fulltext", searchKeywords);
-        setSearchKeywords("");
         multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
         return "faceted_search_results";
     }
