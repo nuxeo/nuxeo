@@ -57,7 +57,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
     public static final String CONNECT_FORM_TITLE = "Enable Nuxeo Connect & Nuxeo Studio for your installation";
 
     protected String getTestPassword() {
-        return "testingwizardregistrationandinstallation";
+        return "XXX";
     }
 
     private static boolean isWindows() {
@@ -65,7 +65,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         return osName.toLowerCase().contains("windows");
     }
 
-    //@Test
+    @Test
     public void runWizardAndRestart() throws Exception {
 
         // **********************
