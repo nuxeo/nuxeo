@@ -40,7 +40,6 @@ public class CleanUpWithInitializerTest {
                 "/default-domain/workspaces/", "myWorkspace", "Workspace");
         doc.setProperty("dublincore", "title", "My Workspace");
         doc = session.createDocument(doc);
-        session.saveDocument(doc);
         session.save();
         assertTrue(session.exists(new PathRef(
                 "/default-domain/workspaces/myWorkspace")));
