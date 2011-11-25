@@ -114,12 +114,12 @@
                       <nxh:commandLink action="#{action.getLink()}"
                         rendered="#{fn:startsWith(action.link,'#')}"
                         immediate="#{action.immediate}"
-                        id="userMenuActionCommandLink">
+                        id="menuActionCommand_#{action.id}">
                         <h:outputText value="#{messages[action.label]}" />
                       </nxh:commandLink>
                       <h:outputLink value="#{baseURL}#{action.link}"
                         rendered="#{!(fn:startsWith(action.link,'#'))}"
-                        id="userMenuActionLink">
+                        id="menuActionLink_#{action.id}">
                         <h:outputText value="#{messages[action.label]}" />
                       </h:outputLink>
                     </li>
@@ -128,7 +128,7 @@
                     <li>
                       <nxh:commandLink action="#{action.getLink()}"
                         immediate="#{action.immediate}"
-                        id="userServicesActionCommandLink">
+                        id="userServicesCommand_#{action.id}">
                         <h:outputText value="#{messages[action.label]}" />
                       </nxh:commandLink>
                     </li>
