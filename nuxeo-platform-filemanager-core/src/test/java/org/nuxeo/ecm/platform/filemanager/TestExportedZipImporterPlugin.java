@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,10 +69,6 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.filemanager.core" })
 public class TestExportedZipImporterPlugin {
 
-    private String archiveFileName;
-
-    protected final String tmpDir = System.getProperty("java.io.tmpdir");
-
     protected DocumentModel sourceWS;
 
     protected DocumentModel destWS;
@@ -80,9 +78,7 @@ public class TestExportedZipImporterPlugin {
     @Inject
     protected CoreSession coreSession;
 
-    private File getArchiveFile() {
-        return new File(archiveFileName);
-    }
+    private File archiveFile;
 
     @Before
     public void createTestDocuments() throws Exception {
@@ -90,13 +86,13 @@ public class TestExportedZipImporterPlugin {
                 "default-domain/workspaces"));
 
         DocumentModel ws = coreSession.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
-        ws.setProperty("dublincore", "title", "test WS");
+                wsRoot.getPathAsString(), "sourceWS", "Workspace");
+        ws.setProperty("dublincore", "title", "Source Workspace");
         ws = coreSession.createDocument(ws);
 
         DocumentModel ws2 = coreSession.createDocumentModel(
-                wsRoot.getPathAsString(), "ws2", "Workspace");
-        ws2.setProperty("dublincore", "title", "test WS2");
+                wsRoot.getPathAsString(), "destWS", "Workspace");
+        ws2.setProperty("dublincore", "title", "Destination Workspace");
         ws2 = coreSession.createDocument(ws2);
 
         DocumentModel file = coreSession.createDocumentModel(
@@ -117,10 +113,8 @@ public class TestExportedZipImporterPlugin {
 
         DocumentReader reader = new DocumentTreeReader(coreSession, ws, false);
 
-        archiveFileName = tmpDir + System.getProperty("file.separator")
-                + "Testing" + System.currentTimeMillis();
-        File archiveFile = new File(archiveFileName);
-
+        archiveFile = File.createTempFile("TestExportedZipImporterPlugin_", ",zip");
+        archiveFile.delete();
         DocumentWriter writer = new NuxeoArchiveWriter(archiveFile);
 
         DocumentPipe pipe = new DocumentPipeImpl(10);
@@ -135,18 +129,22 @@ public class TestExportedZipImporterPlugin {
         destWS = ws2;
     }
 
+    @After
+    public void cleanupTempFolder() {
+        FileUtils.deleteQuietly(archiveFile);
+    }
+
     @Test
     public void testArchiveDetection() throws IOException {
-        ZipFile archive = ExportedZipImporter.getArchiveFileIfValid(getArchiveFile());
+        ZipFile archive = ExportedZipImporter.getArchiveFileIfValid(archiveFile);
         assertNotNull(archive);
         archive.close();
     }
 
     @Test
     public void testImportViaFileManager() throws Exception {
-        File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
-        Blob blob = new FileBlob(archive);
+        Blob blob = new FileBlob(archiveFile);
         fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(),
                 true, "toto.zip");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
@@ -180,14 +178,13 @@ public class TestExportedZipImporterPlugin {
         coreSession.removeDocument(subFile.getRef());
         coreSession.save();
 
-        File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
-        Blob blob = new FileBlob(archive);
+        Blob blob = new FileBlob(archiveFile);
         fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(),
                 true, "toto.zip");
-        sourceWS = coreSession.getChild(wsRoot.getRef(), "ws1");
+        sourceWS = coreSession.getChild(wsRoot.getRef(), "sourceWS");
         assertNotNull(sourceWS);
-        assertEquals("test WS", sourceWS.getTitle());
+        assertEquals("Source Workspace", sourceWS.getTitle());
 
         subFile = coreSession.getChild(sourceWS.getRef(), "myfile");
         assertNotNull(subFile);
