@@ -79,6 +79,8 @@ public class Copy extends AbstractCommand {
 
     private boolean overwriteIfNewerVersion = false;
 
+    private boolean upgradeOnly = false;
+
     protected Copy(String id) {
         super(id);
     }
@@ -139,7 +141,7 @@ public class Copy extends AbstractCommand {
             dst = new File(dst, fileToCopy.getName());
         }
         try {
-            if (overwriteIfNewerVersion) {
+            if (overwriteIfNewerVersion || upgradeOnly) {
                 // Compare source and destination versions set in filename
                 FileVersion fileToCopyVersion, dstVersion = null;
                 FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
@@ -167,7 +169,9 @@ public class Copy extends AbstractCommand {
                         }
                     }
                     if (dstVersion == null) {
-                        // dst doesn't exist
+                        if (upgradeOnly) {
+                            return null;
+                        }
                     } else if (fileToCopyVersion.greaterThan(dstVersion)) {
                         // backup dst and generate rollback command
                         File oldDst = dst;
@@ -325,6 +329,10 @@ public class Copy extends AbstractCommand {
         v = element.getAttribute("overwriteIfNewerVersion");
         if (v.length() > 0) {
             overwriteIfNewerVersion = Boolean.parseBoolean(v);
+        }
+        v = element.getAttribute("upgradeOnly");
+        if (v.length() > 0) {
+            upgradeOnly = Boolean.parseBoolean(v);
         }
     }
 

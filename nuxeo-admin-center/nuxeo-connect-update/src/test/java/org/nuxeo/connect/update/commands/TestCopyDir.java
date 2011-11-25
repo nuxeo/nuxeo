@@ -39,17 +39,21 @@ public class TestCopyDir extends AbstractCommandTest {
 
     private final static String newFilename = "nuxeo-superfeature-5.5.jar";
 
+    private final static String notToDeployFilename = "nuxeo-newfeature-5.5.jar";
+
     private File deprecatedFile;
 
     private File snapshotFile;
 
     private File newFile;
 
+    private File bundles;
+
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        File bundles = new File(Environment.getDefault().getHome(), "bundles");
+        bundles = new File(Environment.getDefault().getHome(), "bundles");
         deprecatedFile = new File(bundles, deprecatedFilename);
         org.apache.commons.io.FileUtils.touch(deprecatedFile);
         newFile = new File(bundles, newFilename);
@@ -63,10 +67,10 @@ public class TestCopyDir extends AbstractCommandTest {
         jarFile.deleteOnExit();
         FileUtils.writeFile(jarFile, "anything");
         builder.addEntry("bundles/" + newFilename, new FileInputStream(jarFile));
-        jarFile = File.createTempFile("test-commands-", ".jar");
-        jarFile.deleteOnExit();
         FileUtils.writeFile(jarFile, "new SNAPSHOT content");
         builder.addEntry("bundles/" + snapshotFilename, new FileInputStream(
+                jarFile));
+        builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(
                 jarFile));
     }
 
@@ -76,6 +80,7 @@ public class TestCopyDir extends AbstractCommandTest {
         writer.attr("dir", "${package.root}/bundles");
         writer.attr("todir", "${env.bundles}");
         writer.attr("overwriteIfNewerVersion", "true");
+        writer.attr("upgradeOnly", "true");
         writer.end();
     }
 
@@ -91,6 +96,8 @@ public class TestCopyDir extends AbstractCommandTest {
         BufferedReader reader = new BufferedReader(new FileReader(snapshotFile));
         String line = reader.readLine();
         assertEquals("new SNAPSHOT content", line);
+        assertFalse("New feature was copied whereas 'upgradeOnly=true'",
+                new File(bundles, notToDeployFilename).exists());
     }
 
     @Override
