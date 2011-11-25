@@ -24,12 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
@@ -46,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 5.4.2
  */
-public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
+public class JbpmPageProvidersTest extends SQLRepositoryTestCase {
 
     private JbpmService service;
 
@@ -90,6 +89,7 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
         administrator = userManager.getPrincipal(SecurityConstants.ADMINISTRATOR);
         assertNotNull(administrator);
 
+        openSession();
         document = getDocument();
         assertNotNull(document);
 
@@ -106,14 +106,13 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6);
         // create one task
-        taskService.createTask(coreSession, administrator, document,
+        taskService.createTask(session, administrator, document,
                 "Test Task Name", actors, false, "test directive",
                 "test comment", calendar.getTime(), null);
         // create another task to check pagination
-        taskService.createTask(coreSession, administrator, document,
+        taskService.createTask(session, administrator, document,
                 "Test Task Name 2", actors, false, "test directive",
                 "test comment", calendar.getTime(), null);
-        openSession();
     }
 
     @Override
@@ -127,7 +126,7 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
     public void testTaskPageProvider() throws Exception {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) getCoreSession());
+                (Serializable) session);
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
                 "current_user_tasks", null, null, null, properties,
                 (Object[]) null);
@@ -179,7 +178,7 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
     public void testProcessPageProvider() throws Exception {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) getCoreSession());
+                (Serializable) session);
         PageProvider<DocumentProcessItem> processProvider = (PageProvider<DocumentProcessItem>) ppService.getPageProvider(
                 "current_user_processes", null, null, null, properties,
                 (Object[]) null);
@@ -196,7 +195,6 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel getDocument() throws Exception {
-        CoreSession session = getCoreSession();
         DocumentModel model = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);
