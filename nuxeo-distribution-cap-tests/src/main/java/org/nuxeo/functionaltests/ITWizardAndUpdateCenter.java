@@ -40,7 +40,6 @@ import org.openqa.selenium.WebElement;
 public class ITWizardAndUpdateCenter extends AbstractTest {
 
     private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.3";
-    //private static final String MARKETPLACE_PACKAGE_ID = "easybookmark-1.0.0";
 
     private static final String SMTP_SERVER_HOST = "someSMTPServer.com";
 
@@ -53,6 +52,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
     protected static final String CONNECT_LOGIN = "junit4tester";
 
     protected static final String CONNECT_PROJECT_SELECTOR = "junit4tester";
+    protected static final String CONNECT_PROJECT_SELECTOR_UUID = "575954be-6027-45b7-8cd1-77a6bcb0832d";
 
     public static final String CONNECT_FORM_TITLE = "Enable Nuxeo Connect & Nuxeo Studio for your installation";
 
@@ -65,7 +65,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         return osName.toLowerCase().contains("windows");
     }
 
-    @Test
+    //@Test
     public void runWizardAndRestart() throws Exception {
 
         // **********************
@@ -197,7 +197,8 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         assertNotNull(connectProjectPage);
 
         // select the associated project
-        connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
+        connectProjectPage.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
+        //connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
         ConnectWizardPage connectFinish = connectProjectPage.nav(
                 ConnectWizardPage.class, "Continue");
         assertNotNull(connectFinish);
@@ -205,9 +206,26 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
                 connectFinish.getTitle());
 
         // **********************
-        // Summary screen
-        SummaryWizardPage summary = connectFinish.nav(SummaryWizardPage.class,
+        // Exit Connect Form and Display Packages selection
+        WizardPage packageSelectiondPage = connectFinish.nav(WizardPage.class,
                 "Continue", true);
+        assertNotNull(packageSelectiondPage);
+        assertEquals("Select packages", packageSelectiondPage.getTitle());
+
+        WebElement presetBtn = findElementWithTimeout(By.id("preset_nuxeo-dm"));
+        presetBtn.click();
+        Thread.sleep(1000);
+
+        // **************************
+        // Package Download Screen
+
+        WizardPage packageDownloadPage = packageSelectiondPage.next(true);
+        assertNotNull(packageDownloadPage);
+        assertEquals("Packages download", packageDownloadPage.getTitle());
+
+        // **********************
+        // Summary screen
+        SummaryWizardPage summary = packageDownloadPage.next(SummaryWizardPage.class);
         assertNotNull(summary);
         assertEquals("Summary", summary.getTitle());
         assertNotNull(summary.getRegistration());
@@ -296,7 +314,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     }
 
-    @Test
+    //@Test
     public void installPackageAndRestart() throws Exception {
 
         // login
