@@ -135,13 +135,11 @@ public class UIValueHolder extends UIInput {
                 PhaseId.APPLY_REQUEST_VALUES);
 
         // Process this component itself
-        if (Boolean.TRUE.equals(getSubmitValue())) {
-            try {
-                decode(context);
-            } catch (RuntimeException e) {
-                context.renderResponse();
-                throw e;
-            }
+        try {
+            decode(context);
+        } catch (RuntimeException e) {
+            context.renderResponse();
+            throw e;
         }
 
         if (isImmediate()) {
@@ -198,11 +196,13 @@ public class UIValueHolder extends UIInput {
         processFacetsAndChildrenWithVariable(context,
                 PhaseId.UPDATE_MODEL_VALUES);
 
-        try {
-            updateModel(context);
-        } catch (RuntimeException e) {
-            context.renderResponse();
-            throw e;
+        if (Boolean.TRUE.equals(getSubmitValue())) {
+            try {
+                updateModel(context);
+            } catch (RuntimeException e) {
+                context.renderResponse();
+                throw e;
+            }
         }
 
         if (!isValid()) {
