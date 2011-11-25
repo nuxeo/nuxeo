@@ -5,6 +5,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<c:if test="false">
+  Deprecated since 5.4.2: use a content view result layout instead
+</c:if>
+
   <h:dataTable var="logEntry" value="${logEntries}"
     class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
     <h:column>

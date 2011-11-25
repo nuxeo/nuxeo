@@ -54,6 +54,12 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         openRepository();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     protected int getCommentGrahNodesNumber() throws Exception {
         RelationManager rm = Framework.getService(RelationManager.class);
 

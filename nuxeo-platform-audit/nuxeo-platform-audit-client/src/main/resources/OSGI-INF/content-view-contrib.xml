@@ -10,34 +10,33 @@
       <translateTitle>true</translateTitle>
       <showTitle>true</showTitle>
 
-      <genericPageProvider
-      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-      <property name="coreSession">#{documentManager}</property>
-      <property name="generateUIComments">true</property>
+      <genericPageProvider class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="generateUIComments">true</property>
 
-      <whereClause docType="BasicAuditSearch">
-        <fixedPart>
-          log.docUUID = ?
-        </fixedPart>
-        <predicate parameter="log.eventDate" operator="BETWEEN">
-          <field schema="basicauditsearch" name="startDate" />
-          <field schema="basicauditsearch" name="endDate" />
-        </predicate>
-        <predicate parameter="log.category" operator="=">
-          <field schema="basicauditsearch" name="eventCategory" />
-        </predicate>
-        <predicate parameter="log.eventId" operator="IN">
-          <field schema="basicauditsearch" name="eventIds" />
-        </predicate>
-        <predicate parameter="log.principalName" operator="=">
-          <field schema="basicauditsearch" name="principalName" />
-        </predicate>
-      </whereClause>
-      <parameter>#{currentDocument.id}</parameter>
-      <sort column="log.eventDate" ascending="false" />
-      <pageSize>10</pageSize>
-      <maxPageSize>1000</maxPageSize>
-    </genericPageProvider>
+        <whereClause docType="BasicAuditSearch">
+          <fixedPart>
+            log.docUUID = ?
+          </fixedPart>
+          <predicate parameter="log.eventDate" operator="BETWEEN">
+            <field schema="basicauditsearch" name="startDate" />
+            <field schema="basicauditsearch" name="endDate" />
+          </predicate>
+          <predicate parameter="log.category" operator="=">
+            <field schema="basicauditsearch" name="eventCategory" />
+          </predicate>
+          <predicate parameter="log.eventId" operator="IN">
+            <field schema="basicauditsearch" name="eventIds" />
+          </predicate>
+          <predicate parameter="log.principalName" operator="=">
+            <field schema="basicauditsearch" name="principalName" />
+          </predicate>
+        </whereClause>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="log.eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
+      </genericPageProvider>
 
       <searchLayout name="basicauditsearch" />
       <showFilterForm>true</showFilterForm>
@@ -58,5 +57,7 @@
       </resultLayouts>
 
     </contentView>
+
   </extension>
+
 </component>

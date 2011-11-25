@@ -26,12 +26,11 @@ import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.Comment;
 import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
@@ -44,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author Anahide Tchertchian
  */
-public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
+public class JbpmTaskServiceTest extends SQLRepositoryTestCase {
 
     protected JbpmService service;
 
@@ -98,10 +97,13 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
 
         user4 = userManager.getPrincipal("myuser4");
         assertNotNull(user4);
+
+        openSession();
     }
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }
@@ -119,7 +121,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         calendar.set(2006, 6, 6);
 
         // create one task for all actors
-        taskService.createTask(coreSession, user3, document, "Test Task Name",
+        taskService.createTask(session, user3, document, "Test Task Name",
                 actors, false, "test directive", "test comment",
                 calendar.getTime(), null);
 
@@ -180,7 +182,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         // test ending of the task
 
         try {
-            taskService.acceptTask(coreSession, user4, task, "ok i'm in");
+            taskService.acceptTask(session, user4, task, "ok i'm in");
             fail("Should have raised an exception: user4 cannot end the task");
         } catch (NuxeoJbpmException e) {
             assertEquals("User with id 'myuser4' cannot end this task",
@@ -188,7 +190,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         }
 
         // accept task
-        taskService.acceptTask(coreSession, user1, task, "ok i'm in");
+        taskService.acceptTask(session, user1, task, "ok i'm in");
 
         // test task again
         tasks = service.getTaskInstances(document, (NuxeoPrincipal) null, null);
@@ -254,7 +256,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         calendar.set(2006, 6, 6);
 
         // create one task per actor
-        taskService.createTask(coreSession, user3, document, "Test Task Name",
+        taskService.createTask(session, user3, document, "Test Task Name",
                 actors, true, "test directive", "test comment",
                 calendar.getTime(), null);
 
@@ -317,7 +319,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
 
         // test ending of the task
         try {
-            taskService.rejectTask(coreSession, user2, task1, "i don't agree");
+            taskService.rejectTask(session, user2, task1, "i don't agree");
             fail("Should have raised an exception: user2 cannot end the task");
         } catch (NuxeoJbpmException e) {
             assertEquals("User with id 'myuser2' cannot end this task",
@@ -325,7 +327,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         }
 
         // reject task as user1
-        taskService.rejectTask(coreSession, user1, task1, "i don't agree");
+        taskService.rejectTask(session, user1, task1, "i don't agree");
 
         // test task again
         tasks = service.getTaskInstances(document, (NuxeoPrincipal) null, null);
@@ -427,7 +429,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
 
         // test ending of the task
         try {
-            taskService.acceptTask(coreSession, user4, task2, "i don't agree");
+            taskService.acceptTask(session, user4, task2, "i don't agree");
             fail("Should have raised an exception: user4 cannot end the task");
         } catch (NuxeoJbpmException e) {
             assertEquals("User with id 'myuser4' cannot end this task",
@@ -435,7 +437,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         }
 
         // accept task as user1
-        taskService.acceptTask(coreSession, user1, task2, "i don't agree");
+        taskService.acceptTask(session, user1, task2, "i don't agree");
 
         tasks = service.getTaskInstances(document, (NuxeoPrincipal) null, null);
         assertNotNull(tasks);
@@ -485,8 +487,6 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel getDocument() throws Exception {
-        openRepository();
-        CoreSession session = getCoreSession();
         DocumentModel model = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);

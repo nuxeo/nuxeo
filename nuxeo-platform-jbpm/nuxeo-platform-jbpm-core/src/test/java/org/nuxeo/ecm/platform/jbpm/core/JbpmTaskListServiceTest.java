@@ -70,6 +70,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }

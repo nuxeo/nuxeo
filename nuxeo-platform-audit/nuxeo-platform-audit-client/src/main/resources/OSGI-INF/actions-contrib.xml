@@ -15,47 +15,53 @@
     </documentation>
 
     <action id="TAB_CONTENT_HISTORY" link="/incl/tabs/document_history.xhtml"
-      enabled="true" label="action.view.history" icon="/icons/file.gif"
-      order="100">
+      enabled="true" label="action.view.history" icon="/icons/file.gif" order="100">
       <category>VIEW_ACTION_LIST</category>
-      <filter id="view_content_history">
-        <rule grant="false">
-          <type>WorkspaceRoot</type>
-          <type>SectionRoot</type>
-          <type>Server</type>
-        </rule>
-      </filter>
-      <filter id="TAB_CONTENT_HISTORY_has_subtabs">
-        <rule grant="false">
-          <condition>
-            #{webActions.getActionsList('TAB_CONTENT_HISTORY_sub_tab').isEmpty()}
-          </condition>
-        </rule>
-      </filter>
+      <filter-id>view_content_history</filter-id>
+      <filter-id>TAB_CONTENT_HISTORY_has_subtabs</filter-id>
     </action>
 
     <action id="TAB_EVENTS" link="/incl/tabs/document_events_cv.xhtml"
-      enabled="true" label="action.view.events" icon="/icons/file.gif"
-      order="50">
+      enabled="true" label="action.view.events" icon="/icons/file.gif" order="50">
       <category>TAB_CONTENT_HISTORY_sub_tab</category>
-      <filter id="view_content_history">
-        <rule grant="false">
-          <type>WorkspaceRoot</type>
-          <type>SectionRoot</type>
-          <type>Server</type>
-        </rule>
-      </filter>
+      <filter-id>view_content_history</filter-id>
     </action>
+
     <action id="TAB_VERSIONS" link="/incl/tabs/document_versions.xhtml"
-      enabled="true" label="action.view.versions" icon="/icons/file.gif"
-      order="100">
+      enabled="true" label="action.view.versions" icon="/icons/file.gif" order="100">
       <category>TAB_CONTENT_HISTORY_sub_tab</category>
-      <filter id="versionable">
-        <rule grant="true">
-          <facet>Versionable</facet>
-        </rule>
-      </filter>
+      <filter-id>versionable</filter-id>
     </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="view_content_history">
+      <rule grant="false">
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>Server</type>
+      </rule>
+      <rule grant="false">
+        <facet>Immutable</facet>
+      </rule>
+    </filter>
+
+    <filter id="TAB_CONTENT_HISTORY_has_subtabs">
+      <rule grant="false">
+        <condition>
+          #{webActions.getActionsList('TAB_CONTENT_HISTORY_sub_tab').isEmpty()}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="versionable">
+      <rule grant="true">
+        <facet>Versionable</facet>
+      </rule>
+    </filter>
+
   </extension>
 
 </component>
