@@ -35,7 +35,7 @@ public class SuggestionServiceImpl extends DefaultComponent implements
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        SuggesterGroupDescriptor suggesterGroup = suggesterGroups.getContribution(context.suggesterGroup);
+        SuggesterGroupDescriptor suggesterGroup = suggesterGroups.getSuggesterGroupDescriptor(context.suggesterGroup);
         if (suggesterGroup == null) {
             log.warn("No registered SuggesterGroup with id: "
                     + context.suggesterGroup);
@@ -43,7 +43,7 @@ public class SuggestionServiceImpl extends DefaultComponent implements
         }
 
         for (String suggesterId : suggesterGroup.getSuggesters()) {
-            SuggesterDescriptor suggesterDescritor = suggesters.getContribution(suggesterId);
+            SuggesterDescriptor suggesterDescritor = suggesters.getSuggesterDescriptor(suggesterId);
             if (suggesterDescritor == null) {
                 log.warn("No suggester registered with id: " + suggesterId);
                 continue;

@@ -11,6 +11,9 @@ public class SuggesterRegistry extends
 
     protected Map<String, SuggesterDescriptor> suggesterDescriptors = new HashMap<String, SuggesterDescriptor>();
 
+    public SuggesterDescriptor getSuggesterDescriptor(String name) {
+        return suggesterDescriptors.get(name);
+    }
     @Override
     public void contributionRemoved(String id, SuggesterDescriptor descriptor) {
         suggesterDescriptors.remove(id);
@@ -46,4 +49,5 @@ public class SuggesterRegistry extends
             throw new RuntimeException(e);
         }
     }
+
 }

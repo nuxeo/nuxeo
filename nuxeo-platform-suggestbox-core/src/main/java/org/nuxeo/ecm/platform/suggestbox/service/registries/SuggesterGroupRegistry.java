@@ -11,6 +11,10 @@ public class SuggesterGroupRegistry extends
 
     protected Map<String, SuggesterGroupDescriptor> suggesterGroupDescriptors = new HashMap<String, SuggesterGroupDescriptor>();
 
+    public SuggesterGroupDescriptor getSuggesterGroupDescriptor(String name) {
+        return suggesterGroupDescriptors.get(name);
+    }
+
     @Override
     public SuggesterGroupDescriptor clone(SuggesterGroupDescriptor suggestGroup) {
         try {
@@ -41,5 +45,4 @@ public class SuggesterGroupRegistry extends
     public void merge(SuggesterGroupDescriptor src, SuggesterGroupDescriptor dst) {
         // TODO implement me once incremental descriptor features are implemented
     }
-
 }
