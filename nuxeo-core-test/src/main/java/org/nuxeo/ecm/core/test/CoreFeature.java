@@ -40,16 +40,11 @@ import com.google.inject.Binder;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({
-    "org.nuxeo.ecm.core.schema",
-    "org.nuxeo.ecm.core.query",
-    "org.nuxeo.ecm.core.api",
-    "org.nuxeo.ecm.core.event",
-    "org.nuxeo.ecm.core",
-    "org.nuxeo.ecm.core.convert",
-    "org.nuxeo.ecm.core.storage.sql",
-    "org.nuxeo.ecm.core.storage.sql.test"
-})
+@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.query",
+        "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.storage.sql",
+        "org.nuxeo.ecm.core.storage.sql.test" })
 @Features(RuntimeFeature.class)
 public class CoreFeature extends SimpleFeature {
 
@@ -66,10 +61,10 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void initialize(FeaturesRunner runner)
-            throws Exception {
+    public void initialize(FeaturesRunner runner) throws Exception {
         repository = new RepositorySettings(runner);
-        runner.getFeature(RuntimeFeature.class).addServiceProvider(CoreSession.class, repository);
+        runner.getFeature(RuntimeFeature.class).addServiceProvider(
+                CoreSession.class, repository);
     }
 
     @Override
@@ -84,13 +79,24 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        initializeSession(runner);
+        if (repository.getGranularity() != Granularity.METHOD) {
+            initializeSession(runner);
+        }
+    }
+
+    @Override
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
+            Object test) throws Exception {
+        if (repository.getGranularity() == Granularity.METHOD) {
+            initializeSession(runner);
+        }
     }
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
-        //TODO cleanupSession(runner);
-        Framework.getService(EventService.class).waitForAsyncCompletion();
+        if (repository.getGranularity() != Granularity.METHOD) {
+            cleanupSession(runner);
+        }
         repository.shutdown();
     }
 
@@ -103,25 +109,35 @@ public class CoreFeature extends SimpleFeature {
     }
 
     protected void cleanupSession(FeaturesRunner runner) {
-        CoreSession session = runner.getInjector().getInstance(CoreSession.class);
-
+        CoreSession session = runner.getInjector().getInstance(
+                CoreSession.class);
         try {
+            // wait for any async thread to finish (e.g. fulltext indexing) as
+            // apparently concurrent fulltext indexing of document that has just
+            // been deleted can trigger the core (SessionImpl) to try to
+            // re-create the row either in the hierarchy or in the fulltext
+            // tables and violate integrity constraints of the database
+            Framework.getLocalService(EventService.class).waitForAsyncCompletion();
             session.removeChildren(new PathRef("/"));
+            session.save();
+            // wait for async events potentially triggered by the repo clean up
+            // it-self before moving on to executing the next test if any
+            Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
         }
-
-        initializeSession(runner);
     }
 
     protected void initializeSession(FeaturesRunner runner) {
-        CoreSession session = runner.getInjector().getInstance(CoreSession.class);
+        CoreSession session = runner.getInjector().getInstance(
+                CoreSession.class);
 
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {
                 factory.populate(session);
                 session.save();
+                Framework.getLocalService(EventService.class).waitForAsyncCompletion();
             } catch (ClientException e) {
                 log.error(e.toString(), e);
             }
