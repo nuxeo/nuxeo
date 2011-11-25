@@ -24,12 +24,14 @@
     <a4j:commandButton action="#{provider.rewind}"
                      alt="#{messages['command.navigation.rewind']}"
                      image="/icons/action_page_rewind.gif"
+                     eventsQueue="a4jPageNavigationQueue"
                      reRender="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </a4j:commandButton>
     <a4j:commandButton action="#{provider.previous}"
                      alt="#{messages['command.navigation.previous']}"
                      image="/icons/action_page_previous.gif"
+                     eventsQueue="a4jPageNavigationQueue"
                      reRender="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </a4j:commandButton>
@@ -41,6 +43,7 @@
     <a4j:commandButton action="#{provider.next}"
                      alt="#{messages['command.navigation.next']}"
                      image="/icons/action_page_next.gif"
+                     eventsQueue="a4jPageNavigationQueue"
                      reRender="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
     </a4j:commandButton>
@@ -48,6 +51,7 @@
     <a4j:commandButton action="#{provider.last}"
                      alt="#{messages['command.navigation.fastforward']}"
                      image="/icons/action_page_fastforward.gif"
+                     eventsQueue="a4jPageNavigationQueue"
                      reRender="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
     </a4j:commandButton>
