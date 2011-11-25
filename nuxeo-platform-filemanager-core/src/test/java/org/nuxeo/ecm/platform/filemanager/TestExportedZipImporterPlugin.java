@@ -21,12 +21,10 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -80,8 +78,7 @@ public class TestExportedZipImporterPlugin {
 
     private File archiveFile;
 
-    @Before
-    public void createTestDocuments() throws Exception {
+    public void createTestDocumentsAndArchive() throws Exception {
         wsRoot = coreSession.getDocument(new PathRef(
                 "default-domain/workspaces"));
 
@@ -135,7 +132,8 @@ public class TestExportedZipImporterPlugin {
     }
 
     @Test
-    public void testArchiveDetection() throws IOException {
+    public void testArchiveDetection() throws Exception {
+        createTestDocumentsAndArchive();
         ZipFile archive = ExportedZipImporter.getArchiveFileIfValid(archiveFile);
         assertNotNull(archive);
         archive.close();
@@ -143,6 +141,7 @@ public class TestExportedZipImporterPlugin {
 
     @Test
     public void testImportViaFileManager() throws Exception {
+        createTestDocumentsAndArchive();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archiveFile);
         fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(),
@@ -168,6 +167,7 @@ public class TestExportedZipImporterPlugin {
 
     @Test
     public void testOverrideImportViaFileManager() throws Exception {
+        createTestDocumentsAndArchive();
         // first update the source DM of the exported source
         sourceWS.setProperty("dublincore", "title", "I have been changed");
         sourceWS = coreSession.saveDocument(sourceWS);
