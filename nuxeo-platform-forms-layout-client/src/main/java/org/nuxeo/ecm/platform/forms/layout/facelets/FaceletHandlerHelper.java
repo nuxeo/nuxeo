@@ -279,11 +279,18 @@ public final class FaceletHandlerHelper {
         return addTagAttribute(widgetAttrs, createAttribute("id", id));
     }
 
-    public TagAttributes getTagAttributes(Widget widget) {
+    /**
+     * @since 5.5
+     */
+    public TagAttributes getTagAttributes(Widget widget,
+            List<String> excludedProperties, boolean bindFirstFieldDefinition) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
-        FieldDefinition[] fields = widget.getFieldDefinitions();
-        if (fields != null && fields.length > 0) {
-            FieldDefinition field = fields[0];
+        if (bindFirstFieldDefinition) {
+            FieldDefinition field = null;
+            FieldDefinition[] fields = widget.getFieldDefinitions();
+            if (fields != null && fields.length > 0) {
+                field = fields[0];
+            }
             TagAttribute valueAttr = createAttribute(
                     "value",
                     ValueExpressionHelper.createExpressionString(
@@ -299,13 +306,25 @@ public final class FaceletHandlerHelper {
         return getTagAttributes(attrs);
     }
 
+    public TagAttributes getTagAttributes(Widget widget) {
+        return getTagAttributes(widget, null, true);
+    }
+
+    /**
+     * @since 5.5
+     */
     public List<TagAttribute> getTagAttributes(
-            Map<String, Serializable> properties, boolean useReferenceProperties) {
+            Map<String, Serializable> properties,
+            List<String> excludedProperties, boolean useReferenceProperties) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         if (properties != null) {
             for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
                 TagAttribute attr;
                 String key = prop.getKey();
+                if (excludedProperties != null
+                        && excludedProperties.contains(key)) {
+                    continue;
+                }
                 Serializable valueInstance = prop.getValue();
                 if (!shouldCreateReferenceAttribute(key, valueInstance)
                         || !useReferenceProperties) {
@@ -328,6 +347,11 @@ public final class FaceletHandlerHelper {
             }
         }
         return attrs;
+    }
+
+    public List<TagAttribute> getTagAttributes(
+            Map<String, Serializable> properties, boolean useReferenceProperties) {
+        return getTagAttributes(properties, null, useReferenceProperties);
     }
 
     public TagAttributes getTagAttributes(WidgetSelectOption selectOption) {

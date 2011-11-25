@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.Serializable;
+import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -47,15 +51,31 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
             throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String widgetId = widget.getId();
-        // XXX: take mode on widget ?
-        TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
+        String widgetMode = widget.getMode();
+
+        TagAttributes attributes = helper.getTagAttributes(widget,
+                Arrays.asList(new String[] { "mode" }), true);
+        attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                helper.createAttribute("id", widgetId));
+
+        String modeValue;
+        Serializable modeFromProps = widget.getProperty("mode");
+        if ((modeFromProps instanceof String)
+                && !StringUtils.isBlank((String) modeFromProps)) {
+            modeValue = (String) modeFromProps;
+        } else {
+            modeValue = widgetMode;
+        }
+        // add mode attribute
+        attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                helper.createAttribute("mode", modeValue));
+
         FaceletHandler leaf = new LeafFaceletHandler();
         String widgetTagConfigId = widget.getTagConfigId();
         TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig,
                 widgetTagConfigId, attributes, leaf);
-        String mode = widget.getMode();
         FaceletHandler res = new LayoutTagHandler(layoutTagConfig);
-        if (BuiltinWidgetModes.PDF.equals(mode)) {
+        if (BuiltinWidgetModes.PDF.equals(widgetMode)) {
             // add a surrounding p:html tag handler
             return helper.getHtmlComponentHandler(widgetTagConfigId,
                     new TagAttributes(new TagAttribute[0]), res,
