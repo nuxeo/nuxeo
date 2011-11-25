@@ -75,7 +75,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
  * Also handles logout and identity switch.
- * 
+ *
  * @author Thierry Delprat
  * @author Bogdan Stefanescu
  * @author Anahide Tchertchian
@@ -236,6 +236,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
+            log.debug("Reason for login failure", e);
             log.info("Login failed for "
                     + cachableUserIdent.getUserInfo().getUserName());
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
@@ -966,7 +967,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     /**
      * Does a forced login as the given user. Bypasses all authentication
      * checks.
-     * 
+     *
      * @param username the user name
      * @return the login context, which MUST be used for logout in a
      *         {@code finally} block
