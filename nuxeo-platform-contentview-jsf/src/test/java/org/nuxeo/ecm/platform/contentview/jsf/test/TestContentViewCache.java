@@ -101,6 +101,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         facesContext.relieveCurrent();
         super.tearDown();
     }

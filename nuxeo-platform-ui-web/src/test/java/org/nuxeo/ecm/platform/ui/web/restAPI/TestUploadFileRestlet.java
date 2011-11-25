@@ -42,6 +42,12 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     /**
      * Unit test of the upload file restlet.
      */
