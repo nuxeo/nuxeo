@@ -42,7 +42,7 @@ public class Context {
 
     protected static String baseUrl;
 
-    protected static boolean browserInternetAccess;
+    protected static Boolean browserInternetAccess;
 
     protected Map<String, String> errors = new HashMap<String, String>();
 
@@ -154,13 +154,23 @@ public class Context {
         return baseUrl;
     }
 
+    public boolean isBrowserInternetAccessChecked() {
+        if (browserInternetAccess == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public boolean hasBrowserInternetAccess() {
+        if (browserInternetAccess == null) {
+            return false;
+        }
         return browserInternetAccess;
     }
 
     public void setBrowserInternetAccess(boolean browserInternetAccess) {
         Context.browserInternetAccess = browserInternetAccess;
     }
-
 
 }
