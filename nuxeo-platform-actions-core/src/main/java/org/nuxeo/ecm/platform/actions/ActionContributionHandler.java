@@ -76,7 +76,11 @@ public class ActionContributionHandler extends
             // register embedded filters and save corresponding filter ids
             for (ActionFilter filter : newFilters) {
                 String filterId = filter.getId();
-                filters.addContribution((DefaultActionFilter) filter);
+                // XXX: local filters implicitly append their rules to existing
+                // ones => see append to true
+                DefaultActionFilter f = (DefaultActionFilter) filter;
+                f.setAppend(true);
+                filters.addContribution(f);
                 if (!newFilterIds.contains(filterId)) {
                     newFilterIds.add(filterId);
                 }

@@ -48,13 +48,13 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     private static final Log log = LogFactory.getLog(DefaultActionFilter.class);
 
     @XNode("@id")
-    private String id;
+    protected String id;
 
     @XNode("@append")
-    private boolean append;
+    protected boolean append;
 
     @XNodeList(value = "rule", type = String[].class, componentType = FilterRule.class)
-    private FilterRule[] rules;
+    protected FilterRule[] rules;
 
     public DefaultActionFilter() {
         this(null, null, false);
@@ -163,7 +163,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     /**
      * Returns true if document has one of the given facets, else false.
-     * 
+     *
      * @return true if document has one of the given facets, else false.
      */
     protected final boolean checkFacets(ActionContext context, String[] facets) {
@@ -183,7 +183,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * Returns true if given document has one of the permissions, else false.
      * <p>
      * If no document is found, return true only if principal is a manager.
-     * 
+     *
      * @return true if given document has one of the given permissions, else
      *         false
      */
@@ -235,7 +235,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * Returns true if one of the conditions is verified, else false.
      * <p>
      * If one evaluation fails, return false.
-     * 
+     *
      * @return true if one of the conditions is verified, else false.
      */
     protected final boolean checkConditions(ActionContext context,
@@ -280,7 +280,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * <p>
      * If document is null, consider context is the server and return true if
      * 'Server' is in the list.
-     * 
+     *
      * @return true if document type is one of the given types, else false.
      */
     protected final boolean checkTypes(ActionContext context, String[] types) {
@@ -303,7 +303,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     /**
      * Returns true if document has one of the given schemas, else false.
-     * 
+     *
      * @return true if document has one of the given schemas, else false
      */
     protected final boolean checkSchemas(ActionContext context, String[] schemas) {
@@ -321,6 +321,10 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     public boolean getAppend() {
         return append;
+    }
+
+    public void setAppend(boolean append) {
+        this.append = append;
     }
 
     // overridden to be public

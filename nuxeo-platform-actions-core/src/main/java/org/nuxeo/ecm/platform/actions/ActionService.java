@@ -114,7 +114,6 @@ public class ActionService extends DefaultComponent implements ActionManager {
         List<Action> actions = getActionRegistry().getActions(category);
         if (hideUnavailableActions) {
             applyFilters(context, actions);
-            Collections.sort(actions);
             return actions;
         } else {
             List<Action> allActions = new ArrayList<Action>();
@@ -124,8 +123,6 @@ public class ActionService extends DefaultComponent implements ActionManager {
             for (Action a : allActions) {
                 a.setAvailable(actions.contains(a));
             }
-
-            Collections.sort(allActions);
             return allActions;
         }
     }

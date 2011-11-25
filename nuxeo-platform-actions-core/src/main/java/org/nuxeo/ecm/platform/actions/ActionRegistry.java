@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,11 +42,11 @@ public class ActionRegistry implements Serializable {
 
     private final Map<String, Action> actions;
 
-    private final Map<String, List<Action>> categories;
+    private final Map<String, List<String>> categories;
 
     public ActionRegistry() {
         actions = new HashMap<String, Action>();
-        categories = new HashMap<String, List<Action>>();
+        categories = new HashMap<String, List<String>>();
     }
 
     public synchronized void addAction(Action action) {
@@ -65,12 +64,14 @@ public class ActionRegistry implements Serializable {
         }
         actions.put(id, action);
         for (String category : action.getCategories()) {
-            List<Action> acts = categories.get(category);
+            List<String> acts = categories.get(category);
             if (acts == null) {
-                acts = new ArrayList<Action>();
-                categories.put(category, acts);
+                acts = new ArrayList<String>();
             }
-            acts.add(action);
+            if (!acts.contains(id)) {
+                acts.add(id);
+            }
+            categories.put(category, acts);
         }
     }
 
@@ -82,9 +83,9 @@ public class ActionRegistry implements Serializable {
         Action action = actions.remove(id);
         if (action != null) {
             for (String category : action.getCategories()) {
-                List<Action> acts = categories.get(category);
+                List<String> acts = categories.get(category);
                 if (acts != null) {
-                    acts.remove(action);
+                    acts.remove(id);
                 }
             }
         }
@@ -97,18 +98,20 @@ public class ActionRegistry implements Serializable {
 
     public List<Action> getActions(String category) {
         List<Action> result = new LinkedList<Action>();
-        Collection<Action> actions;
+        Collection<String> ids;
         synchronized (this) {
-            actions = categories.get(category);
+            ids = categories.get(category);
         }
-        actions = sortActions(actions);
-        if (actions != null) {
-            for (Action action : actions) {
-                if (action.isEnabled()) { // return only enabled actions
+        if (ids != null) {
+            for (String id : ids) {
+                Action action = actions.get(id);
+                if (action != null && action.isEnabled()) {
+                    // return only enabled actions
                     result.add(action);
                 }
             }
         }
+        result = sortActions(result);
         return result;
     }
 
@@ -116,14 +119,11 @@ public class ActionRegistry implements Serializable {
         return actions.get(id);
     }
 
-    private static Collection<Action> sortActions(Collection<Action> actions) {
-        Collection<Action> sortedActions;
-        if (actions == null) {
-            sortedActions = new ArrayList<Action>();
-        } else {
-            Action[] sortedActionsArray = actions.toArray(new Action[actions.size()]);
-            Arrays.sort(sortedActionsArray);
-            sortedActions = Arrays.asList(sortedActionsArray);
+    protected static List<Action> sortActions(Collection<Action> actions) {
+        List<Action> sortedActions = new ArrayList<Action>();
+        if (actions != null) {
+            sortedActions.addAll(actions);
+            Collections.sort(sortedActions);
         }
         return sortedActions;
     }
