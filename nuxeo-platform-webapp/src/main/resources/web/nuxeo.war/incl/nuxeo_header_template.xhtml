@@ -101,43 +101,41 @@
               tabs="MAIN_TABS:home">
               <h:outputText value="#{messages['label.loggedAsUser']}" />
             </nxd:restDocumentLink>
-            <nxu:set var="actions"
+            <nxu:set var="menuActions"
               value="#{webActions.getActionsList('USER_MENU_ACTIONS')}"
               cache="true">
-              <nxu:dataList layout="unorderedList"
-                var="action"
-                value="#{actions}"
-                rowIndexVar="row"
-                rowCountVar="rowCount"
-                id="userMenuActionsTable">
-                <nxh:commandLink action="#{action.getLink()}"
-                  rendered="#{fn:startsWith(action.link,'#')}"
-                  immediate="#{action.immediate}"
-                  id="userMenuActionCommandLink">
-                  <h:outputText value="#{messages[action.label]}" />
-                </nxh:commandLink>
-                <h:outputLink value="#{baseURL}#{action.link}"
-                  rendered="#{!(fn:startsWith(action.link,'#'))}"
-                  id="userMenuActionLink">
-                  <h:outputText value="#{messages[action.label]}" />
-                </h:outputLink>
-              </nxu:dataList>
-            </nxu:set>
-            <nxu:set var="actions"
+            <nxu:set var="oldActions"
               value="#{webActions.getActionsList('USER_SERVICES')}"
               cache="true">
-              <nxu:dataList layout="unorderedList"
-                var="action"
-                value="#{actions}"
-                rowIndexVar="row"
-                rowCountVar="rowCount"
-                id="userServicesActionsTable">
-                <nxh:commandLink action="#{action.getLink()}"
-                  immediate="#{action.immediate}"
-                  id="userServicesActionCommandLink">
-                  <h:outputText value="#{messages[action.label]}" />
-                </nxh:commandLink>
-              </nxu:dataList>
+              <c:if test="#{not empty menuActions or not empty oldActions}">
+                <ul>
+                  <c:forEach var="action" items="#{menuActions}">
+                    <li>
+                      <nxh:commandLink action="#{action.getLink()}"
+                        rendered="#{fn:startsWith(action.link,'#')}"
+                        immediate="#{action.immediate}"
+                        id="userMenuActionCommandLink">
+                        <h:outputText value="#{messages[action.label]}" />
+                      </nxh:commandLink>
+                      <h:outputLink value="#{baseURL}#{action.link}"
+                        rendered="#{!(fn:startsWith(action.link,'#'))}"
+                        id="userMenuActionLink">
+                        <h:outputText value="#{messages[action.label]}" />
+                      </h:outputLink>
+                    </li>
+                  </c:forEach>
+                  <c:forEach var="action" items="#{oldActions}">
+                    <li>
+                      <nxh:commandLink action="#{action.getLink()}"
+                        immediate="#{action.immediate}"
+                        id="userServicesActionCommandLink">
+                        <h:outputText value="#{messages[action.label]}" />
+                      </nxh:commandLink>
+                    </li>
+                  </c:forEach>
+                </ul>
+              </c:if>
+            </nxu:set>
             </nxu:set>
           </li>
         </ul>
@@ -156,7 +154,7 @@
             rowIndexVar="row"
             rowCountVar="rowCount"
             id="userServicesBottomActionsTable">
-            <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+            <h:outputText value=" | " rendered="#{row!=0 and row!=rowCount}"/>
 
             <nxh:commandLink action="#{action.getLink()}"
               rendered="#{fn:startsWith(action.link,'#')}"
