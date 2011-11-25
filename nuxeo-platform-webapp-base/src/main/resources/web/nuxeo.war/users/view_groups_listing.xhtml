@@ -19,18 +19,20 @@
             <a4j:support event="onkeyup" reRender="groupsListingPanel"
               requestDelay="1000" 
               action="#{contentViewActions.refreshAndRewind(contentViewName)}"
-              onsubmit="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
-              ignoreDupResponses="true" eventsQueue="groupSearchQueue" />
+              ignoreDupResponses="true"
+              eventsQueue="adminCenterQueue" />
           </h:inputText>
           <f:verbatim>&amp;nbsp;</f:verbatim>
           <a4j:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}" styleClass="button"
-            reRender="groupsPanel" />
+            reRender="groupsPanel"
+            eventsQueue="adminCenterQueue" />
           <a4j:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{groupManagementActions.clearSearch}" styleClass="button"
-            reRender="groupsPanel" />
+            reRender="groupsPanel"
+            eventsQueue="adminCenterQueue" />
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />

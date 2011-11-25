@@ -16,7 +16,8 @@
       <a4j:commandLink immediate="true"
         value="#{messages['command.directoryBack']}"
         action="#{userManagementActions.toggleShowUserOrGroup}"
-        reRender="usersPanel" />
+        reRender="usersPanel"
+        eventsQueue="adminCenterQueue" />
     </p>
   </h:form>
 
@@ -32,7 +33,8 @@
           <a4j:commandLink
             action="#{userManagementActions.deleteUser}"
             onclick="if (!confirmDeleteUser()) { return false; }"
-            reRender="usersPanel">
+            reRender="usersPanel"
+            eventsQueue="adminCenterQueue">
             <h:graphicImage value="/icons/action_delete.gif" />
             <h:outputText value="#{messages['command.delete']}" />
           </a4j:commandLink>
@@ -47,7 +49,8 @@
       <ul>
         <li class="#{nxu:test(userManagementActions.detailsMode == 'view', 'selected', '')}">
           <a4j:commandLink action="#{userManagementActions.setDetailsMode('view')}"
-            immediate="true" reRender="userDetailsPanel">
+            immediate="true" reRender="userDetailsPanel"
+            eventsQueue="adminCenterQueue">
             <h:outputText value="#{messages['label.userManager.viewUser']}" />
           </a4j:commandLink>
         </li>
@@ -56,7 +59,8 @@
           <li class="#{nxu:test(userManagementActions.detailsMode == 'edit', 'selected', '')}">
             <a4j:commandLink
               action="#{userManagementActions.setDetailsMode('edit')}" immediate="true"
-                    reRender="userDetailsPanel">
+              reRender="userDetailsPanel"
+              eventsQueue="adminCenterQueue">
               <h:outputText value="#{messages['label.userManager.editUser']}" />
             </a4j:commandLink>
           </li>
@@ -64,8 +68,10 @@
 
         <f:subview rendered="#{userManagementActions.allowChangePassword and notReadOnly}">
           <li class="#{nxu:test(userManagementActions.detailsMode == 'editPassword', 'selected', '')}">
-            <a4j:commandLink action="#{userManagementActions.setDetailsMode('editPassword')}" immediate="true"
-              reRender="userDetailsPanel">
+            <a4j:commandLink action="#{userManagementActions.setDetailsMode('editPassword')}"
+              immediate="true"
+              reRender="userDetailsPanel"
+              eventsQueue="adminCenterQueue">
               <h:outputText value="#{messages['command.change.password']}" />
             </a4j:commandLink>
           </li>
@@ -94,7 +100,9 @@
                 <a4j:commandButton
                   value="#{messages['command.save']}"
                   action="#{userManagementActions.updateUser}"
-                  styleClass="button" reRender="userDetailsPanel,facesStatusMessagePanel" />
+                  styleClass="button"
+                  reRender="userDetailsPanel,facesStatusMessagePanel"
+                  eventsQueue="adminCenterQueue" />
               </td>
               <td class="fieldColumn"></td>
             </tr>
@@ -104,7 +112,8 @@
     </ui:insert>
 
     <ui:insert name="edit_user_password_tab_content">
-      <a4j:form id="editUserPassword" rendered="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
+      <a4j:form id="editUserPassword"
+        rendered="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
         <nxl:layout name="user" mode="editPassword" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>
@@ -115,7 +124,8 @@
                   value="#{messages['command.save']}"
                   action="#{userManagementActions.changePassword}"
                   styleClass="button"
-                  reRender="userDetailsPanel,facesStatusMessagePanel" />
+                  reRender="userDetailsPanel,facesStatusMessagePanel"
+                  eventsQueue="adminCenterQueue" />
               </td>
               <td class="fieldColumn"></td>
             </tr>

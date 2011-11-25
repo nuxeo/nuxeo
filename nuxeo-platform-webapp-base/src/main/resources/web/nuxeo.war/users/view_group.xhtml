@@ -16,7 +16,8 @@
       <a4j:commandLink immediate="true"
         value="#{messages['command.directoryBack']}"
         action="#{groupManagementActions.toggleShowUserOrGroup}"
-        reRender="groupsPanel" />
+        reRender="groupsPanel"
+        eventsQueue="adminCenterQueue" />
     </p>
   </h:form>
 
@@ -32,7 +33,8 @@
           <a4j:commandLink
             action="#{groupManagementActions.deleteGroup}"
             onclick="if (!confirmDeleteGroup()) { return false; }"
-            reRender="groupsPanel">
+            reRender="groupsPanel"
+            eventsQueue="adminCenterQueue">
             <h:graphicImage value="/icons/action_delete.gif" />
             <h:outputText value="#{messages['command.delete']}" />
           </a4j:commandLink>
@@ -47,7 +49,8 @@
       <ul>
         <li class="#{nxu:test(groupManagementActions.detailsMode == 'view', 'selected', '')}">
           <a4j:commandLink action="#{groupManagementActions.setDetailsMode('view')}"
-            immediate="true" reRender="groupDetailsPanel">
+            immediate="true" reRender="groupDetailsPanel"
+            eventsQueue="adminCenterQueue">
             <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
           </a4j:commandLink>
         </li>
@@ -56,7 +59,8 @@
           <li class="#{nxu:test(groupManagementActions.detailsMode == 'edit', 'selected', '')}">
             <a4j:commandLink
               action="#{groupManagementActions.setDetailsMode('edit')}" immediate="true"
-                    reRender="groupDetailsPanel">
+              reRender="groupDetailsPanel"
+              eventsQueue="adminCenterQueue">
               <h:outputText value="#{messages['label.groupManager.editGroup']}" />
             </a4j:commandLink>
           </li>
@@ -82,7 +86,9 @@
               <a4j:commandButton
                 value="#{messages['command.save']}"
                 action="#{groupManagementActions.updateGroup}"
-                styleClass="button" reRender="groupDetailsPanel,facesStatusMessagePanel" />
+                styleClass="button"
+                reRender="groupDetailsPanel,facesStatusMessagePanel"
+                eventsQueue="adminCenterQueue" />
             </td>
             <td class="fieldColumn"></td>
           </tr>
