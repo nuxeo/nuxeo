@@ -27,19 +27,16 @@ public class DefaultRepositoryInit implements RepositoryInit {
                 "Domain");
         doc.setProperty("dublincore", "title", "Default domain");
         doc = session.createDocument(doc);
-        session.saveDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/", "workspaces",
                 "WorkspaceRoot");
         doc.setProperty("dublincore", "title", "Workspaces");
         doc = session.createDocument(doc);
-        session.saveDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/", "sections",
                 "SectionRoot");
         doc.setProperty("dublincore", "title", "Workspaces");
         doc = session.createDocument(doc);
-        session.saveDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/", "templates",
                 "TemplateRoot");
@@ -47,13 +44,11 @@ public class DefaultRepositoryInit implements RepositoryInit {
         doc.setProperty("dublincore", "description",
                 "Root of workspaces templates");
         doc = session.createDocument(doc);
-        session.saveDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/workspaces", "test",
                 "Workspace");
         doc.setProperty("dublincore", "title", "workspace");
         doc = session.createDocument(doc);
-        session.saveDocument(doc);
     }
 
 }
