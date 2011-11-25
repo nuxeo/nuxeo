@@ -57,11 +57,13 @@ public class TestReloadProperties extends AbstractCommandTest {
 
     @Override
     protected void installDone(Task task, Throwable error) throws Exception {
+        super.installDone(task, error);
         assertEquals("myvalue", Framework.getProperty("myprop"));
     }
 
     @Override
     protected void uninstallDone(Task task, Throwable error) throws Exception {
+        super.uninstallDone(task, error);
         assertNull(Framework.getProperty("myprop"));
     }
 

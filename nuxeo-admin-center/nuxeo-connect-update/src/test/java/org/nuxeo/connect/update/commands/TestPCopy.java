@@ -59,10 +59,7 @@ public class TestPCopy extends AbstractCommandTest {
 
     @Override
     protected void installDone(Task task, Throwable error) throws Exception {
-        if (error != null) {
-            error.printStackTrace();
-            fail("Unexpected Rollback on Install Task");
-        }
+        super.installDone(task, error);
         File dst = getTargetFile();
         assertTrue(dst.isFile());
         assertEquals("test=my value", FileUtils.readFile(dst));
@@ -70,10 +67,7 @@ public class TestPCopy extends AbstractCommandTest {
 
     @Override
     protected void uninstallDone(Task task, Throwable error) throws Exception {
-        if (error != null) {
-            error.printStackTrace();
-            fail("Unexpected Rollback on uninstall Task");
-        }
+        super.uninstallDone(task, error);
         assertFalse(getTargetFile().isFile());
     }
 

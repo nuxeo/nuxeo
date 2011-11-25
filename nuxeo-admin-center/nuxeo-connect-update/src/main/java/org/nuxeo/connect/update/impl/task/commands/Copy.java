@@ -112,23 +112,26 @@ public class Copy extends AbstractCommand {
             log.warn("Can't copy " + file + " . File missing.");
             return null;
         }
-        return doCopy(task, prefs, file, tofile);
+        return doCopy(task, prefs, file, tofile, overwrite);
     }
 
     /**
+     * @param doOverwrite
      * @since 5.5
      */
     protected Command doCopy(Task task, Map<String, String> prefs,
-            File fileToCopy, File dst) throws PackageException {
+            File fileToCopy, File dst, boolean doOverwrite)
+            throws PackageException {
         String dstmd5;
         File bak = null;
+        CompositeCommand rollbackCommand = new CompositeCommand();
         if (fileToCopy.isDirectory()) {
-            CompositeCommand rollbackCommand = new CompositeCommand();
             if (fileToCopy != file) {
                 dst = new File(dst, fileToCopy.getName());
             }
             for (File childFile : fileToCopy.listFiles()) {
-                rollbackCommand.addCommand(doCopy(task, prefs, childFile, dst));
+                rollbackCommand.addCommand(doCopy(task, prefs, childFile, dst,
+                        doOverwrite));
             }
             return rollbackCommand;
         }
@@ -164,33 +167,35 @@ public class Copy extends AbstractCommand {
                         }
                     }
                     if (dstVersion == null) {
-                        // dst doesn't exist, new file will be copied
-                        dst.getParentFile().mkdirs();
-                    } else if (fileToCopyVersion.greaterThan(dstVersion)
-                            || (fileToCopyVersion.isSnapshot() && fileToCopyVersion.equals(dstVersion))) {
-                        // dst will be replaced with newer version
-                        bak = IOUtils.backup(task.getPackage(), dst);
-                        File newDst = new File(dst.getParentFile(),
+                        // dst doesn't exist
+                    } else if (fileToCopyVersion.greaterThan(dstVersion)) {
+                        // backup dst and generate rollback command
+                        File oldDst = dst;
+                        dst = new File(dst.getParentFile(),
                                 fileToCopy.getName());
-                        // Delete old dst if its name differs from new version
-                        if (!dst.equals(newDst)) {
-                            if (!ArrayUtils.contains(
-                                    FILES_TO_DELETE_ONLY_ON_EXIT,
-                                    filenameWithoutVersion)) {
-                                dst.delete();
-                            } else {
-                                dst.deleteOnExit();
-                            }
-                            dst = newDst;
+                        File backup = IOUtils.backup(task.getPackage(), oldDst);
+                        rollbackCommand.addCommand(new Copy(backup, oldDst,
+                                null, false));
+                        // Delete old dst as its name differs from new version
+                        if (!ArrayUtils.contains(FILES_TO_DELETE_ONLY_ON_EXIT,
+                                filenameWithoutVersion)) {
+                            oldDst.delete();
+                        } else {
+                            oldDst.deleteOnExit();
                         }
-                    } else {
+                    } else if (fileToCopyVersion.isSnapshot()
+                            && fileToCopyVersion.equals(dstVersion)) {
+                        doOverwrite = true;
+                    } else if (!doOverwrite) {
                         log.info("Ignore " + fileToCopy
-                                + " because a newer file is already present.");
+                                + " because not newer than " + dstVersion
+                                + " and 'overwrite' is set to false.");
                         return null;
                     }
                 }
-            } else if (dst.exists()) { // backup the destination file if exist.
-                if (!overwrite) { // force a rollback
+            }
+            if (dst.exists()) { // backup the destination file if exist.
+                if (!doOverwrite) { // force a rollback
                     throw new PackageException(
                             "Copy command has overwrite flag on false but destination file exists: "
                                     + dst);
@@ -223,10 +228,11 @@ public class Copy extends AbstractCommand {
             throw new PackageException("Failed to copy " + fileToCopy, e);
         }
         if (bak == null) { // no file was replaced
-            return new Delete(dst, dstmd5, removeOnExit);
+            rollbackCommand.addCommand(new Delete(dst, dstmd5, removeOnExit));
         } else {
-            return new Copy(bak, dst, dstmd5, true);
+            rollbackCommand.addCommand(new Copy(bak, dst, dstmd5, true));
         }
+        return rollbackCommand;
     }
 
     @SuppressWarnings("unused")

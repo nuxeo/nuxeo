@@ -34,7 +34,7 @@ public class TestCopyUninstallValidation extends TestCopy {
     @Override
     protected void uninstallDone(Task task, Throwable error) throws Exception {
         if (error != null) {
-            error.printStackTrace();
+            log.error(error);
             fail("Unexpected Rollback on uninstall Task");
         }
         // since we modified the file the file should be still there (and not

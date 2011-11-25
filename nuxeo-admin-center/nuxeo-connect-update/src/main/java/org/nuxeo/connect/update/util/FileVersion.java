@@ -133,7 +133,7 @@ public class FileVersion implements Comparable<FileVersion> {
 
     @Override
     public boolean equals(Object o) {
-        return (this == o || (o instanceof FileVersion)
+        return (this == o || o != null && (o instanceof FileVersion)
                 && compareTo((FileVersion) o) == 0);
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -52,10 +52,7 @@ public class TestCopy extends AbstractCommandTest {
 
     @Override
     protected void installDone(Task task, Throwable error) throws Exception {
-        if (error != null) {
-            error.printStackTrace();
-            fail("Unexpected Rollback on Install Task");
-        }
+        super.installDone(task, error);
         LocalPackage pkg = task.getPackage();
         File src = pkg.getData().getEntry("test.properties");
         File dst = getTargetFile();
@@ -65,11 +62,8 @@ public class TestCopy extends AbstractCommandTest {
 
     @Override
     protected void uninstallDone(Task task, Throwable error) throws Exception {
-        if (error != null) {
-            error.printStackTrace();
-            fail("Unexpected Rollback on uninstall Task");
-        }
-        assertFalse(getTargetFile().isFile());
+        super.uninstallDone(task, error);
+        assertFalse(getTargetFile().exists());
     }
 
     protected File getTargetFile() {

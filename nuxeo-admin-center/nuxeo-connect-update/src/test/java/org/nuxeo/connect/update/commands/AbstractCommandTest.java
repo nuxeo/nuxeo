@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     jcarsique
  */
 package org.nuxeo.connect.update.commands;
 
@@ -20,6 +21,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +42,8 @@ import org.nuxeo.connect.update.util.PackageBuilder;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractCommandTest extends PackageTestCase {
+
+    protected static final Log log = LogFactory.getLog(AbstractCommandTest.class);
 
     @Override
     @Before
@@ -70,8 +75,12 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      * @param error always null if task successfully executed. Not null if a
      *            rollback occurred.
      */
-    protected abstract void installDone(Task task, Throwable error)
-            throws Exception;
+    protected void installDone(Task task, Throwable error) throws Exception {
+        if (error != null) {
+            log.error(error);
+            fail("Unexpected Rollback on Install Task");
+        }
+    }
 
     /**
      * Override this method to check the uninstall outcome. If the
@@ -82,8 +91,12 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      * @param error always null if task successfully executed. Not null if a
      *            rollback occurred.
      */
-    protected abstract void uninstallDone(Task task, Throwable error)
-            throws Exception;
+    protected void uninstallDone(Task task, Throwable error) throws Exception {
+        if (error != null) {
+            log.error(error);
+            fail("Unexpected Rollback on uninstall Task");
+        }
+    }
 
     /**
      * Override this method if the install execution is expected to not be
@@ -154,15 +167,16 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         if (!validateInstall(task, status)) {
             return false;
         }
+
+        Throwable error = null;
         try {
             task.run(props);
-            installDone(task, null);
-            return true;
         } catch (Throwable t) {
+            error = t;
             task.rollback();
-            installDone(task, t);
-            return false;
         }
+        installDone(task, error);
+        return error == null;
     }
 
     public boolean uninstall(LocalPackage pkg) throws Exception {
@@ -172,15 +186,16 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         if (!validateUninstall(task, status)) {
             return false;
         }
+
+        Throwable error = null;
         try {
             task.run(props);
-            uninstallDone(task, null);
-            return true;
         } catch (Throwable t) {
+            error = t;
             task.rollback();
-            uninstallDone(task, t);
-            return false;
         }
+        uninstallDone(task, error);
+        return error == null;
     }
 
     @Test
