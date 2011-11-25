@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * Very basic Navigation handler
@@ -89,7 +90,9 @@ public class SimpleNavigationHandler {
 
         }
 
-        String skipPages = System.getProperty(SKIP_PAGES_KEY, null);
+        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
+        configurationGenerator.init();
+        String skipPages = configurationGenerator.getUserConfig().getProperty(SKIP_PAGES_KEY, null);
         if (skipPages!=null) {
             String[] pages2Skip = skipPages.split(",");
             for (String pageKey : pages2Skip) {

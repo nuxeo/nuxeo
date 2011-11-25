@@ -552,6 +552,8 @@ public class RouterServlet extends HttpServlet {
         PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(
                 installationFilePath);
 
+        PackageDownloader.reset();
+
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 

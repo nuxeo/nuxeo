@@ -106,6 +106,9 @@ $(document).ready(function(){
              %><fmt:message key="label.downloadStatus.COMPLETED"/><%
              break;
          case PendingDownload.CORRUPTED:
+             %><fmt:message key="label.downloadStatus.MISSING"/>
+             <img src="<%=contextPath%>/images/broken.png" height="18"/><%
+             break;
          case PendingDownload.MISSING:
              %><fmt:message key="label.downloadStatus.CORRUPTED"/>
              <img src="<%=contextPath%>/images/broken.png" height="18"/><%

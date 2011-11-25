@@ -105,7 +105,6 @@ public class TestParser extends TestCase {
         assertEquals("nuxeo-content-browser", pkgs.getPkg4Download().get(2).getId());
         assertEquals("cap", pkgs.getPkg4Download().get(3).getId());
 
-
         selectedIds.clear();
         selectedIds.add("cmf");
         pkgs.select(selectedIds);

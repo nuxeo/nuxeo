@@ -56,7 +56,9 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  *
@@ -92,16 +94,27 @@ public class PackageDownloader {
     protected String lastSelectionDigest;
 
     protected final AtomicInteger dwThreadCount = new AtomicInteger(0);
+
     protected final AtomicInteger checkThreadCount = new AtomicInteger(0);
 
     public static final String BASE_URL_KEY = "nuxeo.wizard.packages.url";
 
+    public static final String DEFAULT_BASE_URL = "http://community.nuxeo.com/static/staging/mp/";
+
+    protected String baseUrl;
+
     protected String getBaseUrl() {
-        String base =  System.getProperty(BASE_URL_KEY, "http://community.nuxeo.com/static/staging/mp/");
-        if (!base.endsWith("/")) {
-            base = base + "/";
+        if (baseUrl == null) {
+            ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
+            configurationGenerator.init();
+            String base = configurationGenerator.getUserConfig().getProperty(
+                    BASE_URL_KEY, DEFAULT_BASE_URL);
+            if (!base.endsWith("/")) {
+                base = base + "/";
+            }
+            baseUrl = base;
         }
-        return base;
+        return baseUrl;
     }
 
     protected ThreadPoolExecutor download_tpe = new ThreadPoolExecutor(
@@ -111,7 +124,8 @@ public class PackageDownloader {
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r);
                     t.setDaemon(true);
-                    t.setName("DownloaderThread-" + dwThreadCount.incrementAndGet());
+                    t.setName("DownloaderThread-"
+                            + dwThreadCount.incrementAndGet());
                     return t;
                 }
             });
@@ -123,7 +137,8 @@ public class PackageDownloader {
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r);
                     t.setDaemon(true);
-                    t.setName("MD5CheckThread-" + checkThreadCount.incrementAndGet());
+                    t.setName("MD5CheckThread-"
+                            + checkThreadCount.incrementAndGet());
                     return t;
                 }
             });
@@ -136,14 +151,17 @@ public class PackageDownloader {
                 SSLSocketFactory.getSocketFactory(), 443));
         HttpParams httpParams = new BasicHttpParams();
         HttpProtocolParams.setUseExpectContinue(httpParams, false);
-        ConnManagerParams.setMaxTotalConnections(httpParams, NB_DOWNLOAD_THREADS);
-        ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRoute() {
-            @Override
-            public int getMaxForRoute(HttpRoute arg0) {
-                return NB_DOWNLOAD_THREADS;
-            }
-        });
-        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, registry);
+        ConnManagerParams.setMaxTotalConnections(httpParams,
+                NB_DOWNLOAD_THREADS);
+        ConnManagerParams.setMaxConnectionsPerRoute(httpParams,
+                new ConnPerRoute() {
+                    @Override
+                    public int getMaxForRoute(HttpRoute arg0) {
+                        return NB_DOWNLOAD_THREADS;
+                    }
+                });
+        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(
+                httpParams, registry);
         httpClient = new DefaultHttpClient(cm, httpParams);
     }
 
@@ -157,26 +175,27 @@ public class PackageDownloader {
     }
 
     public static void reset() {
-        if (instance!=null) {
-            instance.download_tpe.shutdownNow();
-            instance.check_tpe.shutdown();
+        if (instance != null) {
+            instance.shutdown();
             instance = null;
         }
     }
 
-    public void setProxy (String proxy, int port, String login, String password) {
-        if (proxy!=null) {
+    public void setProxy(String proxy, int port, String login, String password) {
+        if (proxy != null) {
             HttpHost proxyHost = new HttpHost(proxy, port);
-            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
-            if (login!=null) {
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
+                    proxyHost);
+            if (login != null) {
                 httpClient.getCredentialsProvider().setCredentials(
-                    new AuthScope(proxy, port),
-                    new UsernamePasswordCredentials(login, password));
+                        new AuthScope(proxy, port),
+                        new UsernamePasswordCredentials(login, password));
             } else {
                 httpClient.getCredentialsProvider().clear();
             }
         } else {
-            httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
+            httpClient.getParams().removeParameter(
+                    ConnRoutePNames.DEFAULT_PROXY);
             httpClient.getCredentialsProvider().clear();
         }
     }
@@ -299,7 +318,8 @@ public class PackageDownloader {
         return pkgs;
     }
 
-    public void scheduleDownloadedPackagesForInstallation(String installationFilePath) throws IOException {
+    public void scheduleDownloadedPackagesForInstallation(
+            String installationFilePath) throws IOException {
         List<String> fileEntries = new ArrayList<String>();
 
         List<DownloadPackage> pkgs = downloadOptions.getPkg4Download();
@@ -310,11 +330,12 @@ public class PackageDownloader {
             } else {
                 for (PendingDownload download : pendingDownloads) {
                     if (download.getPkg().equals(pkg)) {
-                        if (download.getStatus() == PendingDownload.VERIFIED ) {
+                        if (download.getStatus() == PendingDownload.VERIFIED) {
                             File file = download.getDowloadingFile();
                             fileEntries.add("file:" + file.getAbsolutePath());
                         } else {
-                            log.error("One selected package has not been downloaded : " + pkg.getId());
+                            log.error("One selected package has not been downloaded : "
+                                    + pkg.getId());
                         }
                     }
                 }
@@ -379,11 +400,12 @@ public class PackageDownloader {
 
                 @Override
                 public void run() {
-                    log.info("Starting download on Thread " + Thread.currentThread().getName());
+                    log.info("Starting download on Thread "
+                            + Thread.currentThread().getName());
                     download.setStatus(PendingDownload.INPROGRESS);
                     String url = pkg.getDownloadUrl();
                     if (!url.startsWith("http")) {
-                        url = getBaseUrl()+ url;
+                        url = getBaseUrl() + url;
                     }
                     File filePkg = null;
                     HttpGet dw = new HttpGet(url);
@@ -404,11 +426,19 @@ public class PackageDownloader {
                             log.error("Package " + pkg.filename
                                     + " not found :" + url);
                             download.setStatus(PendingDownload.MISSING);
+                            if (response.getEntity()!=null ) {
+                                response.getEntity().consumeContent();
+                            }
+                            dw.abort();
                             return;
                         } else {
                             log.error("Received StatusCode "
                                     + response.getStatusLine().getStatusCode());
                             download.setStatus(PendingDownload.ABORTED);
+                            if (response.getEntity()!=null) {
+                                response.getEntity().consumeContent();
+                            }
+                            dw.abort();
                             return;
                         }
                     } catch (Exception e) {
@@ -441,7 +471,7 @@ public class PackageDownloader {
                 File newFile = new File(getDownloadDirectory(), digest);
                 filePkg.renameTo(newFile);
                 download.setStatus(PendingDownload.VERIFIED);
-                download.setFile(newFile.length(),newFile);
+                download.setFile(newFile.length(), newFile);
             }
         };
         check_tpe.execute(checkRunner);
@@ -508,6 +538,14 @@ public class PackageDownloader {
             }
         }
         return nbInProgress > 0;
+    }
+
+    public void shutdown() {
+        if (httpClient!=null) {
+            httpClient.getConnectionManager().shutdown();
+        }
+        download_tpe.shutdownNow();
+        check_tpe.shutdownNow();
     }
 
 }
