@@ -1,12 +1,8 @@
 <%@ include file="includes/header.jsp"%>
-<%
-    String welcomeLabel = "label.welcome."
-            + collector.getDistributionName();
-%>
 <script src="<%=contextPath%>/scripts/browserInternetAccess.js"></script>
 <script src="http://www.nuxeo.com/var/storage/wizard/networkCheck.js?ts=<%=System.currentTimeMillis()%>"></script>
 
-<h1><fmt:message key="<%=welcomeLabel%>" /></h1>
+<h1><fmt:message key="label.welcome" /></h1>
 <form id="wizardform" action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
 <div class="formPadding">
 <p><fmt:message key="label.welcome.p1" /></p>

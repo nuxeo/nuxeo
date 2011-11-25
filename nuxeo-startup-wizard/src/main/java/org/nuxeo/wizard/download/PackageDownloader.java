@@ -56,7 +56,6 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
@@ -69,11 +68,19 @@ public class PackageDownloader {
 
     protected final static Log log = LogFactory.getLog(PackageDownloader.class);
 
+    public static final String PACKAGES_XML = "packages.xml";
+
     protected static final int NB_DOWNLOAD_THREADS = 3;
 
     protected static final int NB_CHECK_THREADS = 1;
 
     protected static final int QUEUESIZE = 20;
+
+    public static final String BASE_URL_KEY = "nuxeo.wizard.packages.url";
+
+    public static final String DEFAULT_BASE_URL = "http://community.nuxeo.com/static/staging/mp/";
+
+    public static final String WORKDING_DIR_NAME = "setupWizardDownloads";
 
     protected CopyOnWriteArrayList<PendingDownload> pendingDownloads = new CopyOnWriteArrayList<PendingDownload>();
 
@@ -97,17 +104,22 @@ public class PackageDownloader {
 
     protected final AtomicInteger checkThreadCount = new AtomicInteger(0);
 
-    public static final String BASE_URL_KEY = "nuxeo.wizard.packages.url";
-
-    public static final String DEFAULT_BASE_URL = "http://community.nuxeo.com/static/staging/mp/";
 
     protected String baseUrl;
 
+    protected ConfigurationGenerator configurationGenerator=null;
+
+    protected ConfigurationGenerator getConfig() {
+        if (configurationGenerator==null) {
+            configurationGenerator = new ConfigurationGenerator();
+            configurationGenerator.init();
+        }
+        return configurationGenerator;
+    }
+
     protected String getBaseUrl() {
         if (baseUrl == null) {
-            ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
-            configurationGenerator.init();
-            String base = configurationGenerator.getUserConfig().getProperty(
+            String base = getConfig().getUserConfig().getProperty(
                     BASE_URL_KEY, DEFAULT_BASE_URL);
             if (!base.endsWith("/")) {
                 base = base + "/";
@@ -224,19 +236,18 @@ public class PackageDownloader {
     }
 
     protected File getDownloadDirectory() {
-        // XXX do better !
-        File tmp = new File(System.getProperty("java.io.tmpdir"));
-        File dir = new File(tmp, "testDownload");
+        File nxHome = getConfig().getNuxeoHome();
+        File dir = new File(nxHome, WORKDING_DIR_NAME);
         if (!dir.exists()) {
             dir.mkdirs();
-            dir = new File(tmp, "testDownload");
+            dir = new File(nxHome, WORKDING_DIR_NAME);
         }
         return dir;
     }
 
     public boolean canReachServer() {
         if (canReachServer == null) {
-            HttpGet ping = new HttpGet(getBaseUrl() + "packages.xml");
+            HttpGet ping = new HttpGet(getBaseUrl() + PACKAGES_XML);
             try {
                 HttpResponse response = httpClient.execute(ping);
                 if (response.getStatusLine().getStatusCode() == 200) {
@@ -278,11 +289,11 @@ public class PackageDownloader {
 
     protected File getRemotePackagesDescriptor() {
         File desc = null;
-        HttpGet ping = new HttpGet(getBaseUrl() + "packages.xml");
+        HttpGet ping = new HttpGet(getBaseUrl() + PACKAGES_XML);
         try {
             HttpResponse response = httpClient.execute(ping);
             if (response.getStatusLine().getStatusCode() == 200) {
-                desc = new File(getDownloadDirectory(), "packages.xml");
+                desc = new File(getDownloadDirectory(), PACKAGES_XML);
                 FileUtils.copyToFile(response.getEntity().getContent(), desc);
             } else {
                 log.error("Unable to download remote packages.xml, status code :"
@@ -299,7 +310,7 @@ public class PackageDownloader {
     }
 
     protected File getLocalPackagesDescriptor() {
-        File desc = new File(getDownloadDirectory(), "packages.xml");
+        File desc = new File(getDownloadDirectory(), PACKAGES_XML);
         if (desc.exists()) {
             return desc;
         }
