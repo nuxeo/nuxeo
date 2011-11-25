@@ -18,7 +18,9 @@ package org.nuxeo.connect.update.commands;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Properties;
 
+import org.junit.Before;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
@@ -32,13 +34,31 @@ import org.nuxeo.connect.update.util.PackageBuilder;
  */
 public class TestCopy extends AbstractCommandTest {
 
+    private File goldStandardFile;
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        goldStandardFile = new File(Environment.getDefault().getConfig(),
+                "goldstandard.properties");
+        FileUtils.writeFile(goldStandardFile, "param1=value1");
+    }
+
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
         File props = File.createTempFile("test-commands-", ".properties");
         props.deleteOnExit();
         FileUtils.writeFile(props, "test=my value");
-        FileInputStream in = new FileInputStream(props);
-        builder.addEntry("test.properties", in);
+        builder.addEntry("test.properties", new FileInputStream(props));
+        props = File.createTempFile("test-commands-", ".properties");
+        props.deleteOnExit();
+        FileUtils.writeFile(props, "param2=value2");
+        builder.addEntry("append.properties", new FileInputStream(props));
+        props = File.createTempFile("test-commands-", ".properties");
+        props.deleteOnExit();
+        FileUtils.writeFile(props, "param3=value3");
+        builder.addEntry("append2.properties", new FileInputStream(props));
     }
 
     @Override
@@ -46,7 +66,16 @@ public class TestCopy extends AbstractCommandTest {
         writer.start("copy");
         writer.attr("file", "${package.root}/test.properties");
         writer.attr("todir", "${env.config}");
-        writer.attr("overwrite", "false");
+        writer.end();
+        writer.start("copy");
+        writer.attr("file", "${package.root}/append.properties");
+        writer.attr("tofile", "${env.config}/goldstandard.properties");
+        writer.attr("append", "true");
+        writer.end();
+        writer.start("copy");
+        writer.attr("file", "${package.root}/append2.properties");
+        writer.attr("tofile", "${env.config}/goldstandard.properties");
+        writer.attr("append", "true");
         writer.end();
     }
 
@@ -58,12 +87,28 @@ public class TestCopy extends AbstractCommandTest {
         File dst = getTargetFile();
         assertTrue(dst.isFile());
         assertEquals(IOUtils.createMd5(src), IOUtils.createMd5(dst));
+        Properties goldstandard = new Properties();
+        goldstandard.load(new FileInputStream(goldStandardFile));
+        assertEquals("Original property is missing", "value1",
+                goldstandard.getProperty("param1"));
+        assertEquals("Appended property is missing", "value2",
+                goldstandard.getProperty("param2"));
+        assertEquals("Appended property is missing", "value3",
+                goldstandard.getProperty("param3"));
     }
 
     @Override
     protected void uninstallDone(Task task, Throwable error) throws Exception {
         super.uninstallDone(task, error);
         assertFalse(getTargetFile().exists());
+        Properties goldstandard = new Properties();
+        goldstandard.load(new FileInputStream(goldStandardFile));
+        assertEquals("Original property is missing", "value1",
+                goldstandard.getProperty("param1"));
+        assertNull("Appended property must be removed",
+                goldstandard.getProperty("param2"));
+        assertNull("Appended property must be removed",
+                goldstandard.getProperty("param3"));
     }
 
     protected File getTargetFile() {

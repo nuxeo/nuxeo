@@ -61,14 +61,14 @@ public class ParameterizedCopy extends Copy {
     }
 
     @Override
-    protected String getContentToCopy(Map<String, String> prefs)
+    protected String getContentToCopy(File fileToCopy, Map<String, String> prefs)
             throws PackageException {
         try {
-            String content = FileUtils.readFile(file);
+            String content = FileUtils.readFile(fileToCopy);
             return StringUtils.expandVars(content, prefs);
         } catch (IOException e) {
             throw new PackageException("Failed to run parameterized copy for: "
-                    + file.getName(), e);
+                    + fileToCopy.getName(), e);
         }
     }
 

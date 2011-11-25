@@ -49,6 +49,7 @@ import org.nuxeo.connect.update.impl.task.commands.Install;
 import org.nuxeo.connect.update.impl.task.commands.LoadJar;
 import org.nuxeo.connect.update.impl.task.commands.ParameterizedCopy;
 import org.nuxeo.connect.update.impl.task.commands.ReloadProperties;
+import org.nuxeo.connect.update.impl.task.commands.UnAppend;
 import org.nuxeo.connect.update.impl.task.commands.Undeploy;
 import org.nuxeo.connect.update.impl.task.commands.UndeployConfig;
 import org.nuxeo.connect.update.impl.task.commands.Uninstall;
@@ -141,6 +142,7 @@ public class UpdateServiceImpl implements PackageUpdateService {
         xmap = createXmap();
         addCommand(Copy.ID, Copy.class);
         addCommand(Append.ID, Append.class);
+        addCommand(UnAppend.ID, UnAppend.class);
         addCommand(ParameterizedCopy.ID, ParameterizedCopy.class);
         addCommand(Delete.ID, Delete.class);
         addCommand(Install.ID, Install.class);

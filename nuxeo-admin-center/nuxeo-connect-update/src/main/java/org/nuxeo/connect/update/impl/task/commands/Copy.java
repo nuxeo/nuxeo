@@ -17,6 +17,8 @@
 package org.nuxeo.connect.update.impl.task.commands;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -75,11 +77,20 @@ public class Copy extends AbstractCommand {
 
     protected boolean removeOnExit;
 
-    protected boolean append = false;
+    /**
+     * @since 5.5
+     */
+    protected boolean append;
 
-    private boolean overwriteIfNewerVersion = false;
+    /**
+     * @since 5.5
+     */
+    private boolean overwriteIfNewerVersion;
 
-    private boolean upgradeOnly = false;
+    /**
+     * @since 5.5
+     */
+    private boolean upgradeOnly;
 
     protected Copy(String id) {
         super(id);
@@ -108,6 +119,7 @@ public class Copy extends AbstractCommand {
         this.removeOnExit = removeOnExit;
     }
 
+    @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         if (!file.exists()) {
@@ -199,13 +211,15 @@ public class Copy extends AbstractCommand {
                 }
             }
             if (dst.exists()) { // backup the destination file if exist.
-                if (!doOverwrite) { // force a rollback
+                if (!doOverwrite && !append) { // force a rollback
                     throw new PackageException(
                             "Copy command has overwrite flag on false but destination file exists: "
                                     + dst);
                 }
                 if (task instanceof UninstallTask) {
                     // no backup for uninstall task
+                } else if (append) {
+                    bak = IOUtils.backup(task.getPackage(), fileToCopy);
                 } else {
                     bak = IOUtils.backup(task.getPackage(), dst);
                 }
@@ -215,8 +229,22 @@ public class Copy extends AbstractCommand {
 
             // copy the file - use getContentToCopy to allow parameterization
             // for subclasses
-            String content = getContentToCopy(prefs);
+            String content = getContentToCopy(fileToCopy, prefs);
             if (content != null) {
+                if (append && dst.exists()) {
+                    RandomAccessFile rfile = new RandomAccessFile(dst, "r");
+                    try {
+                        rfile.seek(dst.length());
+                        if (!"".equals(rfile.readLine())) {
+                            content = System.getProperty("line.separator")
+                                    + content;
+                        }
+                    } catch (IOException e) {
+                        log.error(e);
+                    } finally {
+                        rfile.close();
+                    }
+                }
                 FileUtils.writeFile(dst, content, append);
             } else {
                 File tmp = new File(dst.getPath() + ".tmp");
@@ -233,25 +261,63 @@ public class Copy extends AbstractCommand {
         }
         if (bak == null) { // no file was replaced
             rollbackCommand.addCommand(new Delete(dst, dstmd5, removeOnExit));
+        } else if (append) {
+            rollbackCommand.addCommand(new UnAppend(bak, dst));
         } else {
             rollbackCommand.addCommand(new Copy(bak, dst, dstmd5, true));
         }
         return rollbackCommand;
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Override in subclass to parameterize content.
+     *
+     * @since 5.5
+     * @param prefs
+     * @return Content to put in destination file. See {@link #append} parameter
+     *         to determine if returned content is replacing or appending to
+     *         destination file.
+     * @throws PackageException
+     */
+    protected String getContentToCopy(File fileToCopy, Map<String, String> prefs)
+            throws PackageException {
+        // For compliance
+        String deprecatedContent = getContentToCopy(prefs);
+        if (deprecatedContent != null) {
+            return deprecatedContent;
+        }
+        if (append) {
+            try {
+                return FileUtils.readFile(fileToCopy);
+            } catch (IOException e) {
+                throw new PackageException("Couldn't read "
+                        + fileToCopy.getName(), e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @deprecated Since 5.5, use {@link #getContentToCopy(File, Map)}. This
+     *             method is missing the fileToCopy reference.
+     *             Using {@link #file} is leading to errors.
+     * @throws PackageException
+     */
+    @Deprecated
     protected String getContentToCopy(Map<String, String> prefs)
             throws PackageException {
         return null;
     }
 
+    @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
         if (file == null || tofile == null) {
             status.addError("Cannot execute command in installer."
                     + " Invalid copy syntax: file, dir, tofile or todir was not specified.");
         }
-        if (tofile.isFile() && !overwrite) {
+        if (tofile.isFile() && !overwrite && !append) {
             if (removeOnExit) {
                 // a plugin is still there due to a previous action that needs a
                 // restart
@@ -274,6 +340,7 @@ public class Copy extends AbstractCommand {
         }
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
         boolean sourceIsDir = false;
         File dir = null;
@@ -334,8 +401,13 @@ public class Copy extends AbstractCommand {
         if (v.length() > 0) {
             upgradeOnly = Boolean.parseBoolean(v);
         }
+        v = element.getAttribute("append");
+        if (v.length() > 0) {
+            append = Boolean.parseBoolean(v);
+        }
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         if (file != null) {
@@ -350,6 +422,15 @@ public class Copy extends AbstractCommand {
         }
         if (removeOnExit) {
             writer.attr("removeOnExit", "true");
+        }
+        if (overwriteIfNewerVersion) {
+            writer.attr("overwriteIfNewerVersion", "true");
+        }
+        if (upgradeOnly) {
+            writer.attr("upgradeOnly", "true");
+        }
+        if (append) {
+            writer.attr("append", "true");
         }
         writer.end();
     }

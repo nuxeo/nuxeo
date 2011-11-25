@@ -19,11 +19,6 @@
 package org.nuxeo.connect.update.impl.task.commands;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.connect.update.PackageException;
 
 /**
  * Append content of a file into a destination file.
@@ -44,16 +39,6 @@ public class Append extends Copy {
     public Append(File file, File tofile, String md5) {
         super(ID, file, tofile, md5, true, false);
         append = true;
-    }
-
-    @Override
-    protected String getContentToCopy(Map<String, String> prefs)
-            throws PackageException {
-        try {
-            return FileUtils.readFile(file);
-        } catch (IOException e) {
-            throw new PackageException("Couldn't read " + file.getName(), e);
-        }
     }
 
 }
