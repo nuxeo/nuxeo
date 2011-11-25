@@ -42,6 +42,12 @@ public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
                 "nxuidgenerator-test-contrib.xml");
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     protected DocumentModel createFileDocument() throws ClientException {
 
         DocumentModel fileDoc = getCoreSession().createDocumentModel("/",

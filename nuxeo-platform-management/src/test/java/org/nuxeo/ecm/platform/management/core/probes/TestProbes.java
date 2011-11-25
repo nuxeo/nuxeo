@@ -42,6 +42,12 @@ public class TestProbes extends SQLRepositoryTestCase {
         fireFrameworkStarted();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testScheduling() throws MalformedObjectNameException {
         ProbeScheduler scheduler = Framework.getLocalService(ProbeScheduler.class);
         assertFalse(scheduler.isEnabled());

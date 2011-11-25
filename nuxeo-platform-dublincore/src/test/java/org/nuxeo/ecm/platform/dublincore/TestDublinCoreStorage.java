@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -52,11 +52,10 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
                 "OSGI-INF/nxdublincore-service.xml");
         deployBundle("org.nuxeo.ecm.core.event");
         openSession();
-        
+
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         eventAdmin.setBulkModeEnabled(true);
         eventAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
-
 
         root = session.getRootDocument();
     }
@@ -252,7 +251,8 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
         session = openSessionAs("Jacky");
-        CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session);
+        CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(
+                session);
         runner.runUnrestricted();
         DocumentModel doc = runner.getFolder();
         String creator = (String) doc.getPropertyValue("dc:creator");
@@ -279,14 +279,14 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         }
 
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (session != null) {
             closeSession();
         }
-        
+
         super.tearDown();
     }
-    
+
 }

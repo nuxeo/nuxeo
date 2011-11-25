@@ -27,29 +27,37 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 public class AbstractListener extends RepositoryOSGITestCase {
 
-     @Override
-     public void setUp() throws Exception {
-         super.setUp();
-         openRepository();
-     }
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        openRepository();
+    }
 
-     protected DocumentModel createFileDocument(boolean setMimeType) throws ClientException {
-         DocumentModel fileDoc = getCoreSession().createDocumentModel("/", "testFile", "File");
-         fileDoc.setProperty("dublincore", "title", "TestFile");
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
 
-         Blob blob = new StringBlob("SOMEDUMMYDATA");
-         blob.setFilename("test.pdf");
-         if (setMimeType) {
-             blob.setMimeType("application/pdf");
-         }
-         fileDoc.setProperty("file", "content", blob);
+    protected DocumentModel createFileDocument(boolean setMimeType)
+            throws ClientException {
+        DocumentModel fileDoc = getCoreSession().createDocumentModel("/",
+                "testFile", "File");
+        fileDoc.setProperty("dublincore", "title", "TestFile");
 
-         fileDoc = getCoreSession().createDocument(fileDoc);
+        Blob blob = new StringBlob("SOMEDUMMYDATA");
+        blob.setFilename("test.pdf");
+        if (setMimeType) {
+            blob.setMimeType("application/pdf");
+        }
+        fileDoc.setProperty("file", "content", blob);
 
-         getCoreSession().saveDocument(fileDoc);
-         getCoreSession().save();
+        fileDoc = getCoreSession().createDocument(fileDoc);
 
-         return fileDoc;
-     }
+        getCoreSession().saveDocument(fileDoc);
+        getCoreSession().save();
+
+        return fileDoc;
+    }
 
 }

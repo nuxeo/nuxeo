@@ -71,6 +71,12 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertNotNull(service);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testServiceFactoryContribs() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);

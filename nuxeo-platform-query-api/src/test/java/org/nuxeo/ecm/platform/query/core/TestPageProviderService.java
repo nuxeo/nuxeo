@@ -45,6 +45,12 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
     }
 
     @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
+    @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
         deployContrib("org.nuxeo.ecm.platform.query.api",

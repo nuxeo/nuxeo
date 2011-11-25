@@ -36,6 +36,12 @@ public class ContentCreationListenerTest extends RepositoryOSGITestCase {
         openRepository();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testContentCreationListener() throws Exception {
         DocumentModel root = getCoreSession().getRootDocument();
         DocumentModel model = getCoreSession().createDocumentModel(

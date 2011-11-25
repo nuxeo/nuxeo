@@ -27,10 +27,10 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
- * Testing the mime type icon updater listener. This listener should update mime
- * type of a blob when this one is dirty (updated). When the blob is about is on
- * file:content, it also updates the common:icon field setting the right icon
- * according to the mime type
+ * Testing the mime type icon updater listener. This listener should update
+ * mime type of a blob when this one is dirty (updated). When the blob is about
+ * is on file:content, it also updates the common:icon field setting the right
+ * icon according to the mime type
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * @author Benjamin Jalon <bjalon@nuxeo.com>
@@ -52,6 +52,12 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
                 "OSGI-INF/core-type-contrib.xml");
 
         openSession();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     /**

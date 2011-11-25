@@ -59,6 +59,12 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         openRepository();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     protected DocumentModel doCreateDocument() throws ClientException {
         DocumentModel rootDocument = coreSession.getRootDocument();
         DocumentModel model = coreSession.createDocumentModel(

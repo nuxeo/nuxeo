@@ -31,6 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 public class TestVersionning extends RepositoryOSGITestCase {
 
     protected DocumentModel destWS;
+
     protected DocumentModel wsRoot;
 
     @Override
@@ -54,6 +55,12 @@ public class TestVersionning extends RepositoryOSGITestCase {
         openRepository();
 
         createTestDocuments();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     private void createTestDocuments() throws Exception {
