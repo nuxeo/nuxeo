@@ -9,7 +9,8 @@
       itemStyleClass="#{nxu:test(adminViews.currentViewId == adminTab.id, 'selected', '')}">
 
 <c:if test="false">
-      <a4j:commandLink action="#{adminViews.setCurrentViewId(adminTab.id)}" immediate="true" reRender="admin_divtab">
+      <a4j:commandLink action="#{adminViews.setCurrentViewId(adminTab.id)}" immediate="true" reRender="admin_divtab" 
+                       eventsQueue="adminCenterQueue">
         <h:outputText value="#{messages[adminTab.label]}" />
       </a4j:commandLink>
 </c:if>
