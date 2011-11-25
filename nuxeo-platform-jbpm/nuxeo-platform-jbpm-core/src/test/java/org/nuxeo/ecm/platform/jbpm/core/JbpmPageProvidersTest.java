@@ -113,10 +113,12 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
         taskService.createTask(coreSession, administrator, document,
                 "Test Task Name 2", actors, false, "test directive",
                 "test comment", calendar.getTime(), null);
+        openSession();
     }
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }
@@ -194,7 +196,6 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel getDocument() throws Exception {
-        openRepository();
         CoreSession session = getCoreSession();
         DocumentModel model = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "1", "File");

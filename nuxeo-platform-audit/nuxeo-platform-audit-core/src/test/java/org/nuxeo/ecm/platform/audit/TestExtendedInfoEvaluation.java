@@ -34,16 +34,6 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
 
     protected ExpressionEvaluator evaluatorUnderTest;
 
-    protected DocumentModel doCreateDocument() throws ClientException {
-        DocumentModel rootDocument = coreSession.getRootDocument();
-        DocumentModel model = coreSession.createDocumentModel(
-                rootDocument.getPathAsString(), "youps", "File");
-        model.setProperty("dublincore", "title", "huum");
-
-        return coreSession.createDocument(model);
-    }
-
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -52,6 +42,21 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
                 ExpressionFactory.newInstance());
 
         openRepository();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
+    protected DocumentModel doCreateDocument() throws ClientException {
+        DocumentModel rootDocument = coreSession.getRootDocument();
+        DocumentModel model = coreSession.createDocumentModel(
+                rootDocument.getPathAsString(), "youps", "File");
+        model.setProperty("dublincore", "title", "huum");
+
+        return coreSession.createDocument(model);
     }
 
     public void testBean() throws ClientException {
@@ -63,12 +68,12 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
         properties.put("test", "test");
         eventContext.setProperties(properties);
         evaluatorUnderTest.bindValue(context, "context", eventContext);
-        DocumentModel value = evaluatorUnderTest.evaluateExpression(
-                context, "${context.arguments[0]}", DocumentModel.class);
+        DocumentModel value = evaluatorUnderTest.evaluateExpression(context,
+                "${context.arguments[0]}", DocumentModel.class);
         assertNotNull(value);
         assertEquals(source, value);
-        String test = evaluatorUnderTest.evaluateExpression(
-                context, "${context.properties.test}", String.class);
+        String test = evaluatorUnderTest.evaluateExpression(context,
+                "${context.properties.test}", String.class);
         assertNotNull(value);
         assertEquals("test", test);
     }

@@ -36,8 +36,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.core.storage.sql.Repository;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;

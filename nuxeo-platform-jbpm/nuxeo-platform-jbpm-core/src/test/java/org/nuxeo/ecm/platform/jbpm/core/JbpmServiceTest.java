@@ -81,10 +81,13 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
 
         user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
+
+        openSession();
     }
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }
@@ -245,7 +248,6 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel getDocument() throws Exception {
-        openRepository();
         CoreSession session = getCoreSession();
         DocumentModel model = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "1", "File");
