@@ -133,14 +133,10 @@ public class TestVideoService extends SQLRepositoryTestCase {
 
         VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(
                 doc), "WebM 480p");
-        log.warn(String.format("[%s] Waiting for conversion to finish", id));
         while (videoService.getProgressStatus(id) != null) {
             // wait for the conversion to complete
             Thread.sleep(2000);
         }
-        log.warn(String.format(
-                "[%s] Conversion should be finished. Conversion status: ", id,
-                videoService.getProgressStatus(id)));
 
         session.save();
         doc = session.getDocument(doc.getRef());
