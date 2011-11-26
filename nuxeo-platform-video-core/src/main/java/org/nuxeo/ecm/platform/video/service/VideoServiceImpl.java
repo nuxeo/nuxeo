@@ -190,6 +190,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     @Override
     public VideoConversionStatus getProgressStatus(VideoConversionId id) {
         String status = states.get(id);
+        log.warn(String.format("Getting progress status for %s: %s", id, status));
         if (status == null) {
             // early return
             return null;
@@ -216,6 +217,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void clearProgressStatus(VideoConversionId id) {
+        log.warn(String.format("Removing progress status: %s", id));
         states.remove(id);
     }
 }

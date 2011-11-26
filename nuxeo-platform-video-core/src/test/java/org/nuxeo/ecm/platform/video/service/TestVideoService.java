@@ -136,7 +136,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
         log.warn(String.format("[%s] Waiting for conversion to finish", id));
         while (videoService.getProgressStatus(id) != null) {
             // wait for the conversion to complete
-            Thread.sleep(200);
+            Thread.sleep(2000);
         }
         log.warn(String.format(
                 "[%s] Conversion should be finished. Conversion status: ", id,
