@@ -3,83 +3,61 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
-    <widgetType name="summary_video_player">
+    <widgetType name="video_player">
       <documentation>
         This widget displays a HTML5 video player for browsers
         supporting it, and fallback on a Flash player for others.
-        It uses the WebM or MP4 conversion (in 480p) of the video.
-
-        It requires the following variables to be
-        present in the EL context:
-        <ul>
-          <li>currentDocument: the current document</li>
-        </ul>
+        It uses the WebM or MP4 conversion (in 480p) of
+        a document having the facet 'Video'.
       </documentation>
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/summary/summary_video_player_widget_template.xhtml
+        /widgets/video_player_widget_template.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="summary_video_storyboard">
+    <widgetType name="video_storyboard">
       <documentation>
         This widget displays the story board of
-        a video.
-
-        It requires the following variables to be
-        present in the EL context:
-        <ul>
-          <li>currentDocument: the current document</li>
-        </ul>
+        a document having the facet 'Video'.
       </documentation>
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/summary/summary_video_storyboard_widget_template.xhtml
+        /widgets/video_storyboard_widget_template.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="summary_video_conversions">
+    <widgetType name="video_conversions">
       <documentation>
         This widget displays the list of available
-        video conversions.
-
-        It requires the following variables to be
-        present in the EL context:
-        <ul>
-          <li>currentDocument: the current document</li>
-        </ul>
+        video conversions for the given Video document.
       </documentation>
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/summary/summary_video_conversions_widget_template.xhtml
+        /widgets/video_conversions_widget_template.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="summary_video_info">
+    <widgetType name="video_info">
       <documentation>
-        This widget displays the information of the video.
-
-        It requires the following variables to be
-        present in the EL context:
-        <ul>
-          <li>currentDocument: the current document</li>
-        </ul>
+        This widget displays the information of the main video of
+        a document having the facet 'Video'.
       </documentation>
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/summary/summary_video_info_widget_template.xhtml
+        /widgets/video_info_widget_template.xhtml
       </property>
     </widgetType>
   </extension>
@@ -87,13 +65,13 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
       point="widgets">
     <widget name="summary_video_player"
-      type="summary_video_player" />
+      type="video_player" />
     <widget name="summary_video_storyboard"
-      type="summary_video_storyboard" />
+      type="video_storyboard" />
     <widget name="summary_video_conversions"
-          type="summary_video_conversions" />
+          type="video_conversions" />
     <widget name="summary_video_info"
-          type="summary_video_info" />
+          type="video_info" />
 
     <widget name="video_info_duration" type="text">
       <labels>
