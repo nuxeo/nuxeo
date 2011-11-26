@@ -57,4 +57,10 @@ public class VideoConversionId {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "VideoConversionId [documentLocation=%s, conversionName=%s]",
+                documentLocation, conversionName);
+    }
 }

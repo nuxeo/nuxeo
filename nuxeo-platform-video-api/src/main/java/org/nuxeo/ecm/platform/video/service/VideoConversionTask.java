@@ -70,11 +70,18 @@ public class VideoConversionTask implements Runnable {
         Video originalVideo = getVideoToConvert();
         if (originalVideo != null) {
             try {
+                log.warn(String.format("[%s] Converting video: %s", id, originalVideo.getBlob().getFilename()));
                 TranscodedVideo transcodedVideo = service.convert(id,
                         originalVideo, conversionName);
+                log.warn(String.format("[%s] Finished converting video: %s", id, originalVideo.getBlob().getFilename()));
+                log.warn("Saving new transcoded video...");
+                log.warn(String.format("[%s] Saving new transcoded video", id));
                 saveNewTranscodedVideo(transcodedVideo);
+                log.warn(String.format("[%s] Finished saving new transcoded video", id));
             } finally {
+                log.warn(String.format("[%s] Clearing progress status: %s", id, id));
                 service.clearProgressStatus(id);
+                log.warn(String.format("[%s] Finished clearing progress status: %s", id, id));
             }
         }
     }

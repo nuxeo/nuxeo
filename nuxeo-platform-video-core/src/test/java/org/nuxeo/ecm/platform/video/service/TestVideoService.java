@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.5
  */
 public class TestVideoService extends SQLRepositoryTestCase {
+
+    private static final Log log = LogFactory.getLog(TestVideoService.class);
 
     public static final String DELTA_MP4 = "DELTA.mp4";
 
@@ -129,10 +133,14 @@ public class TestVideoService extends SQLRepositoryTestCase {
 
         VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(
                 doc), "WebM 480p");
+        log.warn(String.format("[%s] Waiting for conversion to finish", id));
         while (videoService.getProgressStatus(id) != null) {
             // wait for the conversion to complete
             Thread.sleep(200);
         }
+        log.warn(String.format(
+                "[%s] Conversion should be finished. Conversion status: ", id,
+                videoService.getProgressStatus(id)));
 
         session.save();
         doc = session.getDocument(doc.getRef());
