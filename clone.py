@@ -84,35 +84,31 @@ def hg_fetch(module, branch, base_url):
 
 def git_fetch(module, branch, base_url):
     cwd = os.getcwd()
-    expected_http_url = "%s/%s.git" % (base_url, module)
+    if base_url.startswith("http"):
+        repo_url = "%s/%s.git" % (base_url, module)
+    else:
+        repo_url = "%s/%s" % (base_url, module)
     if not os.path.isdir(module):
         log("Cloning " + module)
-        if git_url.startswith("http"):
-            system("git clone %s %s" % (expected_http_url, module))
-        else:
-            raise ValueError("git urls are not supported by clone.py")
+        system("git clone %s %s" % (repo_url, module))
     os.chdir(module)
 
     # find the nuxeo repo alias
     remote_lines = check_output(["git", "remote", "-v"]).split("\n")
     alias = None
     for remote_line in remote_lines:
-        remote_alias, repo_url, _ = remote_line.split()
-        if repo_url == expected_http_url:
+        remote_alias, remote_url, _ = remote_line.split()
+        if repo_url == remote_url:
             alias = remote_alias
+            break
     if alias is None:
-        raise ValueError("Failed to find remote repo alias for " +
-                         expected_http_url)
+        raise ValueError("Failed to find remote repo alias for " + repo_url)
     else:
-        log("Using alias '%s' for %s" % (alias, expected_http_url))
+        log("Using alias '%s' for %s" % (alias, repo_url))
 
     # check whether we should use a specific branch or the master
     # (assumed to be the main development branch for git repos)
-    # the local branch existing test is here to speed up the check: if the
-    # branch exists locally it is assumed to have been previously checked out
-    # from the remote repo
-    if (branch not in check_output(["git", "branch"]).split() and
-        branch not in check_output(["git", "ls-remote"]).split()):
+    if branch not in check_output(["git", "ls-remote"]).split():
         log(branch + " not found on remote repo: fallback on master.")
         branch = "master"
 
