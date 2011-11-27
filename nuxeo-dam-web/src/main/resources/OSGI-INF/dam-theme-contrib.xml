@@ -7,19 +7,18 @@
   <require>org.nuxeo.theme.jsf</require>
 
   <!--  themes -->
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="themes">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
       <src>themes/theme-dam.xml</src>
+      <!--src>themes/theme-dam-new.xml</src-->
     </theme>
 
   </extension>
 
 
   <!-- views -->
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="views">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
     <view name="dam logo" template-engine="jsf-facelets">
       <format-type>widget</format-type>
@@ -59,8 +58,7 @@
   </extension>
 
   <!-- resources -->
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="resources">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
 
     <resource name="modal_popup.css">
       <path>dam/css/modal_popup.css</path>
@@ -76,11 +74,9 @@
   </extension>
 
   <!-- application settings -->
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="applications">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
 
-    <application root="${org.nuxeo.ecm.contextPath}"
-      template-engine="jsf-facelets">
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
 
       <view id="/dam/assets.xhtml">
         <theme>dam/default</theme>
@@ -94,17 +90,47 @@
 
   </extension>
 
+  <!-- mapping between theme pages and resources -->
+  <!--
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="dam/default">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>popups</style>
+        <style>messages_and_tooltips</style>
+        <style>nuxeo_dam_specific</style>
+      </styles>
+    </themePage>
+
+  </extension>-->
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo_dam_specific">
+      <src>themes/css/nuxeo_dam_specific.css</src>
+    </style>
+  </extension>
+
   <!-- Styles presets -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
 
-    <palette name="DAM borders"
-      src="themes/palettes/dam-borders.properties" category="border" />
-    <palette name="DAM backgrounds"
-      src="themes/palettes/dam-backgrounds.properties" category="background" />
-    <palette name="DAM fonts" src="themes/palettes/dam-fonts.properties"
-      category="font" />
-    <palette name="DAM colors" src="themes/palettes/dam-colors.properties"
-      category="color" />
+    <palette name="DAM borders" src="themes/palettes/dam-borders.properties" category="border" />
+    <palette name="DAM backgrounds" src="themes/palettes/dam-backgrounds.properties" category="background" />
+    <palette name="DAM fonts" src="themes/palettes/dam-fonts.properties" category="font" />
+    <palette name="DAM colors" src="themes/palettes/dam-colors.properties" category="color" />
 
   </extension>
 

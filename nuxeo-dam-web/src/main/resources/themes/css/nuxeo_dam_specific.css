@@ -1,0 +1,229 @@
+/*
+Specific styles for the Document Management View
+=Frame -> specifiy left column style
+=Document list -> specifics to document browsing
+=Advanced Search -> for advanced search view
+=Clipboard & Worklist -> styles in the left column
+author: lkemen@nuxeo.com
+*/
+
+/* =Frame */
+.nxMainContainer { min-height: 660px; height: auto!important; height: 660px; line-height: 1em; }
+
+/* =Filter column */
+.nxMainContainer .column { background: "color.major.light (__FLAVOR__ background)"; border-width: 1px; border-style: none solid none none; border-color:"color.major.medium (__FLAVOR__ border)"; color: "gray.dark (__FLAVOR__ color)"; font-size: .85em; padding: 0; width: 20%; }
+.nxMainContainer .column h3 {background:#c1c1c1 url("${basePath}/img/filter_title_bg.png") top left repeat-x;padding:2px 10px;}
+.nxMainContainer .column .actionBar { background: "neutral.stronger (__FLAVOR__ background)"; }
+.nxMainContainer .column .actionBar .button {font-size:10px;margin:3px;padding:4px 7px;}
+.nxMainContainer .column .selected a.treeLink, .nxMainContainer .column .selected a:hover { color: #000 !important; }
+.nxMainContainer .column .dr-tree-h-text div {width:100%;}
+.nxMainContainer .column .folderFilter {width:100%;}
+
+.import { display:inline-block; font-weight:bold; padding:3px 8px;}
+.importButton { background: url("${basePath}/dam/icons/import_button.png") no-repeat scroll left bottom transparent; color:#000; display: block; padding: .1em 0 .1em 2em; text-decoration: none }
+
+.searchInput {background:#ffffff url("${basePath}/icons/search.gif") no-repeat scroll 2px 2px; border: 1px solid #CCC; margin: 0; padding: 3px 3px 3px 20px; width: 100%}
+.searchFilter {}
+.filterContent {padding:0px;}
+
+.hiddenMenuIcon .dr-pmenu-nowrap img { display: none; width: 0;}
+.hiddenMenuIcon td.dr-pmenu-nowrap { width: 0;}
+
+.dr-pnl {border:none;}
+.dr-tree, .rich-tree { margin: 0 0 5px;}
+.dr-tree-h-ic-div { margin-left: 8px; padding-left: 10px;}
+.dr-tree-h-text { padding: 1px 0px 1px 4px;}
+.filterBlock .dr-pmenu-top-group-div, .filterBlock .rich-pmenu-top-group-div { border: none }
+.filterBlock .rich-pmenu-top-group-div select { margin: 5px; width: 92%;}
+#rightIconfilterForm\00003AtopicRichPanelMenuItem, #rightIconfilterForm\00003AcoverageRichPanelMenuItem { width: 0 }
+#filterForm\00003AdatePanel p { border-bottom: 1px solid #C8CDD4; margin-bottom: 3px; padding: 3px 0px 1px 5px;}
+.DateSelectors table.rich-calendar-exterior {width:auto;}
+#filterForm\00003AdatePanel .DateSelectors { margin: 4px 0 4px 5px; width: 100%;}
+#filterForm\00003AdatePanel .DateSelectors .labels { color: "gray.dark (__FLAVOR__ color)"; padding-right: .4em}
+#filterForm\00003AdatePanel span {}
+#filterForm\00003AdatePanel input { margin-right: 5px; width: 60% }
+.column .dr-pmenu-top-group { border-color: "neutral.light (__FLAVOR__ border)"; border-style: solid none; border-width: 1px; font-weight: normal }
+
+/* =Thumbnails column */
+.nxMainContainer .listingView { border-width: 1px; border-style: none solid none none; border-color:"color.major.medium (__FLAVOR__ border)"; box-shadow: 0 0 9px #9F9F9F inset; width: 45%; }
+
+/* Action Bar */
+.actionPanelViews { background-color: "color.major.light (__FLAVOR__ background)"; box-shadow: 2px 2px 4px #9F9F9F inset; padding: .1em .4em }
+.resultViewMode { float: left; font-size:1em; margin-top: .1em }
+.ListViewIcon, .ThumbViewIcon { margin: 0 .4em 0 0 }
+
+.clipboard { float: right;}
+.clipboard .button, .clipboard .button[disabled="disabled"], .linkDisabled { font-size: .85em; padding: .1em .4em; margin: .05em .3em }
+.clipboard a.button, .clipboard a.button:hover { color: #000; padding: .3em .4em .2em; text-decoration: none }
+.linkDisabled, .linkDisabled:hover { background: none "button.disabled (__FLAVOR__ background)"; border: 1px solid; border-color: "button.disabled (__FLAVOR__ border)"; color: "link.disabled (__FLAVOR__ color)"; cursor: default; padding: .3em .4em .2em; border-radius: 3px }
+.clipboard span span span, .clipboard span span input, .clipboard span span a { display: block; float: right }
+
+/* Listing */
+.pageNavigationControls { background: none; border: none 0; margin: 0;
+	padding: 0; text-align: center;}
+.previousBlock {float:left;text-align:left;width:15%;}
+.statusBlock { float: left; padding-top: .4em; width: 70%;}
+.nextBlock {float:left;text-align:right;width:15%;}
+
+.dr-table { border-left: none }
+.dr-table-cell { border: none }
+.dr-pnl rich-panel { background-color: #ebefff }
+
+.listingView .dataOutput { font-size: 0.9em; margin: 0 }
+
+.thumbViewElement { background: "neutral.lighter (__FLAVOR__ background)" ; border: 1px solid;  border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 3px; min-height:170px; margin: auto; padding: 8px; width: 130px;}
+.thumbViewElement table { font-size: 10px }
+.thumbViewElement .thumbViewPic td { height: 85px; text-align: center; vertical-align: middle; width: 125px }
+.thumbViewElement .thumbViewInfos td {text-align:left;}
+.thumbViewPictureLink {height:80px;text-align:center;vertical-align:middle;width:125px;}
+.thumbViewTitle {font-size:11px;}
+.thumbViewlabel {color:#4d4d4d;}
+
+.thumbnailItem { float: left; margin: .6em 0 .6em .6em }
+.thumbViewPicture { max-width: 125px; max-height: 80px;}
+.bigThumbnailView .thumbnailItem { height: 446px; width: 536px;}
+.bigThumbnailView .thumbViewElement { height: 430px; width: 520px;}
+.bigThumbnailView .thumbViewElement .thumbViewPic td { height: 300px; padding-bottom: 20px; width: 510px;}
+.bigThumbnailView .thumbViewPictureLink { height: 320px; margin: 0 auto 15px; width: 510px;}
+.bigThumbnailView .thumbViewPicture { max-width: 500px; max-height: 320px;}
+
+/* =Detail column */
+.nxMainContainer .detailView { width: 35%; }
+
+.tabsBar { float: none; margin-top: 0 }
+.tabsBar ul { border: none; padding-right: 0 }
+.tabsBar li { margin: 0 }
+.tabsBar a, .tabsBar a:hover, .tabsBar li a:hover, .tabsBar li a:visited { border-radius: 0; border: none; border-right: 1px solid #999; padding: .3em .4em .4em }
+.tabsBar a.selected, .tabsBar a.selected:hover, .tabsBar a.selected:visited, .tabsBar li a:hover { background: #fff; border: none;  border-right: 1px solid #999; border-radius: 0; color: #000 }
+.tabsContent { margin: 0; padding: 5px 10px 10px 10px }
+
+#selectionView iframe { width:100% }
+
+.togglePanel { background: #fff url("${basePath}/dam/img/data_title_bg.png") repeat-x top left; font-size: .9em; margin:0;}
+.togglePanel h3 { float: left;font-size:11px;padding:4px 0;}
+.togglePanel h3 .folded { background:transparent url("${basePath}/icons/arrow_folded.gif") top left no-repeat;padding:0 0 0 18px;}
+.togglePanel h3 .unfolded { background:transparent url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat;padding:0 0 0 18px;}
+.togglePanel h3.noIcon { padding: 4px 0 4px 10px;}
+.togglePanelTitleBox .button { font-size: 0.8em; font-weight: normal; margin: 1px 5px 1px 0px; padding: 1px 5px; text-decoration: none }
+.dataBlockActions { float: right; padding: .3em 0 }
+.togglePanel .togglePanelBody { background:#fff; border-width: 1px; border-style: none none solid; border-color:"color.major.medium (__FLAVOR__ border)"; padding: 8px 10px }
+.togglePanelBody .dataOutput td { border-style: none }
+
+.documentPreviewTitle { padding: .2em .4em .5em; text-align: center }
+.documentPreviewTitle h4 { color: #fff; font-size: 1em; text-shadow: 1px 1px 0 #000; }
+.infoTabContent { background-color: #606060 }
+.infoTabContent .assetContainer { height: 388px; margin: auto; text-align: center; vertical-align: middle; width: 410px }
+.infoTabContent .assetContainer a { margin: auto; text-align: center; vertical-align: middle; width: 410px }
+
+.infoTabContent table { margin: auto }
+.infoTabContent div table { margin: 0 }
+
+td.labelColumn { padding: .2em .3em .1em .4em; text-align: right; vertical-align: top }
+td.fieldColumn { padding: .2em .3em .1em .4em; vertical-align: top; white-space: normal }
+.buttonsBar { margin: 10px 0 5px; padding-left: 150px }
+.buttonsBar .button { margin:0 10px 0 0 }
+
+.comments { padding: 10px 5px 0 }
+.commentBlock {margin: 0 0 15px }
+.commentInfo { margin: 0 0 3px }
+.commentRef { float: left }
+.commentRef .date { color: #727272 }
+.commentRef .author { color: #4b4d68 }
+.commentAction { float: right }
+
+.deliveryBlock .dataInput { margin: 10px 0 }
+.deliveryBlock .dataInput .button { width: auto }
+.deliveryBlock .dataInput input { cursor: default }
+
+/* Edit forms */
+.detailView .dataInput td { vertical-align: top; }
+.detailView .labelColumn { width: 160px; margin: 10px; vertical-align: top; font-weight: bold;}
+.detailView .fieldColumn { vertical-align: top; margin: 10px;}
+.detailView .fieldColumn input[type="text"] { width:250px !important; margin:0 5px 0 0;}
+.detailView .fieldColumn input[type="text"].dataInputTextDate { width:220px !important}
+.detailView .fieldColumn button { margin: 5px 0 0 0 }
+.detailView .fieldColumn input[type="button"] { margin: 0 }
+.detailView .fieldColumn textarea,.detailView .dataInput .fieldColumn textarea { width: 250px !important }
+.detailView .fieldColumn select { margin: 0 0 5px; width: 255px !important }
+.detailView .fieldColumn input[type="text"].rich-calendar-input { width:150px!important; }
+
+/* IP Rights tab */
+a.external { background: url("${basePath}/icons/external.gif") no-repeat scroll right center transparent; padding-right: 16px }
+
+/* Export and History tabs */
+.deliveryBlock, .historyBlock { padding: 10px 5px }
+fieldset { border: 1px solid #ccc; margin: 0; padding:0 1px }
+fieldset table.dataOutput { margin: 10px 0 1px }
+fieldset table.dataOutput th { padding: 3px 0 3px 4px }
+fieldset table.dataOutput td { color: #525252 }
+legend { color: #333; font-weight: bold; padding: 0px 5px }
+
+/* =Common */
+.dataList td, .dataOutput td {padding:5px 3px;}
+.dataOutput th { border-bottom: 1px solid #b5bcc6; color: #000; font-weight: normal; height: 18px; text-align: left }
+.labelColumn { color: #727272; vertical-align: top; width: 125px }
+.fieldColumn { color:#000; padding-left: 5px; white-space: normal }
+
+.selected { background-color: "color.major.medium (__FLAVOR__ background)"; border-color: "color.major.strong (__FLAVOR__ border)"; color: "black (__FLAVOR__ color)" }
+.selectedCtrlClick { background-color: "color.major.light (__FLAVOR__ background)"; border-color: "color.major.strong (__FLAVOR__ border)" }
+.rich-pmenu .selected { color: "black (__FLAVOR__ color)"!important }
+.dr-pmenu-item, .dr-pmenu-item a, .dr-pmenu-item a:link { border: none; color: "link (__FLAVOR__ color)" }
+.rich-pmenu-hovered-element, .dr-pmenu-hovered-element, rich-tree-node-highlighted, rich-tree-node-highlighted a:link, .rich-tree-node-selected a { background-color: "color.major.medium (__FLAVOR__ background)"; color: "black (__FLAVOR__ color)"; }
+.dr-pmenu-selected-item { color: "black (__FLAVOR__ color)"; font-style: normal }
+.column .selected { background-color: "color.major.strong (__FLAVOR__ background)";
+
+.waiterBlock { text-align: center }
+.importsetCreationWaiter { display: none; height: 65%; left: 10%; position: absolute; text-align: center; top: 10%; white-space: nowrap; width: 80%; z-index: 1000 }
+.waiter { background-color: white; border: 1px solid #9f9f9f; display: inline-block; height: 170px; text-align: center; vertical-align: middle; width: 170px; z-index: 1001 }
+.waiterParagraph { padding-top: 30px }
+.IEhack { display: inline-block; height: 100%; overflow: hidden; padding: 0; vertical-align: middle; width: 0 }
+
+.buttonsGadget { border-top: 2px dotted #E9E9E9; font-size: 1.1em; margin: .5em 0 0; padding: .5em 0 0; }
+
+/* Import Pop up*/
+.summary_div_0 { float:left; width: 440px }
+.summary_div_1 { float:right; width: 440px }
+
+#importSetFormPanelContentDiv { height: 480px; overflow-y: auto }
+.smallBox { height: 140px }
+.rich-fileupload-list-decor{ height: 100px }
+.rich-fileupload-table-td { border: none }
+.rich-fileupload-ico { padding: 2px 6px 2px 19px}
+.dr-mpnl-pnl-b { padding:10px 10px 0px }
+#fancybox-content { font-size: .7em; width: 96%; height: 480px; overflow: auto }
+#fancybox-content h3 { border-bottom: 2px dotted #ddd; margin: 0 0 .5em; padding: 0.5em 0 }
+#fancybox-content .dataInput { margin: .4em auto; width: 100% }
+#fancybox-content .dataInput td { vertical-align: top }
+#fancybox-content .dataInput .labelColumn { padding-right: .8em }
+#fancybox-content .dataInput .dataInputText { max-width: 20em }
+#fancybox-content .dataInput select { max-width: 20em }
+#fancybox-content fieldset { margin: 0 auto; max-width: 910px; padding: .6em 0 }
+#fancybox-content fieldset .button { margin: .5em 1em 0 0 }
+#fileUploadForm { height:98px; width:410px; margin: 0 0 15px }
+
+#importSetPanel .dataInput td { padding: 0 }
+#importSetPanel .iconColumn { padding: 0; width: 0 }
+
+/* FancyBox styles */
+.treeNav_popup .refresh { float: right }
+.treeNav_popup a, .treeNav_popup a:link, .treeNav_popup a:visited { text-decoration: none; color: #0066cc }
+.treeNav_popup a:hover, .treeNav_popup a:active { text-decoration: underline }
+
+/* to highlight selected folder */
+.treeNav_popup .selected_folder{ background-color: #d9e3ef }
+#fancybox-wrap { left: 30%; top: 10%; width: 500px; height: 500px }
+
+/* Assets count in folder list */
+.assetsCount { font-size: .9em; color: #777 }
+
+/* used by multi-select widgets (e.g. subjects) */
+.fieldColumn select[size="4"] { width: 142px }
+.fieldColumn input[type="image"] { border: none }
+.fieldColumn .selectionStatus div { width: 290px; background-color: #def }
+
+.CreateUserFormPanel { width:540px }
+.rich-mp-content-table { min-width:450px }
+.rich-mp-content-table .dataOutput { border-collapse: collapse }
+.rich-mp-content-table .dataOutput:first-child th { padding: 2px; border: 1px solid #999 }
+.rich-mp-content-table .dataOutput:first-child td { padding: 2px; border: 1px solid #999 }
+.rich-mp-content-table .dataOutput .dataInput td { padding: 0px; border: none }
