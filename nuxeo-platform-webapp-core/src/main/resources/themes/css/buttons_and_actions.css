@@ -117,15 +117,10 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 #contextMenu {
   position: absolute;
   visibility: hidden;
-  background-color: #ddd;
-  border: 1px solid #000
-  color: green;
   top: 0;
   left: 0 }
-.ctxMenuStyle { list-style: none; padding: .1em; margin: 0; background-color: #232323; width: 100px; font-size: 9px }
-.ctxMenuItemStyle { margin: 0; color: #e7e7e7; display: block; cursor: default; padding: .3em; border-bottom: 1px solid #232323; background-color:#3a3d40 }
-.ctxMenuItemHoverStyle { margin: 0; color: #fff; display: block; cursor: default; padding: .3em; border-color: "color.major.stronger (__FLAVOR__ border)"; background-color: "color.major.stronger (__FLAVOR__ background)"; }
-.ctxMenuItemStyle a { text-decoration: none; color: #e7e7e7 }
-.ctxMenuItemHoverStyle a { text-decoration: none; color: #fff }
-.ctxMenuImg { vertical-align: middle; padding: .1em; padding-right: .4em }
-.ctxMenuShadow { background-color: #000; position: absolute; opacity: 0.2; z-index: 499 }
+.ctxMenuStyle { box-shadow: 2px 2px 5px #CCC; border-color: #ddd; border-style: solid; border-width: 2px; min-width: 120px; font-size: .7em }
+.ctxMenuItemStyle, .ctxMenuItemHoverStyle { margin: 0; display: block; cursor: default; padding: .4em .5em; border-style: none none solid; border-width: 1px; border-color: "neutral.light (__FLAVOR__ border)"; background-color:#fff }
+.ctxMenuItemHoverStyle { background-color: "color.major.medium (__FLAVOR__ background)" }
+.ctxMenuItemStyle a, .ctxMenuItemHoverStyle a { text-decoration: none }
+.ctxMenuImg { vertical-align: middle; padding: 0em .4em 0.1em 0 }

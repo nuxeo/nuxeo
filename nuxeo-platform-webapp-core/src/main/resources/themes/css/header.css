@@ -67,4 +67,4 @@ author: lkemen@nuxeo.com
 
 /* =Studio header link */
 .studioButton { border-left: 1px solid #999 }
-.studioButton a { background-color: #000; border: none; color: #fff; display: inline-block; font-size: 1.1em; line-height: 280%; margin: 0; padding: 0 .6em .15em; text-shadow: 1px 1px 0 #000;}
+.studioButton a { border: none; color: #fff; display: inline-block; font-size: 1.1em; line-height: 280%; margin: 0; padding: 0 .6em .15em }

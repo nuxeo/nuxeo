@@ -7,10 +7,10 @@ author: lkemen@nuxeo.com
 
 /* =Messages */
 .facesStatusMessage { bottom: 0; left: 0; position: fixed; z-index: 1000 }
-.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; width: 500px }
+.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; min-width: 500px }
 
 .errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
-  background-color: #fff;
+  background-color: #daebff;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-width: 1px;
   border-style: solid;
@@ -33,14 +33,14 @@ author: lkemen@nuxeo.com
 /* =Tips */
 .tooltip {
   background-color: "color.major.light (__FLAVOR__ background)";
-  border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
-  border-radius: 3px;
+  border-radius: 4px;
+  color: #efefef;
   display: none;
   font-weight: normal;
-  max-width: 20%;
-  padding: .5em;
+  max-width: 12%;
+  padding: .6em .6em .8em;
   white-space: normal;
-  z-index: 1000 }
+  z-index: 2000 }
 .tips {
   border: 1px dashed;  border-color: "neutral.light (__FLAVOR__ border)";
   box-shadow: none;
