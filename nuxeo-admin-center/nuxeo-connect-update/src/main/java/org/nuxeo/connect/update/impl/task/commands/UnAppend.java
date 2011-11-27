@@ -123,40 +123,7 @@ public class UnAppend extends AbstractCommand {
                 bak = IOUtils.backup(task.getPackage(), contentToRemove);
             }
             FileUtils.writeFile(fromFile, linesToKeep.toString());
-            return new Append(bak, fromFile, null);
-        } catch (Exception e) {
-            throw new PackageException(e);
-        }
-    }
-
-    protected Command doRunbak(Task task, Map<String, String> prefs)
-            throws PackageException {
-        BufferedReader brToRemove, brFromFile;
-        File bak;
-        try {
-            brToRemove = new BufferedReader(new FileReader(contentToRemove));
-            String lineToRemove = brToRemove.readLine();
-            brFromFile = new BufferedReader(new FileReader(fromFile));
-            String lineToCheck;
-            StringBuilder linesToKeep = new StringBuilder();
-            while ((lineToCheck = brFromFile.readLine()) != null) {
-                if (lineToRemove == null || !lineToCheck.equals(lineToRemove)) {
-                    linesToKeep.append(lineToCheck + newLine);
-                } else {
-                    // Ignore current lineToCheck (means removing it)
-                    // Reads next lineToRemove
-                    lineToRemove = brToRemove.readLine();
-                }
-            }
-            org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
-            org.apache.commons.io.IOUtils.closeQuietly(brFromFile);
-            if (task instanceof UninstallTask) {
-                bak = null;
-            } else {
-                bak = IOUtils.backup(task.getPackage(), contentToRemove);
-            }
-            FileUtils.writeFile(fromFile, linesToKeep.toString());
-            return new Append(bak, fromFile, null);
+            return new Append(bak, fromFile);
         } catch (Exception e) {
             throw new PackageException(e);
         }

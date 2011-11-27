@@ -36,8 +36,8 @@ public class Append extends Copy {
         append = true;
     }
 
-    public Append(File file, File tofile, String md5) {
-        super(ID, file, tofile, md5, true, false);
+    public Append(File file, File tofile) {
+        super(ID, file, tofile, null, true, false);
         append = true;
     }
 

@@ -72,10 +72,9 @@ public class TestCopy extends AbstractCommandTest {
         writer.attr("tofile", "${env.config}/goldstandard.properties");
         writer.attr("append", "true");
         writer.end();
-        writer.start("copy");
+        writer.start("append");
         writer.attr("file", "${package.root}/append2.properties");
         writer.attr("tofile", "${env.config}/goldstandard.properties");
-        writer.attr("append", "true");
         writer.end();
     }
 
