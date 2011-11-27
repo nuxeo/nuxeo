@@ -18,26 +18,33 @@
   <target name="prepare-environment"
           depends="prepare-db,prepare-tomcat,wizard-on">
 
-    <!-- TODO
-
+    <!-- retrieve DM MP package -->
     <copy todir="${maven.project.build.directory}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
     </copy>
+    <!-- compute MD5 -->
+    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip" property="DMMPMD5"/>
+    <!-- rename the MP file -->
+    <move file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
+    tofile="${maven.project.build.directory}/tomcat/setupWizardDownloads/${DMMPMD5}" />
 
-    http://ant.apache.org/manual/Tasks/checksum.html
-        <checksum file="foo.bar" property="foobarMD5"/>
-    copy packages.xml avec replace @foobarMD5@
+    <!-- Build Virtual package -->
+    <zip destfile="${maven.project.build.directory}/nuxeo-content-browser-${nuxeo.distribution.version}.zip">
+        <fileset dir="src/main/resources/content-browser"/>
+    </zip>
+    <!-- compute MD5 -->
+    <checksum file="${maven.project.build.directory}/nuxeo-content-browser-${nuxeo.distribution.version}.zip" property="VPCBMPMD5"/>
+    <!-- rename the MP file -->
+    <move file="${maven.project.build.directory}/nuxeo-content-browser-${nuxeo.distribution.version}.zip"
+        tofile="${maven.project.build.directory}/tomcat/setupWizardDownloads/${VPCBMPMD5}" />
 
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.verion}.zip"
-    tofile="${maven.project.build.directory}/tomcat/tmp/${foobarMD5}" />
+    <copy file="src/main/resources/packages.xml" tofile="${maven.project.build.directory}/tomcat/setupWizardDownloads/packages.xml" >
+      <filterset>
+        <filter token="DMMPMD5" value="${DMMPMD5}"/>
+        <filter token="VPCBMPMD5" value="${VPCBMPMD5}"/>
+      </filterset>
+    </copy>
 
-      <copy file="src/main/resources/packages.xml" tofile="${maven.project.build.directory}/tomcat/tmp/packages.xml" >
-    <filterset>
-      <filter token="foobarMD5" value="${foobarMD5}"/>
-    </filterset>
-  </copy>
-
-    -->
   </target>
 
 </project>
