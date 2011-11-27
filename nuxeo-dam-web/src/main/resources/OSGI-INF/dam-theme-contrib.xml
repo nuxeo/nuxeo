@@ -10,8 +10,8 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <src>themes/theme-dam.xml</src>
-      <!--src>themes/theme-dam-new.xml</src-->
+      <!--src>themes/theme-dam.xml</src-->
+      <src>themes/theme-dam-new.xml</src>
     </theme>
 
   </extension>
@@ -20,7 +20,7 @@
   <!-- views -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
-    <view name="dam logo" template-engine="jsf-facelets">
+    <!--view name="dam logo" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>dam/incl/logo.xhtml</template>
     </view>
@@ -29,7 +29,7 @@
       <format-type>widget</format-type>
       <template>dam/incl/nuxeo_dam_header.xhtml</template>
       <resource>screen.css</resource>
-    </view>
+    </view-->
 
     <view name="dam search filters" template-engine="jsf-facelets">
       <format-type>widget</format-type>
@@ -49,8 +49,6 @@
     <view name="dam includes" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>dam/incl/dam_includes.xhtml</template>
-      <resource>nuxeo_dam.css</resource>
-      <resource>modal_popup.css</resource>
       <resource>nuxeo-dam.js</resource>
       <resource>video-controller.js</resource>
     </view>
@@ -59,13 +57,6 @@
 
   <!-- resources -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-
-    <resource name="modal_popup.css">
-      <path>dam/css/modal_popup.css</path>
-    </resource>
-    <resource name="nuxeo_dam.css">
-      <path>dam/css/nuxeo_dam.css</path>
-    </resource>
 
     <resource name="nuxeo-dam.js">
       <path>dam/scripts/nuxeo-dam.js</path>
@@ -91,7 +82,7 @@
   </extension>
 
   <!-- mapping between theme pages and resources -->
-  <!--
+  <!---->
 
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
@@ -116,7 +107,7 @@
       </styles>
     </themePage>
 
-  </extension>-->
+  </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dam_specific">
