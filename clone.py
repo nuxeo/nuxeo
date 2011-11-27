@@ -66,7 +66,8 @@ def check_output(cmd):
         log(err)
     return out.strip()
 
-def hg_fetch(module):
+
+def hg_fetch(module, branch, base_url):
     cwd = os.getcwd()
     if os.path.isdir(module):
         log("Updating " + module + "...")
@@ -74,31 +75,64 @@ def hg_fetch(module):
         system("hg pull")
     else:
         log("Cloning " + module + "...")
-        system("hg clone %s/%s %s" % (hg_url, module, module))
+        system("hg clone %s/%s %s" % (base_url, module, module))
         os.chdir(module)
-    system("hg up %s" % (branch))
+    system("hg up %s" % branch)
     os.chdir(cwd)
     log("")
 
-def git_fetch(module):
+
+def git_fetch(module, branch, base_url):
     cwd = os.getcwd()
-    if os.path.isdir(module):
-        log("Updating " + module + "...")
-        os.chdir(module)
-        system("git fetch")
-    else:
+    expected_http_url = "%s/%s.git" % (base_url, module)
+    if not os.path.isdir(module):
         log("Cloning " + module)
         if git_url.startswith("http"):
-            system("git clone %s/%s.git %s" % (git_url, module, module))
+            system("git clone %s %s" % (expected_http_url, module))
         else:
-            system("git clone %s/%s %s" % (git_url, module, module))
-        os.chdir(module)
-    retcode = system("git checkout %s" % (branch), False)
-    if retcode != 0:
-        log(branch + " not found. Fallback on master")
-        system("git checkout %s" % ("master"))
+            raise ValueError("git urls are not supported by clone.py")
+    os.chdir(module)
+
+    # find the nuxeo repo alias
+    remote_lines = check_output(["git", "remote", "-v"]).split("\n")
+    alias = None
+    for remote_line in remote_lines:
+        remote_alias, repo_url, _ = remote_line.split()
+        if repo_url == expected_http_url:
+            alias = remote_alias
+    if alias is None:
+        raise ValueError("Failed to find remote repo alias for " +
+                         expected_http_url)
+    else:
+        log("Using alias '%s' for %s" % (alias, expected_http_url))
+
+    # check whether we should use a specific branch or the master
+    # (assumed to be the main development branch for git repos)
+    # the local branch existing test is here to speed up the check: if the
+    # branch exists locally it is assumed to have been previously checked out
+    # from the remote repo
+    if (branch not in check_output(["git", "branch"]).split() and
+        branch not in check_output(["git", "ls-remote"]).split()):
+        log(branch + " not found on remote repo: fallback on master.")
+        branch = "master"
+
+    # fetch the changeset for the detected branch from the right remote repo
+    log("Fetching remote changeset for %s with branch %s " % (module, branch))
+    system("git fetch %s %s" % (alias, branch))
+
+    # create the local branch if missing or reuse local branch
+    if branch not in check_output(["git", "branch"]).split():
+        log("Checkouting new local branch %s" % branch)
+        system("git checkout -b %s %s/%s" % (branch, alias, branch))
+    else:
+        log("Checkouting existing local branch %s" % branch)
+        system("git checkout %s" % branch)
+        log("Rebasing remote changes from %s/%s to local branch %s" % (
+                alias, branch, branch))
+        system("git rebase %s/%s %s" % (alias, branch, branch))
     os.chdir(cwd)
     log("")
+
 
 def url_normpath(url):
     parsed = urlparse.urlparse(url)
@@ -146,6 +180,8 @@ for line in lines:
     hg_addons.append(hg_addon)
 #log(hg_addons)
 
+log("Using maven instrospection of the pom.xml files"
+    " to find the list of addons")
 all_lines = os.popen("mvn -N help:effective-pom").readlines()
 all_lines += os.popen("mvn -N help:effective-pom -f pom-optionals.xml").readlines()
 
@@ -156,9 +192,9 @@ for line in all_lines:
         continue
     addon = m.group(1)
     if addon in hg_addons:
-        hg_fetch(addon)
+        hg_fetch(addon, branch, hg_url)
     else:
-        git_fetch(addon)
+        git_fetch(addon, branch, git_url)
 
 long_path_workaround_cleanup()
 
