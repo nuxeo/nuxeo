@@ -555,12 +555,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-user-relationship-core</artifactId>
+        <artifactId>nuxeo-relationship</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-user-relationship-web</artifactId>
+        <artifactId>nuxeo-user-relationship</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
       <dependency>
