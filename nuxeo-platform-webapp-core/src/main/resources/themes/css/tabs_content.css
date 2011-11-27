@@ -19,6 +19,8 @@ author: lkemen@nuxeo.com
 .summary_div_1 { float: right; font-size: .9em; padding: 1em 0; width: 33% }
 .summary_div_2 { clear: both }
 
+.summary_div_0 img { max-height: 50em; max-width: 100% }
+
 .contentViewTitle { float: left; line-height: normal; margin: 1em 1em 1em 0 }
 
 h3.summaryTitle {
@@ -67,7 +69,7 @@ h3.summaryTitle {
 .rightsAddLabel { font-weight: bold; padding: 0 .4em 0 0 }
 .rightsAddSelect { margin-top: 0}
 .rightsAddManager {
-  margin: .2em 0 0 0;
+  margin: .2em 0 3em;
   width: 100% }
 .rightsAddManager td {
   background-color: #fff;

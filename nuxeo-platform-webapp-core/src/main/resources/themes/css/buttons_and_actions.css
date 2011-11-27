@@ -34,6 +34,8 @@ input.button[disabled], input.button[disabled]:hover {
 	cursor: default;
 	visibility: hidden }
 
+a.button { text-decoration: none }
+
 .major, input.major {
 	background: none repeat scroll 0 0 #0080B0;
 	border: 1px solid #014C68;

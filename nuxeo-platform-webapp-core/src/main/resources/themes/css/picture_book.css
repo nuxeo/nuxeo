@@ -11,7 +11,7 @@ author: lkemen@nuxeo.com
   text-align: center;
   width: 140px }
 
-.itemSelected { background-color: #ECF6FF; border: 1px solid; border-color: "color.major.strong (__FLAVOR__ border)" }
+.itemSelected { background-color: "color.major.light (__FLAVOR__ background)"; border: 1px solid; border-color: "color.major.strong (__FLAVOR__ border)" }
 
 .pictureBookItem .cell { height: 110px; padding-top: 1.4em; text-align: center }
 .pictureBookItem .cell a { display: block; height: 100px; padding: 2em; width: 100px }
