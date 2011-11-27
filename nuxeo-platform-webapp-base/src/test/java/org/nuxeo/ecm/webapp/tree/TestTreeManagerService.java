@@ -19,13 +19,13 @@
 
 package org.nuxeo.ecm.webapp.tree;
 
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestTreeManagerService extends RepositoryOSGITestCase {
+public class TestTreeManagerService extends NXRuntimeTestCase {
 
     protected TreeManager treeManager;
 
