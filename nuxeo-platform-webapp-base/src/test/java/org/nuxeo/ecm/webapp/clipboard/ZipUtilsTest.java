@@ -18,6 +18,9 @@
 
 package org.nuxeo.ecm.webapp.clipboard;
 
+
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,24 +28,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipFile;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class ZipUtilsTest extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        openSession();
-    }
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+public class ZipUtilsTest {
 
-    public void tearDown() throws Exception {
-        session.destroy();
-    }
+    @Inject
+    protected CoreSession session;
 
     protected DocumentModel createTestFolder() throws ClientException {
         DocumentModel parent = new DocumentModelImpl("/", "parent", "Folder");
@@ -85,6 +90,7 @@ public class ZipUtilsTest extends SQLRepositoryTestCase {
         return heavyFile;
     }
 
+    @Test
     public void testExportSimpleFile() throws Exception {
         DocumentModel folder = createTestFolder();
         List<DocumentModel> documents = new ArrayList<DocumentModel>();
@@ -104,6 +110,7 @@ public class ZipUtilsTest extends SQLRepositoryTestCase {
         assertNotNull(zipFile.getEntry("Parent/eea"));
     }
 
+    @Test
     public void testExportAllBlobs() throws Exception {
         DocumentModel heavyFile = createHeavyFile();
         List<DocumentModel> documents = new ArrayList<DocumentModel>();
