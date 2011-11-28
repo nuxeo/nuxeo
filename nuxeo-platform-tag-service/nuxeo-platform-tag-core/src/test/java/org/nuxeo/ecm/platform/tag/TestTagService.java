@@ -208,6 +208,9 @@ public class TestTagService extends SQLRepositoryTestCase {
         tagService.untag(session, file1Id, null, null);
         tags = tagService.getDocumentTags(session, file1Id, null);
         assertTrue(tags.isEmpty());
+
+        // close remote session
+        remoting.disconnect(sid);
     }
 
     protected static Set<String> labels(List<Tag> tags) {

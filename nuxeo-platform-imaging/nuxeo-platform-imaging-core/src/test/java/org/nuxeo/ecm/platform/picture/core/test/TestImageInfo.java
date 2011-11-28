@@ -65,6 +65,7 @@ public class TestImageInfo extends RepositoryOSGITestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
         blobHolderService = null;
         imagingService = null;

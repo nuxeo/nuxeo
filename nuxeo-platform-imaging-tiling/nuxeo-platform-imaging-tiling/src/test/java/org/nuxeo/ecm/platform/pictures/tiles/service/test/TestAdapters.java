@@ -22,10 +22,10 @@ package org.nuxeo.ecm.platform.pictures.tiles.service.test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,12 +52,18 @@ public class TestAdapters extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testAdapter() throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel doc = session.createDocumentModel(
-                root.getPathAsString(), "file", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(),
+                "file", "File");
         doc.setProperty("dublincore", "title", "MyDoc");
         doc.setProperty("dublincore", "coverage", "MyDocCoverage");
         doc.setProperty("dublincore", "modified", new GregorianCalendar());
@@ -96,13 +102,13 @@ public class TestAdapters extends SQLRepositoryTestCase {
 
         List<Map<String, Object>> viewsList = getDefaultViewsList(image);
         picture.getProperty("picture:views").setValue(viewsList);
-        picture  = session.createDocument(picture);
+        picture = session.createDocument(picture);
         session.save();
 
         assertTilingIsWorkingFor(picture);
     }
 
-  public void testAdapterOnPictureWithOriginalJpegView() throws Exception {
+    public void testAdapterOnPictureWithOriginalJpegView() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel picture = session.createDocumentModel(
                 root.getPathAsString(), "picture1", "Picture");
@@ -125,7 +131,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         viewsList.add(map);
 
         picture.getProperty("picture:views").setValue(viewsList);
-        picture  = session.createDocument(picture);
+        picture = session.createDocument(picture);
         session.save();
 
         assertTilingIsWorkingFor(picture);
