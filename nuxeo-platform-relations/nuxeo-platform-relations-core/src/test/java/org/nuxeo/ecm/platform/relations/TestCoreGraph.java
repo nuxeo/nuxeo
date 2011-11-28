@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -59,6 +58,10 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     public static final String DC_TERMS_NS = "http://purl.org/dc/terms/";
 
+    private static final String GRAPH_NAME = "myrelations";
+
+    private RelationManager service;
+
     private CoreGraph graph;
 
     private List<Statement> statements;
@@ -78,15 +81,15 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.relations.tests",
                 "relation-core-test-contrib.xml");
         openSession();
-        RelationManager service = Framework.getService(RelationManager.class);
-        Graph graph = service.getGraphByName("myrelations");
-        assertNotNull(graph);
-        this.graph = (CoreGraph) graph;
+        service = Framework.getService(RelationManager.class);
+
         statements = new ArrayList<Statement>();
         doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
-                REPOSITORY_NAME + "/00010000-2c86-46fa-909e-02494bcb0001");
+                database.repositoryName
+                        + "/00010000-2c86-46fa-909e-02494bcb0001");
         doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
-                REPOSITORY_NAME + "/00020000-2c86-46fa-909e-02494bcb0002");
+                database.repositoryName
+                        + "/00020000-2c86-46fa-909e-02494bcb0002");
         isBasedOn = new QNameResourceImpl(DC_TERMS_NS, "IsBasedOn");
         references = new QNameResourceImpl(DC_TERMS_NS, "References");
         statements.add(new StatementImpl(doc2, isBasedOn, doc1));
@@ -95,6 +98,13 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         statements.add(new StatementImpl(doc2, references, new LiteralImpl(
                 "NXRuntime")));
         Collections.sort(statements);
+
+        graph = (CoreGraph) service.getGraphByName(GRAPH_NAME);
+        assertNotNull(graph);
+    }
+
+    public void useGraphWithSession() throws Exception {
+        graph = (CoreGraph) service.getGraph(GRAPH_NAME, session);
     }
 
     @Override
@@ -129,6 +139,11 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(0, graph.size());
         graph.add(statements);
         assertEquals(3, graph.size());
+    }
+
+    public void testAddWithSession() throws Exception {
+        useGraphWithSession();
+        testAdd();
     }
 
     public void testSubjectResource() {
@@ -187,6 +202,11 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
                 "NXRuntime")));
         graph.remove(stmts);
         assertEquals(2, graph.size());
+    }
+
+    public void testRemoveWithSession() throws Exception {
+        useGraphWithSession();
+        testRemove();
     }
 
     public void testStatementProperties() {
@@ -276,6 +296,11 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         stmts = graph.getStatements(new StatementImpl(new ResourceImpl(
                 "http://subject"), null, new BlankImpl("blank")));
         assertEquals(expected, stmts);
+    }
+
+    public void testGetStatementsPatternWithSession() throws Exception {
+        useGraphWithSession();
+        testGetStatementsPattern();
     }
 
     public void testGetSubjects() {
