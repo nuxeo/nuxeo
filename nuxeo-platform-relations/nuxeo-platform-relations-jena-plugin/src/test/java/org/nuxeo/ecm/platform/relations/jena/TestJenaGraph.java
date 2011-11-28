@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.BlankImpl;
@@ -70,10 +71,11 @@ public class TestJenaGraph extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.relations");
+        deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.relations.jena.tests",
                 "jena-test-bundle.xml");
-        RelationService service = (RelationService) Framework.getRuntime().getComponent(
-                RelationService.NAME);
+        RelationManager service = Framework.getService(RelationManager.class);
         Graph graph = service.getGraphByName("myrelations");
         assertNotNull(graph);
         assertEquals(JenaGraph.class, graph.getClass());

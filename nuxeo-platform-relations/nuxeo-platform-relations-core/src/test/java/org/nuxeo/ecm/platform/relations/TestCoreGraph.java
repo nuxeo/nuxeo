@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.BlankImpl;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
-import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestCoreGraph extends SQLRepositoryTestCase {
@@ -77,8 +77,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.relations.tests",
                 "relation-core-test-contrib.xml");
         openSession();
-        RelationService service = (RelationService) Framework.getRuntime().getComponent(
-                RelationService.NAME);
+        RelationManager service = Framework.getService(RelationManager.class);
         Graph graph = service.getGraphByName("myrelations");
         assertNotNull(graph);
         this.graph = (CoreGraph) graph;

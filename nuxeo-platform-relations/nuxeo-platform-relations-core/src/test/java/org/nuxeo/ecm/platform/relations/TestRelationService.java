@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
@@ -37,7 +38,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestRelationService extends NXRuntimeTestCase {
 
-    private RelationService service;
+    private RelationManager service;
 
     @Override
     public void setUp() throws Exception {
@@ -45,20 +46,19 @@ public class TestRelationService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.relations");
         deployContrib("org.nuxeo.ecm.relations.tests",
                 "nxrelations-test-bundle.xml");
-        service = (RelationService) Framework.getRuntime().getComponent(
-                RelationService.NAME);
+        service = Framework.getService(RelationManager.class);
     }
 
     public void testGetGraphByType() {
-        assertNotNull(service.getGraphByType("dummygraph"));
+        assertNotNull(((RelationService) service).getGraphByType("dummygraph"));
         // no implementation
-        assertNull(service.getGraphByType("unexistentgraph"));
+        assertNull(((RelationService) service).getGraphByType("unexistentgraph"));
         // no such graph type
-        assertNull(service.getGraphByType("foo"));
+        assertNull(((RelationService) service).getGraphByType("foo"));
     }
 
     public void testGetGraphTypes() {
-        List<String> types = service.getGraphTypes();
+        List<String> types = ((RelationService) service).getGraphTypes();
         assertEquals(4, types.size());
         assertTrue(types.contains("core"));
         assertTrue(types.contains("dummygraph"));
