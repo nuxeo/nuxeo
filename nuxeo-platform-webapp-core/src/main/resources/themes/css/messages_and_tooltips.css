@@ -32,9 +32,9 @@ author: lkemen@nuxeo.com
 
 /* =Tips */
 .tooltip {
-  background-color: "color.major.light (__FLAVOR__ background)";
+  background-color: #ffe179;
   border-radius: 4px;
-  color: #efefef;
+  color: #000;
   display: none;
   font-weight: normal;
   max-width: 12%;
