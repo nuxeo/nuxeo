@@ -72,6 +72,12 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         fireFrameworkStarted();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     protected void createInitialDocs() throws Exception {
 
         DocumentModel wsRoot = session.getDocument(new PathRef(

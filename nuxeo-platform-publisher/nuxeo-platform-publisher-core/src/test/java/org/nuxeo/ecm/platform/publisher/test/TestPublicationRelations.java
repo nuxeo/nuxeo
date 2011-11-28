@@ -88,6 +88,7 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         NamingContextFactory.revertSetAsInitial();
         super.tearDown();
     }

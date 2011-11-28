@@ -54,7 +54,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * POJO implementation of the publisher service Implements both
  * {@link PublisherService} and {@link RemotePublicationTreeManager}.
- * 
+ *
  * @author tiry
  */
 public class PublisherServiceImpl extends DefaultComponent implements
@@ -217,6 +217,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         CoreSession coreSession = null;
         if (rm != null) {
+            // FIXME: this session is never closed?
             coreSession = rm.getDefaultRepository().open();
         }
 
