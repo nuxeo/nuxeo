@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -83,7 +84,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
     protected String urlRoot;
 
     private EventService eventService;
-    
+
     public SimpleNuxeoBackend(String corePathPrefix, String urlRoot) {
         this.corePathPrefix=corePathPrefix;
         this.urlRoot = urlRoot;
@@ -515,15 +516,15 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         List<Link> links = new ArrayList<Link>();
 
         RelationManager relationManager = Framework.getService(RelationManager.class);
-        QNameResource documentResource = (QNameResource) relationManager.getResource(
+        Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+        Resource resource = relationManager.getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, doc, null);
 
-        Statement pattern = new StatementImpl(null, null, documentResource);
-        List<Statement> inStatements = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
+        List<Statement> inStatements = graph.getStatements(null, null, resource);
         links.addAll(computeLinks(inStatements, userNames, true, request));
 
-        pattern = new StatementImpl(documentResource, null, null );
-        List<Statement> outStatements = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
+        List<Statement> outStatements = graph.getStatements(resource, null,
+                null);
         links.addAll(computeLinks(outStatements, userNames, false, request));
 
         return links;
