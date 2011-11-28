@@ -113,19 +113,20 @@ def git_fetch(module, branch, base_url):
         branch = "master"
 
     # fetch the changeset for the detected branch from the right remote repo
-    log("Fetching remote changeset for %s with branch %s " % (module, branch))
-    system("git fetch %s %s" % (alias, branch))
+    #log("Fetching remote changeset for %s with branch %s " % (module, branch))
+    #system("git fetch %s %s" % (alias, branch))
 
     # create the local branch if missing or reuse local branch
     if branch not in check_output(["git", "branch"]).split():
-        log("Checkouting new local branch %s" % branch)
+        log("Checking out new local branch %s" % branch)
         system("git checkout -b %s %s/%s" % (branch, alias, branch))
     else:
-        log("Checkouting existing local branch %s" % branch)
+        log("Checking out existing local branch %s" % branch)
         system("git checkout %s" % branch)
-        log("Rebasing remote changes from %s/%s to local branch %s" % (
-                alias, branch, branch))
-        system("git rebase %s/%s %s" % (alias, branch, branch))
+
+    # update branch
+    log("Updating branch")
+    system("git pull %s" % alias)
     os.chdir(cwd)
     log("")
 
