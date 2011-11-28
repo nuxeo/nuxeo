@@ -27,8 +27,8 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  * Unit tests for the SiteActionListener.
- * @author rux
  *
+ * @author rux
  */
 public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
 
@@ -48,32 +48,37 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testSiteActionListenerWorkspace() throws Exception {
         final String WorkspaceTitle = "Test Workspace";
         String id = IdUtils.generatePathSegment(WorkspaceTitle);
-        DocumentModel workspace = session.createDocumentModel("/", id, "Workspace");
+        DocumentModel workspace = session.createDocumentModel("/", id,
+                "Workspace");
         workspace.setPropertyValue("dc:title", WorkspaceTitle);
         workspace = session.createDocument(workspace);
         workspace = session.saveDocument(workspace);
         session.save();
-        //re-read the document model
+        // re-read the document model
         workspace = session.getDocument(workspace.getRef());
-        String siteName = (String) workspace.getPropertyValue(
-                SiteConstants.WEBCONTAINER_NAME);
-        String siteUrl = (String) workspace.getPropertyValue(
-                SiteConstants.WEBCONTAINER_URL);
+        String siteName = (String) workspace.getPropertyValue(SiteConstants.WEBCONTAINER_NAME);
+        String siteUrl = (String) workspace.getPropertyValue(SiteConstants.WEBCONTAINER_URL);
         String documentTitle = workspace.getTitle();
         String documentName = workspace.getName();
         assertFalse("No name in site?", StringUtils.isBlank(siteName));
         assertFalse("No url in site?", StringUtils.isBlank(siteUrl));
         assertFalse("No name in document?", StringUtils.isBlank(documentName));
         assertFalse("No title in document?", StringUtils.isBlank(documentTitle));
-        //name contains the title
+        // name contains the title
         assertEquals("Name not valid for web container: " + siteName,
                 documentTitle, siteName);
-        //url contains the name
-        assertEquals("URL not valid for web container: " + siteUrl,
-                siteUrl, URIUtils.quoteURIPathComponent(documentName, false));
+        // url contains the name
+        assertEquals("URL not valid for web container: " + siteUrl, siteUrl,
+                URIUtils.quoteURIPathComponent(documentName, false));
     }
 
     public void testSiteActionListenerWebSite() throws Exception {
@@ -84,24 +89,22 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
         webSite = session.createDocument(webSite);
         webSite = session.saveDocument(webSite);
         session.save();
-        //re-read the document model
+        // re-read the document model
         webSite = session.getDocument(webSite.getRef());
-        String siteName = (String) webSite.getPropertyValue(
-                SiteConstants.WEBCONTAINER_NAME);
-        String siteUrl = (String) webSite.getPropertyValue(
-                SiteConstants.WEBCONTAINER_URL);
+        String siteName = (String) webSite.getPropertyValue(SiteConstants.WEBCONTAINER_NAME);
+        String siteUrl = (String) webSite.getPropertyValue(SiteConstants.WEBCONTAINER_URL);
         String documentTitle = webSite.getTitle();
         String documentName = webSite.getName();
         assertFalse("No name in site?", StringUtils.isBlank(siteName));
         assertFalse("No url in site?", StringUtils.isBlank(siteUrl));
         assertFalse("No name in document?", StringUtils.isBlank(documentName));
         assertFalse("No title in document?", StringUtils.isBlank(documentTitle));
-        //name contains the title
+        // name contains the title
         assertEquals("Name not valid for web container: " + siteName,
                 documentTitle, siteName);
-        //url contains the name
-        assertEquals("URL not valid for web container: " + siteUrl,
-                siteUrl, URIUtils.quoteURIPathComponent(documentName, false));
+        // url contains the name
+        assertEquals("URL not valid for web container: " + siteUrl, siteUrl,
+                URIUtils.quoteURIPathComponent(documentName, false));
     }
 
 }

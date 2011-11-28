@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- * 
+ *
  */
 public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
     protected final AnnotationManager manager = new AnnotationManager();
@@ -115,6 +115,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         NamingContextFactory.revertSetAsInitial();
         super.tearDown();
     }
