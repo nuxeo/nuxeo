@@ -257,8 +257,8 @@ public class StatementImpl implements Statement {
 
     @Override
     public String toString() {
-        return String.format("<%s {%s, %s, %s}>", getClass(), subject,
-                predicate, object);
+        return String.format("%s(%s, %s, %s)", getClass().getSimpleName(),
+                subject, predicate, object);
     }
 
     @Override

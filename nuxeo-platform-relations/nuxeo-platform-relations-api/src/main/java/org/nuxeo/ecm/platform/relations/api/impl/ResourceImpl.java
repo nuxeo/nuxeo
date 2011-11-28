@@ -60,7 +60,7 @@ public class ResourceImpl extends AbstractNode implements Resource {
 
     @Override
     public String toString() {
-        return String.format("<%s '%s'>", getClass(), uri);
+        return String.format("%s('%s')", getClass().getSimpleName(), uri);
     }
 
     @Override

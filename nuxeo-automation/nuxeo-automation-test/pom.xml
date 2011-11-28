@@ -82,71 +82,72 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- only for tests -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-client</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-features</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <!-- For webengine servlet? -->
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-naming</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-annotations</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-jtajca</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.compendium</artifactId>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/UploadBigFileTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
