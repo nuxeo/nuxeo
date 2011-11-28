@@ -35,6 +35,13 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.webapp.core");
+        openSession();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     protected void waitForAsyncExec() {
@@ -42,7 +49,6 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
     }
 
     public void testLifeCycleAPI() throws ClientException {
-        openSession();
 
         DocumentModel folderDoc = session.createDocumentModel("/",
                 "testFolder", "Folder");
