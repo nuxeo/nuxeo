@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
@@ -50,7 +51,9 @@ public class CoreFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
-    private RepositorySettings repository;
+    protected int initialOpenSessions;
+
+    protected RepositorySettings repository;
 
     public RepositorySettings getRepository() {
         return repository;
@@ -79,6 +82,7 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
+        initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         if (repository.getGranularity() != Granularity.METHOD) {
             initializeSession(runner);
         }
@@ -97,7 +101,18 @@ public class CoreFeature extends SimpleFeature {
         if (repository.getGranularity() != Granularity.METHOD) {
             cleanupSession(runner);
         }
+        // close all sessions
         repository.shutdown();
+
+        int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
+        if (leakedOpenSessions != 0) {
+            log.error(String.format(
+                    "There are %s open session(s) at tear down; it seems "
+                            + "the test leaked %s session(s).",
+                    Integer.valueOf(finalOpenSessions),
+                    Integer.valueOf(leakedOpenSessions)));
+        }
     }
 
     @Override
@@ -113,7 +128,8 @@ public class CoreFeature extends SimpleFeature {
                 CoreSession.class);
         try {
             // wait for any async thread to finish (e.g. fulltext indexing) as
-            // apparently concurrent fulltext indexing of document that has just
+            // apparently concurrent fulltext indexing of document that has
+            // just
             // been deleted can trigger the core (SessionImpl) to try to
             // re-create the row either in the hierarchy or in the fulltext
             // tables and violate integrity constraints of the database

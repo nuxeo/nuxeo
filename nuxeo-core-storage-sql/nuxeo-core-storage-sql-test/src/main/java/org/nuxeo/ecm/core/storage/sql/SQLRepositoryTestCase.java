@@ -35,7 +35,11 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(SQLRepositoryTestCase.class);
 
-    public static final String REPOSITORY_NAME = "test";
+    /**
+     * @deprecated since 5.5: use {@link #database.repositoryName} instead
+     */
+    @Deprecated
+    public static final String REPOSITORY_NAME = DatabaseHelper.DATABASE.repositoryName;
 
     public CoreSession session;
 
@@ -100,14 +104,14 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     public CoreSession openSessionAs(String username) throws ClientException {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", username);
-        return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+        return CoreInstance.getInstance().open(database.repositoryName, context);
     }
 
     public CoreSession openSessionAs(NuxeoPrincipal principal)
             throws ClientException {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("principal", principal);
-        return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+        return CoreInstance.getInstance().open(database.repositoryName, context);
     }
 
     public void closeSession() {

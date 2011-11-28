@@ -185,7 +185,6 @@ public class RepositorySettings implements Provider<CoreSession> {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public void shutdown() {
         if (repo != null) {
             if (session != null) {

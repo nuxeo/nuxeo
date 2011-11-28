@@ -22,18 +22,20 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RepositoryManagerImpl extends DefaultComponent implements
         RepositoryManager {
+
+    private static final Log log = LogFactory.getLog(RepositoryManagerImpl.class);
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.core.api.repository.RepositoryManager");
@@ -42,7 +44,13 @@ public class RepositoryManagerImpl extends DefaultComponent implements
 
     @Override
     public void addRepository(Repository repository) {
-        repositories.put(repository.getName(), repository);
+        String repoName = repository.getName();
+        if (repositories.containsKey(repoName)) {
+            log.info("Overriding repository " + repoName);
+        } else {
+            log.info("Registering repository " + repoName);
+        }
+        repositories.put(repoName, repository);
     }
 
     @Override
@@ -57,6 +65,7 @@ public class RepositoryManagerImpl extends DefaultComponent implements
 
     @Override
     public void removeRepository(String name) {
+        log.info("Removing repository " + name);
         repositories.remove(name);
     }
 
