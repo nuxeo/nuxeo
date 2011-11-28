@@ -13,13 +13,8 @@
     <h3><h:outputText value="#{messages['title.edit']} #{currentType.id}" /></h3>
     <ui:include src="/incl/message_banner.xhtml" />
     <h:form id="edit_step">
-      <c:if test="#{!empty currentDocumentType.layout}">
-        <ui:include src="/incl/document_editor.xhtml" />
-      </c:if>
-      <c:if test="#{empty currentDocumentType.layout}">
-        <nxl:documentLayout mode="edit" value="#{currentDocument}" />
-        <ui:include src="/incl/document_versioning.xhtml" />
-      </c:if>
+      <nxl:documentLayout mode="edit" value="#{currentDocument}" />
+      <ui:include src="/incl/document_versioning.xhtml" />
       <h:commandButton value="#{messages['command.save']}"
         action="#{routingActions.updateRouteElement}" id="update_step" />
      <h:outputText value=" "/>
