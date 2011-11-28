@@ -44,12 +44,12 @@ boolean connectOK = ctx.isConnectRegistrationDone();
   <%} %>
   </table>
 
- <center>
+ <div class="buttonContainer">
 <%if (currentPage.prev()!=null) { %>
  <input type="button" id="btnPrev" class="glossyButton" value="<fmt:message key="label.action.prev"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
 <%}%>
  <input type="submit" id="btnNext" class="glossyButton" value="<fmt:message key="label.action.finish"/>"/>
-</center>
+</div>
 
 </form>
 

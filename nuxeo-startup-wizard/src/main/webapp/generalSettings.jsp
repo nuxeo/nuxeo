@@ -16,17 +16,22 @@
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.bind.address"/></td>
       <td><input type="text" name="nuxeo.bind.address" value="<%=collector.getConfigurationParam("nuxeo.bind.address") %>" size="15"/></td>
-      <td class="helpCell"><fmt:message key="label.nuxeo.bind.address.help"/></td>
     </tr>
+    <tr>
+      <td colspan="2" class="helpCell"><fmt:message key="label.nuxeo.bind.address.help"/></td>
+    </tr>
+
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.log.dir"/></td>
       <td><input type="text" name="nuxeo.log.dir" value="<%=collector.getConfigurationParam("nuxeo.log.dir") %>" size="35"/></td>
-      <td class="helpCell"><fmt:message key="label.nuxeo.log.dir.help"/></td>
+    </tr><tr>
+      <td colspan="2" class="helpCell"><fmt:message key="label.nuxeo.log.dir.help"/></td>
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.data.dir"/></td>
       <td><input type="text" name="nuxeo.data.dir" value="<%=collector.getConfigurationParam("nuxeo.data.dir") %>" size="35"/></td>
-      <td class="helpCell"><fmt:message key="label.nuxeo.data.dir.help"/></td>
+    </tr><tr>
+      <td colspan="2" class="helpCell"><fmt:message key="label.nuxeo.data.dir.help"/></td>
     </tr>
   </table>
 

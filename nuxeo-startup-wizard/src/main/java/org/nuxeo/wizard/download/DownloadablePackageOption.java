@@ -130,6 +130,13 @@ public class DownloadablePackageOption {
         return "";
     }
 
+    public String getTextColor() {
+        if (pkg != null) {
+            return pkg.getTextColor();
+        }
+        return "";
+    }
+
     public DownloadablePackageOption getParent() {
         return parent;
     }

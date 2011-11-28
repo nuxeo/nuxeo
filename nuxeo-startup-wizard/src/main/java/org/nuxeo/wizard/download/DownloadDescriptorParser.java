@@ -127,6 +127,7 @@ public class DownloadDescriptorParser {
             pkg.setMd5(el.attributeValue("md5"));
             pkg.setBaseUrl(bUrl);
             pkg.setColor(el.attributeValue("color"));
+            pkg.setTextColor(el.attributeValue("textcolor"));
             String url = el.attributeValue("url");
             if (url != null) {
                 pkg.setDownloadUrl(url);

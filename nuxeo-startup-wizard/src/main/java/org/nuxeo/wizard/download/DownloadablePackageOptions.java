@@ -165,6 +165,7 @@ public class DownloadablePackageOptions {
         sb.append("\"id\":\"" + option.id + "\",");
         sb.append("\"package\":\"" + option.getPackage().getId() + "\",");
         sb.append("\"color\":\"" + option.getColor() + "\",");
+        sb.append("\"textcolor\":\"" + option.getTextColor() + "\",");
         sb.append("\"label\":\"" + option.getLabel() + "\",");
         sb.append("\"selected\":\"" + option.selected + "\",");
         sb.append("\"exclusive\":\"" + option.exclusive + "\",");

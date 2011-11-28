@@ -20,9 +20,9 @@
 <input type="hidden" name="baseUrl" id="baseUrl" value=""/>
 <input type="hidden" name="browserInternetAccess" id="browserInternetAccess" value=""/>
 </div>
-<center>
+<div class="buttonContainer">
  <input type="submit" class="glossyButton" id="btnNext" disabled="true" value="<fmt:message key="label.action.next"/>"/>
-</center>
+</div>
 <script>
   $(document).ready(function(){
     $("#baseUrl").attr("value",window.location.href);

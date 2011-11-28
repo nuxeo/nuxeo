@@ -14,10 +14,10 @@
       <fmt:message key="label.connectFinish.ko.free" />
   </p>
 </div>
-<center>
+<div class="buttonContainer">
 <input type="button" id="btnRetry" class="glossyButton" value="<fmt:message key="label.action.retry"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
 <input type="submit" id="btnSkip" class="glossyButton" value="<fmt:message key="label.action.skip"/>"/>
-</center>
+</div>
 </form>
 
 <%@ include file="includes/footer.jsp" %>
