@@ -2187,12 +2187,17 @@
                 <labels>
                   <label mode="any">Layout mode</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If not set, the mode is resolved from the
+                    usual widget mode. Otherwise it's taken instead when not
+                    empty. WARNING: Before 5.5, mode was not resolved from the
+                    widget mode, so this value was required.
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>mode</field>
                 </fields>
-                <properties widgetMode="any">
-                  <property name="required">true</property>
-                </properties>
               </widget>
               <widget name="template" type="selectOneResource">
                 <labels>
