@@ -28,6 +28,6 @@ public interface GraphFactory {
     /**
      * Creates an instance of the graph.
      */
-    Graph creatGraph(GraphDescription graphDescription, CoreSession session);
+    Graph createGraph(GraphDescription graphDescription, CoreSession session);
 
 }

@@ -484,10 +484,6 @@ public class JenaGraph implements Graph {
         setNamespaces(graphDescription.getNamespaces());
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     protected void setOptions(Map<String, String> options) {
         for (Map.Entry<String, String> option : options.entrySet()) {
             String key = option.getKey();

@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.relations.api.GraphFactory;
 public class DummyGraphFactory implements GraphFactory {
 
     @Override
-    public Graph creatGraph(GraphDescription graphDescription,
+    public Graph createGraph(GraphDescription graphDescription,
             CoreSession session) {
         return new DummyGraphType();
     }

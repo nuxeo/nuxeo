@@ -118,6 +118,8 @@ public class CoreGraph implements Graph {
 
     protected static final Statement ALL = new StatementImpl(null, null, null);
 
+    protected CoreSession session;
+
     protected String name;
 
     protected String docType = REL_TYPE;
@@ -125,8 +127,6 @@ public class CoreGraph implements Graph {
     public Map<String, String> namespaces;
 
     public List<String> namespaceList = Collections.emptyList();
-
-    protected CoreSession session;
 
     /** Only one of those is filled. */
     protected static class NodeAsString {
@@ -137,6 +137,14 @@ public class CoreGraph implements Graph {
         public String string;
     }
 
+    /**
+     * A graph with this base session. An unrestricted session will be opened
+     * based on it.
+     */
+    public CoreGraph(CoreSession session) {
+        this.session = session;
+    }
+
     @Override
     public void setDescription(GraphDescription graphDescription) {
         name = graphDescription.getName();
@@ -145,14 +153,6 @@ public class CoreGraph implements Graph {
         namespaceList = namespaces == null ? Collections.<String> emptyList()
                 : new ArrayList<String>(new LinkedHashSet<String>(
                         namespaces.values()));
-    }
-
-    /**
-     * Sets the base session to use for this graph, instead of getting a new one
-     * each time. An unrestricted session will be opened based on it.
-     */
-    public void setSession(CoreSession session) {
-        this.session = session;
     }
 
     protected void setOptions(Map<String, String> options) {

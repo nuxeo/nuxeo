@@ -27,11 +27,10 @@ import org.nuxeo.ecm.platform.relations.api.GraphFactory;
 public class CoreGraphFactory implements GraphFactory {
 
     @Override
-    public Graph creatGraph(GraphDescription graphDescription,
+    public Graph createGraph(GraphDescription graphDescription,
             CoreSession session) {
-        CoreGraph graph = new CoreGraph();
+        CoreGraph graph = new CoreGraph(session);
         graph.setDescription(graphDescription);
-        graph.setSession(session);
         return graph;
     }
 
