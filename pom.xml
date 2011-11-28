@@ -4360,9 +4360,21 @@
     </profile>
     <profile>
       <id>oracle10g</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc14</artifactId>
+        </dependency>
+      </dependencies>
     </profile>
     <profile>
       <id>oracle11g</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc6</artifactId>
+        </dependency>
+      </dependencies>
     </profile>
     <profile>
       <id>mysql</id>
