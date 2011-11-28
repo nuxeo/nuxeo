@@ -699,6 +699,8 @@ public abstract class NuxeoLauncher {
             log.debug("Check if install in progress...");
             if (configurationGenerator.isInstallInProgress()) {
                 pkgInstall();
+                // Ensure reload of configuration
+                return doStart(logProcessOutput);
             }
 
             start(logProcessOutput);
