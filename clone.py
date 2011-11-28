@@ -108,7 +108,7 @@ def git_fetch(module, branch, base_url):
 
     # check whether we should use a specific branch or the master
     # (assumed to be the main development branch for git repos)
-    if branch not in check_output(["git", "ls-remote"]).split():
+    if branch not in check_output(["git", "ls-remote", alias]).split():
         log(branch + " not found on remote repo: fallback on master.")
         branch = "master"
 
