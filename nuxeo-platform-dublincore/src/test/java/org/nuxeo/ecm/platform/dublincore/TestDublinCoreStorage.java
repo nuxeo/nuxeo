@@ -257,6 +257,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         DocumentModel doc = runner.getFolder();
         String creator = (String) doc.getPropertyValue("dc:creator");
         assertEquals("Jacky", creator);
+        closeSession(session);
     }
 
     public class CreateDocumentUnrestricted extends UnrestrictedSessionRunner {
