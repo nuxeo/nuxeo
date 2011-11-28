@@ -14,20 +14,24 @@ public class IFrameHelper {
     public static final String CONNECT_IFRAME_URL_PATTERN = "/site/connect";
     public static final String CALLBACK_URL_PATTERN = "ConnectCallback";
     public static final String CONNECT_FRAME_NAME = "connectForm";
-
+    public static final int NBTRY = 10;
 
     public static boolean focusOnConnectFrame(WebDriver driver) {
-            return focusOnConnectFrame(driver, 3);
+            return focusOnConnectFrame(driver, NBTRY);
+    }
+
+    protected static void wait(int nbSeconds) {
+        try {
+            Thread.sleep(nbSeconds * 1000);
+        } catch (InterruptedException e) {
+        }
     }
 
     private static boolean focusOnConnectFrame(WebDriver driver, int nbTry) {
 
         if (driver.getCurrentUrl().contains(CALLBACK_URL_PATTERN) && nbTry >0) {
             // we must wait for the callback page to execute and do the redirect
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+            wait(1);
             return focusOnConnectFrame(driver, nbTry-1);
         }
 
@@ -36,24 +40,28 @@ public class IFrameHelper {
                 driver.switchTo().frame(CONNECT_FRAME_NAME);
                 return true;
             } catch (Throwable e) {
-                System.out.println("Unable to find IFrame on page " + driver.getCurrentUrl());
+                if (nbTry>0) {
+                    System.out.println("Retry to find IFrame on page " + driver.getCurrentUrl());
+                    wait(2);
+                    return focusOnConnectFrame(driver, nbTry-1);
+                } else {
+                    System.out.println("Unable to find IFrame on page " + driver.getCurrentUrl());
+                    System.out.println(driver.getPageSource());
+                }
             }
         }
         return false;
     }
 
     public static boolean focusOnWizardPage(WebDriver driver) {
-        return focusOnWizardPage(driver, 3);
+        return focusOnWizardPage(driver, NBTRY);
     }
 
     private static boolean focusOnWizardPage(WebDriver driver, int nbTry) {
 
         if (driver.getCurrentUrl().contains(CALLBACK_URL_PATTERN) && nbTry >0) {
             // we must wait for the callback page to execute and do the redirect
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+            wait(2);
             return focusOnWizardPage(driver, nbTry-1);
         }
 
@@ -63,9 +71,14 @@ public class IFrameHelper {
             driver.switchTo().defaultContent();
             return true;
         } catch (Throwable e) {
-            System.out.println("Unable to top windows on page " + driver.getCurrentUrl());
+            if (nbTry>0) {
+                System.out.println("Retry to find top windows on page " + driver.getCurrentUrl());
+                wait(1);
+                return focusOnWizardPage(driver, nbTry-1);
+            } else {
+                System.out.println("Unable to find top windows on page " + driver.getCurrentUrl());
+            }
         }
         return false;
     }
-
 }
