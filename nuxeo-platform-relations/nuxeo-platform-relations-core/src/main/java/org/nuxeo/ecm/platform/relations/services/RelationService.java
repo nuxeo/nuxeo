@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: RelationService.java 25624 2007-10-02 15:14:38Z atchertchian $
+ *     Anahide Tchertchian
  */
-
 package org.nuxeo.ecm.platform.relations.services;
 
 import java.io.InputStream;
@@ -53,9 +50,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Relation service.
  * <p>
  * It handles a registry of graph instances through extension points.
- * 
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
  */
 public class RelationService extends DefaultComponent implements
         RelationManager {
@@ -171,7 +165,7 @@ public class RelationService extends DefaultComponent implements
      * Gets a graph given a name.
      * <p>
      * This is used to instantiate graphs with a given name
-     * 
+     *
      * @param graphType
      * @return the prefixed resource instance initialized with no value or null
      *         if prefix is not found
@@ -319,6 +313,7 @@ public class RelationService extends DefaultComponent implements
         return graph;
     }
 
+    @Override
     public Graph getTransientGraph(String type) throws ClientException {
         Graph graph = getGraphByType(type);
         if (graph == null) {
@@ -330,6 +325,7 @@ public class RelationService extends DefaultComponent implements
 
     // RelationManager interface
 
+    @Override
     public synchronized Graph getGraphByName(String name)
             throws ClientException {
         Graph registeredGraph = graphRegistry.get(name);
@@ -342,6 +338,7 @@ public class RelationService extends DefaultComponent implements
         return registeredGraph;
     }
 
+    @Override
     public Resource getResource(String namespace, Serializable object,
             Map<String, Serializable> context) throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
@@ -353,6 +350,7 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
+    @Override
     public Set<Resource> getAllResources(Serializable object,
             Map<String, Serializable> context) throws ClientException {
         // TODO OPTIM implement reverse map in registerContribution
@@ -373,6 +371,7 @@ public class RelationService extends DefaultComponent implements
         return res;
     }
 
+    @Override
     public Serializable getResourceRepresentation(String namespace,
             Resource resource, Map<String, Serializable> context)
             throws ClientException {
@@ -385,74 +384,89 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void add(String graphName, List<Statement> statements)
             throws ClientException {
         getGraphByName(graphName).add(statements);
     }
 
+    @Override
     public void clear(String graphName) throws ClientException {
         getGraphByName(graphName).clear();
     }
 
+    @Override
     public List<Node> getObjects(String graphName, Node subject, Node predicate)
             throws ClientException {
         return getGraphByName(graphName).getObjects(subject, predicate);
     }
 
+    @Override
     public List<Node> getPredicates(String graphName, Node subject, Node object)
             throws ClientException {
         return getGraphByName(graphName).getPredicates(subject, object);
     }
 
+    @Override
     public List<Statement> getStatements(String graphName, Statement statement)
             throws ClientException {
         return getGraphByName(graphName).getStatements(statement);
     }
 
+    @Override
     public List<Statement> getStatements(String graphName)
             throws ClientException {
         return getGraphByName(graphName).getStatements();
     }
 
+    @Override
     public List<Node> getSubjects(String graphName, Node predicate, Node object)
             throws ClientException {
         return getGraphByName(graphName).getSubjects(predicate, object);
     }
 
+    @Override
     public boolean hasResource(String graphName, Resource resource)
             throws ClientException {
         return getGraphByName(graphName).hasResource(resource);
     }
 
+    @Override
     public boolean hasStatement(String graphName, Statement statement)
             throws ClientException {
         return getGraphByName(graphName).hasStatement(statement);
     }
 
+    @Override
     public QueryResult query(String graphName, String queryString,
             String language, String baseURI) throws ClientException {
         return getGraphByName(graphName).query(queryString, language, baseURI);
     }
 
+    @Override
     public boolean read(String graphName, InputStream in, String lang,
             String base) throws ClientException {
         return getGraphByName(graphName).read(in, lang, base);
     }
 
+    @Override
     public void remove(String graphName, List<Statement> statements)
             throws ClientException {
         getGraphByName(graphName).remove(statements);
     }
 
+    @Override
     public Long size(String graphName) throws ClientException {
         return getGraphByName(graphName).size();
     }
 
+    @Override
     public boolean write(String graphName, OutputStream out, String lang,
             String base) throws ClientException {
         return getGraphByName(graphName).write(out, lang, base);
     }
 
+    @Override
     public List<String> getGraphNames() throws ClientException {
         return new ArrayList<String>(graphDescriptionRegistry.keySet());
     }
