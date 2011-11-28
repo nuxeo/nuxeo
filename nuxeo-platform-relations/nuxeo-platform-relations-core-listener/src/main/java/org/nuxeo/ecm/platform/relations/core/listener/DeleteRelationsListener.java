@@ -26,10 +26,10 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -57,19 +57,15 @@ public class DeleteRelationsListener implements EventListener {
 
             // remove all the relations from the default graf in which this
             // document is an object in the statement
-            Statement patternIncoming = new StatementImpl(null, null,
+            Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+            List<Statement> statementList = graph.getStatements(null, null,
                     sourceResource);
-            List<Statement> statementList = relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, patternIncoming);
-            relationManager.remove(RelationConstants.GRAPH_NAME, statementList);
+            graph.remove(statementList);
 
             // remove all the relations in which this document is a subject in
             // the statement
-            Statement patternOutcoming = new StatementImpl(sourceResource,
-                    null, null);
-            statementList = relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, patternOutcoming);
-            relationManager.remove(RelationConstants.GRAPH_NAME, statementList);
+            statementList = graph.getStatements(sourceResource, null, null);
+            graph.remove(statementList);
         }
     }
 

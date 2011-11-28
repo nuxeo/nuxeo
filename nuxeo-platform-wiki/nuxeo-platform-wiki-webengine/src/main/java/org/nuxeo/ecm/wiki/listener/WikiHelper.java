@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -86,8 +87,9 @@ public class WikiHelper {
         try {
             // remove old links
             RelationManager rm = RelationHelper.getRelationManager();
+            Graph graph = rm.getGraphByName(RelationConstants.GRAPH_NAME);
             if (stmts != null) {
-                rm.remove(RelationConstants.GRAPH_NAME, stmts);
+                graph.remove(stmts);
                 stmts.clear();
             } else {
                 stmts = new ArrayList<Statement>();
@@ -104,7 +106,7 @@ public class WikiHelper {
                             docResource, HAS_LINK_TO, new LiteralImpl(word));
                     stmts.add(stmt);
                 }
-                rm.add(RelationConstants.GRAPH_NAME, stmts);
+                graph.add(stmts);
             }
         } catch (ClientException e) {
             e.printStackTrace();

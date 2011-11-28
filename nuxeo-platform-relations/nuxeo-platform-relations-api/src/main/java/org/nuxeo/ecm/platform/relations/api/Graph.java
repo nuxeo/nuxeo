@@ -77,20 +77,32 @@ public interface Graph extends Serializable {
     Map<String, String> getNamespaces();
 
     /**
+     * Adds the statement object to the graph.
+     *
+     * @param statement statement to add
+     *
+     * @since 5.5
+     */
+    void add(Statement statement);
+
+    /**
      * Adds given list of Statement objects to the graph.
-     * <p>
-     * If the graph has reification support, the statement properties are also
-     * added to the graph too.
      *
      * @param statements list of Statement instances to add
      */
     void add(List<Statement> statements);
 
     /**
+     * Removes the statement object from the graph.
+     *
+     * @param statement statement to remove
+     *
+     * @since 5.5
+     */
+    void remove(Statement statement);
+
+    /**
      * Removes given list of Statement objects from the graph.
-     * <p>
-     * If the graph has reification support, the deleted statements properties
-     * are removed too.
      *
      * @param statements List of Statement instances to remove
      */
@@ -98,9 +110,6 @@ public interface Graph extends Serializable {
 
     /**
      * Returns all statements in the graph.
-     * <p>
-     * If the graph has reification support, the statements properties are
-     * retrieved too.
      *
      * @return list of Statement instances
      */
@@ -108,14 +117,21 @@ public interface Graph extends Serializable {
 
     /**
      * Returns all statements in the graph matching the pattern.
-     * <p>
-     * If the graph has reification support, the statements properties are
-     * retrieved too.
      *
      * @param statement pattern to match, can hold null nodes as wildcards
      * @return list of Statement instances matching the pattern
      */
     List<Statement> getStatements(Statement statement);
+
+    /**
+     * Returns all statements in the graph matching the pattern.
+     *
+     * @param statement pattern to match, can hold null nodes as wildcards
+     * @return list of Statement instances matching the pattern
+     *
+     * @since 5.5
+     */
+    List<Statement> getStatements(Node subject, Node predicate, Node object);
 
     /**
      * Get items matching the statement pattern (null, predicate, object).

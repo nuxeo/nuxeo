@@ -212,6 +212,11 @@ public class CoreGraph implements Graph {
     }
 
     @Override
+    public void add(Statement statement) {
+        add(Collections.singletonList(statement));
+    }
+
+    @Override
     public void add(List<Statement> statements) {
         try {
             new StatementAdder(statements).runUnrestricted();
@@ -320,6 +325,11 @@ public class CoreGraph implements Graph {
             }
             session.createDocument(rel);
         }
+    }
+
+    @Override
+    public void remove(Statement statement) {
+        remove(Collections.singletonList(statement));
     }
 
     @Override
@@ -468,6 +478,12 @@ public class CoreGraph implements Graph {
             throw new RuntimeException(e);
         }
         return statementFinder.statements;
+    }
+
+    @Override
+    public List<Statement> getStatements(Node subject, Node predicate,
+            Node object) {
+        return getStatements(new StatementImpl(subject, predicate, object));
     }
 
     @Override

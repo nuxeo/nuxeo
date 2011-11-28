@@ -17,22 +17,27 @@
 
 package org.nuxeo.ecm.platform.relations.api.util;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.platform.relations.api.*;
+import org.nuxeo.ecm.platform.relations.api.Literal;
+import org.nuxeo.ecm.platform.relations.api.Node;
+import org.nuxeo.ecm.platform.relations.api.QNameResource;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
+import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
+import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class RelationHelper {
 
@@ -95,9 +100,8 @@ public class RelationHelper {
             String stringObject, String sessionId) {
         try {
             Literal literal = new LiteralImpl(stringObject);
-            Statement pattern = new StatementImpl(null, predicat, literal);
-            List<Statement> stmts = getRelationManager().getStatements(
-                    graphName, pattern);
+            List<Statement> stmts = getRelationManager().getGraphByName(
+                    graphName).getStatements(null, predicat, literal);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -124,9 +128,8 @@ public class RelationHelper {
             DocumentModel objectDocument) {
         try {
             QNameResource docResource = getDocumentResource(objectDocument);
-            Statement pattern = new StatementImpl(null, predicat, docResource);
-            List<Statement> stmts = getRelationManager().getStatements(
-                    graphName, pattern);
+            List<Statement> stmts = getRelationManager().getGraphByName(
+                    graphName).getStatements(null, predicat, docResource);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -153,9 +156,8 @@ public class RelationHelper {
             DocumentModel objectDocument) {
         try {
             QNameResource docResource = getDocumentResource(objectDocument);
-            Statement pattern = new StatementImpl(docResource, predicat, null);
-            List<Statement> stmts = getRelationManager().getStatements(
-                    graphName, pattern);
+            List<Statement> stmts = getRelationManager().getGraphByName(
+                    graphName).getStatements(docResource, predicat, null);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -208,9 +210,8 @@ public class RelationHelper {
             Resource predicat) {
         try {
             QNameResource docResource = getDocumentResource(subjectDoc);
-            Statement pattern = new StatementImpl(docResource, predicat, null);
-            return getRelationManager().getStatements(
-                    graphName, pattern);
+            return getRelationManager().getGraphByName(graphName).getStatements(
+                    docResource, predicat, null);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -227,10 +228,8 @@ public class RelationHelper {
         try {
             QNameResource subject = getDocumentResource(subjectDoc);
             QNameResource object = getDocumentResource(objectDoc);
-            List<Statement> stmts = new ArrayList<Statement>();
             Statement stmt = new StatementImpl(subject, predicat, object);
-            stmts.add(stmt);
-            getRelationManager().remove(graphName, stmts);
+            getRelationManager().getGraphByName(graphName).remove(stmt);
         } catch (ClientException e) {
             log.error(e, e);
         }

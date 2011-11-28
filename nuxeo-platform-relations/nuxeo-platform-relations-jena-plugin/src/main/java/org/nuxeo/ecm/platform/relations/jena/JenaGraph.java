@@ -32,6 +32,7 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -535,6 +536,11 @@ public class JenaGraph implements Graph {
         return namespaces;
     }
 
+    @Override
+    public void add(Statement statement) {
+        add(Collections.singletonList(statement));
+    }
+
     public void add(List<Statement> statements) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -582,6 +588,11 @@ public class JenaGraph implements Graph {
                 graphConnection.close();
             }
         }
+    }
+
+    @Override
+    public void remove(Statement statement) {
+        remove(Collections.singletonList(statement));
     }
 
     public void remove(List<Statement> statements) {
@@ -640,6 +651,12 @@ public class JenaGraph implements Graph {
                 graphConnection.close();
             }
         }
+    }
+
+    @Override
+    public List<Statement> getStatements(Node subject, Node predicate,
+            Node object) {
+        return getStatements(new StatementImpl(subject, predicate, object));
     }
 
     @SuppressWarnings("unchecked")

@@ -395,82 +395,96 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
+    @Deprecated
     public void add(String graphName, List<Statement> statements)
             throws ClientException {
         getGraphByName(graphName).add(statements);
     }
 
     @Override
+    @Deprecated
     public void clear(String graphName) throws ClientException {
         getGraphByName(graphName).clear();
     }
 
     @Override
+    @Deprecated
     public List<Node> getObjects(String graphName, Node subject, Node predicate)
             throws ClientException {
         return getGraphByName(graphName).getObjects(subject, predicate);
     }
 
     @Override
+    @Deprecated
     public List<Node> getPredicates(String graphName, Node subject, Node object)
             throws ClientException {
         return getGraphByName(graphName).getPredicates(subject, object);
     }
 
     @Override
+    @Deprecated
     public List<Statement> getStatements(String graphName, Statement statement)
             throws ClientException {
         return getGraphByName(graphName).getStatements(statement);
     }
 
     @Override
+    @Deprecated
     public List<Statement> getStatements(String graphName)
             throws ClientException {
         return getGraphByName(graphName).getStatements();
     }
 
     @Override
+    @Deprecated
     public List<Node> getSubjects(String graphName, Node predicate, Node object)
             throws ClientException {
         return getGraphByName(graphName).getSubjects(predicate, object);
     }
 
     @Override
+    @Deprecated
     public boolean hasResource(String graphName, Resource resource)
             throws ClientException {
         return getGraphByName(graphName).hasResource(resource);
     }
 
     @Override
+    @Deprecated
     public boolean hasStatement(String graphName, Statement statement)
             throws ClientException {
         return getGraphByName(graphName).hasStatement(statement);
     }
 
     @Override
+    @Deprecated
     public QueryResult query(String graphName, String queryString,
             String language, String baseURI) throws ClientException {
         return getGraphByName(graphName).query(queryString, language, baseURI);
     }
 
     @Override
+    @Deprecated
     public boolean read(String graphName, InputStream in, String lang,
             String base) throws ClientException {
         return getGraphByName(graphName).read(in, lang, base);
     }
 
     @Override
+    @Deprecated
     public void remove(String graphName, List<Statement> statements)
             throws ClientException {
         getGraphByName(graphName).remove(statements);
     }
 
     @Override
+    @Deprecated
     public Long size(String graphName) throws ClientException {
         return getGraphByName(graphName).size();
     }
 
     @Override
+    @Deprecated
     public boolean write(String graphName, OutputStream out, String lang,
             String base) throws ClientException {
         return getGraphByName(graphName).write(out, lang, base);

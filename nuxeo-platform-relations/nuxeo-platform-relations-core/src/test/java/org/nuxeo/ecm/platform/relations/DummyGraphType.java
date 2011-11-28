@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
+import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
 @SuppressWarnings({ "PublicField" })
 public class DummyGraphType implements Graph {
@@ -72,6 +73,10 @@ public class DummyGraphType implements Graph {
         }
     }
 
+    @Override
+    public void add(Statement statement) {
+    }
+
     public void add(List<Statement> statements) {
     }
 
@@ -91,6 +96,11 @@ public class DummyGraphType implements Graph {
     }
 
     public List<Statement> getStatements() {
+        return null;
+    }
+
+    public List<Statement> getStatements(Node subject, Node predicate,
+            Node object) {
         return null;
     }
 
@@ -128,6 +138,10 @@ public class DummyGraphType implements Graph {
 
     public boolean write(String path, String lang, String base) {
         return false;
+    }
+
+    @Override
+    public void remove(Statement statement) {
     }
 
     public void remove(List<Statement> statements) {

@@ -134,7 +134,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(0, graph.size());
         Resource src = new ResourceImpl("urn:foo:1234");
         Statement st = new StatementImpl(src, isBasedOn, doc1);
-        graph.add(Collections.singletonList(st));
+        graph.add(st);
         List<Statement> stmts = graph.getStatements();
         assertEquals(1, stmts.size());
         assertEquals(st, stmts.get(0));
@@ -147,7 +147,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         Node src = new BlankImpl();
         Node dst = new BlankImpl("123");
         Statement st = new StatementImpl(src, isBasedOn, dst);
-        graph.add(Collections.singletonList(st));
+        graph.add(st);
         List<Statement> stmts = graph.getStatements();
         assertEquals(1, stmts.size());
         assertEquals(st, stmts.get(0));
@@ -160,7 +160,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         // without namespace
         Resource src = new ResourceImpl(NS + "bar");
         Statement stmt = new StatementImpl(src, isBasedOn, doc1);
-        graph.add(Collections.singletonList(stmt));
+        graph.add(stmt);
         List<Statement> stmts = graph.getStatements();
         Statement st = stmts.get(0);
         assertEquals(stmt, st);
@@ -169,7 +169,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         graph.remove(Collections.singletonList(stmt));
 
         graph.setNamespaces(Collections.singletonMap("prfx", NS));
-        graph.add(Collections.singletonList(stmt));
+        graph.add(stmt);
         stmts = graph.getStatements();
         st = stmts.get(0);
         assertTrue(st.getSubject().isQNameResource());
@@ -200,7 +200,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         st.setProperty(RelationConstants.MODIFICATION_DATE,
                 RelationDate.getLiteralDate(date));
         st.setProperty(RelationConstants.COMMENT, new LiteralImpl("hi there"));
-        graph.add(Collections.singletonList(st));
+        graph.add(st);
         stmts = graph.getStatements();
         assertEquals(1, stmts.size());
         st = stmts.get(0);

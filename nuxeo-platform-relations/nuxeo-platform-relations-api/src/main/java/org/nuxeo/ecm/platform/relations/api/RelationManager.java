@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: RelationManager.java 22121 2007-07-06 16:33:15Z gracinet $
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.relations.api;
 
 import java.io.InputStream;
@@ -31,9 +29,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * RelationService common interface.
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface RelationManager extends Serializable {
 
@@ -105,82 +100,124 @@ public interface RelationManager extends Serializable {
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#add
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     void add(String graphName, List<Statement> statements)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#remove
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     void remove(String graphName, List<Statement> statements)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getStatements
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     List<Statement> getStatements(String graphName) throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getStatements
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     List<Statement> getStatements(String graphName, Statement statement)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getSubjects
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     List<Node> getSubjects(String graphName, Node predicate, Node object)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getPredicates
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     List<Node> getPredicates(String graphName, Node subject, Node object)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getObjects
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     List<Node> getObjects(String graphName, Node subject, Node predicate)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#hasStatement
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     boolean hasStatement(String graphName, Statement statement)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#hasResource
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     boolean hasResource(String graphName, Resource resource)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#size
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     Long size(String graphName) throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#clear
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     void clear(String graphName) throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#query
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     QueryResult query(String graphName, String queryString, String language,
             String baseURI) throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#read
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     boolean read(String graphName, InputStream in, String lang, String base)
             throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#write
+     *
+     * @deprecated since 5.5, use the Graph API directly
      */
+    @Deprecated
     boolean write(String graphName, OutputStream out, String lang, String base)
             throws ClientException;
 

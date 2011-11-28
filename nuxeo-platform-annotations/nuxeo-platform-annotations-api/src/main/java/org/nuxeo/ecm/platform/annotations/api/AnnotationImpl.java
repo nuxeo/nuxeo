@@ -58,7 +58,7 @@ public class AnnotationImpl implements Annotation, Serializable {
     }
 
     public void setBody(Statement body) {
-        graph.add(Collections.singletonList(body));
+        graph.add(body);
     }
 
     public URI getAnnotates() throws AnnotationException {
@@ -107,7 +107,7 @@ public class AnnotationImpl implements Annotation, Serializable {
         graph.remove(graph.getStatements(new StatementImpl(s, p, null)));
         Literal o = new LiteralImpl(text);
         Statement newStatement = new StatementImpl(s, p, o);
-        graph.add(Collections.singletonList(newStatement));
+        graph.add(newStatement);
     }
 
     public String getContext() throws AnnotationException {
@@ -118,7 +118,7 @@ public class AnnotationImpl implements Annotation, Serializable {
     }
 
     public void setContext(Statement context) {
-        graph.add(Collections.singletonList(context));
+        graph.add(context);
     }
 
     public List<Statement> getStatements() {
@@ -140,7 +140,7 @@ public class AnnotationImpl implements Annotation, Serializable {
     }
 
     public void setAnnotates(Statement statement) {
-        graph.add(Collections.singletonList(statement));
+        graph.add(statement);
     }
 
     public String getCreator() {
@@ -156,7 +156,7 @@ public class AnnotationImpl implements Annotation, Serializable {
     public void addMetadata(String predicate, String value) {
         Statement statement = new StatementImpl(getSubject(), new ResourceImpl(
                 predicate), new LiteralImpl(value));
-        graph.add(Collections.singletonList(statement));
+        graph.add(statement);
     }
 
     public String getId() {

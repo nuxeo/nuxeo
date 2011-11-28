@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Statement;
@@ -47,8 +48,9 @@ public class WikiRelationHelper {
         try {
             // remove old links
             RelationManager rm = RelationHelper.getRelationManager();
+            Graph graph = rm.getGraphByName(RelationConstants.GRAPH_NAME);
             if (stmts != null) {
-                rm.remove(RelationConstants.GRAPH_NAME, stmts);
+                graph.remove(stmts);
                 stmts.clear();
             } else {
                 stmts = new ArrayList<Statement>();
@@ -62,7 +64,7 @@ public class WikiRelationHelper {
                             WikiRelationConstants.HAS_LINK_TO, new LiteralImpl(word));
                     stmts.add(stmt);
                 }
-                rm.add(RelationConstants.GRAPH_NAME, stmts);
+                graph.add(stmts);
             }
         } catch (ClientException e) {
             e.printStackTrace();
