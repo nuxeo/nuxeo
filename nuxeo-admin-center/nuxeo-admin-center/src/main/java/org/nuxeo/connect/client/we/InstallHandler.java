@@ -318,7 +318,7 @@ public class InstallHandler extends DefaultObject {
 
             if (confirm != null && true == confirm) {
                 for (String id : pkgIds) {
-                    InstallAfterRestart.addPackage(id);
+                    InstallAfterRestart.addPackageForInstallation(id);
                 }
                 return getView("bulkInstallOnRestart").arg("pkgIds", pkgIds).arg(
                         "source", source);
@@ -353,7 +353,7 @@ public class InstallHandler extends DefaultObject {
             LocalPackage pkg = pus.getPackage(pkgId);
 
             if (InstallAfterRestart.isNeededForPackage(pkg)) {
-                InstallAfterRestart.addPackage(pkg.getId());
+                InstallAfterRestart.addPackageForInstallation(pkg.getId());
                 return getView("installOnRestart").arg("pkg", pkg).arg(
                         "source", source);
             }

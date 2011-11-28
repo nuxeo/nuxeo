@@ -45,6 +45,8 @@ public class InstallAfterRestart {
 
     protected static final List<String> pkgIds = new ArrayList<String>();
 
+    protected static final List<String> uninstallpkgIds = new ArrayList<String>();
+
     protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
     protected static boolean isNeededByOs() {
@@ -55,16 +57,24 @@ public class InstallAfterRestart {
     }
 
     public static boolean isNeededForPackage(Package pkg) {
-        return (PackageType.STUDIO != pkg.getType() && isNeededByOs()) || (PackageType.HOT_FIX == pkg.getType());
+        return (PackageType.STUDIO != pkg.getType() && isNeededByOs()) || (PackageType.HOT_FIX == pkg.getType()) || (PackageType.ADDON == pkg.getType() && !pkg.supportsHotReload());
     }
 
     protected static boolean isVindozBox() {
         return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
     }
 
-    public static void addPackage(String pkgId) {
+    public static void addPackageForInstallation(String pkgId) {
         if (!pkgIds.contains(pkgId)) {
             pkgIds.add(pkgId);
+            savePkgList();
+        }
+    }
+
+    public static void addPackageForUnInstallation(String pkgId) {
+        if (!pkgIds.contains(pkgId) && !(uninstallpkgIds.contains(pkgId))) {
+            pkgIds.add(pkgId);
+            uninstallpkgIds.add(pkgId);
             savePkgList();
         }
     }
@@ -79,8 +89,17 @@ public class InstallAfterRestart {
             path += File.separator;
         }
         File installFile = new File(path + FILE_NAME);
+        List<String> cmds = new ArrayList<String>();
+        for (String pkgId : pkgIds) {
+            String cmd = pkgId;
+            if (uninstallpkgIds.contains(pkgId)) {
+                cmd = "uninstall " + pkgId;
+            }
+            cmds.add(cmd);
+        }
+
         try {
-            FileUtils.writeLines(installFile, pkgIds);
+            FileUtils.writeLines(installFile, cmds);
         } catch (IOException e) {
             log.error(
                     "Unable to same listing of packages to install on restart",
