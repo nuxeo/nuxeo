@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -41,10 +42,23 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
 
     @Override
     public Blob getBlob() throws ClientException {
-        DocumentModel documentModel = getSession().getChildrenIterator(
-                doc.getRef(), "Picture").next();
-        PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
-        return picture.getPictureFromTitle("Original");
+        CoreSession session = getSession();
+        boolean sessionOpened = false;
+        if (session == null) {
+            sessionOpened = true;
+            session = openNewSession();
+        }
+        try {
+            DocumentModel documentModel = session.getChildrenIterator(
+                    doc.getRef(), "Picture").next();
+            PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
+            return picture.getPictureFromTitle("Original");
+        } finally {
+            if (sessionOpened && session != null) {
+                CoreInstance.getInstance().close(session);
+            }
+        }
+
     }
 
     @Override
@@ -53,14 +67,25 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     public List<Blob> getBlobs(String title) throws ClientException {
-        DocumentModelList docList = getSession().getChildren(doc.getRef(),
-                "Picture");
-        List<Blob> blobList = new ArrayList<Blob>(docList.size());
-        for (DocumentModel documentModel : docList) {
-            PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
-            blobList.add(picture.getPictureFromTitle(title));
+        boolean sessionOpened = false;
+        if (session == null) {
+            sessionOpened = true;
+            session = openNewSession();
         }
-        return blobList;
+        try {
+            DocumentModelList docList = session.getChildren(doc.getRef(),
+                    "Picture");
+            List<Blob> blobList = new ArrayList<Blob>(docList.size());
+            for (DocumentModel documentModel : docList) {
+                PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
+                blobList.add(picture.getPictureFromTitle(title));
+            }
+            return blobList;
+        } finally {
+            if (sessionOpened && session != null) {
+                CoreInstance.getInstance().close(session);
+            }
+        }
     }
 
     @Override
@@ -75,27 +100,27 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         return doc.getId() + xPath + getModificationDate().toString();
     }
 
-    private CoreSession getSession() throws ClientException {
+    protected CoreSession getSession() throws ClientException {
         if (session == null && doc != null) {
             session = doc.getCoreSession();
         }
-        if (session == null) {
-            try {
-                RepositoryManager rm = Framework.getService(RepositoryManager.class);
-                String repoName = null;
-                if (doc != null) {
-                    repoName = doc.getRepositoryName();
-                }
-                if (repoName != null) {
-                    return rm.getRepository(repoName).open();
-                } else {
-                    return rm.getDefaultRepository().open();
-                }
-            } catch (Exception e) {
-                throw new ClientException("Cannot get default repository ", e);
+        return session;
+    }
+
+    protected CoreSession openNewSession() throws ClientException {
+        try {
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
+            String repoName = null;
+            if (doc != null) {
+                repoName = doc.getRepositoryName();
             }
-        } else {
-            return session;
+            if (repoName != null) {
+                return rm.getRepository(repoName).open();
+            } else {
+                return rm.getDefaultRepository().open();
+            }
+        } catch (Exception e) {
+            throw new ClientException("Cannot get default repository ", e);
         }
     }
 

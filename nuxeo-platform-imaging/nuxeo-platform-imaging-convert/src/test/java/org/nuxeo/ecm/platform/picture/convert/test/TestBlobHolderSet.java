@@ -50,6 +50,12 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
         root = getCoreSession().getRootDocument();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     private static File getFileFromPath(String path) {
         return FileUtils.getResourceFileFromContext(path);
     }
