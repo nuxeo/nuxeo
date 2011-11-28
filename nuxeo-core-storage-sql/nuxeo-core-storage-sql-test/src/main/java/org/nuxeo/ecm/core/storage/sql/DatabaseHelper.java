@@ -78,7 +78,7 @@ public abstract class DatabaseHelper {
         this.databaseName = name;
     }
 
-    protected String repositoryName = "test";
+    public String repositoryName = "test";
 
     public void setRepositoryName(String name) {
         this.repositoryName = name;
