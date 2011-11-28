@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -26,13 +27,13 @@ import junit.framework.Assert;
 
 import org.codehaus.jackson.JsonNode;
 import org.hamcrest.number.IsCloseTo;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
@@ -65,6 +66,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
+import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -92,10 +94,18 @@ public class RestTest {
     @Inject
     AutomationService service;
 
-    static HttpAutomationClient client;
-
-    static Session session;
-
+    @Inject 
+    Session session;
+    
+    @Inject 
+    HttpAutomationClient client;
+    
+    @BeforeClass 
+    public static void setupCodecs() throws OperationException {
+        Framework.getLocalService(ObjectCodecService.class).addCodec(new MyObjectCodec());
+        Framework.getLocalService(AutomationService.class).putOperation(MyObjectOperation.class);
+    }
+    
     protected File newFile(String content) throws IOException {
         File file = File.createTempFile("automation-test-", ".xml");
         file.deleteOnExit();
@@ -104,33 +114,6 @@ public class RestTest {
     }
 
     // ------ Tests comes here --------
-
-    @BeforeClass
-    public static void connect() throws Exception {
-        Framework.getLocalService(ObjectCodecService.class).addCodec(
-                new MyObjectCodec());
-        Framework.getLocalService(AutomationService.class).putOperation(
-                MyObjectOperation.class);
-        try {
-            client = new HttpAutomationClient(
-                    "http://localhost:18080/automation");
-
-            session = client.getSession("Administrator", "Administrator");
-        } catch (RemoteException e) {
-            System.out.println(e.getStatus() + "-" + e.getMessage() + "\n"
-                    + e.getRemoteStackTrace());
-            throw e;
-        }
-    }
-
-    @AfterClass
-    public static void shutdown() {
-        if (client != null) {
-            client.shutdown();
-            client = null;
-            session = null;
-        }
-    }
 
     @Test
     public void testInvalidLogin() {
@@ -142,9 +125,9 @@ public class RestTest {
         }
     }
 
-    @Test 
+    @Test
     public void testRemoteErrorHandling() throws Exception {
-           // assert document removed
+        // assert document removed
         try {
             session.newRequest(FetchDocument.ID).set("value", "/myfolder").execute();
             fail("request is suposed to return 404");
@@ -154,17 +137,19 @@ public class RestTest {
             assertThat(remoteCause, is(notNullValue()));
             final StackTraceElement[] remoteStack = remoteCause.getStackTrace();
             assertThat(remoteStack, is(notNullValue()));
-            while (remoteCause.getCause() != remoteCause && remoteCause.getCause() != null) {
+            while (remoteCause.getCause() != remoteCause
+                    && remoteCause.getCause() != null) {
                 remoteCause = remoteCause.getCause();
             }
-            Map<String,JsonNode> otherNodes = ((JsonMarshalling.RemoteThrowable)remoteCause).getOtherNodes();
+            Map<String, JsonNode> otherNodes = ((JsonMarshalling.RemoteThrowable) remoteCause).getOtherNodes();
             String className = otherNodes.get("className").getTextValue();
-            assertThat(className, is("org.nuxeo.ecm.core.model.NoSuchDocumentException"));
+            assertThat(className,
+                    is("org.nuxeo.ecm.core.model.NoSuchDocumentException"));
             Boolean rollback = otherNodes.get("rollback").getBooleanValue();
             assertThat(rollback, is(Boolean.TRUE));
         }
     }
-  
+
     @Test
     public void testMultiValued() throws Exception {
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
@@ -521,6 +506,13 @@ public class RestTest {
         ZipEntry entry2 = zf.getEntry(filename2);
         assertNotNull(entry2);
         zip.getFile().delete();
+    }
+
+    @Test
+    public void testUploadSmallFile() throws Exception {
+        DigestMockInputStream source = new DigestMockInputStream(100);
+        FileInputStream in = new UploadFileSupport(session).testUploadFile(source);
+        assertTrue(source.checkDigest(in));
     }
 
     /**
