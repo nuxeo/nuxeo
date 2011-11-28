@@ -1617,6 +1617,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // do copy
         session.copy(f1.getRef(), root.getRef(), "f2");
 
+        // save is mandatory to propagate read acls after a copy
+        session.save();
+
         // check bob doesn't see doc1's copy
         dml = session.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f2'");
         assertEquals(1, dml.size());
