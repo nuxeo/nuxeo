@@ -34,6 +34,21 @@ public interface RelationManager extends Serializable {
 
     /**
      * Gets a registered graph by name.
+     * <p>
+     * A {@link CoreSession} should be passed to provide a context in which to
+     * store relations when using a "core" graph.
+     *
+     * @param name string name of the graph used at registration
+     * @param session the core session
+     * @return the graph
+     * @throws RuntimeException if the graph is not found
+     *
+     * @since 5.5
+     */
+    Graph getGraph(String name, CoreSession session) throws ClientException;
+
+    /**
+     * Gets a registered graph by name.
      *
      * @param name string name of the graph used at registration
      * @return the graph

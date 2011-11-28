@@ -21,18 +21,16 @@ package org.nuxeo.ecm.platform.relations;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.relations.api.Graph;
+import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
-@SuppressWarnings({ "PublicField" })
 public class DummyGraphType implements Graph {
 
     private static final long serialVersionUID = 1L;
@@ -45,14 +43,13 @@ public class DummyGraphType implements Graph {
 
     public String port;
 
-    public final Map<String, String> namespaces = new HashMap<String, String>();
+    public Map<String, String> namespaces;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setNamespaces(Map<String, String> namespaces) {
-        this.namespaces.putAll(namespaces);
+    @Override
+    public void setDescription(GraphDescription graphDescription) {
+        name = graphDescription.getName();
+        namespaces = graphDescription.getNamespaces();
+        setOptions(graphDescription.getOptions());
     }
 
     public Map<String, String> getNamespaces() {

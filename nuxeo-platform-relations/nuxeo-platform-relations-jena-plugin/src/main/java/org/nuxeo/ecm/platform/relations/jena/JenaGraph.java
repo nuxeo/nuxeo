@@ -45,6 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.relations.api.Blank;
 import org.nuxeo.ecm.platform.relations.api.Graph;
+import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
@@ -476,11 +477,18 @@ public class JenaGraph implements Graph {
 
     // Interface implementation
 
+    @Override
+    public void setDescription(GraphDescription graphDescription) {
+        name = graphDescription.getName();
+        setOptions(graphDescription.getOptions());
+        setNamespaces(graphDescription.getNamespaces());
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setOptions(Map<String, String> options) {
+    protected void setOptions(Map<String, String> options) {
         for (Map.Entry<String, String> option : options.entrySet()) {
             String key = option.getKey();
             String value = option.getValue();
@@ -528,8 +536,7 @@ public class JenaGraph implements Graph {
     }
 
     public void setNamespaces(Map<String, String> namespaces) {
-        this.namespaces = new HashMap<String, String>();
-        this.namespaces.putAll(namespaces);
+        this.namespaces = namespaces;
     }
 
     public Map<String, String> getNamespaces() {

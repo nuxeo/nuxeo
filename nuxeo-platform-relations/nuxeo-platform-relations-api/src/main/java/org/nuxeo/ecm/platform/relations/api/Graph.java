@@ -38,33 +38,10 @@ import java.util.Map;
 public interface Graph extends Serializable {
 
     /**
-     * Sets name for the graph.
-     *
-     * @param name the new name
+     * Sets the graph description.
+     * @param graphDescription
      */
-    void setName(String name);
-
-    /**
-     * Sets options for the graph.
-     * <p>
-     * Options are typically: which backend to use, additional parameters for backend
-     * (e.g. for instance SQL backend, host, port, user/password...).
-     *
-     * @param options map of options for the graph
-     */
-    void setOptions(Map<String, String> options);
-
-    /**
-     * Sets namespaces for the graph.
-     * <p>
-     * Namespaces are prefix/namespace bindings, as rdf for
-     * http://www.w3.org/1999/02/22-rdf-syntax-ns#.
-     *
-     * TODO AT: maybe share same namespaces with the relation service?
-     *
-     * @param namespaces map of namespace bindings for the graph
-     */
-    void setNamespaces(Map<String, String> namespaces);
+    void setDescription(GraphDescription graphDescription);
 
     /**
      * Returns namespaces for the graph.

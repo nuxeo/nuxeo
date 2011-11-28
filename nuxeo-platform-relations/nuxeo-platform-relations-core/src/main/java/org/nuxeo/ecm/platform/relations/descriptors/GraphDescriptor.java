@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: GraphDescriptor.java 20140 2007-06-06 17:53:55Z fguillaume $
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.relations.descriptors;
 
 import java.io.Serializable;
@@ -30,12 +28,7 @@ import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Graph extension.
- * <p>
- * A new type of graph can implement this class to set XMap annotations for
- * custom options (?).
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * Graph descriptor.
  */
 @XObject("graph")
 public class GraphDescriptor implements GraphDescription, Serializable {
@@ -43,24 +36,27 @@ public class GraphDescriptor implements GraphDescription, Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")
-    private String name;
+    public String name;
 
     @XNode("@type")
-    private String graphType;
+    public String graphType;
 
-    private Map<String, String> options = new HashMap<String, String>();
+    public Map<String, String> options = new HashMap<String, String>();
 
     @XNodeMap(value = "namespaces/namespace", key = "@name", type = HashMap.class, componentType = String.class)
-    private Map<String, String> namespaces = new HashMap<String, String>();
+    public Map<String, String> namespaces = new HashMap<String, String>();
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getGraphType() {
         return graphType;
     }
 
+    @Override
     public Map<String, String> getOptions() {
         return options;
     }
@@ -76,6 +72,7 @@ public class GraphDescriptor implements GraphDescription, Serializable {
         this.options = map;
     }
 
+    @Override
     public Map<String, String> getNamespaces() {
         return namespaces;
     }

@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
+import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestCoreGraph extends SQLRepositoryTestCase {
@@ -168,7 +169,9 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
         graph.remove(Collections.singletonList(stmt));
 
-        graph.setNamespaces(Collections.singletonMap("prfx", NS));
+        GraphDescriptor desc = new GraphDescriptor();
+        desc.namespaces = Collections.singletonMap("prfx", NS);
+        graph.setDescription(desc);
         graph.add(stmt);
         stmts = graph.getStatements();
         st = stmts.get(0);

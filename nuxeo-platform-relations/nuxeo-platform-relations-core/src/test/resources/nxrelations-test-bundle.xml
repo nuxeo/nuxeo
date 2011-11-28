@@ -6,8 +6,6 @@
     point="graphtypes">
     <graphtype name="dummygraph"
       class="org.nuxeo.ecm.platform.relations.DummyGraphType" />
-    <graphtype name="unexistentgraph"
-      class="org.nuxeo.ecm.platform.relations.UnexistentGraphType" />
     <graphtype name="byfactory"
       class="org.nuxeo.ecm.platform.relations.DummyGraphFactory" />
   </extension>

@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.GraphFactory;
@@ -63,18 +64,25 @@ public class RelationService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(RelationService.class);
 
-    private final Map<String, String> graphTypeRegistry;
+    /** Graph name -> description */
+    protected final Map<String, GraphDescription> graphDescriptionRegistry;
 
-    private final Map<String, GraphDescription> graphDescriptionRegistry;
+    /** Graph type -> class name. */
+    protected final Map<String, String> graphTypeRegistry;
 
-    private final transient Map<String, Graph> graphRegistry;
+    /** Graph type -> factory. */
+    protected final Map<String, GraphFactory> graphFactories;
 
-    private final Map<String, String> resourceAdapterRegistry;
+    /** Graph type -> graph instance. */
+    protected final Map<String, Graph> graphRegistry;
+
+    protected final Map<String, String> resourceAdapterRegistry;
 
     public RelationService() {
         graphTypeRegistry = new Hashtable<String, String>();
         graphDescriptionRegistry = new Hashtable<String, GraphDescription>();
         graphRegistry = new Hashtable<String, Graph>();
+        graphFactories = new Hashtable<String, GraphFactory>();
         resourceAdapterRegistry = new Hashtable<String, String>();
     }
 
@@ -129,16 +137,37 @@ public class RelationService extends DefaultComponent implements
     private void registerGraphType(Object contribution) {
         GraphTypeDescriptor graphTypeExtension = (GraphTypeDescriptor) contribution;
 
-        String name = graphTypeExtension.getName();
+        String graphType = graphTypeExtension.getName();
         String className = graphTypeExtension.getClassName();
 
-        if (graphTypeRegistry.containsKey(name)) {
-            log.error(String.format("%s already registered using %s", name,
-                    className));
+        if (graphTypeRegistry.containsKey(graphType)) {
+            log.error(String.format("%s already registered using %s",
+                    graphType, className));
         } else {
-            graphTypeRegistry.put(name, className);
-            log.info(String.format("Registered graph type: %s (%s)", name,
+            graphTypeRegistry.put(graphType, className);
+            log.info(String.format("Registered graph type: %s (%s)", graphType,
                     className));
+        }
+        Class<?> klass;
+        try {
+            klass = getClass().getClassLoader().loadClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Cannot register unknown class: "
+                    + className, e);
+        }
+        if (Graph.class.isAssignableFrom(klass)) {
+            // ok, instance lazily constructed
+        } else if (GraphFactory.class.isAssignableFrom(klass)) {
+            GraphFactory factory;
+            try {
+                factory = (GraphFactory) klass.newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            graphFactories.put(graphType, factory);
+        } else {
+            throw new RuntimeException("Invalid graph class/factory type: "
+                    + className);
         }
     }
 
@@ -148,55 +177,20 @@ public class RelationService extends DefaultComponent implements
     private void unregisterGraphType(Object contrib) {
         GraphTypeDescriptor graphTypeExtension = (GraphTypeDescriptor) contrib;
 
-        String name = graphTypeExtension.getName();
+        String graphType = graphTypeExtension.getName();
         String className = graphTypeExtension.getClassName();
 
-        String registeredClassName = graphTypeRegistry.get(name);
+        String registeredClassName = graphTypeRegistry.get(graphType);
         if (registeredClassName == null) {
-            log.error(String.format("Graph type %s not found", name));
+            log.error(String.format("Graph type %s not found", graphType));
         } else if (registeredClassName != className) {
             log.error(String.format("Graph type %s: wrong class",
                     registeredClassName));
         } else {
-            graphTypeRegistry.remove(name);
-            log.debug("Unregistered graph type: " + name);
-        }
-    }
-
-    /**
-     * Gets a graph given a name.
-     * <p>
-     * This is used to instantiate graphs with a given name
-     *
-     * @param graphType
-     * @return the prefixed resource instance initialized with no value or null
-     *         if prefix is not found
-     */
-    public Graph getGraphByType(String graphType) {
-        String className = graphTypeRegistry.get(graphType);
-        if (className == null) {
-            log.error(String.format("Graph type %s not found", graphType));
-            return null;
-        } else {
-            try {
-                // Thread context loader is not working in isolated EARs
-                Object instance = getClass().getClassLoader().loadClass(
-                        className).newInstance();
-                if (instance instanceof Graph) {
-                    return (Graph) instance;
-                }
-                if (instance instanceof GraphFactory) {
-                    return ((GraphFactory) instance).creatGraph();
-                }
-                throw new RuntimeException("Invalid class/factory type: "
-                        + instance.getClass().getName());
-            } catch (Exception e) {
-                String msg = String.format(
-                        "Cannot instantiate graph with type '%s': %s",
-                        graphType, e);
-                log.error(msg);
-                return null;
-            }
+            graphTypeRegistry.remove(graphType);
+            graphFactories.remove(graphType);
+            graphRegistry.remove(graphType);
+            log.debug("Unregistered graph type: " + graphType);
         }
     }
 
@@ -214,7 +208,7 @@ public class RelationService extends DefaultComponent implements
      * The graph has to be declared as using a type already registered in the
      * graph type registry.
      */
-    private void registerGraph(Object contribution) {
+    protected void registerGraph(Object contribution) {
         GraphDescription graphDescription = (GraphDescription) contribution;
         String name = graphDescription.getName();
 
@@ -232,7 +226,7 @@ public class RelationService extends DefaultComponent implements
     /**
      * Unregisters a graph.
      */
-    private void unregisterGraph(Object contribution) {
+    protected void unregisterGraph(Object contribution) {
         GraphDescriptor graphExtension = (GraphDescriptor) contribution;
 
         String name = graphExtension.getName();
@@ -301,51 +295,51 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
-    protected Graph createGraph(String name) {
-        GraphDescription graphDescription = graphDescriptionRegistry.get(name);
-        if (graphDescription == null) {
-            throw new RuntimeException(String.format(
-                    "getGraphByName: %s *not found* amongst %s", name,
-                    graphDescriptionRegistry.keySet()));
-        }
+    // RelationManager interface
 
-        String graphType = graphDescription.getGraphType();
-        Graph graph = getGraphByType(graphType);
-        if (graph == null) {
-            throw new RuntimeException(String.format(
-                    "Caught error when instanciating graph %s", name));
+    @Override
+    public Graph getGraphByName(String name) throws ClientException {
+        return getGraph(name, null);
+    }
+
+    @Override
+    public synchronized Graph getGraph(String name, CoreSession session)
+            throws ClientException {
+        GraphDescription graphDescription = graphDescriptionRegistry.get(name);
+        if (name == null) {
+            throw new RuntimeException("No such graph: " + name);
         }
-        Map<String, String> options = graphDescription.getOptions();
-        Map<String, String> namespaces = graphDescription.getNamespaces();
-        graph.setName(name);
-        graph.setOptions(options);
-        graph.setNamespaces(namespaces);
+        GraphFactory factory = graphFactories.get(graphDescription.getGraphType());
+        if (factory != null) {
+            return factory.creatGraph(graphDescription, session);
+        }
+        // try to find a pre-existing instance
+        Graph graph = graphRegistry.get(name);
+        if (graph == null) {
+            String className = graphTypeRegistry.get(graphDescription.getGraphType());
+            graph = newGraph(className);
+            graph.setDescription(graphDescription);
+            graphRegistry.put(name, graph);
+        }
         return graph;
+    }
+
+    protected Graph newGraph(String className) {
+        try {
+            Class<?> klass = getClass().getClassLoader().loadClass(className);
+            return (Graph) klass.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Graph getTransientGraph(String type) throws ClientException {
-        Graph graph = getGraphByType(type);
-        if (graph == null) {
-            throw new RuntimeException(String.format(
-                    "Caught error when instanciating graph %s", type));
+        String className = graphTypeRegistry.get(type);
+        if (className == null) {
+            throw new RuntimeException("No such transient graph type: " + type);
         }
-        return graph;
-    }
-
-    // RelationManager interface
-
-    @Override
-    public synchronized Graph getGraphByName(String name)
-            throws ClientException {
-        Graph registeredGraph = graphRegistry.get(name);
-        if (registeredGraph == null) {
-            // try to create it
-            registeredGraph = createGraph(name);
-            // put it in registry for later retrieval
-            graphRegistry.put(name, registeredGraph);
-        }
-        return registeredGraph;
+        return newGraph(className);
     }
 
     @Override

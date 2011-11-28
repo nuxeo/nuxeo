@@ -16,13 +16,16 @@
  */
 package org.nuxeo.ecm.platform.relations;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.relations.api.Graph;
+import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.GraphFactory;
 
 public class DummyGraphFactory implements GraphFactory {
 
     @Override
-    public Graph creatGraph() {
+    public Graph creatGraph(GraphDescription graphDescription,
+            CoreSession session) {
         return new DummyGraphType();
     }
 

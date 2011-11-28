@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -157,7 +158,9 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals("http://purl.org/dc/terms/", map.get("dcterms"));
         assertNull(map.get("dummy"));
 
-        graph.setNamespaces(namespaces);
+        GraphDescriptor desc = new GraphDescriptor();
+        desc.namespaces = namespaces;
+        graph.setDescription(desc);
 
         // not set yet on the graph, have to rebuild it
         jenaGraph = graph.openGraph(forceReload).getGraph();

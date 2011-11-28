@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.relations.api.Blank;
 import org.nuxeo.ecm.platform.relations.api.Graph;
+import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -134,12 +135,16 @@ public class CoreGraph implements Graph {
     }
 
     @Override
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(GraphDescription graphDescription) {
+        name = graphDescription.getName();
+        setOptions(graphDescription.getOptions());
+        namespaces = graphDescription.getNamespaces();
+        namespaceList = namespaces == null ? Collections.<String> emptyList()
+                : new ArrayList<String>(new LinkedHashSet<String>(
+                        namespaces.values()));
     }
 
-    @Override
-    public void setOptions(Map<String, String> options) {
+    protected void setOptions(Map<String, String> options) {
         for (Entry<String, String> option : options.entrySet()) {
             String key = option.getKey();
             String type = option.getValue();
@@ -160,14 +165,6 @@ public class CoreGraph implements Graph {
                 docType = type;
             }
         }
-    }
-
-    @Override
-    public void setNamespaces(Map<String, String> namespaces) {
-        this.namespaces = namespaces;
-        namespaceList = namespaces == null ? Collections.<String> emptyList()
-                : new ArrayList<String>(new LinkedHashSet<String>(
-                        namespaces.values()));
     }
 
     @Override

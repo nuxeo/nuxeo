@@ -49,21 +49,11 @@ public class TestRelationService extends NXRuntimeTestCase {
         service = Framework.getService(RelationManager.class);
     }
 
-    public void testGetGraphByType() {
-        assertNotNull(((RelationService) service).getGraphByType("dummygraph"));
-        // no implementation
-        assertNull(((RelationService) service).getGraphByType("unexistentgraph"));
-        // no such graph type
-        assertNull(((RelationService) service).getGraphByType("foo"));
-    }
-
     public void testGetGraphTypes() {
         List<String> types = ((RelationService) service).getGraphTypes();
-        assertEquals(4, types.size());
+        assertEquals(3, types.size());
         assertTrue(types.contains("core"));
         assertTrue(types.contains("dummygraph"));
-        assertTrue(types.contains("unexistentgraph"));
-        assertTrue(types.contains("byfactory"));
         assertFalse(types.contains("foo"));
     }
 

@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.relations.api;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 /**
  * A factory for a {@link Graph}.
  *
@@ -26,6 +28,6 @@ public interface GraphFactory {
     /**
      * Creates an instance of the graph.
      */
-    Graph creatGraph();
+    Graph creatGraph(GraphDescription graphDescription, CoreSession session);
 
 }
