@@ -42,6 +42,7 @@ public class TestRelationService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.relations");
         deployContrib("org.nuxeo.ecm.relations.tests",
                 "nxrelations-test-bundle.xml");
         service = (RelationService) Framework.getRuntime().getComponent(
@@ -58,9 +59,11 @@ public class TestRelationService extends NXRuntimeTestCase {
 
     public void testGetGraphTypes() {
         List<String> types = service.getGraphTypes();
-        assertSame(2, types.size());
+        assertEquals(4, types.size());
+        assertTrue(types.contains("core"));
         assertTrue(types.contains("dummygraph"));
         assertTrue(types.contains("unexistentgraph"));
+        assertTrue(types.contains("byfactory"));
         assertFalse(types.contains("foo"));
     }
 
@@ -94,6 +97,12 @@ public class TestRelationService extends NXRuntimeTestCase {
             fail("Should have raised a RuntimeException");
         } catch (RuntimeException e) {
         }
+    }
+
+    public void testGetGraphByNameFactory() throws Exception {
+        Graph graph = service.getGraphByName("somerelations");
+        assertNotNull(graph);
+        assertEquals(DummyGraphType.class, graph.getClass());
     }
 
     public void testGetResourceOK() throws Exception {

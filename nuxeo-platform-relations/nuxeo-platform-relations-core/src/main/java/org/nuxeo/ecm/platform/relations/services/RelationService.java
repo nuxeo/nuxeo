@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.relations.services;
 
@@ -31,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
+import org.nuxeo.ecm.platform.relations.api.GraphFactory;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -178,8 +180,16 @@ public class RelationService extends DefaultComponent implements
         } else {
             try {
                 // Thread context loader is not working in isolated EARs
-                return (Graph) RelationService.class.getClassLoader().loadClass(
+                Object instance = getClass().getClassLoader().loadClass(
                         className).newInstance();
+                if (instance instanceof Graph) {
+                    return (Graph) instance;
+                }
+                if (instance instanceof GraphFactory) {
+                    return ((GraphFactory) instance).creatGraph();
+                }
+                throw new RuntimeException("Invalid class/factory type: "
+                        + instance.getClass().getName());
             } catch (Exception e) {
                 String msg = String.format(
                         "Cannot instantiate graph with type '%s': %s",
