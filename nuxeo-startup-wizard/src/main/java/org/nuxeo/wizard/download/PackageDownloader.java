@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -104,13 +104,12 @@ public class PackageDownloader {
 
     protected final AtomicInteger checkThreadCount = new AtomicInteger(0);
 
-
     protected String baseUrl;
 
-    protected ConfigurationGenerator configurationGenerator=null;
+    protected ConfigurationGenerator configurationGenerator = null;
 
     protected ConfigurationGenerator getConfig() {
-        if (configurationGenerator==null) {
+        if (configurationGenerator == null) {
             configurationGenerator = new ConfigurationGenerator();
             configurationGenerator.init();
         }
@@ -119,10 +118,13 @@ public class PackageDownloader {
 
     protected String getBaseUrl() {
         if (baseUrl == null) {
-            String base = getConfig().getUserConfig().getProperty(
-                    BASE_URL_KEY, "");
+            String base = getConfig().getUserConfig().getProperty(BASE_URL_KEY,
+                    "");
             if ("".equals(base)) {
-                base = DEFAULT_BASE_URL + "nuxeo-" + getConfig().getUserConfig().getProperty("org.nuxeo.ecm.product.version") + "/mp/";
+                base = DEFAULT_BASE_URL
+                        + "nuxeo-"
+                        + getConfig().getUserConfig().getProperty(
+                                "org.nuxeo.ecm.product.version") + "/mp/";
             }
             if (!base.endsWith("/")) {
                 base = base + "/";
@@ -243,7 +245,6 @@ public class PackageDownloader {
         File dir = new File(nxHome, WORKDING_DIR_NAME);
         if (!dir.exists()) {
             dir.mkdirs();
-            dir = new File(nxHome, WORKDING_DIR_NAME);
         }
         return dir;
     }
@@ -440,7 +441,7 @@ public class PackageDownloader {
                             log.error("Package " + pkg.filename
                                     + " not found :" + url);
                             download.setStatus(PendingDownload.MISSING);
-                            if (response.getEntity()!=null ) {
+                            if (response.getEntity() != null) {
                                 response.getEntity().consumeContent();
                             }
                             dw.abort();
@@ -449,7 +450,7 @@ public class PackageDownloader {
                             log.error("Received StatusCode "
                                     + response.getStatusLine().getStatusCode());
                             download.setStatus(PendingDownload.ABORTED);
-                            if (response.getEntity()!=null) {
+                            if (response.getEntity() != null) {
                                 response.getEntity().consumeContent();
                             }
                             dw.abort();
@@ -555,7 +556,7 @@ public class PackageDownloader {
     }
 
     public void shutdown() {
-        if (httpClient!=null) {
+        if (httpClient != null) {
             httpClient.getConnectionManager().shutdown();
         }
         download_tpe.shutdownNow();

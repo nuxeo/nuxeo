@@ -39,7 +39,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-cap-tests</module>
       </modules>
     </profile>
     <profile>
@@ -47,7 +46,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
       </modules>
     </profile>
@@ -59,6 +57,8 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-marketplace-content-browser</module>
+        <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
@@ -70,6 +70,8 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-marketplace-content-browser</module>
+        <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
@@ -84,6 +86,7 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -96,6 +99,8 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-marketplace-content-browser</module>
+        <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-tomcat-tests</module>
       </modules>
@@ -107,6 +112,8 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-marketplace-content-browser</module>
+        <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
       </modules>
@@ -158,6 +165,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-dm</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-marketplace-content-browser</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>

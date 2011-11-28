@@ -1,6 +1,8 @@
-<package type="addon" name="nuxeo-content-browser" version="5.5-SNAPSHOT">
+<package type="addon" name="nuxeo-content-browser" version="@VERSION@">
   <title>Nuxeo Content Browser</title>
-  <description>Vistual package to manage compatibility between applications on top of CAP. </description>
+  <description>Virtual package to manage compatibility between applications on
+    top of CAP.
+  </description>
   <home-page>http://doc.nuxeo.com/x/bIEk</home-page>
   <vendor>Nuxeo</vendor>
   <installer restart="true" />
@@ -8,7 +10,7 @@
   <NuxeoValidationState>nuxeo_certified</NuxeoValidationState>
   <ProductionState>production_ready</ProductionState>
   <platforms>
-    <platform>cap-5.5-SNAPSHOT</platform>
+    <platform>cap-@VERSION@</platform>
   </platforms>
   <license>LGPL</license>
   <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
