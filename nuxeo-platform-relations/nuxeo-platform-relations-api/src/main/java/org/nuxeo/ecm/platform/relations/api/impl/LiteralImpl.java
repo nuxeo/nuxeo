@@ -90,13 +90,13 @@ public class LiteralImpl extends AbstractNode implements Literal {
     public String toString() {
         String str;
         if (type != null) {
-            str = String.format("<%s '%s^^%s'>", getClass(), value,
-                    type);
+            str = String.format("%s('%s^^%s')", getClass().getSimpleName(),
+                    value, type);
         } else if (language != null) {
-            str = String.format("<%s '%s@%s'>", getClass(), value,
-                    language);
+            str = String.format("%s('%s@%s')", getClass().getSimpleName(),
+                    value, language);
         } else {
-            str = String.format("<%s '%s'>", getClass(), value);
+            str = String.format("%s('%s')", getClass().getSimpleName(), value);
         }
         return str;
     }

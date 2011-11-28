@@ -61,9 +61,9 @@ public class BlankImpl extends AbstractNode implements Blank {
     public String toString() {
         String str;
         if (id != null) {
-            str = String.format("<%s '%s'>", getClass(), id);
+            str = String.format("%s('%s')", getClass().getSimpleName(), id);
         } else {
-            str = String.format("<%s>", getClass());
+            str = String.format("%s()", getClass().getSimpleName());
         }
         return str;
     }
