@@ -101,7 +101,6 @@ public class CoreFeature extends SimpleFeature {
         if (repository.getGranularity() != Granularity.METHOD) {
             cleanupSession(runner);
         }
-        // close all sessions
         repository.shutdown();
 
         int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
