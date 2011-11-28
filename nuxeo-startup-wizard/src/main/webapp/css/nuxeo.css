@@ -13,6 +13,10 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
     color: #664e4e;
 }
 
+body {
+  background-color: #F1F2F3;
+}
+
 hr {
     color: #FFFFFF;
     height: 1px;
@@ -21,7 +25,7 @@ hr {
 
 h1 {
     font: bold 22px "Lucida Grande", Verdana, sans-serif;
-    margin: 10px 0 15px;
+    margin: 0 0 15px;
     color: #000;
     text-shadow: 0 1px 0 #FFFFFF;
 }
@@ -213,6 +217,9 @@ table.nav-left {
     padding: 5px 5px 8px 20px;
     background-color: #202224;
     border-bottom: 1px solid #000000;
+    border-radius : 1em 1em 0 0;
+    -moz-border-radius : 1em 1em 0 0;
+    -webkit-border-radius : 1em 1em 0 0;
 }
 
 .logo {
@@ -269,23 +276,25 @@ div.logout {
 /* Main Content style */
 .mainBlock {
     background-color: #fcfcfc;
-    padding: 0 0px 0 0;
-    border-bottom: 4px solid #ddd;
+    padding: 0;
+    border-bottom: 2px solid #ddd;
 }
 
 .leftCell {
   width:15%;
-  padding:92px 10px;
+  padding:1em;
+  background-color:rgba(224,224, 224, 0.1);
 }
 
 .mainCell {
   width: 65%;
-  padding:0 20px;
+  padding:1em;
 }
 
 .rightCell {
   width: 20%;
   padding:0;
+  display:none;
 }
 
 .homeBox {
@@ -529,9 +538,12 @@ select.project-choice {
 
 /* Footer style */
 .footer {
-    padding: 25px 5px 15px;
-    height: 33px;
+    padding: 1em;
     border-top: 1px solid #fff
+    border-radius : 0 0 1em 1em;
+    -moz-border-radius : 0 0 1em 1em;
+    -webkit-border-radius : 0 0 1em 1em;
+    background-color: #F1F2F3
 }
 
 .footer a {
@@ -755,11 +767,12 @@ table.registration .header {
     padding: 5px 20px 7px;
     color: #f1f5f7;
     text-decoration: none;
+    border-radius: 6px;
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
     font-weight: bold;
-    font-size: 15px;
+    font-size: 12px;
     position: relative;
     cursor: pointer;
 }
@@ -799,10 +812,11 @@ ul.noBullet li {
 }
 
 .screenExplanations {
-    font-color: #555555;
-    margin-bottom: 10px;
-    color: #227CE6;
+    margin: 0.5em 0 1em;
+    color: #333;
+    background-color: rgba(255,204,0,0.5);
     display: block;
+    padding : 1em;
 }
 
 .labelCell {
@@ -812,6 +826,7 @@ ul.noBullet li {
 .helpCell {
     font-style: italic;
     font-color: #555555;
+    padding-bottom : 1em;
 }
 
 .warnBlock {
@@ -843,16 +858,15 @@ ul.noBullet li {
 }
 
 .navItemSelected {
-    background-color: #EEEEFF;
+    background-color: #ddeeff;
     font-style: italic;
     font-color: black;
 }
 
 .navItemSelected a, .navItem a.checked {
-  background: transparent url(../images/checked.gif) top right no-repeat;
-  padding-right: 20px;
+  background: transparent url(../images/checked.gif) top left no-repeat;
+  padding-left: 20px;
   display: inline-block;
-
 }
 
 .nuxeoIFrame {
@@ -864,10 +878,10 @@ ul.noBullet li {
 }
 
 .formPadding {
-    height: 280px;
     overflow: auto;
     border-style: solid;
     border-width: 0px;
+    margin-bottom : 1em;
 }
 
 .progressbar {
@@ -888,18 +902,21 @@ ul.hide {
 }
 
 .nxpblock {
-  background-color: red;
-  border-style: solid;
-  border-width: 2px;
-  border-color: #555555;
+  border : 2px solid white;
   height:25px;
   width:100px;
   text-align:center;
   text-transform:uppercase;
   font-weight:bold;
-  color:black;
-  border-radius: 5px;
+  border-radius: 0.5em;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
   cursor:pointer;
+  padding-top: 7px;
+}
+
+.nxpblock:hover {
+  box-shadow : 0 0 0.3em #666;
 }
 
 .unselectedBloc {
@@ -909,23 +926,70 @@ ul.hide {
 }
 
 .nxprow {
-  margin:2px;
-  height:29px;
-  width:400px;
+  margin:4px;
+  width:200px;
+  height:34px;
 }
 
 .presetBtn {
-  border-width:2px;
-  border-style:outset;
-  border-color:#CCCCCC;
-  padding:10px;
-  margin:2px;
-  width:50px;
-  cursor:pointer;
+  border : 1px solid #666;
+  padding: 0.5em 1em;
+  margin: 0.3em;
+  cursor : pointer;
+  display : inline-block;
+  text-align: center;
+  border-radius : 0.5em;
+  -moz-border-radius : 0.5em;
+  -webkit-border-radius : 0.5em;
 }
 
+.presetBtn:hover {
+  background-color: #DDEEFF;
+}
 .downloadProgress {
   background-color:green;
   height:12px;
   border-radius: 2px;
+}
+
+#wizardFrame {
+ margin : 1em auto;
+ box-shadow : 0 0 1em #CCCCCC;
+ width: 730px;
+ border-radius : 1em;
+ -moz-border-radius : 1em;
+ -webkit-border-radius : 1em;
+}
+
+.buttonContainer {
+  margin : 1em 0;
+}
+
+.ordiv {
+  margin : 1em 0;
+  padding : 0.5em 0;
+  font-size : 133%;
+  border : 2px solid #DDEEFF;
+  border-left : none;
+  border-right : none;
+  color: #999;
+  text-transform: uppercase;
+}
+
+#tree {
+  float:left;
+  margin-left : -2em;
+}
+
+.presetContainer {
+
+}
+
+.blocContainer {
+  float:right;
+}
+
+.presetLabel {
+  font-size : 133%;
+  font-weight : bold;
 }

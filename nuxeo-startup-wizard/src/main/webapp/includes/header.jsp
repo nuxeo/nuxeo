@@ -50,6 +50,8 @@ function showIframeIfPossible() {
 
 <body>
 
+<div id="wizardFrame">
+
 <table width="100%" cellpadding="0" cellspacing="0">
   <tr valign="middle">
     <td class="header">
@@ -88,6 +90,7 @@ function showIframeIfPossible() {
 </td>
 <td class="mainCell">
 
+<!--
 <% if (currentPage.getProgress()>=0) { %>
 <table width="100%" class="progressbar">
 <tr>
@@ -99,3 +102,4 @@ function showIframeIfPossible() {
 </tr>
 </table>
 <%}%>
+ -->

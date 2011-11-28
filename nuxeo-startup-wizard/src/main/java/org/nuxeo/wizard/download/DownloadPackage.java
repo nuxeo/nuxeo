@@ -39,6 +39,8 @@ public class DownloadPackage {
 
     protected String color;
 
+    protected String textColor;
+
     protected boolean enabled;
 
     protected final String id;
@@ -170,4 +172,13 @@ public class DownloadPackage {
             addDep(depId);
         }
     }
+
+    public String getTextColor() {
+        return textColor;
+    }
+
+    public void setTextColor(String textColor) {
+        this.textColor = textColor;
+    }
+
 }

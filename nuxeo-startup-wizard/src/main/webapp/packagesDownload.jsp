@@ -157,14 +157,10 @@ $(document).ready(function(){
 </div>
 <%}%>
 
-  </td></tr></table>
-  </div>
-
- </div>
- <center>
+ <div class="buttonContainer">
  <input type="button" class="glossyButton" id="btnPrev" value="<fmt:message key="label.action.prev"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
  <input style="display:none" type="submit" class="glossyButton" id="btnNext" value="<fmt:message key="label.action.next"/>"/>
- </center>
+ </div>
 
 </form>
 <%@ include file="includes/footer.jsp" %>

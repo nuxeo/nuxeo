@@ -80,24 +80,19 @@ function drawBloc(container, idx, node2Display, parent, nbSiblings) {
     var selected = node2Display.selected;
     var node = node2Display.node;
     if (node == null) {
-        //console.log(node2Display);
         return;
     }
     var span = $("<div class=\"nxpblock\">" + node.package + "</div>");
     span.attr('pkg', node.package);
-    var width = parent.width()/nbSiblings - 3;
+    var width = parent.width()/nbSiblings - 4;
     if (node2Display.parent) {
-      width = node2Display.parent.width / nbSiblings -3 ;
+      width = node2Display.parent.width / nbSiblings -4 ;
     }
     node.width=width;
     span.css("width", width +"px");
-    if (idx==nbSiblings-1) {
-      span.css("float","right")
-    } else {
-      span.css("float","left")
-    }
+    span.css("float","left")
     span.css("background-color",node.color);
-    //span.css("left", width*idx +"px");
+    span.css("color",node.textcolor);
     if (!selected) {
       span.toggleClass("unselectedBloc");
     }
@@ -167,7 +162,7 @@ function displayBlocs() {
   // draw root
   var container = $("#blocs");
   container.html("");
-  var parent = $("<div class=\"nxprow\"></div>");
+  var parent = $("<div class=\"nxprow\" style=\"height:2px\"></div>");
   container.append(parent);
   var row = drawRow(container);
   parent = drawBloc(row,0,{ 'node':jsonTree, 'selected' : true}, parent,1);
@@ -218,27 +213,19 @@ $(document).ready(function(){
 
 <%@ include file="includes/feedback.jsp" %>
 
- <table>
-  <tr>
-   <td>
-    <div id="tree"></div>
-   </td>
-   <td>
-    <div style="width:310px;height:150px;vertical-align:bottom">
-     <div id="blocs" style="position:relative;bottom: 0;width:300px;">
-     </div>
-    </div>
-   </td>
-  </tr>
-  <tr><td colspan="2"> <fmt:message key="label.packagesSelection.presets" /> :
+  <div class="presetContainer"> <span class="presetLabel"><fmt:message key="label.packagesSelection.presets" /> :</span>
   <%for (Preset preset : options.getPresets()) { %>
     <span class="presetBtn" id="preset_<%=preset.getId()%>" onclick="usePreset(<%=preset.getPkgsAsJsonArray()%>)"><%=preset.getLabel()%> </span>
   <%} %>
-  </td></tr>
- </table>
-
-  </td></tr></table>
   </div>
+  <div class="ordiv"> or </div>
+
+  <div id="tree"></div>
+
+  <div class="blocContainer">
+     <div id="blocs"></div>
+  </div>
+  <div style="clear:both"></div>
 
   <%@ include file="includes/prevnext.jsp" %>
 
