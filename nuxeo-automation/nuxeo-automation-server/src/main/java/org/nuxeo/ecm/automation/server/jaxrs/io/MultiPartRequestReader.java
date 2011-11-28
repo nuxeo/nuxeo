@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.automation.server.jaxrs.io;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -26,6 +25,7 @@ import java.util.List;
 
 import javax.mail.BodyPart;
 import javax.mail.internet.MimeMultipart;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -79,7 +79,7 @@ public class MultiPartRequestReader implements
             // perhaps the stream is no more available when javax.mail need it?
             File tmp = File.createTempFile("nx-automation-mp-upload-", ".tmp");
             FileUtils.copyToFile(in, tmp);
-            in = new FileInputStream(tmp); // get the input from the saved
+            in = new SharedFileInputStream(tmp); // get the input from the saved
                                             // file
             try {
                 MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(

@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.mail.BodyPart;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.util.SharedFileInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
