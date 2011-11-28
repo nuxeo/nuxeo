@@ -116,7 +116,9 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     public void closeSession(CoreSession session) {
-        CoreInstance.getInstance().close(session);
+        if (session != null) {
+            CoreInstance.getInstance().close(session);
+        }
     }
 
 }
