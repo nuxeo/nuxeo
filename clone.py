@@ -61,7 +61,9 @@ def fetch(module):
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
-    branch = check_output(["hg", "id", "-b"])
+    branch, tag = check_output(["hg", "id", "-bt"]).split()
+    if tag != "tip":
+        branch = tag
 
 def url_normpath(url):
     parsed = urlparse.urlparse(url)
@@ -77,6 +79,8 @@ system("hg pull")
 system("hg up %s" % branch)
 log("")
 
+root_url = url_normpath(check_output(["hg", "path", "default"]))
+
 log("Using maven introspection of the pom.xml files"
     " to find the list of sub-repositories")
 for line in os.popen("mvn -N help:effective-pom"):
@@ -89,7 +93,6 @@ for line in os.popen("mvn -N help:effective-pom"):
 
 fetch("nuxeo-distribution")
 
-root_url = url_normpath(check_output(["hg", "path", "default"]))
 if root_url.startswith("http"):
     root_url = url_normpath(root_url.replace("/nuxeo", ""))
 fetch("addons")
