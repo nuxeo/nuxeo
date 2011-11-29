@@ -81,5 +81,9 @@ table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background
 
 .dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.medium (__FLAVOR__ background)" }
 
-table.palettePreviewColors { display:inline; vertical-align:middle; }
-table.palettePreviewColors td { border-width:1px; border-style:solid; border-color:black; height: 10px; width: 10px;}
+/* Local configuration table styles */
+.palettePreviewLogo { float: left ;width: 100px }
+table.palettePreviewColors { border-collapse: separate; border-spacing: 3px; display: inline; float: left; vertical-align: middle }
+table.palettePreviewColors td { border: 1px solid #777 }
+table.palettePreviewColors td div { height: 8px; width: 10px }
+td.flavorPreview, td.flavorWaiter { vertical-align: top }
