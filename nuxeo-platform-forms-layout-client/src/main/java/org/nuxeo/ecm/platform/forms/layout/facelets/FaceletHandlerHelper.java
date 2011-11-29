@@ -290,12 +290,12 @@ public final class FaceletHandlerHelper {
             FieldDefinition[] fields = widget.getFieldDefinitions();
             if (fields != null && fields.length > 0) {
                 field = fields[0];
+                TagAttribute valueAttr = createAttribute(
+                        "value",
+                        ValueExpressionHelper.createExpressionString(
+                                widget.getValueName(), field));
+                attrs.add(valueAttr);
             }
-            TagAttribute valueAttr = createAttribute(
-                    "value",
-                    ValueExpressionHelper.createExpressionString(
-                            widget.getValueName(), field));
-            attrs.add(valueAttr);
         }
         // fill with widget properties
         List<TagAttribute> propertyAttrs = getTagAttributes(
