@@ -48,6 +48,16 @@ from utils import extractToken, extractJsfState, extractIframes, extractJsession
 from funkload.utils import Data
 
 
+def getTabParams(tab, subtab=None):
+    """Return nuxeo tabids parameters"""
+    if tab is None:
+        return ''
+    ret = "&tabIds=%3A" + tab
+    if subtab:
+        ret += '%3A' + subtab
+    return ret
+
+
 class BasePage:
     """Base class for nuxeo ep page."""
     fl = None
@@ -118,7 +128,7 @@ class BasePage:
         return self
 
     def viewDocumentPath(self, path, description=None, raiseOn404=True,
-                         outcome=None):
+                         tab="TAB_CONTENT", subtab=None, outcome=None):
         """This method return None when raiseOn404 is False and the document
         does not exist"""
         fl = self.fl
@@ -130,25 +140,23 @@ class BasePage:
         if not outcome:
             outcome = "view_documents"
         resp = fl.get(fl.server_url + "/nxpath/default/default-domain/" +
-               quote(path) + "@" + outcome + '?conversationId=0NXMAIN1',
+               quote(path) + "@" + outcome + '?conversationId=0NXMAIN1' + getTabParams(tab, subtab),
                description=description, ok_codes=ok_codes)
         if resp.code == 404:
             fl.logi('Document ' + path + ' does not exists.')
             return None
         return self
 
-    def viewDocumentUid(self, uid, tab='', subtab='', description=None,
+    def viewDocumentUid(self, uid, tab=None, subtab=None, description=None,
                         outcome=None):
         fl = self.fl
         if not description:
-            description = "View document uid:" + uid + ' ' + tab + subtab
+            description = "View document uid:" + uid + ' ' + getTabParams(tab, subtab)
         if not outcome:
             outcome = "view_documents"
 
-        url = '/nxdoc/default/' + uid + '/' + outcome + '?tabId=' + tab
-        if subtab:
-            url += "&subTabId=" + subtab
-        url += '=&conversationId=0NXMAIN1'
+        url = '/nxdoc/default/' + uid + '/' + outcome
+        url += '?conversationId=0NXMAIN1' + getTabParams(tab, subtab)
         fl.get(fl.server_url + url,
                description=description)
         return self
@@ -375,9 +383,9 @@ class BasePage:
     def personalWorkspace(self):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userServicesForm_SUBMIT', '1'],
-            ['userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink']],
+                ['userServicesForm_SUBMIT', '1'],
+                ['javax.faces.ViewState', fl.getLastJsfState()],
+                ['userServicesForm:menuActionCommand_SHOW_PERSONAL_WORKSPACE', 'userServicesForm:menuActionCommand_SHOW_PERSONAL_WORKSPACE']],
             description="View personal workspace")
         # XXX: not working: post initializes personal workspace if it does
         # not exist...
@@ -394,12 +402,13 @@ class BasePage:
         else:
             action = '/view_documents.faces'
         fl.post(fl.server_url + action, params=[
-            ['userServicesSearchForm:userServicesSearchDefault:simpleSearchKeywordsInput', query],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userServicesSearchForm:userServicesSearchDefault:simpleSearchSubmitButton', 'Search'],
-            ['userServicesSearchForm_SUBMIT', '1']],
+            ['userServicesSearchForm:faceted_search_suggest_box', query],
+            ['userServicesSearchForm:faceted_search_suggestionBox_selection', ''],
+            ['userServicesSearchForm:simpleSearchSubmitButton', 'Search'],
+            ['userServicesSearchForm_SUBMIT', '1'],
+            ['javax.faces.ViewState', fl.getLastJsfState()]],
             description=description)
-        fl.assert_('simple_search' in fl.getBody(),
+        fl.assert_('Default Faceted Search' in fl.getBody(),
                      'Not a search result page')
         return self
 
