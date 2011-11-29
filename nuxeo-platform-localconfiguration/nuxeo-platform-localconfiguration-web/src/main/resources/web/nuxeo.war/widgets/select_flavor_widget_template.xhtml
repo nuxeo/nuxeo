@@ -21,11 +21,11 @@
         <nxu:set var="flavors"
           value="#{themeConfigurationActions.getAvailableFlavors(themeActions.defaultTheme)}"
           cache="true">
+          
           <h:selectOneListbox id="#{widget.id}" value="#{field}">
             <nxu:selectItems
               var="flavor" value="#{flavors}"
-              itemValue="#{flavor.name}" itemLabel="#{messages[flavor.label]}"
-              itemSelected="#{flavor.name == origSelectedFlavorName}" />
+              itemValue="#{flavor.name}" itemLabel="#{messages[flavor.label]}" />
             <a4j:support event="onchange"
               bypassUpdates="true"
               actionListener="#{selectionActions.onSelection}"
@@ -56,12 +56,12 @@
             cache="true">
             <c:choose>
               <c:when test="#{! empty selectedFlavor.logo.previewPath}">
-                <h:graphicImage value="#{selectedFlavor.logo.previewPath}" width="100" />
+                <h:graphicImage value="#{selectedFlavor.logo.previewPath}" width="100px" />
               </c:when>
               <c:otherwise>
                 <c:choose>
                   <c:when test="#{! empty selectedFlavor.logo.path}">
-                    <h:graphicImage value="#{selectedFlavor.logo.path}" width="100" />
+                    <h:graphicImage value="#{selectedFlavor.logo.path}" width="100px" />
                   </c:when>
                   <c:otherwise>
                     #{messages['label.local.configuration.theme.flavorSelection.noPreviewAvailable']}
@@ -69,6 +69,25 @@
                 </c:choose>
               </c:otherwise>
             </c:choose>
+            <c:if test="#{not empty selectedFlavor.palettePreview.colors}">
+              <table class="palettePreviewColors">
+                <tbody>
+                  <c:forEach var="colorIndex" begin="0" end="8"
+                    varStatus="paletteColorStatus">
+                    <nxu:set var="colorValue"
+                      value="#{nxu:test(not empty selectedFlavor.palettePreview.colors[colorIndex], selectedFlavor.palettePreview.colors[colorIndex], '#fff')}">
+                      <c:if test="#{paletteColorStatus.index % 3 == 0}">
+                        <f:verbatim escape="false">&lt;tr&gt;</f:verbatim>
+                      </c:if>
+                      <td style="background-color:#{colorValue}"></td>
+                      <c:if test="#{paletteColorStatus.index % 3 == 2}">
+                        <f:verbatim escape="false">&lt;/tr&gt;</f:verbatim>
+                      </c:if>
+                    </nxu:set>
+                  </c:forEach>
+                </tbody>
+              </table>
+            </c:if>
           </nxu:set>
         </a4j:outputPanel>
       </nxu:valueHolder>
