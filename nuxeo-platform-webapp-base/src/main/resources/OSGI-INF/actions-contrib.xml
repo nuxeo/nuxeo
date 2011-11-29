@@ -10,22 +10,22 @@
       <filter-id>seamHotReloadIsEnabled</filter-id>
     </action>
 
-    <action id="pdfExport" link="pdf" order="18"
+    <!-- NXP-7025: disable pdf export on doc -->
+    <!--
+      <action id="pdfExport" link="pdf" order="18"
       label="label.exportview.pdfExport" icon="/icons/pdf_export.png">
       <category>DOCUMENT_UPPER_ACTION</category>
-    </action>
+      </action>
+    -->
 
     <action id="exportViewPDFExport"
-      link="#{restHelper.getDocumentUrl(currentDocument, 'pdf', true)}"
-      order="0" label="label.exportview.pdfExport"
-      icon="/icons/pdf_export.png">
+      link="#{restHelper.getDocumentUrl(currentDocument, 'pdf', true)}" order="0"
+      label="label.exportview.pdfExport" icon="/icons/pdf_export.png">
       <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
     </action>
 
-    <action id="exportViewZipBlobExport"
-      link="#{clipboardActions.exportWorklistAsZip(currentDocument)}"
-      label="label.exportview.zipBlobExport"
-      icon="/icons/action_export_zip.gif">
+    <action id="exportViewZipBlobExport" link="#{clipboardActions.exportWorklistAsZip(currentDocument)}"
+      label="label.exportview.zipBlobExport" icon="/icons/action_export_zip.gif">
       <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
     </action>
 

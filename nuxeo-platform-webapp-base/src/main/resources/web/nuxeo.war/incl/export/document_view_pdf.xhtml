@@ -27,14 +27,6 @@
         pattern="#{nxu:basicDateAndTimeFormater()}" />
     </nxp:paragraph>
   </nxp:cell>
-  <nxp:cell colspan="2">
-    <nxp:barCode type="code128"
-      barHeight="40"
-      textSize="20"
-      code="#{currentDocument.id}"
-      codeType="code128_ucc"
-      altText="#{currentDocument.id}" />
-  </nxp:cell>
 </nxp:table>
 
 <ui:include src="/incl/export/document_content_pdf_template.xhtml" />

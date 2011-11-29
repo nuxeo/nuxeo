@@ -55,28 +55,36 @@
           value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_COMMAND_ACTION')}"
           cache="true">
           <c:if test="#{not empty exportActions or not empty exportCommandActions}">
-            <h1>#{messages['label.exportview.document']}</h1>
+            <h2>#{messages['label.exportview.document']}</h2>
             <c:forEach var="action" items="#{exportActions}">
               <nxh:metaOutputLink value="#{action.getLink()}"
-                title="#{messages[action.label]}"
-                alt="#{messages[action.label]}"
-                target="_blank">
+                target="_blank"
+                styleClass="exportHelpTooltip">
                 <h:graphicImage value="#{action.icon}"
                   rendered="#{not empty action.icon}" />
                 <h:outputText value=" #{messages[action.label]}" />
               </nxh:metaOutputLink>
+              <nxu:set var="tooltipMessage" value="#{action.label}.tooltip">
+                <div class="tooltip">
+                  #{messages[tooltipMessage]}
+                </div>
+              </nxu:set>
               <br />
             </c:forEach>
             <h:form>
               <c:forEach var="action" items="#{exportCommandActions}">
                 <nxh:commandLink action="#{action.getLink()}"
-                  title="#{messages[action.label]}"
-                  alt="#{messages[action.label]}"
-                  immediate="#{action.immediate}">
+                  immediate="#{action.immediate}"
+                  styleClass="exportHelpTooltip">
                   <h:graphicImage value="#{action.icon}"
                     rendered="#{not empty action.icon}" />
                   <h:outputText value=" #{messages[action.label]}" />
                 </nxh:commandLink>
+                <nxu:set var="tooltipMessage" value="#{action.label}.tooltip">
+                  <div class="tooltip">
+                    #{messages[tooltipMessage]}
+                  </div>
+                </nxu:set>
                 <br />
               </c:forEach>
             </h:form>
@@ -84,19 +92,15 @@
         </nxu:set>
         </nxu:set>
         
-        <br /><br />
+        <br />
 
         <nxu:set var="exportContentViews"
           value="#{documentContentViewActions.getExportContentViewsForCurrentDocument()}"
           cache="true">
           <c:if test="#{not empty exportContentViews}">
-            <h1>#{messages['label.exportview.contentviews']}</h1>
+            <h2>#{messages['label.exportview.contentviews']}</h2>
             <c:forEach var="contentViewByCategory"
               items="#{documentContentViewActions.getExportContentViewsForCurrentDocument()}">
-              <h3>
-                <h:outputText
-                  value="#{messages['label.exportview.contentviews.category']} '#{contentViewByCategory.key}'" />
-              </h3>
               <c:forEach var="contentViewHeader"
                 items="#{contentViewByCategory.value}">
 
@@ -107,57 +111,32 @@
                   <c:set var="contentViewTitle"
                     value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
                   <h:outputText value="#{nxu:test(empty contentViewTitle, contentViewName, contentViewTitle)} " />
-
-                  <nxd:restDocumentLink document="#{currentDocument}"
-                    view="rss" addTabInfo="false"
-                    newConversation="true" target="_blank">
-                    <f:param name="contentViewName" value="#{contentView.name}" />
-                    <f:param name="currentPage" value="0" />
-                    <h:graphicImage value="/icons/rss_export.png"
-                      styleClass="smallIcon" />
-                    <h:outputText value=" #{messages['label.contentview.export.rss']}"/>
-                  </nxd:restDocumentLink>
-                  <h:outputText value="  " />
-
-                  <nxd:restDocumentLink document="#{currentDocument}"
-                    view="atom" addTabInfo="false"
-                    newConversation="true" target="_blank">
-                    <f:param name="contentViewName" value="#{contentView.name}" />
-                    <f:param name="currentPage" value="0" />
-                    <h:graphicImage value="/icons/atom_export.png"
-                      styleClass="smallIcon" />
-                    <h:outputText value=" #{messages['label.contentview.export.atom']}" />
-                  </nxd:restDocumentLink>
-                  <h:outputText value="  " />
+                  <br />
 
                   <c:if test="#{contentView.currentResultLayout.showCSVExport}">
                     <nxd:restDocumentLink document="#{currentDocument}"
                       view="xl" addTabInfo="false"
-                      newConversation="true" target="_blank">
+                      newConversation="true" target="_blank"
+                      styleClass="exportHelpTooltip">
                       <f:param name="contentViewName" value="#{contentView.name}" />
                       <f:param name="currentPage" value="0" />
                       <f:param name="pageSize" value="0" />
-                      <h:graphicImage value="/icons/csv_export.png"
+                      <h:graphicImage value="/icons/xls_export.png"
                         alt="#{messages['label.contentview.export.xl']}"
                         title="#{messages['label.contentview.export.xl']}" />
                       <h:outputText value=" #{messages['label.contentview.export.xl']}"/>
                     </nxd:restDocumentLink>
-                    <h:outputText value="  " />
-                  </c:if>
-
-                  <c:if test="#{contentView.currentResultLayout.showPDFExport}">
-                    <nxd:restDocumentLink document="#{currentDocument}"
-                      view="content_view_pdf" addTabInfo="false"
-                      newConversation="true" target="_blank">
-                      <f:param name="contentViewName" value="#{contentView.name}" />
-                      <f:param name="currentPage" value="0" />
-                      <f:param name="pageSize" value="0" />
-                      <h:graphicImage value="/icons/pdf_export.png"
-                        alt="#{messages['label.contentview.export.pdf']}"
-                        title="#{messages['label.contentview.export.pdf']}" />
-                      <h:outputText value=" #{messages['label.contentview.export.pdf']}"/>
-                    </nxd:restDocumentLink>
-                    <h:outputText value="  " />
+                    <div class="tooltip">
+                      <c:choose>
+                        <c:when test="#{contentView.currentPageProvider.maxPageSize > 0}">
+                          #{nxu:translate('label.contentview.export.xl.tooltip.maxSize', contentView.currentPageProvider.maxPageSize)}
+                        </c:when>
+                        <c:otherwise>
+                          #{messages['label.contentview.export.xl.tooltip']}
+                        </c:otherwise>
+                      </c:choose>
+                    </div>
+                    <br />
                   </c:if>
 
                 </nxu:set>
@@ -170,6 +149,13 @@
         </nxu:set>
 
       </div>
+
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery(".exportHelpTooltip").tooltip({delay:1000, predelay:250});
+  });
+</script>
 
     </div>
   </ui:define>

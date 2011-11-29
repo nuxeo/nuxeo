@@ -49,13 +49,15 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true" />
+          showCSVExport="true" showPDFExport="false" />
         <layout name="document_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
+          iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" />
         <layout name="document_listing_ajax_icon_2_columns"
           title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
+          iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -107,13 +109,15 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true" />
+          showCSVExport="true" showPDFExport="false" />
         <layout name="document_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="false"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
+          iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" />
         <layout name="document_listing_ajax_icon_2_columns"
           title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
+          iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION_TRASH</selectionList>
@@ -165,13 +169,15 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true" />
+          showCSVExport="true" showPDFExport="false" />
         <layout name="document_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
+          iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" />
         <layout name="document_listing_ajax_icon_2_columns"
           title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
+          iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION_SECTIONS</selectionList>
@@ -224,7 +230,7 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true" />
+          showCSVExport="true" showPDFExport="false" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
