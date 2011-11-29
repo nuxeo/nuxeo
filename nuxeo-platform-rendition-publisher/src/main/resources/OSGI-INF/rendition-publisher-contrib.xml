@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.rendition.publisher">
 
-  <require>org.nuxeo.ecm.platform.publisher.jbpm.contrib</require>
+  <require>org.nuxeo.ecm.platform.publisher.task.contrib</require>
 
   <extension
     target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
