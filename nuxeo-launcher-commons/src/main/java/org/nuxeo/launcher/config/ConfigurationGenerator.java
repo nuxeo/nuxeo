@@ -161,6 +161,8 @@ public class ConfigurationGenerator {
 
     private String wizardParam = null;
 
+    private String templatesParam = null;
+
     public boolean isConfigurable() {
         return configurable;
     }
@@ -366,7 +368,6 @@ public class ConfigurationGenerator {
         Map<String, String> newParametersToSave = evalDynamicProperties();
         if (newParametersToSave != null && !newParametersToSave.isEmpty()) {
             saveConfiguration(newParametersToSave, false, false);
-            userConfig.putAll(newParametersToSave);
         }
     }
 
@@ -614,7 +615,7 @@ public class ConfigurationGenerator {
      */
     public void saveConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
-        // Keep wizard true or once; switch false to once
+        // Keep generation true or once; switch false to once
         saveConfiguration(changedParameters, false, true);
     }
 
@@ -624,22 +625,29 @@ public class ConfigurationGenerator {
      * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
-     * @param setWizardOnceToFalse If wizard was on (true or once), then set it
-     *            to false or not?
-     * @param setWizardFalseToOnce If wizard was off (false), then set it to
-     *            once?
+     * @param setGenerationOnceToFalse If generation was on (true or once), then
+     *            set it to false or not?
+     * @param setGenerationFalseToOnce If generation was off (false), then set
+     *            it to once?
      * @see #saveFilteredConfiguration(Map)
      * @since 5.5
      */
     public void saveConfiguration(Map<String, String> changedParameters,
-            boolean setWizardOnceToFalse, boolean setWizardFalseToOnce)
+            boolean setGenerationOnceToFalse, boolean setGenerationFalseToOnce)
             throws ConfigurationException {
-        this.setOnceToFalse = setWizardOnceToFalse;
-        this.setFalseToOnce = setWizardFalseToOnce;
+        this.setOnceToFalse = setGenerationOnceToFalse;
+        this.setFalseToOnce = setGenerationFalseToOnce;
         // Will change wizardParam value instead of appending it
         wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
+        // Will change templatesParam value instead of appending it
+        templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
         writeConfiguration(loadConfiguration(changedParameters),
                 changedParameters);
+        for (String key : changedParameters.keySet()) {
+            if (changedParameters.get(key) != null) {
+                userConfig.setProperty(key, changedParameters.get(key));
+            }
+        }
     }
 
     /**
@@ -675,11 +683,13 @@ public class ConfigurationGenerator {
         Map<String, String> filteredChangedParameters = new HashMap<String, String>();
         for (String key : changedParameters.keySet()) {
             String oldParam = userConfig.getProperty(key);
-            String newParam = changedParameters.get(key).trim();
-            if (oldParam == null && !newParam.isEmpty() || oldParam != null
-                    && !oldParam.trim().equals(newParam)) {
-                filteredChangedParameters.put(key,
-                        changedParameters.get(key).trim());
+            String newParam = changedParameters.get(key);
+            if (newParam != null) {
+                newParam = newParam.trim();
+            }
+            if (oldParam == null && newParam != null && !newParam.isEmpty()
+                    || oldParam != null && !oldParam.trim().equals(newParam)) {
+                filteredChangedParameters.put(key, newParam);
             }
         }
         return filteredChangedParameters;
@@ -698,10 +708,13 @@ public class ConfigurationGenerator {
                 writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
                         + System.getProperty("line.separator"));
                 for (String key : changedParameters.keySet()) {
-                    writer.write("#" + key + "=" + userConfig.getProperty(key)
+                    writer.write("#" + key + "="
+                            + userConfig.getProperty(key, "")
                             + System.getProperty("line.separator"));
-                    writer.write(key + "=" + changedParameters.get(key)
-                            + System.getProperty("line.separator"));
+                    if (changedParameters.get(key) != null) {
+                        writer.write(key + "=" + changedParameters.get(key)
+                                + System.getProperty("line.separator"));
+                    }
                 }
                 writer.write(BOUNDARY_END
                         + System.getProperty("line.separator"));
@@ -741,6 +754,11 @@ public class ConfigurationGenerator {
                             if (wizardParam != null) {
                                 line = PARAM_WIZARD_DONE + "=" + wizardParam;
                             }
+                        } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
+                            if (templatesParam != null) {
+                                line = PARAM_TEMPLATES_NAME + "="
+                                        + templatesParam;
+                            }
                         }
                         newContent.append(line
                                 + System.getProperty("line.separator"));
@@ -760,9 +778,11 @@ public class ConfigurationGenerator {
                                 userConfig.setProperty(key, value);
                             } else {
                                 String key = line.substring(0, equalIdx).trim();
+                                String value = line.substring(equalIdx + 1).trim();
                                 if (!changedParameters.containsKey(key)) {
-                                    String value = line.substring(equalIdx + 1).trim();
                                     changedParameters.put(key, value);
+                                } else if (!value.equals(changedParameters.get(key))) {
+                                    userConfig.setProperty(key, value);
                                 }
                             }
                         }
@@ -862,8 +882,10 @@ public class ConfigurationGenerator {
      */
     public void verifyInstallation() throws ConfigurationException {
         String JavaVersion = System.getProperty("java.version");
-        if ( (!JavaVersion.startsWith("1.6")) && (!JavaVersion.startsWith("1.7")) ) {
-            String message = "Nuxeo requires Java 6 or 7(detected " + JavaVersion + ").";
+        if ((!JavaVersion.startsWith("1.6"))
+                && (!JavaVersion.startsWith("1.7"))) {
+            String message = "Nuxeo requires Java 6 or 7(detected "
+                    + JavaVersion + ").";
             if ("nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
                 log.error(message);
             } else {
@@ -1076,4 +1098,69 @@ public class ConfigurationGenerator {
                 "installAfterRestart.log");
     }
 
+    /**
+     * Add a template to the {@link #PARAM_TEMPLATES_NAME} list if not already
+     * present
+     *
+     * @param template Template to add
+     * @throws ConfigurationException
+     * @since 5.5
+     */
+    public void addTemplate(String template) throws ConfigurationException {
+        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+        String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
+        String[] oldTemplatesSplit = oldTemplates.split(",");
+        if (!Arrays.asList(oldTemplatesSplit).contains(template)) {
+            String newTemplates = oldTemplates
+                    + (oldTemplates.length() > 0 ? "," : "") + template;
+            newParametersToSave.put(PARAM_TEMPLATES_NAME, newTemplates);
+            saveFilteredConfiguration(newParametersToSave);
+            changeTemplates(newTemplates);
+        }
+    }
+
+    /**
+     * Remove a template from the {@link #PARAM_TEMPLATES_NAME} list
+     *
+     * @param template
+     * @throws ConfigurationException
+     * @since 5.5
+     */
+    public void rmTemplate(String template) throws ConfigurationException {
+        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+        String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
+        List<String> oldTemplatesSplit = Arrays.asList(oldTemplates.split(","));
+        if (oldTemplatesSplit.contains(template)) {
+            String newTemplates = "";
+            boolean firstIem = true;
+            for (String templateItem : oldTemplatesSplit) {
+                if (!template.equals(templateItem)) {
+                    newTemplates += (firstIem ? "" : ",") + templateItem;
+                    firstIem = false;
+                }
+            }
+            newParametersToSave.put(PARAM_TEMPLATES_NAME, newTemplates);
+            saveFilteredConfiguration(newParametersToSave);
+            changeTemplates(newTemplates);
+        }
+    }
+
+    /**
+     * Set a property in nuxeo configuration
+     *
+     * @param key
+     * @param value
+     * @throws ConfigurationException
+     * @return The old value
+     * @since 5.5
+     */
+    public String setProperty(String key, String value)
+            throws ConfigurationException {
+        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+        newParametersToSave.put(key, value);
+        String oldValue = userConfig.getProperty(key);
+        saveFilteredConfiguration(newParametersToSave);
+        setBasicConfiguration();
+        return oldValue;
+    }
 }

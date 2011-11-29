@@ -19,6 +19,7 @@
 package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -37,11 +38,11 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(
                 nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
-        configGenerator = new ConfigurationGenerator();
     }
 
     @Test
     public void testEvalDynamicProperties() {
+        configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         assertEquals(
                 "Bad loop back URL",
@@ -84,5 +85,40 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                 expectedLoopback,
                 configGenerator.getUserConfig().getProperty(
                         ConfigurationGenerator.PARAM_LOOPBACK_URL));
+    }
+
+    @Test
+    public void testSetProperty() throws ConfigurationException {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        configGenerator.setProperty("test.prop.key", "test.prop.value");
+        assertEquals("Property not set", "test.prop.value",
+                configGenerator.getUserConfig().getProperty("test.prop.key"));
+        configGenerator.setProperty("test.prop.key", null);
+        assertNull("Property not unset",
+                configGenerator.getUserConfig().getProperty("test.prop.key"));
+        configGenerator.setProperty("test.prop.key", "");
+        assertNull("Property not unset",
+                configGenerator.getUserConfig().getProperty("test.prop.key"));
+    }
+
+    @Test
+    public void testAddRmTemplate() throws ConfigurationException {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        String originalTemplates = configGenerator.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        configGenerator.addTemplate("newTemplate");
+        assertEquals(
+                "newTemplate not added",
+                originalTemplates + ",newTemplate",
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        configGenerator.rmTemplate("newTemplate");
+        assertEquals(
+                "newTemplate not removed",
+                originalTemplates,
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_TEMPLATES_NAME));
     }
 }
