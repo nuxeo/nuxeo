@@ -31,6 +31,10 @@
       <artifactId>nuxeo-runtime-reload</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
