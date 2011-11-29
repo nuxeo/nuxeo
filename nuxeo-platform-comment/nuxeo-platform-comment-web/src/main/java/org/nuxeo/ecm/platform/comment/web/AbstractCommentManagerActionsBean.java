@@ -40,12 +40,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
+import org.nuxeo.ecm.platform.comment.workflow.utils.FollowTransitionUnrestricted;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -104,6 +103,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     @In(create = true)
     protected NavigationContext navigationContext;
 
+    @Override
     @Create
     public void initialize() throws Exception {
         log.debug("Initializing...");
@@ -114,16 +114,19 @@ public abstract class AbstractCommentManagerActionsBean implements
         principalIsAdmin = principal.isAdministrator();
     }
 
+    @Override
     @Destroy
     public void destroy() {
         commentMap = null;
         log.debug("Removing Seam action listener...");
     }
 
+    @Override
     public String getPrincipalName() {
         return principal.getName();
     }
 
+    @Override
     public boolean getPrincipalIsAdmin() {
         return principalIsAdmin;
     }
@@ -150,27 +153,6 @@ public abstract class AbstractCommentManagerActionsBean implements
             }
         }
         return comment;
-    }
-
-    public static class FollowTransitionUnrestricted extends
-            UnrestrictedSessionRunner {
-
-        public final DocumentRef docRef;
-
-        public final String transition;
-
-        public FollowTransitionUnrestricted(CoreSession session,
-                DocumentRef docRef, String transition) {
-            super(session);
-            this.docRef = docRef;
-            this.transition = transition;
-        }
-
-        @Override
-        public void run() throws ClientException {
-            session.followTransition(docRef, transition);
-            session.save();
-        }
     }
 
     public DocumentModel addComment(DocumentModel comment,
@@ -218,11 +200,13 @@ public abstract class AbstractCommentManagerActionsBean implements
         }
     }
 
+    @Override
     public DocumentModel addComment(DocumentModel comment)
             throws ClientException {
         return addComment(comment, null);
     }
 
+    @Override
     public String addComment() throws ClientException {
         DocumentModel myComment = documentManager.createDocumentModel("Comment");
 
@@ -235,6 +219,7 @@ public abstract class AbstractCommentManagerActionsBean implements
         return null;
     }
 
+    @Override
     public String createComment(DocumentModel docToComment)
             throws ClientException {
         DocumentModel myComment = documentManager.createDocumentModel("Comment");
@@ -248,6 +233,7 @@ public abstract class AbstractCommentManagerActionsBean implements
         return null;
     }
 
+    @Override
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED }, create = false)
@@ -275,6 +261,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     /**
      * Initializes uiComments with Comments of current document.
      */
+    @Override
     public void initComments() throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
@@ -286,6 +273,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     /**
      * Initializes uiComments with Comments of current document.
      */
+    @Override
     public void initComments(DocumentModel commentedDoc) throws ClientException {
         commentableDoc = getCommentableDoc(commentedDoc);
         if (uiComments == null) {
@@ -317,6 +305,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     /**
      * Recursively retrieves all comments of a doc.
      */
+    @Override
     public List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc)
             throws ClientException {
         List<ThreadEntry> allComments = new ArrayList<ThreadEntry>();
@@ -331,6 +320,7 @@ public abstract class AbstractCommentManagerActionsBean implements
         return allComments;
     }
 
+    @Override
     public List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc)
             throws ClientException {
         if (commentThread != null) {
@@ -382,6 +372,7 @@ public abstract class AbstractCommentManagerActionsBean implements
         return wrapper;
     }
 
+    @Override
     public String deleteComment(String commentId) throws ClientException {
         if ("".equals(commentId)) {
             log.error("No comment id to delete");
@@ -404,18 +395,22 @@ public abstract class AbstractCommentManagerActionsBean implements
         }
     }
 
+    @Override
     public String deleteComment() throws ClientException {
         return deleteComment(deleteCommentId);
     }
 
+    @Override
     public String getNewContent() {
         return newContent;
     }
 
+    @Override
     public void setNewContent(String newContent) {
         this.newContent = newContent;
     }
 
+    @Override
     public String beginComment() {
         commentStarted = true;
         savedReplyCommentId = replyCommentId;
@@ -423,11 +418,13 @@ public abstract class AbstractCommentManagerActionsBean implements
         return null;
     }
 
+    @Override
     public String cancelComment() {
         cleanContextVariable();
         return null;
     }
 
+    @Override
     public boolean getCommentStarted() {
         return commentStarted;
     }
@@ -448,6 +445,7 @@ public abstract class AbstractCommentManagerActionsBean implements
         flatComments.add(comment);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<UIComment> getLastCommentsByDate(String commentNumber,
             DocumentModel commentedDoc) throws ClientException {
@@ -476,35 +474,43 @@ public abstract class AbstractCommentManagerActionsBean implements
         return comments;
     }
 
+    @Override
     public List<UIComment> getLastCommentsByDate(String commentNumber)
             throws ClientException {
         return getLastCommentsByDate(commentNumber, null);
     }
 
+    @Override
     public String getSavedReplyCommentId() {
         return savedReplyCommentId;
     }
 
+    @Override
     public void setSavedReplyCommentId(String savedReplyCommentId) {
         this.savedReplyCommentId = savedReplyCommentId;
     }
 
+    @Override
     public List<Action> getActionsForComment() {
         return webActions.getActionsList(COMMENTS_ACTIONS);
     }
 
+    @Override
     public List<Action> getActionsForComment(String category) {
         return webActions.getActionsList(category);
     }
 
+    @Override
     public boolean getShowCreateForm() {
         return showCreateForm;
     }
 
+    @Override
     public void setShowCreateForm(boolean flag) {
         showCreateForm = flag;
     }
 
+    @Override
     public void toggleCreateForm(ActionEvent event) {
         showCreateForm = !showCreateForm;
     }

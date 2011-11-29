@@ -48,6 +48,12 @@ public final class CommentsConstants {
 
     public static final String COMMENT_LIFECYCLE = "comment_moderation";
 
+    public static final String ACCEPT_CHAIN_NAME = "acceptComment";
+
+    public static final String REJECT_CHAIN_NAME = "rejectComment";
+
+    public static final String MODERATION_DIRECTIVE_NAME = "moderate";
+
     /**
      * Schemas and fields.
      */
@@ -57,5 +63,5 @@ public final class CommentsConstants {
 
     private CommentsConstants() {
     }
-    
+
 }
