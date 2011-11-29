@@ -164,6 +164,8 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertNotNull(pp);
         assertNotNull(pp.getColors());
         assertEquals(9, pp.getColors().size());
+        assertEquals("#cfecff", pp.getColors().get(0));
+        assertEquals("#70bbff", pp.getColors().get(1));
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering.txt");
@@ -178,9 +180,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("666", logo.getHeight());
         assertEquals("Dark Nuxeo", logo.getTitle());
         pp = flavor.getPalettePreview();
-        assertNotNull(pp);
-        assertNotNull(pp.getColors());
-        assertEquals(9, pp.getColors().size());
+        assertNull(pp);
 
         res = getRenderedCssFileContent("subDark");
         expected = getTestFileContent("css_sub_dark_rendering.txt");
@@ -195,9 +195,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("666", logo.getHeight());
         assertEquals("Dark Nuxeo", logo.getTitle());
         pp = flavor.getPalettePreview();
-        assertNotNull(pp);
-        assertNotNull(pp.getColors());
-        assertEquals(9, pp.getColors().size());
+        assertNull(pp);
 
         ResourceManager rm = Manager.getResourceManager();
         List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
