@@ -3,12 +3,6 @@
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
-
-    <genericPageProvider name="user_tasks"
-      class="org.nuxeo.ecm.platform.jbpm.providers.UserTaskPageProvider">
-      <pageSize>20</pageSize>
-    </genericPageProvider>
-
     <genericPageProvider name="user_processes"
       class="org.nuxeo.ecm.platform.jbpm.providers.UserProcessPageProvider">
       <pageSize>20</pageSize>

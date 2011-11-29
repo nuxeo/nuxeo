@@ -21,9 +21,8 @@ package org.nuxeo.ecm.platform.forum.workflow;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
-import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
+import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -33,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestForumWorkflow extends RepositoryOSGITestCase {
 
-    private JbpmService service;
+    private TaskService service;
 
     private UserManager userManager;
 
@@ -43,8 +42,6 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
 
     @Override
     public void setUp() throws Exception {
-        // clean up previous test.
-        JbpmServiceImpl.contexts.set(null);
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.directory");
@@ -52,12 +49,12 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
-        deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
-        deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
+        deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
+        deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
         deployBundle(ForumWorkflowTUConstants.FORUM_CORE_BUNDLE);
         deployBundle(ForumWorkflowTUConstants.FORUM_WORKFLOW_BUNDLE);
 
-        service = Framework.getService(JbpmService.class);
+        service = Framework.getService(TaskService.class);
         userManager = Framework.getService(UserManager.class);
         assertNotNull(userManager);
 

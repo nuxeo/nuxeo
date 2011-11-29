@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM task Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.task.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.platform.task.api

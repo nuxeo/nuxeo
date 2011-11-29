@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.task.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation class="org.nuxeo.ecm.automation.task.CreateTask" />
+    <operation class="org.nuxeo.ecm.automation.task.GetUserTasks" />
+    <operation
+      class="org.nuxeo.ecm.automation.task.UserTaskPageProviderOperation" />
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="automationTaskListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.automation.task.event.TaskEndedEventListener"
+      priority="200">
+      <event>workflowTaskCompleted</event>
+      <event>workflowTaskRejected</event>
+    </listener>
+  </extension>
+
+</component>

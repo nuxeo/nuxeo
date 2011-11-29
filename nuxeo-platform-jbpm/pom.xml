@@ -24,6 +24,7 @@
     <module>nuxeo-platform-jbpm-web</module>
     <module>nuxeo-platform-jbpm-test</module>
     <module>nuxeo-platform-jbpm-automation</module>
+    <module>nuxeo-platform-jbpm-task-migration</module>
   </modules>
 
 </project>

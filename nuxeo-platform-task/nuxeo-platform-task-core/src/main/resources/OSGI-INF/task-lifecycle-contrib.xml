@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.task.lifecycle">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="lifecycle">
+
+    <lifecycle name="task" defaultInitial="opened">
+      <transitions>
+        <transition name="end" destinationState="ended">
+          <description>End the task</description>
+        </transition>
+        <transition name="cancel" destinationState="cancelled">
+          <description>Cancel the task</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="opened" description="Task is open.">
+          <transitions>
+            <transition>end</transition>
+            <transition>cancel</transition>
+          </transitions>
+        </state>
+        <state name="ended" description="task has been ended">
+        </state>
+        <state name="cancelled" description="Task is cancelled">
+        </state>
+      </states>
+    </lifecycle>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="TaskDoc">task</type>
+    </types>
+  </extension>
+
+</component>

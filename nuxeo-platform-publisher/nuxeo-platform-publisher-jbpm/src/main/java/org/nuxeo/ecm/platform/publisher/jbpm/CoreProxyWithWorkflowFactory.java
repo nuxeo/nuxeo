@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,9 +42,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
-import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
@@ -55,6 +51,7 @@ import org.nuxeo.ecm.platform.publisher.impl.core.CoreFolderPublicationNode;
 import org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -68,9 +65,9 @@ import org.nuxeo.runtime.api.Framework;
 public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         PublishedDocumentFactory {
 
-    public static final String TASK_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
+    public static final String TASK_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
 
-    public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
+    public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
 
     protected JbpmService jbpmService;
 
@@ -168,9 +165,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 prefixedActorIds.toArray(new String[prefixedActorIds.size()]));
         try {
             getEventProducer().fireEvent(
-                    ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
+                    ctx.newEvent(TaskEventNames.WORKFLOW_TASK_ASSIGNED));
             getEventProducer().fireEvent(
-                    ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_START));
+                    ctx.newEvent(TaskEventNames.WORKFLOW_TASK_START));
         } catch (ClientException e) {
             throw new PublishingException(e);
         }

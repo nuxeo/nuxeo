@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.forum.web;
 
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,8 +39,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.ecm.automation.task.CreateTask;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -54,13 +52,14 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
-import org.nuxeo.ecm.platform.forum.workflow.GetModerationTaskOperation;
-import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
-import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
+import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
+import org.nuxeo.ecm.platform.task.TaskQueryConstant;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -93,7 +92,7 @@ public class PostActionBean implements PostAction {
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected transient JbpmService jbpmService;
+    protected transient TaskService taskService;
 
     @In(required = false)
     protected RepositoryLocation currentServerLocation;
@@ -119,6 +118,7 @@ public class PostActionBean implements PostAction {
 
     protected Blob fileContent;
 
+    @Override
     public boolean checkWritePermissionOnThread() {
         try {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -146,6 +146,7 @@ public class PostActionBean implements PostAction {
      * Adds the post to the thread and starts the moderation WF on the post
      * created.
      */
+    @Override
     public String addPost() throws ClientException {
         DocumentModel dm = documentManager.createDocumentModel("Post");
 
@@ -222,6 +223,7 @@ public class PostActionBean implements PostAction {
         return navigationContext.navigateToDocument(getParentThread());
     }
 
+    @Override
     public String cancelPost() throws ClientException {
         cleanContextVariables();
         commentManagerActions.cancelComment();
@@ -229,6 +231,7 @@ public class PostActionBean implements PostAction {
         return navigationContext.navigateToDocument(getParentThread());
     }
 
+    @Override
     public String deletePost() throws ClientException {
         if (deletePostId == null) {
             throw new ClientException("No id for post to delete");
@@ -239,31 +242,31 @@ public class PostActionBean implements PostAction {
 
         if (threadAction.isThreadModerated(thread)
                 && ForumConstants.PENDING_STATE.equals(post.getCurrentLifeCycleState())) {
-            ProcessInstance process = getModerationProcess(thread, deletePostId);
-            if (process != null) {
-                jbpmService.endProcessInstance(process.getId());
+            Task task = getModerationTask(thread, deletePostId);
+            if (task != null) {
+                taskService.deleteTaskInstance(documentManager, task.getId());
             }
         }
         commentManagerActions.deleteComment(deletePostId);
 
         fetchInvalidationsIfNeeded();
-        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_ENDED);
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_ENDED);
 
         return navigationContext.navigateToDocument(getParentThread());
     }
 
+    @Override
     public String rejectPost(DocumentModel post) throws ClientException {
         DocumentModel thread = getParentThread();
 
-        TaskInstance moderationTask = getModerationTask(thread, post.getId());
+        Task moderationTask = getModerationTask(thread, post.getId());
         if (moderationTask == null) {
             throw new ClientException("No moderation task found");
         }
 
-        jbpmService.endTask(moderationTask.getId(),
-                ForumConstants.PROCESS_TRANSITION_TO_REJECTED, null, null, null, (NuxeoPrincipal) currentUser);
+        taskService.rejectTask(documentManager, (NuxeoPrincipal) currentUser, moderationTask, null);
 
-        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
@@ -276,18 +279,18 @@ public class PostActionBean implements PostAction {
     /**
      * Ends the task on a post.
      */
+    @Override
     public String approvePost(DocumentModel post) throws ClientException {
         DocumentModel thread = getParentThread();
 
-        TaskInstance moderationTask = getModerationTask(thread, post.getId());
+        Task moderationTask = getModerationTask(thread, post.getId());
         if (moderationTask == null) {
             throw new ClientException("No moderation task found");
         }
+        taskService.acceptTask(documentManager, (NuxeoPrincipal) currentUser,
+                moderationTask, null);
 
-        jbpmService.endTask(moderationTask.getId(),
-                ForumConstants.PROCESS_TRANSITION_TO_PUBLISH, null, null, null, (NuxeoPrincipal)currentUser);
-
-        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
@@ -297,10 +300,12 @@ public class PostActionBean implements PostAction {
         return navigationContext.navigateToDocument(getParentThread());
     }
 
+    @Override
     public DocumentModel getParentThread() {
         return navigationContext.getCurrentDocument();
     }
 
+    @Override
     public boolean isPostPublished(DocumentModel post) throws ClientException {
         boolean published = false;
         if (post != null
@@ -317,43 +322,47 @@ public class PostActionBean implements PostAction {
     protected void startModeration(DocumentModel post) throws ClientException {
 
         DocumentModel thread = getParentThread();
-        ArrayList<String> moderators = (ArrayList<String>) thread.getProperty(
+        List<String> moderators = (ArrayList<String>) thread.getProperty(
                 "thread", "moderators");
 
         if (moderators == null || moderators.isEmpty()) {
             throw new ClientException("No moderators defined");
         }
 
-        Map<String, Serializable> vars = new HashMap<String, Serializable>();
-        vars.put(VariableName.participants.name(), moderators);
+        Map<String, String> vars = new HashMap<String, String>();
         vars.put(ForumConstants.COMMENT_ID, post.getId());
-        jbpmService.createProcessInstance((NuxeoPrincipal) currentUser,
-                ForumConstants.PROCESS_INSTANCE_NAME, thread, vars, null);
-        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_NEW_STARTED);
+        vars.put(
+                CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
+                "true");
+        vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
+                CommentsConstants.ACCEPT_CHAIN_NAME);
+        vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
+                CommentsConstants.REJECT_CHAIN_NAME);
 
-    }
+        taskService.createTask(documentManager, (NuxeoPrincipal) currentUser,
+                thread, ForumConstants.MODERATION_TASK_NAME, moderators,
+                false, null, null, null, vars, null);
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
 
-    protected ProcessInstance getModerationProcess(DocumentModel thread,
-            String postId) throws ClientException {
-        List<ProcessInstance> processes = jbpmService.getProcessInstances(
-                thread, (NuxeoPrincipal) currentUser, new ForumWorkflowFilter(
-                        postId));
-        if (processes != null && !processes.isEmpty()) {
-            if (processes.size() > 1) {
-                log.error("There are several moderation workflows running, "
-                        + "taking only first found");
-            }
-            return processes.get(0);
-        }
-        return null;
     }
 
     @SuppressWarnings("unchecked")
-    protected TaskInstance getModerationTask(DocumentModel thread, String postId)
+    protected Task getModerationTask(DocumentModel thread, String postId)
             throws ClientException {
-        ProcessInstance process = getModerationProcess(thread, postId);
-        GetModerationTaskOperation operation = new GetModerationTaskOperation(process.getId());
-        return (TaskInstance) jbpmService.executeJbpmOperation(operation);
+        String query = TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_QUERY;
+        query = String.format(query, thread.getId());
+        String commentWhereClause = TaskQueryConstant.getVariableWhereClause(ForumConstants.COMMENT_ID, postId);
+        List<DocumentModel> tasks = documentManager.query(String.format("%s AND %s", query, commentWhereClause));
+
+        if (tasks != null && !tasks.isEmpty()) {
+            if (tasks.size() > 1) {
+                log.error("There are several moderation workflows running, "
+                        + "taking only first found");
+            }
+            Task task = tasks.get(0).getAdapter(Task.class);
+            return task;
+        }
+        return null;
     }
 
     protected void cleanContextVariables() {
@@ -365,26 +374,32 @@ public class PostActionBean implements PostAction {
 
     // getters/setters
 
+    @Override
     public String getText() {
         return text;
     }
 
+    @Override
     public void setText(String text) {
         this.text = text;
     }
 
+    @Override
     public String getFilename() {
         return filename;
     }
 
+    @Override
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    @Override
     public Blob getFileContent() {
         return fileContent;
     }
 
+    @Override
     public void setFileContent(Blob fileContent) {
         this.fileContent = fileContent;
     }
@@ -394,6 +409,7 @@ public class PostActionBean implements PostAction {
      * created reply to a previous post, the title of the new post comes with
      * the previous title, and a prefix (i.e : Re : Previous Title).
      */
+    @Override
     public String getTitle() throws ClientException {
 
         String previousId = commentManagerActions.getSavedReplyCommentId();
@@ -413,6 +429,7 @@ public class PostActionBean implements PostAction {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }

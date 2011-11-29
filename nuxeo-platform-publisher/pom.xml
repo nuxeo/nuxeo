@@ -16,7 +16,7 @@
     <module>nuxeo-platform-publisher-api</module>
     <module>nuxeo-platform-publisher-core</module>
     <module>nuxeo-platform-publisher-core-contrib</module>
-    <module>nuxeo-platform-publisher-jbpm</module>
+    <module>nuxeo-platform-publisher-task</module>
     <module>nuxeo-platform-publisher-web</module>
   </modules>
 

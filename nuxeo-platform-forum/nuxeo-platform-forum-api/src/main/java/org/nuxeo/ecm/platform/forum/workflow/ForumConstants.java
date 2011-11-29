@@ -42,6 +42,8 @@ public final class ForumConstants {
     public static final String PROCESS_TRANSITION_TO_PUBLISH = "moderation_publish";
     public static final String PROCESS_TRANSITION_TO_REJECTED = "moderation_reject";
 
+    public static final String MODERATION_TASK_NAME = "moderate";
+
     // Constant utility class.
     private ForumConstants() {
     }

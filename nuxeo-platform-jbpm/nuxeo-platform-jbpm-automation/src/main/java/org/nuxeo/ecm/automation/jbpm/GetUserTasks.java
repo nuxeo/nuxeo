@@ -49,7 +49,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
         + "Task properties are serialized using JSON and returned in a Blob.")
 public class GetUserTasks {
 
-    public static final String ID = "Workflow.GetTask";
+    public static final String ID = "Workflow.GetJBPMTask";
 
     private static final Log log = LogFactory.getLog(Log.class);
 
