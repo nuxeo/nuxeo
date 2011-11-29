@@ -10,7 +10,9 @@
   class="deliveryBlock">
 
   <a4j:form>
-    <c:if test="#{!damDocumentActions.currentSelection.hasSchema('file') and damDocumentActions.currentSelection.hasSchema('picture')}">
+    <nxu:set var="currentSelection" value="#{damDocumentActions.currentSelection}">
+
+    <c:if test="#{currentSelection.hasFacet('Picture')}">
     <fieldset>
       <legend><h:outputText value="#{messages['label.delivery.intro.url']}" /></legend>
       <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
@@ -46,7 +48,7 @@
     </fieldset>
     </c:if>
 
-    <c:if test="#{damDocumentActions.currentSelection.hasSchema('file')}">
+    <c:if test="#{currentSelection.hasSchema('file') and !currentSelection.hasFacet('Picture')}">
       <fieldset>
       <legend><h:outputText value="#{messages['label.delivery.intro.download']}" /></legend>
       <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
@@ -61,7 +63,7 @@
       </fieldset>
     </c:if>
 
-
+    </nxu:set>
   </a4j:form>
 
 </div>
