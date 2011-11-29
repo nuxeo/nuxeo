@@ -38,6 +38,7 @@ import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.impl.task.commands.Append;
 import org.nuxeo.connect.update.impl.task.commands.Command;
+import org.nuxeo.connect.update.impl.task.commands.Config;
 import org.nuxeo.connect.update.impl.task.commands.Copy;
 import org.nuxeo.connect.update.impl.task.commands.Delete;
 import org.nuxeo.connect.update.impl.task.commands.Deploy;
@@ -157,6 +158,7 @@ public class UpdateServiceImpl implements PackageUpdateService {
         addCommand(UndeployConfig.ID, UndeployConfig.class);
         addCommand(LoadJar.ID, LoadJar.class);
         addCommand(UnloadJar.ID, UnloadJar.class);
+        addCommand(Config.ID, Config.class);
         startInstalledPackages();
     }
 

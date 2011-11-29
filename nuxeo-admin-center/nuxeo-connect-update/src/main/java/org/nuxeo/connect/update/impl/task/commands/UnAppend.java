@@ -49,7 +49,7 @@ public class UnAppend extends AbstractCommand {
     private File fromFile;
 
     public UnAppend() {
-        super(ID);
+        this(ID);
     }
 
     protected UnAppend(String id) {
