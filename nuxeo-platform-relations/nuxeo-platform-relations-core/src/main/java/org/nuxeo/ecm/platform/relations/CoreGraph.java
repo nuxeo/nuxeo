@@ -479,7 +479,7 @@ public class CoreGraph implements Graph {
 
         protected QNameResource createId(String id) {
             return NodeFactory.createQNameResource(DOCUMENT_NAMESPACE,
-                    repositoryName + '/' + id);
+                    session.getRepositoryName() + '/' + id);
         }
 
         protected Node createUri(String uri) {
@@ -620,7 +620,8 @@ public class CoreGraph implements Graph {
                 clauses.add(REL_SOURCE_ID + " = ?");
                 params.add(nas.id);
                 clauses.add(REL_TARGET_URI + " = ?");
-                params.add(DOCUMENT_NAMESPACE + repositoryName + '/' + nas.id);
+                params.add(DOCUMENT_NAMESPACE + session.getRepositoryName()
+                        + '/' + nas.id);
             } else if (nas.uri != null) {
                 for (String ns : DOC_NAMESPACES) {
                     if (nas.uri.startsWith(ns)) {
