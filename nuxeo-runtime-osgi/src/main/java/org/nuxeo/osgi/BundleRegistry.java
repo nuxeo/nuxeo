@@ -22,6 +22,7 @@ package org.nuxeo.osgi;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -46,7 +47,7 @@ public class BundleRegistry {
 
     public BundleRegistry() {
         bundlesById = new HashMap<Long, BundleRegistration>();
-        bundles = new HashMap<String, BundleRegistration>();
+        bundles = new LinkedHashMap<String, BundleRegistration>();
         pendings = new HashMap<String, Set<BundleRegistration>>();
     }
 
