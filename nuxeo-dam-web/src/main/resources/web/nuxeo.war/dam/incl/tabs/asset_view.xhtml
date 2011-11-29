@@ -40,10 +40,10 @@
             </f:subview>
 
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-            <nxl:widgetType name="summary_video_player" mode="view" value="#{damDocumentActions.currentSelection}" />
+            <nxl:widgetType name="video_player" mode="view" value="#{damDocumentActions.currentSelection}" />
           </f:subview>
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('audio')}">
-            <nxl:widgetType name="summary_audio_player" mode="view"
+            <nxl:widgetType name="audio_player" mode="view"
               value="#{damDocumentActions.currentSelection}" field="file:content" />
          </f:subview>
        </td>
@@ -71,7 +71,7 @@
       </div>
 
       <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-        <nxl:widgetType name="summary_video_storyboard" mode="view" value="#{damDocumentActions.currentSelection}" />
+        <nxl:widgetType name="video_storyboard" mode="view" value="#{damDocumentActions.currentSelection}" />
       </f:subview>
 
       <div class="togglePanel">
