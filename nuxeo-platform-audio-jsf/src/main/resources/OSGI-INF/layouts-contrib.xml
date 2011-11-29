@@ -6,7 +6,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
-    <widgetType name="summary_audio_player">
+    <widgetType name="audio_player">
       <configuration>
         <sinceVersion>5.5</sinceVersion>
         <title>Audio Player</title>
@@ -14,7 +14,7 @@
           <p>This widgets displays a html5 or flash audio player</p>
         </description>
         <categories>
-          <category>summary</category>
+          <category>configuration_not_ready</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
@@ -25,7 +25,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/summary/audio_player_widget_template.xhtml
+        /widgets/audio_player_widget_template.xhtml
       </property>
     </widgetType>
 
@@ -34,7 +34,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="summary_audio_player" type="summary_audio_player">
+    <widget name="summary_audio_player" type="audio_player">
       <fields>
         <field>file:content</field>
       </fields>
