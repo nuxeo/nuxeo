@@ -72,10 +72,10 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
   font-size: .9em;
   font-weight: bold;
   margin-right: .9em;
-  padding: .4em .7em;
+  padding: .25em .7em .5em;
   text-decoration:none }
 .action_bar a:hover { background: none "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)" }
-.action_bar a img { margin: 0 .3em -0.2em -0.4em }
+.action_bar a img { margin: 0 .2em -0.2em -0.4em }
 
 .listingLayoutSelector { float: right; margin: 1.1em 0 1em .7em; text-align: right }
 .listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 .4em 0 0 }
