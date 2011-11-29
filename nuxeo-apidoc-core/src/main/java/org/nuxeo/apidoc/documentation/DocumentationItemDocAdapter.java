@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,7 +33,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
-public class DocumentationItemDocAdapter implements DocumentationItem {
+public class DocumentationItemDocAdapter extends AbstractDocumentationItem implements DocumentationItem {
 
     protected static final Log log = LogFactory.getLog(DocumentationItemDocAdapter.class);
 

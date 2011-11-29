@@ -24,6 +24,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -84,6 +85,7 @@ public class TestSearcher extends SQLRepositoryTestCase {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());
         }
 
+        CoreInstance.getInstance().close(session);
     }
 
 }

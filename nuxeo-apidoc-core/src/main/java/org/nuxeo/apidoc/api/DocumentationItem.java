@@ -19,7 +19,7 @@ package org.nuxeo.apidoc.api;
 import java.util.List;
 import java.util.Map;
 
-public interface DocumentationItem {
+public interface DocumentationItem extends Comparable<DocumentationItem> {
 
     String TYPE_NAME = "NXDocumentation";
 

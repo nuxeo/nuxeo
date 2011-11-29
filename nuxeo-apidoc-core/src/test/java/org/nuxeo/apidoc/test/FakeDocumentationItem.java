@@ -19,9 +19,10 @@ package org.nuxeo.apidoc.test;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
 
-public class FakeDocumentationItem implements DocumentationItem {
+public class FakeDocumentationItem extends AbstractDocumentationItem implements DocumentationItem {
 
     public List<String> applicableVersion;
 

@@ -11,7 +11,6 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
       <facet name="Folderish"/>
     </doctype>
 
@@ -24,7 +23,6 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
       <facet name="Folderish"/>
     </doctype>
 
@@ -36,7 +34,6 @@
       <schema name="nxbundle" />
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
       <facet name="Folderish"/>
     </doctype>
 
@@ -47,7 +44,6 @@
       <schema name="nxcomponent" />
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
       <facet name="Folderish"/>
     </doctype>
 
@@ -59,7 +55,6 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
       <facet name="Folderish"/>
     </doctype>
 
@@ -71,7 +66,6 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
     </doctype>
 
     <doctype name="NXService" extends="Document">
@@ -82,7 +76,6 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
     </doctype>
 
     <doctype name="NXSeamComponent" extends="Document">
@@ -93,7 +86,6 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
     </doctype>
 
     <doctype name="NXOperation" extends="Document">
@@ -104,7 +96,6 @@
       <schema name="nxoperation" />
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
     </doctype>
 
     <doctype name="NXDocumentation" extends="Document">
@@ -115,7 +106,6 @@
       <schema name="nxdocumentation" />
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Indexable" />
     </doctype>
 
   </extension>

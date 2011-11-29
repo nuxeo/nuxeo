@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -95,7 +96,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
             }
         }
 
-        return new DocumentationItem() {
+        return new AbstractDocumentationItem() {
 
             @Override
             public boolean isApproved() {

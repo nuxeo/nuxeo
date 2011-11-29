@@ -268,6 +268,10 @@ public class DocumentationComponent extends DefaultComponent implements
                 result.add(docItem);
             }
         }
+
+        Collections.sort(result);
+        Collections.reverse(result);
+
         return result;
     }
 
@@ -280,6 +284,7 @@ public class DocumentationComponent extends DefaultComponent implements
                 + QueryHelper.quoted(id) + " AND "
                 + DocumentationItem.PROP_TARGET_TYPE + " = "
                 + QueryHelper.quoted(type) + " AND " + QueryHelper.NOT_DELETED;
+        query += " ORDER BY dc:created";
         return session.query(query);
     }
 
