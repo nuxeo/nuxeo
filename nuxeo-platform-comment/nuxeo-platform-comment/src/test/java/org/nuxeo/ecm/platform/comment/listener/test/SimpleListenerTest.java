@@ -41,16 +41,9 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.comment.api");
-        // deployBundle("org.nuxeo.ecm.platform.comment");
-        deployBundle("org.nuxeo.ecm.platform.comment.core");
-
-        deployContrib("org.nuxeo.ecm.platform.comment",
-                "OSGI-INF/CommentService.xml");
-        deployContrib("org.nuxeo.ecm.platform.comment",
-                "OSGI-INF/comment-listener-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.comment");
         deployContrib("org.nuxeo.ecm.platform.comment.tests",
                 "OSGI-INF/comment-jena-contrib.xml");
-
         openRepository();
     }
 

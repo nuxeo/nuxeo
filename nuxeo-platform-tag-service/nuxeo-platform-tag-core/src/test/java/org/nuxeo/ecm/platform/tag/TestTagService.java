@@ -48,7 +48,7 @@ public class TestTagService extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.comment.core");
+        deployBundle("org.nuxeo.ecm.platform.comment");
         deployBundle("org.nuxeo.ecm.platform.tag");
         deployBundle("org.nuxeo.ecm.platform.ws");
         deployTestContrib("org.nuxeo.ecm.platform.tag",

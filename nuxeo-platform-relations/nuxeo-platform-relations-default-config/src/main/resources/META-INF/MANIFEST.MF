@@ -4,4 +4,5 @@ Bundle-Name: Nuxeo ECM Relations Default Configuration
 Bundle-SymbolicName: org.nuxeo.ecm.relations.default.config;singleton:=true
 Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.directory.sql
-Nuxeo-Component: OSGI-INF/directories-contrib.xml
+Nuxeo-Component: OSGI-INF/directories-contrib.xml,
+ OSGI-INF/graph-contrib.xml

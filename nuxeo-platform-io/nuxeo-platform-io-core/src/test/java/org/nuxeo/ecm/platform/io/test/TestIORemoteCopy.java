@@ -120,11 +120,11 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
                 "JBossLoginConfig.xml");
         // donnot : deployContrib("StreamingServer.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "nxrelations.xml");
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
-                "nxrelations-default-jena-bundle.xml");
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
-                "nxrelations-jena-plugin.xml");
+        deployBundle("org.nuxeo.ecm.relations.api");
+        deployBundle("org.nuxeo.ecm.relations");
+        deployBundle("org.nuxeo.ecm.relations.jena");
+        deployBundle("org.nuxeo.ecm.platform.comment.api");
+        deployBundle("org.nuxeo.ecm.platform.comment");
 
         InitialContext ctx1 = new InitialContext();
         System.err.println(ctx1.lookup("java:/comment-relations"));
@@ -134,10 +134,6 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
             System.err.println(o);
         }
 
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
-                "comment-schemas-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
-                "CommentService.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests",
                 "commentService-config-bundle.xml");
 

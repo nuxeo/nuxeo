@@ -1,27 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.comment.service.CommentServiceConfig">
 
-  <documentation>
-    This component gives the user the possibility to add comments to documents.
-  </documentation>
-
-  <extension target="org.nuxeo.ecm.platform.comment.service.CommentService"
-    point="config">
-    <config>
-      <converterClass>
-        org.nuxeo.ecm.platform.comment.impl.CommentConverterImpl
-      </converterClass>
-      <graphName>documentComments</graphName>
-      <!-- XXX AT: these namespaces should have an ending slash -->
-      <commentNamespace>http://www.nuxeo.org/comments/uid</commentNamespace>
-      <documentNamespace>http://www.nuxeo.org/document/uid</documentNamespace>
-      <predicateNamespace>
-        http://www.nuxeo.org/predicates/isCommentFor
-      </predicateNamespace>
-    </config>
-  </extension>
-
-  <!-- relation graph -->
+  <!-- memory graph -->
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
     point="graphs">
     <graph name="documentComments" type="jena">

@@ -41,6 +41,8 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
 
     protected static final String COMMENTS_GRAPH_NAME = "documentComments";
 
+    protected static final String DOCUMENT_NAMESPACE_NOSLASH = "http://www.nuxeo.org/document/uid";
+
     protected DocumentModel doc1;
 
     protected DocumentModel doc2;
@@ -59,9 +61,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.relations.core.listener");
         deployBundle("org.nuxeo.ecm.platform.comment.api");
-        deployBundle("org.nuxeo.ecm.platform.comment.core");
-        deployContrib("org.nuxeo.ecm.platform.comment",
-                "OSGI-INF/CommentService.xml");
+        deployBundle("org.nuxeo.ecm.platform.comment");
         deployBundle("org.nuxeo.ecm.platform.relations.core.listener.tests");
         openSession();
 
@@ -88,6 +88,12 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         doc2 = session.createDocument(doc2);
 
         session.save();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     protected void addSomeComments(DocumentModel docToComment) throws Exception {
@@ -172,7 +178,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         // add some real document relations (like those from the Relations tab
         // in DM
         Resource publishedResource = relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, publishedProxy, null);
+                DOCUMENT_NAMESPACE_NOSLASH, publishedProxy, null);
         addSomeRelations(publishedResource);
 
         // publish again
@@ -180,22 +186,20 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         session.save();
 
         // check that the old relations are still there
-        List<Statement> statements = relationManager.getGraphByName(
-                RelationConstants.GRAPH_NAME).getStatements(publishedResource,
-                null, null);
+        Graph defaultGraph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+        List<Statement> statements = defaultGraph.getStatements(
+                publishedResource, null, null);
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
-        statements = relationManager.getGraphByName(
-                RelationConstants.GRAPH_NAME).getStatements(null, null,
-                publishedResource);
+        statements = defaultGraph.getStatements(null, null, publishedResource);
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
         // previous comments are still there, but not the comments from the
         // source document
-        List<Statement> comments = relationManager.getGraphByName(
-                COMMENTS_GRAPH_NAME).getStatements(null, null,
+        Graph commentGraph = relationManager.getGraphByName(COMMENTS_GRAPH_NAME);
+        List<Statement> comments = commentGraph.getStatements(null, null,
                 publishedResource);
         assertNotNull(comments);
         assertEquals(2, comments.size());

@@ -177,10 +177,11 @@ public class RelationService extends DefaultComponent implements
                 graphFactories.remove(name);
                 graphRegistry.remove(name);
                 graphDescriptions.remove(name);
+                log.info("Unregistered graph: " + name);
             }
         }
         graphTypes.remove(graphType);
-        log.debug("Unregistered graph type: " + graphType);
+        log.info("Unregistered graph type: " + graphType);
     }
 
     public List<String> getGraphTypes() {
@@ -205,7 +206,7 @@ public class RelationService extends DefaultComponent implements
             graphDescriptions.remove(name);
         }
         graphDescriptions.put(name, graphDescription);
-        log.info(String.format("Graph %s registered", name));
+        log.info("Registered graph: " + name);
 
         // remove any existing graph instance in case its definition changed
         graphRegistry.remove(name);
@@ -217,15 +218,12 @@ public class RelationService extends DefaultComponent implements
     protected void unregisterGraph(Object contribution) {
         GraphDescription graphDescription = (GraphDescription) contribution;
         String name = graphDescription.getName();
-        GraphDescription registeredGraphDef = graphDescriptions.get(name);
-        if (registeredGraphDef == null) {
-            log.error(String.format("Graph %s not found", name));
-        } else {
+        if (graphDescriptions.containsKey(name)) {
+            graphFactories.remove(name);
+            graphRegistry.remove(name);
             graphDescriptions.remove(name);
-            log.info(String.format("Graph %s unregistered", name));
+            log.info("Unregistered graph: " + name);
         }
-        // remove any existing graph instance
-        graphRegistry.remove(name);
     }
 
     // Resource adapters
@@ -292,7 +290,7 @@ public class RelationService extends DefaultComponent implements
     @Override
     public Graph getGraph(String name, CoreSession session) {
         GraphDescription graphDescription = graphDescriptions.get(name);
-        if (name == null) {
+        if (graphDescription == null) {
             throw new RuntimeException("No such graph: " + name);
         }
 
