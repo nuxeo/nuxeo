@@ -102,7 +102,7 @@ def git_fetch(module, branch, base_url):
             alias = remote_alias
             break
     if alias is None:
-        raise ValueError("Failed to find remote repo alias for " + repo_url)
+        raise ValueError("Failed to find remote repository alias for " + repo_url)
     else:
         log("Using alias '%s' for %s" % (alias, repo_url))
 
@@ -177,7 +177,7 @@ for line in lines:
     hg_addons.append(hg_addon)
 #log(hg_addons)
 
-log("Using maven instrospection of the pom.xml files"
+log("Using maven introspection of the pom.xml files"
     " to find the list of addons")
 all_lines = os.popen("mvn -N help:effective-pom").readlines()
 all_lines += os.popen("mvn -N help:effective-pom -f pom-optionals.xml").readlines()
