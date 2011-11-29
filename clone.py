@@ -108,25 +108,25 @@ def git_fetch(module, branch, base_url):
 
     # check whether we should use a specific branch or the master
     # (assumed to be the main development branch for git repos)
-    if branch not in check_output(["git", "ls-remote", alias]).split():
+    if branch not in check_output(["git", "ls-remote", alias]).split("/"):
         log(branch + " not found on remote repo: fallback on master.")
         branch = "master"
 
-    # fetch the changeset for the detected branch from the right remote repo
-    #log("Fetching remote changeset for %s with branch %s " % (module, branch))
-    #system("git fetch %s %s" % (alias, branch))
-
-    # create the local branch if missing or reuse local branch
-    if branch not in check_output(["git", "branch"]).split():
+    # the branch is a tag name
+    if branch in check_output(["git", "tag"]).split():
+        log("Checking out tag %s" % branch)
+        system("git checkout %s" % branch)
+    # create the local branch if missing
+    elif branch not in check_output(["git", "branch"]).split():
         log("Checking out new local branch %s" % branch)
         system("git checkout -b %s %s/%s" % (branch, alias, branch))
+    # reuse local branch
     else:
         log("Checking out existing local branch %s" % branch)
         system("git checkout %s" % branch)
+        log("Updating branch")
+        system("git pull %s" % alias)
 
-    # update branch
-    log("Updating branch")
-    system("git pull %s" % alias)
     os.chdir(cwd)
     log("")
 
@@ -145,7 +145,9 @@ long_path_workaround_init()
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
-    branch = check_output(["hg", "id", "-b"])
+    branch, tag = check_output(["hg", "id", "-bt"]).split()
+    if tag != "tip":
+        branch = tag
 
 log("Cloning/updating addons pom")
 system("hg pull")
