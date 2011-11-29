@@ -15,24 +15,20 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.ecm.platform.publisher.jbpm;
+package org.nuxeo.ecm.platform.publisher.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -51,7 +47,9 @@ import org.nuxeo.ecm.platform.publisher.impl.core.CoreFolderPublicationNode;
 import org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -69,7 +67,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
 
-    protected JbpmService jbpmService;
+    protected TaskService taskService;
 
     protected UserManager userManager;
 
@@ -128,41 +126,22 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     protected void createTask(DocumentModel document, CoreSession session,
             NuxeoPrincipal principal) throws PublishingValidatorException,
-            NuxeoJbpmException, PublishingException {
-        TaskInstance ti = new TaskInstance();
+            ClientException, PublishingException {
         String[] actorIds = getValidatorsFor(document);
-        List<String> prefixedActorIds = new ArrayList<String>();
-        for (String s : actorIds) {
-            if (s.contains(":")) {
-                prefixedActorIds.add(s);
-            } else {
-                UserManager userManager = getUserManager();
-                String prefix;
-                try {
-                    prefix = userManager.getPrincipal(s) == null ? NuxeoGroup.PREFIX
-                            : NuxeoPrincipal.PREFIX;
-                } catch (ClientException e) {
-                    throw new ClientRuntimeException(e);
-                }
-                prefixedActorIds.add(prefix + s);
-            }
-        }
-        ti.setPooledActors(prefixedActorIds.toArray(new String[prefixedActorIds.size()]));
-        Map<String, Serializable> variables = new HashMap<String, Serializable>();
-        variables.put(JbpmService.VariableName.documentId.name(),
+        Map<String, String> variables = new HashMap<String, String>();
+        variables.put(TaskService.VariableName.documentId.name(),
                 document.getId());
-        variables.put(JbpmService.VariableName.documentRepositoryName.name(),
+        variables.put(TaskService.VariableName.documentRepositoryName.name(),
                 document.getRepositoryName());
-        variables.put(JbpmService.VariableName.initiator.name(),
+        variables.put(TaskService.VariableName.initiator.name(),
                 principal.getName());
-        ti.setVariables(variables);
-        ti.setName(TASK_NAME);
-        ti.setCreate(new Date());
-        getJbpmService().saveTaskInstances(Collections.singletonList(ti));
+
+        getTaskService().createTask(session, principal, document, TASK_NAME,
+                Arrays.asList(actorIds), false, TASK_NAME, null, null, variables, null);
         DocumentEventContext ctx = new DocumentEventContext(session, principal,
                 document);
         ctx.setProperty(NotificationConstants.RECIPIENTS_KEY,
-                prefixedActorIds.toArray(new String[prefixedActorIds.size()]));
+                actorIds);
         try {
             getEventProducer().fireEvent(
                     ctx.newEvent(TaskEventNames.WORKFLOW_TASK_ASSIGNED));
@@ -185,16 +164,16 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return userManager;
     }
 
-    protected JbpmService getJbpmService() {
-        if (jbpmService == null) {
+    protected TaskService getTaskService() {
+        if (taskService == null) {
             try {
-                jbpmService = Framework.getService(JbpmService.class);
+                taskService = Framework.getService(TaskService.class);
             } catch (Exception e) {
                 throw new IllegalStateException(
-                        "Jbpm service is not deployed.", e);
+                        "Task service is not deployed.", e);
             }
         }
-        return jbpmService;
+        return taskService;
     }
 
     @Override
@@ -203,8 +182,23 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
         try {
-            ProxyCleaner proxyCleaner = new ProxyCleaner(coreSession, proxy);
-            proxyCleaner.runUnrestricted();
+
+            DocumentModel sourceVersion = coreSession.getSourceDocument(proxy.getRef());
+            DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
+            DocumentModelList brothers = coreSession.getProxies(dm.getRef(),
+                    proxy.getParentRef());
+            if (brothers != null && brothers.size() > 1) {
+                // we remove the brothers of the published document if any
+                // the use case is:
+                // v1 is published, v2 is waiting for publication and was just
+                // validated
+                // v1 is removed and v2 is now being published
+                for (DocumentModel doc : brothers) {
+                    if (!doc.getId().equals(proxy.getId())) {
+                        coreSession.removeDocument(doc.getRef());
+                    }
+                }
+            }
         } catch (ClientException e1) {
             throw new PublishingException(e1.getMessage(), e1);
         }
@@ -236,14 +230,14 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             CoreSession session, String comment, PublishingEvent event)
             throws PublishingException {
         try {
-            List<TaskInstance> tis = getJbpmService().getTaskInstances(
-                    document, currentUser, null);
+            List<Task> tis = getTaskService().getTaskInstances(
+                    document, (NuxeoPrincipal) null, session);
             String initiator = null;
-            for (TaskInstance ti : tis) {
-                if (ti.getName().equals(TASK_NAME)) {
-                    initiator = (String) ti.getVariable(JbpmService.VariableName.initiator.name());
-                    ti.end();
-                    jbpmService.saveTaskInstances(Collections.singletonList(ti));
+            for (Task task : tis) {
+                if (task.getName().equals(TASK_NAME)) {
+                    initiator = (String) task.getVariable(TaskService.VariableName.initiator.name());
+                    task.end(session);
+                    session.saveDocument(task.getDocument());
                     break;
                 }
             }
@@ -257,8 +251,6 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             }
             notifyEvent(event.name(), properties, comment, null,
                     runner.liveDocument, session);
-        } catch (NuxeoJbpmException e) {
-            throw new PublishingException(e);
         } catch (ClientException ce) {
             throw new PublishingException(ce);
         }
@@ -306,16 +298,16 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
-            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
-                    (NuxeoPrincipal) null, null);
-            for (TaskInstance ti : tis) {
-                if (ti.getName().equals(TASK_NAME)) {
+            List<Task> tasks = getTaskService().getTaskInstances(proxy,
+                    (NuxeoPrincipal) null, coreSession);
+            for (Task task : tasks) {
+                if (task.getName().equals(TASK_NAME)) {
                     // if there is a task on this doc, then it is not yet
                     // published
                     return false;
                 }
             }
-        } catch (NuxeoJbpmException e) {
+        } catch (ClientException e) {
             throw new PublishingException(e);
         }
         return true;
@@ -333,14 +325,13 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             NuxeoPrincipal currentUser) throws ClientException {
         assert currentUser != null;
         try {
-            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
-                    currentUser, null);
-            for (TaskInstance ti : tis) {
-                if (ti.getName().equals(TASK_NAME)) {
+            List<Task> tasks = getTaskService().getTaskInstances(proxy, (NuxeoPrincipal) null , coreSession);
+            for (Task task : tasks) {
+                if (task.getName().equals(TASK_NAME)) {
                     return true;
                 }
             }
-        } catch (NuxeoJbpmException e) {
+        } catch (ClientException e) {
             throw new PublishingException(e);
         }
         return false;
@@ -376,37 +367,6 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             liveDocument = session.getDocument(new IdRef(
                     sourceDocument.getSourceId()));
         }
-    }
-
-    protected class ProxyCleaner extends UnrestrictedSessionRunner {
-
-        DocumentModel proxy;
-
-        public ProxyCleaner(CoreSession session, DocumentModel proxy) {
-            super(session);
-            this.proxy = proxy;
-        }
-
-        @Override
-        public void run() throws ClientException {
-            DocumentModel sourceVersion = session.getSourceDocument(proxy.getRef());
-            DocumentModel dm = session.getSourceDocument(sourceVersion.getRef());
-            DocumentModelList brothers = session.getProxies(dm.getRef(),
-                    proxy.getParentRef());
-            if (brothers != null && brothers.size() > 1) {
-                // we remove the brothers of the published document if any
-                // the use case is:
-                // v1 is published, v2 is waiting for publication and was just
-                // validated
-                // v1 is removed and v2 is now being published
-                for (DocumentModel doc : brothers) {
-                    if (!doc.getId().equals(proxy.getId())) {
-                        session.removeDocument(doc.getRef());
-                    }
-                }
-            }
-        }
-
     }
 
     /**
