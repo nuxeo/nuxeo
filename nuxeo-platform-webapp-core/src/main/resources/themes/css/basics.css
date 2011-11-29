@@ -15,6 +15,7 @@ html, body { font-family: "default (__FLAVOR__ font)"; font-size: 100%;	line-hei
 ul { list-style: none }
 img, a img,:link img,:visited img { border: none }
 img, a { outline: medium none }
+strong { font-weight: bold }
 
 /* =Links and Titles */
 a, a:link, a:visited { color: "link (__FLAVOR__ color)"; text-decoration: none }
