@@ -6,7 +6,8 @@ author: lkemen@nuxeo.com
 */
 
 /* =FancyBox */
-#fancybox-wrap { font-family: "default (__FLAVOR__ font)"; font-size: 100% }
+#fancybox-overlay { z-index: 10002 }
+#fancybox-wrap { font-family: "default (__FLAVOR__ font)"; font-size: 100%; z-index: 10005 }
 #fancybox-wrap a, #fancybox-wrap a:link, #fancybox-wrap a:visited { text-decoration: none; color: "link (__FLAVOR__ color)"; }
 #fancybox-wrap a:hover, #fancybox-wrap a:active { text-decoration: underline }
 

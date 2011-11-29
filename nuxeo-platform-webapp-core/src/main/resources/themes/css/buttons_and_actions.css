@@ -47,7 +47,7 @@ a.button { text-decoration: none }
 
 .smallButton, input.smallButton { font-size: 0.85em; padding: 0 .4em}
 
-.dropdown { background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center transparent; padding: .5em 1.5em .5em .8em }
+.dropdown, .dropdown:hover { background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center transparent; padding: .35em 1.5em .35em .8em }
 
 /* =Syndication Button */
 div.syndicationButton { background-color: #ff9d5c; float: right; font-size: .7em; margin-bottom: .5em }
@@ -90,7 +90,7 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .globalActionBar .actionList { float: right; list-style: none; margin: 0; padding: 0 }
 .globalActionBar .actionList li { cursor: pointer; float: right; font-weight: normal; margin: 0 0 0 .8em; position: relative; text-decoration: none; z-index:3000 }
 .globalActionBar .actionList li a { color: "default (__FLAVOR__ color)"; padding: 0 }
-.globalActionBar .actionList .actionSubList { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; display:none; list-style: none; padding: 0; position: absolute; right: 0; top: 26px; width: 250px; z-index: 1001; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2) }
+.globalActionBar .actionList .actionSubList { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; display:none; list-style: none; padding: 0; position: absolute; right: 0; top: 25px; width: 250px; z-index: 1001; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2) }
 .globalActionBar .actionList .actionSubList li { background: none; border: none; display: inline; float: none; height: auto; margin: 0; padding: 0; text-align: left; width: 300px }
 .globalActionBar .actionList .actionSubList li a { background: none; border: none; display: block; margin: 0; padding: .5em 1em; text-decoration: none }
 .globalActionBar .actionList .actionSubList li a:hover { background-color:"color.major.medium (__FLAVOR__ background)";}
