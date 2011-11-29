@@ -80,3 +80,6 @@ table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background
 .listShuttleTable { margin-left: 3em }
 
 .dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.medium (__FLAVOR__ background)" }
+
+table.palettePreviewColors { display:inline; vertical-align:middle; }
+table.palettePreviewColors td { border-width:1px; border-style:solid; border-color:black; height: 10px; width: 10px;}

@@ -247,6 +247,19 @@
         <presets category="font" src="themes/palettes/default-fonts.properties" />
         <presets category="color" src="themes/palettes/default-colors.properties" />
       </presetsList>
+      <palettePreview>
+        <colors>
+          <color>#cfecff</color>
+          <color>#70bbff</color>
+          <color>#4e9ae1</color>
+          <color>#fff</color>
+          <color>#fff</color>
+          <color>#0079a6</color>
+          <color>#00416b</color>
+          <color>#332e2e</color>
+          <color>#cfecff</color>
+        </colors>
+      </palettePreview>
     </flavor>
 
     <flavor name="rainbow">
