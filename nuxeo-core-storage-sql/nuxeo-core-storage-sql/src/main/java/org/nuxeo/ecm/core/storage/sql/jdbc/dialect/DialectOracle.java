@@ -535,7 +535,7 @@ public class DialectOracle extends Dialect {
                 Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
                         + suffix);
                 String line = String.format(
-                        "  :NEW.%s := :NEW.%s || :NEW.%s; ",
+                        "  :NEW.%s := :NEW.%s || ' ' || :NEW.%s; ",
                         ftft.getQuotedName(), ftst.getQuotedName(),
                         ftbt.getQuotedName());
                 lines.add(line);
