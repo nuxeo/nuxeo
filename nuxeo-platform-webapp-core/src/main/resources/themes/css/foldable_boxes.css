@@ -28,7 +28,7 @@ author: lkemen@nuxeo.com
   float: left;
   padding-right: 1em }
 .foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)" }
-.foldableBox .boxBody { clear: both; padding: 1em }
+.foldableBox .boxBody { clear: both; font-size: 1.1em; padding: 1em }
 
 /* =Light boxes */
 .foldableLightBox { margin-bottom: 1.8em }

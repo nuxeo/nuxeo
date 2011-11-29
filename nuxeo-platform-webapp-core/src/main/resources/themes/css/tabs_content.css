@@ -99,6 +99,7 @@ h3.summaryTitle {
 .archiveTabContent .notEditable { background-color: #fff; border: none }
 .archiveTabContent .currentDocumentInformation { background-color: "neutral.medium (__FLAVOR__ background)" }
 
+/* Workflow */
 .taskAssign {
   background: "neutral.medium (__FLAVOR__ background)";
   border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
@@ -106,6 +107,12 @@ h3.summaryTitle {
   margin: .4em 0 1em;
   padding: .4em;
   text-align: center }
+.taskActions { width: 470px }
+.closedContent {
+  background: #fff;
+  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
+  margin: 1.4em 0;
+  padding: 0 .9em .9em }
 
 /* =Comments */
 .commentBlock { margin: .7em 0 .8em; padding: .2em 1em .2em 0 }

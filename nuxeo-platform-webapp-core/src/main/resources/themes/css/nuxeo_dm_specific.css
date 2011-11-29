@@ -55,11 +55,3 @@ author: lkemen@nuxeo.com
 .wizardFrame .templatePreview img { border: 1px solid #333; float: left }
 .wizardFrame .templatePreview .templatePreviewDescription { font-style: italic }
 .wizardFrame .wizardButtonBar { text-align: right }
-
-.closedContent {
-  background: #fff;
-  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
-  margin: 1.4em 0 0;
-  padding: 0 .9em .9em }
-
-.taskActions { width: 470px }
