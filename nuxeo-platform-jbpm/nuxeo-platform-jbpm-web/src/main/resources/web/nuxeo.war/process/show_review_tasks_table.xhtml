@@ -2,14 +2,16 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"><c:set
-  var="virtualTasks" value="#{jbpmActions.currentVirtualTasks}" /> <nxu:methodResult
-  name="tasks"
-  value="#{jbpmActions.getCurrentTasks('validate', 'validate-after-reject')}">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  class="reviewTable">
+
+  <c:set var="virtualTasks" value="#{jbpmActions.currentVirtualTasks}" />
+  <nxu:methodResult name="tasks" value="#{jbpmActions.getCurrentTasks('validate', 'validate-after-reject')}">
 
   <c:if test="#{not empty virtualTasks or not empty tasks}">
 
-    <div class="closedContent"><h:form id="reviewTasksTable">
+    <div class="closedContent">
+      <h:form id="reviewTasksTable">
 
       <h3><h:outputText
         value="#{messages['label.workflow.review.task.list']}" /></h3>
@@ -122,4 +124,5 @@
 
   </c:if>
 
-</nxu:methodResult></div>
+  </nxu:methodResult>
+</div>
