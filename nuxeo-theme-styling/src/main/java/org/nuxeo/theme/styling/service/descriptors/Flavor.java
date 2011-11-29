@@ -57,6 +57,9 @@ public class Flavor implements Serializable {
     @XNode("logo")
     Logo logo;
 
+    @XNode("palettePreview")
+    PalettePreview palettePreview;
+
     @XNode("presetsList@append")
     boolean appendPresets;
 
@@ -111,6 +114,14 @@ public class Flavor implements Serializable {
         this.appendPresets = appendPresets;
     }
 
+    public PalettePreview getPalettePreview() {
+        return palettePreview;
+    }
+
+    public void setPalettePreview(PalettePreview palettePreview) {
+        this.palettePreview = palettePreview;
+    }
+
     @Override
     public Flavor clone() {
         Flavor clone = new Flavor();
@@ -119,6 +130,10 @@ public class Flavor implements Serializable {
         Logo logo = getLogo();
         if (logo != null) {
             clone.setLogo(logo.clone());
+        }
+        PalettePreview pp = getPalettePreview();
+        if (pp != null) {
+            clone.setPalettePreview(pp.clone());
         }
         clone.setExtendsFlavor(getExtendsFlavor());
         clone.setAppendPresets(getAppendPresets());

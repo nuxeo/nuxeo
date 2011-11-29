@@ -49,6 +49,19 @@
         <presets category="font" src="themes/palettes/default-fonts.properties" />
         <presets category="color" src="themes/palettes/default-colors.properties" />
       </presetsList>
+      <palettePreview>
+        <colors>
+          <color>#cfecff</color>
+          <color>#70bbff</color>
+          <color>#99146d</color>
+          <color>#661414</color>
+          <color>#bb3232</color>
+          <color>#cc1b1b</color>
+          <color>#881b1b</color>
+          <color>#00ffaa</color>
+          <color>#cfecff</color>
+        </colors>
+      </palettePreview>
     </flavor>
 
     <!-- register it before and to check registration order has no impact

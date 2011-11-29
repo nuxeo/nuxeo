@@ -26,6 +26,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 
 /**
  * Registry for theme flavors, handling merge of registered {@link Flavor}
@@ -92,6 +93,10 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
                 }
             }
             dst.setLogo(newLogo);
+        }
+        PalettePreview pp = src.getPalettePreview();
+        if (pp != null) {
+            dst.setPalettePreview(pp);
         }
 
         List<FlavorPresets> newPresets = src.getPresets();

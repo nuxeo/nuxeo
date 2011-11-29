@@ -45,6 +45,7 @@ import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
 import org.nuxeo.theme.styling.service.registries.FlavorRegistry;
@@ -550,10 +551,23 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     public Flavor getFlavor(String flavorName) {
         if (flavorReg != null) {
             Flavor flavor = flavorReg.getFlavor(flavorName);
-            if (flavor != null && flavor.getLogo() == null) {
-                // resolve and attach the computed logo from extended flavor
-                Flavor clone = flavor.clone();
-                clone.setLogo(computeLogo(flavor, new ArrayList<String>()));
+            Flavor clone = null;
+            if (flavor != null) {
+                if (flavor.getLogo() == null) {
+                    // resolve and attach the computed logo from extended
+                    // flavor
+                    clone = flavor.clone();
+                    clone.setLogo(computeLogo(flavor, new ArrayList<String>()));
+                }
+                if (flavor.getPalettePreview() == null) {
+                    if (clone == null) {
+                        clone = flavor.clone();
+                    }
+                    clone.setPalettePreview(computePalettePreview(flavor,
+                            new ArrayList<String>()));
+                }
+            }
+            if (clone != null) {
                 return clone;
             }
             return flavor;
@@ -596,6 +610,38 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 }
             }
             return localLogo;
+        }
+        return null;
+    }
+
+    protected PalettePreview computePalettePreview(Flavor flavor,
+            List<String> flavors) {
+        if (flavor != null) {
+            PalettePreview localPalette = flavor.getPalettePreview();
+            if (localPalette == null) {
+                String extendsFlavorName = flavor.getExtendsFlavor();
+                if (!StringUtils.isBlank(extendsFlavorName)) {
+                    if (flavors.contains(extendsFlavorName)) {
+                        // cyclic dependency => abort
+                        log.error(String.format(
+                                "Cyclic dependency detected in flavor '%s' hierarchy",
+                                flavor.getName()));
+                        return null;
+                    } else {
+                        // retrieved the extended colors
+                        flavors.add(flavor.getName());
+                        Flavor extendedFlavor = getFlavor(extendsFlavorName);
+                        if (extendedFlavor != null) {
+                            localPalette = computePalettePreview(
+                                    extendedFlavor, flavors);
+                        } else {
+                            log.warn(String.format("Extended flavor '%s' "
+                                    + "not found", extendsFlavorName));
+                        }
+                    }
+                }
+            }
+            return localPalette;
         }
         return null;
     }

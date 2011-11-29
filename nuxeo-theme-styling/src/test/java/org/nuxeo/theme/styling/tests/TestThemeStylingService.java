@@ -33,6 +33,7 @@ import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -143,6 +144,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals(expected, res);
         Flavor flavor = service.getFlavor("*");
         assertNull(flavor);
+        PalettePreview pp = null;
         Logo logo = service.getLogo("*");
         assertNull(logo);
 
@@ -158,6 +160,10 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("92", logo.getWidth());
         assertEquals("36", logo.getHeight());
         assertEquals("Nuxeo", logo.getTitle());
+        pp = flavor.getPalettePreview();
+        assertNotNull(pp);
+        assertNotNull(pp.getColors());
+        assertEquals(9, pp.getColors().size());
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering.txt");
@@ -171,6 +177,10 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("100", logo.getWidth());
         assertEquals("666", logo.getHeight());
         assertEquals("Dark Nuxeo", logo.getTitle());
+        pp = flavor.getPalettePreview();
+        assertNotNull(pp);
+        assertNotNull(pp.getColors());
+        assertEquals(9, pp.getColors().size());
 
         res = getRenderedCssFileContent("subDark");
         expected = getTestFileContent("css_sub_dark_rendering.txt");
@@ -184,6 +194,10 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("100", logo.getWidth());
         assertEquals("666", logo.getHeight());
         assertEquals("Dark Nuxeo", logo.getTitle());
+        pp = flavor.getPalettePreview();
+        assertNotNull(pp);
+        assertNotNull(pp.getColors());
+        assertEquals(9, pp.getColors().size());
 
         ResourceManager rm = Manager.getResourceManager();
         List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
