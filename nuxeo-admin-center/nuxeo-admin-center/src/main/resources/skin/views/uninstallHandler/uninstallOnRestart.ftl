@@ -10,18 +10,11 @@ function closePopup() {
 
 <@block name="body">
   <div class="successfulDownloadBox">
-   <h3> Installation of ${pkg.title} (${pkg.id}) completed </h3>
-
-    <#if installTask.isRestartRequired()>
-     <div>
-         You will need to restart your server to complete the installation.
-         <br/>
-         <form method="GET" action="${Root.path}/restartView">
-         Click on the restart button to restart the server now : <input type="submit" value="Restart"/>
-         </form>.
-     </div>
-    </#if>
-
+   <h1> Uninstallation of ${pkg.title} (${pkg.id}) will be done at next restart.</h1>
+    <br/>
+    <div>
+     To complete the uninstallation of the package, please restart your server.
+    </div>
     <br/>
     <#if source=="installer">
       <a href="javascript:closePopup()" class="installButton"> Finish </a>

@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -42,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Provides REST bindings for {@link Package} install management.
- * 
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @WebObject(type = "uninstallHandler")
@@ -83,11 +84,14 @@ public class UninstallHandler extends DefaultObject {
     @Path(value = "run/{pkgId}")
     public Object doUninstall(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source) {
-
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
+            if (InstallAfterRestart.isNeededForPackage(pkg)) {
+                InstallAfterRestart.addPackageForUnInstallation(pkgId);
+                return getView("uninstallOnRestart").arg("pkg", pkg).arg("source",
+                        source);
+            }
             Task uninstallTask = pkg.getUninstallTask();
             try {
                 uninstallTask.run(new HashMap<String, String>());
@@ -99,12 +103,10 @@ public class UninstallHandler extends DefaultObject {
             }
             return getView("uninstallDone").arg("uninstallTask", uninstallTask).arg(
                     "pkg", pkg).arg("source", source);
-
         } catch (Exception e) {
             log.error("Error during uninstall of " + pkgId, e);
             return getView("uninstallError").arg("e", e).arg("source", source);
         }
-
     }
 
     @POST

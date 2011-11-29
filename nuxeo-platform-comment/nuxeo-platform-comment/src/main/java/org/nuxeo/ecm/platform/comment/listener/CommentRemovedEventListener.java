@@ -28,10 +28,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
 public class CommentRemovedEventListener extends AbstractCommentListener
         implements EventListener {
@@ -59,10 +59,10 @@ public class CommentRemovedEventListener extends AbstractCommentListener
                     + "check the service relation adapters configuration");
             return;
         }
-        Statement pattern = new StatementImpl(commentRes, null, null);
-        List<Statement> statementList = relationManager.getStatements(
-                config.graphName, pattern);
-        relationManager.remove(config.graphName, statementList);
+        Graph graph = relationManager.getGraphByName(config.graphName);
+        List<Statement> statementList = graph.getStatements(commentRes, null,
+                null);
+        graph.remove(statementList);
     }
 
 }

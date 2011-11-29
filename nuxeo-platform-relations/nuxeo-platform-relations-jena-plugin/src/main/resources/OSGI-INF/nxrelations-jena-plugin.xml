@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.relations.jena">
 
   <extension
@@ -7,6 +6,8 @@
     point="graphtypes">
     <graphtype name="jena"
       class="org.nuxeo.ecm.platform.relations.jena.JenaGraph" />
+    <graphtype name="jena-or-core"
+      class="org.nuxeo.ecm.platform.relations.jena.JenaOrCoreGraphFactory" />
   </extension>
 
 </component>

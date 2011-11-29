@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
@@ -116,7 +117,8 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
                 new LiteralImpl("some conformance")));
         originalStatements.add(new StatementImpl(otherDocResource, conformsTo,
                 documentResource));
-        relationManager.add(RelationConstants.GRAPH_NAME, originalStatements);
+        relationManager.getGraphByName(RelationConstants.GRAPH_NAME).add(
+                originalStatements);
     }
 
     public void testCopyRelationsFromWork() throws Exception {
@@ -137,22 +139,21 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         // copied on the proxy, just ordinary relations
         Resource publishedResource = relationManager.getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, publishedProxy, null);
-        List<Statement> statements = relationManager.getStatements(
-                RelationConstants.GRAPH_NAME, new StatementImpl(
-                        publishedResource, null, null));
+        Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+        List<Statement> statements = graph.getStatements(new StatementImpl(
+                publishedResource, null, null));
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
-        statements = relationManager.getStatements(
-                RelationConstants.GRAPH_NAME, new StatementImpl(null, null,
-                        publishedResource));
+        statements = graph.getStatements(new StatementImpl(null, null,
+                publishedResource));
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
         // no comments where copied
-        List<Statement> comments = relationManager.getStatements(
-                COMMENTS_GRAPH_NAME, new StatementImpl(null, null,
-                        publishedResource));
+        List<Statement> comments = relationManager.getGraphByName(
+                COMMENTS_GRAPH_NAME).getStatements(
+                new StatementImpl(null, null, publishedResource));
         assertNotNull(comments);
         assertEquals(0, comments.size());
     }
@@ -179,23 +180,23 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         session.save();
 
         // check that the old relations are still there
-        List<Statement> statements = relationManager.getStatements(
-                RelationConstants.GRAPH_NAME, new StatementImpl(
-                        publishedResource, null, null));
+        List<Statement> statements = relationManager.getGraphByName(
+                RelationConstants.GRAPH_NAME).getStatements(publishedResource,
+                null, null);
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
-        statements = relationManager.getStatements(
-                RelationConstants.GRAPH_NAME, new StatementImpl(null, null,
-                        publishedResource));
+        statements = relationManager.getGraphByName(
+                RelationConstants.GRAPH_NAME).getStatements(null, null,
+                publishedResource);
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
         // previous comments are still there, but not the comments from the
         // source document
-        List<Statement> comments = relationManager.getStatements(
-                COMMENTS_GRAPH_NAME, new StatementImpl(null, null,
-                        publishedResource));
+        List<Statement> comments = relationManager.getGraphByName(
+                COMMENTS_GRAPH_NAME).getStatements(null, null,
+                publishedResource);
         assertNotNull(comments);
         assertEquals(2, comments.size());
     }
@@ -254,13 +255,12 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
 
     private List<Statement> getRelations(Resource resource1, Resource resource2)
             throws ClientException {
-        List<Statement> statements = relationManager.getStatements(
-                RelationConstants.GRAPH_NAME, new StatementImpl(resource1,
-                        null, resource2));
+        Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+        List<Statement> statements = graph.getStatements(new StatementImpl(
+                resource1, null, resource2));
         if (statements != null) {
-            statements.addAll(relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, new StatementImpl(resource2,
-                            null, resource1)));
+            statements.addAll(graph.getStatements(new StatementImpl(resource2,
+                    null, resource1)));
         }
         return statements;
 

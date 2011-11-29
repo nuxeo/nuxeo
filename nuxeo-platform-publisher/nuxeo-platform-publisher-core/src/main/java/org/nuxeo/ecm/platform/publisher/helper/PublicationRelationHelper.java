@@ -64,7 +64,7 @@ public class PublicationRelationHelper {
                 PUBLICATION_TREE_NAMESPACE, publicationTree.getConfigName());
         Statement stmt = new StatementImpl(docResource, PUBLISHED_BY,
                 treeResource);
-        rm.add(PUBLICATION_GRAPH_NAME, Collections.singletonList(stmt));
+        rm.getGraphByName(PUBLICATION_GRAPH_NAME).add(stmt);
     }
 
     public static void removePublicationRelation(DocumentModel documentModel)
@@ -73,7 +73,7 @@ public class PublicationRelationHelper {
                 PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
         RelationManager rm = RelationHelper.getRelationManager();
         if (stmts != null) {
-            rm.remove(PUBLICATION_GRAPH_NAME, stmts);
+            rm.getGraphByName(PUBLICATION_GRAPH_NAME).remove(stmts);
         }
     }
 

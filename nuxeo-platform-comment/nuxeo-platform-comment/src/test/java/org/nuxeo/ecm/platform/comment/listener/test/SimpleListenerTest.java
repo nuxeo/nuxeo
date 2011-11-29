@@ -63,7 +63,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
     protected int getCommentGrahNodesNumber() throws Exception {
         RelationManager rm = Framework.getService(RelationManager.class);
 
-        List<Statement> statementList = rm.getStatements("documentComments");
+        List<Statement> statementList = rm.getGraphByName("documentComments").getStatements();
         return statementList.size();
     }
 

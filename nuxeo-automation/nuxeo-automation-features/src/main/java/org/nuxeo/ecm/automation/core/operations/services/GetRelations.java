@@ -34,7 +34,6 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 
 /**
@@ -108,14 +107,14 @@ public class GetRelations {
 
     protected List<Statement> getIncomingStatements(QNameResource res,
             Resource predicate) throws ClientException {
-        Statement pattern = new StatementImpl(null, predicate, res);
-        return relations.getStatements(getGraphName(), pattern);
+        return relations.getGraphByName(getGraphName()).getStatements(null,
+                predicate, res);
     }
 
     protected List<Statement> getOutgoingStatements(QNameResource res,
             Resource predicate) throws ClientException {
-        Statement pattern = new StatementImpl(res, predicate, null);
-        return relations.getStatements(getGraphName(), pattern);
+        return relations.getGraphByName(getGraphName()).getStatements(res,
+                predicate, null);
     }
 
     protected DocumentModel getDocumentModel(Node node) throws ClientException {

@@ -32,6 +32,7 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.relations.api.Blank;
 import org.nuxeo.ecm.platform.relations.api.Graph;
+import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
@@ -475,11 +477,14 @@ public class JenaGraph implements Graph {
 
     // Interface implementation
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public void setDescription(GraphDescription graphDescription) {
+        name = graphDescription.getName();
+        setOptions(graphDescription.getOptions());
+        setNamespaces(graphDescription.getNamespaces());
     }
 
-    public void setOptions(Map<String, String> options) {
+    protected void setOptions(Map<String, String> options) {
         for (Map.Entry<String, String> option : options.entrySet()) {
             String key = option.getKey();
             String value = option.getValue();
@@ -527,12 +532,16 @@ public class JenaGraph implements Graph {
     }
 
     public void setNamespaces(Map<String, String> namespaces) {
-        this.namespaces = new HashMap<String, String>();
-        this.namespaces.putAll(namespaces);
+        this.namespaces = namespaces;
     }
 
     public Map<String, String> getNamespaces() {
         return namespaces;
+    }
+
+    @Override
+    public void add(Statement statement) {
+        add(Collections.singletonList(statement));
     }
 
     public void add(List<Statement> statements) {
@@ -582,6 +591,11 @@ public class JenaGraph implements Graph {
                 graphConnection.close();
             }
         }
+    }
+
+    @Override
+    public void remove(Statement statement) {
+        remove(Collections.singletonList(statement));
     }
 
     public void remove(List<Statement> statements) {
@@ -640,6 +654,12 @@ public class JenaGraph implements Graph {
                 graphConnection.close();
             }
         }
+    }
+
+    @Override
+    public List<Statement> getStatements(Node subject, Node predicate,
+            Node object) {
+        return getStatements(new StatementImpl(subject, predicate, object));
     }
 
     @SuppressWarnings("unchecked")

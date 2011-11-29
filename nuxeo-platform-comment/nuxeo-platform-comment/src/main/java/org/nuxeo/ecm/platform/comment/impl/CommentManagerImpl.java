@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
@@ -129,6 +130,7 @@ public class CommentManagerImpl implements CommentManager {
         } catch (Exception e) {
             throw new ClientException(e);
         }
+        Graph graph = relationManager.getGraphByName(config.graphName);
         Resource docResource = relationManager.getResource(
                 config.documentNamespace, docModel, ctxMap);
         if (docResource == null) {
@@ -138,16 +140,12 @@ public class CommentManagerImpl implements CommentManager {
         }
 
         // FIXME AT: why no filter on the predicate?
-        Statement pattern = new StatementImpl(null, null, docResource);
-        List<Statement> statementList = relationManager.getStatements(
-                config.graphName, pattern);
+        List<Statement> statementList = graph.getStatements(null, null, docResource);
         // XXX AT: BBB for when repository name was not included in the
         // resource uri
         Resource oldDocResource = new QNameResourceImpl(
                 config.documentNamespace, docModel.getId());
-        Statement oldPattern = new StatementImpl(null, null, oldDocResource);
-        statementList.addAll(relationManager.getStatements(config.graphName,
-                oldPattern));
+        statementList.addAll(graph.getStatements(null, null, oldDocResource));
 
         List<DocumentModel> commentList = new ArrayList<DocumentModel>();
         for (Statement stmt : statementList) {
@@ -255,7 +253,6 @@ public class CommentManagerImpl implements CommentManager {
                     path);
 
             RelationManager relationManager = getRelationManager();
-            List<Statement> statementList = new ArrayList<Statement>();
 
             Resource commentRes = relationManager.getResource(
                     config.commentNamespace, createdComment, null);
@@ -273,8 +270,7 @@ public class CommentManagerImpl implements CommentManager {
 
             Statement stmt = new StatementImpl(commentRes, predicateRes,
                     documentRes);
-            statementList.add(stmt);
-            relationManager.add(config.graphName, statementList);
+            relationManager.getGraphByName(config.graphName).add(stmt);
         } catch (Exception e) {
             throw new ClientException("failed to create comment", e);
         }
@@ -579,6 +575,7 @@ public class CommentManagerImpl implements CommentManager {
         } catch (Exception e) {
             throw new ClientException(e);
         }
+        Graph graph = relationManager.getGraphByName(config.graphName);
         Resource commentResource = relationManager.getResource(
                 config.commentNamespace, comment, ctxMap);
         if (commentResource == null) {
@@ -587,18 +584,14 @@ public class CommentManagerImpl implements CommentManager {
                             + "check the service relation adapters configuration");
         }
         Resource predicate = new ResourceImpl(config.predicateNamespace);
-        Statement pattern = new StatementImpl(commentResource, predicate, null);
 
-        List<Statement> statementList = relationManager.getStatements(
-                config.graphName, pattern);
+        List<Statement> statementList = graph.getStatements(commentResource, predicate, null);
         // XXX AT: BBB for when repository name was not included in the
         // resource uri
         Resource oldDocResource = new QNameResourceImpl(
                 config.commentNamespace, comment.getId());
-        Statement oldPattern = new StatementImpl(oldDocResource, predicate,
-                null);
-        statementList.addAll(relationManager.getStatements(config.graphName,
-                oldPattern));
+        statementList.addAll(graph.getStatements(oldDocResource, predicate,
+                null));
 
         List<DocumentModel> docList = new ArrayList<DocumentModel>();
         for (Statement stmt : statementList) {

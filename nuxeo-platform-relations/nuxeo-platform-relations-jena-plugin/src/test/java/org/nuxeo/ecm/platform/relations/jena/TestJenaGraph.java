@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.BlankImpl;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -70,10 +72,11 @@ public class TestJenaGraph extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.relations");
+        deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.relations.jena.tests",
                 "jena-test-bundle.xml");
-        RelationService service = (RelationService) Framework.getRuntime().getComponent(
-                RelationService.NAME);
+        RelationManager service = Framework.getService(RelationManager.class);
         Graph graph = service.getGraphByName("myrelations");
         assertNotNull(graph);
         assertEquals(JenaGraph.class, graph.getClass());
@@ -155,7 +158,9 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals("http://purl.org/dc/terms/", map.get("dcterms"));
         assertNull(map.get("dummy"));
 
-        graph.setNamespaces(namespaces);
+        GraphDescriptor desc = new GraphDescriptor();
+        desc.namespaces = namespaces;
+        graph.setDescription(desc);
 
         // not set yet on the graph, have to rebuild it
         jenaGraph = graph.openGraph(forceReload).getGraph();

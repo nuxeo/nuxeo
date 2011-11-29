@@ -38,33 +38,10 @@ import java.util.Map;
 public interface Graph extends Serializable {
 
     /**
-     * Sets name for the graph.
-     *
-     * @param name the new name
+     * Sets the graph description.
+     * @param graphDescription
      */
-    void setName(String name);
-
-    /**
-     * Sets options for the graph.
-     * <p>
-     * Options are typically: which backend to use, additional parameters for backend
-     * (e.g. for instance SQL backend, host, port, user/password...).
-     *
-     * @param options map of options for the graph
-     */
-    void setOptions(Map<String, String> options);
-
-    /**
-     * Sets namespaces for the graph.
-     * <p>
-     * Namespaces are prefix/namespace bindings, as rdf for
-     * http://www.w3.org/1999/02/22-rdf-syntax-ns#.
-     *
-     * TODO AT: maybe share same namespaces with the relation service?
-     *
-     * @param namespaces map of namespace bindings for the graph
-     */
-    void setNamespaces(Map<String, String> namespaces);
+    void setDescription(GraphDescription graphDescription);
 
     /**
      * Returns namespaces for the graph.
@@ -77,20 +54,32 @@ public interface Graph extends Serializable {
     Map<String, String> getNamespaces();
 
     /**
+     * Adds the statement object to the graph.
+     *
+     * @param statement statement to add
+     *
+     * @since 5.5
+     */
+    void add(Statement statement);
+
+    /**
      * Adds given list of Statement objects to the graph.
-     * <p>
-     * If the graph has reification support, the statement properties are also
-     * added to the graph too.
      *
      * @param statements list of Statement instances to add
      */
     void add(List<Statement> statements);
 
     /**
+     * Removes the statement object from the graph.
+     *
+     * @param statement statement to remove
+     *
+     * @since 5.5
+     */
+    void remove(Statement statement);
+
+    /**
      * Removes given list of Statement objects from the graph.
-     * <p>
-     * If the graph has reification support, the deleted statements properties
-     * are removed too.
      *
      * @param statements List of Statement instances to remove
      */
@@ -98,9 +87,6 @@ public interface Graph extends Serializable {
 
     /**
      * Returns all statements in the graph.
-     * <p>
-     * If the graph has reification support, the statements properties are
-     * retrieved too.
      *
      * @return list of Statement instances
      */
@@ -108,14 +94,21 @@ public interface Graph extends Serializable {
 
     /**
      * Returns all statements in the graph matching the pattern.
-     * <p>
-     * If the graph has reification support, the statements properties are
-     * retrieved too.
      *
      * @param statement pattern to match, can hold null nodes as wildcards
      * @return list of Statement instances matching the pattern
      */
     List<Statement> getStatements(Statement statement);
+
+    /**
+     * Returns all statements in the graph matching the pattern.
+     *
+     * @param statement pattern to match, can hold null nodes as wildcards
+     * @return list of Statement instances matching the pattern
+     *
+     * @since 5.5
+     */
+    List<Statement> getStatements(Node subject, Node predicate, Node object);
 
     /**
      * Get items matching the statement pattern (null, predicate, object).

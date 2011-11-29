@@ -11,8 +11,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
-import java.util.ArrayList;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -59,13 +57,13 @@ public class CreateRelation {
         QNameResource subject = getDocumentResource(doc);
         QNameResource obj = getDocumentResource(object);
         Resource predicate = getPredicate();
-        ArrayList<Statement> stmts = new ArrayList<Statement>();
+        Statement stmt;
         if (outgoing) {
-            stmts.add(new StatementImpl(obj, predicate, subject));
+            stmt = new StatementImpl(obj, predicate, subject);
         } else {
-            stmts.add(new StatementImpl(subject, predicate, obj));
+            stmt = new StatementImpl(subject, predicate, obj);
         }
-        relations.add(RelationConstants.GRAPH_NAME, stmts);
+        relations.getGraphByName(RelationConstants.GRAPH_NAME).add(stmt);
         return doc;
     }
 

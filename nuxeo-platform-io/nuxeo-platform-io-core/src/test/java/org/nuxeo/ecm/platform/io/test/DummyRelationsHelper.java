@@ -28,12 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -87,22 +89,19 @@ public class DummyRelationsHelper {
         // create new relation
         Statement newRelation = new StatementImpl(docAResource,
                 new ResourceImpl("http://depends-on"), docBResource);
-        List<Statement> statementsToAdd = new ArrayList<Statement>();
-        statementsToAdd.add(newRelation);
-        relationManager.add("default", statementsToAdd);
+        Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+        graph.add(newRelation);
 
         // search for incomming relations in docB
         Statement pattern = new StatementImpl(null, null, docBResource);
-        List<Statement> incomingStatements = relationManager.getStatements(
-                "default", pattern);
+        List<Statement> incomingStatements = graph.getStatements(pattern);
         for (Statement st : incomingStatements) {
             log.info("Relations on B :" + st.getPredicate().toString());
         }
 
         // search for outgoing relations in docA
         pattern = new StatementImpl(docAResource, null, null);
-        List<Statement> outgoingStatements = relationManager.getStatements(
-                "default", pattern);
+        List<Statement> outgoingStatements = graph.getStatements(pattern);
         for (Statement st : outgoingStatements) {
             log.info("Relations on A :" + st.getPredicate().toString());
         }

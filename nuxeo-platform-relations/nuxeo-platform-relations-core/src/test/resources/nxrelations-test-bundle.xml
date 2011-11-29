@@ -1,38 +1,14 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.relations.services.RelationService">
+<component name="org.nuxeo.ecm.platform.relations.services.RelationServiceTests">
 
-  <implementation
-    class="org.nuxeo.ecm.platform.relations.services.RelationService" />
-
-  <service>
-    <provide interface="org.nuxeo.ecm.platform.relations.api.RelationManager" />
-  </service>
-
-  <extension-point name="graphtypes">
-    <object
-      class="org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor" />
-  </extension-point>
-
-  <!-- Graph type example for tests -->
   <extension
     target="org.nuxeo.ecm.platform.relations.services.RelationService"
     point="graphtypes">
     <graphtype name="dummygraph"
       class="org.nuxeo.ecm.platform.relations.DummyGraphType" />
+    <graphtype name="byfactory"
+      class="org.nuxeo.ecm.platform.relations.DummyGraphFactory" />
   </extension>
-
-  <!-- Graph type example with no implementation for tests -->
-  <extension
-    target="org.nuxeo.ecm.platform.relations.services.RelationService"
-    point="graphtypes">
-    <graphtype name="unexistentgraph"
-      class="org.nuxeo.ecm.platform.relations.UnexistentGraphType" />
-  </extension>
-
-  <extension-point name="resourceadapters">
-    <object
-      class="org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor" />
-  </extension-point>
 
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
     point="resourceadapters">
@@ -47,12 +23,6 @@
       class="org.nuxeo.ecm.platform.relations.UnexistentResourceAdapter" />
   </extension>
 
-  <extension-point name="graphs">
-    <object
-      class="org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor" />
-  </extension-point>
-
-  <!-- Graph example for tests -->
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
     point="graphs">
     <graph name="myrelations" type="dummygraph">
@@ -66,6 +36,8 @@
         <namespace name="dc">http://purl.org/dc/elements/1.1/</namespace>
         <namespace name="nxtest">http://nuxeo/org/nxrelations/test/</namespace>
       </namespaces>
+    </graph>
+    <graph name="somerelations" type="byfactory">
     </graph>
   </extension>
 

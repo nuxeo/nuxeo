@@ -28,11 +28,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
 public class DocumentRemovedCommentEventListener extends
         AbstractCommentListener implements PostCommitEventListener {
@@ -58,9 +58,8 @@ public class DocumentRemovedCommentEventListener extends
                     + "check the service relation adapters configuration");
             return;
         }
-        Statement pattern = new StatementImpl(null, null, documentRes);
-        List<Statement> statementList = relationManager.getStatements(
-                config.graphName, pattern);
+        Graph graph = relationManager.getGraphByName(config.graphName);
+        List<Statement> statementList = graph.getStatements(null, null, documentRes);
 
         // remove comments
         for (Statement stmt : statementList) {
@@ -82,7 +81,7 @@ public class DocumentRemovedCommentEventListener extends
         }
         coreSession.save();
         // remove relations
-        relationManager.remove(config.graphName, statementList);
+        graph.remove(statementList);
     }
 
 }

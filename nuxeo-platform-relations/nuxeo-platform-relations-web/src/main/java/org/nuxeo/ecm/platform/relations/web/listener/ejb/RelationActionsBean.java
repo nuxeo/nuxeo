@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -224,14 +225,12 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             incomingStatements = Collections.emptyList();
             incomingStatementsInfo = Collections.emptyList();
         } else {
-            Statement pattern = new StatementImpl(null, null, docResource);
-            incomingStatements = relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, pattern);
+            Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+            incomingStatements = graph.getStatements(null, null, docResource);
             // add old statements, BBB
             Resource oldDocResource = getOldDocumentResource(currentDoc);
-            Statement oldPattern = new StatementImpl(null, null, oldDocResource);
-            incomingStatements.addAll(relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, oldPattern));
+            incomingStatements.addAll(graph.getStatements(null, null,
+                    oldDocResource));
             incomingStatementsInfo = getStatementsInfo(incomingStatements);
             // sort by modification date, reverse
             Comparator<StatementInfo> comp = Collections.reverseOrder(new StatementInfoComparator());
@@ -252,14 +251,12 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             outgoingStatements = Collections.emptyList();
             outgoingStatementsInfo = Collections.emptyList();
         } else {
-            Statement pattern = new StatementImpl(docResource, null, null);
-            outgoingStatements = relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, pattern);
+            Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+            outgoingStatements = graph.getStatements(docResource, null, null);
             // add old statements, BBB
             Resource oldDocResource = getOldDocumentResource(currentDoc);
-            Statement oldPattern = new StatementImpl(oldDocResource, null, null);
-            outgoingStatements.addAll(relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, oldPattern));
+            outgoingStatements.addAll(graph.getStatements(oldDocResource, null,
+                    null));
             outgoingStatementsInfo = getStatementsInfo(outgoingStatements);
             // sort by modification date, reverse
             Comparator<StatementInfo> comp = Collections.reverseOrder(new StatementInfoComparator());
@@ -385,7 +382,6 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         Statement stmt = new StatementImpl(documentResource, predicate, object);
         if (!outgoingStatements.contains(stmt)) {
             // add statement to the graph
-            List<Statement> stmts = new ArrayList<Statement>();
             String eventComment = null;
             if (comment != null) {
                 comment = comment.trim();
@@ -402,8 +398,6 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                 stmt.addProperty(RelationConstants.AUTHOR, new LiteralImpl(
                         currentUser.getName()));
             }
-
-            stmts.add(stmt);
 
             // notifications
 
@@ -422,13 +416,13 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                     options, eventComment);
 
             // add statement
-            relationManager.add(RelationConstants.GRAPH_NAME, stmts);
+            Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+            graph.add(stmt);
 
             // XXX AT: try to refetch it from the graph so that resources are
             // transformed into qname resources: useful for indexing
             if (includeStatementsInEvents) {
-                putStatements(options, relationManager.getStatements(
-                        RelationConstants.GRAPH_NAME, stmt));
+                putStatements(options, graph.getStatements(stmt));
             }
 
             // after notification
@@ -503,9 +497,8 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                     options, null);
 
             // remove statement
-            List<Statement> stmts = new ArrayList<Statement>();
-            stmts.add(stmt);
-            relationManager.remove(RelationConstants.GRAPH_NAME, stmts);
+            relationManager.getGraphByName(RelationConstants.GRAPH_NAME).remove(
+                    stmt);
 
             // after notification
             notifyEvent(RelationEvents.AFTER_RELATION_REMOVAL, source, options,

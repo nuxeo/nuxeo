@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
@@ -37,30 +38,22 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestRelationService extends NXRuntimeTestCase {
 
-    private RelationService service;
+    private RelationManager service;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.relations");
         deployContrib("org.nuxeo.ecm.relations.tests",
                 "nxrelations-test-bundle.xml");
-        service = (RelationService) Framework.getRuntime().getComponent(
-                RelationService.NAME);
-    }
-
-    public void testGetGraphByType() {
-        assertNotNull(service.getGraphByType("dummygraph"));
-        // no implementation
-        assertNull(service.getGraphByType("unexistentgraph"));
-        // no such graph type
-        assertNull(service.getGraphByType("foo"));
+        service = Framework.getService(RelationManager.class);
     }
 
     public void testGetGraphTypes() {
-        List<String> types = service.getGraphTypes();
-        assertSame(2, types.size());
+        List<String> types = ((RelationService) service).getGraphTypes();
+        assertEquals(3, types.size());
+        assertTrue(types.contains("core"));
         assertTrue(types.contains("dummygraph"));
-        assertTrue(types.contains("unexistentgraph"));
         assertFalse(types.contains("foo"));
     }
 
@@ -94,6 +87,12 @@ public class TestRelationService extends NXRuntimeTestCase {
             fail("Should have raised a RuntimeException");
         } catch (RuntimeException e) {
         }
+    }
+
+    public void testGetGraphByNameFactory() throws Exception {
+        Graph graph = service.getGraphByName("somerelations");
+        assertNotNull(graph);
+        assertEquals(DummyGraphType.class, graph.getClass());
     }
 
     public void testGetResourceOK() throws Exception {

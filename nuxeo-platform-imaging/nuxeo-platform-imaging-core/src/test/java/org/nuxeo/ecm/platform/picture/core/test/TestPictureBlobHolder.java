@@ -35,12 +35,12 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBookBlobHolder;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestPictureBlobHolder extends RepositoryOSGITestCase {
+public class TestPictureBlobHolder extends SQLRepositoryTestCase {
 
     BlobHolderAdapterService service;
 
@@ -49,7 +49,7 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
-        openRepository();
+        openSession();
         service = Framework.getLocalService(BlobHolderAdapterService.class);
         assertNotNull(service);
     }
@@ -101,16 +101,16 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
     public void testBlobHolder() throws Exception {
         DocumentModel picturebook = new DocumentModelImpl("/", "picturebook",
                 PICTUREBOOK_TYPE_NAME);
-        coreSession.createDocument(picturebook);
+        session.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(
                 picturebook.getPathAsString(), "pic1", PICTURE_TYPE_NAME);
         picture.setPropertyValue("picture:views", (Serializable) createViews());
-        picture = coreSession.createDocument(picture);
+        picture = session.createDocument(picture);
         DocumentModel picture2 = new DocumentModelImpl(
                 picturebook.getPathAsString(), "pic2", PICTURE_TYPE_NAME);
         picture2.setPropertyValue("picture:views", (Serializable) createViews());
-        coreSession.createDocument(picture2);
-        coreSession.save();
+        session.createDocument(picture2);
+        session.save();
 
         BlobHolder bh = picturebook.getAdapter(BlobHolder.class);
         assertNotNull(bh);

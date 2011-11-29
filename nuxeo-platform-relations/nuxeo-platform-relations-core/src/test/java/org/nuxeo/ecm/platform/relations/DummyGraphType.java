@@ -21,17 +21,16 @@ package org.nuxeo.ecm.platform.relations;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.relations.api.Graph;
+import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 
-@SuppressWarnings({ "PublicField" })
 public class DummyGraphType implements Graph {
 
     private static final long serialVersionUID = 1L;
@@ -44,14 +43,13 @@ public class DummyGraphType implements Graph {
 
     public String port;
 
-    public final Map<String, String> namespaces = new HashMap<String, String>();
+    public Map<String, String> namespaces;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setNamespaces(Map<String, String> namespaces) {
-        this.namespaces.putAll(namespaces);
+    @Override
+    public void setDescription(GraphDescription graphDescription) {
+        name = graphDescription.getName();
+        namespaces = graphDescription.getNamespaces();
+        setOptions(graphDescription.getOptions());
     }
 
     public Map<String, String> getNamespaces() {
@@ -70,6 +68,10 @@ public class DummyGraphType implements Graph {
                 this.port = value;
             }
         }
+    }
+
+    @Override
+    public void add(Statement statement) {
     }
 
     public void add(List<Statement> statements) {
@@ -91,6 +93,11 @@ public class DummyGraphType implements Graph {
     }
 
     public List<Statement> getStatements() {
+        return null;
+    }
+
+    public List<Statement> getStatements(Node subject, Node predicate,
+            Node object) {
         return null;
     }
 
@@ -128,6 +135,10 @@ public class DummyGraphType implements Graph {
 
     public boolean write(String path, String lang, String base) {
         return false;
+    }
+
+    @Override
+    public void remove(Statement statement) {
     }
 
     public void remove(List<Statement> statements) {

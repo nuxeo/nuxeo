@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.relations.api.Blank;
 import org.nuxeo.ecm.platform.relations.api.Graph;
+import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -114,7 +116,9 @@ public class CoreGraph implements Graph {
 
     protected static final List<Statement> EMPTY_STATEMENTS = Collections.emptyList();
 
-    protected static StatementImpl ALL = new StatementImpl(null, null, null);
+    protected static final Statement ALL = new StatementImpl(null, null, null);
+
+    protected CoreSession session;
 
     protected String name;
 
@@ -133,13 +137,25 @@ public class CoreGraph implements Graph {
         public String string;
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * A graph with this base session. An unrestricted session will be opened
+     * based on it.
+     */
+    public CoreGraph(CoreSession session) {
+        this.session = session;
     }
 
     @Override
-    public void setOptions(Map<String, String> options) {
+    public void setDescription(GraphDescription graphDescription) {
+        name = graphDescription.getName();
+        setOptions(graphDescription.getOptions());
+        namespaces = graphDescription.getNamespaces();
+        namespaceList = namespaces == null ? Collections.<String> emptyList()
+                : new ArrayList<String>(new LinkedHashSet<String>(
+                        namespaces.values()));
+    }
+
+    protected void setOptions(Map<String, String> options) {
         for (Entry<String, String> option : options.entrySet()) {
             String key = option.getKey();
             String type = option.getValue();
@@ -163,21 +179,14 @@ public class CoreGraph implements Graph {
     }
 
     @Override
-    public void setNamespaces(Map<String, String> namespaces) {
-        this.namespaces = namespaces;
-        namespaceList = namespaces == null ? Collections.<String> emptyList()
-                : new ArrayList<String>(new LinkedHashSet<String>(
-                        namespaces.values()));
-    }
-
-    @Override
     public Map<String, String> getNamespaces() {
         return namespaces;
     }
 
     @Override
     public Long size() {
-        SizeFinder sizeFinder = new SizeFinder();
+        SizeFinder sizeFinder = session == null ? new SizeFinder()
+                : new SizeFinder(session);
         try {
             sizeFinder.runUnrestricted();
         } catch (ClientException e) {
@@ -187,10 +196,15 @@ public class CoreGraph implements Graph {
     }
 
     protected class SizeFinder extends UnrestrictedSessionRunner {
+
         protected long size;
 
         protected SizeFinder() {
-            super(getRepositoryName(null));
+            super(getDefaultRepositoryName());
+        }
+
+        protected SizeFinder(CoreSession session) {
+            super(session);
         }
 
         @Override
@@ -208,13 +222,20 @@ public class CoreGraph implements Graph {
 
     @Override
     public void clear() {
-        remove(Collections.<Statement> singletonList(ALL));
+        remove(Collections.singletonList(ALL));
+    }
+
+    @Override
+    public void add(Statement statement) {
+        add(Collections.singletonList(statement));
     }
 
     @Override
     public void add(List<Statement> statements) {
+        StatementAdder statementAdder = session == null ? new StatementAdder(
+                statements) : new StatementAdder(statements, session);
         try {
-            new StatementAdder(statements).runUnrestricted();
+            statementAdder.runUnrestricted();
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
@@ -226,9 +247,13 @@ public class CoreGraph implements Graph {
 
         protected Date now;
 
-        public StatementAdder(List<Statement> statements) {
-            super(getRepositoryName(null));
-            setOriginatingUsername("system"); // TODO
+        protected StatementAdder(List<Statement> statements) {
+            super(getDefaultRepositoryName(), "system");
+            this.statements = statements;
+        }
+
+        protected StatementAdder(List<Statement> statements, CoreSession session) {
+            super(session);
             this.statements = statements;
         }
 
@@ -323,9 +348,16 @@ public class CoreGraph implements Graph {
     }
 
     @Override
+    public void remove(Statement statement) {
+        remove(Collections.singletonList(statement));
+    }
+
+    @Override
     public void remove(List<Statement> statements) {
+        StatementRemover statementRemover = session == null ? new StatementRemover(
+                statements) : new StatementRemover(statements, session);
         try {
-            new StatementRemover(statements).runUnrestricted();
+            statementRemover.runUnrestricted();
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
@@ -337,11 +369,15 @@ public class CoreGraph implements Graph {
 
         protected Date now;
 
-        public StatementRemover(List<Statement> statements) {
-            super(getRepositoryName(null));
-            setOriginatingUsername("system"); // TODO
+        protected StatementRemover(List<Statement> statements) {
+            super(getDefaultRepositoryName());
             this.statements = statements;
+        }
 
+        protected StatementRemover(List<Statement> statements,
+                CoreSession session) {
+            super(session);
+            this.statements = statements;
         }
 
         @Override
@@ -377,7 +413,12 @@ public class CoreGraph implements Graph {
         protected Statement statement;
 
         protected StatementFinder(Statement statement) {
-            super(getRepositoryName(null));
+            super(getDefaultRepositoryName());
+            this.statement = statement;
+        }
+
+        protected StatementFinder(Statement statement, CoreSession session) {
+            super(session);
             this.statement = statement;
         }
 
@@ -461,18 +502,19 @@ public class CoreGraph implements Graph {
 
     @Override
     public List<Statement> getStatements() {
-        StatementFinder statementFinder = new StatementFinder(ALL);
-        try {
-            statementFinder.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
-        return statementFinder.statements;
+        return getStatements(ALL);
+    }
+
+    @Override
+    public List<Statement> getStatements(Node subject, Node predicate,
+            Node object) {
+        return getStatements(new StatementImpl(subject, predicate, object));
     }
 
     @Override
     public List<Statement> getStatements(Statement statement) {
-        StatementFinder statementFinder = new StatementFinder(statement);
+        StatementFinder statementFinder = session == null ? new StatementFinder(
+                statement) : new StatementFinder(statement, session);
         try {
             statementFinder.runUnrestricted();
         } catch (ClientException e) {
@@ -529,7 +571,8 @@ public class CoreGraph implements Graph {
         if (resource == null) {
             return false;
         }
-        ResourceFinder resourceFinder = new ResourceFinder(resource);
+        ResourceFinder resourceFinder = session == null ? new ResourceFinder(
+                resource) : new ResourceFinder(resource, session);
         try {
             resourceFinder.runUnrestricted();
         } catch (ClientException e) {
@@ -545,7 +588,12 @@ public class CoreGraph implements Graph {
         protected Resource resource;
 
         protected ResourceFinder(Resource resource) {
-            super(getRepositoryName(null));
+            super(getDefaultRepositoryName());
+            this.resource = resource;
+        }
+
+        protected ResourceFinder(Resource resource, CoreSession session) {
+            super(session);
             this.resource = resource;
         }
 
@@ -649,15 +697,12 @@ public class CoreGraph implements Graph {
         throw new UnsupportedOperationException();
     }
 
-    protected static String getRepositoryName(String repositoryName) {
-        if (repositoryName == null) {
-            try {
-                repositoryName = Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    protected static String getDefaultRepositoryName() {
+        try {
+            return Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return repositoryName;
     }
 
     protected String whereBuilder(String query, Statement statement)
@@ -815,4 +860,5 @@ public class CoreGraph implements Graph {
         }
         statement.setProperty(prop, RelationDate.getLiteralDate(date));
     }
+
 }

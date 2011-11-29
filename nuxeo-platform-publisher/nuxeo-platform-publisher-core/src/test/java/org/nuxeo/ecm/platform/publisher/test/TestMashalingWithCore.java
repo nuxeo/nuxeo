@@ -17,7 +17,17 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
-import org.nuxeo.ecm.core.api.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -28,11 +38,6 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicati
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentModelMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Test marshaling with real {@link DocumentModel}
@@ -57,6 +62,12 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.core");
         openSession();
         createInitialDocs();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     protected void createInitialDocs() throws Exception {

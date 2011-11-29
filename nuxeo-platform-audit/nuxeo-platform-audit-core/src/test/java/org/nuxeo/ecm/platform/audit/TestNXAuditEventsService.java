@@ -27,7 +27,6 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -35,7 +34,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
@@ -48,12 +47,11 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestNXAuditEventsService extends RepositoryOSGITestCase {
+public class TestNXAuditEventsService extends SQLRepositoryTestCase {
 
     private NXAuditEventsService serviceUnderTest;
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-
 
     @Override
     public void setUp() throws Exception {
@@ -65,54 +63,42 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.audit.tests");
         deployBundle("org.nuxeo.runtime.management");
 
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "nxaudit-tests.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "test-audit-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
+                "nxaudit-tests.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
+                "test-audit-contrib.xml");
         serviceUnderTest = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(serviceUnderTest);
-        openRepository();
+        openSession();
         fireFrameworkStarted();
     }
 
-    @Override
-    public void tearDown() throws Exception  {
-        waitForEventsDispatched();
-        if (coreSession!=null) {
-            closeSession(coreSession);
-        }
+    protected void waitForEventsDispatched() {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    }
 
+    @Override
+    public void tearDown() throws Exception {
+        waitForEventsDispatched();
+        closeSession();
         super.tearDown();
     }
 
     protected DocumentModel doCreateDocument() throws ClientException {
-        DocumentModel rootDocument = coreSession.getRootDocument();
-        DocumentModel model = coreSession.createDocumentModel(
+        DocumentModel rootDocument = session.getRootDocument();
+        DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
-        DocumentModel source = coreSession.createDocument(model);
-        coreSession.save();
+        DocumentModel source = session.createDocument(model);
+        session.save();
         waitForEventsDispatched();
         return source;
     }
 
- /*   public void testLogMessage() throws ClientException {
-        DocumentModel source = doCreateDocument();
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
-        assertEquals(1, entries.size());
-
-        LogEntry entry = entries.get(0);
-        assertEquals("eventDocumentCategory", entry.getCategory());
-        assertEquals("project", entry.getDocLifeCycle());
-        assertEquals("/youps", entry.getDocPath());
-        assertEquals("File", entry.getDocType());
-        assertEquals("documentCreated", entry.getEventId());
-        assertEquals("Administrator", entry.getPrincipalName());
-        assertEquals("test", entry.getRepositoryId());
-    }
-*/
     public void testLogDocumentMessageWithoutCategory() throws ClientException {
         DocumentModel source = doCreateDocument();
-        EventContext ctx = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), source);
+        EventContext ctx = new DocumentEventContext(session,
+                session.getPrincipal(), source);
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
@@ -141,8 +127,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     public void testLogDocumentMessageWithCategory() throws ClientException {
         DocumentModel source = doCreateDocument();
-        EventContext ctx = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), source);
+        EventContext ctx = new DocumentEventContext(session,
+                session.getPrincipal(), source);
         ctx.setProperty("category", "myCategory");
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
@@ -187,10 +173,10 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     public void testsyncLogCreation() throws Exception {
         doCreateDocument();
-        DocumentModel rootDocument = coreSession.getRootDocument();
+        DocumentModel rootDocument = session.getRootDocument();
         long count = serviceUnderTest.syncLogCreationEntries(
-                coreSession.getRepositoryName(),
-                rootDocument.getPathAsString(), true);
+                session.getRepositoryName(), rootDocument.getPathAsString(),
+                true);
         assertEquals(2, count);
 
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
@@ -203,7 +189,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("/", entry.getDocPath());
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
-        assertEquals(SecurityConstants.SYSTEM_USERNAME, entry.getPrincipalName());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME,
+                entry.getPrincipalName());
         assertEquals("test", entry.getRepositoryId());
     }
 
@@ -214,8 +201,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
     }
 
     public void TODOtestCount() throws Exception {
-        CoreSession session = getCoreSession();
-        DocumentModel rootDocument = getCoreSession().getRootDocument();
+        DocumentModel rootDocument = session.getRootDocument();
         DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");

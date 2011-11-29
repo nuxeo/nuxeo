@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -28,8 +30,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
-
-import java.util.List;
 
 public class TestRealRemoting extends SQLRepositoryTestCase {
 
@@ -56,6 +56,12 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
 
         openSession();
         fireFrameworkStarted();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     protected void createInitialDocs() throws Exception {

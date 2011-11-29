@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -265,16 +266,15 @@ public class NXAuditEventsService extends DefaultComponent implements
             String exp = descriptor.getExpression();
             Serializable value = null;
             try {
-                value = expressionEvaluator.evaluateExpression(
-                    context, exp, Serializable.class);
+                value = expressionEvaluator.evaluateExpression(context, exp,
+                        Serializable.class);
             } catch (ELException e) {
                 continue;
             }
             if (value == null) {
                 continue;
             }
-            extendedInfos.put(descriptor.getKey(),
-                    newExtendedInfo(value));
+            extendedInfos.put(descriptor.getKey(), newExtendedInfo(value));
         }
     }
 
@@ -551,10 +551,9 @@ public class NXAuditEventsService extends DefaultComponent implements
             String dateRange, String[] category, String path, int pageNb,
             int pageSize) {
         try {
-            return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds,
-                    dateRange,category,path,pageNb,pageSize);
-        }
-        catch (ClientException e) {
+            return LogEntryProvider.createProvider(em).queryLogsByPage(
+                    eventIds, dateRange, category, path, pageNb, pageSize);
+        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
@@ -600,16 +599,23 @@ public class NXAuditEventsService extends DefaultComponent implements
             String path, Boolean recurs) {
         LogEntryProvider provider = LogEntryProvider.createProvider(em);
         provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
-        CoreSession session = guardedCoreSession(repoId);
-        DocumentRef rootRef = new PathRef(path);
-        DocumentModel root = guardedDocument(session, rootRef);
-        long nbAddedEntries = doSyncNode(provider, session, root, recurs);
+        CoreSession session = null;
+        try {
+            session = guardedCoreSession(repoId);
+            DocumentRef rootRef = new PathRef(path);
+            DocumentModel root = guardedDocument(session, rootRef);
+            long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-        if (log.isDebugEnabled()) {
-            log.debug("synced " + nbAddedEntries + " entries on " + path);
+            if (log.isDebugEnabled()) {
+                log.debug("synced " + nbAddedEntries + " entries on " + path);
+            }
+
+            return nbAddedEntries;
+        } finally {
+            if (session != null) {
+                CoreInstance.getInstance().close(session);
+            }
         }
-
-        return nbAddedEntries;
     }
 
     protected long doSyncNode(LogEntryProvider provider, CoreSession session,
@@ -735,7 +741,7 @@ public class NXAuditEventsService extends DefaultComponent implements
                 break;
             }
         }
-        if (! processEvents) {
+        if (!processEvents) {
             return;
         }
         for (Event event : eventBundle) {
@@ -750,8 +756,8 @@ public class NXAuditEventsService extends DefaultComponent implements
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
-            logDocumentEvent(em, event.getName(), docCtx, new Date(
-                    event.getTime()));
+            logDocumentEvent(em, event.getName(), docCtx,
+                    new Date(event.getTime()));
         } else {
             logMiscEvent(em, event.getName(), ctx, new Date(event.getTime()));
         }
@@ -836,32 +842,33 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     // Compat APIs
 
-    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange,
-            String category, String path, int pageNb, int pageSize) {
-        String[] categories = {category};
-        return queryLogsByPage(em,eventIds,dateRange,
-                categories, path,pageNb,pageSize);
+    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
+            String dateRange, String category, String path, int pageNb,
+            int pageSize) {
+        String[] categories = { category };
+        return queryLogsByPage(em, eventIds, dateRange, categories, path,
+                pageNb, pageSize);
     }
 
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
             String category, String path, int pageNb, int pageSize) {
-        String[] categories = {category};
-        return queryLogsByPage(eventIds,dateRange,
-                categories, path,pageNb,pageSize);
+        String[] categories = { category };
+        return queryLogsByPage(eventIds, dateRange, categories, path, pageNb,
+                pageSize);
     }
 
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
             String category, String path, int pageNb, int pageSize) {
-        String[] categories = {category};
-        return queryLogsByPage(eventIds,limit,
-                categories, path,pageNb,pageSize);
+        String[] categories = { category };
+        return queryLogsByPage(eventIds, limit, categories, path, pageNb,
+                pageSize);
     }
 
-    public List<LogEntry> queryLogsByPage(EntityManager em,String[] eventIds, Date limit,
-            String category, String path, int pageNb, int pageSize) {
-        String[] categories = {category};
-        return queryLogsByPage(em,eventIds,limit,
-                categories, path,pageNb,pageSize);
+    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
+            Date limit, String category, String path, int pageNb, int pageSize) {
+        String[] categories = { category };
+        return queryLogsByPage(em, eventIds, limit, categories, path, pageNb,
+                pageSize);
     }
 
     @Override
