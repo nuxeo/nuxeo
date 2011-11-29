@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.relations.jena;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.relations.CoreGraphFactory;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -32,6 +34,8 @@ import org.nuxeo.runtime.api.Framework;
  * graph.
  */
 public class JenaOrCoreGraphFactory implements GraphFactory {
+
+    private static final Log log = LogFactory.getLog(JenaOrCoreGraphFactory.class);
 
     // used for tests
     protected static JenaGraph testJenaGraph;
@@ -55,11 +59,13 @@ public class JenaOrCoreGraphFactory implements GraphFactory {
             // Jena graph already contains data, use it
             service.graphFactories.remove(name);
             service.graphRegistry.put(name, graph);
+            log.info("Graph " + name + " using Jena");
         } else {
             // use a core graph and remember this factory
             GraphFactory factory = new CoreGraphFactory();
             service.graphFactories.put(name, factory);
             graph = factory.createGraph(graphDescription, session);
+            log.info("Graph " + name + " using Core");
         }
         return graph;
     }
