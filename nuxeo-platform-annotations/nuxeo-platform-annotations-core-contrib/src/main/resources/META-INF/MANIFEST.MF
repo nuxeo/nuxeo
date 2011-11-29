@@ -5,6 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.annotations.contrib;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: core,stateful
 Nuxeo-Component: OSGI-INF/annotations-relations-contrib.xml,
-  OSGI-INF/annotations-audit-contrib.xml,
-  OSGI-INF/annotation-repository-jena-contrib.xml
+  OSGI-INF/annotations-audit-contrib.xml
 Require-Bundle: org.nuxeo.ecm.relations
