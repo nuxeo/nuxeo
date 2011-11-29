@@ -97,7 +97,8 @@ public class TestSetupWizardActionBean {
         parameters = setupWizardActionBean.getParameters();
         advancedParameters = setupWizardActionBean.getAdvancedParameters();
         parameters.put("nuxeo.bind.address", "127.0.0.1");
-        parameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
+        parameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME,
+                "postgresql");
         advancedParameters.put("test.default.nuxeo.defaults", "false");
         setupWizardActionBean.saveParameters();
         System.out.println("Generated nuxeoConf: " + nuxeoConf);
@@ -113,7 +114,7 @@ public class TestSetupWizardActionBean {
                 if (newStr.startsWith("server.status.key")) {
                     assertTrue(expStr.startsWith("server.status.key"));
                 } else {
-                    assertEquals(newStr, expStr);
+                    assertEquals(expStr, newStr);
                 }
             }
         }
