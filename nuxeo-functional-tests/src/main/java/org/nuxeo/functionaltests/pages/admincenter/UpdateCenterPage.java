@@ -33,9 +33,17 @@ public class UpdateCenterPage extends AdminCenterBasePage {
         super(driver);
     }
 
+    protected static void wait(int nbSeconds) {
+        try {
+            Thread.sleep(nbSeconds * 1000);
+        } catch (InterruptedException e) {
+        }
+    }
     public PackageListingPage getPackageListingPage() {
-        IFrameHelper.focusOnWEIFrame(driver);
-        findElementWithTimeout(By.tagName("body")); // wait for IFrame Body
+        boolean iframeFound = IFrameHelper.focusOnWEIFrame(driver);
+        assert(iframeFound);
+        WebElement body = findElementWithTimeout(By.tagName("body")); // wait for IFrame Body
+        assert (body!=null);
         PackageListingPage page = asPage(PackageListingPage.class);
         WebElement listing = findElementWithTimeout(By.xpath("//table[@class='packageListing']"));
         assert (listing != null);
@@ -43,8 +51,20 @@ public class UpdateCenterPage extends AdminCenterBasePage {
     }
 
     public UpdateCenterPage getPackagesFromNuxeoMarketPlace() {
+
         packagesFromNuxeoMarketPlaceLink.click();
         return asPage(UpdateCenterPage.class);
     }
 
+    public boolean removePlatformFilterOnMarketPlacePage() {
+        WebElement chk = findElementWithTimeout(By.xpath("(.//*/input[@type='checkbox'])[2]"));
+        if (chk==null) {
+            return false;
+        }
+        if ("true".equals(chk.getAttribute("checked"))) {
+            chk.click();
+            wait(2);
+        }
+        return true;
+    }
 }

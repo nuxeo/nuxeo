@@ -338,6 +338,9 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
         updateCenterHome = updateCenterHome.getPackagesFromNuxeoMarketPlace();
 
+        // ensure there is no filter
+        updateCenterHome.removePlatformFilterOnMarketPlacePage();
+
         // Get listing in IFrame
         PackageListingPage packageListing = updateCenterHome.getPackageListingPage();
 
@@ -353,11 +356,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         assertNotNull(packageListing);
         WebElement packageLink = packageListing.getPackageLink(MARKETPLACE_PACKAGE_ID);
         assertNotNull(packageLink);
-        if (isWindows()) {
-            assertTrue(packageLink.getText().trim().toLowerCase().startsWith("restart"));
-        } else {
-            assertTrue(packageLink.getText().trim().toLowerCase().startsWith("uninstall"));
-        }
+        assertTrue(packageLink.getText().trim().toLowerCase().startsWith("restart"));
 
         updateCenterHome = packageListing.exit();
         assertNotNull(updateCenterHome);
