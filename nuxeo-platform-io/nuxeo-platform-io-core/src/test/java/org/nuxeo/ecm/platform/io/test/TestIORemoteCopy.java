@@ -125,7 +125,6 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.comment.api");
         deployBundle("org.nuxeo.ecm.platform.comment");
-        deployBundle("org.nuxeo.ecm.platform.comment.core");
 
         InitialContext ctx1 = new InitialContext();
         System.err.println(ctx1.lookup("java:/comment-relations"));

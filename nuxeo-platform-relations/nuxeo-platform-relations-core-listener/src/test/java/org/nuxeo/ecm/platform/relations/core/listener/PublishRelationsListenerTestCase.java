@@ -62,7 +62,6 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.relations.core.listener");
         deployBundle("org.nuxeo.ecm.platform.comment.api");
         deployBundle("org.nuxeo.ecm.platform.comment");
-        deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployBundle("org.nuxeo.ecm.platform.relations.core.listener.tests");
         openSession();
 
