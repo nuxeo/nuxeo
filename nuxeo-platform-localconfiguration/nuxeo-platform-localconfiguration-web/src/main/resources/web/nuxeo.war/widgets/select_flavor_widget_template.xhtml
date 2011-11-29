@@ -15,7 +15,7 @@
     value="#{nxu:test(empty currentLocalFlavorName, defaultFlavorName, currentLocalFlavorName)}">
 
   <a4j:region renderRegionOnly="true">
-    <h:panelGrid columns="3">
+    <h:panelGrid columns="3" columnClasses=",flavorPreview,flavorWaiter">
 
       <h:panelGroup>
         <nxu:set var="flavors"
@@ -40,12 +40,6 @@
           styleClass="errorStyleClass" />            
       </h:panelGroup>
 
-      <a4j:status>
-        <f:facet name="start">
-          <h:graphicImage value="/img/standart_waiter.gif" />
-        </f:facet>
-      </a4j:status>
-
       <nxu:valueHolder id="#{widget.id}_valueHolder"
         var="selectedFlavorName"
         defaultValue="#{origSelectedFlavorName}"
@@ -56,12 +50,12 @@
             cache="true">
             <c:choose>
               <c:when test="#{! empty selectedFlavor.logo.previewPath}">
-                <h:graphicImage value="#{selectedFlavor.logo.previewPath}" width="100px" />
+                <h:graphicImage value="#{selectedFlavor.logo.previewPath}" class="palettePreviewLogo" />
               </c:when>
               <c:otherwise>
                 <c:choose>
                   <c:when test="#{! empty selectedFlavor.logo.path}">
-                    <h:graphicImage value="#{selectedFlavor.logo.path}" width="100px" />
+                    <h:graphicImage value="#{selectedFlavor.logo.path}" class="palettePreviewLogo" />
                   </c:when>
                   <c:otherwise>
                     #{messages['label.local.configuration.theme.flavorSelection.noPreviewAvailable']}
@@ -79,7 +73,7 @@
                       <c:if test="#{paletteColorStatus.index % 3 == 0}">
                         <f:verbatim escape="false">&lt;tr&gt;</f:verbatim>
                       </c:if>
-                      <td style="background-color:#{colorValue}"></td>
+                      <td style="background-color:#{colorValue}"><div></div></td>
                       <c:if test="#{paletteColorStatus.index % 3 == 2}">
                         <f:verbatim escape="false">&lt;/tr&gt;</f:verbatim>
                       </c:if>
@@ -91,6 +85,12 @@
           </nxu:set>
         </a4j:outputPanel>
       </nxu:valueHolder>
+
+      <a4j:status>
+        <f:facet name="start">
+          <h:graphicImage value="/img/standart_waiter.gif" />
+        </f:facet>
+      </a4j:status>
 
     </h:panelGrid>
   </a4j:region>
