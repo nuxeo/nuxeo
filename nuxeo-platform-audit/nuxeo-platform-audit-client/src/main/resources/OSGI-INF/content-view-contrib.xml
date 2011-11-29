@@ -53,7 +53,7 @@
       <resultLayouts>
         <layout name="history_listing" title="history_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true" />
+          showCSVExport="true" showPDFExport="false" />
       </resultLayouts>
 
     </contentView>
