@@ -290,8 +290,7 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public synchronized Graph getGraph(String name, CoreSession session)
-            throws ClientException {
+    public Graph getGraph(String name, CoreSession session) {
         GraphDescription graphDescription = graphDescriptions.get(name);
         if (name == null) {
             throw new RuntimeException("No such graph: " + name);

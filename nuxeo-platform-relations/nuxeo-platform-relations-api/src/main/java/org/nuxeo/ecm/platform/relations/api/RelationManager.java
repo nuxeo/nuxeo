@@ -45,7 +45,7 @@ public interface RelationManager extends Serializable {
      *
      * @since 5.5
      */
-    Graph getGraph(String name, CoreSession session) throws ClientException;
+    Graph getGraph(String name, CoreSession session);
 
     /**
      * Gets a registered graph by name.

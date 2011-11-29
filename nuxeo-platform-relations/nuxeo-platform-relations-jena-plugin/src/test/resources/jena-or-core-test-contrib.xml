@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.relations.test.jena-or-core">
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="jenagraph" type="jena">
+    </graph>
+    <graph name="jenaorcoregraph" type="jena-or-core">
+    </graph>
+    <graph name="jenaorcoregraph2" type="jena-or-core">
+    </graph>
+  </extension>
+
+</component>

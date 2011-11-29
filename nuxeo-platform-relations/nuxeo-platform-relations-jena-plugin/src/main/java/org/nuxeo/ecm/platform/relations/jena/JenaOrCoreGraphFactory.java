@@ -33,6 +33,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JenaOrCoreGraphFactory implements GraphFactory {
 
+    // used for tests
+    protected static JenaGraph testJenaGraph;
+
     @Override
     public Graph createGraph(GraphDescription graphDescription,
             CoreSession session) {
@@ -40,7 +43,13 @@ public class JenaOrCoreGraphFactory implements GraphFactory {
                 RelationService.NAME);
         String name = graphDescription.getName();
 
-        Graph graph = new JenaGraph();
+        Graph graph;
+        if (testJenaGraph == null) {
+            graph = new JenaGraph();
+        } else {
+            // test mode, allows reuse of in-memory graph
+            graph = testJenaGraph;
+        }
         graph.setDescription(graphDescription);
         if (graph.size().longValue() > 0) {
             // Jena graph already contains data, use it
