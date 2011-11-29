@@ -59,14 +59,12 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="HasRelatedText"/>
-      <facet name="HasRelatedText"/>
       <facet name="Asset"/>
     </doctype>
 
     <doctype name="Video" extends="Document">
       <schema name="common" />
       <schema name="dublincore" />
-      <schema name="file" />
       <schema name="uid" />
       <facet name="Commentable" />
       <facet name="Versionable" />
@@ -80,7 +78,6 @@
     <doctype name="Audio" extends="Document">
       <schema name="common" />
       <schema name="dublincore" />
-      <schema name="file" />
       <schema name="uid" />
       <facet name="Audio" />
       <facet name="Commentable" />
