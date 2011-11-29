@@ -10,9 +10,9 @@
     <version>5.5-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-jbpm-core</artifactId>
-  <name>Nuxeo JPBM Core Service</name>
-  <description>The core functionalities for the jBPM service.</description>
+  <artifactId>nuxeo-platform-jbpm-task-migration</artifactId>
+  <name>Nuxeo JPBM task migration</name>
+  <description>Task migration tools for JBPM.</description>
 
   <dependencies>
     <dependency>
@@ -71,6 +71,26 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-task-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-task-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-task-automation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-comment-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
     </dependency>
 
     <!-- test -->

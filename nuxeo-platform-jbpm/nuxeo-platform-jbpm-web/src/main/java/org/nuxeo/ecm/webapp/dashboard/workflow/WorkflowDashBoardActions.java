@@ -35,25 +35,21 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
-import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItemImpl;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItem;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItemImpl;
-import org.nuxeo.ecm.platform.jbpm.dashboard.WorkflowDashBoard;
+import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 @Name("workflowDashBoardActions")
 @Scope(ScopeType.CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
-public class WorkflowDashBoardActions implements Serializable,
-        WorkflowDashBoard {
+public class WorkflowDashBoardActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -67,38 +63,15 @@ public class WorkflowDashBoardActions implements Serializable,
     @In(required = false)
     protected transient Principal currentUser;
 
+    @In(required = false)
+    protected transient TaskDashBoardActions taskDashBoardActions;
+
     private static final Log log = LogFactory.getLog(WorkflowDashBoardActions.class);
 
     public Collection<DashBoardItem> computeDashboardItems()
             throws ClientException {
         if (currentUserTasks == null) {
-            currentUserTasks = new ArrayList<DashBoardItem>();
-            NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-            List<TaskInstance> tasks = jbpmService.getCurrentTaskInstances(pal,
-                    null);
-            if (tasks != null) {
-                for (TaskInstance task : tasks) {
-                    try {
-                        if (task.hasEnded() || task.isCancelled()) {
-                            continue;
-                        }
-                        DocumentModel doc = jbpmService.getDocumentModel(task,
-                                pal);
-                        if (doc != null
-                                && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                            currentUserTasks.add(new DashBoardItemImpl(task,
-                                    doc));
-                        } else {
-                            log.warn(String.format(
-                                    "User '%s' has a task of type '%s' on a "
-                                            + "missing or deleted document",
-                                    currentUser.getName(), task.getName()));
-                        }
-                    } catch (Exception e) {
-                        log.error(e);
-                    }
-                }
-            }
+            currentUserTasks = taskDashBoardActions.computeDashboardItems();
         }
         return currentUserTasks;
     }

@@ -17,25 +17,13 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.jbpm.dashboard;
+package org.nuxeo.ecm.plateform.jbpm.web.task;
 
-import java.util.Collection;
+import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
-public interface WorkflowDashBoard {
+public class JBPMTaskMigrationActions implements Serializable {
 
-    Collection<DashBoardItem> computeDashboardItems() throws ClientException;
 
-    Collection<DocumentProcessItem> computeDocumentProcessItems()
-            throws ClientException;
-
-    void invalidateDocumentProcessItems();
-
-    void invalidateDashboardItems();
-
-    String refreshDashboardItems();
-
-    String refreshDocumentProcessItems();
 
 }

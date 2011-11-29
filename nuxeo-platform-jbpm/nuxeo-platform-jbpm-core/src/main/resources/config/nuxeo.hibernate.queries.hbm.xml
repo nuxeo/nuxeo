@@ -16,6 +16,7 @@
       and si1.name = 'documentId'
       and si2.name = 'documentRepositoryName'
       and si1.token.processInstance.end is null
+      and si1.token.processInstance.isSuspended != true
     ]]>
   </query>
 
@@ -25,6 +26,7 @@
       from org.jbpm.context.exe.variableinstance.StringInstance si
       where si.value in (:initiators)
       and si.name = 'initiator'
+      and si.token.processInstance.isSuspended != true
     ]]>
   </query>
 
@@ -41,6 +43,7 @@
       and si1.value = :docId
       and si2.value = :repoId
       and t.end is null
+      and t.isSuspended != true
     ]]>
   </query>
 </hibernate-mapping>

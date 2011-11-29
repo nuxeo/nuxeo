@@ -14,7 +14,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="automationTaskListener" async="false" postCommit="false"
+    <listener name="automationJBPMTaskListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.automation.jbpm.event.TaskEndedEventListener"
       priority="200">
       <event>workflowTaskCompleted</event>

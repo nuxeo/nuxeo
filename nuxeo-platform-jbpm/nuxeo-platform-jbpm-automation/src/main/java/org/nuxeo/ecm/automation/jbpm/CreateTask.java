@@ -60,7 +60,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
         + "versus \"the first who achieve the task makes it disappear for the others\".</p>")
 public class CreateTask {
 
-    public static final String ID = "Workflow.CreateTask";
+    public static final String ID = "Workflow.CreateJBPMTask";
 
     private static final Log log = LogFactory.getLog(CreateTask.class);
 

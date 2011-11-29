@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = UserTaskPageProviderOperation.ID, category = Constants.CAT_SERVICES, label = "UserTaskPageProvider", description = "Returns the tasks waiting for the current user.")
 public class UserTaskPageProviderOperation extends AbstractWorkflowOperation {
 
-    public static final String ID = "Workflow.UserTaskPageProvider";
+    public static final String ID = "Workflow.UserJBPMTaskPageProvider";
 
     public static final String USER_TASKS_PAGE_PROVIDER = "user_tasks";
 

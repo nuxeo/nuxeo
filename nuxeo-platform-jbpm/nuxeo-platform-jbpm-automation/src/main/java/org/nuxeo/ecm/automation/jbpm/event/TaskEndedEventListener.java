@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.jbpm.event;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,14 +45,15 @@ public class TaskEndedEventListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(TaskEndedEventListener.class);
 
+    @Override
     public void handleEvent(Event event) throws ClientException {
         EventContext eventContext = event.getContext();
-        TaskInstance task = (TaskInstance) eventContext.getProperty(JbpmTaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY);
-        if (task == null) {
+        Serializable property = eventContext.getProperty(JbpmTaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY);
+        if (property == null || !(property instanceof TaskInstance)) {
             // do nothing
             return;
         }
-
+        TaskInstance task = (TaskInstance) property;
         Boolean validated = Boolean.valueOf((String) task.getVariable(JbpmService.TaskVariableName.validated.name()));
 
         String chain;
