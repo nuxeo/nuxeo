@@ -66,6 +66,7 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -141,11 +142,13 @@ public class CommentManagerImpl implements CommentManager {
 
         // FIXME AT: why no filter on the predicate?
         List<Statement> statementList = graph.getStatements(null, null, docResource);
-        // XXX AT: BBB for when repository name was not included in the
-        // resource uri
-        Resource oldDocResource = new QNameResourceImpl(
-                config.documentNamespace, docModel.getId());
-        statementList.addAll(graph.getStatements(null, null, oldDocResource));
+        if (graph instanceof JenaGraph) {
+            // XXX AT: BBB for when repository name was not included in the
+            // resource uri
+            Resource oldDocResource = new QNameResourceImpl(
+                    config.documentNamespace, docModel.getId());
+            statementList.addAll(graph.getStatements(null, null, oldDocResource));
+        }
 
         List<DocumentModel> commentList = new ArrayList<DocumentModel>();
         for (Statement stmt : statementList) {
@@ -586,12 +589,14 @@ public class CommentManagerImpl implements CommentManager {
         Resource predicate = new ResourceImpl(config.predicateNamespace);
 
         List<Statement> statementList = graph.getStatements(commentResource, predicate, null);
-        // XXX AT: BBB for when repository name was not included in the
-        // resource uri
-        Resource oldDocResource = new QNameResourceImpl(
-                config.commentNamespace, comment.getId());
-        statementList.addAll(graph.getStatements(oldDocResource, predicate,
-                null));
+        if (graph instanceof JenaGraph) {
+            // XXX AT: BBB for when repository name was not included in the
+            // resource uri
+            Resource oldDocResource = new QNameResourceImpl(
+                    config.commentNamespace, comment.getId());
+            statementList.addAll(graph.getStatements(oldDocResource, predicate,
+                    null));
+        }
 
         List<DocumentModel> docList = new ArrayList<DocumentModel>();
         for (Statement stmt : statementList) {

@@ -3,7 +3,8 @@
 
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
     point="graphs">
-    <graph name="default" type="jena">
+    <graph name="default" type="jena-or-core">
+      <option name="doctype">DefaultRelation</option>
       <option name="backend">sql</option>
       <option name="databaseType">
         ${org.nuxeo.ecm.sql.jena.databaseType}

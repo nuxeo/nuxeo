@@ -3,7 +3,8 @@
 
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
     point="graphs">
-    <graph name="documentComments" type="jena">
+    <graph name="documentComments" type="jena-or-core">
+      <option name="doctype">CommentRelation</option>
       <option name="backend">sql</option>
       <option name="databaseType">
         ${org.nuxeo.ecm.sql.jena.databaseType}
