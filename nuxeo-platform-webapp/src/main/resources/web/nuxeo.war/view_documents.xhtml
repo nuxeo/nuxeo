@@ -22,9 +22,11 @@
   <ui:define name="body">
     <div>
 
-      <nxl:documentLayout documentMode="header" mode="view"
-        value="#{currentDocument}" defaultLayout="document_header"
-        includeAnyMode="false" />
+      <h:form id="document_header_layout_form">
+        <nxl:documentLayout documentMode="header" mode="view"
+          value="#{currentDocument}" defaultLayout="document_header"
+          includeAnyMode="false" />
+      </h:form>
 
       <ui:include src="/incl/message_banner.xhtml"/>
 
