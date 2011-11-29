@@ -77,7 +77,8 @@ system("hg pull")
 system("hg up %s" % branch)
 log("")
 
-root_url = url_normpath(check_output(["hg", "path", "default"]))
+log("Using maven introspection of the pom.xml files"
+    " to find the list of sub-repositories")
 for line in os.popen("mvn -N help:effective-pom"):
     line = line.strip()
     m = re.match("<module>(.*?)</module>", line)
@@ -88,6 +89,7 @@ for line in os.popen("mvn -N help:effective-pom"):
 
 fetch("nuxeo-distribution")
 
+root_url = url_normpath(check_output(["hg", "path", "default"]))
 if root_url.startswith("http"):
     root_url = url_normpath(root_url.replace("/nuxeo", ""))
 fetch("addons")
