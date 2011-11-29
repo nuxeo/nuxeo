@@ -324,6 +324,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     return o1.compareToIgnoreCase(o2);
                 }
             });
+            printDeploymentOrderInfo(names);
             for (String name : names) {
                 if (name.endsWith("-config.xml")
                         || name.endsWith("-bundle.xml")) {
@@ -357,6 +358,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
 
         loadDefaultConfig();
+    }
+
+    protected static void printDeploymentOrderInfo(String[] fileNames) {
+        StringBuilder buf = new StringBuilder();
+        for (String fileName : fileNames) {
+            buf.append("\n\t" + fileName);
+        }
+        log.info("Deployment order of configuration files: " + buf.toString());
     }
 
     @Override

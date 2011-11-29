@@ -43,7 +43,6 @@ import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FrameworkLoader {
 
@@ -102,6 +101,7 @@ public class FrameworkLoader {
         FrameworkLoader.bundleFiles = bundleFiles == null ? new ArrayList<File>()
                 : bundleFiles;
         Collections.sort(FrameworkLoader.bundleFiles);
+
         loader = cl;
         doInitialize(hostEnv);
         osgi = new OSGiAdapter(home);
@@ -162,12 +162,23 @@ public class FrameworkLoader {
         }
     }
 
+    protected static void printDeploymentOrderInfo(List<File> files) {
+        StringBuilder buf = new StringBuilder();
+        for (File file : files) {
+            if (file != null) {
+                buf.append("\n\t" + file.getPath());
+            }
+        }
+        log.info("Deployment order: " + buf.toString());
+    }
+
     private static void doStart() throws Exception {
         printStartMessage();
         // install system bundle first
         BundleFile bf = new SystemBundleFile(home);
         SystemBundle systemBundle = new SystemBundle(osgi, bf, loader);
         osgi.setSystemBundle(systemBundle);
+        printDeploymentOrderInfo(bundleFiles);
         for (File f : bundleFiles) {
             try {
                 install(f);
