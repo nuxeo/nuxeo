@@ -9,19 +9,25 @@ You can build a complete Tomcat or JBoss distribution with the Nuxeo DAM
 application included, using the following commands:
 
     $ ant assemble-tomcat 
+
 or
+
     $ ant assemble-jboss
 
-The generated zip should be available in::
+The generated zip should be available in:
 
     nuxeo-dam-distribution/target/nuxeo-dam-distribution-X.X-SNAPSHOT-tomcat.zip
+
 or
+
     nuxeo-dam-distribution/target/nuxeo-dam-distribution-X.X-SNAPSHOT-jboss.zip
 
-After unzipping, make the nuxeoctl script runnable and launch Nuxeo DAM:
+After unzipping, make the `nuxeoctl` script runnable and launch Nuxeo DAM:
 
     $ cd nuxeo-dam-X.X-SNAPSHOT-tomcat
+
 or
+
     $ cd nuxeo-dam-X.X-SNAPSHOT-jboss
     $ chmod a+x bin/nuxeoctl
     $ ./bin/nuxeoctl start
