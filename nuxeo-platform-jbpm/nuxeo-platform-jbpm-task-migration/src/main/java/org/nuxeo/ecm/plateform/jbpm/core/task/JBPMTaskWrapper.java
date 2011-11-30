@@ -18,6 +18,8 @@ import org.nuxeo.ecm.platform.task.TaskComment;
 
 public class JBPMTaskWrapper implements Task {
 
+    private static final long serialVersionUID = 1L;
+
     private TaskInstance ti;
 
     private String directive;

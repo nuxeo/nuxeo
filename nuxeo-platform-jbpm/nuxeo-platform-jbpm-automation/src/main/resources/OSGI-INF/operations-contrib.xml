@@ -3,10 +3,6 @@
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
-    <operation class="org.nuxeo.ecm.automation.jbpm.CreateTask" />
-    <operation class="org.nuxeo.ecm.automation.jbpm.GetUserTasks" />
-    <operation
-      class="org.nuxeo.ecm.automation.jbpm.UserTaskPageProviderOperation" />
     <operation
       class="org.nuxeo.ecm.automation.jbpm.UserProcessPageProviderOperation" />
   </extension>

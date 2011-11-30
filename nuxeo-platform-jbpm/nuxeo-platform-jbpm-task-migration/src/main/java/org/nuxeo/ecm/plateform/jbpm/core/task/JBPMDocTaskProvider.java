@@ -30,6 +30,8 @@ import org.nuxeo.runtime.api.Framework;
 
 public class JBPMDocTaskProvider implements TaskProvider {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String PUBLISHER_JBPMTASK_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
 
     public static final String PUBLISHER_TASK_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
