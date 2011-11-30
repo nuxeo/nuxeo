@@ -17,8 +17,6 @@
 # Variables used:
 # ${idType} VARCHAR(36)
 # ${fulltextCatalog} configured catalog
-# ${fulltextTriggerStatements} repeated for all suffixes SFX:
-#   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
 # ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
 # ${usersSeparator} default is "|", but it depends on the configuration
 # Conditions used:
