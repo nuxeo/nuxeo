@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -68,7 +68,7 @@ import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFac
         "org.nuxeo.ecm.relations.jena",
         "org.nuxeo.ecm.platform.publisher.core.contrib",
         "org.nuxeo.ecm.platform.publisher.core",
-        "org.nuxeo.ecm.platform.publisher.task",
+        "org.nuxeo.ecm.platform.publisher.jbpm",
         JbpmUTConstants.CORE_BUNDLE_NAME,
         JbpmUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher"})
