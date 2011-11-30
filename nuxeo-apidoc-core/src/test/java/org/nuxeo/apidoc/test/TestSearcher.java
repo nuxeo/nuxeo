@@ -85,7 +85,15 @@ public class TestSearcher extends SQLRepositoryTestCase {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());
         }
 
-        CoreInstance.getInstance().close(session);
+
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        if (session!=null) {
+            CoreInstance.getInstance().close(session);
+        }
+        super.tearDown();
     }
 
 }

@@ -28,6 +28,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -156,6 +157,14 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         assertEquals("testTitle", foundItems.get(0).getTitle());
         assertEquals("newContent3", foundItems.get(0).getContent());
 
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        if (session!=null) {
+            CoreInstance.getInstance().close(session);
+        }
+        super.tearDown();
     }
 
 }

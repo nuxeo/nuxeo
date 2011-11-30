@@ -17,6 +17,7 @@
 package org.nuxeo.apidoc.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -33,8 +34,9 @@ public class BundleGroupTreeHelper {
             List<BundleGroupFlatTree> tree) {
         BundleGroupFlatTree info = new BundleGroupFlatTree(group, level);
         tree.add(info);
-
-        for (BundleGroup subGroup : group.getSubGroups()) {
+        List<BundleGroup> subGroups = group.getSubGroups();
+        Collections.sort(subGroups, new NuxeoArtifactComparator());
+        for (BundleGroup subGroup : subGroups) {
             browseBundleGroup(subGroup, level + 1, tree);
         }
     }
@@ -48,7 +50,10 @@ public class BundleGroupTreeHelper {
 
     public List<BundleGroupFlatTree> getBundleGroupTree() {
         List<BundleGroupFlatTree> tree = new ArrayList<BundleGroupFlatTree>();
-        for (BundleGroup group : distrib.getBundleGroups()) {
+
+        List<BundleGroup> bgroups = distrib.getBundleGroups();
+        Collections.sort(bgroups, new NuxeoArtifactComparator());
+        for (BundleGroup group : bgroups) {
             browseBundleGroup(group, 0, tree);
         }
         return tree;
