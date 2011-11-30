@@ -35,6 +35,8 @@ import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -60,6 +62,8 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  *
  */
 public class FormData implements FormInstance {
+    
+    private static Log log = LogFactory.getLog(FormData.class);
 
     public static final String PROPERTY = "property";
     public static final String TITLE = "dc:title";
@@ -224,7 +228,13 @@ public class FormData implements FormInstance {
             }
         }
         String ctype  = item.getContentType();
+
         StreamingBlob blob = new StreamingBlob(src, ctype == null ? "application/octet-stream" : ctype);
+        try {
+            blob.persist();
+        } catch (IOException e) {
+            log.error(e, e);
+        }
         blob.setFilename(item.getName());
         return blob;
     }
