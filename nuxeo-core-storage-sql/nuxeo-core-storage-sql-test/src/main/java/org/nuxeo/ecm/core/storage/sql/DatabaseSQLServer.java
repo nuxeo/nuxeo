@@ -17,6 +17,8 @@ import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author Florent Guillaume
  */
@@ -38,7 +40,8 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     private static final String DRIVER = "net.sourceforge.jtds.jdbc.Driver";
 
-    private static void setProperties() {
+    private void setProperties() {
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(SERVER_PROPERTY, DEF_SERVER);
         setProperty(PORT_PROPERTY, DEF_PORT);
         setProperty(DATABASE_PROPERTY, DEF_DATABASE);

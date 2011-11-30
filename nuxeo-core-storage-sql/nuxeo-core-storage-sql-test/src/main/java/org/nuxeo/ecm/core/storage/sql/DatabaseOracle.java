@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
@@ -46,7 +47,8 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final String DRIVER = "oracle.jdbc.driver.OracleDriver";
 
-    private static void setProperties() {
+    private void setProperties() {
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(URL_PROPERTY, DEF_URL);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);

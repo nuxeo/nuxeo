@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
@@ -43,6 +44,7 @@ public class DatabaseDerby extends DatabaseHelper {
     protected String url;
 
     protected void setProperties() {
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, new File(DIRECTORY).getAbsolutePath());
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);

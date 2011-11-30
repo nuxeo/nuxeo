@@ -40,8 +40,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     private static final String DRIVER = "org.postgresql.Driver";
 
     protected void setProperties() {
-        Properties properties = Framework.getProperties();
-        properties.setProperty(REPOSITORY_PROPERTY, repositoryName);
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(SERVER_PROPERTY, DEF_SERVER);
         setProperty(PORT_PROPERTY, DEF_PORT);

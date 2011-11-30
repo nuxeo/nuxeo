@@ -17,6 +17,8 @@ import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author Florent Guillaume
  */
@@ -34,7 +36,8 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     private static final String DRIVER = "com.mysql.jdbc.Driver";
 
-    private static void setProperties() {
+    private void setProperties() {
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(URL_PROPERTY, DEF_URL);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
