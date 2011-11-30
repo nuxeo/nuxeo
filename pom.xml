@@ -61,6 +61,7 @@
     <module>nuxeo-birt</module>
     <module>nuxeo-social-collaboration</module>
     <module>nuxeo-platform-suggestbox</module>
+    <module>nuxeo-dam</module>
   </modules>
 
   <dependencyManagement>
@@ -612,6 +613,38 @@
       <dependency>
         <groupId>org.nuxeo.rss.reader</groupId>
         <artifactId>nuxeo-rss-reader-ui</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- DAM -->
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-lang</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-importer-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-importer-jaxrs</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>

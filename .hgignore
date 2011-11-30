@@ -6,6 +6,7 @@ nuxeo-rss-reader
 nuxeo-birt
 nuxeo-platform-suggestbox
 target
+nuxeo-dam
 
 syntax: regexp
 
