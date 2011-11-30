@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.api.AbstractDocumentationItem;
+import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 
-public class SimpleDocumentationItem extends AbstractDocumentationItem {
+public class SimpleDocumentationItem extends AbstractDocumentationItem implements DocumentationItem {
 
     protected List<String> applicableVersion = new ArrayList<String>();
 
