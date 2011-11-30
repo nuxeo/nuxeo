@@ -47,6 +47,16 @@
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-marketplace-dm</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nuxeo-dam</id>
+      <modules>
+        <module>nuxeo-distribution-coreserver</module>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-marketplace-dam</module>
       </modules>
     </profile>
     <profile>
@@ -59,6 +69,8 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
@@ -72,6 +84,8 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
@@ -88,6 +102,8 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
@@ -101,6 +117,8 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-tomcat-tests</module>
       </modules>
@@ -114,8 +132,11 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
+        <!-- <module>nuxeo-distribution-dam/ftest/selenium</module> -->
       </modules>
     </profile>
     <profile>
@@ -297,6 +318,35 @@
         <version>${nuxeo.distribution.version}</version>
         <classifier>jar-with-dependencies</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-dam</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-dam</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>resources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-tomcat</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>nuxeo-dam</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-tomcat</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>nuxeo-dam-importer</classifier>
+      </dependency>
+
+      <!-- Test scope -->
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-functional-tests</artifactId>

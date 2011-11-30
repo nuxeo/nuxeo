@@ -72,6 +72,10 @@
       <!-- default profile for building Tomcat with only Nuxeo DM -->
     </profile>
     <profile>
+      <id>nuxeo-dam</id>
+      <!-- default profile for building Tomcat with only Nuxeo DAM -->
+    </profile>
+    <profile>
       <id>sdk</id>
       <!-- profile for building SDK distributions (they are always built when release
         profile is activated) -->
@@ -99,6 +103,7 @@
         <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
           <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile>
         </configuration>
         <executions>
           <execution>
