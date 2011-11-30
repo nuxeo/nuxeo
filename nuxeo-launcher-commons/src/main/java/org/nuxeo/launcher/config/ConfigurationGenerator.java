@@ -887,9 +887,8 @@ public class ConfigurationGenerator {
      */
     public void verifyInstallation() throws ConfigurationException {
         String JavaVersion = System.getProperty("java.version");
-        if ((!JavaVersion.startsWith("1.6"))
-                && (!JavaVersion.startsWith("1.7"))) {
-            String message = "Nuxeo requires Java 6 or 7(detected "
+        if ((!JavaVersion.startsWith("1.6"))) {
+            String message = "Nuxeo requires Java 6 (detected "
                     + JavaVersion + ").";
             if ("nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
                 log.error(message);
