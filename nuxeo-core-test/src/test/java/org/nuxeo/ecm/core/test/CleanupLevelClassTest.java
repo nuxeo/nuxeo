@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.test;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -40,6 +41,9 @@ public class CleanupLevelClassTest {
         assertTrue(session.exists(new PathRef("/default-domain")));
     }
 
+    // test order isn't guaranteed (and changed under Java 7)
+    // so this cannot work
+    @Ignore
     @Test
     public void docStillExists() throws Exception {
         assertTrue(session.exists(new PathRef("/default-domain")));
