@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Bogdan Stefanescu
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
@@ -47,9 +47,9 @@ public interface RuntimeHarness {
     /**
      * Deploys a whole OSGI bundle.
      * <p>
-     * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
-     * and then falls back to the bundle url (e.g., <code>nuxeo-platform-search-api</code>)
-     * for backwards compatibility.
+     * The lookup is first done on symbolic name, as set in
+     * <code>MANIFEST.MF</code> and then falls back to the bundle url (e.g.,
+     * <code>nuxeo-platform-search-api</code>) for backwards compatibility.
      *
      * @param bundle the symbolic name
      */
@@ -58,9 +58,7 @@ public interface RuntimeHarness {
     /**
      * Undeploys a contribution from a given bundle.
      * <p>
-     * The path will be relative to the bundle root.
-     * Example:
-     * <code>
+     * The path will be relative to the bundle root. Example: <code>
      * undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
      *
@@ -81,30 +79,30 @@ public interface RuntimeHarness {
     @Deprecated
     void undeploy(String contrib);
 
-    RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception;
+    RuntimeContext deployTestContrib(String bundle, URL contrib)
+            throws Exception;
 
     /**
      * Deploys an XML contribution from outside a bundle.
      * <p>
-     * This should be used by tests
-     * wiling to deploy test contribution as part of a real bundle.
+     * This should be used by tests wiling to deploy test contribution as part
+     * of a real bundle.
      * <p>
-     * The bundle owner is important since the contribution may depend on resources
-     * deployed in that bundle.
+     * The bundle owner is important since the contribution may depend on
+     * resources deployed in that bundle.
      * <p>
      * Note that the owner bundle MUST be an already deployed bundle.
      *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
      */
-    RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception;
+    RuntimeContext deployTestContrib(String bundle, String contrib)
+            throws Exception;
 
     /**
      * Deploys a contribution from a given bundle.
      * <p>
-     * The path will be relative to the bundle root.
-     * Example:
-     * <code>
+     * The path will be relative to the bundle root. Example: <code>
      * deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
      * <p>
@@ -119,8 +117,8 @@ public interface RuntimeHarness {
     /**
      * Deploys a contribution file by looking for it in the class loader.
      * <p>
-     * The first contribution file found by the class loader will be used.
-     * You have no guarantee in case of name collisions.
+     * The first contribution file found by the class loader will be used. You
+     * have no guarantee in case of name collisions.
      *
      * @deprecated use the less ambiguous {@link #deployContrib(String, String)}
      * @param contrib the relative path to the contribution file
@@ -149,7 +147,6 @@ public interface RuntimeHarness {
      * Framework properties for variable injections
      *
      * @since 5.4.2
-     * @return
      */
     Properties getProperties();
 
@@ -158,7 +155,6 @@ public interface RuntimeHarness {
      * Runtime context for deployment
      *
      * @since 5.4.2
-     * @return
      */
     RuntimeContext getContext();
 
@@ -167,7 +163,18 @@ public interface RuntimeHarness {
      * OSGI bridge
      *
      * @since 5.4.2
-     * @return
      */
     OSGiAdapter getOSGiAdapter();
+
+    /**
+     * @since 5.5
+     */
+    public boolean isRestart();
+
+    /**
+     * @since 5.5
+     * @throws Exception
+     */
+    public void restart() throws Exception;
+
 }

@@ -12,10 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id$
  */
 
 package org.nuxeo.runtime.test;
@@ -95,6 +94,11 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
 
     protected boolean restart = false;
 
+    @Override
+    public boolean isRestart() {
+        return restart;
+    }
+
     protected OSGiAdapter osgi;
 
     protected Bundle runtimeBundle;
@@ -122,7 +126,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
     /**
      * Restarts the runtime and preserve homes directory.
      */
-    protected void restart() throws Exception {
+    @Override
+    public void restart() throws Exception {
         restart = true;
         try {
             tearDown();
@@ -195,6 +200,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         try {
             if (!restart) {
                 Environment.setDefault(null);
+                System.getProperties().remove("nuxeo.home");
                 workingDir = File.createTempFile("NXOSGITestFramework",
                         generateId());
                 workingDir.delete();
