@@ -7,7 +7,6 @@ import java.util.List;
 
 public abstract class AbstractDocumentationItem implements DocumentationItem {
 
-
     @Override
     public int compareTo(DocumentationItem o) {
 
@@ -19,12 +18,12 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
         Collections.reverse(myVersions);
         Collections.reverse(otherVersions);
 
-        if (myVersions.size()==0) {
-            if (otherVersions.size()==0) {
+        if (myVersions.isEmpty()) {
+            if (otherVersions.isEmpty()) {
                 return 0;
             }
             return 1;
-        } else if (otherVersions.size()==0) {
+        } else if (otherVersions.isEmpty()) {
             return -1;
         }
 

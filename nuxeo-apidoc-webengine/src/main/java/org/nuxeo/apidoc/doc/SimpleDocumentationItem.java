@@ -21,10 +21,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.apidoc.api.DocumentationItem;
+import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 
-public class SimpleDocumentationItem implements DocumentationItem {
+public class SimpleDocumentationItem extends AbstractDocumentationItem {
 
     protected List<String> applicableVersion = new ArrayList<String>();
 

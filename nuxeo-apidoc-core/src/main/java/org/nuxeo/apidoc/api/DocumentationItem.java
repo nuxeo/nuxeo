@@ -63,7 +63,7 @@ public interface DocumentationItem extends Comparable<DocumentationItem> {
     String getTypeLabel();
 
     /**
-     * Gets versions
+     * Gets versions.
      */
     List<String> getApplicableVersion();
 
@@ -74,42 +74,38 @@ public interface DocumentationItem extends Comparable<DocumentationItem> {
 
     /**
      * Gets the Type of the target documented artifact (NXBundle, NXComponent
-     * ...)
+     * ...).
      */
     String getTargetType();
 
     /**
-     * Indicates if documentation has been validated by Nuxeo
+     * Indicates if documentation has been validated by Nuxeo.
      */
     boolean isApproved();
 
     /**
-     * Local documentation identifier
+     * Local documentation identifier.
      */
     String getId();
 
     /**
-     * UUID of the underlying DocumentModel
+     * UUID of the underlying DocumentModel.
      */
     String getUUID();
 
     /**
-     * Returns attachments
+     * Returns attachments.
      */
     Map<String, String> getAttachments();
 
     /**
-     * Return true if item is a placeholder automatically generated
-     *
-     * @return
+     * Return true if item is a placeholder automatically generated.
      */
     boolean isPlaceHolder();
 
     /**
      * Return the id used by quick editor (can contains a real UUID for existing
-     * doc or an artifact id for new one)
-     *
-     * @return
+     * doc or an artifact id for new one).
      */
     String getEditId();
 
