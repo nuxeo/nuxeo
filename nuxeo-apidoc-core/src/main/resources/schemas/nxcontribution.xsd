@@ -9,9 +9,15 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="16384" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:element name="contribId" type="xs:string"/>
   <xs:element name="targetComponentName" type="xs:string"/>
   <xs:element name="extensionPoint" type="xs:string"/>
-  <xs:element name="documentation" type="xs:string"/>
+  <xs:element name="documentation" type="nxcontribution:longString"/>
 
 </xs:schema>

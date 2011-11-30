@@ -273,6 +273,12 @@ public class SnapshotPersister {
             DistributionSnapshot snapshot, CoreSession session, String label,
             ExtensionPointInfo epi, DocumentModel parent)
             throws ClientException {
+        System.out.println("EPID : " + epi.getId().length() + " :" + epi.getId());
+        System.out.println("Name : " + epi.getName().length() + " :" + epi.getName());
+        if (epi.getDocumentation()!=null) {
+            System.out.println("Desc : " + epi.getDocumentation().length() + " :" + epi.getDocumentation());
+        }
+
         try {
             return ExtensionPointInfoDocAdapter.create(epi, session,
                     parent.getPathAsString()).getDoc();

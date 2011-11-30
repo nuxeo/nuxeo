@@ -9,11 +9,16 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="16384" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:element name="componentId" type="xs:string"/>
   <xs:element name="componentName" type="xs:string"/>
   <xs:element name="componentClass" type="xs:string"/>
-  <xs:element name="builtInDocumentation" type="xs:string"/>
+  <xs:element name="builtInDocumentation" type="nxcomponent:longString"/>
   <xs:element name="isXML" type="xs:boolean"/>
 
   <xs:element name="services" type="nxcomponent:stringList"/>

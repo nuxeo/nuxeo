@@ -3,6 +3,12 @@
   targetNamespace="http://nuxeo.org/schemas/nxextensionpoint"
   xmlns:nxextensionpoint="http://nuxeo.org/schemas/nxextensionpoint">
 
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="16384" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="stringList">
     <xs:sequence>
       <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
@@ -10,7 +16,7 @@
   </xs:complexType>
 
   <xs:element name="name" type="xs:string"/>
-  <xs:element name="documentation" type="xs:string"/>
+  <xs:element name="documentation" type="nxextensionpoint:longString"/>
   <xs:element name="extensionPoint" type="nxextensionpoint:stringList"/>
   <xs:element name="epId" type="xs:string"/>
 
