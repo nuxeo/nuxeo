@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -79,7 +80,8 @@ public abstract class BaseVideoConversionConverter extends
 
         try {
             String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
-            String outFileName = baseName + getVideoExtension();
+            String outFileName = StringUtils.deleteWhitespace(baseName)
+                    + getVideoExtension();
             cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, new File(outDir,
                     outFileName).getAbsolutePath());
 
