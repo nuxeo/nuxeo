@@ -772,6 +772,11 @@ public class ConfigurationGenerator {
                                     + System.getProperty("line.separator"));
                         } else {
                             int equalIdx = line.indexOf("=");
+                            if (line.startsWith("#" + PARAM_TEMPLATES_NAME)
+                                    || line.startsWith(PARAM_TEMPLATES_NAME)) {
+                                // Backward compliance, it must be ignored
+                                continue;
+                            }
                             if (line.trim().startsWith("#")) {
                                 String key = line.substring(1, equalIdx).trim();
                                 String value = line.substring(equalIdx + 1).trim();
