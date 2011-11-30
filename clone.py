@@ -48,7 +48,7 @@ def system_with_retries(cmd):
     while True:
         retries += 1
         retcode = system(cmd, False)
-        if retcode == 0: break
+        if retcode == 0: return 0
         if retries > 10:
             system(cmd, True)
         else:
