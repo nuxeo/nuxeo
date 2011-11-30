@@ -61,8 +61,11 @@ def fetch(module):
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
-    branch, tag = check_output(["hg", "id", "-bt"]).split()
-    if tag != "tip":
+    t = check_output(["hg", "id", "-bt"]).split()
+    branch = t[0]
+    if (len(t) > 1):
+        tag = t[1]
+    if 'tag' in globals() and tag != "tip":
         branch = tag
 
 def url_normpath(url):
