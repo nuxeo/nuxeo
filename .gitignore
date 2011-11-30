@@ -1,0 +1,11 @@
+syntax: glob
+*.class
+target
+bin
+gen
+.classpath
+.settings
+.project
+build.properties
+*.iml
+*.log
