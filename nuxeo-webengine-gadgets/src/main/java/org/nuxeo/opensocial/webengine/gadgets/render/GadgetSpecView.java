@@ -156,7 +156,7 @@ public class GadgetSpecView {
                     VirtualHostHelper.getContextPathProperty() + "/");
             input.put("specDirectoryUrl",
                     VirtualHostHelper.getContextPathProperty()
-                            + "/site/gadgets/" + gadget.getDirectory() + "/");
+                            + "/site/gadgets/" + gadget.getName() + "/");
             input.put("insideNuxeo", true);
         } else {
             // we are called by an external gadget container
@@ -164,7 +164,7 @@ public class GadgetSpecView {
             input.put("serverSideBaseUrl", specAccessUrl);
             input.put("clientSideBaseUrl", specAccessUrl);
             input.put("specDirectoryUrl", specAccessUrl + "site/gadgets/"
-                    + gadget.getDirectory() + "/");
+                    + gadget.getName() + "/");
             input.put("insideNuxeo", false);
         }
 
