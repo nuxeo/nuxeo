@@ -113,7 +113,8 @@ public class TaskPageProvidersTest extends RepositoryOSGITestCase {
         // check first single task
         DashBoardItem task = tasks.get(0);
         assertNotNull(task.getStartDate());
-        assertEquals("Test Task Name", task.getName());
+        // There is no sort order, we can not assert which one is the first
+        assertTrue(task.getName(), task.getName().startsWith("Test Task Name"));
         assertEquals("test comment", task.getComment());
         assertNull(task.getDescription());
         assertEquals("test directive", task.getDirective());
@@ -129,7 +130,7 @@ public class TaskPageProvidersTest extends RepositoryOSGITestCase {
         assertEquals(1, tasks.size());
         // check second single task
         task = tasks.get(0);
-        assertEquals("Test Task Name 2", task.getName());
+
         assertEquals("test comment", task.getComment());
         assertNull(task.getDescription());
         assertEquals("test directive", task.getDirective());
@@ -137,7 +138,7 @@ public class TaskPageProvidersTest extends RepositoryOSGITestCase {
         assertEquals(document, task.getDocument());
         assertNotNull(task.getDueDate());
         assertNotNull(task.getStartDate());
-
+        assertTrue(task.getName(), task.getName().startsWith("Test Task Name"));
         assertTrue(taskProvider.isPreviousPageAvailable());
         assertFalse(taskProvider.isNextPageAvailable());
     }
