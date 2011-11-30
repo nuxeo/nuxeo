@@ -13,6 +13,8 @@
     @author Anahide Tchertchian (at@nuxeo.com)
   </documentation>
 
+  <require>org.nuxeo.ecm.platform.forms.layout.LayoutStore</require>
+
   <implementation
     class="org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManagerImpl" />
 
