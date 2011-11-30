@@ -67,7 +67,7 @@ def check_output(cmd):
     return out.strip()
 
 
-def hg_fetch(module, branch, base_url):
+def hg_fetch(module, branch):
     cwd = os.getcwd()
     if os.path.isdir(module):
         log("Updating " + module + "...")
@@ -75,21 +75,23 @@ def hg_fetch(module, branch, base_url):
         system("hg pull")
     else:
         log("Cloning " + module + "...")
-        system("hg clone %s/%s %s" % (base_url, module, module))
+        system("hg clone %s/%s %s" % (hg_url, module, module))
         os.chdir(module)
     system("hg up %s" % branch)
     os.chdir(cwd)
     log("")
 
 
-def git_fetch(module, branch, base_url):
+def git_fetch(module, branch):
     cwd = os.getcwd()
-    if base_url.startswith("http"):
-        repo_url = "%s/%s.git" % (base_url, module)
+    if git_url.startswith("git@github.com"):
+        repo_url = "%s/%s.git" % (git_url, module)
     else:
-        repo_url = "%s/%s" % (base_url, module)
-    if not os.path.isdir(module):
-        log("Cloning " + module)
+        repo_url = "%s/%s" % (git_url, module)
+    if os.path.isdir(module):
+        log("Updating " + module + "...")
+    else:
+        log("Cloning " + module + "...")
         system("git clone %s %s" % (repo_url, module))
     os.chdir(module)
 
@@ -98,7 +100,14 @@ def git_fetch(module, branch, base_url):
     alias = None
     for remote_line in remote_lines:
         remote_alias, remote_url, _ = remote_line.split()
+        # backward compliance with repositories cloned with HTTP URL
+        if remote_url.startswith("http"):
+            repo_url_http = "%s/%s.git" % (git_url_http, module)
         if repo_url == remote_url:
+            alias = remote_alias
+            break
+        elif repo_url_http == remote_url:
+            log("WARN: fallback on %s (you should use %s)." % (repo_url_http, repo_url))
             alias = remote_alias
             break
     if alias is None:
@@ -109,20 +118,17 @@ def git_fetch(module, branch, base_url):
     # check whether we should use a specific branch or the master
     # (assumed to be the main development branch for git repos)
     if branch not in check_output(["git", "ls-remote", alias]).split("/"):
-        log(branch + " not found on remote repo: fallback on master.")
+        #log(branch + " not found on remote repo: fallback on master.")
         branch = "master"
 
     # the branch is a tag name
     if branch in check_output(["git", "tag"]).split():
-        log("Checking out tag %s" % branch)
         system("git checkout %s" % branch)
     # create the local branch if missing
     elif branch not in check_output(["git", "branch"]).split():
-        log("Checking out new local branch %s" % branch)
         system("git checkout -b %s %s/%s" % (branch, alias, branch))
     # reuse local branch
     else:
-        log("Checking out existing local branch %s" % branch)
         system("git checkout %s" % branch)
         log("Updating branch")
         system("git pull %s" % alias)
@@ -145,8 +151,11 @@ long_path_workaround_init()
 if len(sys.argv) > 1:
     branch = sys.argv[1]
 else:
-    branch, tag = check_output(["hg", "id", "-bt"]).split()
-    if tag != "tip":
+    t = check_output(["hg", "id", "-bt"]).split()
+    branch = t[0]
+    if (len(t) > 1):
+        tag = t[1]
+    if 'tag' in globals() and tag != "tip":
         branch = tag
 
 log("Cloning/updating addons pom")
@@ -156,8 +165,11 @@ log("")
 
 hg_url = url_normpath(check_output(["hg", "path", "default"]))
 if hg_url.startswith("http"):
-    git_url = url_normpath(hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo"))
+    git_url_http = url_normpath(hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo"))
+    # prefer use of git@github.com:nuxeo/addon.git instead of https://github.com/nuxeo/addon.git
+    git_url = "git@github.com:nuxeo"
 else:
+    # use filesystem path as URL
     git_url = hg_url
 
 retries = 0
@@ -191,9 +203,9 @@ for line in all_lines:
         continue
     addon = m.group(1)
     if addon in hg_addons:
-        hg_fetch(addon, branch, hg_url)
+        hg_fetch(addon, branch)
     else:
-        git_fetch(addon, branch, git_url)
+        git_fetch(addon, branch)
 
 long_path_workaround_cleanup()
 
