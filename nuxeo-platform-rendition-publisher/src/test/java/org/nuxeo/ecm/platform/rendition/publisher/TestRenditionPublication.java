@@ -31,11 +31,11 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
+import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -68,9 +68,9 @@ import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFac
         "org.nuxeo.ecm.relations.jena",
         "org.nuxeo.ecm.platform.publisher.core.contrib",
         "org.nuxeo.ecm.platform.publisher.core",
-        "org.nuxeo.ecm.platform.publisher.jbpm",
-        JbpmUTConstants.CORE_BUNDLE_NAME,
-        JbpmUTConstants.TESTING_BUNDLE_NAME,
+        "org.nuxeo.ecm.platform.publisher.task",
+        TaskUTConstants.CORE_BUNDLE_NAME,
+        TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher"})
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
