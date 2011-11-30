@@ -102,8 +102,10 @@
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
-          <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-          <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+            <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile>
+          </buildFiles>
         </configuration>
         <executions>
           <execution>
