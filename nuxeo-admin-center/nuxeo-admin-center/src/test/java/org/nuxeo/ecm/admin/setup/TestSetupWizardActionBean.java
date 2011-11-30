@@ -109,13 +109,14 @@ public class TestSetupWizardActionBean {
         String newStr, expStr;
         while ((newStr = bfNew.readLine()) != null) {
             expStr = bfExp.readLine();
-            if (!newStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN)) {
+            if (newStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN)) {
+                // BOUNDARY is generated, we can't test an exact match
+                assertTrue(expStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN));
+            } else if (newStr.startsWith("server.status.key")) {
                 // server.status.key is generated, we can't test an exact match
-                if (newStr.startsWith("server.status.key")) {
-                    assertTrue(expStr.startsWith("server.status.key"));
-                } else {
-                    assertEquals(expStr, newStr);
-                }
+                assertTrue(expStr.startsWith("server.status.key"));
+            } else {
+                assertEquals(expStr, newStr);
             }
         }
         expStr = bfExp.readLine();
