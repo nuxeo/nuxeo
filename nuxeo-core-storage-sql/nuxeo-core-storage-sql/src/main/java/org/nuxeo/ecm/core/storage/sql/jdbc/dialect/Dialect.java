@@ -1250,4 +1250,15 @@ public abstract class Dialect {
         return null;
     }
 
+    /**
+     * Gets the SQL descending sort direction with option to sort nulls last.
+     *
+     * Use to unify database behavior.
+     *
+     * @return DESC or DESC NULLS LAST depending on dialects.
+     */
+    public String getDescending() {
+        return " DESC";
+    }
+
 }

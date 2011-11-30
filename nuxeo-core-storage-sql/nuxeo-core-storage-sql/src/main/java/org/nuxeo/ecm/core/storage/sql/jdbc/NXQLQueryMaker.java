@@ -1874,7 +1874,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 buf.append(dialect.closeQuote());
             }
             if (node.isDescending) {
-                buf.append(" DESC");
+                buf.append(dialect.getDescending());
             }
         }
 

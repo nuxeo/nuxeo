@@ -629,4 +629,9 @@ public class DialectOracle extends Dialect {
         return "SELECT NX_ANCESTORS(?) FROM DUAL";
     }
 
+    @Override
+    public String getDescending() {
+        return " DESC NULLS LAST";
+    }
+
 }

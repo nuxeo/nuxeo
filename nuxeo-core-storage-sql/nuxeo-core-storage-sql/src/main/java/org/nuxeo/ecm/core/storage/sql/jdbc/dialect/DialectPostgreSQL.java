@@ -1010,4 +1010,9 @@ public class DialectPostgreSQL extends Dialect {
         return "SELECT NX_ANCESTORS(?)";
     }
 
+    @Override
+    public String getDescending() {
+        return " DESC NULLS LAST";
+    }
+
 }
