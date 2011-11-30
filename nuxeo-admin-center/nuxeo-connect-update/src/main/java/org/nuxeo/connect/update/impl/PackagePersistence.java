@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -133,7 +133,7 @@ public class PackagePersistence {
                 ZipUtils.unzip(file, tmp);
                 return addPackageFromDir(tmp);
             } catch (IOException e) {
-                throw new PackageException("Faild to unzip package: "
+                throw new PackageException("Failed to unzip package: "
                         + file.getName());
             } finally {
                 if (tmp.isDirectory()) { // should never happen
