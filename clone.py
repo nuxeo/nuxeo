@@ -43,6 +43,18 @@ def system(cmd, failonerror=True):
             sys.exit(retcode)
     return retcode
 
+def system_with_retries(cmd):
+    retries = 0
+    while True:
+        retries += 1
+        retcode = system(cmd, False)
+        if retcode == 0: break
+        if retries > 10:
+            system(cmd, True)
+        else:
+            log("Error executing %s - retrying in 10 seconds" % (cmd,))
+            time.sleep(10)
+
 def long_path_workaround_init():
     # On Windows, try to map the current directory to an unused drive letter to shorten path names
     if platform.system() != "Windows": return
@@ -72,10 +84,10 @@ def hg_fetch(module, branch):
     if os.path.isdir(module):
         log("Updating " + module + "...")
         os.chdir(module)
-        system("hg pull")
+        system_with_retries("hg pull")
     else:
         log("Cloning " + module + "...")
-        system("hg clone %s/%s %s" % (hg_url, module, module))
+        system_with_retries("hg clone %s/%s %s" % (hg_url, module, module))
         os.chdir(module)
     system("hg up %s" % branch)
     os.chdir(cwd)
