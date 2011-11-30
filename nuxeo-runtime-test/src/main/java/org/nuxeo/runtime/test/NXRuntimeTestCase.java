@@ -200,7 +200,9 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         try {
             if (!restart) {
                 Environment.setDefault(null);
-                System.getProperties().remove("nuxeo.home");
+                if (System.getProperties().remove("nuxeo.home") != null) {
+                    log.warn("Removed System property nuxeo.home.");
+                }
                 workingDir = File.createTempFile("NXOSGITestFramework",
                         generateId());
                 workingDir.delete();
@@ -261,7 +263,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
                 urls[i] = new URL("file:" + paths[i]);
             }
         } else {
-            log.warn("Unknow classloader type: "
+            log.warn("Unknown classloader type: "
                     + classLoader.getClass().getName()
                     + "\nWon't be able to load OSGI bundles");
             return;
