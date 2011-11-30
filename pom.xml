@@ -2,16 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
-    <groupId>org.nuxeo.ecm.distribution</groupId>
-    <artifactId>nuxeo-distribution</artifactId>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.dam</groupId>
   <artifactId>nuxeo-dam-parent</artifactId>
-  <version>5.5-SNAPSHOT</version>
   <name>Nuxeo DAM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DAM Parent</description>
@@ -23,85 +21,6 @@
     <module>nuxeo-dam-lang</module>
     <module>nuxeo-dam-web</module>
   </modules>
-
-  <properties>
-    <nuxeo.dam.version>5.5-SNAPSHOT</nuxeo.dam.version>
-  </properties>
-
-  <profiles>
-    <profile>
-      <!-- Build all distributions -->
-      <id>all-distributions</id>
-      <modules>
-        <module>nuxeo-distribution-dam</module>
-        <module>nuxeo-distribution-dam-tomcat</module>
-        <module>nuxeo-marketplace-dam</module>
-      </modules>
-    </profile>
-  </profiles>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-distribution-dam</artifactId>
-        <version>${nuxeo.dam.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-distribution-dam</artifactId>
-        <version>${nuxeo.dam.version}</version>
-        <type>zip</type>
-        <classifier>resources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-distribution-dam</artifactId>
-        <version>${nuxeo.dam.version}</version>
-        <type>zip</type>
-        <classifier>tomcat</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam.distribution</groupId>
-        <artifactId>nuxeo-distribution-dam</artifactId>
-        <version>${nuxeo.dam.version}</version>
-        <type>zip</type>
-        <classifier>tomcat-importer</classifier>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-api</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-core</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-web</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-lang</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-importer-core</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-importer-jaxrs</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <repositories>
     <repository>
@@ -152,8 +71,8 @@
   </pluginRepositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo-dam</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-dam</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo-dam</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-dam.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-dam.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-dam</url>
   </scm>
 </project>

@@ -1,3 +1,0 @@
-import.root.path=/default-domain/import-root
-
-org.nuxeo.dam.import.async=false
