@@ -99,9 +99,10 @@ public class TestConfig extends AbstractCommandTest {
         assertTrue(configurationGenerator.init());
 
         log.info("Install done. nuxeo.conf content:");
-        BufferedReader reader = new BufferedReader(new FileReader(configurationGenerator.getNuxeoConf()));
+        BufferedReader reader = new BufferedReader(new FileReader(
+                configurationGenerator.getNuxeoConf()));
         String line;
-        while ((line=reader.readLine())!=null) {
+        while ((line = reader.readLine()) != null) {
             log.info(line);
         }
         reader.close();
@@ -132,9 +133,10 @@ public class TestConfig extends AbstractCommandTest {
         assertTrue(configurationGenerator.init());
 
         log.info("Uninstall done. nuxeo.conf content:");
-        BufferedReader reader = new BufferedReader(new FileReader(configurationGenerator.getNuxeoConf()));
+        BufferedReader reader = new BufferedReader(new FileReader(
+                configurationGenerator.getNuxeoConf()));
         String line;
-        while ((line=reader.readLine())!=null) {
+        while ((line = reader.readLine()) != null) {
             log.info(line);
         }
         reader.close();
