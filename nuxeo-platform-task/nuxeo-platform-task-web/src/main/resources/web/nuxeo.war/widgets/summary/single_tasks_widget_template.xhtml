@@ -9,7 +9,7 @@
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.associatedTasks']}" />
     </h3>
-    
+
     <table class="dataOutput">
       <thead>
         <tr>
@@ -34,7 +34,7 @@
           <tr>
             <td>
               <c:set var="createdFromCreateTaskOperation"
-                value="#{task.getVariableLocally('createdFromCreateTaskOperation') == 'true'}" />
+                value="#{task.getVariable('createdFromCreateTaskOperation') == 'true'}" />
               <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />
               <c:if test="#{createdFromCreateTaskOperation}">
                 #{task.name}
@@ -133,7 +133,7 @@
         </table>
       </div>
     </h:panelGroup>
-    
+
   </c:if>
 
 </div>

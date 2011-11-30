@@ -281,7 +281,13 @@ public class TaskImpl implements Task {
     protected void setPropertyValue(String propertyName, Object value) {
         try {
             if (value != null) {
-                doc.setPropertyValue(propertyName, (Serializable) value);
+                if (value instanceof Date) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime((Date)value);
+                    doc.setPropertyValue(propertyName, cal);
+                } else {
+                    doc.setPropertyValue(propertyName, (Serializable) value);
+                }
             }
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
