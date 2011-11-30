@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.publisher.task.contrib">
+<component name="org.nuxeo.ecm.platform.publisher.jbpm.contrib">
 
  <require>org.nuxeo.ecm.platform.publisher.contrib</require>
  
@@ -9,7 +9,7 @@
       point="factory">
 
     <publishedDocumentFactory name="CoreProxyWithWorkflow"
-                              class="org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory"
+                              class="org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory"
                               validatorsRule="CoreValidatorsRule"/>
 
   </extension>

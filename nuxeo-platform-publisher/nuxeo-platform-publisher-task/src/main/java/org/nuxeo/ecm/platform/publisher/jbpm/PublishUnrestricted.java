@@ -14,34 +14,46 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.publisher.task;
+package org.nuxeo.ecm.platform.publisher.jbpm;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
  * @author arussel
- *
  */
-public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
-    private final DocumentModel document;
-    private final String aclName;
-    public RemoveACLUnrestricted(CoreSession session, DocumentModel document, String aclName) {
+public class PublishUnrestricted extends UnrestrictedSessionRunner {
+    private DocumentModel newProxy;
+
+    private final DocumentModel docToPublish;
+
+    private final DocumentModel sectionToPublishTo;
+
+    private final boolean overwriteProxy;
+
+    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
+            DocumentModel sectionToPublishTo) {
+        this(session, docToPublish, sectionToPublishTo, true);
+    }
+
+    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
+            DocumentModel sectionToPublishTo, boolean overwriteProxy) {
         super(session);
-        this.document = document;
-        this.aclName = aclName;
+        this.sectionToPublishTo = sectionToPublishTo;
+        this.docToPublish = docToPublish;
+        this.overwriteProxy = overwriteProxy;
     }
 
     @Override
     public void run() throws ClientException {
-        ACP acp = document.getACP();
-        acp.removeACL(aclName);
-        session.setACP(document.getRef(), acp, true);
+        newProxy = session.publishDocument(docToPublish, sectionToPublishTo, overwriteProxy);
         session.save();
-        acp = document.getACP();
+    }
+
+    public DocumentModel getModel() {
+        return newProxy;
     }
 
 }

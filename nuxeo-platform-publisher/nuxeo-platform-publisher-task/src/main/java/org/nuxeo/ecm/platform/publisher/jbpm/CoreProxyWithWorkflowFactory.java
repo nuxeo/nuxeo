@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.ecm.platform.publisher.task;
+package org.nuxeo.ecm.platform.publisher.jbpm;
 
 import java.io.Serializable;
 import java.util.Arrays;

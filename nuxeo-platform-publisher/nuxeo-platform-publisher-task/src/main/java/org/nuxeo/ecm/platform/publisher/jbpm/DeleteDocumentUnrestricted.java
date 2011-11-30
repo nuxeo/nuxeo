@@ -14,7 +14,7 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.publisher.task;
+package org.nuxeo.ecm.platform.publisher.jbpm;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
