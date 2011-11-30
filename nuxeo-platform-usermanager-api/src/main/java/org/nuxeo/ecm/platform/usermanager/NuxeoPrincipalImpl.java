@@ -341,7 +341,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                                 + groupName + " group that does not exists");
                     }
                 } else {
-                    groupsToProcess.addAll(nxGroup.getParentGroups());
+                    groupsToProcess.addAll(nxGroup.getMemberGroups());
                     // fetch the group name from the returned entry in case
                     // it does not have the same case than the actual entry in
                     // directory (for case insensitive directories)
