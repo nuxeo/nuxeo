@@ -10,25 +10,12 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <!--src>themes/theme-galaxy-user-center.xml</src-->
-      <src>themes/theme-galaxy-user-center-new.xml</src>
+      <src>themes/user-center.xml</src>
     </theme>
 
   </extension>
 
-  <!--extension target="org.nuxeo.theme.services.ThemeService" point="views">
-
-    <view name="Nuxeo DM logo (Galaxy User Center Theme)"
-      template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/logo_DM_galaxy_user_center.xhtml</template>
-    </view>
-
-  </extension-->
-
-  <!-- mapping between theme pages and resources -->
   <!-- Register mapping between theme pages and resources -->
-  <!-- -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <themePage name="userCenter/default">
@@ -51,10 +38,6 @@
         <style>foldable_boxes</style>
         <style>richfaces_components</style>
         <style>tabs_content</style>
-        <style>activity_stream</style>
-        <style>mini_messages</style>
-        <style>relationship_network</style>
-        <style>user_profile</style>
         <style>nuxeo_usercenter_specific</style>
       </styles>
     </themePage>
@@ -62,31 +45,15 @@
   </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <!-- Addons -->
-    <style name="activity_stream">
-      <src>themes/css/activity_stream.css</src>
-    </style>
-    <style name="mini_messages">
-      <src>themes/css/mini_messages.css</src>
-    </style>
-    <style name="relationship_network">
-      <src>themes/css/relationship_network.css</src>
-    </style>
-    <style name="user_profile">
-      <src>themes/css/user_profile.css</src>
-    </style>
-    <!-- Specific to pages -->
     <style name="nuxeo_usercenter_specific">
       <src>themes/css/nuxeo_usercenter_specific.css</src>
     </style>
   </extension>
 
     <!-- application settings -->
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="applications">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
 
-    <application root="${org.nuxeo.ecm.contextPath}"
-      template-engine="jsf-facelets">
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
 
       <view id="/view_home.xhtml">
         <theme>userCenter/default</theme>
@@ -96,20 +63,5 @@
 
   </extension>
 
-  <!-- Styles presets -->
-
-  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
-
-    <palette name="Galaxy User Center borders"
-      src="themes/palettes/galaxy-user-center-borders.properties" category="border" />
-    <palette name="Galaxy User Center backgrounds"
-      src="themes/palettes/galaxy-user-center-backgrounds.properties"
-      category="background" />
-    <palette name="Galaxy User Center fonts"
-      src="themes/palettes/galaxy-user-center-fonts.properties" category="font" />
-    <palette name="Galaxy User Center colors"
-      src="themes/palettes/galaxy-user-center-colors.properties" category="color" />
-
-  </extension>
 
 </component>
