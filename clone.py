@@ -86,13 +86,19 @@ def git_fetch(module, branch):
     cwd = os.getcwd()
     if git_url.startswith("git@github.com"):
         repo_url = "%s/%s.git" % (git_url, module)
+        # backward compliance with repositories cloned with HTTP URL
+        repo_url_http = "%s/%s.git" % (git_url_http, module)
     else:
         repo_url = "%s/%s" % (git_url, module)
     if os.path.isdir(module):
         log("Updating " + module + "...")
     else:
         log("Cloning " + module + "...")
-        system("git clone %s %s" % (repo_url, module))
+        retcode = system("git clone %s %s" % (repo_url, module), False)
+        if retcode != 0:
+            log("WARN: you need a GitHub account to clone from " + repo_url)
+            system("git clone %s %s" % (repo_url_http, module))
+
     os.chdir(module)
 
     # find the nuxeo repo alias
@@ -100,20 +106,17 @@ def git_fetch(module, branch):
     alias = None
     for remote_line in remote_lines:
         remote_alias, remote_url, _ = remote_line.split()
-        # backward compliance with repositories cloned with HTTP URL
-        if remote_url.startswith("http"):
-            repo_url_http = "%s/%s.git" % (git_url_http, module)
         if repo_url == remote_url:
             alias = remote_alias
+            log("Using alias '%s' for %s" % (alias, repo_url))
             break
         elif repo_url_http == remote_url:
-            log("WARN: fallback on %s (you should use %s)." % (repo_url_http, repo_url))
+            log("WARN: fallback on %s (%s is recommended for contributing)." % (repo_url_http, repo_url))
             alias = remote_alias
+            log("Using alias '%s' for %s" % (alias, repo_url_http))
             break
     if alias is None:
         raise ValueError("Failed to find remote repository alias for " + repo_url)
-    else:
-        log("Using alias '%s' for %s" % (alias, repo_url))
 
     # check whether we should use a specific branch or the master
     # (assumed to be the main development branch for git repos)
@@ -203,6 +206,7 @@ for line in all_lines:
         continue
     addon = m.group(1)
     if addon in hg_addons:
+        continue
         hg_fetch(addon, branch)
     else:
         git_fetch(addon, branch)
