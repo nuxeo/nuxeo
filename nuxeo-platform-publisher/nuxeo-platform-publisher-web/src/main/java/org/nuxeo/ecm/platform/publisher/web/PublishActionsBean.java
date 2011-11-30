@@ -277,9 +277,13 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public PublicationTree getCurrentPublicationTreeForPublishing()
             throws ClientException {
         if (currentPublicationTree == null) {
+            String currentPublicationTreeNameForPublishing = getCurrentPublicationTreeNameForPublishing();
+            if (currentPublicationTreeNameForPublishing == null) {
+                return currentPublicationTree;
+            }
             try {
                 currentPublicationTree = publisherService.getPublicationTree(
-                        getCurrentPublicationTreeNameForPublishing(),
+                        currentPublicationTreeNameForPublishing,
                         documentManager, null,
                         navigationContext.getCurrentDocument());
             } catch (PublicationTreeNotAvailable e) {
