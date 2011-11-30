@@ -14,20 +14,20 @@
     <copy todir="${maven.project.build.directory}/marketplace">
       <fileset dir="src/main/resources" />
       <filterset>
-        <filter token="VERSION" value="${nuxeo.dam.version}" />
+        <filter token="VERSION" value="${nuxeo.distribution.version}" />
       </filterset>
     </copy>
     <copy todir="${maven.project.build.directory}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dam::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
     </copy>
-    <nx:zipdiff file1="${maven.project.build.directory}/nuxeo-distribution-dam-${nuxeo.dam.version}.zip"
+    <nx:zipdiff file1="${maven.project.build.directory}/nuxeo-distribution-dam-${nuxeo.distribution.version}.zip"
                 file2="${maven.project.build.directory}/nuxeo-distribution-cap-${nuxeo.distribution.version}.zip"
                 includesfile="${maven.project.build.directory}/includes"
                 excludesfile="${maven.project.build.directory}/excludesfile"
                 patternsetid="dam.versus.cap">
     </nx:zipdiff>
-    <unzip src="${maven.project.build.directory}/nuxeo-distribution-dam-${nuxeo.dam.version}.zip"
+    <unzip src="${maven.project.build.directory}/nuxeo-distribution-dam-${nuxeo.distribution.version}.zip"
            dest="${maven.project.build.directory}/marketplace/install">
       <patternset refid="dam.versus.cap" />
     </unzip>

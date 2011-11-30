@@ -95,7 +95,7 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
   <target name="create-http-importer-distribution" if="importer">
     <copy todir="${nxserver}/bundles" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-importer-jaxrs:${nuxeo.addons.version}" />
-      <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-importer-jaxrs:${nuxeo.dam.version}" />
+      <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-importer-jaxrs:${nuxeo.addons.version}" />
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
