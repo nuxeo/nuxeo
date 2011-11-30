@@ -206,7 +206,6 @@ for line in all_lines:
         continue
     addon = m.group(1)
     if addon in hg_addons:
-        continue
         hg_fetch(addon, branch)
     else:
         git_fetch(addon, branch)
