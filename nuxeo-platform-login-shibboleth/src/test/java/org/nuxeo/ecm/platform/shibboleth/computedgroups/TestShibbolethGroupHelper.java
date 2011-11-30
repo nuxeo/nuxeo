@@ -129,7 +129,7 @@ public class TestShibbolethGroupHelper {
 
         assertTrue(dirRef.getTargetIdsForSource("testRef").size() > 0);
         assertTrue(dirRef.getSourceIdsForTarget("refShib").size() > 0);
-        assertSame("testRef", dirRef.getSourceIdsForTarget("refShib").get(0));
+        assertEquals("testRef", dirRef.getSourceIdsForTarget("refShib").get(0));
     }
 
     @Test
