@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.ColumnInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.ColumnMapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -180,6 +181,14 @@ public class NXQLQueryMaker implements QueryMaker {
     /** Do we match only relations (and therefore no proxies). */
     protected boolean onlyRelations;
 
+    protected final List<String> whatColumnNames = new LinkedList<String>();
+
+    protected final List<String> orderByColumnNames = new LinkedList<String>();
+
+    protected boolean hasIndex;
+
+    protected boolean orderByHasIndex;
+
     protected Boolean proxyClause;
 
     // The hierarchy table for the hierarchy/name, may be an alias table
@@ -230,18 +239,52 @@ public class NXQLQueryMaker implements QueryMaker {
                     sqlQuery);
         }
 
+        // SELECT * -> SELECT ecm:uuid
+        boolean selectStar = sqlQuery.select.isEmpty();
+        if (selectStar) {
+            sqlQuery.select.add(new Reference(NXQL.ECM_UUID));
+        }
+
         /*
          * Find all relevant types and keys for the criteria.
          */
 
-        QueryAnalyzer info = newQueryAnalyzer(queryFilter.getFacetFilter());
+        QueryAnalyzer queryAnalyzer = newQueryAnalyzer(queryFilter.getFacetFilter());
         try {
-            info.visitQuery(sqlQuery);
+            queryAnalyzer.visitQuery(sqlQuery);
         } catch (QueryCannotMatchException e) {
             // query cannot match
             return null;
         } catch (QueryMakerException e) {
             throw new StorageException(e.getMessage(), e);
+        }
+
+        boolean distinct = sqlQuery.select.isDistinct();
+        if (selectStar && hasIndex) {
+            distinct = true;
+        }
+        if (distinct) {
+            // if DISTINCT, check that the ORDER BY columns are all in the
+            // SELECT list
+            Set<String> set = new HashSet<String>(orderByColumnNames);
+            set.removeAll(whatColumnNames);
+            if (!set.isEmpty()) {
+                if (!selectStar) {
+                    throw new StorageException(
+                            "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: "
+                                    + set);
+                }
+                // for a SELECT *, we can add the needed columns if they
+                // don't involve array elements
+                if (orderByHasIndex) {
+                    throw new StorageException(
+                            "For SELECT * the ORDER BY columns cannot use indexes");
+                }
+                for (String name : set) {
+                    sqlQuery.select.add(new Reference(name));
+                }
+                // queryAnalyzer.visitSelectClause(sqlQuery.select);
+            }
         }
 
         /*
@@ -278,14 +321,11 @@ public class NXQLQueryMaker implements QueryMaker {
         List<Select> withSelects = new LinkedList<Select>();
         List<String> withSelectsStatements = new LinkedList<String>();
         List<Serializable> withParams = new LinkedList<Serializable>();
-        boolean distinct = sqlQuery.select.isDistinct();
 
         for (DocKind docKind : docKinds) {
 
             // Quoted id in the hierarchy. This is the id returned by the query.
             String hierId;
-            // Quoted id attached to the data that matches.
-            String dataHierId;
 
             joins = new LinkedList<Join>();
             whereClauses = new LinkedList<String>();
@@ -298,7 +338,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 hierTable = hier;
                 dataHierTable = hierTable;
                 hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
-                dataHierId = hierId;
                 from = hierTable.getQuotedName();
                 break;
             case PROXY:
@@ -307,7 +346,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 // TODO use dialect
                 from = hier.getQuotedName() + " " + hierTable.getQuotedName();
                 hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
-                dataHierId = dataHierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
                 // proxies
                 Table proxies = database.getTable(model.PROXY_TABLE_NAME);
                 String proxiesid = proxies.getColumn(model.MAIN_KEY).getFullQuotedName();
@@ -341,30 +379,20 @@ public class NXQLQueryMaker implements QueryMaker {
                 throw new StorageException(e.getMessage(), e);
             }
             sqlQuery.select.accept(whereBuilder);
-            boolean selectDocuments = whereBuilder.whatColumns.isEmpty();
-            if (selectDocuments) {
-                whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
-                whatKeys = Collections.singletonList(model.MAIN_KEY);
-            } else {
-                whatColumns = whereBuilder.whatColumns;
-                whatKeys = whereBuilder.whatKeys;
-            }
+            whatColumns = whereBuilder.whatColumns;
+            whatKeys = whereBuilder.whatKeys;
 
             /*
              * Process WHERE and ORDER BY.
              */
 
-            if (info.wherePredicate != null) {
-                info.wherePredicate.accept(whereBuilder);
+            if (queryAnalyzer.wherePredicate != null) {
+                queryAnalyzer.wherePredicate.accept(whereBuilder);
                 // WHERE clause
                 String where = whereBuilder.buf.toString();
                 if (where.length() != 0) {
                     whereClauses.add(where);
                 }
-            }
-
-            if (selectDocuments && whereBuilder.needsDistinct) {
-                distinct = true;
             }
 
             // ORDER BY computed just once; may use just aliases
@@ -418,7 +446,7 @@ public class NXQLQueryMaker implements QueryMaker {
             fixWhatColumns(whatColumns);
             if (doUnion) {
                 // UNION, so we need all orderable columns aliased as well
-                for (String key : info.orderKeys) {
+                for (String key : orderByColumnNames) {
                     Column column = whereBuilder.findColumn(key, false, true);
                     String name = column.getFullQuotedName();
                     String alias = dialect.openQuote() + COL_ALIAS_PREFIX
@@ -707,14 +735,17 @@ public class NXQLQueryMaker implements QueryMaker {
         return useIndex;
     }
 
-    // digits or star or star followed by digits
-    private final static Pattern INDEX = Pattern.compile("\\d+|\\*|\\*\\d+");
+    // digits or star or star followed by digits, for segments
+    protected final static Pattern INDEX = Pattern.compile("\\d+|\\*|\\*\\d+");
 
-    // digits or star or star followed by digits, then slash
-    private final static Pattern INDEX_SLASH = Pattern.compile("/(?:\\d+|\\*|\\*\\d+)(/|$)");
+    // index in xpath
+    protected final static Pattern HAS_INDEX = Pattern.compile(".*/(\\d+|\\*|\\*\\d+)(/.*|$)");
 
-    // non-canonical index syntax
-    private final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
+    // digits or star or star followed by digits, then slash, for replaceAll
+    protected final static Pattern INDEX_SLASH = Pattern.compile("/(?:\\d+|\\*|\\*\\d+)(/|$)");
+
+    // non-canonical index syntax, for replaceAll
+    protected final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(\\d+|\\*|\\*\\d+)\\]" // index in brackets
     );
 
@@ -751,6 +782,11 @@ public class NXQLQueryMaker implements QueryMaker {
         return INDEX_SLASH.matcher(xpath).replaceAll("/*$1");
     }
 
+    public boolean hasIndex(String xpath) {
+        xpath = canonicalXPath(xpath);
+        return HAS_INDEX.matcher(xpath).matches();
+    }
+
     protected QueryAnalyzer newQueryAnalyzer(FacetFilter facetFilter) {
         return new QueryAnalyzer(facetFilter);
     }
@@ -763,8 +799,6 @@ public class NXQLQueryMaker implements QueryMaker {
     protected class QueryAnalyzer extends DefaultQueryVisitor {
 
         private static final long serialVersionUID = 1L;
-
-        public final List<String> orderKeys = new LinkedList<String>();
 
         protected boolean inSelect;
 
@@ -931,73 +965,55 @@ public class NXQLQueryMaker implements QueryMaker {
                     throw new QueryMakerException("Cannot order by column: "
                             + name);
                 }
-                return;
-            }
-            if (NXQL.ECM_PRIMARYTYPE.equals(name) || //
+            } else if (NXQL.ECM_PRIMARYTYPE.equals(name) || //
                     NXQL.ECM_UUID.equals(name) || //
                     NXQL.ECM_NAME.equals(name) || //
                     NXQL.ECM_POS.equals(name) || //
-                    NXQL.ECM_PARENTID.equals(name)) {
-                if (inOrderBy) {
-                    orderKeys.add(name);
+                    NXQL.ECM_PARENTID.equals(name) || //
+                    NXQL.ECM_LIFECYCLESTATE.equals(name) || //
+                    NXQL.ECM_VERSIONLABEL.equals(name) || //
+                    NXQL.ECM_LOCK.equals(name) || //
+                    NXQL.ECM_LOCK_OWNER.equals(name) || //
+                    NXQL.ECM_LOCK_CREATED.equals(name) || //
+                    NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+                // ok
+            } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
+                if (inSelect) {
+                    throw new QueryMakerException("Cannot select on column: "
+                            + name);
                 }
-                return;
-            }
-            if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
                 if (inOrderBy) {
-                    orderKeys.add(name);
+                    throw new QueryMakerException("Cannot order by column: "
+                            + name);
                 }
-                return;
-            }
-            if (NXQL.ECM_VERSIONLABEL.equals(name)) {
-                if (inOrderBy) {
-                    orderKeys.add(name);
-                }
-                return;
-            }
-            if (NXQL.ECM_LOCK.equals(name) || NXQL.ECM_LOCK_OWNER.equals(name)) {
-                if (inOrderBy) {
-                    orderKeys.add(name);
-                }
-                return;
-            }
-            if (NXQL.ECM_LOCK_CREATED.equals(name)) {
-                if (inOrderBy) {
-                    orderKeys.add(name);
-                }
-                return;
-            }
-            if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
-                if (inOrderBy) {
-                    orderKeys.add(name);
-                }
-                return;
-            }
-            if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 if (model.getRepositoryDescriptor().fulltextDisabled) {
                     throw new QueryMakerException(
                             "Fulltext disabled by configuration");
                 }
                 String[] nameref = new String[] { name };
                 boolean useIndex = findFulltextIndexOrField(model, nameref);
-                if (useIndex) {
-                    // all is done in fulltext match info
-                    return;
-                } else {
+                if (!useIndex) {
                     // LIKE on a field, continue analysing with that field
                     name = nameref[0];
-                    // fall through
+                    checkProperty(name); // may throw
                 }
-                // fall through
-            }
-            if (name.startsWith(NXQL.ECM_PREFIX)) {
+                // else all is done in fulltext match info
+            } else if (name.startsWith(NXQL.ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
+            } else {
+                checkProperty(name); // may throw
             }
 
-            checkProperty(name); // may throw
-
-            if (inOrderBy) {
-                orderKeys.add(name);
+            if (inSelect) {
+                whatColumnNames.add(name);
+            } else if (inOrderBy) {
+                orderByColumnNames.add(name);
+            }
+            if (hasIndex(name)) {
+                hasIndex = true;
+                if (inOrderBy) {
+                    orderByHasIndex = true;
+                }
             }
         }
 
@@ -1010,7 +1026,6 @@ public class NXQLQueryMaker implements QueryMaker {
             String simple = simpleXPath(xpath);
             ModelProperty prop = model.getPathPropertyInfo(simple);
             if (prop == null || prop == ModelProperty.NONE) {
-                prop = model.getPathPropertyInfo(simple);
                 throw new QueryMakerException("No such property: " + xpath);
             }
         }
@@ -1076,8 +1091,6 @@ public class NXQLQueryMaker implements QueryMaker {
         protected int uniquePropIndex = 0;
 
         protected int hierJoinCount = 0;
-
-        protected boolean needsDistinct;
 
         // path prefix -> hier table to join,
         protected Map<String, Table> propertyHierTables = new HashMap<String, Table>();
@@ -1192,23 +1205,24 @@ public class NXQLQueryMaker implements QueryMaker {
             xpath = canonicalXPath(xpath);
             String[] segments = xpath.split("/");
             String simple = null; // simplified prefix to match model
-            String lastContextKey = null; // prefix used as key for table to
-                                          // join
+            String contextKey = null; // prefix used as key for table to join
             String segment = null;
             ModelProperty prop = null;
             for (int i = 0; i < segments.length; i++) {
                 segment = segments[i];
                 simple = simple == null ? segment : simple + '/' + segment;
-                String contextKey = lastContextKey == null ? segment
-                        : lastContextKey + '/' + segment;
-                String contextKeySuffix = "";
+                String contextStart = contextKey == null ? ""
+                        : contextKey + '/';
+                String contextSuffix = "";
                 int index = -1;
                 boolean star = false;
+                boolean isArrayElement = false;
                 if (i < segments.length - 1) {
                     // check if we have a complex list index in the next
                     // position
                     String next = segments[i + 1];
                     if (INDEX.matcher(next).matches()) {
+                        isArrayElement = true;
                         if (next.startsWith("*")) {
                             star = true;
                             next = next.substring(1);
@@ -1220,17 +1234,16 @@ public class NXQLQueryMaker implements QueryMaker {
                         i++;
                         simple += "/*";
                         if (star) {
-                            contextKeySuffix = "/*";
                             if (index == -1) {
                                 // any
-                                contextKeySuffix = "-" + ++uniquePropIndex;
+                                contextSuffix = "/*-" + ++uniquePropIndex;
                             } else {
                                 // named
-                                contextKeySuffix = String.valueOf(index);
+                                contextSuffix = "/*" + index;
                             }
                             index = -1;
                         } else {
-                            contextKeySuffix = "/" + index;
+                            contextSuffix = "/" + index;
                         }
                     }
                 }
@@ -1245,7 +1258,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         throw new QueryMakerException("No such property: "
                                 + xpath);
                     }
-                    contextKey += contextKeySuffix;
+                    contextKey = contextStart + segment + contextSuffix;
                     Table table = propertyHierTables.get(contextKey);
                     if (table == null) {
                         // none existing
@@ -1256,7 +1269,6 @@ public class NXQLQueryMaker implements QueryMaker {
                         addJoin(Join.INNER, alias, table,
                                 model.HIER_PARENT_KEY, contextHier,
                                 model.MAIN_KEY, segment, index);
-                        needsDistinct = true;
                     }
                     contextHier = table;
                 } else {
@@ -1265,24 +1277,18 @@ public class NXQLQueryMaker implements QueryMaker {
                         throw new QueryMakerException("No such property: "
                                 + xpath);
                     }
-                    boolean isArrayElement = !contextKeySuffix.isEmpty();
                     // use fragment name, not segment, for table context key
-                    contextKey = lastContextKey == null ? prop.fragmentName
-                            : lastContextKey + '/' + prop.fragmentName;
-                    contextKey += contextKeySuffix;
+                    contextKey = contextStart + prop.fragmentName
+                            + contextSuffix;
                     boolean skipJoin = !isArrayElement
                             && prop.propertyType.isArray();
-                    if (isArrayElement) {
-                        needsDistinct = true;
-                    }
                     Table table = getFragmentTable(contextHier, contextKey,
                             prop.fragmentName, index, skipJoin);
                     return new ColumnInfo(table.getColumn(prop.fragmentKey),
                             isArrayElement, prop.propertyType);
                 }
-                lastContextKey = contextKey;
             }
-            return null; // not reached
+            throw new AssertionError("not reached");
         }
 
         protected Set<String> getStringLiterals(LiteralList list)

@@ -2900,12 +2900,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
         assertEquals(oneDoc, res.list);
 
-        // ORDER BY on complex prop
-
-        clause = "tst:title LIKE '%' ORDER BY tst:owner/firstname";
-        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
-
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
         // JOIN hierarchy h3 ON h3.parentid = h2.id
@@ -3116,7 +3110,60 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 set);
         it.close();
 
-        // ORDER BY
+        /*
+         * ORDER BY
+         */
+
+        clause = "tst:title LIKE '%' ORDER BY tst:owner/firstname";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:title";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:owner/firstname";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        // this produces a DISTINCT and adds tst:title to the select list
+        clause = "tst:subjects/* = 'foo' ORDER BY tst:title";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        // SELECT * statement cannot ORDER BY array or complex list element
+        clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
+        try {
+            session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+            fail();
+        } catch (StorageException e) {
+            String expected = "For SELECT * the ORDER BY columns cannot use indexes";
+            assertEquals(expected, e.getMessage());
+        }
+        assertEquals(oneDoc, res.list);
+
+        clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
+        it = session.queryAndFetch("SELECT tst:title" + FROM_WHERE + clause,
+                "NXQL", QueryFilter.EMPTY);
+        assertEquals(3, it.size());
+        it.close();
+
+        // same with DISTINCT, cannot work
+        try {
+            session.queryAndFetch("SELECT DISTINCT tst:title" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+            fail();
+        } catch (StorageException e) {
+            String expected = "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: [tst:subjects/*1]";
+            assertEquals(expected, e.getCause().getMessage());
+        }
+
+        // ok if ORDER BY column added to SELECT columns
+        it = session.queryAndFetch("SELECT DISTINCT tst:title, tst:subjects/*1"
+                + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(3, it.size());
+        it.close();
+
         clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
         it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE
                 + clause, "NXQL", QueryFilter.EMPTY);
@@ -3126,6 +3173,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
             list.add((String) map.get("tst:subjects/*1"));
         }
         assertEquals(Arrays.asList("bar", "foo", "moo"), list);
+        it.close();
+
+        clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
+        it = session.queryAndFetch("SELECT DISTINCT tst:subjects/*1"
+                + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(3, it.size());
         it.close();
     }
 
