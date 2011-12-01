@@ -102,9 +102,19 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
             obj.put("taskName",
                     createdFromCreateTaskOperation ? dashBoardItem.getName()
                             : getI18nTaskName(dashBoardItem.getName(), locale));
-            obj.put("directive",
-                    getI18nLabel(dashBoardItem.getDirective(), locale));
-            obj.put("comment", dashBoardItem.getComment());
+
+            String directiveKey = dashBoardItem.getDirective();
+            String directiveLabel = getI18nLabel(directiveKey,locale);
+            if (directiveKey != null && directiveKey.equals(directiveLabel)) {
+                directiveKey = "label.workflow.task." + directiveKey;
+                String newdirectiveLabel = getI18nLabel(directiveKey,locale);
+                if (!directiveKey.equals(newdirectiveLabel)) {
+                    directiveLabel = newdirectiveLabel;
+                }
+            }
+            obj.put("directive",directiveLabel);
+            String comment = dashBoardItem.getComment();
+            obj.put("comment", comment !=null ? comment : "");
             Date dueDate = dashBoardItem.getDueDate();
             obj.put("dueDate",
                     dueDate != null ? DateParser.formatW3CDateTime(dueDate)
