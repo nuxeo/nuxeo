@@ -28,7 +28,7 @@
 #CATEGORY: testUpgrade
 
 # here use a NVARCHAR(MAX) instead of a NVARCHAR(4000) to test compatibility
-CREATE TABLE TESTSCHEMA2 (
+CREATE TABLE testschema2 (
   ID ${idType} NOT NULL PRIMARY KEY,
   TITLE NVARCHAR(MAX) NULL
 );
