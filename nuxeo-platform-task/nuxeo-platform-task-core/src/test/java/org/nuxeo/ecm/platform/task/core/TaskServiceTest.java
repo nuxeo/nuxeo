@@ -105,6 +105,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         actors.add(SecurityConstants.MEMBERS);
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6);
+        calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp truncation issues.
 
         // create one task for all actors
         taskService.createTask(coreSession, user3, document, "Test Task Name",
@@ -228,6 +229,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         actors.add(SecurityConstants.MEMBERS);
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6);
+        calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp truncation issues.
 
         // create one task per actor
         taskService.createTask(coreSession, user3, document, "Test Task Name",
