@@ -19,17 +19,21 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
@@ -44,6 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -312,7 +317,62 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     public static boolean isDirty(DocumentModel doc) throws ClientException {
-        return doc == null ? false : doc.isDirty();
+        if (doc == null) {
+            return false;
+        }
+        for (DocumentPart part : doc.getParts()) {
+            if (part.isDirty()) {
+                // check if dirty properties are not empty
+                Iterator<Property> props = part.getDirtyChildren();
+                if (props != null) {
+                    while (props.hasNext()) {
+                        Property prop = props.next();
+                        Serializable value = prop.getValue();
+                        if (value != null) {
+                            if (isPropertyValueDirty(value)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected static boolean isPropertyValueDirty(Object value) {
+        if (value instanceof String) {
+            if (!StringUtils.isBlank((String) value)) {
+                return true;
+            }
+        } else if (value instanceof List) {
+            List<?> list = (List) value;
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } else if (value instanceof Collection) {
+            Collection<?> col = (Collection) value;
+            if (!col.isEmpty()) {
+                return true;
+            }
+        } else if (value instanceof Object[]) {
+            Object[] col = (Object[]) value;
+            if (col.length > 0) {
+                return true;
+            }
+        } else if (value instanceof Map) {
+            Map<?, ?> map = (Map) value;
+            if (map.isEmpty()) {
+                return true;
+            }
+            for (Object mapItem : map.values()) {
+                if (isPropertyValueDirty(mapItem)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean hasPermission(DocumentModel document,

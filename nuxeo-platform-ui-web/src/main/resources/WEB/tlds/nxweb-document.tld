@@ -84,7 +84,9 @@
            property list name, the index and the sub property name.</li>
       <li> availableLifeCycleTransitions(String, String): get all the available transition
            to follow with the parameters: lifeCycleName and currentLifeCycleState</li>
-      <li> isDirty(DocumentModel): returns true if document model is dirty.</li>
+      <li> isDirty(DocumentModel): returns true if document model is dirty
+           or dirty properties hold empty values. This is useful to check if the
+           'clear filter' button should be displayed on content views for instance.</li>
     </ul>
     ]]>
   </description>
