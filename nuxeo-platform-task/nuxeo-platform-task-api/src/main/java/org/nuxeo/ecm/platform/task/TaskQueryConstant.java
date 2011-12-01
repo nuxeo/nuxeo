@@ -29,7 +29,7 @@ public class TaskQueryConstant {
     public static final String TASK_ACTORS_WHERE_CLAUSE = " nt:actors IN (%s) ";
 
     public static final String GET_TASKS_QUERY = "SELECT * FROM "
-            + TaskConstants.TASK_TYPE_NAME + " WHERE ecm:currentLifeCycleState != 'ended'";
+            + TaskConstants.TASK_TYPE_NAME + " WHERE (ecm:currentLifeCycleState != 'ended' AND ecm:currentLifeCycleState != 'cancelled') ";
 
     public static final String GET_TASKS_FOR_ACTORS_QUERY = GET_TASKS_QUERY + " AND nt:actors IN (%s) ";
 

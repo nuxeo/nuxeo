@@ -12,7 +12,7 @@
         <param type="string" name="directive">test directive</param>
         <param type="string" name="comment">test comment</param>
         <!-- define actors here, it's easier for tests -->
-        <param type="string" name="additional list of actors ids">
+        <param type="string" name="additional list of actors prefixed ids">
           Administrator, members, myuser
         </param>
         <param type="boolean" name="create one task per actor">false</param>
@@ -33,7 +33,7 @@
       <operation id="Workflow.CreateTask">
         <param type="string" name="task name">several test tasks</param>
         <!-- define actors here, it's easier for tests -->
-        <param type="string" name="additional list of actors ids">
+        <param type="string" name="additional list of actors prefixed ids">
           Administrator, members, myuser
         </param>
         <param type="boolean" name="create one task per actor">true</param>
@@ -51,7 +51,7 @@
           taskRejectedChain
         </param>
         <!-- define actors here, it's easier for tests -->
-        <param type="string" name="additional list of actors ids">
+        <param type="string" name="additional list of actors prefixed ids">
           Administrator, members, myuser
         </param>
         <param type="boolean" name="create one task per actor">false</param>

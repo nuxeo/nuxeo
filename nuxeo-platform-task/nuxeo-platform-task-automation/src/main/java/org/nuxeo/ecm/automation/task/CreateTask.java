@@ -94,10 +94,10 @@ public class CreateTask {
     @Param(name = "reject operation chain", required = false, order = 5)
     protected String rejectOperationChain;
 
-    @Param(name = "variable name for actors ids", required = false, order = 6)
+    @Param(name = "variable name for actors prefixed ids", required = false, order = 6)
     protected String keyForActors;
 
-    @Param(name = "additional list of actors ids", required = false, order = 7)
+    @Param(name = "additional list of actors prefixed ids", required = false, order = 7)
     protected StringList additionalPrefixedActors;
 
     @Param(name = "create one task per actor", required = false, values = "true", order = 8)
