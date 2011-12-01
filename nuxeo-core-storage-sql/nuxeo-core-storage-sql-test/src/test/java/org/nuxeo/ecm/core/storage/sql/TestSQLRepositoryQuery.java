@@ -900,6 +900,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         createDocs();
         closeSession();
         session = openSessionAs("bob");
+        session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:fulltext = 'world'");
         // this failed with ORA-00918 on Oracle (NXP-5410)
         session.query("SELECT * FROM Document WHERE ecm:fulltext = 'world'");
         // we don't care about the answer, just that the query executes

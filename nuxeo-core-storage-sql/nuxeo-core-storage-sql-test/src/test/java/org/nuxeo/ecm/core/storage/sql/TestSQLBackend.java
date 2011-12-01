@@ -3151,7 +3151,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // same with DISTINCT, cannot work
         try {
             session.queryAndFetch("SELECT DISTINCT tst:title" + FROM_WHERE
-                + clause, "NXQL", QueryFilter.EMPTY);
+                    + clause, "NXQL", QueryFilter.EMPTY);
             fail();
         } catch (StorageException e) {
             String expected = "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: [tst:subjects/*1]";
@@ -3180,6 +3180,92 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(3, it.size());
         it.close();
+    }
+
+    public void testQueryComplexOr() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        // doc1 tst:title = 'hello world'
+        Node doc1 = session.addChildNode(root, "doc1", null, "TestDoc", false);
+        doc1.setSimpleProperty("tst:title", "hello world");
+
+        // doc2 tst:owner/firstname = 'Bruce'
+        Node doc2 = session.addChildNode(root, "doc2", null, "TestDoc", false);
+        Node owner = session.addChildNode(doc2, "tst:owner", null, "person",
+                true);
+        owner.setSimpleProperty("firstname", "Bruce");
+
+        // doc3 tst:friends/0/firstname = 'John'
+        Node doc3 = session.addChildNode(root, "doc3", null, "TestDoc", false);
+        Node friend = session.addChildNode(doc3, "tst:friends",
+                Long.valueOf(0), "person", true);
+        friend.setSimpleProperty("firstname", "John");
+
+        // doc4 tst:subjects/0 = 'foo'
+        Node doc4 = session.addChildNode(root, "doc4", null, "TestDoc", false);
+        doc4.setCollectionProperty("tst:subjects", new String[] { "foo" });
+
+        session.save();
+
+        String s1 = "SELECT * FROM TestDoc WHERE ecm:isProxy = 0 AND (";
+        String s2 = ")";
+        String o = " OR ";
+        String c1 = "tst:title = 'hello world'";
+        String c2 = "tst:owner/firstname = 'Bruce'";
+        String c3 = "tst:friends/0/firstname = 'John'";
+        String c4 = "tst:subjects/0 = 'foo'";
+        PartialList<Serializable> res;
+
+        res = session.query(s1 + c1 + s2, QueryFilter.EMPTY, false);
+        assertEquals(Collections.singletonList(doc1.getId()), res.list);
+
+        res = session.query(s1 + c2 + s2, QueryFilter.EMPTY, false);
+        assertEquals(Collections.singletonList(doc2.getId()), res.list);
+
+        res = session.query(s1 + c3 + s2, QueryFilter.EMPTY, false);
+        assertEquals(Collections.singletonList(doc3.getId()), res.list);
+
+        res = session.query(s1 + c4 + s2, QueryFilter.EMPTY, false);
+        assertEquals(Collections.singletonList(doc4.getId()), res.list);
+
+        res = session.query(s1 + c1 + o + c2 + s2, QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+
+        res = session.query(s1 + c1 + o + c3 + s2, QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+
+        res = session.query(s1 + c1 + o + c4 + s2, QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+
+        res = session.query(s1 + c2 + o + c3 + s2, QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+
+        res = session.query(s1 + c2 + o + c4 + s2, QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+
+        res = session.query(s1 + c3 + o + c4 + s2, QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+
+        res = session.query(s1 + c1 + o + c2 + o + c3 + s2, QueryFilter.EMPTY,
+                false);
+        assertEquals(3, res.list.size());
+
+        res = session.query(s1 + c1 + o + c2 + o + c4 + s2, QueryFilter.EMPTY,
+                false);
+        assertEquals(3, res.list.size());
+
+        res = session.query(s1 + c1 + o + c3 + o + c4 + s2, QueryFilter.EMPTY,
+                false);
+        assertEquals(3, res.list.size());
+
+        res = session.query(s1 + c2 + o + c3 + o + c4 + s2, QueryFilter.EMPTY,
+                false);
+        assertEquals(3, res.list.size());
+
+        res = session.query(s1 + c1 + o + c2 + o + c3 + o + c4 + s2,
+                QueryFilter.EMPTY, false);
+        assertEquals(4, res.list.size());
     }
 
     public void testPath() throws Exception {

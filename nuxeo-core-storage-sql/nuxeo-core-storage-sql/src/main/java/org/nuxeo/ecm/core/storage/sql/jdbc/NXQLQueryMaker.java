@@ -417,12 +417,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
 
-            // add clauses associated with the complex property JOINs
-            for (Join join : joins) {
-                whereClauses.addAll(join.whereClauses);
-                whereParams.addAll(join.whereParams);
-            }
-
             /*
              * Columns on which to select and do ordering.
              */
@@ -537,7 +531,17 @@ public class NXQLQueryMaker implements QueryMaker {
             selectParams.addAll(whatNamesParams);
 
             StringBuilder fromb = new StringBuilder(from);
-            if (dialect.needsOracleJoins()) {
+            if (dialect.needsOracleJoins() && doUnion && securityJoin != null
+                    && ftMatchInfo != null) {
+                // NXP-5410 we must use Oracle joins
+                // when there's union all + fulltext + security
+                for (Join join : joins) {
+                    if (!join.whereClauses.isEmpty()) {
+                        // we cannot use Oracle join when there are join filters
+                        throw new StorageException(
+                                "Query too complex for Oracle (NXP-5410)");
+                    }
+                }
                 // implicit joins for Oracle
                 List<String> joinClauses = new LinkedList<String>();
                 for (Join join : joins) {
@@ -550,6 +554,11 @@ public class NXQLQueryMaker implements QueryMaker {
                     if (join.kind == Join.LEFT) {
                         joinClause += "(+)"; // Oracle implicit LEFT JOIN syntax
                     }
+                    if (!join.whereClauses.isEmpty()) {
+                        joinClause += " AND "
+                                + StringUtils.join(join.whereClauses, " AND ");
+                        selectParams.addAll(join.whereParams);
+                    }
                     joinClauses.add(joinClause);
                 }
                 whereClauses.addAll(0, joinClauses);
@@ -557,10 +566,17 @@ public class NXQLQueryMaker implements QueryMaker {
                 // else ANSI join
                 Collections.sort(joins); // implicit JOINs last (PostgreSQL)
                 for (Join join : joins) {
-                    fromb.append(join.toSql(dialect));
                     if (join.tableParam != null) {
                         selectParams.add(join.tableParam);
                     }
+                    String joinClause = join.toSql(dialect);
+                    // add JOIN filter for complex properties
+                    if (!join.whereClauses.isEmpty()) {
+                        joinClause += " AND "
+                                + StringUtils.join(join.whereClauses, " AND ");
+                        selectParams.addAll(join.whereParams);
+                    }
+                    fromb.append(joinClause);
                 }
             }
 
@@ -673,8 +689,7 @@ public class NXQLQueryMaker implements QueryMaker {
             table = new TableAlias(baseTable, alias);
             propertyFragmentTables.put(contextKey, table);
             if (!skipJoin) {
-                int kind = index == -1 ? Join.LEFT : Join.INNER;
-                addJoin(kind, alias, table, model.MAIN_KEY, contextHier,
+                addJoin(Join.LEFT, alias, table, model.MAIN_KEY, contextHier,
                         model.MAIN_KEY, null, index);
             }
         }
@@ -1266,7 +1281,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         String alias = TABLE_HIER_ALIAS + ++hierJoinCount;
                         table = new TableAlias(hier, alias);
                         propertyHierTables.put(contextKey, table);
-                        addJoin(Join.INNER, alias, table,
+                        addJoin(Join.LEFT, alias, table,
                                 model.HIER_PARENT_KEY, contextHier,
                                 model.MAIN_KEY, segment, index);
                     }
