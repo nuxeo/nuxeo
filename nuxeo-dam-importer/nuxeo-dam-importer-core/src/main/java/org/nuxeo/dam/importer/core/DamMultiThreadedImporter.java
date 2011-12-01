@@ -179,14 +179,11 @@ class TargetContainerCreator extends UnrestrictedSessionRunner {
     @Override
     public void run() throws ClientException {
         try {
-            TransactionHelper.startTransaction();
             DocumentModel importFolder = getOrCreateImportFolder();
             targetContainer = createImportSet(importFolder);
             session.save();
         } catch (Exception e) {
             log.error(e, e);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
         }
     }
 

@@ -20,6 +20,7 @@ package org.nuxeo.dam.importer.core.helper;
 import org.nuxeo.dam.exception.DamRuntimeException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Helper class to launch an {@code UnrestrictedSessionRunner} in a separate
@@ -45,9 +46,13 @@ public class UnrestrictedSessionRunnerHelper {
         Thread t = new Thread(new Runnable() {
             public void run() {
                 try {
+                    TransactionHelper.startTransaction();
                     runner.runUnrestricted();
                 } catch (ClientException e) {
+                    TransactionHelper.setTransactionRollbackOnly();
                     throw new DamRuntimeException(e);
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         });

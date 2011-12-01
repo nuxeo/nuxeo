@@ -353,7 +353,6 @@ class ContainerFolderCreator extends UnrestrictedSessionRunner {
 
     @Override
     public void run() throws ClientException {
-        TransactionHelper.startTransaction();
         try {
             DamService damService = Framework.getLocalService(DamService.class);
             folder = session.createDocumentModel(damService.getAssetLibraryPath(),
@@ -365,8 +364,6 @@ class ContainerFolderCreator extends UnrestrictedSessionRunner {
             session.save();
         } catch (ClientException e) {
             log.error(e, e);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
         }
     }
 
