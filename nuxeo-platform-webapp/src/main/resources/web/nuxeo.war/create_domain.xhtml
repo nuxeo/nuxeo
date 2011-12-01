@@ -20,7 +20,12 @@
       <h:outputText value="#{messages['title.create.domain']}" />
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
-    <h:form enctype="multipart/form-data">
+    <h:form enctype="multipart/form-data" id="document_create">
+      <script>
+        jQuery(document).ready(function() {
+          jQuery('#document_create').focusFirst();
+        });
+      </script>
       <nxl:documentLayout mode="create" value="#{changeableDocument}" />
       <p class="buttonsGadget">
         <nxu:set var="actions"

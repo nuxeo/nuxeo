@@ -56,8 +56,8 @@
       <resource>fancybox-popup-utils.js</resource>
       <resource>contextmenu.js</resource>
       <resource>jquery.tools.tooltip.min.js</resource>
+      <resource>jquery.tools.focusfirst.js</resource>
       <resource>jquery.hotkeys.js</resource>
-
       <resource>sarissa-ie-workaround.js</resource>
     </view>
 
@@ -150,6 +150,10 @@
     <!-- Hotkeys (e.g. used to focus the search box using '/') -->
     <resource name="jquery.hotkeys.js">
       <path>scripts/jquery/jquery.hotkeys.js</path>
+    </resource>
+    <!-- Helpers for focus on first input of a form -->
+    <resource name="jquery.tools.focusfirst.js">
+      <path>scripts/jquery/jquery.tools.focusfirst.js</path>
     </resource>
     <!-- Workaround for jQuery and Sarissa library conflict on IE -->
     <resource name="sarissa-ie-workaround.js">

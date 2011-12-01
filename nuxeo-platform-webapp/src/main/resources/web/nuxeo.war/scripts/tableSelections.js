@@ -53,17 +53,6 @@ function selectDataTablePageForDocument(tableId, providerName, selected, listNam
   handleAllCheckBoxes(tableId, selected);
 }
 
-function selectSectionsPage(tableId,selected) {
-  //TODO : Not yet used
-  /*
-      if (proxy == null) {
-        proxy = Seam.Component.getInstance("documentActions");
-      }
-      proxy.processSelectPage(selected, selectDataTableRowCB);
-      handleAllCheckBoxes(tableId, selected);
-   */
-}
-
 function handleAllCheckBoxes(tableName, checked) {
   var table = document.getElementById(tableName);
   var listOfInputs = table.getElementsByTagName("input");

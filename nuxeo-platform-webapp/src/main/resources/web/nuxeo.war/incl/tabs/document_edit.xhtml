@@ -9,6 +9,12 @@
 
 <h:form enctype="multipart/form-data" id="document_edit">
 
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('#document_edit').focusFirst();
+    });
+  </script>
+
   <nxl:documentLayout mode="edit" value="#{currentDocument}" />
   <ui:include src="/incl/document_versioning.xhtml" />
 

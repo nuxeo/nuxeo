@@ -20,6 +20,12 @@
 
   <h:form id="searchForm">
 
+    <script>
+      jQuery(document).ready(function() {
+        jQuery('#searchForm').focusFirst();
+      });
+    </script>
+
     <nxu:set var="contentView"
       value="#{contentViewActions.getContentViewWithProvider(searchConfigurationActions.advancedSearchView)}"
       cache="true">
