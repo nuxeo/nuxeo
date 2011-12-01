@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
 
 /**
- * Action Bean ton handle a Folders tree.
+ * Action Bean to handle a Folders tree.
  *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
