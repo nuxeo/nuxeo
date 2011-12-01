@@ -104,7 +104,7 @@
         <configuration>
           <buildFiles>
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-            <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile>
+            <!-- <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile> -->
           </buildFiles>
         </configuration>
         <executions>
