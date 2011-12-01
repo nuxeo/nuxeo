@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public abstract class CoreManagementTestCase extends SQLRepositoryTestCase {
 
-        @Override
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
@@ -32,8 +32,13 @@ public abstract class CoreManagementTestCase extends SQLRepositoryTestCase {
         openSession();
     }
 
-        protected  void deployOtherBundles() {
-            ;
-        }
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
+    protected void deployOtherBundles() {
+    }
 
 }

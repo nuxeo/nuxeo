@@ -22,20 +22,11 @@ import org.nuxeo.ecm.core.management.test.FakeDocumentStoreHandler;
 
 public class TestStorage extends CoreManagementTestCase {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.runtime.management");
-        deployBundle("org.nuxeo.ecm.core.management");
-        deployBundle("org.nuxeo.ecm.core.management.test");
-        fireFrameworkStarted();
-        openSession();
-    }
-
     public void testRegistration() {
         assertNotNull("handler is not contributed",
                 FakeDocumentStoreHandler.testInstance);
-        assertNotNull("handler is not invoked", FakeDocumentStoreHandler.testInstance.repositoryName);
+        assertNotNull("handler is not invoked",
+                FakeDocumentStoreHandler.testInstance.repositoryName);
         assertEquals("configuration is not contributed", "test",
                 FakeDocumentStoreHandler.testInstance.repositoryName);
     }
