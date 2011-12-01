@@ -7,5 +7,10 @@ gen
 .settings
 .project
 build.properties
+.idea
+*.ipr
 *.iml
+*.iws
 *.log
+*.orig
+.DS_Store
