@@ -27,16 +27,17 @@
     <h:outputText value="#{messages['label.picture.download.header']}" />
     
     <h:selectManyCheckbox layout="pageDirection"
-      value="#{pictureBookManager.selectedViews}">
+      value="#{pictureBookManager.selectedViews}"
+      styleClass="selectSize">
       <f:selectItems value="#{pictureBookManager.selectItems}" />
     </h:selectManyCheckbox>
 
 
     <div onclick="Richfaces.hideModalPanel('imagingPanel')">
-      <nxh:commandLink class="imagingPanelDownloadLink" action="#{pictureBookManager.downloadSelectedBook}">
+      <nxh:commandLink class="imagingPanelDownloadLink button" action="#{pictureBookManager.downloadSelectedBook}">
         <h:outputText value="#{messages['action.picture.dlSelected']}" />
       </nxh:commandLink>
-      <nxh:commandLink class="imagingPanelDownloadLink" action="#{pictureBookManager.downloadAll}">
+      <nxh:commandLink class="imagingPanelDownloadLink button" action="#{pictureBookManager.downloadAll}">
         <h:outputText value="#{messages['action.picture.dlAll']}" />
       </nxh:commandLink>
     </div>

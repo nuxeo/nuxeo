@@ -68,11 +68,11 @@
   <h:form id="slideshow">
     <nxd:restDocumentLink document="#{slideShowManager.child}"
       tab="tab_imageview">
-      <div style="width: 550px; height: 550px;">
+      <div class="slideshowContainer">
       <div id="apear-div" style="display: none;">
       <f:subview rendered="#{slideShowManager.child.type eq 'PictureBook'}">
         <img onload="Effect.Appear('apear-div');"
-          src="icons/big_picturebook.png" height="400" width="400" />
+          src="icons/big_picturebook.png" />
       </f:subview>
       <f:subview rendered="#{slideShowManager.child.type eq 'Picture'}">
         <img onload="Effect.Appear('apear-div');"
