@@ -39,11 +39,11 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Offline Marketplace packages manager.
- * 
+ *
  * See {@link #printHelp()} for the usage.
- * 
+ *
  * The target directory is set from System property "nuxeo.runtime.home".
- * 
+ *
  * <p>
  * The environment used by Nuxeo runtime can be specified as System properties.
  * <p>
@@ -68,7 +68,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>commons-logging
  * <li>log4j
  * </ul>
- * 
+ *
  */
 public class LocalPackageManager {
 
@@ -88,7 +88,7 @@ public class LocalPackageManager {
 
     protected Environment targetEnv;
 
-    protected List<String> packages;
+    protected List<String> packages = new ArrayList<String>();
 
     protected PackageUpdateService pus;
 
@@ -115,7 +115,7 @@ public class LocalPackageManager {
     }
 
     public LocalPackageManager(String[] args) throws FileNotFoundException {
-        if (args.length < 2) {
+        if (args.length < 3) {
             printHelp();
             System.exit(1);
         }
@@ -124,6 +124,7 @@ public class LocalPackageManager {
             throw new IllegalStateException(wd + " is not a directory!");
         }
         command = args[1];
+        config = new File(args[2]);
 
         home = new File(System.getProperty("nuxeo.runtime.home"));
         if (home == null) {
@@ -143,10 +144,10 @@ public class LocalPackageManager {
         try {
             Environment.setDefault(targetEnv);
             if ("install".equalsIgnoreCase(command)) {
-                config = new File(args[2]);
+                readPackages();
                 update();
             } else if ("installpkg".equalsIgnoreCase(command)) {
-                String packageParam = args[2];
+                String packageParam = args[3];
                 if (new File(packageParam).exists()) {
                     // packageParam is a file
                     update(packageParam);
@@ -155,9 +156,13 @@ public class LocalPackageManager {
                     updatePackage(packageParam);
                 }
             } else if ("uninstall".equalsIgnoreCase(command)) {
-                String pkgId = args[2];
-                uninstall(pkgId);
+                if (args.length < 4) {
+                    throw new PackageException(
+                            "Missing package id as parameter.");
+                }
+                uninstall(args[3]);
             } else if ("list".equalsIgnoreCase(command)) {
+                readPackages();
                 listPackages();
             } else if ("reset".equalsIgnoreCase(command)) {
                 reset();
@@ -175,12 +180,15 @@ public class LocalPackageManager {
 
     public void printHelp() {
         log.error("\nLocalPackageManager usage: working_directory command [parameters]");
-        log.error("\n\t Commands:");
-        log.error("\t\t list\t\t\tLists local packages and their status.");
-        log.error("\t\t install /path/to/upgrade/file\t\t\tReads the given upgrade file and performs install.");
-        log.error("\t\t installpkg [/path/to/package|packageId]\t\t\tInstalls the given package (as a file or its ID).");
-        log.error("\t\t uninstall packageId\t\t\tUninstalls the specified package.");
-        log.error("\t\t reset\t\t\tReset all package states to DOWNLOADED. This may be usefull after a manual upgrade of the server.");
+        log.error("Commands:");
+        log.error("\tlist\t\t\t\tLists local packages and their status.");
+        log.error("\tinstall /path/to/upgrade/file\t\t\tReads the given upgrade"
+                + " file and performs install.");
+        log.error("\tinstallpkg [/path/to/package|packageId]\t\tInstalls the given"
+                + " package (as a file or its ID).");
+        log.error("\tuninstall packageId\t\t\t\tUninstalls the specified package.");
+        log.error("\treset\t\t\t\t\tReset all package states to DOWNLOADED. "
+                + "This may be useful after a manual upgrade of the server.");
     }
 
     protected void initEnvironment() {
@@ -232,9 +240,6 @@ public class LocalPackageManager {
         try {
             FrameworkLoader.stop();
         } finally {
-            if (config != null) {
-                config.delete();
-            }
             if (wd != null) {
                 FileUtils.deleteTree(wd);
             }
@@ -242,7 +247,9 @@ public class LocalPackageManager {
     }
 
     public void update() throws PackageException {
-        readPackages();
+        if (packages.isEmpty()) {
+            throw new PackageException("No package found in " + config);
+        }
         log.info("Performing update ...");
         for (String pkgId : packages) {
             boolean uninstall = false;
@@ -263,10 +270,14 @@ public class LocalPackageManager {
             }
         }
         log.info("Done.");
+        config.delete();
     }
 
-    protected void readPackages() throws PackageException {
-        packages = new ArrayList<String>();
+    protected void readPackages() {
+        if (!config.isFile()) {
+            log.debug("No file " + config);
+            return;
+        }
         List<String> lines;
         try {
             lines = FileUtils.readLines(config);
@@ -279,9 +290,7 @@ public class LocalPackageManager {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-        if (packages.isEmpty()) {
-            throw new PackageException("No bundles found in " + config);
-        }
+        return;
     }
 
     /**
@@ -313,7 +322,7 @@ public class LocalPackageManager {
 
     /**
      * Validate and run given task
-     * 
+     *
      * @since 5.5
      * @param task
      * @throws PackageException
@@ -356,16 +365,45 @@ public class LocalPackageManager {
      * @since 5.5
      */
     private void listPackages() throws PackageException {
-        log.info(PackageState.REMOTE + "=remote " + PackageState.DOWNLOADING
-                + "=downloading " + PackageState.DOWNLOADED + "=downloaded "
-                + PackageState.INSTALLING + "=installing "
-                + PackageState.INSTALLED + "=installed " + PackageState.STARTED
-                + "=started ");
+        if (packages.isEmpty()) {
+            log.info("No package waiting for install.");
+        } else {
+            log.info("Waiting for install:");
+            for (String pkg : packages) {
+                log.info(pkg);
+            }
+        }
         List<LocalPackage> localPackages = pus.getPackages();
-        for (LocalPackage localPackage : localPackages) {
-            log.info("Package id=" + localPackage.getId() + " name="
-                    + localPackage.getName() + " state="
-                    + localPackage.getState());
+        if (localPackages.isEmpty()) {
+            log.info("No local package.");
+        } else {
+            log.info("Local packages:");
+            for (LocalPackage localPackage : localPackages) {
+                String packageDescription;
+                switch (localPackage.getState()) {
+                case PackageState.DOWNLOADING:
+                    packageDescription = "downloading...";
+                    break;
+                case PackageState.DOWNLOADED:
+                    packageDescription = "downloaded";
+                    break;
+                case PackageState.INSTALLING:
+                    packageDescription = "installing...";
+                    break;
+                case PackageState.INSTALLED:
+                    packageDescription = "installed";
+                    break;
+                case PackageState.STARTED:
+                    packageDescription = "started";
+                    break;
+                default:
+                    packageDescription = "unknown";
+                    break;
+                }
+                packageDescription += "\t" + localPackage.getName() + " (id: "
+                        + localPackage.getId() + ")";
+                log.info(packageDescription);
+            }
         }
     }
 
