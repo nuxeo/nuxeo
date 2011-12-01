@@ -51,13 +51,19 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.dublincore",
                 "OSGI-INF/nxdublincore-service.xml");
         deployBundle("org.nuxeo.ecm.core.event");
-        openSession();
 
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         eventAdmin.setBulkModeEnabled(true);
         eventAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
 
+        openSession();
         root = session.getRootDocument();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void testStorageService() {
@@ -123,14 +129,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
         // create a new session
         session.save();
-        session.disconnect();
-        session = null;
-        // UserPrincipal newUser = new UserPrincipal("Jacky");
-        // newUser.groups.add(SecurityService.ADMINISTRATORS);
-        // context.put("username", newUser);
-        // switch user in session
-        // LocalSession local = (LocalSession) session;
-        // local.setPrincipal(newUser);
+        closeSession();
         session = openSessionAs("Jacky");
 
         DocumentModel childFile3 = session.getDocument(childFile2.getRef());
@@ -143,7 +142,6 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         assertTrue(contributorsList.contains("Jacky"));
         assertEquals("Administrator",
                 childFile3.getProperty("dublincore", "creator"));
-        closeSession();
     }
 
     public void testLastContributor() throws ClientException {
@@ -171,8 +169,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
         // create a new session
         session.save();
-        session.disconnect();
-        session = null;
+        closeSession();
         session = openSessionAs("Jacky");
 
         DocumentModel childFile3 = session.getDocument(childFile2.getRef());
@@ -189,7 +186,6 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         session.save();
         closeSession();
 
-        session = null;
         // Test if a new contributor will be at the end of the list
         session = openSessionAs("Fredo");
 
@@ -206,7 +202,6 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         session.save();
         closeSession();
 
-        session = null;
         // Test if a previously contributor will be move to the end of the list
         session = openSessionAs("Administrator");
 
@@ -220,7 +215,6 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         assertTrue(contributorsList.contains("Administrator"));
         assertEquals("Administrator",
                 childFile3.getProperty("dublincore", "lastContributor"));
-        closeSession();
     }
 
     public void testIssuedDate() throws ClientException {
@@ -250,6 +244,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     }
 
     public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
+        closeSession();
         session = openSessionAs("Jacky");
         CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(
                 session);
@@ -257,7 +252,6 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         DocumentModel doc = runner.getFolder();
         String creator = (String) doc.getPropertyValue("dc:creator");
         assertEquals("Jacky", creator);
-        closeSession(session);
     }
 
     public class CreateDocumentUnrestricted extends UnrestrictedSessionRunner {
@@ -279,15 +273,6 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
             return folder;
         }
 
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        if (session != null) {
-            closeSession();
-        }
-
-        super.tearDown();
     }
 
 }

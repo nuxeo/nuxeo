@@ -132,6 +132,10 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         int tti =  Arrays.binarySearch(props, new DocumentProperty("dc:title", null), propsComparator);
         assertTrue(tti > 0);
         assertEquals("dc:title:huum", props[tti].toString());
+
+        // cleanup
+        remoting.disconnect(sid);
+        closeSession();
     }
 
 }
