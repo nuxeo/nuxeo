@@ -36,6 +36,7 @@
               <c:set var="createdFromCreateTaskOperation"
                 value="#{task.getVariable('createdFromCreateTaskOperation') == 'true'}" />
               <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />
+              <c:set var="taskDirectiveLabel" value="label.workflow.task.#{task.directive}" />
               <c:if test="#{createdFromCreateTaskOperation}">
                 #{task.name}
               </c:if>
@@ -48,8 +49,15 @@
                 mode="view" value="#{task.actors}" />
             </td>
             <td>
-              <h:outputText
-                value="#{messages[task.directive]}" />
+              <c:if test="#{createdFromCreateTaskOperation}">
+                <h:outputText
+                  value="#{messages[task.directive]}" />
+              </c:if>
+              <c:if test="#{!createdFromCreateTaskOperation}">
+                <h:outputText
+                  value="#{messages[taskDirectiveLabel]}" />
+              </c:if>
+
             </td>
             <td>
               <table>

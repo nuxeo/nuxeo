@@ -341,7 +341,7 @@ public class PostActionBean implements PostAction {
 
         taskService.createTask(documentManager, (NuxeoPrincipal) currentUser,
                 thread, ForumConstants.MODERATION_TASK_NAME, moderators,
-                false, null, null, null, vars, null);
+                false, ForumConstants.MODERATION_TASK_NAME, null, null, vars, null);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
 
     }
