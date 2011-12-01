@@ -53,20 +53,35 @@ import org.nuxeo.runtime.api.Framework;
 public class TaskMigrationRunner extends UnrestrictedSessionRunner {
 
     protected final List<TaskInstance> tis;
+
     protected List<Task> tasks;
+
     protected final JbpmContext context;
 
     protected static final Log log = LogFactory.getLog(TaskMigrationRunner.class);
 
-    protected TaskMigrationRunner(List<TaskInstance> tis,JbpmContext context, CoreSession session) {
+    protected static Boolean migrate = null;
+
+    public static final String TASK_MIGRATION_PROPERTY = "org.nuxeo.ecm.platform.jbpm.task.migrate";
+
+    protected boolean needToMigrate() {
+        if (migrate == null) {
+            String flag = Framework.getProperty(TASK_MIGRATION_PROPERTY, "true");
+            migrate = Boolean.parseBoolean(flag);
+        }
+        return migrate;
+    }
+
+    protected TaskMigrationRunner(List<TaskInstance> tis, JbpmContext context,
+            CoreSession session) {
         super(session);
-        this.tis=tis;
+        this.tis = tis;
         tasks = new ArrayList<Task>(tis.size());
         this.context = context;
     }
 
     public List<Task> migrate() throws ClientException {
-        if (tis.size()==0) {
+        if (tis.size() == 0) {
             return new ArrayList<Task>();
         }
         this.runUnrestricted();
@@ -77,13 +92,15 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
     public void run() throws ClientException {
         for (TaskInstance taskInstance : tis) {
             Task migratedTask = null;
-            try {
-                migratedTask =migrateJBPMtoDocTask(taskInstance,
-                        context, session);
-            } catch (ClientException e) {
-                log.error("Error while migrating task", e);
+            if (needToMigrate()) {
+                try {
+                    migratedTask = migrateJBPMtoDocTask(taskInstance, context,
+                            session);
+                } catch (ClientException e) {
+                    log.error("Error while migrating task", e);
+                }
             }
-            if (migratedTask==null) {
+            if (migratedTask == null) {
                 migratedTask = new JBPMTaskWrapper(taskInstance);
             }
             tasks.add(migratedTask);
@@ -101,13 +118,19 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
         } else if (JBPMDocTaskProvider.PUBLISHER_JBPMTASK_NAME.equals(taskName)) {
             return migratePublisherTask(ti, context, coreSession);
         } else {
-            return migrateGenericTask(ti, context, coreSession, null);
+            if (ti.getProcessInstance() != null) {
+                // don't migrate tasks associated to a process
+                return new JBPMTaskWrapper(ti);
+            } else {
+                return migrateGenericTask(ti, context, coreSession, null);
+            }
         }
     }
 
     private Task migrateGenericTask(TaskInstance ti, JbpmContext context,
-            CoreSession coreSession, Map<String, String> vars) throws ClientException {
-        if (vars==null) {
+            CoreSession coreSession, Map<String, String> vars)
+            throws ClientException {
+        if (vars == null) {
             vars = new HashMap<String, String>();
         }
         vars.putAll(ti.getVariables());
@@ -118,7 +141,7 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
         }
         String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
         DocumentModel doc = null;
-        if (docId!=null) {
+        if (docId != null) {
             DocumentRef idRef = new IdRef(docId);
             doc = coreSession.getDocument(idRef);
         }
@@ -134,26 +157,25 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
 
         String directive = (String) ti.getVariable(JbpmService.TaskVariableName.directive.name());
         String comment = "";
-        if (ti.getComments().size()>0) {
+        if (ti.getComments().size() > 0) {
             Comment jbpmComment = (Comment) ti.getComments().get(0);
             comment = jbpmComment.getMessage();
         }
-        CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession, user, doc,
-                ti.getName(), actors, false,
-                directive, comment , ti.getDueDate(), vars, parentPath);
+        CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
+                user, doc, ti.getName(), actors, false, directive, comment,
+                ti.getDueDate(), vars, parentPath);
         runner.runUnrestricted();
         List<Task> tasks = runner.getTasks();
         ti.suspend();
-        if (ti.getProcessInstance()!=null) {
+        if (ti.getProcessInstance() != null) {
             ti.getProcessInstance().suspend();
         }
-        if (tasks!=null && tasks.size()>0) {
+        if (tasks != null && tasks.size() > 0) {
             return tasks.get(0);
         } else {
             return null;
         }
     }
-
 
     private Task migrateCommentTask(TaskInstance ti, JbpmContext context,
             CoreSession coreSession) throws ClientException {
@@ -172,9 +194,8 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
         return migrateGenericTask(ti, context, coreSession, vars);
     }
 
-    private Task migratePublisherTask(TaskInstance ti,
-            JbpmContext context, CoreSession coreSession)
-            throws ClientException {
+    private Task migratePublisherTask(TaskInstance ti, JbpmContext context,
+            CoreSession coreSession) throws ClientException {
         return migrateGenericTask(ti, context, coreSession, null);
     }
 

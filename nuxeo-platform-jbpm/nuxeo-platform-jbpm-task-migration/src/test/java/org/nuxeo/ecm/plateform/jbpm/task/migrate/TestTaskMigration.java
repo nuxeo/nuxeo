@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -49,7 +50,6 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
 
         deployContrib("org.nuxeo.ecm.platform.jbpm.task.migration", "OSGI-INF/task-provider-contrib.xml");
 
-        deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
 
         jbpmService = Framework.getService(JbpmService.class);
@@ -107,15 +107,18 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
         long t1 = System.currentTimeMillis();
         long deltaS= (t1-t0)/1000;
 
-        System.out.println("Migrated " + NB_TASKS + " in " + deltaS + "s");
-        System.out.println((NB_TASKS / deltaS) + " task/s");
+        System.out.println("Migrated " + NB_TASKS + " tasks in " + deltaS + "s");
+        System.out.println((NB_TASKS / deltaS) + " tasks/s");
 
+        // check that there are no more JBPM tasks
         tis = jbpmService.getCurrentTaskInstances(prefixedActorIds, null);
         assertEquals(0, tis.size());
 
+        // check that the Task docs were indeed created
         taskDocs = session.query("select * from TaskDoc");
         assertEquals(NB_TASKS, taskDocs.size());
 
+        // check tasks attributes
         Task task = tasks.get(0);
         assertTrue(task.getName().startsWith("TestTask-"));
         assertEquals("directive",task.getDirective());
@@ -124,6 +127,16 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
         assertEquals("user:titi",task.getActors().get(0));
         assertTrue(task.getVariables().keySet().contains("v1"));
         assertTrue(task.getVariables().keySet().contains("v2"));
+        assertEquals(doc.getId(), task.getTargetDocumentId());
+
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        if (session!=null) {
+            CoreInstance.getInstance().close(session);
+        }
+        super.tearDown();
     }
 
 }
