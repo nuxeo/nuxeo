@@ -103,7 +103,8 @@ public class CoreFeature extends SimpleFeature {
         }
         repository.shutdown();
 
-        int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        final CoreInstance core = CoreInstance.getInstance();
+        int finalOpenSessions = core.getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
         if (leakedOpenSessions != 0) {
             log.error(String.format(
@@ -111,6 +112,9 @@ public class CoreFeature extends SimpleFeature {
                             + "the test leaked %s session(s).",
                     Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
+             for (CoreInstance.RegistrationInfo info:core.getRegistrationInfos()) {
+                log.warn("Leaking session", info);
+            }
         }
     }
 

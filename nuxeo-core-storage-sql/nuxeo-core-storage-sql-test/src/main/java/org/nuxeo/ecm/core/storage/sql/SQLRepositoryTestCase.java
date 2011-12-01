@@ -12,7 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -81,7 +81,8 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         super.tearDown();
         database.tearDown();
-        int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        final CoreInstance core = CoreInstance.getInstance();
+        int finalOpenSessions = core.getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
         if (leakedOpenSessions != 0) {
             log.error(String.format(
@@ -89,6 +90,9 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
                             + "the test leaked %s session(s).",
                     Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
+            for (CoreInstance.RegistrationInfo info:core.getRegistrationInfos()) {
+                log.warn("Leaking session", info);
+            }
         }
     }
 

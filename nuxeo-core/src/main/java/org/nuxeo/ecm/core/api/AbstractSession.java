@@ -211,7 +211,16 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         // "REPOSITORY_FIRST_ACCESS" is set after the session is created. We
         // need to synchronize the call to be sure we initialize it only once.
         synchronized (AbstractSession.class) {
-            Session session = getSession(); // force the creation of the
+            Session session;
+            try {
+                session = getSession(); // force the creation of the
+            } catch (ClientException e) {
+                CoreInstance.getInstance().unregisterSession(sessionId);
+                throw e;
+            } catch (Throwable e) {
+                CoreInstance.getInstance().unregisterSession(sessionId);
+                throw ClientException.wrap(e);
+            }
             // underlying session
             if (sessionContext.remove("REPOSITORY_FIRST_ACCESS") != null) {
                 // this is the first time we access the repository in this JVM

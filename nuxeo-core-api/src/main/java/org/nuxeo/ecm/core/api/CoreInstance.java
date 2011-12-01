@@ -16,7 +16,9 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -77,7 +79,18 @@ public class CoreInstance implements Serializable {
 
     private CoreSessionFactory factory;
 
-    private final Map<String, CoreSession> sessions = new ConcurrentHashMap<String, CoreSession>();
+    public static class RegistrationInfo extends Throwable {
+        private static final long serialVersionUID = 1L;
+        public final CoreSession session;
+        public final String threadName;
+        RegistrationInfo(CoreSession session) {
+            super("Session registration context (" + session.getSessionId() + "," + Thread.currentThread().getName() + ")");
+            this.session = session;
+            this.threadName = Thread.currentThread().getName();
+        }
+    }
+    
+    private final Map<String, RegistrationInfo> sessions = new ConcurrentHashMap<String, RegistrationInfo>();
 
     // hiding the default constructor from clients
     protected CoreInstance() {
@@ -142,14 +155,18 @@ public class CoreInstance implements Serializable {
         if (log.isDebugEnabled()) {
             log.debug("Register session with id '" + sid + "'.");
         }
-        sessions.put(sid, session);
+        sessions.put(sid, new RegistrationInfo(session));
     }
 
     public CoreSession unregisterSession(String sid) {
         if (log.isDebugEnabled()) {
             log.debug("Unregister session with id '" + sid + "'.");
         }
-        return sessions.remove(sid);
+        RegistrationInfo info = sessions.remove(sid);
+        if (info == null) {
+            return null;
+        }
+        return info.session;
     }
 
     public void close(CoreSession client) {
@@ -179,10 +196,19 @@ public class CoreInstance implements Serializable {
     }
 
     public CoreSession[] getSessions() {
-        Collection<CoreSession> valuesOfMap = sessions.values();
-        return valuesOfMap.toArray(new CoreSession[0]);
+        Collection<RegistrationInfo> infos = sessions.values();
+        CoreSession[] ret = new CoreSession[infos.size()];
+       Iterator<RegistrationInfo> it = infos.iterator(); 
+       int i = 0;
+       while (it.hasNext()) {
+           ret[i++] = it.next().session;
+       }
+       return ret;
     }
 
+    public Collection<RegistrationInfo> getRegistrationInfos() {
+        return sessions.values();
+    }
     /**
      * Gets the client bound to the given session.
      *
@@ -194,9 +220,13 @@ public class CoreInstance implements Serializable {
         if (reentrantSession != null && reentrantSession.containsKey(sid)) {
             return reentrantSession.get(sid);
         }
-        return sessions.get(sid);
+        return sessions.get(sid).session;
     }
 
+    public RegistrationInfo getSessionRegistrationInfo(String sid) {
+        return sessions.get(sid);
+    }
+    
     public void initialize(CoreSessionFactory factory) {
         // TODO: to be able to test more easily with a variety of client
         // factories
