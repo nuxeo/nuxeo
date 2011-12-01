@@ -10,8 +10,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <!--src>themes/theme-dam.xml</src-->
-      <src>themes/theme-dam-new.xml</src>
+      <src>themes/nuxeo-dam.xml</src>
     </theme>
 
   </extension>
@@ -19,17 +18,6 @@
 
   <!-- views -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
-
-    <!--view name="dam logo" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>dam/incl/logo.xhtml</template>
-    </view>
-
-    <view name="dam header" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>dam/incl/nuxeo_dam_header.xhtml</template>
-      <resource>screen.css</resource>
-    </view-->
 
     <view name="dam search filters" template-engine="jsf-facelets">
       <format-type>widget</format-type>
@@ -82,8 +70,6 @@
   </extension>
 
   <!-- mapping between theme pages and resources -->
-  <!---->
-
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <themePage name="dam/default">
@@ -114,16 +100,5 @@
       <src>themes/css/nuxeo_dam_specific.css</src>
     </style>
   </extension>
-
-  <!-- Styles presets -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
-
-    <palette name="DAM borders" src="themes/palettes/dam-borders.properties" category="border" />
-    <palette name="DAM backgrounds" src="themes/palettes/dam-backgrounds.properties" category="background" />
-    <palette name="DAM fonts" src="themes/palettes/dam-fonts.properties" category="font" />
-    <palette name="DAM colors" src="themes/palettes/dam-colors.properties" category="color" />
-
-  </extension>
-
 
 </component>
