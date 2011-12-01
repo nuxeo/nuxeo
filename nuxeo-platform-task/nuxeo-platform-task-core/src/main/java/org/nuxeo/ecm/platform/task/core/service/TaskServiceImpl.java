@@ -371,14 +371,14 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     @Override
     public void deleteTaskInstance(CoreSession coreSession, String taskId)
             throws ClientException {
-        DocumentRef docRef = new IdRef(taskId);
-        if (coreSession.hasPermission(docRef, SecurityConstants.REMOVE)) {
-            coreSession.removeDocument(docRef);
-        } else {
-            throw new ClientException(coreSession.getPrincipal()
-                    + " has no right to remove document "
-                    + TASK_INSTANCE_EVENT_PROPERTIES_KEY);
-        }
+        final DocumentRef docRef = new IdRef(taskId);
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(coreSession) {
+            @Override
+            public void run() throws ClientException {
+                session.removeDocument(docRef);
+            }
+        };
+        runner.runUnrestricted();
     }
 
     @Override
