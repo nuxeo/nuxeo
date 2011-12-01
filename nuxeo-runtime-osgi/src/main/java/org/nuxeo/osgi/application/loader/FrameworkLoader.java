@@ -163,13 +163,15 @@ public class FrameworkLoader {
     }
 
     protected static void printDeploymentOrderInfo(List<File> files) {
-        StringBuilder buf = new StringBuilder();
-        for (File file : files) {
-            if (file != null) {
-                buf.append("\n\t" + file.getPath());
+        if (log.isDebugEnabled()) {
+            StringBuilder buf = new StringBuilder();
+            for (File file : files) {
+                if (file != null) {
+                    buf.append("\n\t" + file.getPath());
+                }
             }
+            log.debug("Deployment order: " + buf.toString());
         }
-        log.info("Deployment order: " + buf.toString());
     }
 
     private static void doStart() throws Exception {

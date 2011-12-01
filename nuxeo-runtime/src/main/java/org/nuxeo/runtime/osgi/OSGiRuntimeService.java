@@ -361,11 +361,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     protected static void printDeploymentOrderInfo(String[] fileNames) {
-        StringBuilder buf = new StringBuilder();
-        for (String fileName : fileNames) {
-            buf.append("\n\t" + fileName);
+        if (log.isDebugEnabled()) {
+            StringBuilder buf = new StringBuilder();
+            for (String fileName : fileNames) {
+                buf.append("\n\t" + fileName);
+            }
+            log.debug("Deployment order of configuration files: "
+                    + buf.toString());
         }
-        log.info("Deployment order of configuration files: " + buf.toString());
     }
 
     @Override
