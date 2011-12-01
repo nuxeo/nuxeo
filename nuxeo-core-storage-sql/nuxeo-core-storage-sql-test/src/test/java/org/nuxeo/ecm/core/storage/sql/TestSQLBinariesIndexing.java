@@ -155,6 +155,8 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         startIndexation = new CountDownLatch(1);
 
         recycleSession();
+
+        DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
     protected void docsAreNotIndexed() throws Exception {
