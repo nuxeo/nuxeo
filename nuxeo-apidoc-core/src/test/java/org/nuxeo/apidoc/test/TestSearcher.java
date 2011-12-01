@@ -55,6 +55,14 @@ public class TestSearcher extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        if (session!=null) {
+            CoreInstance.getInstance().close(session);
+        }
+        super.tearDown();
+    }
+
     protected SnapshotManager getSnapshotManager() {
         return Framework.getLocalService(SnapshotManager.class);
     }
@@ -71,29 +79,19 @@ public class TestSearcher extends SQLRepositoryTestCase {
         assertNotNull(persistent);
         session.save();
 
-        List<NuxeoArtifact> artficats = searcher.searchArtifact(session,
+        List<NuxeoArtifact> artifacts = searcher.searchArtifact(session,
                 "event");
-        log.info("Found " + artficats.size() + " artifacts");
-        for (NuxeoArtifact artifact : artficats) {
+        log.info("Found " + artifacts.size() + " artifacts");
+        for (NuxeoArtifact artifact : artifacts) {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());
         }
 
-        artficats = searcher.filterArtifact(session, persistent.getKey(),
+        artifacts = searcher.filterArtifact(session, persistent.getKey(),
                 "NXComponent", "event");
-        log.info("Found " + artficats.size() + " components");
-        for (NuxeoArtifact artifact : artficats) {
+        log.info("Found " + artifacts.size() + " components");
+        for (NuxeoArtifact artifact : artifacts) {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());
         }
-
-
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        if (session!=null) {
-            CoreInstance.getInstance().close(session);
-        }
-        super.tearDown();
     }
 
 }

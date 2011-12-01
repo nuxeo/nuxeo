@@ -33,16 +33,16 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
 
 public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
-    protected WebContext ctx;
+    protected final WebContext ctx;
 
-    protected DistributionSnapshot ds;
+    protected final DistributionSnapshot ds;
 
     public NuxeoArtifactSerializer(WebContext ctx, DistributionSnapshot ds) {
         this.ctx = ctx;
         this.ds = ds;
     }
 
-    protected static boolean useEmbededMode(WebContext ctx) {
+    protected static boolean useEmbeddedMode(WebContext ctx) {
         return ((Boolean) ctx.getProperty("embeddedMode", Boolean.FALSE)).booleanValue();
     }
 
@@ -53,7 +53,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
         String distId = ds.getKey().replace(" ", "%20");
         if (ds.isLive()) {
-            if (useEmbededMode(ctx)) {
+            if (useEmbeddedMode(ctx)) {
                 distId = "adm";
             } else {
                 distId = "current";
@@ -96,7 +96,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
     @Override
     protected JSONObject item2JSON(TreeItem item, JSONArray children) {
         JSONObject json = new JSONObject();
-        String[] classes = new String[] { "folder", "Folder" };
+        String[] classes = { "folder", "Folder" };
         json.element("text", item.getLabel()).element("id",
                 item.getPath().toString()).element("href", getUrl(item)).element(
                 "classes", classes).element("class", classes);

@@ -30,7 +30,7 @@ public class SeamComponentWO extends NuxeoArtifactWebObject {
     @Override
     @GET
     @Produces("text/html")
-    @Path(value = "introspection")
+    @Path("introspection")
     public Object doGet() throws Exception {
         return getView("view").arg("seamComponent", getTargetComponentInfo());
     }

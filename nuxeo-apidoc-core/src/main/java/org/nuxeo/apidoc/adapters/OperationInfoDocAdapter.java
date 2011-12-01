@@ -111,7 +111,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
-        ArrayList<Param> params = new ArrayList<Param>();
+        List<Param> params = new ArrayList<Param>();
         if (maps != null) {
             for (Map<String, Serializable> map : maps) {
                 Param p = new Param();

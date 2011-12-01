@@ -135,14 +135,12 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     @Override
     public String getHierarchyPath() {
-
-        String path = "";
         try {
-
             List<DocumentModel> parents = getCoreSession().getParentDocuments(
                     doc.getRef());
             Collections.reverse(parents);
 
+            String path = "";
             for (DocumentModel doc : parents) {
                 if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
                     break;

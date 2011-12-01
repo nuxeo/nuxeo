@@ -32,7 +32,7 @@ public class OperationWO extends NuxeoArtifactWebObject {
     @Override
     @GET
     @Produces("text/html")
-    @Path(value = "introspection")
+    @Path("introspection")
     public Object doGet() throws Exception {
         return getView("view").arg("operation", getTargetComponentInfo());
     }

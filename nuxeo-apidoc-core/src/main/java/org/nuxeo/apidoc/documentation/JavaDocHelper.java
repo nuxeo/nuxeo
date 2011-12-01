@@ -18,21 +18,16 @@ package org.nuxeo.apidoc.documentation;
 
 public class JavaDocHelper {
 
-    protected String defaultPrefix;
-
-    protected String docVersion;
-
     public static final String BASE_URL = "http://community.nuxeo.com/api/";
-
     public static final String CM_BASE = "nuxeo-case-management";
-
     public static final String DM_BASE = "nuxeo";
-
     public static final String DAM_BASE = "nuxeo-dam";
-
     public static final String DEFAULT_DIST = DM_BASE;
-
     public static final String DEFAULT_VERSION = "5.4";
+
+    protected final String defaultPrefix;
+
+    protected final String docVersion;
 
     public JavaDocHelper(String prefix, String version) {
         defaultPrefix = prefix;
@@ -58,7 +53,6 @@ public class JavaDocHelper {
             String distribVersion) {
 
         String base = DEFAULT_DIST;
-        String version = DEFAULT_VERSION;
 
         if (distribName.toUpperCase().contains("CM")
                 || distribName.toUpperCase().contains("CASE")) {
@@ -67,7 +61,7 @@ public class JavaDocHelper {
             base = DAM_BASE;
         }
 
-        version = distribVersion.substring(0, 3);
+        String version = distribVersion.substring(0, 3);
         return new JavaDocHelper(base, version);
     }
 

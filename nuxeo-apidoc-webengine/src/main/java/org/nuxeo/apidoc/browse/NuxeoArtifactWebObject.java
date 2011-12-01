@@ -83,7 +83,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @POST
     @Produces("text/html")
-    @Path(value = "updateDocumentation")
+    @Path("updateDocumentation")
     public Object doUpdateDocumentation(DocumentationItem docItem)
             throws Exception {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
@@ -127,7 +127,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @POST
     @Produces("text/html")
-    @Path(value = "createDocumentation")
+    @Path("createDocumentation")
     public Object doCreateDocumentation(DocumentationItem docItem)
             throws Exception {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
@@ -145,7 +145,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @POST
     @Produces("text/html")
-    @Path(value = "deleteDocumentation")
+    @Path("deleteDocumentation")
     public Object doDeleteDocumentation(@FormParam("uuid") String uuid)
             throws Exception {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
@@ -168,7 +168,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "doc")
+    @Path("doc")
     public Object doViewDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
@@ -178,7 +178,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "aggregated")
+    @Path("aggregated")
     public Object doViewAggregated() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
@@ -188,7 +188,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "createForm")
+    @Path("createForm")
     public Object doAddDoc(@QueryParam("inline") Boolean inline,
             @QueryParam("type") String type) throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
@@ -206,7 +206,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "editForm/{uuid}")
+    @Path("editForm/{uuid}")
     public Object doEditDoc(@PathParam("uuid") String uuid) throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         List<String> versions = getSnapshotManager().getAvailableVersions(
@@ -221,7 +221,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/plain")
-    @Path(value = "quickEdit/{editId}")
+    @Path("quickEdit/{editId}")
     public Object quickEdit(@PathParam("editId") String editId)
             throws Exception {
 
@@ -238,7 +238,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @POST
     @Produces("text/plain")
-    @Path(value = "quickEdit/{editId}")
+    @Path("quickEdit/{editId}")
     public Object quickEditSave(@PathParam("editId") String editId)
             throws Exception {
 

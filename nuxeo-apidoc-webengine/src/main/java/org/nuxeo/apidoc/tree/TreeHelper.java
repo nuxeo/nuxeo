@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TreeHelper {
 
-    protected static Log log = LogFactory.getLog(TreeHelper.class);
+    protected static final Log log = LogFactory.getLog(TreeHelper.class);
 
     public static NuxeoArtifactTree getOrBuildAnonymousTree(WebContext ctx) {
         NuxeoArtifactTree tree = (NuxeoArtifactTree) ctx.getRequest().getAttribute(

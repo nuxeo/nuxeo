@@ -176,7 +176,7 @@ public class SnapshotPersister {
             List<OperationInfo> operations, CoreSession session, String label,
             DocumentModel parent,SnapshotFilter filter) throws ClientException {
         for (OperationInfo op : operations) {
-            if (filter==null || (op instanceof OperationInfoImpl && filter.includeOpertation((OperationInfoImpl)op))) {
+            if (filter==null || (op instanceof OperationInfoImpl && filter.includeOperation((OperationInfoImpl) op))) {
                 persistOperation(snapshot, op, session, label, parent);
             }
         }

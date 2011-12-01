@@ -26,9 +26,9 @@ public class SnapshotFilter {
 
     protected final String bundleGroupName;
 
-    protected List<String> bundlePrefixes = new ArrayList<String>();
+    protected final List<String> bundlePrefixes = new ArrayList<String>();
 
-    protected List<String> packagesPrefixes = new ArrayList<String>();
+    protected final List<String> packagesPrefixes = new ArrayList<String>();
 
     public SnapshotFilter(String groupName) {
         bundleGroupName = groupName;
@@ -75,7 +75,7 @@ public class SnapshotFilter {
         return false;
     }
 
-    public boolean includeOpertation(OperationInfoImpl op) {
+    public boolean includeOperation(OperationInfoImpl op) {
         for (String pprefix : packagesPrefixes) {
             if (op.getOperationClass().startsWith(pprefix)) {
                 return true;

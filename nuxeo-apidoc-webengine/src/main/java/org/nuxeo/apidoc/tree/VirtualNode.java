@@ -24,15 +24,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public class VirtualNode implements NuxeoArtifact {
 
-    protected String cid;
+    protected final String cid;
 
-    protected String version;
+    protected final String version;
 
     protected final String type;
 
-    protected String id;
+    protected final String id;
 
-    protected String basePath;
+    protected final String basePath;
 
     public VirtualNode(ComponentInfo ci, String type, String id) {
         cid = ci.getId();

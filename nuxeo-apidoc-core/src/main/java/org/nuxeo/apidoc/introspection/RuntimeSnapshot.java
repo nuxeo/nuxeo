@@ -39,7 +39,6 @@ import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.seam.SeamRuntimeIntrospector;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.runtime.api.Framework;
 
@@ -165,9 +164,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
             for (String grp : subGroups) {
                 List<String> grpArtifactIds = new ArrayList<String>();
                 for (String aid : artifactIds) {
-                    if (aid.startsWith(grp)) {
-                        grpArtifactIds.add(aid);
-                    } else if (("grp:" + aid).startsWith(grp)) {
+                    if (aid.startsWith(grp) || ("grp:" + aid).startsWith(grp)) {
                         grpArtifactIds.add(aid);
                     }
                 }

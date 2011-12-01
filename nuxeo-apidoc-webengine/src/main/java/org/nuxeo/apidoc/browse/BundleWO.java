@@ -37,7 +37,7 @@ public class BundleWO extends NuxeoArtifactWebObject {
     @Override
     @GET
     @Produces("text/html")
-    @Path(value = "introspection")
+    @Path("introspection")
     public Object doGet() throws Exception {
         BundleInfo bi = getTargetBundleInfo();
         Collection<ComponentInfo> ci = bi.getComponents();

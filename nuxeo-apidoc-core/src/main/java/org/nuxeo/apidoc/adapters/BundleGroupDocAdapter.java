@@ -39,6 +39,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bg-" + bundleGroup.getId());
         String targetPath = new Path(containerPath).append(name).toString();
+
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
             exist = true;
@@ -85,7 +86,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getName() {
-        return safeGet(PROP_GROUP_NAME, "unknow_bundle_group");
+        return safeGet(PROP_GROUP_NAME, "unknown_bundle_group");
     }
 
     @Override
@@ -119,7 +120,6 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
             log.error("Unable to determine version for bundleGroup " + getId());
             return "?";
         }
-
         return parentSnapshot.getVersion();
     }
 

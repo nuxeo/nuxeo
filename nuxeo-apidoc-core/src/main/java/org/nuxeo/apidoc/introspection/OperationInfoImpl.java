@@ -33,7 +33,7 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
 
     public final String version;
 
-    protected String operationClass;
+    protected final String operationClass;
 
     public OperationInfoImpl(OperationDocumentation op, String version, String operationClass) {
         this.op = op;

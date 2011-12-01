@@ -30,7 +30,7 @@ public class ServiceWO extends NuxeoArtifactWebObject {
     @Override
     @GET
     @Produces("text/html")
-    @Path(value = "introspection")
+    @Path("introspection")
     public Object doGet() throws Exception {
         ServiceInfo si = getServiceInfo();
         return getView("view").arg("service", si);

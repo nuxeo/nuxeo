@@ -35,7 +35,7 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     @Override
     @GET
     @Produces("text/html")
-    @Path(value = "introspection")
+    @Path("introspection")
     public Object doGet() throws Exception {
         BundleGroup group = getTargetBundleGroup();
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(

@@ -85,14 +85,14 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/plain")
-    @Path(value = "tree")
+    @Path("tree")
     public Object tree(@QueryParam("root") String source) {
         return TreeHelper.updateTree(getContext(), source);
     }
 
     @GET
     @Produces("text/html")
-    @Path(value = "treeView")
+    @Path("treeView")
     public Object treeView() {
         return getView("tree").arg(Distribution.DIST_ID,
                 ctx.getProperty(Distribution.DIST_ID));
@@ -125,7 +125,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listBundleGroups")
+    @Path("listBundleGroups")
     public Object getMavenGroups() {
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(
                 getSnapshotManager().getSnapshot(distributionId,
@@ -144,7 +144,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listBundles")
+    @Path("listBundles")
     public Object getBundles() {
         List<String> bundleIds = getSnapshotManager().getSnapshot(
                 distributionId, ctx.getCoreSession()).getBundleIds();
@@ -154,7 +154,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "filterBundles")
+    @Path("filterBundles")
     public Object filterBundles() throws Exception {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(
@@ -171,7 +171,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listComponents")
+    @Path("listComponents")
     public Object getComponents() {
         List<String> javaComponentIds = getSnapshotManager().getSnapshot(
                 distributionId, ctx.getCoreSession()).getJavaComponentIds();
@@ -197,7 +197,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "filterComponents")
+    @Path("filterComponents")
     public Object filterComponents() throws Exception {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(
@@ -223,7 +223,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listServices")
+    @Path("listServices")
     public Object getServices() {
         List<String> serviceIds = getSnapshotManager().getSnapshot(
                 distributionId, ctx.getCoreSession()).getServiceIds();
@@ -264,7 +264,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/plain")
-    @Path(value = "feedServices")
+    @Path("feedServices")
     public String feedServices() throws Exception {
         List<String> serviceIds = getSnapshotManager().getSnapshot(
                 distributionId, ctx.getCoreSession()).getServiceIds();
@@ -296,7 +296,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/plain")
-    @Path(value = "feedExtensionPoints")
+    @Path("feedExtensionPoints")
     public String feedExtensionPoints() throws Exception {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId,
                 ctx.getCoreSession()).getExtensionPointIds();
@@ -329,7 +329,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "filterServices")
+    @Path("filterServices")
     public Object filterServices() throws Exception {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(
@@ -351,7 +351,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listExtensionPointsSimple")
+    @Path("listExtensionPointsSimple")
     @SuppressWarnings("boxing")
     public Object getExtensionPointsSimple() {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId,
@@ -386,7 +386,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listExtensionPoints")
+    @Path("listExtensionPoints")
     public Object getExtensionPoints() {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId,
                 ctx.getCoreSession()).getExtensionPointIds();
@@ -403,7 +403,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "filterExtensionPoints")
+    @Path("filterExtensionPoints")
     public Object filterExtensionPoints() throws Exception {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(
@@ -424,7 +424,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listContributions")
+    @Path("listContributions")
     public Object getContributions() {
         DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(
                 distributionId, ctx.getCoreSession());
@@ -436,7 +436,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "filterContributions")
+    @Path("filterContributions")
     public Object filterContributions() throws Exception {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(
@@ -451,7 +451,7 @@ public class ApiBrowser extends DefaultObject {
                 "searchFilter", fulltext);
     }
 
-    @Path(value = "doc")
+    @Path("doc")
     public Resource viewDoc() {
         try {
             return ctx.newObject("documentation");
@@ -462,7 +462,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "service2Bundle/{serviceId}")
+    @Path("service2Bundle/{serviceId}")
     public Object service2Bundle(@PathParam("serviceId") String serviceId)
             throws Exception {
 
@@ -487,7 +487,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "extensionPoint2Component/{epId}")
+    @Path("extensionPoint2Component/{epId}")
     public Object extensionPoint2Component(@PathParam("epId") String epId)
             throws Exception {
 
@@ -506,7 +506,7 @@ public class ApiBrowser extends DefaultObject {
         return Response.seeOther(new URI(target.toString())).build();
     }
 
-    @Path(value = "viewBundle/{bundleId}")
+    @Path("viewBundle/{bundleId}")
     public Resource viewBundle(@PathParam("bundleId") String bundleId) {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
@@ -519,7 +519,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewComponent/{componentId}")
+    @Path("viewComponent/{componentId}")
     public Resource viewComponent(@PathParam("componentId") String componentId) {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
@@ -532,7 +532,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewSeamComponent/{componentId}")
+    @Path("viewSeamComponent/{componentId}")
     public Resource viewSeamComponent(
             @PathParam("componentId") String componentId) {
         try {
@@ -544,7 +544,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewOperation/{opId}")
+    @Path("viewOperation/{opId}")
     public Resource viewOperation(@PathParam("opId") String opId) {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
@@ -555,7 +555,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewService/{serviceId}")
+    @Path("viewService/{serviceId}")
     public Resource viewService(@PathParam("serviceId") String serviceId) {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
@@ -568,7 +568,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewExtensionPoint/{epId}")
+    @Path("viewExtensionPoint/{epId}")
     public Resource viewExtensionPoint(@PathParam("epId") String epId) {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
@@ -581,7 +581,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewContribution/{cId}")
+    @Path("viewContribution/{cId}")
     public Resource viewContribution(@PathParam("cId") String cId) {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
@@ -594,7 +594,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewBundleGroup/{gId}")
+    @Path("viewBundleGroup/{gId}")
     public Resource viewBundleGroup(@PathParam("gId") String gId) {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
@@ -607,7 +607,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path(value = "viewArtifact/{id}")
+    @Path("viewArtifact/{id}")
     public Object viewArtifact(@PathParam("id") String id) {
         try {
 
@@ -656,14 +656,14 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listSeamComponents")
+    @Path("listSeamComponents")
     public Object listSeamComponents() throws Exception {
         return dolistSeamComponents("listSeamComponents", false);
     }
 
     @GET
     @Produces("text/html")
-    @Path(value = "listSeamComponentsSimple")
+    @Path("listSeamComponentsSimple")
     public Object listSeamComponentsSimple() throws Exception {
         return dolistSeamComponents("listSeamComponentsSimple", true);
     }
@@ -683,7 +683,7 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "listOperations")
+    @Path("listOperations")
     public Object listOperations() throws Exception {
         DistributionSnapshot snap = getSnapshotManager().getSnapshot(
                 distributionId, ctx.getCoreSession());

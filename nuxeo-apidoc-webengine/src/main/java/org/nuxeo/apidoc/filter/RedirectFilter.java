@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 public class RedirectFilter extends BaseApiDocFilter {
 
-    protected boolean isUriValidForAnnonymous(HttpServletRequest request) {
+    protected boolean isUriValidForAnonymous(HttpServletRequest request) {
         String uri = request.getRequestURI();
         if (uri.contains("/nxpath/")) {
             return false;
@@ -65,7 +65,7 @@ public class RedirectFilter extends BaseApiDocFilter {
         NuxeoPrincipal nxUser = (NuxeoPrincipal) httpRequest.getUserPrincipal();
 
         if (nxUser != null && nxUser.isAnonymous()) {
-            if (!isUriValidForAnnonymous(httpRequest)) {
+            if (!isUriValidForAnonymous(httpRequest)) {
                 redirectToWebEngineView(httpRequest, httpResponse);
             }
         }

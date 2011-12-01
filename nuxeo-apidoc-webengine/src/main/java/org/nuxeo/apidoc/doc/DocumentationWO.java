@@ -51,7 +51,7 @@ public class DocumentationWO extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "filter")
+    @Path("filter")
     public Object filterAll() throws Exception {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
@@ -82,7 +82,7 @@ public class DocumentationWO extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "view/{docUUID}")
+    @Path("view/{docUUID}")
     public Object viewDoc(@PathParam("docUUID") String docUUID)
             throws Exception {
         DocumentRef docRef = new IdRef(docUUID);

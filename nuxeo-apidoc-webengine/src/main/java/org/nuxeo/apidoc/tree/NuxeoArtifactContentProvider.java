@@ -34,7 +34,7 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
 
     private static final long serialVersionUID = 1L;
 
-    protected DistributionSnapshot ds;
+    protected final DistributionSnapshot ds;
 
     public NuxeoArtifactContentProvider(DistributionSnapshot ds) {
         this.ds = ds;
@@ -68,17 +68,17 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
             }
         } else if (obj.getArtifactType().equals(ComponentInfo.TYPE_NAME)) {
             ComponentInfo ci = ds.getComponent(obj.getId());
-            if (ci.getExtensionPoints().size() > 0) {
+            if (!ci.getExtensionPoints().isEmpty()) {
                 result.add(new VirtualNode(ci,
                         VirtualNodesConsts.ExtensionPoints_VNODE,
                         VirtualNodesConsts.ExtensionPoints_VNODE_NAME));
             }
-            if (ci.getServices().size() > 0) {
+            if (!ci.getServices().isEmpty()) {
                 result.add(new VirtualNode(ci,
                         VirtualNodesConsts.Services_VNODE,
                         VirtualNodesConsts.Services_VNODE_NAME));
             }
-            if (ci.getExtensions().size() > 0) {
+            if (!ci.getExtensions().isEmpty()) {
                 result.add(new VirtualNode(ci,
                         VirtualNodesConsts.Contributions_VNODE,
                         VirtualNodesConsts.Contributions_VNODE_NAME));
@@ -88,7 +88,7 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
             String cid = ((VirtualNode) obj).getComponentId();
             ComponentInfo ci = ds.getComponent(cid);
             for (ExtensionPointInfo epi : ci.getExtensionPoints()) {
-                result.add((NuxeoArtifact) epi);
+                result.add(epi);
             }
         } else if (obj.getArtifactType().equals(
                 VirtualNodesConsts.Contributions_VNODE)) {
@@ -157,17 +157,11 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
 
     @Override
     public boolean isContainer(Object ob) {
-
         NuxeoArtifact obj = (NuxeoArtifact) ob;
 
-        if (obj.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)) {
-            return false;
-        } else if (obj.getArtifactType().equals(ExtensionInfo.TYPE_NAME)) {
-            return false;
-        } else if (obj.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
-            return false;
-        }
-        return true;
+        return !(obj.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)
+                || obj.getArtifactType().equals(ExtensionInfo.TYPE_NAME)
+                || obj.getArtifactType().equals(ServiceInfo.TYPE_NAME));
     }
 
 }

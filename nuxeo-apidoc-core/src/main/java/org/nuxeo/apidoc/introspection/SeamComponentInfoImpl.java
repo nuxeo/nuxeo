@@ -33,7 +33,7 @@ public class SeamComponentInfoImpl extends BaseNuxeoArtifact implements
 
     protected String className;
 
-    protected List<String> interfaceNames = new ArrayList<String>();
+    protected final List<String> interfaceNames = new ArrayList<String>();
 
     protected String version;
 

@@ -110,7 +110,7 @@ public class Distribution extends ModuleRoot {
         return getView("index").arg("hideNav", Boolean.TRUE);
     }
 
-    @Path(value = "{distributionId}")
+    @Path("{distributionId}")
     public Resource viewDistribution(
             @PathParam("distributionId") String distributionId) {
         try {
@@ -163,7 +163,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path(value = "save")
+    @Path("save")
     @Produces("text/html")
     public Object doSave() throws Exception {
         if (!isEditor()) {
@@ -195,7 +195,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path(value = "saveExtended")
+    @Path("saveExtended")
     @Produces("text/html")
     public Object doSaveExtended() throws Exception {
         if (!isEditor()) {
@@ -209,17 +209,15 @@ public class Distribution extends ModuleRoot {
         String pkgList = formData.getString("packages");
         SnapshotFilter filter = new SnapshotFilter(distribLabel);
 
-        String[] bundles= null;
         if (bundleList!=null) {
-            bundles = bundleList.split("\n");
+            String[] bundles = bundleList.split("\n");
             for (String bundleId : bundles) {
                 filter.addBundlePrefix(bundleId);
             }
         }
 
-        String[] packages= null;
         if (pkgList!=null) {
-            packages = pkgList.split("\\r?\\n");;
+            String[] packages = pkgList.split("\\r?\\n");
             for (String pkg : packages) {
                 filter.addPackagesPrefix(pkg);
             }
@@ -267,7 +265,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @GET
-    @Path(value = "downloadDoc")
+    @Path("downloadDoc")
     public Response downloadDoc() throws Exception {
         DocumentationService ds = Framework.getService(DocumentationService.class);
         File tmp = getExportTmpFile();
@@ -283,7 +281,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @GET
-    @Path(value = "download/{distributionId}")
+    @Path("download/{distributionId}")
     public Response downloadDistrib(
             @PathParam("distributionId") String distribId) throws Exception {
         File tmp = getExportTmpFile();
@@ -300,7 +298,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path(value = "uploadDistrib")
+    @Path("uploadDistrib")
     @Produces("text/html")
     public Object uploadDistrib() throws Exception {
         if (!isEditor()) {
@@ -317,7 +315,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path(value = "uploadDoc")
+    @Path("uploadDoc")
     @Produces("text/html")
     // @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object uploadDoc() throws Exception {

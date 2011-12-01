@@ -33,7 +33,7 @@ import javax.xml.namespace.QName;
  */
 public class XMLWriter {
 
-    protected static String CRLF = System.getProperty("line.separator");
+    protected static final String CRLF = System.getProperty("line.separator");
 
     protected int indent;
 
@@ -531,9 +531,9 @@ public class XMLWriter {
     }
 
     class Element {
-        String name;
+        final String name;
 
-        Element parent;
+        final Element parent;
 
         ArrayList<String> nsMap;
 
