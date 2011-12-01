@@ -47,33 +47,33 @@
         </widgetModes>
       </widget>
 
-     <widget name="eventId" type="selectManyDirectory">
-      <labels>
-        <label mode="any">label.performedAction</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>bas:eventIds</field>
-      </fields>
-      <properties mode="any">
-        <property name="directoryName">eventTypes</property>
-        <property name="localize">true</property>
-      </properties>
-    </widget>
+      <widget name="eventId" type="selectManyDirectory">
+        <labels>
+          <label mode="any">label.performedAction</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>bas:eventIds</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">eventTypes</property>
+          <property name="localize">true</property>
+        </properties>
+      </widget>
 
-     <widget name="eventCategory" type="selectOneDirectory">
-      <labels>
-        <label mode="any">label.category</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>bas:eventCategory</field>
-      </fields>
-      <properties mode="any">
-        <property name="directoryName">eventCategories</property>
-        <property name="localize">true</property>
-      </properties>
-    </widget>
+      <widget name="eventCategory" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.category</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>bas:eventCategory</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">eventCategories</property>
+          <property name="localize">true</property>
+        </properties>
+      </widget>
 
       <widget name="userId" type="singleUserSuggestion">
         <labels>
@@ -87,12 +87,14 @@
           <mode value="create">hidden</mode>
         </widgetModes>
         <properties mode="any">
-         <property name="userSuggestionSearchType">USER_TYPE</property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
         </properties>
       </widget>
 
     </layout>
 
+    <!-- TODO: define global widgets to be shared with event logs
+      displayed in document tabs -->
     <layout name="event_listing">
       <templates>
         <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
@@ -148,7 +150,7 @@
           </properties>
           <widget>eventComment</widget>
         </column>
-         <column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
@@ -164,6 +166,9 @@
         <fields>
           <field>data.eventId</field>
         </fields>
+        <properties mode="any">
+          <property name="localize">true</property>
+        </properties>
       </widget>
 
       <widget name="eventDate" type="datetime">
@@ -190,15 +195,17 @@
         </fields>
       </widget>
 
-      <!-- XXX use i18n text widget -->
       <widget name="eventCategory" type="text">
         <labels>
           <label mode="any">label.category</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>data.category</field>
+          <field>data:category</field>
         </fields>
+        <properties mode="any">
+          <property name="localize">true</property>
+        </properties>
       </widget>
 
       <widget name="eventDoc" type="template">
@@ -210,9 +217,9 @@
           <field>data</field>
         </fields>
         <properties mode="any">
-        <property name="template">
-          /widgets/auditdoc_widget_template.xhtml
-        </property>
+          <property name="template">
+            /widgets/auditdoc_widget_template.xhtml
+          </property>
         </properties>
       </widget>
 
@@ -226,7 +233,6 @@
         </fields>
       </widget>
 
-      <!-- XXX use i18n text widget -->
       <widget name="eventLC" type="text">
         <labels>
           <label mode="any">label.lifecycle</label>
@@ -235,8 +241,10 @@
         <fields>
           <field>data.docLifeCycle</field>
         </fields>
+        <properties mode="any">
+          <property name="localize">true</property>
+        </properties>
       </widget>
-
 
     </layout>
 

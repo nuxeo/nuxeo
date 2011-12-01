@@ -38,7 +38,7 @@
         <maxPageSize>1000</maxPageSize>
       </genericPageProvider>
 
-      <searchLayout name="basicauditsearch" />
+      <searchLayout name="basicauditsearch" filterDisplayType="quick" />
       <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
