@@ -39,11 +39,11 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Offline Marketplace packages manager.
- *
+ * 
  * See {@link #printHelp()} for the usage.
- *
+ * 
  * The target directory is set from System property "nuxeo.runtime.home".
- *
+ * 
  * <p>
  * The environment used by Nuxeo runtime can be specified as System properties.
  * <p>
@@ -68,7 +68,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>commons-logging
  * <li>log4j
  * </ul>
- *
+ * 
  */
 public class LocalPackageManager {
 
@@ -159,6 +159,8 @@ public class LocalPackageManager {
                 uninstall(pkgId);
             } else if ("list".equalsIgnoreCase(command)) {
                 listPackages();
+            } else if ("reset".equalsIgnoreCase(command)) {
+                reset();
             } else {
                 printHelp();
                 return;
@@ -178,6 +180,7 @@ public class LocalPackageManager {
         log.error("\t\t install /path/to/upgrade/file\t\t\tReads the given upgrade file and performs install.");
         log.error("\t\t installpkg [/path/to/package|packageId]\t\t\tInstalls the given package (as a file or its ID).");
         log.error("\t\t uninstall packageId\t\t\tUninstalls the specified package.");
+        log.error("\t\t reset\t\t\tReset all package states to DOWNLOADED. This may be usefull after a manual upgrade of the server.");
     }
 
     protected void initEnvironment() {
@@ -245,7 +248,7 @@ public class LocalPackageManager {
             boolean uninstall = false;
             if (pkgId.startsWith("uninstall ")) {
                 pkgId = pkgId.substring(10);
-                uninstall=true;
+                uninstall = true;
             }
             if (pkgId.startsWith("file:")) {
                 String packageFileName = pkgId.substring(5);
@@ -310,7 +313,7 @@ public class LocalPackageManager {
 
     /**
      * Validate and run given task
-     *
+     * 
      * @since 5.5
      * @param task
      * @throws PackageException
@@ -366,4 +369,8 @@ public class LocalPackageManager {
         }
     }
 
+    private void reset() throws PackageException {
+        pus.reset();
+        log.info("Packages reset done: All packages were marked as DOWNLOADED");
+    }
 }

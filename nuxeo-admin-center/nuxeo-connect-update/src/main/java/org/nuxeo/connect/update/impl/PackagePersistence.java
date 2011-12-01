@@ -34,12 +34,13 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.task.Task;
 
 /**
- * The file {@code nxserver/data/packages/.packages} stores the state of all local
- * features.
+ * The file {@code nxserver/data/packages/.packages} stores the state of all
+ * local features.
  * <p>
  * Each local package have a corresponding directory in
- * {@code nxserver/data/features/store} which is named: {@code <package_uid>} ("id-version")
- *
+ * {@code nxserver/data/features/store} which is named: {@code <package_uid>}
+ * ("id-version")
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PackagePersistence {
@@ -194,7 +195,7 @@ public class PackagePersistence {
      * <li> {@link PackageState#INSTALLED}
      * <li> {@link PackageState#STARTED}
      * </ul>
-     *
+     * 
      * @param name
      * @return
      */
@@ -230,8 +231,13 @@ public class PackagePersistence {
         return new ArrayList<LocalPackage>();
     }
 
-    public synchronized void removePackage(String id) {
+    public synchronized void removePackage(String id) throws PackageException {
         states.remove(id);
+        try {
+            writeStates(states);
+        } catch (IOException e) {
+            throw new PackageException("Failed to write package states", e);
+        }
         File file = new File(store, id);
         if (file.isDirectory()) {
             FileUtils.deleteTree(file);
@@ -241,6 +247,18 @@ public class PackagePersistence {
     public synchronized void updateState(String id, int state)
             throws PackageException {
         states.put(id, state);
+        try {
+            writeStates(states);
+        } catch (IOException e) {
+            throw new PackageException("Failed to write package states", e);
+        }
+    }
+
+    public synchronized void reset() throws PackageException {
+        String[] keys = states.keySet().toArray(new String[states.size()]);
+        for (String key : keys) {
+            states.put(key, PackageState.DOWNLOADED);
+        }
         try {
             writeStates(states);
         } catch (IOException e) {

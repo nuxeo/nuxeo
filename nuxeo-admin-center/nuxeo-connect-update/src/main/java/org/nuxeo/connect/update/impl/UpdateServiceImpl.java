@@ -62,7 +62,7 @@ import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class UpdateServiceImpl implements PackageUpdateService {
 
@@ -271,4 +271,8 @@ public class UpdateServiceImpl implements PackageUpdateService {
         }
     }
 
+    @Override
+    public void reset() throws PackageException {
+        persistence.reset();
+    }
 }
