@@ -221,9 +221,6 @@
         <style>drag_and_drop</style>
         <style>richfaces_components</style>
         <style>tabs_content</style>
-        <style>picture_book</style>
-        <style>polls</style>
-        <style>faceted_search</style>
         <style>nuxeo_dm_specific</style>
       </styles>
     </themePage>
@@ -324,7 +321,6 @@
     <style name="tabs_content">
       <src>themes/css/tabs_content.css</src>
     </style>
-
     <!-- Header and Footer -->
     <style name="header">
       <src>themes/css/header.css</src>
@@ -332,18 +328,6 @@
     <style name="footer">
       <src>themes/css/footer.css</src>
     </style>
-
-    <!-- Addons -->
-    <style name="picture_book">
-      <src>themes/css/picture_book.css</src>
-    </style>
-    <style name="polls">
-      <src>themes/css/polls.css</src>
-    </style>
-    <style name="faceted_search">
-      <src>themes/css/faceted_search.css</src>
-    </style>
-
     <!-- Specific to pages -->
     <style name="nuxeo_dm_specific">
       <src>themes/css/nuxeo_dm_specific.css</src>

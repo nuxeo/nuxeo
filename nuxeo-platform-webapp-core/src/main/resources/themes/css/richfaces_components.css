@@ -41,7 +41,6 @@ h3.documentTypes { padding: 0; margin: 1.4em 0 .5em; color: #333; border-width: 
 .documentType a, .documentType a:link, .documentType a:visted, .documentType a:hover { font-weight: bold; color: "link (__FLAVOR__ color)"; text-decoration: none }
 .documentType span { color: #454545 }
 a.documentTypeLink { color: "link (__FLAVOR__ color)"; font-weight: bold; text-decoration: none }
-.imagingPanelDownloadLink { color: "link (__FLAVOR__ color)"; display: block; font-weight: bold; padding: .4em 0 .2em }
 
 #tooltip { position: absolute; display: block }
 #tooltipContent { display: block; padding: .2em 1.1em .3em .6em; margin-left: .5em; background: #FFFFAA; color:"black (__FLAVOR__ color)"; border: 1px solid #333 }

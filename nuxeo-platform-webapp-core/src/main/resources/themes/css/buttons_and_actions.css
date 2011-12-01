@@ -114,13 +114,9 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none "color.major.medium (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)"; float: right !important; }
 
 /* =RightClick menu */
-#contextMenu {
-  position: absolute;
-  visibility: hidden;
-  top: 0;
-  left: 0 }
-.ctxMenuStyle { box-shadow: 2px 2px 5px #CCC; border-color: #ddd; border-style: solid; border-width: 2px; min-width: 120px; font-size: .7em }
+#contextMenu { position: absolute; visibility: hidden; top: 0; left: 0 }
+.ctxMenuStyle { box-shadow: 2px 2px 5px #CCC; border: 2px solid #ddd; min-width: 120px; font-size: .7em }
 .ctxMenuItemStyle, .ctxMenuItemHoverStyle { margin: 0; display: block; cursor: default; padding: .4em .5em; border-style: none none solid; border-width: 1px; border-color: "neutral.light (__FLAVOR__ border)"; background-color:#fff }
-.ctxMenuItemHoverStyle { background-color: "color.major.medium (__FLAVOR__ background)" }
-.ctxMenuItemStyle a, .ctxMenuItemHoverStyle a { text-decoration: none }
+.ctxMenuItemHoverStyle { cursor: pointer; background-color: "color.major.medium (__FLAVOR__ background)" }
+.ctxMenuItemStyle a, .ctxMenuItemHoverStyle a { display: block; text-decoration: none }
 .ctxMenuImg { vertical-align: middle; padding: 0em .4em 0.1em 0 }
