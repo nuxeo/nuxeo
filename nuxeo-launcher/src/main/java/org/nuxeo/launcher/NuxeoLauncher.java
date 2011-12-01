@@ -753,9 +753,7 @@ public abstract class NuxeoLauncher {
             log.error("No package to install.");
             errorValue = 1;
         } else {
-            callPackageManager(
-                    "install",
-                    new String[] { configurationGenerator.getInstallFile().getPath() });
+            callPackageManager("install", null);
         }
         return errorValue == 0;
     }
@@ -781,6 +779,7 @@ public abstract class NuxeoLauncher {
             startCommand.add(PKG_MANAGER_CLASS);
             startCommand.add(tmpDir.getPath());
             startCommand.add(pkgCommand);
+            startCommand.add(configurationGenerator.getInstallFile().getPath());
             if (pkgParams != null) {
                 for (String param : pkgParams) {
                     startCommand.add(param);

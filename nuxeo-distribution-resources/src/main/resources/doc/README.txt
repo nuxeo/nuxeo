@@ -61,9 +61,8 @@ Complementary features
      * Preview and annotations: requires install of third-party software
        [7]"pdftohtml", see [8]the pdftohtml instructions on the related
        software page.
-     * Image tiling: requires install of third-party software [9]"Image
-       Magick", see [10]the Image Magick instructions on the related
-       software page.
+     * Image tiling: requires install of third-party software [9]"ImageMagick",
+       see [10]the ImageMagick instructions on the related software page.
      * Drag and drop plugins: [11]Firefox, [12]Internet Explorer.
      * Desktop integration thanks to LiveEdit: see the [13]plugins
        download page.

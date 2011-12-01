@@ -17,33 +17,6 @@
 
   <target name="prepare-environment"
           depends="prepare-db,prepare-tomcat,wizard-on">
-
-    <!-- retrieve DM MP package -->
-    <copy todir="${maven.project.build.directory}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-content-browser::zip" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
-    </copy>
-    <!-- compute MD5 checksums -->
-    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-content-browser-${nuxeo.distribution.version}.zip"
-              property="VPCBMPMD5" />
-    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
-              property="DMMPMD5" />
-    <!-- rename the MP files -->
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-content-browser-${nuxeo.distribution.version}.zip"
-          tofile="${maven.project.build.directory}/tomcat/setupWizardDownloads/${VPCBMPMD5}" />
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
-          tofile="${maven.project.build.directory}/tomcat/setupWizardDownloads/${DMMPMD5}" />
-
-    <!-- Copy default packages.xml file -->
-    <copy file="src/main/resources/packages.xml"
-          tofile="${maven.project.build.directory}/tomcat/setupWizardDownloads/packages.xml">
-      <filterset>
-        <filter token="DMMPMD5" value="${DMMPMD5}" />
-        <filter token="VPCBMPMD5" value="${VPCBMPMD5}" />
-        <filter token="VERSION" value="${nuxeo.distribution.version}" />
-      </filterset>
-    </copy>
-
   </target>
 
 </project>

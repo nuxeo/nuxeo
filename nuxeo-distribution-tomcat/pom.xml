@@ -69,11 +69,15 @@
     </profile>
     <profile>
       <id>nuxeo-dm</id>
-      <!-- default profile for building Tomcat with only Nuxeo DM -->
+      <!-- profile for building Tomcat with already chosen Nuxeo DM -->
     </profile>
     <profile>
       <id>nuxeo-dam</id>
-      <!-- default profile for building Tomcat with only Nuxeo DAM -->
+      <!-- profile for building Tomcat with already chosen Nuxeo DAM -->
+    </profile>
+    <profile>
+      <id>nuxeo-cmf</id>
+      <!-- profile for building Tomcat with already chosen Nuxeo CMF -->
     </profile>
     <profile>
       <id>sdk</id>

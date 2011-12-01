@@ -1,5 +1,5 @@
-<package type="addon" name="nuxeo-content-browser" version="@VERSION@">
-  <title>Nuxeo Content Browser</title>
+<package type="addon" name="@NAME@" version="@VERSION@">
+  <title>@TITLE@</title>
   <description>Virtual package to manage compatibility between applications on
     top of CAP.
   </description>

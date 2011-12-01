@@ -6,6 +6,8 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
+  <!-- DEPRECATED: DAM is now a Marketplace package -->
+  <!-- TODO: migrate importer stuff to assembly.xml and generate a dam-importer -->
 
   <target name="init" unless="init.done">
     <tstamp />

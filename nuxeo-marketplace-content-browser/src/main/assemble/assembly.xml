@@ -7,13 +7,15 @@
            uri="urn:nuxeo-artifact" />
 
   <target name="build"
-          description="Build content browser virtual marketplace package">
+          description="Build content browser virtual marketplace packages">
     <delete failonerror="false"
             dir="${maven.project.build.directory}/marketplace" />
     <mkdir dir="${maven.project.build.directory}/marketplace" />
     <copy todir="${maven.project.build.directory}/marketplace">
       <fileset dir="src/main/resources" />
       <filterset>
+        <filter token="NAME" value="nuxeo-content-browser" />
+        <filter token="TITLE" value="Nuxeo Content Browser" />
         <filter token="VERSION" value="${nuxeo.distribution.version}" />
       </filterset>
     </copy>
@@ -22,6 +24,22 @@
          basedir="${maven.project.build.directory}/marketplace" />
     <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+
+    <copy todir="${maven.project.build.directory}/marketplace">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="NAME" value="nuxeo-content-browser-cmf" />
+        <filter token="TITLE" value="Nuxeo Content Browser for CMF" />
+        <filter token="VERSION" value="${nuxeo.distribution.version}" />
+      </filterset>
+    </copy>
+
+    <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}-cmf.zip"
+         basedir="${maven.project.build.directory}/marketplace" />
+    <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="cmf"
                      type="zip" />
   </target>
 
