@@ -33,7 +33,7 @@ def system(cmd):
     sys.stdout.flush()
     retcode = p.returncode
     if retcode != 0:
-        log("Command returned non-zero exit code: %s" % (cmd,))
+        log("[ERROR]: command returned non-zero exit code: %s" % cmd)
         sys.exit(retcode)
 
 def check_output(cmd):
@@ -105,7 +105,6 @@ os.chdir("addons")
 log("$> cd addons; clone.py %s" % branch)
 retcode = os.system("python clone.py %s" % branch)
 if retcode != 0:
-    log("Command returned non-zero exit code: %s" % (cmd,))
+    log("[ERROR]: cloning addons failed.")
     sys.exit(retcode)
 os.chdir(cwd)
-
