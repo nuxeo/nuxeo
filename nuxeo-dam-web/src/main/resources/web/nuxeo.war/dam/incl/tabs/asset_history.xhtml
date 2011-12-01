@@ -12,7 +12,7 @@
   <fieldset>
     <legend><h:outputText value="#{messages['label.header.history']}" /></legend>
 
-    <h:dataTable var="logEntry" value="${logEntries}"
+    <h:dataTable var="logEntry" value="#{damDocumentActions.selectedAssetLogEntries}"
       class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
       <h:column>
         <f:facet name="header">

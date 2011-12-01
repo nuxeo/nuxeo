@@ -17,11 +17,13 @@
 
 package org.nuxeo.dam.webapp.contentbrowser;
 
+import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.platform.action.DamWebActions.DAM_VIEW_ASSET_ACTION_LIST_CATEGORY;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -30,6 +32,7 @@ import javax.faces.event.ActionEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -37,7 +40,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
-import org.nuxeo.dam.platform.action.DamWebActions;
 import org.nuxeo.dam.webapp.chainselect.ChainSelectCleaner;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
 import org.nuxeo.ecm.core.api.Blob;
@@ -52,6 +54,9 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.audit.api.AuditException;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.web.listener.ejb.ContentHistoryActionsBean;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -88,6 +93,9 @@ public class DamDocumentActions implements Serializable {
     @In(create = true)
     private transient NuxeoPrincipal currentNuxeoPrincipal;
 
+    @In(create = true)
+    ContentHistoryActionsBean contentHistoryActions;
+
     /**
      * Current selected asset
      */
@@ -107,6 +115,8 @@ public class DamDocumentActions implements Serializable {
 
     protected String downloadSize = DEFAULT_PICTURE_DOWNLOAD_PROPERTY;
 
+    protected List<LogEntry> selectedAssetLogEntries;
+
     public DocumentModel getCurrentSelection() {
         return currentSelection;
     }
@@ -116,6 +126,7 @@ public class DamDocumentActions implements Serializable {
         webActions.resetCurrentTabs(DAM_VIEW_ASSET_ACTION_LIST_CATEGORY);
         displayMode = BuiltinModes.VIEW;
         currentSelection = selection;
+        selectedAssetLogEntries = null;
         currentSelectionLink = webActions.getCurrentTabAction(
                 DAM_VIEW_ASSET_ACTION_LIST_CATEGORY).getLink();
         resetData();
@@ -327,6 +338,7 @@ public class DamDocumentActions implements Serializable {
         DocumentModelList currentPage = provider.getCurrentPage();
         if (currentPage != null && !currentPage.isEmpty()) {
             currentSelection = currentPage.get(0);
+            selectedAssetLogEntries = null;
         }
     }
 
@@ -373,6 +385,14 @@ public class DamDocumentActions implements Serializable {
 
     public void toggleIptcArea(ActionEvent event) {
         showIptcArea = !showIptcArea;
+    }
+
+    public List<LogEntry> getSelectedAssetLogEntries()
+            throws AuditException {
+        if (selectedAssetLogEntries == null) {
+            selectedAssetLogEntries = contentHistoryActions.computeLogEntries(getCurrentSelection());
+        }
+        return selectedAssetLogEntries;
     }
 
 }
