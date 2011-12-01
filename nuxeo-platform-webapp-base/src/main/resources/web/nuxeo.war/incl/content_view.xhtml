@@ -78,17 +78,31 @@
 
         <ui:insert name="content_view_header" />
 
+        <ui:insert name="content_view_quick_search_layout">
+          <c:if test="#{contentView.searchLayout.filterDisplayType == 'quick'}">
+            <ui:include src="/incl/content_view_quick_search_layout.xhtml" />
+          </c:if>
+        </ui:insert>
+
         <ui:insert name="content_view_selector">
           <ui:include src="/incl/content_view_result_layout_selector.xhtml" />
           <div style="clear:both;" />
         </ui:insert>
 
         <ui:insert name="content_view_search_layout">
-          <ui:include src="/incl/content_view_search_layout.xhtml" />
-          <div style="clear:both;" />
+          <c:if test="#{contentView.searchLayout.filterDisplayType == 'default' or empty contentView.searchLayout.filterDisplayType}">
+            <ui:include src="/incl/content_view_search_layout.xhtml" />
+            <div style="clear:both;" />
+          </c:if>
         </ui:insert>
 
         <a4j:outputPanel id="#{contentViewRenderId}_resultsPanel">
+          <script>
+            jQuery(document).ready(function() {
+            	initNXDrapAndDropOnPage(jQuery('##{contentViewRenderId}_panel'));
+            });
+          </script>
+
           <ui:decorate template="/incl/documents_layout_table.xhtml">
             <ui:param name="providerId" value="#{contentViewId}" />
             <ui:param name="documents" value="#{provider.currentSelectPage}" />
@@ -97,9 +111,11 @@
 
             <ui:define name="empty_folder_label">
               <ui:insert name="empty_content_view_label">
+                <c:set var="defaultSentence"
+                  value="#{nxu:test(contentView.showFilterForm and nxd:isDirty(contentView.searchDocumentModel), messages['label.content.empty.search'], messages['label.content.emptyFolder'])}" />
                 <c:set var="emptySentence"
                   value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
-                <h:outputText value="#{nxu:test(empty emptySentence, messages['label.content.emptyFolder'], emptySentence)}"
+                <h:outputText value="#{nxu:test(empty emptySentence, defaultSentence, emptySentence)}"
                   rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
               </ui:insert>
             </ui:define>
@@ -154,8 +170,10 @@
 
             <ui:define name="syndication_buttons">
               <ui:insert name="content_view_syndication_buttons">
-                <ui:include src="/incl/content_view_syndication_buttons.xhtml" />
-                <div style="clear:both;" />
+                <c:if test="#{contentView.currentResultLayout.showSyndicationLinks}">
+                  <ui:include src="/incl/content_view_syndication_buttons.xhtml" />
+                  <div style="clear:both;" />
+                </c:if>
               </ui:insert>
             </ui:define>
 

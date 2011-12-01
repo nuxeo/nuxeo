@@ -25,8 +25,10 @@
             <field schema="advanced_search" name="modified_max" />
           </predicate>
           <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
           </fixedPart>
         </whereClause>
         <parameter>#{currentDocument.id}</parameter>
@@ -34,7 +36,8 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
-      <searchLayout name="document_content_filter" />
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
       <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
@@ -49,15 +52,13 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout name="document_listing_ajax_compact_2_columns"
-          title="document_listing_compact_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout name="document_listing_ajax_icon_2_columns"
-          title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -85,8 +86,10 @@
             <field schema="advanced_search" name="modified_max" />
           </predicate>
           <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState = 'deleted'
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState =
+            'deleted'
           </fixedPart>
         </whereClause>
         <parameter>#{currentDocument.id}</parameter>
@@ -94,7 +97,8 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
-      <searchLayout name="document_content_filter" />
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
       <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
@@ -109,15 +113,13 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout name="document_listing_ajax_compact_2_columns"
-          title="document_listing_compact_2_columns" translateTitle="false"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout name="document_listing_ajax_icon_2_columns"
-          title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
+          translateTitle="false" iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION_TRASH</selectionList>
@@ -145,8 +147,10 @@
             <field schema="advanced_search" name="modified_max" />
           </predicate>
           <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
           </fixedPart>
         </whereClause>
         <parameter>#{currentDocument.id}</parameter>
@@ -154,7 +158,8 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
-      <searchLayout name="document_content_filter" />
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
       <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
@@ -169,15 +174,13 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout name="document_listing_ajax_compact_2_columns"
-          title="document_listing_compact_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout name="document_listing_ajax_icon_2_columns"
-          title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION_SECTIONS</selectionList>
@@ -205,8 +208,10 @@
             <field schema="advanced_search" name="modified_max" />
           </predicate>
           <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
           </fixedPart>
         </whereClause>
         <parameter>#{currentDocument.id}</parameter>
@@ -215,7 +220,8 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
-      <searchLayout name="document_content_filter" />
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
       <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
@@ -230,7 +236,7 @@
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>

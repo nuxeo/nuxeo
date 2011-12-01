@@ -1346,9 +1346,6 @@
       </templates>
       <rows>
         <row>
-          <widget>search_all_words</widget>
-        </row>
-        <row>
           <widget>search_title</widget>
         </row>
         <row>

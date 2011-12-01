@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testContrib">
+<component name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testContrib">
 
   <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
     point="contentViews">
@@ -30,10 +29,9 @@
       <actions category="CURRENT_SELECTION_LIST" />
       <resultLayouts>
         <layout name="document_listing" title="label.document_listing.layout"
-          translateTitle="true" iconPath="/icons/myicon.png"
-          showCSVExport="true" />
+          translateTitle="true" iconPath="/icons/myicon.png" showCSVExport="true" />
       </resultLayouts>
-      <searchLayout name="search_layout" />
+      <searchLayout name="search_layout" filterDisplayType="quick" />
       <refresh>
         <event>documentChildrenChanged</event>
       </refresh>
@@ -52,8 +50,10 @@
         <property name="checkQueryCache">true</property>
         <whereClause docType="File">
           <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
           </fixedPart>
           <predicate parameter="dc:title" operator="FULLTEXT">
             <field schema="dublincore" name="title" />
@@ -132,8 +132,10 @@
         <property name="checkQueryCache">true</property>
         <whereClause docType="File">
           <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
           </fixedPart>
           <predicate parameter="dc:title" operator="FULLTEXT">
             <field schema="dublincore" name="title" />
@@ -154,7 +156,8 @@
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_PP">
       <pattern>
-        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        SELECT * FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:currentLifeCycleState != 'deleted'
       </pattern>
@@ -162,12 +165,13 @@
       <pageSize>2</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider
-      name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_PP">
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_PP">
       <whereClause docType="File">
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState !=
+          'deleted'
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="dublincore" name="title" />

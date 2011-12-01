@@ -18,8 +18,10 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
-          SELECT * FROM Document WHERE ecm:fulltext LIKE ? AND ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+          SELECT * FROM Document WHERE ecm:fulltext LIKE ? AND
+          ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+          AND
           ecm:currentLifeCycleState != 'deleted'
         </pattern>
         <parameter>#{documentSearchActions.simpleSearchKeywords}</parameter>
@@ -45,16 +47,15 @@
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout
-          name="document_virtual_navigation_listing_ajax_compact_2_columns"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
           iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
         <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
           title="document_listing_icon_2_columns" translateTitle="true"
           iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -152,7 +153,8 @@
             <field schema="advanced_search" name="currentLifeCycleState" />
           </predicate>
           <fixedPart>
-            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+            ecm:mixinType != 'HiddenInNavigation' AND
+            ecm:isCheckedInVersion = 0
           </fixedPart>
         </whereClause>
         <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
@@ -180,16 +182,15 @@
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout
-          name="document_virtual_navigation_listing_ajax_compact_2_columns"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
           iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
         <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
           title="document_listing_icon_2_columns" translateTitle="true"
           iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -232,16 +233,15 @@
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-        <layout
-          name="document_virtual_navigation_listing_ajax_compact_2_columns"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
           iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
         <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
           title="document_listing_icon_2_columns" translateTitle="true"
           iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>

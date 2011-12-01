@@ -46,6 +46,12 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @XNode("@showPDFExport")
     protected boolean showPDFExport = false;
 
+    @XNode("@showSyndicationLinks")
+    protected boolean showSyndicationLinks = false;
+
+    @XNode("@filterDisplayType")
+    protected String filterDisplayType;
+
     public ContentViewLayoutImpl() {
     }
 
@@ -82,6 +88,16 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @Override
     public boolean getShowPDFExport() {
         return showPDFExport;
+    }
+
+    @Override
+    public boolean getShowSyndicationLinks() {
+        return showSyndicationLinks;
+    }
+
+    @Override
+    public String getFilterDisplayType() {
+        return filterDisplayType;
     }
 
     @Override

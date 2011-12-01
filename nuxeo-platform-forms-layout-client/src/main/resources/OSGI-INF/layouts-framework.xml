@@ -6,7 +6,7 @@
     and layouts.
 
     Layouts are groups of widgets controlling the rendering of (for instance) a
-    document fields display on a page. The layouts and widgets can be dispmlayed
+    document fields display on a page. The layouts and widgets can be displayed
     in a given mode (create, edit, view, etc...).
 
     @version 1.0

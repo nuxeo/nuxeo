@@ -80,6 +80,8 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
         assertNull(contentView.getSearchLayout().getIconPath());
         assertFalse(contentView.getSearchLayout().getShowCSVExport());
+        assertEquals("quick",
+                contentView.getSearchLayout().getFilterDisplayType());
 
         assertEquals("CURRENT_SELECTION", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();

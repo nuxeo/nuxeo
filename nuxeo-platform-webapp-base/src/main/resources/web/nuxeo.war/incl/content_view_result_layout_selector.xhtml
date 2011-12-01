@@ -28,7 +28,7 @@ Needed parameters:
           <li class="#{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
             <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
               reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel"
-              ajaxSingle="true" oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));">
+              ajaxSingle="true">
               <c:set var="iconPath"
                 value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
               <c:set var="title"
@@ -46,7 +46,6 @@ Needed parameters:
           <a4j:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
             id="refreshContentViewLink"
             reRender="#{contentViewRenderId}_resultsPanel"
-            oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
             ajaxSingle="true">
             <h:graphicImage value="/icons/refresh.png"
              alt="#{messages['label.refresh']}"
@@ -136,8 +135,7 @@ Needed parameters:
       </h:selectOneMenu>
       <div style="display: none;">
         <a4j:commandButton value="submit"
-          reRender="#{contentViewRenderId}_resultsPanel"
-          oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));" />
+          reRender="#{contentViewRenderId}_resultsPanel" />
       </div>
 
     </a4j:form>

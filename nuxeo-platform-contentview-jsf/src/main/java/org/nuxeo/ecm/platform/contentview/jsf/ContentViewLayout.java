@@ -47,17 +47,35 @@ public interface ContentViewLayout extends Serializable {
     String getIconPath();
 
     /**
-     * Returns true if CSV export is enabled for this layout.
+     * Returns true if CSV export is enabled for this layout. Defaults to
+     * false.
      *
      * @since 5.4.2
      */
     boolean getShowCSVExport();
 
     /**
-     * Returns true if PDF export is enabled for this layout.
+     * Returns true if PDF export is enabled for this layout. Defaults to
+     * false.
      *
      * @since 5.4.2
      */
     boolean getShowPDFExport();
+
+    /**
+     * Returns true if syndication links are enabled for this layout. Defaults
+     * to false.
+     *
+     * @since 5.5
+     */
+    boolean getShowSyndicationLinks();
+
+    /**
+     * Returns the filter display type to handle different kinds of filter
+     * display.
+     *
+     * @since 5.5
+     */
+    String getFilterDisplayType();
 
 }

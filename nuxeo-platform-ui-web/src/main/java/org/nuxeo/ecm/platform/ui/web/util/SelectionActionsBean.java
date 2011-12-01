@@ -84,6 +84,21 @@ public class SelectionActionsBean implements Serializable {
     @RequestParameter
     protected String valueHolderId;
 
+    /**
+     * Value held temporarily by this bean to be set on JSF components.
+     *
+     * @since 5.5
+     */
+    protected String selectedValue;
+
+    public String getSelectedValue() {
+        return selectedValue;
+    }
+
+    public void setSelectedValue(String selectedValue) {
+        this.selectedValue = selectedValue;
+    }
+
     public SelectItem[] getEmptySelection() {
         return new SelectItem[0];
     }
@@ -292,8 +307,9 @@ public class SelectionActionsBean implements Serializable {
     /**
      * Adds selection retrieved from a selector to another component
      * <p>
-     * Retrieves Must pass request parameters "valueHolderId" holding the value
-     * to pass to the binding component,
+     * Must pass request parameters "selectorId" holding the id of component
+     * holding the value to pass to the other component, and "valueHolderId"
+     * holding the other component id.
      *
      * @since 5.5
      * @param event
@@ -315,4 +331,34 @@ public class SelectionActionsBean implements Serializable {
             }
         }
     }
+
+    /**
+     * Adds value retrieved from {@link #getSelectedValue()} to a component
+     * <p>
+     * Must pass request parameters "valueHolderId" holding the id of the bound
+     * component, and call {@link #setSelectedValue(String)} prior to this
+     * call.
+     *
+     * @since 5.5
+     * @param event
+     */
+    public void onClick(ActionEvent event) {
+        UIComponent component = event.getComponent();
+        if (component == null) {
+            return;
+        }
+        EditableValueHolder hiddenSelector = null;
+        if (valueHolderId != null) {
+            UIComponent base = ComponentUtils.getBase(component);
+            hiddenSelector = ComponentUtils.getComponent(base, valueHolderId,
+                    EditableValueHolder.class);
+        }
+        if (hiddenSelector != null) {
+            String selectedValue = getSelectedValue();
+            if (hiddenSelector != null) {
+                hiddenSelector.setSubmittedValue(selectedValue);
+            }
+        }
+    }
+
 }
