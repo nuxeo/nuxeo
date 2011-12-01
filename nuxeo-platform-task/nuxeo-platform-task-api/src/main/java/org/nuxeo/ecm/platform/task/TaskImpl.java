@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public class TaskImpl implements Task {
 
+    private static final long serialVersionUID = 1L;
+
     private DocumentModel doc;
 
     public TaskImpl(DocumentModel doc) {
