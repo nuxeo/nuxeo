@@ -45,7 +45,7 @@ import org.xml.sax.InputSource;
 
 /**
  * A command based task.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class CommandsTask extends AbstractTask {
@@ -156,10 +156,22 @@ public abstract class CommandsTask extends AbstractTask {
         }
         writer.end("uninstall");
         try {
-            FileUtils.writeFile(file, writer.toString());
+            // replace all occurrences of the installation path with the
+            // corresponding variable otherwise the uninstall will not work
+            // after renaming the installation directory
+            String content = parametrizePaths(writer.toString());
+            FileUtils.writeFile(file, content);
         } catch (IOException e) {
             throw new PackageException("Failed to write commands", e);
         }
+    }
+
+    public String parametrizePaths(String content) {
+        String serverHome = env.get(ENV_SERVER_HOME);
+        if (!serverHome.endsWith("/")) {
+            serverHome += "/";
+        }
+        return content.replace(serverHome, "${" + ENV_SERVER_HOME + "}/");
     }
 
     public void readLog(Reader reader) throws PackageException {

@@ -39,9 +39,9 @@ import org.w3c.dom.Element;
 /**
  * Copy a file to the given target directory or file. If the target is a
  * directory the file name is preserved. If the target file exists it will be
- * replaced if overwrite is true otherwise the command validation fails.
- * If the source file is a directory, then the files it contents will be
- * recursively copied.
+ * replaced if overwrite is true otherwise the command validation fails. If the
+ * source file is a directory, then the files it contents will be recursively
+ * copied.
  * <p>
  * If md5 is set then the copy command will be validated only if the target file
  * has the same md5 as the one specified in the command.
@@ -52,7 +52,7 @@ import org.w3c.dom.Element;
  * inverse of Copy command is another copy command with the md5 to the one of
  * the copied file and the overwrite flag to true. The file to copy will be the
  * backup of the overwritten file.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Copy extends AbstractCommand {
@@ -153,13 +153,11 @@ public class Copy extends AbstractCommand {
             dst = new File(dst, fileToCopy.getName());
         }
         try {
-            if (overwriteIfNewerVersion || upgradeOnly) {
+            FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
+            if (filenameMatcher.match(fileToCopy.getName())
+                    && (overwriteIfNewerVersion || upgradeOnly)) {
                 // Compare source and destination versions set in filename
                 FileVersion fileToCopyVersion, dstVersion = null;
-                FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
-                if (!filenameMatcher.match(fileToCopy.getName())) {
-
-                }
                 String filenameWithoutVersion = filenameMatcher.getValue();
                 FileMatcher versionMatcher = FileMatcher.getMatcher(filenameWithoutVersion
                         + "{v:[0-9]+.*}\\.jar");
@@ -271,7 +269,7 @@ public class Copy extends AbstractCommand {
 
     /**
      * Override in subclass to parameterize content.
-     *
+     * 
      * @since 5.5
      * @param prefs
      * @return Content to put in destination file. See {@link #append} parameter
@@ -300,8 +298,8 @@ public class Copy extends AbstractCommand {
 
     /**
      * @deprecated Since 5.5, use {@link #getContentToCopy(File, Map)}. This
-     *             method is missing the fileToCopy reference.
-     *             Using {@link #file} is leading to errors.
+     *             method is missing the fileToCopy reference. Using
+     *             {@link #file} is leading to errors.
      * @throws PackageException
      */
     @Deprecated
