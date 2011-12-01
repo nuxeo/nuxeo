@@ -43,14 +43,15 @@ def system(cmd, failonerror=True):
             sys.exit(retcode)
     return retcode
 
-def system_with_retries(cmd):
+def system_with_retries(cmd, failonerror=True):
     retries = 0
     while True:
         retries += 1
         retcode = system(cmd, False)
-        if retcode == 0: return 0
-        if retries > 10:
-            system(cmd, True)
+        if retcode == 0:
+            return 0
+        elif retries > 10:
+            return system(cmd, failonerror)
         else:
             log("Error executing %s - retrying in 10 seconds" % (cmd,))
             time.sleep(10)
