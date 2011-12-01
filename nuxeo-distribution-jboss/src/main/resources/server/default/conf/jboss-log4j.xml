@@ -257,9 +257,12 @@
   <category name="org.nuxeo">
     <priority value="WARN" />
   </category>
+  <!-- Uncomment for fragments pre-processing -->
+  <!--
   <category name="org.nuxeo.runtime.deployment.preprocessor">
     <priority value="INFO" />
   </category>
+  -->
   <category name="org.nuxeo.ecm.platform.ui.web.auth">
     <priority value="INFO" />
   </category>
