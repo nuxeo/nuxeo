@@ -37,7 +37,7 @@ def system(cmd, failonerror=True):
     sys.stdout.flush()
     retcode = p.returncode
     if retcode != 0:
-        log("Command returned non-zero exit code: %s" % (cmd,))
+        log("[ERROR]: command returned non-zero exit code: %s" % cmd)
         if failonerror:
             long_path_workaround_cleanup()
             sys.exit(retcode)
@@ -53,7 +53,7 @@ def system_with_retries(cmd, failonerror=True):
         elif retries > 10:
             return system(cmd, failonerror)
         else:
-            log("Error executing %s - retrying in 10 seconds" % (cmd,))
+            log("Error executing %s - retrying in 10 seconds..." % cmd)
             time.sleep(10)
 
 def long_path_workaround_init():
@@ -109,7 +109,7 @@ def git_fetch(module, branch):
         log("Cloning " + module + "...")
         retcode = system("git clone %s %s" % (repo_url, module), False)
         if retcode != 0:
-            log("WARN: you need a GitHub account to clone from " + repo_url)
+            log("[WARN]: you need a GitHub account to clone from " + repo_url)
             system("git clone %s %s" % (repo_url_http, module))
 
     os.chdir(module)
@@ -124,7 +124,7 @@ def git_fetch(module, branch):
             log("Using alias '%s' for %s" % (alias, repo_url))
             break
         elif repo_url_http == remote_url:
-            log("WARN: fallback on %s (%s is recommended for contributing)." % (repo_url_http, repo_url))
+            log("[WARN]: fallback on %s (%s is recommended for contributing)." % (repo_url_http, repo_url))
             alias = remote_alias
             log("Using alias '%s' for %s" % (alias, repo_url_http))
             break
@@ -194,9 +194,9 @@ while True:
     lines = urllib.urlopen("https://hg.nuxeo.org/?sort=name").readlines()
     if len(lines) > 1000: break
     if retries > 10:
-        log("Error retrieving addons list from hg.nuxeo.org - giving up")
+        log("[ERROR]: could not retrieve addons list from hg.nuxeo.org - giving up.")
         sys.exit(-1)
-    log("Error retrieving addons list from hg.nuxeo.org - retrying in 10 seconds")
+    log("Error retrieving addons list from hg.nuxeo.org - retrying in 10 seconds...")
     time.sleep(10)
 
 hg_addons = []
