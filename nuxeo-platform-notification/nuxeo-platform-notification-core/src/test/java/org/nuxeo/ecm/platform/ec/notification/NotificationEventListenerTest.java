@@ -36,6 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Julien Thimonier <jt@nuxeo.com>
  */
+// FIXME: this test does not test anything (...)
 public class NotificationEventListenerTest extends RepositoryOSGITestCase {
 
     private static final Log log = LogFactory.getLog(NotificationService.class);
@@ -63,17 +64,21 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
 
         // Injection of the EmailHelper Mock to track mails sending
         EventService eventService = Framework.getService(EventService.class);
-        List<PostCommitEventListener> listeners = eventService
-                .getPostCommitEventListeners();
+        List<PostCommitEventListener> listeners = eventService.getPostCommitEventListeners();
 
         for (PostCommitEventListener postCommitEventListener : listeners) {
             if (postCommitEventListener.getClass().equals(
                     NotificationEventListener.class)) {
-                ((NotificationEventListener) postCommitEventListener)
-                        .setEmailHelper(emailHelperMock);
+                ((NotificationEventListener) postCommitEventListener).setEmailHelper(emailHelperMock);
             }
         }
         log.info("setup Finnished");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     protected DocumentModel createNoteDocument() throws ClientException {
@@ -102,26 +107,29 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
     }
 
     public void testListener() throws ClientException {
-//        EventService eventService = Framework.getLocalService(EventService.class);
-//        PlacefulServiceImpl placefulServiceImpl = (PlacefulServiceImpl) Framework.getLocalService(PlacefulService.class);
-//        DocumentModel noteDoc = createNoteDocument();
-//        // Record notification
-//        UserSubscription userSubscription = new UserSubscription(
-//                "Workflow Change", "user:"
-//                        + getCoreSession().getPrincipal().getName(),
-//                noteDoc.getId());
-//        placefulServiceImpl.setAnnotation(userSubscription);
-//
-//        // Trigger notification
-//        DocumentEventContext ctx = new DocumentEventContext(getCoreSession(),
-//                getCoreSession().getPrincipal(), noteDoc);
-//        ctx.setProperty("recipients", new Object[] { "jt@nuxeo.com" });
-//        ctx.getProperties().put("comment", "RAS");
-//        eventService.fireEvent(ctx.newEvent("workflowAbandoned"));
-//        getCoreSession().save();
-//        waitForAsyncExec();
-//        // Check that at least one email has been sending
-//        assertTrue(emailHelperMock.getCompteur() > 0);
+        // EventService eventService =
+        // Framework.getLocalService(EventService.class);
+        // PlacefulServiceImpl placefulServiceImpl = (PlacefulServiceImpl)
+        // Framework.getLocalService(PlacefulService.class);
+        // DocumentModel noteDoc = createNoteDocument();
+        // // Record notification
+        // UserSubscription userSubscription = new UserSubscription(
+        // "Workflow Change", "user:"
+        // + getCoreSession().getPrincipal().getName(),
+        // noteDoc.getId());
+        // placefulServiceImpl.setAnnotation(userSubscription);
+        //
+        // // Trigger notification
+        // DocumentEventContext ctx = new
+        // DocumentEventContext(getCoreSession(),
+        // getCoreSession().getPrincipal(), noteDoc);
+        // ctx.setProperty("recipients", new Object[] { "jt@nuxeo.com" });
+        // ctx.getProperties().put("comment", "RAS");
+        // eventService.fireEvent(ctx.newEvent("workflowAbandoned"));
+        // getCoreSession().save();
+        // waitForAsyncExec();
+        // // Check that at least one email has been sending
+        // assertTrue(emailHelperMock.getCompteur() > 0);
     }
 
 }
