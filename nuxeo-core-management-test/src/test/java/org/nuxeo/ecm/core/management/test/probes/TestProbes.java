@@ -37,6 +37,12 @@ public class TestProbes extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testServiceLookup() {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);

@@ -43,6 +43,12 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testServiceLookups() {
         // local manager lookup
         AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
