@@ -14,6 +14,11 @@
   </h3>
 
   <a4j:form id="createUser" rendered="#{userManagementActions.allowCreateUser and notReadOnly}">
+    <script>
+      jQuery(document).ready(function() {
+        jQuery('#createUserView\\:createUser').focusFirst();
+      });
+    </script>
     <nxl:layout name="user" mode="create" value="#{userManagementActions.newUser}" />
     <table class="dataInput">
       <tbody>

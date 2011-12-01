@@ -14,6 +14,11 @@
   </h3>
 
   <a4j:form id="createGroup" rendered="#{groupManagementActions.allowCreateGroup and notReadOnly}">
+    <script>
+      jQuery(document).ready(function() {
+        jQuery('#createGroupView\\:createGroup').focusFirst();
+      });
+    </script>
     <nxl:layout name="group" mode="create" value="#{groupManagementActions.newGroup}" />
     <table class="dataInput">
       <tbody>

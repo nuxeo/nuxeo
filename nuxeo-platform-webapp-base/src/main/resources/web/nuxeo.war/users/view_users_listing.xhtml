@@ -10,6 +10,11 @@
       <a4j:region id="search_users_region">
         <!-- search form -->
         <a4j:form id="searchForm" ajaxSubmit="true">
+          <script>
+            jQuery(document).ready(function() {
+              jQuery('#usersListingView\\:searchForm').focusFirst();
+            });
+          </script>
           <h:inputText id="searchText"
             value="#{userManagementActions.searchString}"
             onkeydown="if (event.keyCode == 13) {document.getElementById('usersListingView:searchForm:searchButton').click();return false;} else return true;"
