@@ -252,22 +252,34 @@ public class LocalPackageManager {
         }
         log.info("Performing update ...");
         for (String pkgId : packages) {
-            boolean uninstall = false;
-            if (pkgId.startsWith("uninstall ")) {
-                pkgId = pkgId.substring(10);
-                uninstall = true;
+            try {
+                boolean uninstall = false;
+                if (pkgId.startsWith("uninstall ")) {
+                    pkgId = pkgId.substring(10);
+                    uninstall = true;
+                }
+                if (pkgId.startsWith("file:")) {
+                    String packageFileName = pkgId.substring(5);
+                    log.info("Getting Installation package " + packageFileName);
+                    LocalPackage pkg = pus.addPackage(new File(packageFileName));
+                    pkgId = pkg.getId();
+                }
+                if (uninstall) {
+                    uninstall(pkgId);
+                } else {
+                    updatePackage(pkgId);
+                }
+            } catch (PackageException e) {
+                log.error(e);
+                errorValue = 1;
             }
-            if (pkgId.startsWith("file:")) {
-                String packageFileName = pkgId.substring(5);
-                log.info("Getting Installation package " + packageFileName);
-                LocalPackage pkg = pus.addPackage(new File(packageFileName));
-                pkgId = pkg.getId();
-            }
-            if (uninstall) {
-                uninstall(pkgId);
-            } else {
-                updatePackage(pkgId);
-            }
+        }
+        if (errorValue != 0) {
+            File bak = new File(config.getPath() + ".bak");
+            bak.delete();
+            config.renameTo(bak);
+            throw new PackageException("An error occurred. File renamed to "
+                    + bak);
         }
         log.info("Done.");
         config.delete();
