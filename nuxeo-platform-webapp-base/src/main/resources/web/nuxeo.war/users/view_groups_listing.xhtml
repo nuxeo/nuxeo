@@ -19,15 +19,17 @@
           </script>
           <h:inputText id="searchText"
             value="#{groupManagementActions.searchString}"
-            onkeydown="if (event.keyCode == 13) {document.getElementById('groupsListingView:searchForm:searchButton').click();return false;} else return true;"
             styleClass="directoryFilter" />
           <f:verbatim>&amp;nbsp;</f:verbatim>
-          <a4j:commandButton id="searchButton"
+          <h:commandButton id="searchButton"
             value="#{messages['command.search']}"
-            action="#{contentViewActions.refreshAndRewind(contentViewName)}" styleClass="button"
-            onclick="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
-            reRender="groupsPanel"
-            eventsQueue="adminCenterQueue" />
+            action="#{contentViewActions.refreshAndRewind(contentViewName)}"
+            styleClass="button">
+            <a4j:support event="onclick"
+              reRender="groupsPanel"
+              onclick="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
+              eventsQueue="adminCenterQueue" />
+          </h:commandButton>
           <a4j:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{groupManagementActions.clearSearch}" styleClass="button"
