@@ -17,6 +17,16 @@ function closePopup() {
        <li>${pkgId}</li>
        </#list>
    </ul>
+
+   <#if (rmPkgIds?size)>0 >
+   <h1> You have scheduled uninstallation of the following packages</h1>
+   <ul>
+       <#list rmPkgIds as pkgId>
+       <li>${pkgId}</li>
+       </#list>
+   </ul>
+   </#if>
+
     <br/>
     <div>
      Installation will be completed on next server restart.

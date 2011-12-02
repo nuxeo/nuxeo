@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,6 +40,7 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
+import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.Field;
 import org.nuxeo.connect.update.model.Form;
 import org.nuxeo.connect.update.task.Task;
@@ -144,7 +146,7 @@ public class InstallHandler extends DefaultObject {
                     } else {
                         if (resolution.requireChanges()) {
                             if (autoMode==null) {
-                                autoMode = resolution.getLocalPackagesToRemove().size()==0;
+                                autoMode = true;
                             }
                             return getView("displayDependencies").arg(
                                     "resolution", resolution).arg("pkg", pkg).arg(
@@ -300,6 +302,11 @@ public class InstallHandler extends DefaultObject {
             if (!pkgIds.contains(pkgId)) {
                 pkgIds.add(pkgId);
             }
+            List<String> rmPkgIds = new ArrayList<String>();
+            for (Entry<String, Version> rmEntry : resolution.getLocalPackagesToRemove().entrySet()) {
+                String id = rmEntry.getKey() + "-" + rmEntry.getValue().toString();
+                rmPkgIds.add(id);
+            }
 
             for (String id : pkgIds) {
                 Package pkg = pus.getPackage(id);
@@ -317,14 +324,17 @@ public class InstallHandler extends DefaultObject {
             }
 
             if (confirm != null && true == confirm) {
+                for (String id : rmPkgIds) {
+                    InstallAfterRestart.addPackageForUnInstallation(id);
+                }
                 for (String id : pkgIds) {
                     InstallAfterRestart.addPackageForInstallation(id);
                 }
-                return getView("bulkInstallOnRestart").arg("pkgIds", pkgIds).arg(
+                return getView("bulkInstallOnRestart").arg("pkgIds", pkgIds).arg("rmPkgIds", rmPkgIds).arg(
                         "source", source);
             } else {
                 return getView("bulkInstallOnRestartConfirm").arg("pkgIds",
-                        pkgIds).arg("warns", warns).arg("descs", descs).arg(
+                        pkgIds).arg("rmPkgIds", rmPkgIds).arg("warns", warns).arg("descs", descs).arg(
                         "source", source).arg("pkgId", pkgId);
             }
 

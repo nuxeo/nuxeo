@@ -95,17 +95,11 @@ function updateProgress(pkgId, progress) {
   }
 }
 
-<#if resolution.getRemovePackageIds()>0 >
-function switchMode() {
-   $("#manualModeCheckBox").attr("checked", "true");
-}
-<#else>
 function switchMode() {
   autoMode = ! autoMode;
   setMode();
 }
 
-</#if>
 function setMode() {
  if (autoMode) {
    $(".manualModeCmd").css("display","none");
@@ -114,14 +108,14 @@ function setMode() {
    $("#manualModeCheckBox").removeAttr("checked");
  } else {
    $(".manualModeCmd").css("display","block");
-   $("#installManualButton").css("display","block");
+   $("#installManualButton").css("display","inline");
    $("#installAutoButton").css("display","none");
    $("#manualModeCheckBox").attr("checked", "true");
  }
 }
 
 function displayDownloadButtonIfNeeded() {
-  if ($(".progressDownloadContainer").size()>0) {
+  if ($(".progressDownloadContainer").size()>0 && ${resolution.nbPackagesToDownload}>0 ) {
      $("#downloadAllButton").css("display","inline");
      $("#installAutoButton").css("visibility","hidden");
   } else {
@@ -208,8 +202,8 @@ $(document).ready(function() {
    <br/>
    <A href="javascript:downloadAllPackages()" id="downloadAllButton" class="installButton" style="display:none"> Download all packages </A>
    <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
-   <A href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}"class="installButton" id="installAutoButton"> Installation of package ${pkg.id} and dependencies </a>
-   <A href="${Root.path}/install/start/${pkg.id}/?source=${source}"class="installButton" id="installManualButton"> Continue installation of package ${pkg.id} </a>
+   <A href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}" class="installButton" id="installAutoButton"> Installation of package ${pkg.id} and dependencies </a>
+   <A href="${Root.path}/install/start/${pkg.id}/?source=${source}" class="installButton" id="installManualButton"> Continue installation of package ${pkg.id} </a>
 
   </div>
 

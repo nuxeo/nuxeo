@@ -24,6 +24,14 @@ function closePopup() {
          <div style="white-space:pre">${descs[pkgId_index]}</div>
        </#list>
        </div>
+   <#if (rmPkgIds?size)>0 >
+    <h1> The following packages will be uninstalled </h1>
+   <ul>
+       <#list rmPkgIds as pkgId>
+       <li>${pkgId}</li>
+       </#list>
+   </ul>
+   </#if>
    <br/><br/>
    <a href="${This.path}/bulkRun/${pkgId}/?source=${source}&confirm=true" class="installButton"> Confirm install </a>
   </div>

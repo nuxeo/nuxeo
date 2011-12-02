@@ -257,6 +257,9 @@ public class LocalPackageManager {
                 if (pkgId.startsWith("uninstall ")) {
                     pkgId = pkgId.substring(10);
                     uninstall = true;
+            } else if (pkgId.startsWith("install ")) {
+                pkgId = pkgId.substring(8);
+                uninstall=false;
                 }
                 if (pkgId.startsWith("file:")) {
                     String packageFileName = pkgId.substring(5);

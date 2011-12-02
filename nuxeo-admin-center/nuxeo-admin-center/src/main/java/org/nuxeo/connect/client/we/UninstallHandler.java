@@ -19,6 +19,7 @@
 package org.nuxeo.connect.client.we;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -31,6 +32,8 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
+import org.nuxeo.connect.data.DownloadablePackage;
+import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -54,7 +57,7 @@ public class UninstallHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
-    public Object startInstall(@PathParam("pkgId") String pkgId,
+    public Object startUninstall(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source) {
 
         try {
@@ -68,6 +71,13 @@ public class UninstallHandler extends DefaultObject {
             if (status.hasErrors()) {
                 return getView("canNotUninstall").arg("status", status).arg(
                         "pkg", pkg).arg("source", source);
+            }
+
+            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg);
+            if (pkgToRemove.size() > 0) {
+                return getView("displayDependencies").arg("pkg", pkg).arg(
+                        "pkgToRemove", pkgToRemove).arg("source", source);
             }
 
             return getView("startUninstall").arg("status", status).arg(
@@ -87,22 +97,35 @@ public class UninstallHandler extends DefaultObject {
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
-            if (InstallAfterRestart.isNeededForPackage(pkg)) {
+            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg);
+            if (pkgToRemove.size() > 0) {
+
+                for (DownloadablePackage rpkg : pkgToRemove) {
+                    InstallAfterRestart.addPackageForUnInstallation(rpkg.getId());
+                }
                 InstallAfterRestart.addPackageForUnInstallation(pkgId);
-                return getView("uninstallOnRestart").arg("pkg", pkg).arg("source",
-                        source);
+                return getView("uninstallOnRestart").arg("pkg", pkg).arg(
+                        "source", source);
+
+            } else {
+                if (InstallAfterRestart.isNeededForPackage(pkg)) {
+                    InstallAfterRestart.addPackageForUnInstallation(pkgId);
+                    return getView("uninstallOnRestart").arg("pkg", pkg).arg(
+                            "source", source);
+                }
+                Task uninstallTask = pkg.getUninstallTask();
+                try {
+                    uninstallTask.run(new HashMap<String, String>());
+                } catch (Throwable e) {
+                    log.error("Error during uninstall of " + pkgId, e);
+                    uninstallTask.rollback();
+                    return getView("uninstallError").arg("e", e).arg("source",
+                            source);
+                }
+                return getView("uninstallDone").arg("uninstallTask",
+                        uninstallTask).arg("pkg", pkg).arg("source", source);
             }
-            Task uninstallTask = pkg.getUninstallTask();
-            try {
-                uninstallTask.run(new HashMap<String, String>());
-            } catch (Throwable e) {
-                log.error("Error during uninstall of " + pkgId, e);
-                uninstallTask.rollback();
-                return getView("uninstallError").arg("e", e).arg("source",
-                        source);
-            }
-            return getView("uninstallDone").arg("uninstallTask", uninstallTask).arg(
-                    "pkg", pkg).arg("source", source);
         } catch (Exception e) {
             log.error("Error during uninstall of " + pkgId, e);
             return getView("uninstallError").arg("e", e).arg("source", source);
