@@ -124,7 +124,8 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         context = userSession.getDocument(ws2.getRef());
         uw = uwm.getCurrentUserPersonalWorkspace(userSession, context);
         assertNotNull(uw);
-        assertTrue(uw.getPathAsString().startsWith("/default-domain"));
+        assertTrue(uw.getPathAsString(),
+                uw.getPathAsString().startsWith("/default-domain"));
 
         // now delete the default-domain
         session.removeDocument(new PathRef("/default-domain"));
