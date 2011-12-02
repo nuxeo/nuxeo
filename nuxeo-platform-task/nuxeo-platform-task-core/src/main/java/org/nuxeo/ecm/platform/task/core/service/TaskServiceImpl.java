@@ -154,14 +154,10 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             // notify
             Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
             ArrayList<String> notificationRecipients = new ArrayList<String>();
+            notificationRecipients.addAll(actorIds);
             if (principal != null) {
-                notificationRecipients.add(principal.getName());
-            }
-            for (String actor : actorIds) {
-                if (actor.contains(":")) {
-                    notificationRecipients.add(actor.split(":")[1]);
-                } else {
-                    notificationRecipients.add(actor);
+                if (!notificationRecipients.contains("user:" + principal.getName())) {
+                    notificationRecipients.add("user:" + principal.getName());
                 }
             }
             eventProperties.put(
