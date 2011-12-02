@@ -95,6 +95,20 @@ function updateProxySettings() {
       <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.password"/></td>
       <td><input type="password" name="nuxeo.http.proxy.password" value="<%=collector.getConfigurationParam("nuxeo.http.proxy.password") %>"/></td>
     </tr>
+    <tr>
+    <td colspan="2" class="helpCell"><fmt:message key="label.nuxeo.http.proxy.html.help"/></td>
+    </tr>
+    <tr>
+      <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.ntlm.host"/></td>
+      <td><input type="text" name="nuxeo.http.proxy.ntlm.host" value="<%=collector.getConfigurationParam("nuxeo.http.proxy.ntlm.host") %>"/>
+
+      </td>
+    </tr>
+    <tr>
+      <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.ntlm.domain"/></td>
+      <td><input type="text" name="nuxeo.http.proxy.ntlm.domain" value="<%=collector.getConfigurationParam("nuxeo.http.proxy.ntlm.domain") %>"/></td>
+    </tr>
+
   </table>
   </div>
 

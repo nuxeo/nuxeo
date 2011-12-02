@@ -437,6 +437,8 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.password", null);
             collector.addConfigurationParam("nuxeo.http.proxy.host", null);
             collector.addConfigurationParam("nuxeo.http.proxy.port", null);
+            collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
+            collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain", null);
             PackageDownloader.instance().setProxy(null, 0, null, null);
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
@@ -449,8 +451,9 @@ public class RouterServlet extends HttpServlet {
             }
             if ("anonymous".equals(proxyType)) {
                 collector.addConfigurationParam("nuxeo.http.proxy.login", null);
-                collector.addConfigurationParam("nuxeo.http.proxy.password",
-                        null);
+                collector.addConfigurationParam("nuxeo.http.proxy.password",null);
+                collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
+                collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain", null);
 
                 if (!ctx.hasErrors()) {
                     PackageDownloader.instance().setProxy(
@@ -468,7 +471,10 @@ public class RouterServlet extends HttpServlet {
                             collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
                             Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
                             collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
-                            collector.getConfigurationParamValue("nuxeo.http.proxy.password"));
+                            collector.getConfigurationParamValue("nuxeo.http.proxy.password"),
+                            collector.getConfigurationParamValue("nuxeo.http.proxy.ntlm.host"),
+                            collector.getConfigurationParamValue("nuxeo.http.proxy.ntml.domain")
+                        );
                     }
                 }
             }

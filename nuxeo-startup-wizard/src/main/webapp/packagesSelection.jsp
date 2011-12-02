@@ -206,26 +206,25 @@ $(document).ready(function(){
 <fmt:message key="label.packagesSelection.description" /> <br/>
 </span>
 
-<span class="screenExplanations">
-<fmt:message key="label.packagesSelection.explanations" /> <br/>
-</span>
-
-
 <%@ include file="includes/feedback.jsp" %>
 
+  <span style="display:none">
   <div class="presetContainer"> <span class="presetLabel"><fmt:message key="label.packagesSelection.presets" /> :</span>
   <%for (Preset preset : options.getPresets()) { %>
     <span class="presetBtn" id="preset_<%=preset.getId()%>" onclick="usePreset(<%=preset.getPkgsAsJsonArray()%>)"><%=preset.getLabel()%> </span>
   <%} %>
   </div>
-  <div class="ordiv"> or </div>
-
+  </span>
+  <br/>
   <div id="tree"></div>
-
   <div class="blocContainer">
      <div id="blocs"></div>
   </div>
   <div style="clear:both"></div>
+
+<span class="screenExplanations">
+<fmt:message key="label.packagesSelection.explanations" /> <br/>
+</span>
 
   <%@ include file="includes/prevnext.jsp" %>
 

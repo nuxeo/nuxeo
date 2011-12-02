@@ -56,7 +56,7 @@ function showIframeIfPossible() {
   <tr valign="middle">
     <td class="header">
         <div class="logo">
-          <a href="<%=contextPath%>"><img src="<%=contextPath%><%=collector.getLogo()%>" height="28px" border="0"/></a>
+          <a href="<%=contextPath%>"><img src="<%=contextPath%>/images/nuxeo.png" height="28px" border="0"/></a>
         </div>
         <div style="clear:both;"></div>
     </td>

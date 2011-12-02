@@ -977,8 +977,12 @@ ul.hide {
 }
 
 #tree {
-  float:left;
-  margin-left : -2em;
+  float: left;
+  margin-left: -2em;
+  border-width: 0 4px 0 0;
+  border-color: #ffeb6d;
+  border-style: solid;
+  padding-right: 1em;
 }
 
 .presetContainer {

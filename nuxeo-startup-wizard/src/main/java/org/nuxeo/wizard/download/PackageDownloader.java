@@ -41,6 +41,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -198,15 +199,22 @@ public class PackageDownloader {
         }
     }
 
-    public void setProxy(String proxy, int port, String login, String password) {
+    public void setProxy(String proxy, int port, String login, String password, String NTLMHost, String NTLMDomain ) {
         if (proxy != null) {
             HttpHost proxyHost = new HttpHost(proxy, port);
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
                     proxyHost);
             if (login != null) {
-                httpClient.getCredentialsProvider().setCredentials(
-                        new AuthScope(proxy, port),
-                        new UsernamePasswordCredentials(login, password));
+                if (NTLMHost!=null && !NTLMHost.trim().isEmpty()) {
+                    NTCredentials ntlmCredentials = new NTCredentials(login, password, NTLMHost, NTLMDomain);
+                    httpClient.getCredentialsProvider().setCredentials(
+                            new AuthScope(proxy, port),
+                            ntlmCredentials);
+                } else {
+                    httpClient.getCredentialsProvider().setCredentials(
+                            new AuthScope(proxy, port),
+                            new UsernamePasswordCredentials(login, password));
+                }
             } else {
                 httpClient.getCredentialsProvider().clear();
             }
