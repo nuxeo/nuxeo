@@ -34,11 +34,6 @@ Needed parameters:
   
       <a4j:form id="#{quickFilterFormId}" ajaxSubmit="true"
         styleClass="action_bar">
-        <script>
-          jQuery(document).ready(function() {
-            jQuery('##{quickFilterFormId}').focusFirst();
-          });
-        </script>
 
         <h:outputText value="#{messages['label.contentview.filter.filterAction']} " />
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
