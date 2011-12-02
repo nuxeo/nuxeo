@@ -60,6 +60,18 @@ BEGIN
     FROM [hierarchy] h
     JOIN subtree ON subtree.id = h.parentid
   )
+  DELETE FROM [proxies]
+    FROM [proxies] p
+    JOIN subtree
+    ON subtree.id = p.targetid;
+  WITH subtree(id, parentid) AS (
+    SELECT id, parentid
+    FROM deleted
+  UNION ALL
+    SELECT h.id, h.parentid
+    FROM [hierarchy] h
+    JOIN subtree ON subtree.id = h.parentid
+  )
   DELETE FROM [hierarchy]
     FROM [hierarchy] h
     JOIN subtree

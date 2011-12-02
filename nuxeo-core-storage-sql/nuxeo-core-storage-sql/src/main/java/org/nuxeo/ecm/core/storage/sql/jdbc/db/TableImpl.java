@@ -278,8 +278,7 @@ public class TableImpl implements Table {
                 // Use a trigger INSTEAD OF DELETE to cascade deletes
                 // recursively for:
                 // - hierarchy.parentid
-                // - versions.versionableid
-                // - proxies.versionableid
+                // - proxies.targetid
                 buf.append(" ON DELETE CASCADE");
             }
             sqls.add(buf.toString());
