@@ -35,6 +35,7 @@ import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -304,11 +305,13 @@ public class FormData implements FormInstance {
                     ar[i] = getString(list.get(i));
                 }
             } else {
-                ar = new Blob[list.size()];
-                ar[0] = getBlob(item0);
-                for (int i = 1, len = list.size(); i < len; i++) {
-                    ar[i] = getBlob(list.get(i));
+                List<Blob> blobs = new ArrayList<Blob>();
+                for (FileItem item : list) {
+                    if (!StringUtils.isBlank(item.getName())) {
+                        blobs.add(getBlob(item));
+                    }
                 }
+                ar = blobs.toArray(new Blob[blobs.size()]);
             }
         }
         return ar;
