@@ -126,6 +126,8 @@ public class OperationTypeImpl implements OperationType {
                 methods.add(im);
             }
         }
+        // method order depends on the JDK, make it deterministic
+        Collections.sort(methods);
     }
 
     protected void initFields() {
@@ -216,8 +218,14 @@ public class OperationTypeImpl implements OperationType {
             this.priority = priority;
         }
 
+        @Override
         public int compareTo(Match o) {
             return o.priority - priority;
+        }
+
+        @Override
+        public String toString() {
+            return "Match(" + method + ", " + priority + ")";
         }
     }
 

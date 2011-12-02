@@ -23,7 +23,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class InvokableMethod {
+public class InvokableMethod implements Comparable<InvokableMethod> {
 
     public static final int VOID_PRIORITY = 1;
 
@@ -144,6 +144,38 @@ public class InvokableMethod {
             throw new OperationException("Failed to invoke operation "
                     + op.getId(), t);
         }
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + method + ", " + priority
+                + ")";
+    }
+
+    @Override
+    // used for methods of the same class, so ignore the class
+    public int compareTo(InvokableMethod o) {
+        // compare on name
+        int cmp = method.getName().compareTo(o.method.getName());
+        if (cmp != 0) {
+            return cmp;
+        }
+        // same name, compare on parameter types
+        Class<?>[] pt = method.getParameterTypes();
+        Class<?>[] opt = o.method.getParameterTypes();
+        // smaller length first
+        cmp = pt.length - opt.length;
+        if (cmp != 0) {
+            return cmp;
+        }
+        // compare parameter classes lexicographically
+        for (int i = 0; i < pt.length; i++) {
+            cmp = pt[i].getName().compareTo(opt[i].getName());
+            if (cmp != 0) {
+                return cmp;
+            }
+        }
+        return 0;
     }
 
 }
