@@ -415,6 +415,12 @@ public class NuxeoSession implements Session {
         throw new UnsupportedOperationException();
     }
 
+    public ItemIterable<CmisObject> queryObjects(String typeId, String where,
+            boolean searchAllVersions, OperationContext context) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public QueryStatement createQueryStatement(String statement) {
         return new QueryStatementImpl(this, statement);
