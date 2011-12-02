@@ -67,6 +67,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
+import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
 import org.nuxeo.ecm.platform.relations.web.NodeInfo;
 import org.nuxeo.ecm.platform.relations.web.NodeInfoImpl;
 import org.nuxeo.ecm.platform.relations.web.StatementInfo;
@@ -227,10 +228,12 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         } else {
             Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
             incomingStatements = graph.getStatements(null, null, docResource);
-            // add old statements, BBB
-            Resource oldDocResource = getOldDocumentResource(currentDoc);
-            incomingStatements.addAll(graph.getStatements(null, null,
-                    oldDocResource));
+            if (graph instanceof JenaGraph) {
+                // add old statements, BBB
+                Resource oldDocResource = getOldDocumentResource(currentDoc);
+                incomingStatements.addAll(graph.getStatements(null, null,
+                        oldDocResource));
+            }
             incomingStatementsInfo = getStatementsInfo(incomingStatements);
             // sort by modification date, reverse
             Comparator<StatementInfo> comp = Collections.reverseOrder(new StatementInfoComparator());
@@ -253,10 +256,12 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         } else {
             Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
             outgoingStatements = graph.getStatements(docResource, null, null);
-            // add old statements, BBB
-            Resource oldDocResource = getOldDocumentResource(currentDoc);
-            outgoingStatements.addAll(graph.getStatements(oldDocResource, null,
-                    null));
+            if (graph instanceof JenaGraph) {
+                // add old statements, BBB
+                Resource oldDocResource = getOldDocumentResource(currentDoc);
+                outgoingStatements.addAll(graph.getStatements(oldDocResource, null,
+                        null));
+            }
             outgoingStatementsInfo = getStatementsInfo(outgoingStatements);
             // sort by modification date, reverse
             Comparator<StatementInfo> comp = Collections.reverseOrder(new StatementInfoComparator());
