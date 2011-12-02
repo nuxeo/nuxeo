@@ -439,7 +439,7 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.port", null);
             collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
             collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain", null);
-            PackageDownloader.instance().setProxy(null, 0, null, null);
+            PackageDownloader.instance().setProxy(null, 0, null, null,null,null);
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
                 ctx.trackError("nuxeo.http.proxy.port",
@@ -459,7 +459,7 @@ public class RouterServlet extends HttpServlet {
                     PackageDownloader.instance().setProxy(
                         collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
                         Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
-                        null, null);
+                        null, null, null, null);
                 }
             } else {
                 if (collector.getConfigurationParam("nuxeo.http.proxy.login").isEmpty()) {
