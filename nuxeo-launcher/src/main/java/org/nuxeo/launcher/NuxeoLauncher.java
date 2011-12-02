@@ -705,7 +705,7 @@ public abstract class NuxeoLauncher {
                 System.setProperty(
                         ConfigurationGenerator.PARAM_WIZARD_DONE,
                         configurationGenerator.getUserConfig().getProperty(
-                                ConfigurationGenerator.PARAM_WIZARD_DONE));
+                                ConfigurationGenerator.PARAM_WIZARD_DONE, "true"));
                 return doStart(logProcessOutput);
             }
 
