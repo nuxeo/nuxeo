@@ -212,6 +212,9 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         assertNotNull(packageSelectiondPage);
         assertEquals("Select packages", packageSelectiondPage.getTitle());
 
+        WebElement presetShower = findElementWithTimeout(By.id("presetsShower"));
+        presetShower.click();
+
         WebElement presetBtn = findElementWithTimeout(By.id("preset_nuxeo-dm"));
         presetBtn.click();
         Thread.sleep(1000);

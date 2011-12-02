@@ -1,39 +1,27 @@
 <packages>
-  <packageDefinitions
-    baseUrl="http://community.nuxeo.com/static/releases/nuxeo-@VERSION@/mp/">
-    <package id="cap" label="Basic / Naked (CAP)" md5="" color="#333"
-      textcolor="#FFF" />
-    <package id="dm" label="Advanced Document Management (DM)" filename="nuxeo-marketplace-dm-@VERSION@.zip"
-      md5="@DMMPMD5@" implies="nuxeo-content-browser" color="#3399CC" textcolor="#FFF" />
-    <package id="dam" label="Digital Assets Management features (DAM)"
-      filename="nuxeo-marketplace-dam-@VERSION@.zip" md5="@DAMMPMD5@" implies="nuxeo-content-browser"
-      color="#ffde00" textcolor="#000" />
-    <package id="collab" label="Collaboration features (social collab)"
-      filename="nuxeo-marketplace-social-collaboration-@VERSION@.zip" md5=""
-      color="#CC3333" textcolor="#FFF" />
-    <package id="cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf.zip"
-      md5="@CMFMPMD5@" implies="nuxeo-content-browser-cmf" color="#66CC33"
-      textcolor="#FFF" />
-    <package id="nuxeo-content-browser" label="Standard Content Browser"
-      filename="nuxeo-marketplace-content-browser-@VERSION@.zip" md5="@VPCBMPMD5@" />
-    <package id="nuxeo-content-browser-cmf" label="CMF Content Browser"
-      filename="nuxeo-marketplace-content-browser-cmf-@VERSION@.zip" md5="" />
-  </packageDefinitions>
-  <install>
-    <packageOptions>
-      <package ref="cap" exclusive="false">
-        <package ref="dm" exclusive="false">
-          <package ref="collab" exclusive="false" />
-        </package>
-        <package ref="dam" exclusive="false" />
-        <package ref="cmf" exclusive="true" />
-      </package>
-    </packageOptions>
-  </install>
-  <presets>
-    <preset id="nuxeo-dm" label="Nuxeo DM">cap,dm</preset>
-    <preset id="nuxeo-cmf" label="Nuxeo CMF">cap,cmf</preset>
-    <preset id="nuxeo-dam" label="Nuxeo DAM">cap,dam</preset>
-  </presets>
+ <packageDefinitions baseUrl="http://community.nuxeo.com/static/releases/nuxeo-@VERSION@/mp/">
+  <package id="cap" label="Content Application Platform (CAP)" md5="" color="#635959" textcolor="#FFF"/>
+  <package id="dm" label="Advanced Document Management (DM)" filename="nuxeo-dm-@VERSION@.zip" md5="@DMMPMD5@" implies="nuxeo-content-browser" color="#5e9adf" textcolor="#FFF"/>
+  <package id="dam" label="Digital Asset Management (DAM)" filename="nuxeo-dam-@VERSION@.zip" md5="@DAMMPMD5@" implies="nuxeo-content-browser" color="#ffeb6d" textcolor="#333"/>
+  <package id="collab" label="Social Collaboration (SOCIAL)" filename="nuxeo-@VERSION@-collab.zip" md5="" color="#ff736e" textcolor="#FFF"/>
+  <package id="cmf" label="Case Management Framework (CMF)" filename="nuxeo-@VERSION@-cmf.zip" md5="@CMFMPMD5@" implies="nuxeo-content-browser-cmf" color="#94b340" textcolor="#FFF"/>
+  <package id="nuxeo-content-browser" label="Standard Content Browser" filename="nuxeo-content-browser-@VERSION@.zip" md5="@VPCBMPMD5@"/>
+  <package id="nuxeo-content-browser-cmf" label="CMF Content Browser" filename="nuxeo-content-browser-cmf-@VERSION@.zip" md5="@VPCBCMFMPMD@"/>
+ </packageDefinitions>
+ <install>
+  <packageOptions>
+   <package ref="cap" exclusive="false">
+     <package ref="dm" exclusive="false">
+       <package ref="collab" exclusive="false"/>
+     </package>
+     <package ref="dam" exclusive="false"/>
+     <package ref="cmf" exclusive="true"/>
+   </package>
+ </packageOptions>
+ </install>
+ <presets>
+  <preset id="nuxeo-dm" label="Nuxeo DM">cap,dm</preset>
+  <preset id="nuxeo-cmf" label="Nuxeo CMF">cap,cmf</preset>
+  <preset id="nuxeo-dam" label="Nuxeo DAM">cap,dam</preset>
+ </presets>
 </packages>
-

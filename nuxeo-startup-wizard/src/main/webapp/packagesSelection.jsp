@@ -207,8 +207,8 @@ $(document).ready(function(){
 </span>
 
 <%@ include file="includes/feedback.jsp" %>
-
-  <span style="display:none">
+  <span id="presetsShower" onclick="$('#hiddenPresets').css('display','block');"></span>
+  <span style="display:none" id="hiddenPresets">
   <div class="presetContainer"> <span class="presetLabel"><fmt:message key="label.packagesSelection.presets" /> :</span>
   <%for (Preset preset : options.getPresets()) { %>
     <span class="presetBtn" id="preset_<%=preset.getId()%>" onclick="usePreset(<%=preset.getPkgsAsJsonArray()%>)"><%=preset.getLabel()%> </span>
