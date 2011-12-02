@@ -696,13 +696,12 @@ public abstract class NuxeoLauncher {
                 configurationGenerator.prepareWizardStart();
             } else {
                 configurationGenerator.cleanupPostWizard();
-            }
-
-            log.debug("Check if install in progress...");
-            if (configurationGenerator.isInstallInProgress()) {
-                pkgInstall();
-                // Ensure reload of configuration
-                return doStart(logProcessOutput);
+                log.debug("Check if install in progress...");
+                if (configurationGenerator.isInstallInProgress()) {
+                    pkgInstall();
+                    // Ensure reload of configuration
+                    return doStart(logProcessOutput);
+                }
             }
 
             start(logProcessOutput);
