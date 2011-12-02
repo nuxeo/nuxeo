@@ -155,7 +155,7 @@ END;
 # ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
 
 #TEST:
-SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'NXP_TAGGING' AND TABLE_CATALOG = db_name();
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'nxp_tagging' AND TABLE_CATALOG = db_name();
 
 #IF: ! emptyResult
 LOG.INFO Upgrading tags
