@@ -62,27 +62,37 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  *
  */
 public class FormData implements FormInstance {
-    
+
     private static Log log = LogFactory.getLog(FormData.class);
 
     public static final String PROPERTY = "property";
+
     public static final String TITLE = "dc:title";
+
     public static final String DOCTYPE = "doctype";
+
     public static final String VERSIONING = "versioning";
+
     public static final String MAJOR = "major";
+
     public static final String MINOR = "minor";
 
-    protected static ServletFileUpload fu = new ServletFileUpload(new DiskFileItemFactory());
+    protected static ServletFileUpload fu = new ServletFileUpload(
+            new DiskFileItemFactory());
 
     protected final HttpServletRequest request;
+
     protected boolean isMultipart = false;
+
     protected RequestContext ctx;
 
     // Multipart items cache
     protected Map<String, List<FileItem>> items;
-    // parameter map cache - used in Multipart forms to convert to ServletRequest#getParameterMap
+
+    // parameter map cache - used in Multipart forms to convert to
+    // ServletRequest#getParameterMap
     // format
-    //protected Map<String, String[]> parameterMap;
+    // protected Map<String, String[]> parameterMap;
 
     public FormData(HttpServletRequest request) {
         this.request = request;
@@ -121,7 +131,6 @@ public class FormData implements FormInstance {
         return isMultipart;
     }
 
-
     @SuppressWarnings("unchecked")
     public Map<String, String[]> getFormFields() {
         if (isMultipart) {
@@ -134,10 +143,10 @@ public class FormData implements FormInstance {
     public Map<String, String[]> getMultiPartFormFields() {
         Map<String, List<FileItem>> items = getMultiPartItems();
         Map<String, String[]> result = new HashMap<String, String[]>();
-        for (Map.Entry<String,List<FileItem>> entry : items.entrySet()) {
+        for (Map.Entry<String, List<FileItem>> entry : items.entrySet()) {
             List<FileItem> list = entry.getValue();
             String[] ar = new String[list.size()];
-            for (int i=0; i<ar.length; i++) {
+            for (int i = 0; i < ar.length; i++) {
                 ar[i] = getString(list.get(i));
             }
             result.put(entry.getKey(), ar);
@@ -149,12 +158,14 @@ public class FormData implements FormInstance {
     public Map<String, List<FileItem>> getMultiPartItems() {
         if (items == null) {
             if (!isMultipart) {
-                throw new IllegalStateException("Not in a multi part form request");
+                throw new IllegalStateException(
+                        "Not in a multi part form request");
             }
             try {
                 items = new HashMap<String, List<FileItem>>();
                 ServletRequestContext ctx = new ServletRequestContext(request);
-                List<FileItem> fileItems = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(ctx);
+                List<FileItem> fileItems = new ServletFileUpload(
+                        new DiskFileItemFactory()).parseRequest(ctx);
                 for (FileItem item : fileItems) {
                     String key = item.getFieldName();
                     List<FileItem> list = items.get(key);
@@ -190,7 +201,7 @@ public class FormData implements FormInstance {
         Blob[] ar = null;
         if (list != null) {
             ar = new Blob[list.size()];
-            for (int i=0,len=list.size(); i<len; i++) {
+            for (int i = 0, len = list.size(); i < len; i++) {
                 ar[i] = getBlob(list.get(i));
             }
         }
@@ -227,9 +238,10 @@ public class FormData implements FormInstance {
                 throw WebException.wrap("Failed to get blob data", e);
             }
         }
-        String ctype  = item.getContentType();
+        String ctype = item.getContentType();
 
-        StreamingBlob blob = new StreamingBlob(src, ctype == null ? "application/octet-stream" : ctype);
+        StreamingBlob blob = new StreamingBlob(src,
+                ctype == null ? "application/octet-stream" : ctype);
         try {
             blob.persist();
         } catch (IOException e) {
@@ -262,7 +274,7 @@ public class FormData implements FormInstance {
         String[] ar = null;
         if (list != null) {
             ar = new String[list.size()];
-            for (int i=0,len=list.size(); i<len; i++) {
+            for (int i = 0, len = list.size(); i < len; i++) {
                 ar[i] = getString(list.get(i));
             }
         }
@@ -288,13 +300,13 @@ public class FormData implements FormInstance {
             if (item0.isFormField()) {
                 ar = new String[list.size()];
                 ar[0] = getString(item0);
-                for (int i=1,len=list.size(); i<len; i++) {
+                for (int i = 1, len = list.size(); i < len; i++) {
                     ar[i] = getString(list.get(i));
                 }
             } else {
                 ar = new Blob[list.size()];
                 ar[0] = getBlob(item0);
-                for (int i=1,len=list.size(); i<len; i++) {
+                for (int i = 1, len = list.size(); i < len; i++) {
                     ar[i] = getBlob(list.get(i));
                 }
             }
@@ -354,12 +366,15 @@ public class FormData implements FormInstance {
                 fillDocumentFromForm(doc);
             }
         } catch (PropertyException e) {
-            throw WebException.wrap("Failed to fill document properties from request properties", e);
+            throw WebException.wrap(
+                    "Failed to fill document properties from request properties",
+                    e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void fillDocumentFromForm(DocumentModel doc) throws PropertyException {
+    public void fillDocumentFromForm(DocumentModel doc)
+            throws PropertyException {
         Map<String, String[]> map = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -378,7 +393,8 @@ public class FormData implements FormInstance {
         }
     }
 
-    public void fillDocumentFromMultiPartForm(DocumentModel doc) throws PropertyException {
+    public void fillDocumentFromMultiPartForm(DocumentModel doc)
+            throws PropertyException {
         Map<String, List<FileItem>> map = getMultiPartItems();
         for (Map.Entry<String, List<FileItem>> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -402,7 +418,8 @@ public class FormData implements FormInstance {
         }
     }
 
-    static void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException {
+    static void fillDocumentProperty(Property p, String key, Object[] ar)
+            throws PropertyException {
         if (ar == null || ar.length == 0) {
             p.remove();
         } else if (p.isScalar()) {
@@ -417,7 +434,10 @@ public class FormData implements FormInstance {
                 } else if ("content".equals(elType.getName())) {
                     // list of blobs
                     List<Blob> blobs = new ArrayList<Blob>();
-                    if (ar.getClass().getComponentType() == String.class) { // transform strings to blobs
+                    if (ar.getClass().getComponentType() == String.class) { // transform
+                                                                            // strings
+                                                                            // to
+                                                                            // blobs
                         for (Object obj : ar) {
                             blobs.add(new StringBlob(obj.toString()));
                         }
@@ -429,7 +449,8 @@ public class FormData implements FormInstance {
                     p.setValue(blobs);
                 } else {
                     // complex properties will be ignored
-                    //throw new WebException("Cannot create complex lists properties from HTML forms");
+                    // throw new
+                    // WebException("Cannot create complex lists properties from HTML forms");
                 }
             }
         } else if (p.isComplex()) {
@@ -439,13 +460,13 @@ public class FormData implements FormInstance {
                 if (ar[0].getClass() == String.class) {
                     blob = new StringBlob(ar[0].toString());
                 } else {
-                    blob = (Blob)ar[0];
+                    blob = (Blob) ar[0];
                 }
                 p.setValue(blob);
             } else {
                 // complex properties will be ignored
-//                throw new WebException(
-//                        "Cannot set complex properties from HTML forms. You need to set each sub-scalar property explicitely");
+                // throw new WebException(
+                // "Cannot set complex properties from HTML forms. You need to set each sub-scalar property explicitely");
             }
         }
     }
@@ -467,7 +488,8 @@ public class FormData implements FormInstance {
         return getString(TITLE);
     }
 
-    public <T extends Form> T validate(Class<T> type) throws ValidationException {
+    public <T extends Form> T validate(Class<T> type)
+            throws ValidationException {
         T proxy = FormManager.newProxy(type);
         try {
             proxy.load(this, proxy);
