@@ -198,7 +198,7 @@
       </fields>
       <properties widgetMode="any">
         <property name="tab">
-          #{nxu:test(layoutValue.data.taskInstance.getVariableLocally('createdFromCreateTaskOperation')
+          #{nxu:test(layoutValue.data.task.getVariable('createdFromCreateTaskOperation')
           == 'true', '', 'TAB_CONTENT_JBPM')}
         </property>
       </properties>
