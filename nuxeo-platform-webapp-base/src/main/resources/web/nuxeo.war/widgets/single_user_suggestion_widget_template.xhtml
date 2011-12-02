@@ -25,7 +25,7 @@
   <c:set var="userDirectory" value="#{userManager.userDirectoryName}" />
   <c:set var="userSchema" value="#{userManager.userSchemaName}" />
   <c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
-  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, entrySecondLabel)}" />
+  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
 
   <f:subview rendered="#{displayAction == 'nothing' and searchType == 'USER_TYPE'}">
     <h:outputText value="#{field_0}"
