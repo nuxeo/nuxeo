@@ -156,8 +156,10 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             ArrayList<String> notificationRecipients = new ArrayList<String>();
             notificationRecipients.addAll(actorIds);
             if (principal != null) {
-                if (!notificationRecipients.contains("user:" + principal.getName())) {
-                    notificationRecipients.add("user:" + principal.getName());
+                if (!notificationRecipients.contains(NuxeoPrincipal.PREFIX
+                        + principal.getName())) {
+                    notificationRecipients.add(NuxeoPrincipal.PREFIX
+                            + principal.getName());
                 }
             }
             eventProperties.put(
@@ -216,8 +218,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     notificationRecipients);
             // try to resolve document when notifying
             DocumentModel document = null;
-            String docId = (String) task.getVariable(TaskService.VariableName.documentId.name());
-            String docRepo = (String) task.getVariable(TaskService.VariableName.documentRepositoryName.name());
+            String docId = task.getVariable(TaskService.VariableName.documentId.name());
+            String docRepo = task.getVariable(TaskService.VariableName.documentRepositoryName.name());
             if (coreSession.getRepositoryName().equals(docRepo)) {
                 try {
                     document = coreSession.getDocument(new IdRef(docId));
@@ -337,7 +339,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
         properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, category);
         properties.put(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY, task);
-        String disableNotif = (String) task.getVariable(TaskEventNames.DISABLE_NOTIFICATION_SERVICE);
+        String disableNotif = task.getVariable(TaskEventNames.DISABLE_NOTIFICATION_SERVICE);
         if (disableNotif != null
                 && Boolean.TRUE.equals(Boolean.valueOf(disableNotif))) {
             properties.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE,
@@ -367,7 +369,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     public void deleteTaskInstance(CoreSession coreSession, String taskId)
             throws ClientException {
         final DocumentRef docRef = new IdRef(taskId);
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(coreSession) {
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
+                coreSession) {
             @Override
             public void run() throws ClientException {
                 session.removeDocument(docRef);
