@@ -56,6 +56,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-restriction-contrib.xml");
 
         // deploy specific adapter for testing external blobs: files are stored
         // in temporary directory
@@ -522,7 +524,15 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("book:author/pAge", null);
         // not prefetched anymore as schema was loaded
         assertFalse(doc.isPrefetched("book:author/pJob"));
-
-
     }
+
+    public void testRestriction() throws Exception {
+        doc = session.createDocumentModel("/", "doc2", "Restriction");
+        doc.setPropertyValue("restr:shortstring", "foo");
+        doc = session.createDocument(doc);
+        doc = session.getDocument(doc.getRef());
+        String value = doc.getProperty("restr:shortstring").getValue(String.class);
+        assertEquals("foo", value);
+    }
+
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyFactory;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
@@ -70,7 +71,9 @@ public class CompositePropertyFactory implements PropertyFactory {
         PropertyFactory factory = factories.get(key);
         if (factory == null) {
             factory = factories.get(type);
-            factories.put(key, factory);
+            if (factory != null) {
+                factories.put(key, factory);
+            }
         }
         return factory;
     }
@@ -78,6 +81,10 @@ public class CompositePropertyFactory implements PropertyFactory {
     @Override
     public Property createProperty(Property parent, Field field, int flags) {
         Type type = field.getType();
+        if (type instanceof SimpleTypeImpl) {
+            // type with constraint
+            type = type.getSuperType();
+        }
         PropertyFactory factory = getFactory(type.getSchemaName(), type.getName());
         if (factory != null ) {
             return factory.createProperty(parent, field, flags);

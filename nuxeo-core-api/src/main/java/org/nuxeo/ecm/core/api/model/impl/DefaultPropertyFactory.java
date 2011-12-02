@@ -152,20 +152,6 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
         }
     }
 
-    @Override
-    public PropertyFactory getFactory(String schema, String type) {
-        // TODO: types must use QName for the type name
-        String key = schema + ':' + type;
-        PropertyFactory factory = factories.get(key);
-        if (factory == null) {
-            factory = factories.get(type);
-            if (factory != null) {
-                factories.put(key, factory);
-            }
-        }
-        return factory;
-    }
-
     public static DocumentPart newDocumentPart(Schema schema) {
         return new DocumentPartImpl(schema);
     }
