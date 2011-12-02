@@ -55,6 +55,8 @@ Needed parameters:
             styleClass="button">
             <a4j:support event="onclick"
               reRender="#{elementsToReRender}"
+              ignoreDupResponses="true"
+              requestDelay="100"
               eventsQueue="contentViewQueue">
               <nxu:actionListenerMethod
                 value="#{contentView.resetPageProvider()}" />
@@ -70,6 +72,8 @@ Needed parameters:
           reRender="#{filterFormId}_panel"
           id="moreButton"
           ajaxSingle="true"
+          ignoreDupResponses="true"
+          requestDelay="100"
           eventsQueue="contentViewQueue"
           styleClass="button">
           <f:setPropertyActionListener value="true"
@@ -89,6 +93,8 @@ Needed parameters:
           ajaxSingle="true"
           rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
           reRender="#{elementsToReRender}"
+          ignoreDupResponses="true"
+          requestDelay="100"
           eventsQueue="contentViewQueue"
           styleClass="button">
           <nxu:actionListenerMethod
@@ -136,6 +142,8 @@ Needed parameters:
                 <a4j:support event="onclick"
                   reRender="#{elementsToReRender}"
                   oncomplete="jQuery.fancybox.close();"
+                  ignoreDupResponses="true"
+                  requestDelay="100"
                   eventsQueue="contentViewQueue">
                   <nxu:actionListenerMethod
                     value="#{contentView.resetPageProvider()}" />
@@ -147,6 +155,8 @@ Needed parameters:
                 ajaxSingle="true"
                 disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
                 reRender="#{filterFormId}"
+                ignoreDupResponses="true"
+                requestDelay="100"
                 eventsQueue="contentViewQueue"
                 styleClass="button">
                 <nxu:actionListenerMethod

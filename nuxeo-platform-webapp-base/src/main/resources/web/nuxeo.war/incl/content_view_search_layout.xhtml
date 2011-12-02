@@ -45,6 +45,8 @@ Needed parameters:
             rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
             reRender="#{elementsToReRender}"
             eventsQueue="contentViewQueue"
+            ignoreDupResponses="true"
+            requestDelay="100"
             styleClass="button warningLink">
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
@@ -71,6 +73,8 @@ Needed parameters:
             <a4j:support event="onclick"
               reRender="#{elementsToReRender}"
               oncomplete="jQuery.fancybox.close();"
+              ignoreDupResponses="true"
+              requestDelay="100"
               eventsQueue="contentViewQueue">
               <nxu:actionListenerMethod
                 value="#{contentView.resetPageProvider()}" />
@@ -83,6 +87,8 @@ Needed parameters:
             disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
             reRender="#{elementsToReRender}"
             eventsQueue="contentViewQueue"
+            ignoreDupResponses="true"
+            requestDelay="100"
             styleClass="button">
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
