@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -137,11 +138,11 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 principal.getName());
 
         getTaskService().createTask(session, principal, document, TASK_NAME,
-                Arrays.asList(actorIds), false, TASK_NAME, null, null, variables, null);
+                Arrays.asList(actorIds), false, TASK_NAME, null, null,
+                variables, null);
         DocumentEventContext ctx = new DocumentEventContext(session, principal,
                 document);
-        ctx.setProperty(NotificationConstants.RECIPIENTS_KEY,
-                actorIds);
+        ctx.setProperty(NotificationConstants.RECIPIENTS_KEY, actorIds);
         try {
             getEventProducer().fireEvent(
                     ctx.newEvent(TaskEventNames.WORKFLOW_TASK_ASSIGNED));
@@ -230,8 +231,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             CoreSession session, String comment, PublishingEvent event)
             throws PublishingException {
         try {
-            List<Task> tis = getTaskService().getTaskInstances(
-                    document, (NuxeoPrincipal) null, session);
+            List<Task> tis = getTaskService().getTaskInstances(document,
+                    (NuxeoPrincipal) null, session);
             String initiator = null;
             for (Task task : tis) {
                 if (task.getName().equals(TASK_NAME)) {
@@ -325,7 +326,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             NuxeoPrincipal currentUser) throws ClientException {
         assert currentUser != null;
         try {
-            List<Task> tasks = getTaskService().getTaskInstances(proxy, (NuxeoPrincipal) null , coreSession);
+            List<Task> tasks = getTaskService().getTaskInstances(proxy,
+                    (NuxeoPrincipal) null, coreSession);
             for (Task task : tasks) {
                 if (task.getName().equals(TASK_NAME)) {
                     return true;
@@ -402,9 +404,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         @Override
         public void run() throws ClientException {
             DocumentModelList list = session.getProxies(docRef, targetRef);
+            DocumentModel proxy = null;
             if (list.isEmpty()) {// first publication
-                DocumentModel proxy = session.publishDocument(
-                        session.getDocument(docRef),
+                proxy = session.publishDocument(session.getDocument(docRef),
                         session.getDocument(targetRef));
                 SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
                         proxy);
@@ -424,7 +426,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             } else if (list.size() == 1) {
                 // one doc is already published or waiting for publication
                 if (isPublishedDocWaitingForPublication(list.get(0))) {
-                    DocumentModel proxy = session.publishDocument(
+                    proxy = session.publishDocument(
                             session.getDocument(docRef),
                             session.getDocument(targetRef));
                     if (!isValidator(proxy, principal)) {
@@ -453,7 +455,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                     }
                 } else {
                     if (!isValidator(list.get(0), principal)) {
-                        DocumentModel proxy = session.publishDocument(
+                        proxy = session.publishDocument(
                                 session.getDocument(docRef),
                                 session.getDocument(targetRef), false);
                         // save needed to have the proxy visible from other
@@ -469,7 +471,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                         publishedDocument.setPending(true);
                         result = publishedDocument;
                     } else {
-                        DocumentModel proxy = session.publishDocument(
+                        proxy = session.publishDocument(
                                 session.getDocument(docRef),
                                 session.getDocument(targetRef));
                         // save needed to have the proxy visible from other
@@ -508,7 +510,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                             comment,
                             PublishingEvent.documentPublicationApproved);
                     session.removeDocument(waitingForPublicationDoc.getRef());
-                    DocumentModel proxy = session.publishDocument(
+                    proxy = session.publishDocument(
                             session.getDocument(docRef),
                             session.getDocument(targetRef));
                     notifyEvent(PublishingEvent.documentPublished, proxy,
@@ -517,6 +519,15 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                             proxy);
                     result = publishedDocument;
                 }
+            }
+            if (proxy != null) {
+                detachDocument(proxy);
+            }
+        }
+
+        private void detachDocument(DocumentModel doc) throws ClientException {
+            if (doc instanceof DocumentModelImpl) {
+                ((DocumentModelImpl) doc).detach(true);
             }
         }
 
