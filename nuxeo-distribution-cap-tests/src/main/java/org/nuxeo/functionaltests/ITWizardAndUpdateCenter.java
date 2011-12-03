@@ -212,8 +212,10 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         assertNotNull(packageSelectiondPage);
         assertEquals("Select packages", packageSelectiondPage.getTitle());
 
-        WebElement presetShower = findElementWithTimeout(By.id("presetsShower"));
-        presetShower.click();
+        // use specific url
+        String currentUrl = driver.getCurrentUrl();
+        currentUrl = currentUrl + "?showPresets=true";
+        packageSelectiondPage = get(currentUrl, WizardPage.class);
 
         WebElement presetBtn = findElementWithTimeout(By.id("preset_nuxeo-dm"));
         presetBtn.click();

@@ -205,10 +205,16 @@ $(document).ready(function(){
 <span class="screenDescription">
 <fmt:message key="label.packagesSelection.description" /> <br/>
 </span>
+<%
+String presetClass = "display:none";
+if ("true".equals(request.getParameter("showPresets"))) {
+    presetClass = "";
+}
+%>
 
 <%@ include file="includes/feedback.jsp" %>
-  <span id="presetsShower" onclick="$('#hiddenPresets').css('display','block');"></span>
-  <span style="display:none" id="hiddenPresets">
+
+  <span style="<%=presetClass%>" id="hiddenPresets">
   <div class="presetContainer"> <span class="presetLabel"><fmt:message key="label.packagesSelection.presets" /> :</span>
   <%for (Preset preset : options.getPresets()) { %>
     <span class="presetBtn" id="preset_<%=preset.getId()%>" onclick="usePreset(<%=preset.getPkgsAsJsonArray()%>)"><%=preset.getLabel()%> </span>
