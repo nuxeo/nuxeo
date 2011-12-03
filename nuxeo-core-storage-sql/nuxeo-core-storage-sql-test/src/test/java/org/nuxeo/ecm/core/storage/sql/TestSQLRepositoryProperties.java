@@ -469,13 +469,15 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.createDocument(session.createDocumentModel("/", "doc2",
                 "TestDocumentWithDefaultPrefetch"));
         assertTrue(doc.isPrefetched("dc:title"));
+        assertTrue(doc.isPrefetched("dc:description"));
+        assertTrue(doc.isPrefetched("dc:created"));
         assertTrue(doc.isPrefetched("dc:modified"));
         assertTrue(doc.isPrefetched("dc:creator"));
-        assertTrue(doc.isPrefetched("dc:contributors"));
+        assertTrue(doc.isPrefetched("dc:lastContributor"));
         assertTrue(doc.isPrefetched("icon"));
         assertTrue(doc.isPrefetched("dublincore", "title"));
         assertTrue(doc.isPrefetched("common", "icon"));
-        assertFalse(doc.isPrefetched("dc:description"));
+        assertFalse(doc.isPrefetched("dc:contributors"));
         assertNull(doc.getPropertyValue("dc:title"));
         assertNull(doc.getProperty("dublincore", "title"));
 
