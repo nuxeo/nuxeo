@@ -42,7 +42,8 @@
     <documentation>The default type manager configuration</documentation>
     <configuration>
       <!--prefetch>common, dublincore</prefetch-->
-      <prefetch>common.icon, dc:title, dc:modified, dc:contributors, dc:creator</prefetch>
+      <prefetch>common.icon, dc:title, dc:description, dc:created, dc:modified,
+        dc:lastContributor, dc:creator</prefetch>
     </configuration>
   </extension>
 
