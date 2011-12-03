@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.JbpmActorsListFilter;
@@ -353,6 +354,9 @@ public class JbpmServiceImpl implements JbpmService {
         DocumentModel result;
         try {
             result = session.getDocument(new IdRef(docId));
+            if (result instanceof DocumentModelImpl) {
+                ((DocumentModelImpl) result).detach(true);
+            }
         } catch (ClientException e) {
             throw new NuxeoJbpmException(e);
         } finally {
