@@ -24,6 +24,7 @@ import org.nuxeo.dam.core.service.InheritedPropertiesService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -35,8 +36,8 @@ import org.nuxeo.runtime.api.Framework;
 public class InitPropertiesListener implements EventListener {
 
     /**
-     * Used to find the first parent accessible by a user, ie. the first parent
-     * where the user has the READ permission.
+     * Used to find the {@link DocumentRef} of the first parent accessible by a
+     * user, ie. the first parent where the user has the READ permission.
      */
     protected static class AccessibleParentFinder extends
             UnrestrictedSessionRunner {
@@ -45,7 +46,7 @@ public class InitPropertiesListener implements EventListener {
 
         public final DocumentModel doc;
 
-        public DocumentModel parent;
+        public DocumentRef parentRef;
 
         public AccessibleParentFinder(CoreSession session, DocumentModel doc) {
             super(session);
@@ -55,10 +56,10 @@ public class InitPropertiesListener implements EventListener {
 
         @Override
         public void run() throws ClientException {
-            parent = getFirstParentAccessibleByUser(doc);
+            parentRef = getFirstParentAccessibleByUser(doc);
         }
 
-        protected DocumentModel getFirstParentAccessibleByUser(DocumentModel doc)
+        protected DocumentRef getFirstParentAccessibleByUser(DocumentModel doc)
                 throws ClientException {
             DocumentModel parent = session.getDocument(doc.getParentRef());
             if (parent == null || "/".equals(parent.getPathAsString())) {
@@ -67,7 +68,7 @@ public class InitPropertiesListener implements EventListener {
 
             if (userSession.hasPermission(parent.getRef(),
                     SecurityConstants.READ)) {
-                return parent;
+                return parent.getRef();
             } else {
                 return getFirstParentAccessibleByUser(parent);
             }
@@ -94,8 +95,7 @@ public class InitPropertiesListener implements EventListener {
                 if (importSet == null
                         || "/".equals(importSet.getPathAsString())) {
                     // there is no or no accessible importset parent, don't
-                    // update
-                    // the document.
+                    // update the document.
                     return;
                 }
 
@@ -129,7 +129,8 @@ public class InitPropertiesListener implements EventListener {
             DocumentModel doc) throws ClientException {
         AccessibleParentFinder finder = new AccessibleParentFinder(session, doc);
         finder.runUnrestricted();
-        return finder.parent;
+        return finder.parentRef != null ? session.getDocument(finder.parentRef)
+                : null;
     }
 
     protected InheritedPropertiesService getInheritedPropertiesService() {
