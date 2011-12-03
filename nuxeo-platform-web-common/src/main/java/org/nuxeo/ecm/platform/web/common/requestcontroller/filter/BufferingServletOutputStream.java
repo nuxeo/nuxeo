@@ -214,7 +214,15 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                 if (needsFlush) {
                     outputStream.flush();
                 }
-            } finally {
+            }
+            catch (IOException e) {
+                if ("ClientAbortException".equals(e.getClass().getSimpleName())) {
+                    log.debug("Client disconected");
+                } else {
+                    throw e;
+                }
+            }
+            finally {
                 if (needsClose) {
                     outputStream.close();
                 }
