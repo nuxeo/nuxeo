@@ -106,7 +106,7 @@ AS $$
   SELECT TO_TSVECTOR('${fulltextAnalyzer}', SUBSTR($1, 1, 250000))
 $$
 LANGUAGE sql
-STABLE;
+IMMUTABLE;
 
 
 #IF: pathOptimizationsEnabled
