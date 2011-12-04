@@ -265,13 +265,13 @@ public class PackageDownloader {
                 if (response.getStatusLine().getStatusCode() == 200) {
                     canReachServer = true;
                 } else {
-                    log.error("Unable to ping server -> status code :"
+                    log.warn("Unable to ping server -> status code :"
                             + response.getStatusLine().getStatusCode() + " ("
                             + response.getStatusLine().getReasonPhrase() + ")");
                     canReachServer = false;
                 }
             } catch (Exception e) {
-                log.error("Unable to ping server", e);
+                log.warn("Unable to ping remote server", e);
                 canReachServer = false;
             }
         }
@@ -308,14 +308,14 @@ public class PackageDownloader {
                 desc = new File(getDownloadDirectory(), PACKAGES_XML);
                 FileUtils.copyToFile(response.getEntity().getContent(), desc);
             } else {
-                log.error("Unable to download remote packages.xml, status code :"
+                log.warn("Unable to download remote packages.xml, status code :"
                         + response.getStatusLine().getStatusCode()
                         + " ("
                         + response.getStatusLine().getReasonPhrase() + ")");
                 return null;
             }
         } catch (Exception e) {
-            log.error("Unable to reach remote packages.xml", e);
+            log.warn("Unable to reach remote packages.xml", e);
             return null;
         }
         return desc;
