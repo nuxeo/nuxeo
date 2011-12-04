@@ -199,12 +199,24 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                     FileInputStream in = new FileInputStream(tmp);
                     try {
                         IOUtils.copy(in, outputStream);
+                    } catch (IOException e) {
+                        if ("ClientAbortException".equals(e.getClass().getSimpleName())) {
+                            log.debug("Client disconected");
+                        } else {
+                            throw e;
+                        }
                     } finally {
                         in.close();
                     }
                 } finally {
                     tmp.delete();
                 }
+            }
+        } catch (IOException e) {
+            if ("ClientAbortException".equals(e.getClass().getSimpleName())) {
+                log.debug("Client disconected");
+            } else {
+                throw e;
             }
         } finally {
             memory = null;
@@ -214,15 +226,13 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                 if (needsFlush) {
                     outputStream.flush();
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 if ("ClientAbortException".equals(e.getClass().getSimpleName())) {
                     log.debug("Client disconected");
                 } else {
                     throw e;
                 }
-            }
-            finally {
+            } finally {
                 if (needsClose) {
                     outputStream.close();
                 }
