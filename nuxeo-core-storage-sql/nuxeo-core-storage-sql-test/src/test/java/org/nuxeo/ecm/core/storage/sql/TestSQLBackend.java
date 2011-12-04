@@ -3131,13 +3131,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
         assertEquals(oneDoc, res.list);
 
+        // no wildcard index so no DISTINCT needed
+        clause = "tst:title LIKE '%' ORDER BY tst:friends/0/lastname";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        clause = "tst:title LIKE '%' ORDER BY tst:subjects/0";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
         // SELECT * statement cannot ORDER BY array or complex list element
         clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
         try {
             session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
             fail();
         } catch (StorageException e) {
-            String expected = "For SELECT * the ORDER BY columns cannot use indexes";
+            String expected = "For SELECT * the ORDER BY columns cannot use wildcard indexes";
             assertEquals(expected, e.getMessage());
         }
         assertEquals(oneDoc, res.list);

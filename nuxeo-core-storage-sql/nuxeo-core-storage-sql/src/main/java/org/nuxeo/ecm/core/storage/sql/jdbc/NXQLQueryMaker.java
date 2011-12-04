@@ -185,9 +185,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected final List<String> orderByColumnNames = new LinkedList<String>();
 
-    protected boolean hasIndex;
+    protected boolean hasWildcardIndex;
 
-    protected boolean orderByHasIndex;
+    protected boolean orderByHasWildcardIndex;
 
     protected Boolean proxyClause;
 
@@ -260,7 +260,7 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         boolean distinct = sqlQuery.select.isDistinct();
-        if (selectStar && hasIndex) {
+        if (selectStar && hasWildcardIndex) {
             distinct = true;
         }
         if (distinct) {
@@ -275,10 +275,10 @@ public class NXQLQueryMaker implements QueryMaker {
                                     + set);
                 }
                 // for a SELECT *, we can add the needed columns if they
-                // don't involve array elements
-                if (orderByHasIndex) {
+                // don't involve wildcard index array elements
+                if (orderByHasWildcardIndex) {
                     throw new StorageException(
-                            "For SELECT * the ORDER BY columns cannot use indexes");
+                            "For SELECT * the ORDER BY columns cannot use wildcard indexes");
                 }
                 for (String name : set) {
                     sqlQuery.select.add(new Reference(name));
@@ -753,8 +753,8 @@ public class NXQLQueryMaker implements QueryMaker {
     // digits or star or star followed by digits, for segments
     protected final static Pattern INDEX = Pattern.compile("\\d+|\\*|\\*\\d+");
 
-    // index in xpath
-    protected final static Pattern HAS_INDEX = Pattern.compile(".*/(\\d+|\\*|\\*\\d+)(/.*|$)");
+    // wildcard index in xpath
+    protected final static Pattern HAS_WILDCARD_INDEX = Pattern.compile(".*/(\\*|\\*\\d+)(/.*|$)");
 
     // digits or star or star followed by digits, then slash, for replaceAll
     protected final static Pattern INDEX_SLASH = Pattern.compile("/(?:\\d+|\\*|\\*\\d+)(/|$)");
@@ -797,9 +797,9 @@ public class NXQLQueryMaker implements QueryMaker {
         return INDEX_SLASH.matcher(xpath).replaceAll("/*$1");
     }
 
-    public boolean hasIndex(String xpath) {
+    public boolean hasWildcardIndex(String xpath) {
         xpath = canonicalXPath(xpath);
-        return HAS_INDEX.matcher(xpath).matches();
+        return HAS_WILDCARD_INDEX.matcher(xpath).matches();
     }
 
     protected QueryAnalyzer newQueryAnalyzer(FacetFilter facetFilter) {
@@ -1024,10 +1024,10 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (inOrderBy) {
                 orderByColumnNames.add(name);
             }
-            if (hasIndex(name)) {
-                hasIndex = true;
+            if (hasWildcardIndex(name)) {
+                hasWildcardIndex = true;
                 if (inOrderBy) {
-                    orderByHasIndex = true;
+                    orderByHasWildcardIndex = true;
                 }
             }
         }
