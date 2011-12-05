@@ -38,8 +38,9 @@
         </h3>
         <div class="boxBody">
           <c:if test="#{contentView != null}">
-            <h:outputText value="#{messages['label.search.form.desc']}"
-              class="infoMessage" />
+            <div class="tips">
+              <h:outputText value="#{messages['label.search.form.desc']}" />
+            </div>
             <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
               value="#{contentView.searchDocumentModel}" />
           </c:if>
