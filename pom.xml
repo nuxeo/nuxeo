@@ -1366,7 +1366,7 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.xml.stream</groupId>
+        <groupId>org.jvnet.staxex</groupId>
         <artifactId>stax-ex</artifactId>
         <version>1.6</version>
       </dependency>
@@ -2130,18 +2130,53 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>2.2.3</version>
-      </dependency>
-      <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3</version>
         <exclusions>
           <exclusion>
             <groupId>stax</groupId>
             <artifactId>stax-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>jaxws-rt</artifactId>
+        <version>2.2.5</version>
+        <exclusions>
+          <!-- bad classes pulled by dependency com.sun.xml.ws:policy -->
+          <exclusion>
+            <!-- classes conflict with com.sun.xml.bind:jaxb-impl -->
+            <groupId>com.sun.xml.txw2</groupId>
+            <artifactId>txw2</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- classes conflict with com.sun.xml.bind:jaxb-impl -->
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-runtime</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- classes conflict with org.codehaus.woodstox:stax2-api -->
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>javax.xml.ws</groupId>
+        <artifactId>jaxws-api</artifactId>
+        <version>2.2.5</version>
+        <exclusions>
+          <!-- classes conflict with javax.annotation:jsr250-api -->
+          <exclusion>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.annotation</artifactId>
+          </exclusion>
+          <!-- classes conflict with javax.jws:jsr181 -->
+          <exclusion>
+            <groupId>javax.jws</groupId>
+            <artifactId>jsr181-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2707,21 +2742,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>metro.webservices</groupId>
-        <artifactId>webservices-api</artifactId>
-        <version>1.4</version>
-      </dependency>
-      <dependency>
-        <groupId>metro.webservices</groupId>
-        <artifactId>webservices-rt</artifactId>
-        <version>1.4</version>
-      </dependency>
-      <dependency>
-        <groupId>metro.webservices</groupId>
-        <artifactId>webservices-tools</artifactId>
-        <version>1.4</version>
-      </dependency>
 
       <dependency>
         <groupId>org.wikimodel</groupId>
@@ -2792,6 +2812,11 @@
           <exclusion>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>json-jena</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- conflicts with woodstox-core-asl needed by jaxws-rt -->
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
