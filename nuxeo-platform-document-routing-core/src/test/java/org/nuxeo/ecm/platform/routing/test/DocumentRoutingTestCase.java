@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROOT_PATH = "/";
@@ -84,6 +84,12 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         // test our services
         engineService = Framework.getService(DocumentRoutingEngineService.class);
         service = Framework.getService(DocumentRoutingService.class);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void testServices() throws Exception {

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -231,17 +232,18 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 session);
         assertNotNull(route);
         session.save();
-        session = openSessionAs("routeManagers");
-        DocumentModel step = session.getChildren(route.getDocument().getRef()).get(
+        CoreSession managersSession = openSessionAs("routeManagers");
+        DocumentModel step = managersSession.getChildren(route.getDocument().getRef()).get(
                 0);
-        service.lockDocumentRoute(route, session);
+        service.lockDocumentRoute(route, managersSession);
         service.removeRouteElement(step.getAdapter(DocumentRouteElement.class),
-                session);
-        service.unlockDocumentRoute(route, session);
-        DocumentRoute newModel = service.saveRouteAsNewModel(route, session);
+                managersSession);
+        service.unlockDocumentRoute(route, managersSession);
+        DocumentRoute newModel = service.saveRouteAsNewModel(route, managersSession);
         assertNotNull(newModel);
         assertEquals("(COPY) route1",
                 (String) newModel.getDocument().getPropertyValue("dc:title"));
+        closeSession(managersSession);
     }
 
     public void testRemoveStepFromLockedRoute() throws Exception {
@@ -286,6 +288,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 step32.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         e = null;
+        closeSession();
         session = openSessionAs("jdoe");
         try {
             service.unlockDocumentRoute(route, session);
@@ -295,6 +298,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertNotNull(e);
         childs = service.getOrderedRouteElement(stepFolder.getId(), session);
         assertEquals(1, childs.size());
+        closeSession();
     }
 
     public void testCreateNewInstance() throws Exception {
@@ -668,6 +672,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
         waitForAsyncExec();
+        closeSession();
         session = openSessionAs("routeManagers");
         DocumentRoute routeInstance = service.createNewInstance(route,
                 doc1.getId(), session);

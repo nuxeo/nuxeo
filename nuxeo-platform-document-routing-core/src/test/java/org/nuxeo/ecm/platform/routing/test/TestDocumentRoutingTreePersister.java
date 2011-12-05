@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -50,8 +51,9 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
                 TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
         session.save();
         closeSession();
-        session = openSessionAs("members");
-        assertFalse(session.hasPermission(doc.getRef(), SecurityConstants.READ));
+        CoreSession membersSession = openSessionAs("members");
+        assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
+        closeSession(membersSession);
     }
 
     public void testGetParentFolderForDocumentRouteInstance() {
@@ -80,8 +82,9 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         docsId = (List<String>) instance.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
         assertEquals("1", docsId.get(0));
         closeSession();
-        session = openSessionAs(DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
-        assertEquals(3, session.getChildren(instance.getRef()).size());
+        CoreSession managersSession = openSessionAs(DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
+        assertEquals(3, managersSession.getChildren(instance.getRef()).size());
+        closeSession(managersSession);
     }
 
     public void testSaveDocumentRouteInstanceAsNewModel()
