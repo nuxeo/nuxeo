@@ -64,7 +64,7 @@ public class TestRepoStats {
         // stats on default template
         RepoStatInfo stat1 = runRepoStatSync();
 
-        System.out.println(stat1.toString());
+        // System.out.println(stat1.toString());
 
         assertEquals(5, stat1.getTotalNbDocs());
         assertEquals(new Long(1), stat1.getDocTypeCount("Root"));
@@ -87,7 +87,7 @@ public class TestRepoStats {
         // Add a blob Holder
 
         RepoStatInfo stat2 = runRepoStatSync();
-        System.out.println(stat2.toString());
+        // System.out.println(stat2.toString());
 
         assertEquals(6, stat2.getTotalNbDocs());
         assertEquals(1, stat2.getTotalBlobNumber());
@@ -108,7 +108,7 @@ public class TestRepoStats {
         assertEquals(2, docs.size());
 
         RepoStatInfo stat3 = runRepoStatSync();
-        System.out.println(stat3.toString());
+        // System.out.println(stat3.toString());
         assertEquals(1, stat3.getVersions());
         assertEquals(7, stat3.getTotalNbDocs());
         assertEquals(2, stat3.getTotalBlobNumber());
@@ -123,7 +123,7 @@ public class TestRepoStats {
         session.save();
 
         RepoStatInfo stat4 = runRepoStatSync();
-        System.out.println(stat4.toString());
+        // System.out.println(stat4.toString());
         assertEquals(1, stat4.getVersions());
         assertEquals(7, stat4.getTotalNbDocs());
         assertEquals(2, stat4.getTotalBlobNumber());
@@ -136,6 +136,6 @@ public class TestRepoStats {
     public void testIntrospection() {
         SimplifiedServerInfo info = RuntimeInstrospection.getInfo();
         assertNotNull(info);
-        System.out.print(info.toString());
+        // System.out.print(info.toString());
     }
 }
