@@ -123,6 +123,8 @@ cursor: pointer;
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#ddeeff)";   
  }
 
+#gadgetListContainer .gadget p.specUrl { font-size: .85em; text-align: right }
+
  #gadgetListContainer .gadget:hover { 
  background-image: none;
  background-color:#C0DCF5;
@@ -131,12 +133,14 @@ cursor: pointer;
  #gadgetListContainer .gadget .gadgetThumb {
  float:left;
  padding:0.5em 0.75em 0.5em 0;
- min-height: 64px;
- min-width: 64px;
+ height: 64px;
+ width: 64px;
+ text-align: center;
  }
 
  #gadgetListContainer .gadget .gadgetThumb img {
- width: 64px;
+ max-height: 64px;
+ max-width: 64px;
  }
 
  #gadgetListContainer .gadget h3 {
