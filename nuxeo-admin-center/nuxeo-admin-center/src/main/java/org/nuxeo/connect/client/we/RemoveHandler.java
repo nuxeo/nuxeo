@@ -10,8 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageUpdateService;
-import org.nuxeo.connect.update.impl.PackagePersistence;
-import org.nuxeo.connect.update.impl.UpdateServiceImpl;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -34,8 +32,7 @@ public class RemoveHandler extends DefaultObject {
 
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-            PackagePersistence persistence = ((UpdateServiceImpl) pus).getPersistence();
-            persistence.removePackage(pkgId);
+            pus.removePackage(pkgId);
 
             return getView("removeDone").arg("pkgId", pkgId).arg(
                     "source", source);

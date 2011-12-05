@@ -161,6 +161,12 @@ public class LocalPackageManager {
                             "Missing package id as parameter.");
                 }
                 uninstall(args[3]);
+            } else if ("add".equalsIgnoreCase(command)) {
+                if (args.length < 4) {
+                    throw new PackageException(
+                            "Missing file name as parameter.");
+                }
+                add(args[3]);
             } else if ("remove".equalsIgnoreCase(command)) {
                 if (args.length < 4) {
                     throw new PackageException(
@@ -188,7 +194,9 @@ public class LocalPackageManager {
         log.error("\nLocalPackageManager usage: working_directory command [parameters]");
         log.error("Commands:");
         log.error("\tlist\t\t\t\tLists local packages and their status.");
-        log.error("\tinstall /path/to/upgrade/file\t\t\tReads the given upgrade"
+        log.error("\tadd /path/to/upgrade/file\t\t\tReads the given package"
+                + " file and stores it in the local cache.");
+        log.error("\tinstall /path/to/upgrade/file\t\t\tReads the given package"
                 + " file and performs install.");
         log.error("\tinstallpkg [/path/to/package|packageId]\t\tInstalls the given"
                 + " package (as a file or its ID).");
@@ -379,6 +387,20 @@ public class LocalPackageManager {
             uninstallTask.rollback();
             errorValue = 1;
             log.error("Failed to uninstall package: " + pkgId, e);
+        }
+    }
+
+    /**
+     * @param pkgId Marketplace package id
+     * @throws PackageException
+     * @since 5.5
+     */
+    private void add(String packageFileName) throws PackageException {
+        log.info("Adding " + packageFileName);
+        try {
+            pus.addPackage(new File(packageFileName));
+        } catch (Throwable e) {
+            log.error("Failed to add package: " + packageFileName, e);
         }
     }
 
