@@ -144,4 +144,8 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         return res;
     }
 
+    public ThemePage getConfigurationApplyingToAllThemes() {
+        return themePageResources.get("*");
+    }
+
 }

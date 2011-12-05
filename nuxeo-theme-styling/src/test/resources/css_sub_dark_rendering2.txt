@@ -10,6 +10,8 @@
 .${print_suid} h4 {margin:0;padding:0;}
 .${print_suid} h5 {margin:0;padding:0;}
 .${print_suid} h6 {margin:0;padding:0;}
+.${print_suid} .myAddonClassWithFlavor {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${print_suid} .myAddonClass {margin:0;padding:0;}
 
 
 /* CSS styles named 'testStyling/default Page Styles' */
@@ -44,5 +46,7 @@
 .${default_suid} .boldLabel {font-weight:bold;}
 .${default_suid} .button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
 .${default_suid} input.button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
+.${default_suid} .myAddonClassWithFlavor {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${default_suid} .myAddonClass {margin:0;padding:0;}
 
 </style>

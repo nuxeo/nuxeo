@@ -10,6 +10,8 @@
 .${print_suid} h4 {margin:0;padding:0;}
 .${print_suid} h5 {margin:0;padding:0;}
 .${print_suid} h6 {margin:0;padding:0;}
+.${print_suid} .myAddonClassWithFlavor {color:#000;font-family:'Lucida Grande', Arial, Helvetica, Geneva, sans-serif;}
+.${print_suid} .myAddonClass {margin:0;padding:0;}
 
 
 /* CSS styles named 'testStyling/default Page Styles' */
@@ -41,5 +43,7 @@
 .${default_suid} .selectDocumentType {margin-top:10px;}
 .${default_suid} .checkBox {margin-right:3px;}
 .${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
+.${default_suid} .myAddonClassWithFlavor {color:#000;font-family:'Lucida Grande', Arial, Helvetica, Geneva, sans-serif;}
+.${default_suid} .myAddonClass {margin:0;padding:0;}
 
 </style>

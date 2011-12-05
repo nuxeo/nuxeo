@@ -409,10 +409,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     try {
                         postRegisterThemePageResources(res);
                     } catch (ThemeException e) {
-                        log.error(
-                                String.format("Could not load theme page "
-                                        + "resources for page '%s' ",
-                                        res.getThemeName()), e);
+                        log.error(String.format("Could not load theme page "
+                                + "resources for page '%s' ", res.getName()), e);
                     }
                 }
             }
@@ -424,10 +422,18 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
      */
     protected void postRegisterThemePageResources(ThemePage page)
             throws ThemeException {
-        ThemeManager themeManager = Manager.getThemeManager();
-        String themeName = page.getThemeName();
         String pageName = page.getName();
+        if (!"*".equals(pageName)) {
+            // include page conf for all themes
+            ThemePage forAllPage = pageReg.getConfigurationApplyingToAllThemes();
+            postRegisterThemePageResources(pageName, page, forAllPage);
+        }
+    }
 
+    protected void postRegisterThemePageResources(String themePageName,
+            ThemePage page, ThemePage pageApplyingToAll) throws ThemeException {
+        String themeName = ThemePage.getThemeName(themePageName);
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
         if (themeDescriptor == null) {
             log.error(String.format(
@@ -437,19 +443,29 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
             ThemeManager.loadTheme(themeDescriptor);
         }
-        PageElement pageElement = themeManager.getPageByPath(pageName);
+        PageElement pageElement = themeManager.getPageByPath(themePageName);
         if (pageElement != null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Register theme page '%s' to the theme service",
-                        pageName));
+                        themePageName));
             }
 
+            List<String> allStyleNames = new ArrayList<String>();
             List<String> styleNames = page.getStyles();
             if (styleNames != null) {
+                allStyleNames.addAll(styleNames);
+            }
+            if (pageApplyingToAll != null) {
+                styleNames = pageApplyingToAll.getStyles();
+                if (styleNames != null) {
+                    allStyleNames.addAll(styleNames);
+                }
+            }
+            if (!allStyleNames.isEmpty()) {
                 Style style = themeManager.createStyle();
                 style.setExternal(true);
-                for (String styleName : styleNames) {
+                for (String styleName : allStyleNames) {
                     SimpleStyle simpleStyle = styleReg.getStyle(styleName);
                     if (simpleStyle == null) {
                         log.warn("Style unknown: " + styleName);
@@ -467,8 +483,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     }
                 }
                 // link page and style
-                style.setName(pageName + PAGE_STYLE_NAME_SUFFIX);
-                style.setCollection(page.getPageName()
+                style.setName(themePageName + PAGE_STYLE_NAME_SUFFIX);
+                style.setCollection(themePageName
                         + PAGE_STYLE_CLASS_NAME_PREFIX);
 
                 themeManager.setNamedObject(themeName, "style", style);
@@ -481,8 +497,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                 themeManager.makeFormatInherit(existingPageStyle, style);
             } else {
                 // remove style linked to page
-                themeManager.removeNamedObject(themeName, "style", pageName
-                        + PAGE_STYLE_NAME_SUFFIX);
+                themeManager.removeNamedObject(themeName, "style",
+                        themePageName + PAGE_STYLE_NAME_SUFFIX);
             }
 
             // mark page as loaded
@@ -494,7 +510,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Done registering theme page '%s' to the theme service",
-                        pageName));
+                        themePageName));
             }
         } else {
             log.error(String.format("Unknown theme page '%s'", page.getName()));
@@ -503,10 +519,16 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     protected void unRegisterThemePageResources(ThemePage page)
             throws ThemeException {
-        ThemeManager themeManager = Manager.getThemeManager();
-        String themeName = page.getThemeName();
         String pageName = page.getName();
+        if (!"*".equals(pageName)) {
+            unRegisterThemePageResources(pageName, page);
+        }
+    }
 
+    protected void unRegisterThemePageResources(String themePageName,
+            ThemePage page) throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        String themeName = ThemePage.getThemeName(themePageName);
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
         if (themeDescriptor == null) {
             // not there anymore => ignore
@@ -515,16 +537,16 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
             ThemeManager.loadTheme(themeDescriptor);
         }
-        PageElement pageElement = themeManager.getPageByPath(pageName);
+        PageElement pageElement = themeManager.getPageByPath(themePageName);
         if (pageElement != null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Unregister theme page '%s' from the theme service",
-                        pageName));
+                        themePageName));
             }
 
             // remove style linked to page
-            themeManager.removeNamedObject(themeName, "style", pageName
+            themeManager.removeNamedObject(themeName, "style", themePageName
                     + PAGE_STYLE_NAME_SUFFIX);
             // reset cache
             themeManager.stylesModified(themeName);
@@ -691,7 +713,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         }
         if (pageReg != null) {
             for (ThemePage res : pageReg.getThemePages()) {
-                if (themeName.equals(res.getThemeName())) {
+                String name = ThemePage.getThemeName(res.getName());
+                if ("*".equals(name) || themeName.equals(name)) {
                     try {
                         postRegisterThemePageResources(res);
                     } catch (ThemeException e) {

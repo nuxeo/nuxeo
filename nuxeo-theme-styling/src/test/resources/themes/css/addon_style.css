@@ -1,0 +1,2 @@
+.myAddonClassWithFlavor { color: "black (__FLAVOR__ color)"; font-family: "default (__FLAVOR__ font)" }
+.myAddonClass { margin: 0; padding: 0 }
