@@ -51,6 +51,7 @@ table.dataOutput th a img { margin: 0 0 0 .2em; padding: 0; vertical-align: bott
 .iconColumn .dropInto { background-color: "neutral.light (__FLAVOR__ background)" }
 .iconColumn img { background: none; position: relative; z-index: 25 }
 .twoColumns { width: 50% }
+.fieldColumn { padding-left: .5em }
 .fieldColumn img { margin: 0 .4em; vertical-align: top }
 
 .buttonsGadgetNoForm .button { margin-right: 1em }
