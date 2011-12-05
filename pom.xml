@@ -118,7 +118,7 @@
     <gwt.version>2.4.0</gwt.version>
     <guice.version>3.0</guice.version>
     <jersey.version>1.1.5</jersey.version>
-    <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
+    <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>0.6.0-r1201655</chemistry.opencmis.version>
@@ -1960,18 +1960,7 @@
         <exclusions>
           <exclusion>
             <groupId>org.mortbay.jetty</groupId>
-            <artifactId>servlet-api-2.5</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>servlet-api-2.5</artifactId>
-        <version>${jetty.mortbay.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>servlet-api-2.5</artifactId>
+            <artifactId>servlet-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
