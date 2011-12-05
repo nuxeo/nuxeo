@@ -101,8 +101,8 @@ body {
   margin-left: 5em;
   filter: alpha(opacity = 80);
   opacity: 0.8;
-  padding: 1.5em 1em 1em;
-  width: 20em
+  padding: 1.5em 0 1em;
+  width: 22em
 }
 
 .login_label {
@@ -117,7 +117,8 @@ body {
   border-radius: 2px;
   box-shadow: 1px 1px 2px #e0e0e0 inset;
   padding: .3em;
-  margin: 0 .9em .4em 0
+  margin: 0 0 .4em;
+  width: 14.5em
 }
 
 .login_button {
@@ -289,8 +290,7 @@ function focusOn(eltId) {
                   </label>
                 </td>
                 <td>
-                  <input class="login_input" type="text"
-                    name="user_name" id="username" size="22">
+                  <input class="login_input" type="text" name="user_name" id="username">
                 </td>
               </tr>
               <tr>
@@ -300,8 +300,7 @@ function focusOn(eltId) {
                   </label>
                 </td>
                 <td>
-                  <input class="login_input" type="password"
-                      name="user_password" id="password" size="22">
+                  <input class="login_input" type="password" name="user_password" id="password">
                 </td>
               </tr>
               <tr>
