@@ -288,6 +288,15 @@ org.nuxeo.ecm.product.name=Nuxeo DM
         <include name="el-*" />
         <include name="catalina-*" />
         <include name="quartz*" />
+        <include name="jaxb-*" /> <!-- use JDK / JBoss endorsed -->
+        <include name="jaxws-*" /> <!-- use JDK / JBoss endorsed -->
+        <include name="saaj-*" /> <!-- use JDK / JBoss endorsed -->
+        <!-- dependencies for jaxws-rt -->
+        <include name="streambuffer-*" />
+        <include name="policy-*" />
+        <include name="gmbal-api-only-*" />
+        <include name="management-api-*" />
+        <include name="ha-api-*" />
       </fileset>
     </delete>
 

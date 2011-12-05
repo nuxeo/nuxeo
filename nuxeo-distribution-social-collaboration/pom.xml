@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-social-collaboration</artifactId>
+  <packaging>zip</packaging>
+  <name>Nuxeo Social Collaboration Distribution</name>
+  <description>Nuxeo Social Collaboration Distribution</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-dm</artifactId>
+      <type>pom</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-social-workspace-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-social-workspace-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-social-workspace-gadgets</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-relationship</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-user-relationship</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-mini-message</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-user-activity-stream</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-activity</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+</project>

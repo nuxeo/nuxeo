@@ -21,6 +21,8 @@ package org.nuxeo.wizard.download;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -70,6 +73,12 @@ public class PackageDownloader {
     protected final static Log log = LogFactory.getLog(PackageDownloader.class);
 
     public static final String PACKAGES_XML = "packages.xml";
+
+    public static final String PACKAGES_DEFAULT_SELECTION = "packages-default-selection.properties";
+
+    public static final String PACKAGES_DEFAULT_SELECTION_PRESETS = "preset";
+
+    public static final String PACKAGES_DEFAULT_SELECTION_PACKAGES = "packages";
 
     protected static final int NB_DOWNLOAD_THREADS = 3;
 
@@ -291,6 +300,28 @@ public class PackageDownloader {
                 try {
                     downloadOptions = DownloadDescriptorParser.parsePackages(new FileInputStream(
                             packageFile));
+
+                    // manage init from presets if available
+                    Properties defaultSelection = getDefaultPackageSelection();
+                    if (defaultSelection!=null) {
+                        String presetId = defaultSelection.getProperty(PACKAGES_DEFAULT_SELECTION_PRESETS, null);
+                        if (presetId!=null && !presetId.isEmpty()) {
+                            for (Preset preset : downloadOptions.getPresets()) {
+                                if (preset.getId().equals(presetId)) {
+                                    List<String> pkgIds = Arrays.asList(preset.getPkgs());
+                                    downloadOptions.select(pkgIds);
+                                    break;
+                                }
+                            }
+                        } else {
+                            String pkgIdsList = defaultSelection.getProperty(PACKAGES_DEFAULT_SELECTION_PACKAGES, null);
+                            if (pkgIdsList!=null && !pkgIdsList.isEmpty()) {
+                                String[] ids = pkgIdsList.split(",");
+                                List<String> pkgIds = Arrays.asList(ids);
+                                downloadOptions.select(pkgIds);
+                            }
+                        }
+                    }
                 } catch (FileNotFoundException e) {
                     log.error("Unable to read packages.xml", e);
                 }
@@ -319,6 +350,38 @@ public class PackageDownloader {
             return null;
         }
         return desc;
+    }
+
+    protected Properties getDefaultPackageSelection() {
+        File desc = new File(getDownloadDirectory(), PACKAGES_DEFAULT_SELECTION);
+        if (desc!=null) {
+            try {
+                Properties props = new Properties();
+                props.load(new FileReader(desc));
+                return props;
+            } catch (IOException e) {
+                log.error("Unable to load presets", e);
+            }
+        }
+        return null;
+    }
+
+    protected void saveSelectedPackages(List<DownloadPackage> pkgs) {
+        File desc = new File(getDownloadDirectory(), PACKAGES_DEFAULT_SELECTION);
+        Properties props = new Properties();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < pkgs.size(); i++) {
+            if (i>0) {
+                sb.append(",");
+            }
+            sb.append(pkgs.get(i).getId());
+        }
+        props.put(PACKAGES_DEFAULT_SELECTION_PACKAGES, sb.toString());
+        try {
+            props.store(new FileWriter(desc), "Saved from Nuxeo SetupWizard");
+        } catch (IOException e) {
+           log.error("Unable to save package selection", e);
+        }
     }
 
     protected File getLocalPackagesDescriptor() {
@@ -373,6 +436,9 @@ public class PackageDownloader {
             installLog.createNewFile();
         }
         FileUtils.writeLines(installLog, fileEntries);
+
+        // Save presets
+        saveSelectedPackages(pkgs);
     }
 
     public List<PendingDownload> getPendingDownloads() {

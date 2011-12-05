@@ -79,11 +79,19 @@ public class DownloadablePackageOptions {
     public List<String> checkSelectionValid(List<String> ids) {
         for (String id : ids) {
             DownloadablePackageOption option = findById(id, pkgOptions);
+            if (option==null) {
+                List<String> newIds = new ArrayList<String>();
+                newIds.addAll(ids);
+                newIds.remove(id);
+                return checkSelectionValid(newIds);
+            }
             // force selection of parents
             if (option.getParent() != null
                     && !ids.contains(option.getParent().getId())) {
-                ids.add(option.getParent().getId());
-                return checkSelectionValid(ids);
+                List<String> newIds = new ArrayList<String>();
+                newIds.addAll(ids);
+                newIds.add(option.getParent().getId());
+                return checkSelectionValid(newIds);
             }
             // check constraints
             if (option.isExclusive()) {
