@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.task.TaskService;
  * Creates a task
  *
  * @author Anahide Tchertchian
+ * @since 5.5
  */
 @Operation(id = CreateTask.ID, category = Constants.CAT_SERVICES, label = "Create task", since = "5.3.2", description = "Enable to create a task bound to the document. "
         + "<p><b>Directive</b>, <b>comment</b> and <b>due date</b> will be displayed in the task list of the user. "

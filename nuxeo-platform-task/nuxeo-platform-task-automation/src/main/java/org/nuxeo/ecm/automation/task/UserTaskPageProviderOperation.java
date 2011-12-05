@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  * Operation to retrieve the tasks waiting for the current user.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.2
+ * @since 5.5
  */
 @Operation(id = UserTaskPageProviderOperation.ID, category = Constants.CAT_SERVICES, label = "UserTaskPageProvider", description = "Returns the tasks waiting for the current user.")
 public class UserTaskPageProviderOperation extends AbstractTaskOperation {

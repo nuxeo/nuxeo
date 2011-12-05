@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: DashBoardItemImpl.java 28478 2008-01-04 12:53:58Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.task.dashboard;
 
 import java.util.Date;
@@ -34,6 +30,7 @@ import org.nuxeo.ecm.platform.task.TaskComment;
  * Dashboard item implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @since 5.5
  */
 public class DashBoardItemImpl extends AbstractDashBoardItemImpl implements DashBoardItem {
 

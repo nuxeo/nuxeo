@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,6 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.task.test;
@@ -22,8 +19,7 @@ package org.nuxeo.ecm.platform.task.test;
 /**
  * Task test configuration constants
  *
- * @author Anahide Tchertchian
- *
+ * @since 5.5
  */
 public class TaskUTConstants {
 

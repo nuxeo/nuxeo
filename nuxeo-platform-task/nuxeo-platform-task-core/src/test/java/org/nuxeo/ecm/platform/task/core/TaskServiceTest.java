@@ -23,12 +23,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -39,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author Anahide Tchertchian
  */
-public class TaskServiceTest extends RepositoryOSGITestCase {
+public class TaskServiceTest extends SQLRepositoryTestCase {
 
     protected TaskService taskService;
 
@@ -87,10 +86,13 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
 
         user4 = userManager.getPrincipal("myuser4");
         assertNotNull(user4);
+
+        openSession();
     }
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
     }
 
@@ -105,14 +107,16 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         actors.add(SecurityConstants.MEMBERS);
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6);
-        calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp truncation issues.
+        calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp
+                                               // truncation issues.
 
         // create one task for all actors
-        taskService.createTask(coreSession, user3, document, "Test Task Name",
+        taskService.createTask(session, user3, document, "Test Task Name",
                 actors, false, "test directive", "test comment",
                 calendar.getTime(), null, null);
 
-        List<Task> tasks = taskService.getTaskInstances(document,(NuxeoPrincipal) null, coreSession);
+        List<Task> tasks = taskService.getTaskInstances(document,
+                (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -148,8 +152,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
                 "true",
                 task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
-        assertEquals(user3.getName(),
-                task.getInitiator());
+        assertEquals(user3.getName(), task.getInitiator());
         // test rights for each user
         // initiator or admin can end a task
         assertTrue(taskService.canEndTask(administrator, task));
@@ -164,7 +167,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         // test ending of the task
 
         try {
-            taskService.acceptTask(coreSession, user4, task, "ok i'm in");
+            taskService.acceptTask(session, user4, task, "ok i'm in");
             fail("Should have raised an exception: user4 cannot end the task");
         } catch (ClientException e) {
             assertEquals("User with id 'myuser4' cannot end this task",
@@ -172,12 +175,13 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         }
 
         // accept task
-        taskService.acceptTask(coreSession, user1, task, "ok i'm in");
+        taskService.acceptTask(session, user1, task, "ok i'm in");
 
         session.save();
 
         // test task again
-        tasks = taskService.getTaskInstances(document,(NuxeoPrincipal) null, coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
         assertNotNull(tasks);
         // ended tasks are filtered
         assertEquals(0, tasks.size());
@@ -210,7 +214,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
                 task.getVariable(TaskService.VariableName.documentRepositoryName.name()));
         assertEquals(document.getId(),
                 task.getVariable(TaskService.VariableName.documentId.name()));
-         assertEquals("test directive",
+        assertEquals("test directive",
                 task.getVariable(TaskService.VariableName.directive.name()));
         assertEquals(
                 "true",
@@ -229,14 +233,16 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         actors.add(SecurityConstants.MEMBERS);
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6);
-        calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp truncation issues.
+        calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp
+                                               // truncation issues.
 
         // create one task per actor
-        taskService.createTask(coreSession, user3, document, "Test Task Name",
+        taskService.createTask(session, user3, document, "Test Task Name",
                 actors, true, "test directive", "test comment",
                 calendar.getTime(), null, null);
 
-        List<Task> tasks = taskService.getTaskInstances(document,(NuxeoPrincipal) null, coreSession);
+        List<Task> tasks = taskService.getTaskInstances(document,
+                (NuxeoPrincipal) null, session);
         Collections.sort(tasks, new Comparator<Task>() {
 
             @Override
@@ -257,8 +263,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
 
         List<String> pooledActorIds = task1.getActors();
         assertEquals(1, pooledActorIds.size());
-        assertEquals(user1.getName(),
-                pooledActorIds.get(0));
+        assertEquals(user1.getName(), pooledActorIds.get(0));
 
         List<TaskComment> comments = task1.getComments();
         assertEquals(1, comments.size());
@@ -277,14 +282,12 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
                 task1.getVariable(TaskService.VariableName.documentRepositoryName.name()));
         assertEquals(document.getId(),
                 task1.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals(
-                "test directive",
+        assertEquals("test directive",
                 task1.getVariable(TaskService.VariableName.directive.name()));
         assertEquals(
                 "true",
                 task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
-        assertEquals(user3.getName(),
-                task1.getInitiator());
+        assertEquals(user3.getName(), task1.getInitiator());
 
         // test rights for each user
         // initiator or admin can end a task
@@ -297,7 +300,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
 
         // test ending of the task
         try {
-            taskService.rejectTask(coreSession, user2, task1, "i don't agree");
+            taskService.rejectTask(session, user2, task1, "i don't agree");
             fail("Should have raised an exception: user2 cannot end the task");
         } catch (ClientException e) {
             assertEquals("User with id 'myuser2' cannot end this task",
@@ -305,10 +308,11 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         }
 
         // reject task as user1
-        taskService.rejectTask(coreSession, user1, task1, "i don't agree");
+        taskService.rejectTask(session, user1, task1, "i don't agree");
         session.save();
         // test task again
-        tasks = taskService.getTaskInstances(document,(NuxeoPrincipal) null, coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
         assertNotNull(tasks);
         // ended tasks are filtered
         assertEquals(1, tasks.size());
@@ -321,8 +325,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
 
         pooledActorIds = task1.getActors();
         assertEquals(1, pooledActorIds.size());
-        assertEquals(user1.getName(),
-                pooledActorIds.get(0));
+        assertEquals(user1.getName(), pooledActorIds.get(0));
 
         comments = task1.getComments();
         assertEquals(2, comments.size());
@@ -341,17 +344,14 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
                 task1.getVariable(TaskService.VariableName.documentRepositoryName.name()));
         assertEquals(document.getId(),
                 task1.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals(
-                "test directive",
+        assertEquals("test directive",
                 task1.getVariable(TaskService.VariableName.directive.name()));
         assertEquals(
                 "true",
                 task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
-        assertEquals(
-                "false",
+        assertEquals("false",
                 task1.getVariable(TaskService.VariableName.validated.name()));
-        assertEquals(user3.getName(),
-                task1.getInitiator());
+        assertEquals(user3.getName(), task1.getInitiator());
 
         // check second task
         Task task2 = tasks.get(0);
@@ -359,8 +359,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
 
         pooledActorIds = task2.getActors();
         assertEquals(1, pooledActorIds.size());
-        assertEquals(SecurityConstants.MEMBERS,
-                pooledActorIds.get(0));
+        assertEquals(SecurityConstants.MEMBERS, pooledActorIds.get(0));
 
         comments = task2.getComments();
         assertEquals(1, comments.size());
@@ -379,14 +378,12 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
                 task2.getVariable(TaskService.VariableName.documentRepositoryName.name()));
         assertEquals(document.getId(),
                 task2.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals(
-                "test directive",
+        assertEquals("test directive",
                 task2.getVariable(TaskService.VariableName.directive.name()));
         assertEquals(
                 "true",
                 task2.getVariable(TaskService.VariableName.createdFromTaskService.name()));
-        assertEquals(user3.getName(),
-                task2.getInitiator());
+        assertEquals(user3.getName(), task2.getInitiator());
 
         // test rights for each user
         // initiator or admin can end a task
@@ -401,7 +398,7 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
 
         // test ending of the task
         try {
-            taskService.acceptTask(coreSession, user4, task2, "i don't agree");
+            taskService.acceptTask(session, user4, task2, "i don't agree");
             fail("Should have raised an exception: user4 cannot end the task");
         } catch (ClientException e) {
             assertEquals("User with id 'myuser4' cannot end this task",
@@ -409,15 +406,16 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
         }
 
         // accept task as user1
-        taskService.acceptTask(coreSession, user1, task2, "i don't agree");
+        taskService.acceptTask(session, user1, task2, "i don't agree");
         session.save();
-        tasks = taskService.getTaskInstances(document,(NuxeoPrincipal) null, coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
     }
 
     protected Task getTask(final String taskId) throws ClientException {
-        DocumentModel taskDoc = coreSession.getDocument(new IdRef(taskId));
+        DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
         if (taskDoc != null) {
             return taskDoc.getAdapter(Task.class);
         }
@@ -425,8 +423,6 @@ public class TaskServiceTest extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel getDocument() throws Exception {
-        openRepository();
-        CoreSession session = getCoreSession();
         DocumentModel model = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);
