@@ -119,28 +119,32 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("default", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
         List<String> flavorNames = service.getFlavorNames(DEFAULT_PAGE_NAME);
         assertNotNull(flavorNames);
-        assertEquals(3, flavorNames.size());
+        assertEquals(4, flavorNames.size());
         assertEquals("default", flavorNames.get(0));
         assertEquals("dark", flavorNames.get(1));
         assertEquals("subDark", flavorNames.get(2));
+        assertEquals("addon_flavor", flavorNames.get(3));
         List<Flavor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
         assertNotNull(flavors);
-        assertEquals(3, flavors.size());
+        assertEquals(4, flavors.size());
         assertEquals("default", flavors.get(0).getName());
         assertEquals("dark", flavors.get(1).getName());
         assertEquals("subDark", flavors.get(2).getName());
+        assertEquals("addon_flavor", flavors.get(3).getName());
 
         assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
         flavorNames = service.getFlavorNames(PRINT_PAGE_NAME);
         assertNotNull(flavorNames);
-        assertEquals(2, flavorNames.size());
+        assertEquals(3, flavorNames.size());
         assertEquals("default", flavorNames.get(0));
         assertEquals("dark", flavorNames.get(1));
+        assertEquals("addon_flavor", flavorNames.get(2));
         flavors = service.getFlavors(PRINT_PAGE_NAME);
         assertNotNull(flavors);
-        assertEquals(2, flavors.size());
+        assertEquals(3, flavors.size());
         assertEquals("default", flavors.get(0).getName());
         assertEquals("dark", flavors.get(1).getName());
+        assertEquals("addon_flavor", flavors.get(2).getName());
 
         String res = getRenderedCssFileContent("*");
         String expected = getTestFileContent("css_no_flavor_rendering.txt");
@@ -203,8 +207,9 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         ResourceManager rm = Manager.getResourceManager();
         List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
         assertNotNull(resources);
-        assertEquals(1, resources.size());
+        assertEquals(2, resources.size());
         assertEquals("jquery.fancybox.js", resources.get(0));
+        assertEquals("jquery.addon.js", resources.get(1));
     }
 
     public void testStylesRegistration() throws Exception {
@@ -237,9 +242,10 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         ResourceManager rm = Manager.getResourceManager();
         List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
         assertNotNull(resources);
-        assertEquals(2, resources.size());
+        assertEquals(3, resources.size());
         assertEquals("jquery.fancybox.js", resources.get(0));
         assertEquals("jquery.fancybox.style.css", resources.get(1));
+        assertEquals("jquery.addon.js", resources.get(2));
 
         // undeploy, check theme styling is back to first definition
         undeployContrib("org.nuxeo.theme.styling.tests",
@@ -258,27 +264,31 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("dark", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
         List<String> flavorNames = service.getFlavorNames(DEFAULT_PAGE_NAME);
         assertNotNull(flavorNames);
-        assertEquals(1, flavorNames.size());
+        assertEquals(2, flavorNames.size());
         assertEquals("dark", flavorNames.get(0));
+        assertEquals("addon_flavor", flavorNames.get(1));
         List<Flavor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
         assertNotNull(flavors);
-        assertEquals(1, flavors.size());
+        assertEquals(2, flavors.size());
         assertEquals("dark", flavors.get(0).getName());
+        assertEquals("addon_flavor", flavors.get(1).getName());
 
         assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
         flavorNames = service.getFlavorNames(PRINT_PAGE_NAME);
         assertNotNull(flavorNames);
-        assertEquals("fl: " + flavorNames, 4, flavorNames.size());
+        assertEquals("fl: " + flavorNames, 5, flavorNames.size());
         assertEquals("default", flavorNames.get(0));
         assertEquals("dark", flavorNames.get(1));
         assertEquals("subDark", flavorNames.get(2));
         assertEquals("nonExistingFlavor", flavorNames.get(3));
+        assertEquals("addon_flavor", flavorNames.get(4));
         flavors = service.getFlavors(PRINT_PAGE_NAME);
         assertNotNull(flavors);
-        assertEquals(3, flavors.size());
+        assertEquals(4, flavors.size());
         assertEquals("default", flavors.get(0).getName());
         assertEquals("dark", flavors.get(1).getName());
         assertEquals("subDark", flavors.get(2).getName());
+        assertEquals("addon_flavor", flavors.get(3).getName());
         // non existing flavors are omitted
 
         String res = getRenderedCssFileContent("*");

@@ -8,11 +8,20 @@
       <styles append="true">
         <style>addon_style</style>
       </styles>
+      <flavors append="true">
+        <flavor>addon_flavor</flavor>
+      </flavors>
       <resources append="true">
         <resource>jquery.addon.js</resource>
       </resources>
     </themePage>
 
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="flavors">
+    <flavor name="addon_flavor">
+      <!-- empty, need to add tests -->
+    </flavor>
   </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="styles">

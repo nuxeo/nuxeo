@@ -673,13 +673,22 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (pageReg != null) {
             ThemePage themePage = pageReg.getThemePage(themePageName);
             if (themePage != null) {
-                List<String> flavors = themePage.getFlavors();
+                List<String> flavors = new ArrayList<String>();
+                List<String> localFlavors = themePage.getFlavors();
+                if (localFlavors != null) {
+                    flavors.addAll(localFlavors);
+                }
+                // add flavors from theme for all pages
+                ThemePage forAllPage = pageReg.getConfigurationApplyingToAllThemes();
+                if (forAllPage != null) {
+                    localFlavors = forAllPage.getFlavors();
+                    if (localFlavors != null) {
+                        flavors.addAll(localFlavors);
+                    }
+                }
                 // add default flavor if it's not listed there
                 String defaultFlavor = themePage.getDefaultFlavor();
                 if (defaultFlavor != null) {
-                    if (flavors == null) {
-                        flavors = new ArrayList<String>();
-                    }
                     if (!flavors.contains(defaultFlavor)) {
                         flavors.add(0, defaultFlavor);
                     }
@@ -733,7 +742,18 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         String themePageName = ThemeManager.getPagePathByUrl(themeUrl);
         ThemePage themePage = pageReg.getThemePage(themePageName);
         if (themePage != null) {
-            List<String> resources = themePage.getResources();
+            List<String> resources = new ArrayList<String>();
+            List<String> localResources = themePage.getResources();
+            if (localResources != null) {
+                resources.addAll(localResources);
+            }
+            ThemePage forAllPage = pageReg.getConfigurationApplyingToAllThemes();
+            if (forAllPage != null) {
+                localResources = forAllPage.getResources();
+                if (localResources != null) {
+                    resources.addAll(localResources);
+                }
+            }
             if (resources != null && !resources.isEmpty()) {
                 ResourceManager resourceManager = Manager.getResourceManager();
                 for (String r : resources) {
