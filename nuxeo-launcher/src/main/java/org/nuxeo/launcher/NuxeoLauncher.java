@@ -485,6 +485,8 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.pkgInstall();
         } else if ("mp-uninstall".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgUninstall();
+        } else if ("mp-remove".equalsIgnoreCase(launcher.command)) {
+            commandSucceeded = launcher.pkgRemove();
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgReset();
         } else {
@@ -746,6 +748,12 @@ public abstract class NuxeoLauncher {
     private boolean pkgUninstall() {
         log.info("Package(s) uninstall in progress...");
         callPackageManager("uninstall", params);
+        return errorValue == 0;
+    }
+
+    private boolean pkgRemove() {
+        log.info("Package(s) removal in progress...");
+        callPackageManager("remove", params);
         return errorValue == 0;
     }
 
@@ -1230,7 +1238,8 @@ public abstract class NuxeoLauncher {
         log.error("\t\t mp-install\t\tRun marketplace package installation. "
                 + "It is automatically called at startup if installAfterRestart.log exists. "
                 + "Else you must provide the package file or ID as parameter.");
-        log.error("\t\t mp-uninstall\t\tUninstall a marketplace package. You must provide the package id as parameter (see \"mp-status\" command).");
+        log.error("\t\t mp-uninstall\t\tUninstall a marketplace package. You must provide the package id as parameter (see \"mp-list\" command).");
+        log.error("\t\t mp-remove\t\tRemoves a marketplace package. You must provide the package id as parameter (see \"mp-list\" command).");
         log.error("\t\t mp-reset\t\tReset all packages to DOWNLOADED state. May be usefull after a manual server upgrade.");
         log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
     }
