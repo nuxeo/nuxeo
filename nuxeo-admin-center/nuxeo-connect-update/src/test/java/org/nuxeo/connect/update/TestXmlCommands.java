@@ -53,7 +53,7 @@ public class TestXmlCommands extends PackageTestCase {
                 + file.getAbsolutePath() + "\" tofile=\""
                 + tofile.getAbsolutePath()
                 + "\" overwrite=\"true\"/>\n</install>\n");
-        System.out.println(builder.buildManifest());
+        // System.out.println(builder.buildManifest());
         return builder.build();
     }
 

@@ -74,8 +74,8 @@ public class PictureCreatorTest {
         fakeJSON.append(", \"upload-fileId\" : \"1\" ");
         fakeJSON.append("}");
 
-        System.out.println("***************************************");
-        System.out.println(fakeJSON.toString());
+        // System.out.println("***************************************");
+        // System.out.println(fakeJSON.toString());
 
         DocumentModel root = session.getRootDocument();
 

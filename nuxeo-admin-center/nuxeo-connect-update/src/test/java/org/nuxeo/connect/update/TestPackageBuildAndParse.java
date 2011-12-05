@@ -56,7 +56,7 @@ public class TestPackageBuildAndParse {
 
         // test on package def
         String manifest = builder.buildManifest();
-        System.out.println(manifest);
+        // System.out.println(manifest);
         XMap xmap = UpdateServiceImpl.createXmap();
         InputStream xmlIn = new ByteArrayInputStream(manifest.getBytes());
         PackageDefinitionImpl packageDef = (PackageDefinitionImpl) xmap.load(xmlIn);
