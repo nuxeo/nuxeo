@@ -211,7 +211,7 @@
       <translated>true</translated>
       <properties widgetMode="any">
         <property name="value">
-          #{messages[layoutValue.data.directive]}
+          #{layoutValue.data.i18nDirective}
         </property>
       </properties>
     </widget>

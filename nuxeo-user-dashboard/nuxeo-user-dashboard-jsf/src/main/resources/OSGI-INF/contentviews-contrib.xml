@@ -13,6 +13,7 @@
       <pageProvider name="user_tasks">
         <property name="coreSession">#{documentManager}</property>
         <property name="filterDocumentsFromTrash">true</property>
+        <property name="locale">#{localeSelector.localeString}</property>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
       <showRefreshCommand>true</showRefreshCommand>

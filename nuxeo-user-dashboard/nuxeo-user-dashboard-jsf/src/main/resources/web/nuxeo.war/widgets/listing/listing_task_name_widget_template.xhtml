@@ -9,13 +9,7 @@
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
-  <c:set var="createdFromCreateTaskOperation"
-    value="#{field.task.getVariable('createdFromCreateTaskOperation') == 'true'}" />
-  <c:set var="taskNameLabel" value="label.workflow.task.#{field.name}" />
-  <h:outputText rendered="#{createdFromCreateTaskOperation}"
-    value="#{field.name}" />
-  <h:outputText rendered="#{!createdFromCreateTaskOperation}"
-    value="#{messages[taskNameLabel]}" />
+  <h:outputText  value="#{field.getI18nTaskName()}" />
 
 </c:if>
 </f:subview>
