@@ -182,9 +182,14 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         ThemePage existingPage = pageReg.getThemePage(themePageName);
         pageReg.addContribution(themePage);
         if (existingPage != null && existingPage.isLoaded()) {
-            // reload
-            ThemePage newPage = pageReg.getThemePage(themePageName);
-            postRegisterThemePageResources(newPage);
+            if ("*".equals(themePageName)) {
+                // reload all
+                postRegisterAllThemePageResources();
+            } else {
+                // reload this page
+                ThemePage newPage = pageReg.getThemePage(themePageName);
+                postRegisterThemePageResources(newPage);
+            }
         }
     }
 
@@ -501,8 +506,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                         themePageName + PAGE_STYLE_NAME_SUFFIX);
             }
 
-            // mark page as loaded
+            // mark page(s) as loaded
             page.setLoaded(true);
+            if (pageApplyingToAll != null) {
+                pageApplyingToAll.setLoaded(true);
+            }
             // reset cache
             themeManager.stylesModified(themeName);
             themeManager.themeModified(themeName);
@@ -723,7 +731,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (pageReg != null) {
             for (ThemePage res : pageReg.getThemePages()) {
                 String name = ThemePage.getThemeName(res.getName());
-                if ("*".equals(name) || themeName.equals(name)) {
+                if (themeName.equals(name)) {
                     try {
                         postRegisterThemePageResources(res);
                     } catch (ThemeException e) {
