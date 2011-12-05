@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,6 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.platform.task.core.service;
 
@@ -30,6 +29,7 @@ import org.nuxeo.ecm.platform.task.TaskQueryConstant;
 
 /**
  * @author Laurent Doguin
+ * @since 5.5
  */
 public class DocumentTaskProvider implements TaskProvider {
 
@@ -101,6 +101,5 @@ public class DocumentTaskProvider implements TaskProvider {
         }
         return tasks;
     }
-
 
 }

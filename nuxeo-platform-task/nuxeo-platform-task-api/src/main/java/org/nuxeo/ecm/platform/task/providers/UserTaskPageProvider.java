@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  * be filled with a core session. It also accepts an optional property
  * {@link #FILTER_DOCS_FROM_TRASH}, defaulting to true.
  *
- * @since 5.4.2
+ * @since 5.5
  */
 public class UserTaskPageProvider extends
         AbstractPageProvider<DashBoardItem> implements

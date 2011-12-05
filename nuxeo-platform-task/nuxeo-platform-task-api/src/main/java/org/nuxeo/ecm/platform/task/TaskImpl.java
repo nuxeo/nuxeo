@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,9 +13,7 @@
  *
  * Contributors:
  *     Nicolas Ulrich
- *
  */
-
 package org.nuxeo.ecm.platform.task;
 
 import java.io.Serializable;
@@ -32,6 +30,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
+/**
+ * @since 5.5
+ */
 public class TaskImpl implements Task {
 
     private static final long serialVersionUID = 1L;
@@ -81,7 +82,8 @@ public class TaskImpl implements Task {
     @Override
     public List<TaskComment> getComments() throws ClientException {
         List<Map<String, Serializable>> taskCommentsProperty = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
-        List<TaskComment> taskComments = new ArrayList<TaskComment>(taskCommentsProperty.size());
+        List<TaskComment> taskComments = new ArrayList<TaskComment>(
+                taskCommentsProperty.size());
         for (Map<String, Serializable> taskCommentMap : taskCommentsProperty) {
             taskComments.add(new TaskComment(taskCommentMap));
         }
@@ -149,12 +151,14 @@ public class TaskImpl implements Task {
 
     @Override
     public void setTargetDocumentId(String targetDocId) throws ClientException {
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, targetDocId);
+        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME,
+                targetDocId);
     }
 
     @Override
     public void setDescription(String description) throws ClientException {
-        setPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME, description);
+        setPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME,
+                description);
     }
 
     @Override
@@ -216,7 +220,7 @@ public class TaskImpl implements Task {
             throws ClientException {
         List<Map<String, Serializable>> variablesProperty = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         if (variablesProperty == null) {
-            variablesProperty = new ArrayList<Map<String,Serializable>>();
+            variablesProperty = new ArrayList<Map<String, Serializable>>();
         }
         Map<String, Serializable> variable;
         for (String key : variables.keySet()) {
@@ -228,16 +232,18 @@ public class TaskImpl implements Task {
                 variablesProperty.add(variable);
             }
         }
-        setPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME, variablesProperty);
+        setPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME,
+                variablesProperty);
     }
 
     @Override
     public void setVariable(String key, String value) throws ClientException {
         List<Map<String, Serializable>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         if (variables == null) {
-            variables = new ArrayList<Map<String,Serializable>>();
+            variables = new ArrayList<Map<String, Serializable>>();
         }
-        Map<String, Serializable> variableMap = new HashMap<String, Serializable>(2);
+        Map<String, Serializable> variableMap = new HashMap<String, Serializable>(
+                2);
         variableMap.put("key", key);
         variableMap.put("value", value);
         variables.add(variableMap);
@@ -248,10 +254,11 @@ public class TaskImpl implements Task {
     public void addComment(String author, String text) throws ClientException {
         List<Map<String, Serializable>> existingTasks = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
         if (existingTasks == null) {
-            existingTasks = new ArrayList<Map<String,Serializable>>();
+            existingTasks = new ArrayList<Map<String, Serializable>>();
         }
         existingTasks.add(new TaskComment(author, text));
-        setPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME, existingTasks);
+        setPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME,
+                existingTasks);
     }
 
     @SuppressWarnings("unchecked")
@@ -285,7 +292,7 @@ public class TaskImpl implements Task {
             if (value != null) {
                 if (value instanceof Date) {
                     Calendar cal = Calendar.getInstance();
-                    cal.setTime((Date)value);
+                    cal.setTime((Date) value);
                     doc.setPropertyValue(propertyName, cal);
                 } else {
                     doc.setPropertyValue(propertyName, (Serializable) value);

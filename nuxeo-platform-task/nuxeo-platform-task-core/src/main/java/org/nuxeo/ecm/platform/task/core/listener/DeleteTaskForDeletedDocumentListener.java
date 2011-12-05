@@ -32,10 +32,10 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener that deletes deletes related tasks
- * of the document.
+ * Listener that deletes deletes related tasks of the document.
  *
  * @author arussel
+ * @since 5.5
  */
 public class DeleteTaskForDeletedDocumentListener implements EventListener {
 
@@ -60,7 +60,8 @@ public class DeleteTaskForDeletedDocumentListener implements EventListener {
             DocumentModel dm = context.getSourceDocument();
             CoreSession coreSession = context.getCoreSession();
             NuxeoPrincipal principal = (NuxeoPrincipal) context.getPrincipal();
-            List<Task> tasks = getTaskService().getTaskInstances(dm, (NuxeoPrincipal) null, coreSession);
+            List<Task> tasks = getTaskService().getTaskInstances(dm,
+                    (NuxeoPrincipal) null, coreSession);
             if (!tasks.isEmpty()) {
                 for (Task task : tasks) {
                     getTaskService().deleteTaskInstance(coreSession,
