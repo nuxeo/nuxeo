@@ -41,6 +41,8 @@ public class TestCopyDir extends AbstractCommandTest {
 
     private final static String notToDeployFilename = "nuxeo-newfeature-5.5.jar";
 
+    private final static String testConfigFilename = "test-config.xml";
+
     private File deprecatedFile;
 
     private File snapshotFile;
@@ -72,6 +74,11 @@ public class TestCopyDir extends AbstractCommandTest {
                 jarFile));
         builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(
                 jarFile));
+        File xmlFile = File.createTempFile("test-config", ".xml");
+        xmlFile.deleteOnExit();
+        FileUtils.writeFile(xmlFile, "anything");
+        builder.addEntry("templates/collaboration/config/" + testConfigFilename, new FileInputStream(
+                xmlFile));
     }
 
     @Override
@@ -81,6 +88,12 @@ public class TestCopyDir extends AbstractCommandTest {
         writer.attr("todir", "${env.bundles}");
         writer.attr("overwriteIfNewerVersion", "true");
         writer.attr("upgradeOnly", "true");
+        writer.end();
+
+        writer.start("copy");
+        writer.attr("dir", "${package.root}/templates");
+        writer.attr("todir", "${env.templates}");
+        writer.attr("overwrite", "true");
         writer.end();
     }
 
@@ -98,6 +111,10 @@ public class TestCopyDir extends AbstractCommandTest {
         assertEquals("new SNAPSHOT content", line);
         assertFalse("New feature was copied whereas 'upgradeOnly=true'",
                 new File(bundles, notToDeployFilename).exists());
+
+        File templates = new File(Environment.getDefault().getHome(), "templates");
+        File configFile = new File(templates, "collaboration/config/" + testConfigFilename);
+        assertTrue(configFile.exists());
     }
 
     @Override
@@ -109,6 +126,10 @@ public class TestCopyDir extends AbstractCommandTest {
         BufferedReader reader = new BufferedReader(new FileReader(snapshotFile));
         String line = reader.readLine();
         assertEquals("old SNAPSHOT content", line);
+
+        File templates = new File(Environment.getDefault().getHome(), "templates");
+        File configFile = new File(templates, "collaboration/config/" + testConfigFilename);
+        assertFalse(configFile.exists());
     }
 
 }

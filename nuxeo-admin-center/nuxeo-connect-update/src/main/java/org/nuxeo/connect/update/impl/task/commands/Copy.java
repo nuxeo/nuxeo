@@ -52,7 +52,7 @@ import org.w3c.dom.Element;
  * inverse of Copy command is another copy command with the md5 to the one of
  * the copied file and the overwrite flag to true. The file to copy will be the
  * backup of the overwritten file.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Copy extends AbstractCommand {
@@ -143,6 +143,7 @@ public class Copy extends AbstractCommand {
             if (fileToCopy != file) {
                 dst = new File(dst, fileToCopy.getName());
             }
+            dst.mkdirs();
             for (File childFile : fileToCopy.listFiles()) {
                 rollbackCommand.addCommand(doCopy(task, prefs, childFile, dst,
                         doOverwrite));
@@ -269,7 +270,7 @@ public class Copy extends AbstractCommand {
 
     /**
      * Override in subclass to parameterize content.
-     * 
+     *
      * @since 5.5
      * @param prefs
      * @return Content to put in destination file. See {@link #append} parameter
