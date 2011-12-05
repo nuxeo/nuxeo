@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
@@ -333,7 +334,12 @@ public class PostActionBean implements PostAction {
         vars.put(ForumConstants.COMMENT_ID, post.getId());
         vars.put(
                 CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
-                "true");
+                "false");
+        vars.put(
+                Task.TaskVariableName.needi18n.name(), "true");
+        vars.put(
+                Task.TaskVariableName.taskType.name(), ForumConstants.FORUM_TASK_TYPE);
+
         vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
                 CommentsConstants.ACCEPT_CHAIN_NAME);
         vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(),

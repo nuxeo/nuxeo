@@ -35,6 +35,8 @@ public final class CommentConstants {
 
     public static final String COMMENT_TEXT = "comment_text";
 
+    public static final String COMMENT_TASK_TYPE = "comment_moderation";
+
     private CommentConstants() {
     }
 

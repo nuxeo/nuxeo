@@ -33,6 +33,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,6 +63,9 @@ public class TaskDashBoardActions {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
+
     private static final Log log = LogFactory.getLog(TaskDashBoardActions.class);
 
     public Collection<DashBoardItem> computeDashboardItems()
@@ -80,7 +84,7 @@ public class TaskDashBoardActions {
                         if (doc != null
                                 && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                             currentUserTasks.add(new DashBoardItemImpl(task,
-                                    doc));
+                                    doc, localeSelector.getLocale()));
                         } else {
                             log.warn(String.format(
                                     "User '%s' has a task of type '%s' on a "

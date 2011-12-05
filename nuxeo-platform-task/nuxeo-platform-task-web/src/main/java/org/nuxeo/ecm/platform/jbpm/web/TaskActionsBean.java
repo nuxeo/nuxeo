@@ -28,6 +28,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,6 +37,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
+import org.nuxeo.ecm.platform.task.dashboard.DashBoardItemImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
@@ -70,7 +73,12 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
+
     protected List<Task> tasks;
+
+    protected List<DashBoardItem> items;
 
     protected String comment;
 
@@ -86,6 +94,36 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
         }
         return tasks;
     }
+
+    @Factory(value = "currentDashBoardItems", scope = ScopeType.EVENT)
+    public List<DashBoardItem> getCurrentDashBoardItems()
+            throws ClientException {
+        if (items==null) {
+            items = new ArrayList<DashBoardItem>();
+            for (Task task : getCurrentDocumentTasks()) {
+                DashBoardItem item = new DashBoardItemImpl(task, localeSelector.getLocale());
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
+    @Factory(value = "currentDashBoardItemsExceptPublishingTasks", scope = ScopeType.EVENT)
+    public List<DashBoardItem> getCurrentDashBoardItemsExceptPublishingTasks()
+            throws ClientException {
+        if (items==null) {
+            items = new ArrayList<DashBoardItem>();
+            for (Task task : getCurrentDocumentTasks()) {
+                String taskType = task.getVariable(Task.TaskVariableName.taskType.name());
+                if (!"publish_moderate".equals(taskType)) {
+                    DashBoardItem item = new DashBoardItemImpl(task, localeSelector.getLocale());
+                    items.add(item);
+                }
+            }
+        }
+        return items;
+    }
+
 
     public String getComment() {
         return comment;
@@ -149,6 +187,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     @BypassInterceptors
     public void resetCache() {
         tasks = null;
+        items = null;
     }
 
 }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.task.dashboard;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.platform.task.TaskComment;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class DashBoardItemImpl implements DashBoardItem {
+public class DashBoardItemImpl extends AbstractDashBoardItemImpl implements DashBoardItem {
 
     private static final long serialVersionUID = 919752175741886376L;
 
@@ -58,11 +59,15 @@ public class DashBoardItemImpl implements DashBoardItem {
 
     protected String comment;
 
-    @SuppressWarnings("unchecked")
-    public DashBoardItemImpl(Task task, DocumentModel document) {
+    public DashBoardItemImpl(Task task, Locale locale) {
+        this(task, task.getDocument(), locale);
+    }
+
+    public DashBoardItemImpl(Task task, DocumentModel document, Locale locale) {
         try{
         this.task = task;
         this.document = document;
+        this.locale = locale;
         id = task.getId();
         name = task.getName();
         description = task.getDescription();

@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.task.providers;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -95,6 +96,14 @@ public class UserTaskPageProvider extends
         return pageTasks;
     }
 
+    protected Locale getLocale() {
+        String locale = (String) getProperties().get("locale");
+        if (locale!=null) {
+            return new Locale(locale);
+        }
+        return null;
+    }
+
     protected void getAllTasks() {
         error = null;
         errorMessage = null;
@@ -119,7 +128,7 @@ public class UserTaskPageProvider extends
                                     && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                                 continue;
                             } else {
-                                userTasks.add(new DashBoardItemImpl(task, doc));
+                                userTasks.add(new DashBoardItemImpl(task, doc, getLocale()));
                             }
                         } else {
                             log.warn(String.format(

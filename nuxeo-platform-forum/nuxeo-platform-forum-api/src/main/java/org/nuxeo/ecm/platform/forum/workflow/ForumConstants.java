@@ -44,6 +44,8 @@ public final class ForumConstants {
 
     public static final String MODERATION_TASK_NAME = "moderate";
 
+    public static final String FORUM_TASK_TYPE = "forum_moderate";
+
     // Constant utility class.
     private ForumConstants() {
     }

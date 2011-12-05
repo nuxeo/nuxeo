@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.automation.task;
 
-import java.util.Date;
 import java.util.List;
 
 import net.sf.json.JSONArray;
@@ -35,8 +34,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.task.Task;
-import org.nuxeo.ecm.platform.task.TaskComment;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
+import org.nuxeo.ecm.platform.task.dashboard.DashBoardItemImpl;
 
 /**
  * Returns tasks assigned to current user or one of its groups.
@@ -79,28 +79,9 @@ public class GetUserTasks {
                         principal().getName(), task.getName()));
                 continue;
             }
-            JSONObject obj = new JSONObject();
-            obj.element("id", task.getId()); // can be one or two (test or
-            // suite)
-            obj.element("docref", doc.getRef().toString());
-            obj.element("name", task.getName());
-            obj.element("description", task.getDescription());
-            obj.element("startDate", task.getCreated());
-            boolean expired = false;
-            Date dueDate = task.getDueDate();
-            obj.element("dueDate", task.getDueDate());
-            if (dueDate != null) {
-                expired = dueDate.before(new Date());
-            }
-            obj.element("expired", expired);
-            obj.element("directive",
-                    task.getDirective());
-            List<TaskComment> comments = task.getComments();
-            String comment = "";
-            if (comments != null && !comments.isEmpty()) {
-                comment = comments.get(comments.size() - 1).getText();
-            }
-            obj.element("comment", comment);
+
+            DashBoardItem item = new DashBoardItemImpl(task, doc, null);
+            JSONObject obj = item.asJSON();
             rows.add(obj);
         }
         return new StringBlob(rows.toString(), "application/json");

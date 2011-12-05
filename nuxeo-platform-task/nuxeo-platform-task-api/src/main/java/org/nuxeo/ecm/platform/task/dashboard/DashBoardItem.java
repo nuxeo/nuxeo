@@ -21,7 +21,11 @@ package org.nuxeo.ecm.platform.task.dashboard;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Locale;
 
+import net.sf.json.JSONObject;
+
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.task.Task;
@@ -38,7 +42,6 @@ public interface DashBoardItem extends Serializable {
     /**
      * Returns the identifier of the workflow task instance.
      *
-     * @since 5.2.M4 uses the long identifier instead of String equivalent
      * @return the identifier of the dash board item.
      */
     String getId();
@@ -110,4 +113,45 @@ public interface DashBoardItem extends Serializable {
      * Returns the underneath task instance
      */
     Task getTask();
+
+
+    /**
+     * Defines the {@link Locale} that will be used to generate translations
+     *
+     * @param locale
+     */
+    void setLocale(Locale locale);
+
+    /**
+     * Get the Translated TaskName
+     * (Locale must be set)
+     *
+     * @return
+     */
+    String getI18nTaskName();
+
+    /**
+     * Get the Translated Task Directive
+     * (Locale must be set)
+     * @return
+     */
+    String getI18nDirective();
+
+    /**
+     * Returns JSON representation of the item
+     *
+     * @return
+     * @throws ClientException
+     */
+    JSONObject asJSON() throws ClientException;
+
+    /**
+     * Return the link url to the target Document
+     *
+     * @param includeWorkflowTab
+     * @return
+     * @throws ClientException
+     */
+    String getDocumentLink(boolean includeWorkflowTab) throws ClientException;
+
 }

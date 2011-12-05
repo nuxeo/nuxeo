@@ -5,7 +5,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <c:if test="#{!empty currentSingleTasks}">
+  <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.associatedTasks']}" />
     </h3>
@@ -30,38 +30,22 @@
         </tr>
       </thead>
       <tbody>
-        <nxu:repeat var="task" value="#{currentSingleTasks}">
+        <nxu:repeat var="dashboardItem" value="#{currentDashBoardItemsExceptPublishingTasks}">
           <tr>
             <td>
-              <c:set var="createdFromCreateTaskOperation"
-                value="#{task.getVariable('createdFromCreateTaskOperation') == 'true'}" />
-              <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />
-              <c:set var="taskDirectiveLabel" value="label.workflow.task.#{task.directive}" />
-              <c:if test="#{createdFromCreateTaskOperation}">
-                #{task.name}
-              </c:if>
-              <c:if test="#{!createdFromCreateTaskOperation}">
-                #{messages[taskNameLabel]}
-              </c:if>
+                #{dashboardItem.i18nTaskName}
             </td>
             <td>
               <nxl:layout name="user_group_prefixed_suggestion"
-                mode="view" value="#{task.actors}" />
+                mode="view" value="#{dashboardItem.task.actors}" />
             </td>
             <td>
-              <c:if test="#{createdFromCreateTaskOperation}">
-                <h:outputText
-                  value="#{messages[task.directive]}" />
-              </c:if>
-              <c:if test="#{!createdFromCreateTaskOperation}">
-                <h:outputText
-                  value="#{messages[taskDirectiveLabel]}" />
-              </c:if>
-
+              <h:outputText
+                  value="#{dashboardItem.i18nDirective}" />
             </td>
             <td>
               <table>
-                <c:forEach var="comment" items="${task.comments}">
+                <c:forEach var="comment" items="${dashboardItem.task.comments}">
                   <f:subview rendered="#{!empty comment}">
                     <nxu:methodResult name="userInfo"
                       value="#{userSuggestionActions.getPrefixedUserInfo(comment.author)}">
@@ -85,14 +69,14 @@
               </table>
             </td>
             <td>
-              <h:outputText value="#{task.created}">
+              <h:outputText value="#{dashboardItem.task.created}">
                 <f:convertDateTime
                   pattern="#{nxu:dateAndTimeFormater('medium')}"
                   timeZone="#{timeZone}" />
               </h:outputText>
             </td>
             <td>
-              <h:outputText value="#{task.dueDate}">
+              <h:outputText value="#{dashboardItem.task.dueDate}">
                 <f:convertDateTime
                   pattern="#{nxu:dateAndTimeFormater('medium')}"
                   timeZone="#{timeZone}" />
@@ -101,14 +85,14 @@
             <td>
               <h:commandLink
                 value="#{messages['label.review.end.task']}"
-                action="#{taskActions.acceptTask(task)}"
-                rendered="#{taskService.canEndTask(currentUser, task)}" />
+                action="#{taskActions.acceptTask(dashboardItem.task)}"
+                rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}" />
             </td>
             <td>
               <h:commandLink
                 value="#{messages['label.review.reject.task']}"
-                action="#{taskActions.rejectTask(task)}"
-                rendered="#{taskService.canEndTask(currentUser, task)}" />
+                action="#{taskActions.rejectTask(dashboardItem.task)}"
+                rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}" />
             </td>
           </tr>
         </nxu:repeat>

@@ -93,4 +93,6 @@ public interface Task extends Serializable {
 
     void end(CoreSession coreSession) throws ClientException;
 
+    enum TaskVariableName { needi18n, taskType };
+
 }

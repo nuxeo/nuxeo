@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.task;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -34,7 +33,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
-import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
@@ -95,39 +93,8 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
 
         JSONArray processes = new JSONArray();
         for (DashBoardItem dashBoardItem : pageProvider.getCurrentPage()) {
-            boolean createdFromCreateTaskOperation = Boolean.parseBoolean((String) dashBoardItem.getTask().getVariable(
-                    "createdFromCreateTaskOperation"));
-
-            JSONObject obj = new JSONObject();
-            obj.put("taskName",
-                    createdFromCreateTaskOperation ? dashBoardItem.getName()
-                            : getI18nTaskName(dashBoardItem.getName(), locale));
-
-            String directiveKey = dashBoardItem.getDirective();
-            String directiveLabel = getI18nLabel(directiveKey,locale);
-            if (directiveKey != null && directiveKey.equals(directiveLabel)) {
-                directiveKey = "label.workflow.task." + directiveKey;
-                String newdirectiveLabel = getI18nLabel(directiveKey,locale);
-                if (!directiveKey.equals(newdirectiveLabel)) {
-                    directiveLabel = newdirectiveLabel;
-                }
-            }
-            obj.put("directive",directiveLabel);
-            String comment = dashBoardItem.getComment();
-            obj.put("comment", comment !=null ? comment : "");
-            Date dueDate = dashBoardItem.getDueDate();
-            obj.put("dueDate",
-                    dueDate != null ? DateParser.formatW3CDateTime(dueDate)
-                            : "");
-            obj.put("documentTitle", dashBoardItem.getDocument().getTitle());
-            obj.put("documentLink",
-                    getDocumentLink(documentViewCodecManager,
-                            dashBoardItem.getDocument(),
-                            !createdFromCreateTaskOperation));
-            Date startDate = dashBoardItem.getStartDate();
-            obj.put("startDate",
-                    startDate != null ? DateParser.formatW3CDateTime(startDate)
-                            : "");
+            dashBoardItem.setLocale(locale);
+            JSONObject obj = dashBoardItem.asJSON();
             processes.add(obj);
         }
 
@@ -143,9 +110,5 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
                 json.toString().getBytes("UTF-8")), "application/json");
     }
 
-    protected String getI18nTaskName(String taskName, Locale locale) {
-        String labelKey = "label.workflow.task." + taskName;
-        return getI18nLabel(labelKey, locale);
-    }
 
 }

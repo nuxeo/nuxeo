@@ -68,6 +68,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
 
+    public static final String PUBLISH_TASK_TYPE = "publish_moderate";
+
     protected TaskService taskService;
 
     protected UserManager userManager;
@@ -130,6 +132,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             ClientException, PublishingException {
         String[] actorIds = getValidatorsFor(document);
         Map<String, String> variables = new HashMap<String, String>();
+        variables.put(Task.TaskVariableName.needi18n.name(),"true");
+        variables.put(Task.TaskVariableName.taskType.name(),PUBLISH_TASK_TYPE);
         variables.put(TaskService.VariableName.documentId.name(),
                 document.getId());
         variables.put(TaskService.VariableName.documentRepositoryName.name(),

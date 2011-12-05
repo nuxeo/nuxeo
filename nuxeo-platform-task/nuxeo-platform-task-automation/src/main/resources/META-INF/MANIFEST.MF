@@ -4,7 +4,7 @@ Bundle-Name: Nuxeo ECM task Automation
 Bundle-SymbolicName: org.nuxeo.ecm.platform.task.automation;singleton:=true
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/operations-contrib.xml,
-  OSGI-INF/pageproviders-contrib.xml
+ OSGI-INF/pageproviders-contrib.xml
 Require-Bundle: org.nuxeo.ecm.core.api,
   org.nuxeo.ecm.platform.task.api,
   org.nuxeo.ecm.automation.core

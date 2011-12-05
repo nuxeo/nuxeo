@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskQueryConstant;
@@ -56,8 +57,12 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(CommentsConstants.COMMENT_ID, commentID);
         vars.put(
-                CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
-                "true");
+                Task.TaskVariableName.needi18n.name(), "true");
+        vars.put(
+                Task.TaskVariableName.taskType.name(), CommentConstants.COMMENT_TASK_TYPE);
+
+        vars.put(CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
+                "false");
         vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
                 CommentsConstants.ACCEPT_CHAIN_NAME);
         vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
