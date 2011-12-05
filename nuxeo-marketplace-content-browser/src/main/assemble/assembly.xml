@@ -26,7 +26,7 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip" />
 
-    <copy todir="${maven.project.build.directory}/marketplace">
+    <copy todir="${maven.project.build.directory}/marketplace" overwrite="true">
       <fileset dir="src/main/resources" />
       <filterset>
         <filter token="NAME" value="nuxeo-content-browser-cmf" />

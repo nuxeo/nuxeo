@@ -10,7 +10,9 @@
   <copy dir="${package.root}/install/templates-tomcat" todir="${env.templates}"
     ignore="!Platform.isTomcat()" overwrite="true" />
   <append file="${package.root}/install/distribution.properties" todir="${env.templates}/common/config" />
-  <append file="${package.root}/install/nuxeo.defaults" todir="${env.templates}" />
-  <copy file="${package.root}/install/artifacts-dm.properties" todir="${env.server.home}/sdk" />
-  <copy file="${package.root}/install/test-artifacts-dm.properties" todir="${env.server.home}/sdk" />
+  <config set="org.nuxeo.ecm.product.name=Nuxeo DM" />
+  <copy file="${package.root}/install/artifacts-dm.properties" todir="${env.server.home}/sdk"
+    overwrite="true" />
+  <copy file="${package.root}/install/test-artifacts-dm.properties" todir="${env.server.home}/sdk"
+    overwrite="true" />
 </install>

@@ -705,7 +705,8 @@ public abstract class NuxeoLauncher {
                 System.setProperty(
                         ConfigurationGenerator.PARAM_WIZARD_DONE,
                         configurationGenerator.getUserConfig().getProperty(
-                                ConfigurationGenerator.PARAM_WIZARD_DONE, "true"));
+                                ConfigurationGenerator.PARAM_WIZARD_DONE,
+                                "true"));
                 return doStart(logProcessOutput);
             }
 
@@ -843,7 +844,8 @@ public abstract class NuxeoLauncher {
         String[] filenames = new String[] { "nuxeo-runtime-osgi",
                 "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
                 "nuxeo-connect-client", "nuxeo-connect-offline-update",
-                "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload" };
+                "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload",
+                "nuxeo-launcher-commons" };
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
         baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
         filenames = new String[] { "commons-io", "commons-jexl", "groovy-all",

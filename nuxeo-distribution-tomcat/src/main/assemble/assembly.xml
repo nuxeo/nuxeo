@@ -260,9 +260,13 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
 file:setupWizardDownloads/${DMMPMD5}
 </echo>
 
-    <!-- TODO: unzip sdk properties from ${tomcat}/setupWizardDownloads/${DMMPMD5}
-         see copy-sdk-resources
-    -->
+    <unzip dest="${distribution.dir}/sdk"
+           src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
+      <patternset>
+        <include name="install/*artifacts*.properties" />
+      </patternset>
+      <mapper type="flatten" />
+    </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />
@@ -292,9 +296,20 @@ file:setupWizardDownloads/${DMMPMD5}
 file:setupWizardDownloads/${DAMMPMD5}
 </echo>
 
-    <!-- TODO: unzip sdk properties from ${tomcat}/setupWizardDownloads/${DAMMPMD5}
-         see copy-sdk-resources
-    -->
+    <unzip dest="${distribution.dir}/sdk"
+           src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
+      <patternset>
+        <include name="install/*artifacts*.properties" />
+      </patternset>
+      <mapper type="flatten" />
+    </unzip>
+    <unzip dest="${distribution.dir}/sdk"
+           src="${distribution.dir}/setupWizardDownloads/${DAMMPMD5}">
+      <patternset>
+        <include name="install/*artifacts*.properties" />
+      </patternset>
+      <mapper type="flatten" />
+    </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />
@@ -323,9 +338,13 @@ file:setupWizardDownloads/${DAMMPMD5}
 file:setupWizardDownloads/${CMFMPMD5}
 </echo>
 
-    <!-- TODO: unzip sdk properties from ${tomcat}/setupWizardDownloads/${CMFMPMD5}
-         see copy-sdk-resources
-    -->
+    <unzip dest="${distribution.dir}/sdk"
+           src="${distribution.dir}/setupWizardDownloads/${CMFMPMD5}">
+      <patternset>
+        <include name="install/*artifacts*.properties" />
+      </patternset>
+      <mapper type="flatten" />
+    </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />

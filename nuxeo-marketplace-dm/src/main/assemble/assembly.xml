@@ -59,9 +59,8 @@
 org.nuxeo.distribution.name=dm
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
-org.nuxeo.distribution.package=mp</echo>
-    <echo file="${maven.project.build.directory}/marketplace/install/nuxeo.defaults">## nuxeo-marketplace-dm
-org.nuxeo.ecm.product.name=Nuxeo DM</echo>
+org.nuxeo.distribution.package=mp
+</echo>
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${maven.project.build.directory}/marketplace" />
