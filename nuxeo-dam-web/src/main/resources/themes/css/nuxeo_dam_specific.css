@@ -167,9 +167,9 @@ legend { color: #333; font-weight: bold; padding: 0 .4em }
 .column .selected { background-color: "color.major.strong (__FLAVOR__ background)" }
 
 .waiterBlock { text-align: center }
-.importsetCreationWaiter { display: none; height: 65%; left: 10%; position: absolute; text-align: center; top: 10%; white-space: nowrap; width: 80%; z-index: 1000 }
+.importsetCreationWaiter { display: none; height: 65%; left: 10%; position: absolute; text-align: center; top: 10%; white-space: nowrap; width: 80%; z-index: 15000 }
 .waiter { background-color: white; border: 1px solid #9f9f9f; display: inline-block; height: 170px; text-align: center; vertical-align: middle; width: 170px; z-index: 1001 }
-.waiterParagraph { padding-top: 3em }
+.waiterParagraph { padding: 1.5em 0 }
 .IEhack { display: inline-block; height: 100%; overflow: hidden; padding: 0; vertical-align: middle; width: 0 }
 
 /* =FancyBox styles */
