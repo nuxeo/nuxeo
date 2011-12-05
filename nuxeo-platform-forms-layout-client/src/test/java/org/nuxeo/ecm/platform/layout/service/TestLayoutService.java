@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -269,6 +270,39 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals(2, rows.length);
         assertEquals("selection", rows[0].getName());
         assertEquals("title_link", rows[1].getName());
+    }
+
+    public void testWidgetModeProperties() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+
+        Layout editLayout = service.getLayout(null, "testWidgetModeProperties",
+                BuiltinModes.EDIT, "", null, false);
+        assertNotNull(editLayout);
+        Widget editWidget = editLayout.getWidget("testWidgetMode");
+        assertNotNull(editWidget);
+        assertEquals("testWidgetMode", editWidget.getName());
+        assertEquals(BuiltinWidgetModes.EDIT, editWidget.getMode());
+        assertEquals("layout", editWidget.getType());
+        Map<String, Serializable> editProps = editWidget.getProperties();
+        assertNotNull(editProps);
+        assertEquals(2, editProps.size());
+        assertEquals("layout_in_a_widget", editProps.get("name"));
+        assertEquals(BuiltinWidgetModes.EDIT, editProps.get("mode"));
+
+        Layout viewLayout = service.getLayout(null, "testWidgetModeProperties",
+                BuiltinModes.VIEW, "", null, false);
+        assertNotNull(viewLayout);
+        Widget viewWidget = viewLayout.getWidget("testWidgetMode");
+        assertNotNull(viewWidget);
+        assertEquals("testWidgetMode", viewWidget.getName());
+        assertEquals(BuiltinWidgetModes.VIEW, viewWidget.getMode());
+        assertEquals("layout", viewWidget.getType());
+        Map<String, Serializable> viewProps = viewWidget.getProperties();
+        assertNotNull(viewProps);
+        assertEquals(2, viewProps.size());
+        assertEquals("layout_in_a_widget", viewProps.get("name"));
+        assertEquals(BuiltinWidgetModes.VIEW, viewProps.get("mode"));
     }
 
 }

@@ -281,6 +281,24 @@
         </column>
       </columns>
     </layout>
+
+    <layout name="testWidgetModeProperties">
+      <rows>
+        <row>
+          <widget>testWidgetMode</widget>
+        </row>
+      </rows>
+      <widget name="testWidgetMode" type="layout">
+        <properties widgetMode="any">
+          <property name="name">layout_in_a_widget</property>
+          <property name="mode">edit</property>
+        </properties>
+        <properties widgetMode="view">
+          <property name="mode">view</property>
+        </properties>
+      </widget>
+    </layout>
+
   </extension>
 
 </component>
