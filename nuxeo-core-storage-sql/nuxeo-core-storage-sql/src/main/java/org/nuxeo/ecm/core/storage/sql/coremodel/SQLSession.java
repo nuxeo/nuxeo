@@ -761,8 +761,8 @@ public class SQLSession implements Session {
         for (Node n : nodes) {
             try {
                 children.add(newDocument(n));
-            } catch (NoSuchDocumentException e) {
-                // obsolete type, ignore child
+            } catch (DocumentException e) {
+                // ignore error retrieving one of the children
                 continue;
             }
         }
