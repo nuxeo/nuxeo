@@ -1245,7 +1245,7 @@ public abstract class NuxeoLauncher {
         log.error("\t\t restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
         log.error("\t\t pack\t\t\tNot implemented. Use \"pack\" Shell script.");
         log.error("\t\t mp-list\t\tList marketplace packages.");
-        log.error("\t\t mp-add\t\tAdd marketplace package to local cache. You must provide the package file as parameter.");
+        log.error("\t\t mp-add\t\t\tAdd marketplace package to local cache. You must provide the package file as parameter.");
         log.error("\t\t mp-install\t\tRun marketplace package installation. "
                 + "It is automatically called at startup if installAfterRestart.log exists. "
                 + "Else you must provide the package file or ID as parameter.");
