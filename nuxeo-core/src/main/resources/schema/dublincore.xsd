@@ -35,6 +35,9 @@
   <!-- Corresponds to the dublincore type element,
   but renamed to avoid conflicts -->
   <xs:element name="nature" type="xs:string"/>
+  
+  <!-- @Since 5.5 -->
+  <xs:element name="publisher" type="xs:string"/>
 
 </xs:schema>
 
