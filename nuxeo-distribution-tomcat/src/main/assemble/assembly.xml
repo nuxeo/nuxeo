@@ -174,6 +174,7 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dam::zip" />
       <!-- <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-cmf::zip" /> -->
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-social-collaboration::zip" />
     </copy>
     <!-- compute MD5 checksums -->
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-content-browser-${nuxeo.distribution.version}.zip"
@@ -186,6 +187,8 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
               property="DAMMPMD5" />
     <!-- <checksum file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
               property="CMFMPMD5" /> -->
+    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
+              property="SCMPMD5" />
 
     <!-- Copy default packages.xml file -->
     <copy file="src/main/resources/packages.xml"
@@ -196,6 +199,7 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
         <filter token="DMMPMD5" value="${DMMPMD5}" />
         <filter token="DAMMPMD5" value="${DAMMPMD5}" />
         <filter token="CMFMPMD5" value="${CMFMPMD5}" />
+        <filter token="SCMPMD5" value="${SCMPMD5}" />
         <filter token="VERSION" value="${nuxeo.distribution.version}" />
       </filterset>
     </copy>
@@ -211,6 +215,8 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
           tofile="${tomcat}/setupWizardDownloads/${DAMMPMD5}" />
     <!-- <move file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${CMFMPMD5}" /> -->
+    <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
+          tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
   </target>
 
   <target name="build-nuxeo-cap"

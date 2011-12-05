@@ -1,0 +1,55 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="build" description="Build Nuxeo Social Collaboration Marketplace package">
+    <tstamp />
+    <delete failonerror="false"
+            dir="${maven.project.build.directory}/marketplace" />
+    <mkdir dir="${maven.project.build.directory}/marketplace" />
+    <copy todir="${maven.project.build.directory}/marketplace">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${nuxeo.distribution.version}" />
+      </filterset>
+    </copy>
+    <copy todir="${maven.project.build.directory}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-social-collaboration::zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
+    </copy>
+    <nx:zipdiff file1="${maven.project.build.directory}/nuxeo-distribution-social-collaboration-${nuxeo.distribution.version}.zip"
+                file2="${maven.project.build.directory}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
+                includesfile="${maven.project.build.directory}/includes"
+                excludesfile="${maven.project.build.directory}/excludesfile"
+                patternsetid="socialcollaboration.versus.dm">
+    </nx:zipdiff>
+    <unzip src="${maven.project.build.directory}/nuxeo-distribution-social-collaboration-${nuxeo.distribution.version}.zip"
+           dest="${maven.project.build.directory}/marketplace/install">
+      <patternset refid="socialcollaboration.versus.dm" />
+    </unzip>
+
+    <!-- Social Collaboration templates -->
+    <unzip dest="${maven.project.build.directory}/marketplace/install/templates"
+           overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-social-collaboration::zip"
+                            classifier="resources" />
+    </unzip>
+
+    <!-- Social Collaboration properties to append -->
+    <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## nuxeo-marketplace-social-collaobration
+org.nuxeo.distribution.version=${maven.project.version}
+org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
+org.nuxeo.distribution.package=mp</echo>
+
+    <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${maven.project.build.directory}/marketplace" />
+    <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+</project>
