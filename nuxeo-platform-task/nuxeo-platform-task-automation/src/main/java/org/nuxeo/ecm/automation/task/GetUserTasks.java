@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.task.dashboard.DashBoardItemImpl;
 
 /**
  * Returns tasks assigned to current user or one of its groups.
- * @since 5.5
  */
 @Operation(id = GetUserTasks.ID, category = Constants.CAT_SERVICES, label = "Get user tasks", since = "5.4", description = "List tasks assigned to this user or one of its group."
         + "Task properties are serialized using JSON and returned in a Blob.")

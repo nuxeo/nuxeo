@@ -63,11 +63,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- * @since 5.5
  */
 public class TaskServiceImpl extends DefaultComponent implements TaskService {
-
-    private static final long serialVersionUID = 1L;
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.task.core.TaskService");

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,11 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id: DashBoardItem.java 23683 2007-08-10 07:25:25Z btatar $
  */
+
 package org.nuxeo.ecm.platform.task.dashboard;
 
 import java.io.Serializable;
@@ -32,7 +36,6 @@ import org.nuxeo.ecm.platform.task.Task;
  * Aimed at being used in Dashboard fragments.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * @since 5.5
  */
 public interface DashBoardItem extends Serializable {
 

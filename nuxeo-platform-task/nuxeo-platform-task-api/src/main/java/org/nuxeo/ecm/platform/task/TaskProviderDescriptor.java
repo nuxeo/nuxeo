@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- * @since 5.5
+ *
  */
 @XObject("taskProvider")
 public class TaskProviderDescriptor {

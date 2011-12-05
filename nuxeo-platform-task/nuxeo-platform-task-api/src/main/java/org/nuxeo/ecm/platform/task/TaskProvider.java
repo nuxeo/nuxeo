@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author Laurent Doguin
- * @since 5.5
  */
 public interface TaskProvider extends Serializable {
 

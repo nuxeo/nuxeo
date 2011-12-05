@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Nicolas Ulrich
+ *
  */
 
 package org.nuxeo.ecm.platform.task;
@@ -22,12 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @since 5.5
- */
 public class TaskComment extends HashMap<String, Serializable> {
-
-    private static final long serialVersionUID = 1L;
 
     public TaskComment(Map<String, Serializable> taskCommentMap) {
         super();

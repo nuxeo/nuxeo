@@ -23,11 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -40,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 5.4.2
  */
-public class TaskPageProvidersTest extends SQLRepositoryTestCase {
+public class TaskPageProvidersTest extends RepositoryOSGITestCase {
 
     protected TaskService taskService;
 
@@ -78,9 +79,9 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         administrator = userManager.getPrincipal(SecurityConstants.ADMINISTRATOR);
         assertNotNull(administrator);
 
-        openSession();
         document = getDocument();
         assertNotNull(document);
+
 
         // create isolated task
         List<String> actors = new ArrayList<String>();
@@ -89,26 +90,20 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6);
         // create one task
-        taskService.createTask(session, administrator, document,
+        taskService.createTask(coreSession, administrator, document,
                 "Test Task Name", actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null);
         // create another task to check pagination
-        taskService.createTask(session, administrator, document,
+        taskService.createTask(coreSession, administrator, document,
                 "Test Task Name 2", actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     @SuppressWarnings("unchecked")
     public void testTaskPageProvider() throws Exception {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+                (Serializable) getCoreSession());
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
                 "current_user_tasks", null, null, null, properties,
                 (Object[]) null);
@@ -149,6 +144,8 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
     }
 
     protected DocumentModel getDocument() throws Exception {
+        openRepository();
+        CoreSession session = getCoreSession();
         DocumentModel model = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);

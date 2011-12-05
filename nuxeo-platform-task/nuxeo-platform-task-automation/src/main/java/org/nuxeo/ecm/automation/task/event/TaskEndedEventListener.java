@@ -39,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
  * rejected
  *
  * @author Anahide Tchertchian
- * @since 5.5
  */
 public class TaskEndedEventListener implements EventListener {
 
@@ -55,13 +54,13 @@ public class TaskEndedEventListener implements EventListener {
         }
         Task task = (Task) property;
 
-        Boolean validated = Boolean.valueOf(task.getVariable(TaskService.VariableName.validated.name()));
+        Boolean validated = Boolean.valueOf((String) task.getVariable(TaskService.VariableName.validated.name()));
 
         String chain;
         if (validated) {
-            chain = task.getVariable(OperationTaskVariableName.acceptOperationChain.name());
+            chain = (String) task.getVariable(OperationTaskVariableName.acceptOperationChain.name());
         } else {
-            chain = task.getVariable(OperationTaskVariableName.rejectOperationChain.name());
+            chain = (String) task.getVariable(OperationTaskVariableName.rejectOperationChain.name());
         }
 
         if (!StringUtils.isEmpty(chain)) {

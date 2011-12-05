@@ -1,18 +1,3 @@
-/*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- */
 package org.nuxeo.ecm.platform.task.dashboard;
 
 import java.util.Date;
@@ -36,9 +21,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * @since 5.5
- */
+
 public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
 
     private static final long serialVersionUID = 1L;
@@ -82,7 +65,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
     }
 
     protected boolean isCreatedFromCreateTaskOperation() throws ClientException {
-        return Boolean.parseBoolean(getTask().getVariable(
+        return Boolean.parseBoolean((String) getTask().getVariable(
                 "createdFromCreateTaskOperation"));
     }
 
@@ -91,8 +74,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
             if (isCreatedFromCreateTaskOperation()) {
                 return false;
             }
-            return Boolean.parseBoolean(getTask().getVariable(
-                    Task.TaskVariableName.needi18n.name()));
+            return Boolean.parseBoolean((String) getTask().getVariable(Task.TaskVariableName.needi18n.name()));
         } catch (Exception e) {
             log.error("Error while testing Task variables", e);
             return false;
@@ -134,14 +116,14 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
             throws ClientException {
         DocumentModel doc = getDocument();
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
-        if (documentViewCodecManager != null) {
+        if (documentViewCodecManager!=null) {
             String viewId = getDefaultViewFor(doc);
             Map<String, String> parameters = new HashMap<String, String>();
             if (includeWorkflowTab) {
                 parameters.put("tabId", "TAB_CONTENT_JBPM");
             }
-            DocumentView docView = new DocumentViewImpl(
-                    new DocumentLocationImpl(doc), viewId, parameters);
+            DocumentView docView = new DocumentViewImpl(new DocumentLocationImpl(
+                    doc), viewId, parameters);
             return documentViewCodecManager.getUrlFromDocumentView("docpath",
                     docView, false, null);
         } else {

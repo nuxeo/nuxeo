@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,6 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id: EventNames.java 29075 2008-01-16 09:12:59Z jcarsique $
  */
 
 package org.nuxeo.ecm.platform.task;
@@ -19,7 +22,6 @@ package org.nuxeo.ecm.platform.task;
 /**
  * Event identifiers.
  *
- * @since 5.5
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class TaskEventNames {
@@ -100,8 +102,8 @@ public final class TaskEventNames {
     public static final String WORK_ITEMS_LIST_LOADED = "workItemsListLoaded";
 
     /**
-     * A task variable key to disable the notification service. (i.e. no email
-     * sending through this service)
+     * A task variable key to disable the notification service.
+     * (i.e. no email sending through this service)
      */
     public static final String DISABLE_NOTIFICATION_SERVICE = "disableNotificationService";
 

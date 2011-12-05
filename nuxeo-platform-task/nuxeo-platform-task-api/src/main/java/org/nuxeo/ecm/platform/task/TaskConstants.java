@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,13 +13,13 @@
  *
  * Contributors:
  *     Nicolas Ulrich
+ *
  */
 
 package org.nuxeo.ecm.platform.task;
 
-/**
- * @since 5.5
- */
+
+
 public class TaskConstants {
 
     public static final String TASK_USERS_PROPERTY_NAME = "task:actors";
@@ -52,13 +52,13 @@ public class TaskConstants {
 
     public static final String TASK_CANCELLED_LIFE_CYCLE_STATE = "cancelled";
 
-    public static final String TASK_OPENED_LIFE_CYCLE_STATE = "opened";
+    public static final String TASK_OPENED_LIFE_CYCLE_STATE  = "opened";
 
-    public static final String TASK_ENDED_LIFE_CYCLE_STATE = "ended";
+    public static final String TASK_ENDED_LIFE_CYCLE_STATE  = "ended";
 
     public static final String TASK_CANCEL_LIFE_CYCLE_TRANSITION = "cancel";
 
-    public static final String TASK_END_LIFE_CYCLE_TRANSITION = "end";
+    public static final String TASK_END_LIFE_CYCLE_TRANSITION  = "end";
 
     public static final String TASK_TYPE_NAME = "TaskDoc";
 
