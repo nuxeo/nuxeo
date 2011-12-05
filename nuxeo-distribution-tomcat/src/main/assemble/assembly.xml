@@ -279,6 +279,9 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     <copy file="${distribution.dir}/nxserver/data/installAfterRestart-DM.log"
           tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
           overwrite="true" />
+    <echo message="preset=nuxeo-dm"
+          append="false"
+          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
 
     <unzip dest="${distribution.dir}/sdk"
            src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
@@ -314,6 +317,9 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     <copy file="${distribution.dir}/nxserver/data/installAfterRestart-DAM.log"
           tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
           overwrite="true" />
+    <echo message="preset=nuxeo-dam"
+          append="false"
+          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
 
     <unzip dest="${distribution.dir}/sdk"
            src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
@@ -356,6 +362,9 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     <copy file="${distribution.dir}/nxserver/data/installAfterRestart-CMF.log"
           tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
           overwrite="true" />
+    <echo message="preset=nuxeo-cmf"
+          append="false"
+          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
 
     <unzip dest="${distribution.dir}/sdk"
            src="${distribution.dir}/setupWizardDownloads/${CMFMPMD5}">
