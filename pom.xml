@@ -3012,6 +3012,19 @@
       </build>
     </profile>
 
+    <!-- Used to include addons and/or nuxeo-distribution in a single run -->
+    <profile>
+      <id>addons</id>
+      <modules>
+        <module>addons</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>distrib</id>
+      <modules>
+        <module>nuxeo-distribution</module>
+      </modules>
+    </profile>
   </profiles>
 
   <developers>
