@@ -63,7 +63,7 @@ public class TestParser extends TestCase {
 
         pkgs.select(ids);
         List<DownloadPackage> pkg4Download = pkgs.getPkg4Download();
-        System.out.println(pkg4Download.toString());
+        // System.out.println(pkg4Download.toString());
         assertEquals(4, pkg4Download.size()); // CAP + DM + DAM + COLLAB
 
         // test selection CAP + DAM
@@ -73,7 +73,7 @@ public class TestParser extends TestCase {
 
         pkgs.select(ids);
         pkg4Download = pkgs.getPkg4Download();
-        System.out.println(pkg4Download.toString());
+        // System.out.println(pkg4Download.toString());
         assertEquals(2, pkg4Download.size()); // CAP + DAM
 
     }
@@ -92,7 +92,7 @@ public class TestParser extends TestCase {
 
         assertEquals(3, root.getChildrenPackages().size()); // DAM / DM / CMF
 
-        System.out.println(pkgs.asJson());
+        // System.out.println(pkgs.asJson());
 
         // Check selections
         List<String> selectedIds = new ArrayList<String>();
