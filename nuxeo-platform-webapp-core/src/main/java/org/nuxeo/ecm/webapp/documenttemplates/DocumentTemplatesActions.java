@@ -90,11 +90,11 @@ public interface DocumentTemplatesActions {
     /**
      * Listener to children changed event.
      */
-    void documentChildrenChanged(DocumentModel targetDoc);
+    void documentChildrenChanged();
 
     /**
      * Listener for domain changed event.
      */
-    void domainChanged(DocumentModel targetDoc);
+    void domainChanged();
 
 }
