@@ -83,7 +83,7 @@
           reRender="keyword_status" id="keyword_add" />
         <br />
         <nxdir:chainSelectStatus display="value"
-          entryCssStyle="background-color: #DDEEFF"
+          cssStyleClass="chainSelect"
           label="#{messages['label.chainSelect.selection']}"
           id="keyword_status">
           <f:facet name="removeButton">
@@ -139,7 +139,7 @@
 
           <br />
           <nxdir:chainSelectStatus id="coverageSelection" display="value"
-            entryCssStyle="background-color: #DDEEFF"
+            cssStyleClass="chainSelect"
             label="#{messages['label.chainSelect.selection']}">
             <f:facet name="removeButton">
               <a4j:commandButton actionListener="#{chainSelectActions.delete}"

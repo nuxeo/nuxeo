@@ -27,5 +27,9 @@ input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ bord
 
 .taskPrincipalSelect select { margin: 4em 0 1em 1.4em; padding: .2em .1em .2em .1em }
 
+.chainSelect { margin-top: .3em }
+.chainSelect div { background-color: #ffffd6; border: 1px solid #ddd; border-radius: 3px; margin: .3em; padding: 0 .3em .4em; max-width: 50%; }
+.chainSelect input[type="image"] { margin: 0 .3em -0.4em 0 }
+
 /* =Calendar */
 .calendarTrigger { cursor: pointer; margin: 0 0 .4em; vertical-align: bottom }
