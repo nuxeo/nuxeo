@@ -330,13 +330,13 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
             Map<String, Map<String, Serializable>> properties, String mode) {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         if (properties != null) {
-            Map<String, Serializable> propsInMode = properties.get(mode);
-            if (propsInMode != null) {
-                res.putAll(propsInMode);
-            }
             Map<String, Serializable> propsInAnyMode = properties.get(BuiltinModes.ANY);
             if (propsInAnyMode != null) {
                 res.putAll(propsInAnyMode);
+            }
+            Map<String, Serializable> propsInMode = properties.get(mode);
+            if (propsInMode != null) {
+                res.putAll(propsInMode);
             }
         }
         return res;
@@ -365,13 +365,13 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
             Map<String, List<RenderingInfo>> infos, String mode) {
         List<RenderingInfo> res = new ArrayList<RenderingInfo>();
         if (infos != null) {
-            List<RenderingInfo> inMode = infos.get(mode);
-            if (inMode != null) {
-                res.addAll(inMode);
-            }
             List<RenderingInfo> inAnyMode = infos.get(BuiltinModes.ANY);
             if (inAnyMode != null) {
                 res.addAll(inAnyMode);
+            }
+            List<RenderingInfo> inMode = infos.get(mode);
+            if (inMode != null) {
+                res.addAll(inMode);
             }
         }
         return res;
