@@ -19,6 +19,7 @@
     <facet name="Routable" />
     <facet name="DocumentRoute" />
     <facet name="RouteStep" />
+    <facet name="StepFolder" />
 
     <facet name="CommentsInfoHolder">
       <schema name="info_comments" />
