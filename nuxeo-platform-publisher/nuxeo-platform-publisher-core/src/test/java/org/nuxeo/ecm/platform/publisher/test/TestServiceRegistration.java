@@ -17,12 +17,12 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import java.util.List;
+
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
-
-import java.util.List;
 
 public class TestServiceRegistration extends SQLRepositoryTestCase {
 
@@ -42,6 +42,12 @@ public class TestServiceRegistration extends SQLRepositoryTestCase {
 
         openSession();
         fireFrameworkStarted();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void testMainService() throws Exception {
