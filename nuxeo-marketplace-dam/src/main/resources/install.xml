@@ -7,6 +7,7 @@
     overwrite="true" />
   <append file="${package.root}/install/distribution.properties" todir="${env.templates}/common/config" />
   <config set="org.nuxeo.ecm.product.name=Nuxeo DAM" />
+  <config addtemplate="dam" />
   <copy file="${package.root}/install/artifacts-dam.properties" todir="${env.server.home}/sdk"
     overwrite="true" />
   <copy file="${package.root}/install/test-artifacts-dam.properties" todir="${env.server.home}/sdk"
