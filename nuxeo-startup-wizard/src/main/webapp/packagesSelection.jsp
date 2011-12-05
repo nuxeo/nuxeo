@@ -84,6 +84,9 @@ function drawBloc(container, idx, node2Display, parent, nbSiblings) {
     }
     var span = $("<div class=\"nxpblock\">" + node.package + "</div>");
     span.attr('pkg', node.package);
+    if (node2Display.root) {
+      span.attr('root', true);
+    }
     var width = parent.width()/nbSiblings - 4;
     if (node2Display.parent) {
       width = node2Display.parent.width / nbSiblings -4 ;
@@ -165,10 +168,14 @@ function displayBlocs() {
   var parent = $("<div class=\"nxprow\" style=\"height:2px\"></div>");
   container.append(parent);
   var row = drawRow(container);
-  parent = drawBloc(row,0,{ 'node':jsonTree, 'selected' : true}, parent,1);
+  parent = drawBloc(row,0,{ 'node':jsonTree, 'selected' : true, 'root' : true}, parent,1);
   displayNodes(container, parent, 0, [jsonTree], ids);
   // bind click
   $(".nxpblock").click(function(event) {
+    if ($(event.target).attr("root")) {
+      // can not deselect the root !!!
+      return;
+    }
     var targetPkg = $(event.target).attr("pkg");
     var filter = "input[type='checkbox'][name='" + targetPkg + "']";
     if ( $(filter).attr("checked")==true) {
