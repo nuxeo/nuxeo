@@ -47,12 +47,6 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-common-dm" />
     </unzip>
-    <!-- DM Tomcat templates -->
-    <unzip dest="${maven.project.build.directory}/marketplace/install/templates-tomcat"
-           overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="templates-tomcat-dm" />
-    </unzip>
 
     <!-- DM properties to append -->
     <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## nuxeo-marketplace-dm

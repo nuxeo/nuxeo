@@ -53,9 +53,6 @@
       <param name="derby-lib-dir" value="lib" />
     </antcall>
     <antcall target="build-resources">
-      <param name="distribution" value="templates-tomcat-dm" />
-    </antcall>
-    <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat-coreserver" />
     </antcall>
     <antcall target="build-resources">

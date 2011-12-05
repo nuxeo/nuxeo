@@ -316,13 +316,6 @@
         <artifactId>nuxeo-distribution-resources</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
-        <classifier>templates-tomcat-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
         <classifier>templates-jboss</classifier>
       </dependency>
       <dependency>
