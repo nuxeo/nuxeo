@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+
 import org.nuxeo.wizard.download.DownloadDescriptorParser;
 import org.nuxeo.wizard.download.DownloadPackage;
 import org.nuxeo.wizard.download.DownloadablePackageOption;
@@ -29,10 +30,10 @@ import org.nuxeo.wizard.download.DownloadablePackageOptions;
 
 public class TestParser extends TestCase {
 
-
     public void testParser1() {
 
-        InputStream stream = this.getClass().getResourceAsStream("/packages_old.xml");
+        InputStream stream = this.getClass().getResourceAsStream(
+                "/packages_old.xml");
         assertNotNull(stream);
 
         DownloadablePackageOptions pkgs = DownloadDescriptorParser.parsePackages(stream);
@@ -40,14 +41,18 @@ public class TestParser extends TestCase {
         assertEquals(3, pkgs.size());
 
         assertEquals(1, pkgs.get(0).getChildrenPackages().size()); // CAP => DAM
-        assertEquals(2, pkgs.get(1).getChildrenPackages().size()); // DM => DAM, Collab
-        assertEquals(0, pkgs.get(2).getChildrenPackages().size()); // CMF => Nothing
+        assertEquals(2, pkgs.get(1).getChildrenPackages().size()); // DM => DAM,
+                                                                   // Collab
+        assertEquals(0, pkgs.get(2).getChildrenPackages().size()); // CMF =>
+                                                                   // Nothing
 
         assertEquals(true, pkgs.get(0).isExclusive());
         assertEquals(true, pkgs.get(1).isExclusive());
         assertEquals(true, pkgs.get(2).isExclusive());
-        assertEquals(false, pkgs.get(1).getChildrenPackages().get(0).isExclusive());
-        assertEquals(false, pkgs.get(1).getChildrenPackages().get(1).isExclusive());
+        assertEquals(false,
+                pkgs.get(1).getChildrenPackages().get(0).isExclusive());
+        assertEquals(false,
+                pkgs.get(1).getChildrenPackages().get(1).isExclusive());
 
         assertNull(pkgs.get(0).getPackage()); // Fake package
         assertNotNull(pkgs.get(1).getPackage());
@@ -80,7 +85,8 @@ public class TestParser extends TestCase {
 
     public void testParserAndSelection() {
 
-        InputStream stream = this.getClass().getResourceAsStream("/packages.xml");
+        InputStream stream = this.getClass().getResourceAsStream(
+                "/packages.xml");
         assertNotNull(stream);
 
         DownloadablePackageOptions pkgs = DownloadDescriptorParser.parsePackages(stream);
@@ -88,7 +94,7 @@ public class TestParser extends TestCase {
         assertEquals(1, pkgs.size());
 
         DownloadablePackageOption root = pkgs.get(0);
-        assertEquals("cap", root.getPackage().getId());
+        assertEquals("nuxeo-cap", root.getPackage().getId());
 
         assertEquals(3, root.getChildrenPackages().size()); // DAM / DM / CMF
 
@@ -96,31 +102,40 @@ public class TestParser extends TestCase {
 
         // Check selections
         List<String> selectedIds = new ArrayList<String>();
-        selectedIds.add("collab");
+        selectedIds.add("nuxeo-sc");
 
         pkgs.select(selectedIds);
-        assertEquals(4,pkgs.getPkg4Download().size()); // Collab / DM / nuxeo-content-browser / CAP
-        assertEquals("collab", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("dm", pkgs.getPkg4Download().get(1).getId());
-        assertEquals("nuxeo-content-browser", pkgs.getPkg4Download().get(2).getId());
-        assertEquals("cap", pkgs.getPkg4Download().get(3).getId());
-
-        selectedIds.clear();
-        selectedIds.add("cmf");
-        pkgs.select(selectedIds);
-        assertEquals(3,pkgs.getPkg4Download().size()); // CMF / nuxeo-content-browser-cmf / CAP
-        assertEquals("cmf", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("nuxeo-content-browser-cmf", pkgs.getPkg4Download().get(1).getId());
-        assertEquals("cap", pkgs.getPkg4Download().get(2).getId());
+        assertEquals(4, pkgs.getPkg4Download().size()); // Collab / DM /
+                                                        // nuxeo-content-browser
+                                                        // / CAP
+        assertEquals("nuxeo-sc", pkgs.getPkg4Download().get(0).getId());
+        assertEquals("nuxeo-dm", pkgs.getPkg4Download().get(1).getId());
+        assertEquals("nuxeo-content-browser",
+                pkgs.getPkg4Download().get(2).getId());
+        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(3).getId());
 
         selectedIds.clear();
-        selectedIds.add("cmf");
-        selectedIds.add("dm");
+        selectedIds.add("nuxeo-cmf");
         pkgs.select(selectedIds);
-        assertEquals(3,pkgs.getPkg4Download().size()); // DM / nuxeo-content-browser / CAP
-        assertEquals("dm", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("nuxeo-content-browser", pkgs.getPkg4Download().get(1).getId());
-        assertEquals("cap", pkgs.getPkg4Download().get(2).getId());
+        assertEquals(3, pkgs.getPkg4Download().size()); // CMF /
+                                                        // nuxeo-content-browser-cmf
+                                                        // / CAP
+        assertEquals("nuxeo-cmf", pkgs.getPkg4Download().get(0).getId());
+        assertEquals("nuxeo-content-browser-cmf",
+                pkgs.getPkg4Download().get(1).getId());
+        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(2).getId());
+
+        selectedIds.clear();
+        selectedIds.add("nuxeo-cmf");
+        selectedIds.add("nuxeo-dm");
+        pkgs.select(selectedIds);
+        assertEquals(3, pkgs.getPkg4Download().size()); // DM /
+                                                        // nuxeo-content-browser
+                                                        // / CAP
+        assertEquals("nuxeo-dm", pkgs.getPkg4Download().get(0).getId());
+        assertEquals("nuxeo-content-browser",
+                pkgs.getPkg4Download().get(1).getId());
+        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(2).getId());
 
     }
 

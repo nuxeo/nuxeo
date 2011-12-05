@@ -217,6 +217,20 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
           tofile="${tomcat}/setupWizardDownloads/${CMFMPMD5}" /> -->
     <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
+
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-DM.log">file:setupWizardDownloads/${VPCBMPMD5}
+file:setupWizardDownloads/${DMMPMD5}
+</echo>
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-SC.log">file:setupWizardDownloads/${VPCBMPMD5}
+file:setupWizardDownloads/${DMMPMD5}
+file:setupWizardDownloads/${SCMPMD5}
+</echo>
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-DAM.log">file:setupWizardDownloads/${VPCBMPMD5}
+file:setupWizardDownloads/${DAMMPMD5}
+</echo>
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-CMF.log">file:setupWizardDownloads/${VPCBCMFMPMD5}
+file:setupWizardDownloads/${CMFMPMD5}
+</echo>
   </target>
 
   <target name="build-nuxeo-cap"
@@ -251,8 +265,8 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
   <target name="build-nuxeo-dm"
           if="build.dm"
           depends="add-marketplace-packages"
-          description="Build Tomcat distribution with Nuxeo DM">
-    <echo>Building Nuxeo DM...</echo>
+          description="DEPRECATED - Build Tomcat distribution with Nuxeo DM">
+    <echo>DEPRECATED - Building Nuxeo DM...</echo>
     <property name="classifier" value="nuxeo-dm" />
     <property name="distribution.dir"
               value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
@@ -262,9 +276,12 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     </copy>
     <antcall target="chmodx" />
 
-    <echo file="${distribution.dir}/nxserver/data/installAfterRestart.log">file:setupWizardDownloads/${VPCBMPMD5}
-file:setupWizardDownloads/${DMMPMD5}
-</echo>
+    <copy file="${distribution.dir}/nxserver/data/installAfterRestart-DM.log"
+          tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
+          overwrite="true" />
+    <echo message="preset=nuxeo-dm"
+          append="false"
+          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
 
     <unzip dest="${distribution.dir}/sdk"
            src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
@@ -286,8 +303,8 @@ file:setupWizardDownloads/${DMMPMD5}
   <target name="build-nuxeo-dam"
           if="build.dam"
           depends="add-marketplace-packages"
-          description="Build Tomcat distribution with Nuxeo DAM">
-    <echo>Building Nuxeo DAM...</echo>
+          description="DEPRECATED - Build Tomcat distribution with Nuxeo DAM">
+    <echo>DEPRECATED - Building Nuxeo DAM...</echo>
     <property name="classifier" value="nuxeo-dam" />
     <property name="distribution.dir"
               value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
@@ -297,10 +314,12 @@ file:setupWizardDownloads/${DMMPMD5}
     </copy>
     <antcall target="chmodx" />
 
-    <echo file="${distribution.dir}/nxserver/data/installAfterRestart.log">file:setupWizardDownloads/${VPCBMPMD5}
-file:setupWizardDownloads/${DMMPMD5}
-file:setupWizardDownloads/${DAMMPMD5}
-</echo>
+    <copy file="${distribution.dir}/nxserver/data/installAfterRestart-DAM.log"
+          tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
+          overwrite="true" />
+    <echo message="preset=nuxeo-dam"
+          append="false"
+          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
 
     <unzip dest="${distribution.dir}/sdk"
            src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
@@ -329,8 +348,8 @@ file:setupWizardDownloads/${DAMMPMD5}
   <target name="build-nuxeo-cmf"
           if="build.cmf"
           depends="add-marketplace-packages"
-          description="Build Tomcat distribution with Nuxeo CMF">
-    <echo>Building Nuxeo CMF...</echo>
+          description="DEPRECATED - Build Tomcat distribution with Nuxeo CMF">
+    <echo>DEPRECATED - Building Nuxeo CMF...</echo>
     <property name="classifier" value="nuxeo-cmf" />
     <property name="distribution.dir"
               value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
@@ -340,9 +359,12 @@ file:setupWizardDownloads/${DAMMPMD5}
     </copy>
     <antcall target="chmodx" />
 
-    <echo file="${distribution.dir}/nxserver/data/installAfterRestart.log">file:setupWizardDownloads/${VPCBCMFMPMD5}
-file:setupWizardDownloads/${CMFMPMD5}
-</echo>
+    <copy file="${distribution.dir}/nxserver/data/installAfterRestart-CMF.log"
+          tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
+          overwrite="true" />
+    <echo message="preset=nuxeo-cmf"
+          append="false"
+          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
 
     <unzip dest="${distribution.dir}/sdk"
            src="${distribution.dir}/setupWizardDownloads/${CMFMPMD5}">
