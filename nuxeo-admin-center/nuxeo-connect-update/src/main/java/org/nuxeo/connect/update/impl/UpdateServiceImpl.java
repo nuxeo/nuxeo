@@ -89,6 +89,10 @@ public class UpdateServiceImpl implements PackageUpdateService {
         return persistence.addPackage(file);
     }
 
+    public void removePackage(String id) throws PackageException {
+        persistence.removePackage(id);
+    }
+
     public LocalPackage getPackage(String id) throws PackageException {
         return persistence.getPackage(id);
     }

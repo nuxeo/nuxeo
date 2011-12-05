@@ -161,6 +161,12 @@ public class LocalPackageManager {
                             "Missing package id as parameter.");
                 }
                 uninstall(args[3]);
+            } else if ("remove".equalsIgnoreCase(command)) {
+                if (args.length < 4) {
+                    throw new PackageException(
+                            "Missing package id as parameter.");
+                }
+                remove(args[3]);
             } else if ("list".equalsIgnoreCase(command)) {
                 readPackages();
                 listPackages();
@@ -187,6 +193,7 @@ public class LocalPackageManager {
         log.error("\tinstallpkg [/path/to/package|packageId]\t\tInstalls the given"
                 + " package (as a file or its ID).");
         log.error("\tuninstall packageId\t\t\t\tUninstalls the specified package.");
+        log.error("\tremove packageId\t\t\t\tRemoves the specified package.");
         log.error("\treset\t\t\t\t\tReset all package states to DOWNLOADED. "
                 + "This may be useful after a manual upgrade of the server.");
     }
@@ -257,9 +264,9 @@ public class LocalPackageManager {
                 if (pkgId.startsWith("uninstall ")) {
                     pkgId = pkgId.substring(10);
                     uninstall = true;
-            } else if (pkgId.startsWith("install ")) {
-                pkgId = pkgId.substring(8);
-                uninstall=false;
+                } else if (pkgId.startsWith("install ")) {
+                    pkgId = pkgId.substring(8);
+                    uninstall=false;
                 }
                 if (pkgId.startsWith("file:")) {
                     String packageFileName = pkgId.substring(5);
@@ -372,6 +379,27 @@ public class LocalPackageManager {
             uninstallTask.rollback();
             errorValue = 1;
             log.error("Failed to uninstall package: " + pkgId, e);
+        }
+    }
+
+    /**
+     * @param pkgId Marketplace package id
+     * @throws PackageException
+     * @since 5.5
+     */
+    private void remove(String pkgId) throws PackageException {
+        LocalPackage pkg = pus.getPackage(pkgId);
+        if (pkg == null) {
+            throw new IllegalStateException("No package found: " + pkgId);
+        }
+        if (pkg.getState() != PackageState.DOWNLOADED) {
+            throw new IllegalStateException("Can only remove packages in DOWNLOADED state");
+        }
+        log.info("Removing " + pkgId);
+        try {
+            pus.removePackage(pkgId);
+        } catch (Throwable e) {
+            log.error("Failed to remove package: " + pkgId, e);
         }
     }
 
