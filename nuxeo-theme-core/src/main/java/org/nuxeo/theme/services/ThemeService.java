@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
-import org.nuxeo.runtime.model.Reloadable;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
@@ -60,7 +58,7 @@ import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.ViewType;
 
-public class ThemeService extends DefaultComponent implements Reloadable {
+public class ThemeService extends DefaultComponent {
 
     public static final ComponentName ID = new ComponentName(
             "org.nuxeo.theme.services.ThemeService");
@@ -70,12 +68,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     private Map<String, Registrable> registries = new HashMap<String, Registrable>();
 
     private RuntimeContext context;
-
-    // collect all registered extensions here to be able to reload the
-    // registries.
-    // TODO: convert to ContributionFragmentRegistry to handle hot reload
-    // correctly
-    protected List<Extension> extensions = new ArrayList<Extension>();
 
     public Map<String, Registrable> getRegistries() {
         return registries;
@@ -95,16 +87,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             registry.clear();
         }
         registries.remove(name);
-    }
-
-    @Override
-    public void reload(ComponentContext context) throws Exception {
-        deactivate(context);
-        activate(context);
-        for (Extension xt : extensions) {
-            doRegisterExtension(xt);
-        }
-        applicationStarted(context);
     }
 
     @Override
@@ -142,12 +124,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     @Override
     public void registerExtension(Extension extension) {
-        if (doRegisterExtension(extension)) {
-            extensions.add(extension);
-        }
-    }
-
-    public boolean doRegisterExtension(Extension extension) {
         String xp = extension.getExtensionPoint();
         if (xp.equals("registries")) {
             registerRegistryExtension(extension);
@@ -180,19 +156,11 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             registerBank(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
-            return false;
         }
-        return true;
     }
 
     @Override
     public void unregisterExtension(Extension extension) {
-        if (doUnregisterExtension(extension)) {
-            extensions.remove(extension);
-        }
-    }
-
-    public boolean doUnregisterExtension(Extension extension) {
         String xp = extension.getExtensionPoint();
         if (xp.equals("registries")) {
             unregisterRegistryExtension(extension);
@@ -215,9 +183,7 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             unregisterBank(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
-            return false;
         }
-        return true;
     }
 
     private void registerRegistryExtension(Extension extension) {
