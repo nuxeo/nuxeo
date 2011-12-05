@@ -47,10 +47,11 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
         ArrayList<String> serverProperties = new ArrayList<String>();
         serverProperties.add("-Djava.util.logging.manager="
                 + "org.apache.juli.ClassLoaderLogManager");
-        serverProperties.add("-Dcatalina.base="
-                + configurationGenerator.getNuxeoHome().getPath());
-        serverProperties.add("-Dcatalina.home="
-                + configurationGenerator.getNuxeoHome().getPath());
+        File home = configurationGenerator.getNuxeoHome();
+        File endorsed = new File(home, "endorsed");
+        serverProperties.add("-Dcatalina.base=" + home.getPath());
+        serverProperties.add("-Dcatalina.home=" + home.getPath());
+        serverProperties.add("-Djava.endorsed.dirs=" + endorsed.getPath());
         return serverProperties;
     }
 
