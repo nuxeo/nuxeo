@@ -564,8 +564,8 @@ public class SQLSession implements Session {
                 throws QueryException {
             try {
                 String query = this.query;
-                // do ORDER BY ecm:path by hand in SQLQueryResult as we can't do
-                // it in SQL (and has to do limit/offset as well)
+                // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
+                // do it in SQL (and has to do limit/offset as well)
                 Boolean orderByPath;
                 Matcher matcher = ORDER_BY_PATH_ASC.matcher(query);
                 if (matcher.matches()) {
@@ -641,8 +641,7 @@ public class SQLSession implements Session {
         TypeProvider typeProvider = getTypeManager();
         DocumentType type = typeProvider.getDocumentType(typeName);
         if (type == null) {
-            throw new NoSuchDocumentException("Unknown document type: "
-                    + typeName);
+            throw new DocumentException("Unknown document type: " + typeName);
         }
         String[] mixins = node.getMixinTypes();
         List<CompositeType> mixinTypes = new ArrayList<CompositeType>(
@@ -1099,7 +1098,6 @@ public class SQLSession implements Session {
     /**
      * This method flag the current session, the read ACLs update will be done
      * automatically at save time.
-     *
      */
     public void requireReadAclsUpdate() {
         session.requireReadAclsUpdate();
