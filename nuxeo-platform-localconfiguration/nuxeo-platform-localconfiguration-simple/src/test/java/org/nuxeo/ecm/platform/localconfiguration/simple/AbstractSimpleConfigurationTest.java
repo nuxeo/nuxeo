@@ -93,10 +93,10 @@ public abstract class AbstractSimpleConfigurationTest {
         session.save();
     }
 
-    protected void changeUser(String username) throws ClientException {
+    protected CoreSession openSessionAs(String username) throws ClientException {
         CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
-        session = coreFeature.getRepository().getRepositoryHandler().changeUser(
-                session, username);
+        return coreFeature.getRepository().getRepositoryHandler().openSessionAs(
+                username);
     }
 
 }

@@ -32,6 +32,8 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -285,9 +287,8 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        changeUser("user1");
-
-        DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
+        CoreSession newSession = openSessionAs("user1");
+        DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
         SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
                 SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
                 childWorkspace);
@@ -302,7 +303,11 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         simpleConfiguration.putAll(parameters);
         assertEquals(2, adapter.parameters.size());
 
-        simpleConfiguration.save(session);
+        try {
+            simpleConfiguration.save(newSession);
+        } finally {
+            CoreInstance.getInstance().close(newSession);
+        }
     }
 
 }
