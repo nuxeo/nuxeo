@@ -1251,7 +1251,7 @@ public abstract class NuxeoLauncher {
                 + "Else you must provide the package file or ID as parameter.");
         log.error("\t\t mp-uninstall\t\tUninstall a marketplace package. You must provide the package id as parameter (see \"mp-list\" command).");
         log.error("\t\t mp-remove\t\tRemoves a marketplace package. You must provide the package id as parameter (see \"mp-list\" command).");
-        log.error("\t\t mp-reset\t\tReset all packages to DOWNLOADED state. May be usefull after a manual server upgrade.");
+        log.error("\t\t mp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
         log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
     }
 
