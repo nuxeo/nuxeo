@@ -1,0 +1,11 @@
+<install>
+  <copy dir="${package.root}/install/bundles" todir="${env.bundles}"
+    overwriteIfNewerVersion="true" />
+  <copy dir="${package.root}/install/lib" todir="${env.lib}"
+    overwriteIfNewerVersion="true" />
+  <copy dir="${package.root}/install/templates" todir="${env.templates}"
+    overwrite="true" />
+  <append file="${package.root}/install/distribution.properties" todir="${env.templates}/common/config" />
+  <append file="${package.root}/install/artifacts.properties" todir="${env.server.home}/sdk" />
+  <append file="${package.root}/install/test-artifacts.properties" todir="${env.server.home}/sdk" />
+</install>
