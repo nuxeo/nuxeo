@@ -114,8 +114,8 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
 /**
  * Abstract implementation of the client interface.
  * <p>
- * This handles all the aspects that are independent on the final implementation
- * (like running inside a J2EE platform or not).
+ * This handles all the aspects that are independent on the final
+ * implementation (like running inside a J2EE platform or not).
  * <p>
  * The only aspect not implemented is the session management that should be
  * handled by subclasses.
@@ -179,7 +179,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     private String sessionId;
 
     /**
-     * Internal method: Gets the current session based on the client session id.
+     * Internal method: Gets the current session based on the client session
+     * id.
      *
      * @return the repository session
      */
@@ -213,7 +214,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         synchronized (AbstractSession.class) {
             Session session;
             try {
-                session = getSession(); // force the creation of the
+                // force the creation of the underlying session
+                session = getSession();
             } catch (ClientException e) {
                 CoreInstance.getInstance().unregisterSession(sessionId);
                 throw e;
@@ -221,7 +223,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 CoreInstance.getInstance().unregisterSession(sessionId);
                 throw ClientException.wrap(e);
             }
-            // underlying session
             if (sessionContext.remove("REPOSITORY_FIRST_ACCESS") != null) {
                 // this is the first time we access the repository in this JVM
                 // notify the InitializationHandler if any.
@@ -270,12 +271,12 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * <p>
      * The ID has the following format:
      * &lt;repository-name&gt;-&lt;JVM-Unique-ID&gt; where the JVM-Unique-ID is
-     * an unique ID on a running JVM and repository-name is a used to avoid name
-     * clashes with sessions on different machines (the repository name should
-     * be unique in the system)
+     * an unique ID on a running JVM and repository-name is a used to avoid
+     * name clashes with sessions on different machines (the repository name
+     * should be unique in the system)
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in
-     * the system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -291,8 +292,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     /**
      * Utility method to generate VersionModel labels.
      *
-     * @return the String representation of an auto-incremented counter that not
-     *         used in any label of docRef
+     * @return the String representation of an auto-incremented counter that
+     *         not used in any label of docRef
      */
     @Override
     public String generateVersionLabelFor(DocumentRef docRef)
@@ -540,7 +541,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     /**
-     * Gets the document model for the given core document, preserving the contextData.
+     * Gets the document model for the given core document, preserving the
+     * contextData.
      *
      * @param doc the document
      * @return the document model
@@ -1808,7 +1810,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             if (sourceDoc != null) {
                 DocumentModel sourceDocModel = readModel(sourceDoc);
                 if (sourceDocModel != null) {
-                    options.put("comment", versionLabel); // to be used by audit
+                    options.put("comment", versionLabel); // to be used by
+                                                          // audit
                     // service
                     notifyEvent(DocumentEventTypes.VERSION_REMOVED,
                             sourceDocModel, options, null, null, false, false);
@@ -2546,8 +2549,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     /**
-     * Update the proxy for doc in the given section to point to the new target.
-     * Do nothing if there are several proxies.
+     * Update the proxy for doc in the given section to point to the new
+     * target. Do nothing if there are several proxies.
      *
      * @return the proxy if it was updated, or {@code null} if none or several
      *         were found
@@ -2858,7 +2861,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         } catch (LifeCycleException e) {
-            throw new ClientException("Failed to reinit life cycle " + docRef, e);
+            throw new ClientException("Failed to reinit life cycle " + docRef,
+                    e);
         }
     }
 
