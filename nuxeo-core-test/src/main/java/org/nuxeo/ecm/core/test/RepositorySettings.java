@@ -56,20 +56,29 @@ public class RepositorySettings implements Provider<CoreSession> {
     private static final Log log = LogFactory.getLog(RepositorySettings.class);
 
     protected FeaturesRunner runner;
+
     protected BackendType type;
+
     protected String repositoryName;
+
     protected String databaseName;
+
     protected String username;
+
     protected RepositoryInit repoInitializer;
+
     protected Granularity granularity;
+
     protected DatabaseHelperFactory databaseFactory;
+
     protected TestRepositoryHandler repo;
+
     protected CoreSession session;
 
     /**
      * workaround to switch users at runtime i a test method
      */
-    private Map<String,Serializable> sessionContext;
+    private Map<String, Serializable> sessionContext;
 
     /**
      * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}.
@@ -118,7 +127,8 @@ public class RepositorySettings implements Provider<CoreSession> {
     public void importSettings(RepositorySettings settings) {
         shutdown();
         // override only the user name and the type.
-        // overriding initializer and granularity may broke tests that are using specific initializers
+        // overriding initializer and granularity may broke tests that are
+        // using specific initializers
         RepositoryConfig defaultConfig = Defaults.of(RepositoryConfig.class);
         if (defaultConfig.type() != settings.type) {
             type = settings.type;
@@ -172,12 +182,15 @@ public class RepositorySettings implements Provider<CoreSession> {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
-            DatabaseHelper dbHelper = databaseFactory.getHelper(type, databaseName, repositoryName);
+            DatabaseHelper dbHelper = databaseFactory.getHelper(type,
+                    databaseName, repositoryName);
             dbHelper.setUp();
             OSGiAdapter osgi = harness.getOSGiAdapter();
-            Bundle bundle = osgi.getRegistry().getBundle("org.nuxeo.ecm.core.storage.sql.test");
+            Bundle bundle = osgi.getRegistry().getBundle(
+                    "org.nuxeo.ecm.core.storage.sql.test");
             URL contribURL = bundle.getEntry(dbHelper.getDeploymentContrib());
-            Contribution contrib = new ContributionLocation(repositoryName, contribURL);
+            Contribution contrib = new ContributionLocation(repositoryName,
+                    contribURL);
             harness.getContext().deploy(contrib);
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -195,12 +208,10 @@ public class RepositorySettings implements Provider<CoreSession> {
         }
     }
 
-
     public TestRepositoryHandler getRepositoryHandler() {
         if (repo == null) {
             try {
-                repo = new TestRepositoryHandler(
-                        repositoryName);
+                repo = new TestRepositoryHandler(repositoryName);
                 repo.openRepository();
             } catch (Exception e) {
                 log.error(e.toString(), e);
@@ -228,33 +239,33 @@ public class RepositorySettings implements Provider<CoreSession> {
         return getRepositoryHandler().openSession(sessionContext);
     }
 
-    public void switchUser(String username) {
-        switchUser(username, false, false);
+    public CoreSession openSessionAsAdminUser(String username)
+            throws ClientException {
+        return openSessionAs(username, true, false);
     }
 
-    public void switchToAdminUser(String username) {
-        switchUser(username, true, false);
+    public CoreSession openSessionAsAnonymousUser(String username)
+            throws ClientException {
+        return openSessionAs(username, false, true);
     }
 
-    public void switchToAnonymousUser(String username) {
-        switchUser(username, false, true);
+    public CoreSession openSessionAsSystemUser() throws ClientException {
+        return openSessionAs(SecurityConstants.SYSTEM_USERNAME, true, false);
     }
 
-    public void switchToSystemUser() {
-        switchUser(SecurityConstants.SYSTEM_USERNAME, true, false);
-    }
-
-    public void switchUser(String username, boolean isAdmin, boolean isAnonymous) {
+    public CoreSession openSessionAs(String username, boolean isAdmin,
+            boolean isAnonymous) throws ClientException {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         if (sessionContext == null) {
-            throw new java.lang.IllegalStateException("session was not yet opened!");
+            throw new java.lang.IllegalStateException(
+                    "session was not yet opened!");
         }
         UserPrincipal principal = new UserPrincipal(username,
                 new ArrayList<String>(), isAnonymous, isAdmin);
         sessionContext.put("username", username);
         sessionContext.put("principal", principal);
+        return getRepositoryHandler().openSession(sessionContext);
     }
-
 
     @Override
     public CoreSession get() {
