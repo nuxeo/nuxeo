@@ -233,13 +233,14 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertNotNull(route);
         session.save();
         CoreSession managersSession = openSessionAs("routeManagers");
-        DocumentModel step = managersSession.getChildren(route.getDocument().getRef()).get(
-                0);
+        DocumentModel step = managersSession.getChildren(
+                route.getDocument().getRef()).get(0);
         service.lockDocumentRoute(route, managersSession);
         service.removeRouteElement(step.getAdapter(DocumentRouteElement.class),
                 managersSession);
         service.unlockDocumentRoute(route, managersSession);
-        DocumentRoute newModel = service.saveRouteAsNewModel(route, managersSession);
+        DocumentRoute newModel = service.saveRouteAsNewModel(route,
+                managersSession);
         assertNotNull(newModel);
         assertEquals("(COPY) route1",
                 (String) newModel.getDocument().getPropertyValue("dc:title"));
@@ -316,8 +317,9 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(
-                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
@@ -341,16 +343,19 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(
-                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
-        assertEquals(1, service.getDocumentRoutesForAttachedDocument(session,
-                doc1.getId()).size());
+        assertEquals(
+                1,
+                service.getDocumentRoutesForAttachedDocument(session,
+                        doc1.getId()).size());
         List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
@@ -393,16 +398,19 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(
-                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
-        assertEquals(1, service.getDocumentRoutesForAttachedDocument(session,
-                doc1.getId()).size());
+        assertEquals(
+                1,
+                service.getDocumentRoutesForAttachedDocument(session,
+                        doc1.getId()).size());
         List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         routeInstance.cancel(session);
@@ -438,16 +446,19 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(
-                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
-        assertEquals(1, service.getDocumentRoutesForAttachedDocument(session,
-                doc1.getId()).size());
+        assertEquals(
+                1,
+                service.getDocumentRoutesForAttachedDocument(session,
+                        doc1.getId()).size());
         List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         String firstStepId = waiting.get(0);
@@ -517,33 +528,48 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(
-                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         closeSession();
         openSession();
+        routeInstance = session.getDocument(
+                routeInstance.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
         session.saveDocument(routeInstance.getDocument());
         session.save();
         closeSession();
+
         // jack checks he can't do anything on it
         session = openSessionAs("jack");
-        assertFalse(routeInstance.canValidateStep(session));
-        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
-        assertEquals(1, waiting.size());
-        boolean exception = false;
-        try {// jacks fails to resume the step
-            WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
-            fail();
-        } catch (Exception e) {
-            exception = true;
-        }
-        assertTrue(exception);
+        assertFalse(session.exists(routeInstance.getDocument().getRef()));
+        // routeInstance = session.getDocument(
+        // routeInstance.getDocument().getRef()).getAdapter(
+        // DocumentRoute.class);
+        // assertFalse(routeInstance.canValidateStep(session));
+        // List<String> waiting =
+        // WaitingStepRuntimePersister.getRunningStepIds();
+        // assertEquals(1, waiting.size());
+        // boolean exception = false;
+        // try {// jacks fails to resume the step
+        // WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        // fail();
+        // } catch (Exception e) {
+        // exception = true;
+        // }
+        // assertTrue(exception);
         closeSession();
-        // jack finishes the route
+        // bob finishes the route
+
         session = openSessionAs("bob");
+        routeInstance = session.getDocument(
+                routeInstance.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
         waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
@@ -591,8 +617,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = service.validateRouteModel(
                 route.getAdapter(DocumentRoute.class), session).getDocument();
         session.save();
-        service.unlockDocumentRouteUnrestrictedSession(route.getAdapter(DocumentRoute.class),
-                session);
+        service.unlockDocumentRouteUnrestrictedSession(
+                route.getAdapter(DocumentRoute.class), session);
         route = session.getDocument(route.getRef());
         assertEquals("validated", route.getCurrentLifeCycleState());
         closeSession();
@@ -609,8 +635,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 route.getDocument().getRef(), "conditionalStep2");
         DocumentModelList children = service.getOrderedRouteElement(
                 conditionalStepFolder.getId(), session);
-        assertEquals(DocumentRoutingConstants.STEP_DOCUMENT_TYPE, children.get(
-                0).getType());
+        assertEquals(DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                children.get(0).getType());
         DocumentModel branch1 = children.get(1);
         assertEquals(DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
                 branch1.getType());
@@ -649,8 +675,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 route.getDocument().getRef(), "conditionalStep2");
         DocumentModelList children = service.getOrderedRouteElement(
                 conditionalStepFolder.getId(), session);
-        assertEquals(DocumentRoutingConstants.STEP_DOCUMENT_TYPE, children.get(
-                0).getType());
+        assertEquals(DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                children.get(0).getType());
         assertEquals(DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
                 children.get(1).getType());
         assertEquals(DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
@@ -667,13 +693,16 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(
-                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
         waitForAsyncExec();
         closeSession();
         session = openSessionAs("routeManagers");
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
         DocumentRoute routeInstance = service.createNewInstance(route,
                 doc1.getId(), session);
         session.save();
@@ -710,16 +739,19 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(
-                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
-        assertEquals(1, service.getDocumentRoutesForAttachedDocument(session,
-                doc1.getId()).size());
+        assertEquals(
+                1,
+                service.getDocumentRoutesForAttachedDocument(session,
+                        doc1.getId()).size());
         List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         // step 1
         assertEquals(1, waiting.size());
@@ -732,8 +764,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         // executeIfOption2 is running
         waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
-        assertEquals("executeIfOption2", session.getDocument(
-                new IdRef(waiting.get(0))).getName());
+        assertEquals("executeIfOption2",
+                session.getDocument(new IdRef(waiting.get(0))).getName());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
         // step 3 is run
         waiting = WaitingStepRuntimePersister.getRunningStepIds();

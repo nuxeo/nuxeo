@@ -52,7 +52,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
- *
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
@@ -110,10 +109,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 session, model, docIds, startInstance, persister);
         try {
             runner.runUnrestricted();
+            DocumentRef routeRef = runner.getInstance().getDocument().getRef();
+            return session.getDocument(routeRef).getAdapter(DocumentRoute.class);
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
-        return runner.getInstance();
     }
 
     @Override
