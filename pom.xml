@@ -4347,6 +4347,7 @@
       </properties>
     </profile>
 
+    <!-- Used for multi-database tests -->
     <profile>
       <id>customdb</id>
       <build>
@@ -4392,7 +4393,6 @@
         </plugins>
       </build>
     </profile>
-
     <profile>
       <id>default</id>
     </profile>
@@ -4422,6 +4422,20 @@
     </profile>
     <profile>
       <id>mysql</id>
+    </profile>
+
+    <!-- Used to include addons and/or nuxeo-distribution in a single run -->
+    <profile>
+      <id>addons</id>
+      <modules>
+        <module>addons</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>distrib</id>
+      <modules>
+        <module>nuxeo-distribution</module>
+      </modules>
     </profile>
 
   </profiles>
