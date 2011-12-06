@@ -21,13 +21,13 @@
   <table class="dataInput">
     <tbody>
       <tr>
-        <td class="iconColumn" style="vertical-align:top;">
-          <h:graphicImage value="/icons/lightbulb.png"
-            styleClass="layoutHelpLabel"
-            title="#{messages['label.editComment.tooltip']}" />
-        </td>
         <td class="labelColumn">
-          <h:outputText value="#{messages['label.editComment']}" />
+          <div class="widgetHelpLabel">
+            <h:outputText value="#{messages['label.editComment']}" />
+          </div>
+          <div class="tooltip">
+            #{messages['label.editComment.tooltip']}
+          </div>
         </td>
         <td class="fieldColumn">
           <h:inputTextarea value="#{currentDocument.contextData['request/comment']}" />

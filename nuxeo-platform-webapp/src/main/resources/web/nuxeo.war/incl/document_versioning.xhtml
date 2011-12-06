@@ -1,5 +1,4 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
@@ -8,24 +7,28 @@
 
   <table class="dataInput">
     <tr>
-      <td class="iconColumn" style="vertical-align:top;">
-        <h:graphicImage value="/icons/lightbulb.png"
-          styleClass="layoutHelpLabel"
-          title="#{messages['label.versioning.currentVersion.tooltip']}" />
+      <td class="labelColumn">
+        <div class="widgetHelpLabel">
+          <h:outputText value="#{messages['label.version']}"/>
+        </div>
+        <div class="tooltip">
+          #{messages['label.versioning.currentVersion.tooltip']}
+        </div>
       </td>
-      <td class="labelColumn"><h:outputText value="#{messages['label.version']}"/></td>
-      <td class="fieldColumn"><h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/></td>
+      <td class="fieldColumn">
+        <h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/>
+      </td>
     </tr>
     <c:if test="#{renderVersioningOptionsForCurrentDocument}">
     <tr>
-      <td class="iconColumn" style="vertical-align:top;">
-        <h:graphicImage value="/icons/lightbulb.png"
-          styleClass="layoutHelpLabel"
-          title="#{messages['label.versioning.changeVersion.tooltip']}" />
-      </td>
       <td class="labelColumn">
-        <h:outputLabel for="versioningOptionInstanceId"
-          value="#{messages['label.versioning.selectVersioningOption']}" />
+        <div class="widgetHelpLabel">
+          <h:outputLabel for="versioningOptionInstanceId"
+            value="#{messages['label.versioning.selectVersioningOption']}" />
+        </div>
+        <div class="tooltip">
+          #{messages['label.versioning.changeVersion.tooltip']}
+        </div>
       </td>
       <td class="fieldColumn">
         <h:selectOneRadio id="versioningOptionInstanceId"
