@@ -101,7 +101,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
         if (items==null) {
             items = new ArrayList<DashBoardItem>();
             for (Task task : getCurrentDocumentTasks()) {
-                DashBoardItem item = new DashBoardItemImpl(task, localeSelector.getLocale());
+                DashBoardItem item = new DashBoardItemImpl(task,navigationContext.getCurrentDocument(), localeSelector.getLocale());
                 items.add(item);
             }
         }
@@ -116,7 +116,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             for (Task task : getCurrentDocumentTasks()) {
                 String taskType = task.getVariable(Task.TaskVariableName.taskType.name());
                 if (!"publish_moderate".equals(taskType)) {
-                    DashBoardItem item = new DashBoardItemImpl(task, localeSelector.getLocale());
+                    DashBoardItem item = new DashBoardItemImpl(task, navigationContext.getCurrentDocument(), localeSelector.getLocale());
                     items.add(item);
                 }
             }

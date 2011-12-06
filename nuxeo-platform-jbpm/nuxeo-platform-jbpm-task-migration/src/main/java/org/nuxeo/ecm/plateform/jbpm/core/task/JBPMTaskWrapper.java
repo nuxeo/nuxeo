@@ -22,15 +22,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jbpm.graph.exe.Comment;
 import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple wrapper around a Jbpm {@link TaskInstance}
@@ -51,6 +58,10 @@ public class JBPMTaskWrapper implements Task {
 
     private Boolean validated;
 
+    protected static Log log = LogFactory.getLog(JBPMTaskWrapper.class);
+
+    private DocumentModel doc;
+
     public JBPMTaskWrapper(TaskInstance ti) {
         this.ti = ti;
         targetDocId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
@@ -61,7 +72,23 @@ public class JBPMTaskWrapper implements Task {
 
     @Override
     public DocumentModel getDocument() {
-        throw new UnsupportedOperationException();
+        if (doc==null) {
+            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner((String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name())) {
+                @Override
+                public void run() throws ClientException {
+                    doc = session.getDocument(new IdRef(targetDocId));
+                    if (doc instanceof DocumentModelImpl) {
+                        ((DocumentModelImpl) doc).detach(true);
+                    }
+                }
+            };
+            try {
+                runner.runUnrestricted();
+            } catch (ClientException e) {
+               log.error("Error while fetching DocumentModel", e);
+            }
+        }
+        return doc;
     }
 
     @Override
