@@ -2224,7 +2224,7 @@
       <dependency>
         <groupId>opensymphony</groupId>
         <artifactId>quartz-all</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
