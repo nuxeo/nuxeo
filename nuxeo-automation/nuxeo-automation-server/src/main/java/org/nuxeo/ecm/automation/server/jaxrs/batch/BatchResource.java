@@ -29,6 +29,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +44,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -134,8 +138,14 @@ public class BatchResource {
                 return result;
             }
         } catch (Exception e) {
-            log.error("Error while executing batch", e);
-            return "{ error:'" + e.getMessage() + "'}";
+            log.error("Error while executing automation batch ", e);
+            Throwable unwraped = ExceptionHelper.unwrapException(e);
+            if (ExceptionHelper.isSecurityError(unwraped)) {
+                return Response.status(Status.FORBIDDEN).entity("{\"error\" : \"" + unwraped.getMessage() + "\"}").build();
+            }
+            else {
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + unwraped.getMessage() + "\"}").build();
+            }
         }
     }
 
