@@ -1245,12 +1245,12 @@ public abstract class NuxeoLauncher {
         log.error("\t\t restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
         log.error("\t\t pack\t\t\tNot implemented. Use \"pack\" Shell script.");
         log.error("\t\t mp-list\t\tList marketplace packages.");
-        log.error("\t\t mp-add\t\t\tAdd marketplace package to local cache. You must provide the package file as parameter.");
+        log.error("\t\t mp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
         log.error("\t\t mp-install\t\tRun marketplace package installation. "
                 + "It is automatically called at startup if installAfterRestart.log exists. "
-                + "Else you must provide the package file or ID as parameter.");
-        log.error("\t\t mp-uninstall\t\tUninstall a marketplace package. You must provide the package id as parameter (see \"mp-list\" command).");
-        log.error("\t\t mp-remove\t\tRemoves a marketplace package. You must provide the package id as parameter (see \"mp-list\" command).");
+                + "Else you must provide the package file(s) or ID(s) as parameter.");
+        log.error("\t\t mp-uninstall\t\tUninstall marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
+        log.error("\t\t mp-remove\t\tRemove marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
         log.error("\t\t mp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
         log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
     }
