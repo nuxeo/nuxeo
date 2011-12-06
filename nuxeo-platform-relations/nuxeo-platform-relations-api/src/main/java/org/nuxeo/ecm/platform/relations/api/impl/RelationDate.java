@@ -35,17 +35,19 @@ import org.nuxeo.ecm.platform.relations.api.Literal;
  */
 public class RelationDate {
 
-    public static final DateFormat ISO_FORMAT = new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss");
-
     private RelationDate() {
+    }
+
+    protected static DateFormat getDateFormat() {
+        // not thread-safe so don't use a static instance
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     }
 
     /**
      * Returns Literal for given date.
      */
     public static Literal getLiteralDate(Date date) {
-        return new LiteralImpl(ISO_FORMAT.format(date));
+        return new LiteralImpl(getDateFormat().format(date));
     }
 
     /**
@@ -63,7 +65,7 @@ public class RelationDate {
         if (dateLiteral != null) {
             String dateString = dateLiteral.getValue();
             try {
-                date = ISO_FORMAT.parse(dateString);
+                date = getDateFormat().parse(dateString);
             } catch (ParseException err) {
             }
         }

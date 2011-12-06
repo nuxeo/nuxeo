@@ -18,8 +18,6 @@
 
 package org.nuxeo.ecm.platform.syndication.serializer;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,8 +47,6 @@ public interface DocumentModelListSerializer {
     String authorField = "author";
 
     String EMPTY_LIST = "empty result";
-
-    DateFormat DATE_PARSER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     String serialize(DocumentModelList docList, List<String> columnsDefinition,
             HttpServletRequest req) throws ClientException;

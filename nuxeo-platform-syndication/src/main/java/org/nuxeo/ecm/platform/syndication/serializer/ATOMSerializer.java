@@ -18,8 +18,6 @@
 
 package org.nuxeo.ecm.platform.syndication.serializer;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +46,6 @@ import com.sun.syndication.io.SyndFeedOutput;
  */
 public class ATOMSerializer extends AbstractSyndicationSerializer implements
         DashBoardItemSerializer {
-
-    private static final DateFormat DATE_PARSER = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss");
 
     private static final String ATOM_TYPE_old = "atom_0.3";
     private static final String ATOM_TYPE = "atom_1.0";

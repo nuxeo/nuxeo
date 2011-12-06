@@ -40,9 +40,6 @@ public class FeedItemAdapter {
     private FeedItemAdapter() {
     }
 
-    protected static final DateFormat DATE_PARSER = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss");
-
     /**
      * Convert a {@link DocumentModel} to a {@link FeedItem}.
      *
@@ -79,9 +76,11 @@ public class FeedItemAdapter {
         Date updateDate = ((Calendar) doc.getProperty("dublincore",
                 "modified")).getTime();
 
+        // not thread-safe so don't use a static instance
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            feedIt.setPublishedDate(DATE_PARSER.parse(DATE_PARSER.format(creationDate)));
-            feedIt.setUpdatedDate(DATE_PARSER.parse(DATE_PARSER.format(updateDate)));
+            feedIt.setPublishedDate(dateFormat.parse(dateFormat.format(creationDate)));
+            feedIt.setUpdatedDate(dateFormat.parse(dateFormat.format(updateDate)));
         } catch (ParseException e) {
             throw new ClientException(e);
         }

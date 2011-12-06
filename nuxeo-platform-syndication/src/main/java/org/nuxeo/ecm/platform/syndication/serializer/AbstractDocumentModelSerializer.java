@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.platform.syndication.serializer;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -158,7 +160,9 @@ public abstract class AbstractDocumentModelSerializer implements
                         res = new ResultField(fieldName,
                                 doc.getProperty(schemaName, fieldName).toString());
                     } else if (property instanceof Calendar) {
-                        String date = DATE_PARSER.format(((Calendar) doc.getProperty(
+                        // not thread-safe so don't use a static instance
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String date = dateFormat.format(((Calendar) doc.getProperty(
                                 schemaName, fieldName)).getTime());
                         res = new ResultField(fieldName, date);
                     } else if (property instanceof Object[]) {

@@ -65,9 +65,6 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
 
     private static final String taskNSPrefix = "nxt";
 
-    private static final DateFormat DATE_PARSER = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss");
-
     @Override
     public String serialize(ResultSummary summary, DocumentModelList docList,
             List<String> columnsDefinition, HttpServletRequest req)
@@ -168,13 +165,16 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
                 taskElem.addAttribute("currentDocumentLifeCycle",
                         currentLifeCycle);
 
+                // not thread-safe so don't use a static instance
+                DateFormat dateFormat = new SimpleDateFormat(
+                        "yyyy-MM-dd HH:mm:ss");
                 if (item.getDueDate() != null) {
                     taskElem.addAttribute("dueDate",
-                            DATE_PARSER.format(item.getDueDate()));
+                            dateFormat.format(item.getDueDate()));
                 }
                 if (item.getStartDate() != null) {
                     taskElem.addAttribute("startDate",
-                            DATE_PARSER.format(item.getStartDate()));
+                            dateFormat.format(item.getStartDate()));
                 }
                 if (item.getComment() != null) {
                     taskElem.setText(item.getComment());

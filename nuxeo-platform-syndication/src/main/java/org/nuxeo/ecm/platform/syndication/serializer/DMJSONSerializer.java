@@ -125,9 +125,6 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
         res.setEntity(json, MediaType.TEXT_PLAIN);
     }
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss");
-
     protected static String serialize(ResultSummary summary,
             List<DashBoardItem> workItems, String columnsDefinition,
             List<String> labels, String lang) throws ClientException {
@@ -177,11 +174,13 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
             }
             m.put("currentDocumentLifeCycle", currentLifeCycle);
 
+            // not thread-safe so don't use a static instance
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if (item.getDueDate() != null) {
-                m.put("dueDate", DATE_FORMAT.format(item.getDueDate()));
+                m.put("dueDate", dateFormat.format(item.getDueDate()));
             }
             if (item.getStartDate() != null) {
-                m.put("startDate", DATE_FORMAT.format(item.getStartDate()));
+                m.put("startDate", dateFormat.format(item.getStartDate()));
             }
             if (item.getComment() != null) {
                 m.put("comment", item.getComment());
