@@ -742,6 +742,7 @@ public class ConfigurationGenerator {
             boolean onConfiguratorContent = false;
             while ((line = reader.readLine()) != null) {
                 if (!onConfiguratorContent) {
+                    boolean templatesParamSet = false, wizardParamSet = false;
                     if (!line.startsWith(BOUNDARY_BEGIN)) {
                         if (line.startsWith(PARAM_FORCE_GENERATION)) {
                             if (setOnceToFalse && onceGeneration) {
@@ -753,16 +754,28 @@ public class ConfigurationGenerator {
                         } else if (line.startsWith(PARAM_WIZARD_DONE)) {
                             if (wizardParam != null) {
                                 line = PARAM_WIZARD_DONE + "=" + wizardParam;
+                                wizardParamSet = true;
                             }
                         } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
                             if (templatesParam != null) {
                                 line = PARAM_TEMPLATES_NAME + "="
                                         + templatesParam;
+                                templatesParamSet = true;
                             }
                         }
                         newContent.append(line
                                 + System.getProperty("line.separator"));
                     } else {
+                        if (templatesParam != null && !templatesParamSet) {
+                            newContent.append(PARAM_TEMPLATES_NAME + "="
+                                    + templatesParam
+                                    + System.getProperty("line.separator"));
+                        }
+                        if (wizardParam != null && !wizardParamSet) {
+                            newContent.append(PARAM_WIZARD_DONE + "="
+                                    + wizardParam
+                                    + System.getProperty("line.separator"));
+                        }
                         onConfiguratorContent = true;
                     }
                 } else {
@@ -888,8 +901,8 @@ public class ConfigurationGenerator {
     public void verifyInstallation() throws ConfigurationException {
         String JavaVersion = System.getProperty("java.version");
         if ((!JavaVersion.startsWith("1.6"))) {
-            String message = "Nuxeo requires Java 6 (detected "
-                    + JavaVersion + ").";
+            String message = "Nuxeo requires Java 6 (detected " + JavaVersion
+                    + ").";
             if ("nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
                 log.error(message);
             } else {
