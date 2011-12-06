@@ -383,6 +383,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-cmf</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>resources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-tomcat</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>

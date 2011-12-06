@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.cm.service.importer.SchedulerContrib">
+
+  <require>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService</require>
+  <!-- This configuration send an event every 5 minutes.
+       You need to first configure an importer. -->  
+  <!--extension
+     target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+     point="schedule">
+    <schedule id="importerSchedule">
+      <username>system</username>
+      <event>eventCmImport</event>
+      <eventCategory>cmImportCategory</eventCategory>
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+    </schedule>
+  </extension -->
+</component>
+

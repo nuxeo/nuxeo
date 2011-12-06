@@ -33,6 +33,13 @@
       <patternset refid="cmf.versus.cap" />
     </unzip>
 
+    <!-- CMF templates -->
+    <unzip dest="${maven.project.build.directory}/marketplace/install/templates"
+           overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cmf::zip"
+                            classifier="resources" />
+    </unzip>
+
     <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## nuxeo-marketplace-case-management
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
