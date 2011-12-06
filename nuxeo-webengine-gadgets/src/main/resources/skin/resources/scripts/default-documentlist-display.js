@@ -144,7 +144,7 @@ function mkCell(colDef, dashBoardItem) {
             html += "\" href=\"";
             html += NXGadgetContext.clientSideBaseUrl;
             html += codec + "/default";
-            html += dashBoardItem.path;
+            html += escape(dashBoardItem.path);
             html += "@" + view;
             html += "\" />";
             html += dashBoardItem.title;
