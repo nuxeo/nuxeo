@@ -178,6 +178,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     } else if (noop){
       alert(jQuery("#dndMessageNoOperation").html());
     }
+    window.location.href=window.location.href;
   }
 
   DropZoneUIHandler.prototype.cancelUpload = function() {
@@ -391,8 +392,18 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
               window.location.href=window.location.href;
               log("refresh-done");
           },
-          function(xhr,status,e) {
-              log("Error while executing batch");
+          function(xhr,status,errorMessage) {
+            this.cancelUpload();
+            if (status==403) {
+              alert("Security Error : \n" + errorMessage);
+            } else {
+              if (errorMessage) {
+                alert("Server Error : \n" + errorMessage);
+              } else {
+                alert("Unknown Server Error");
+              }
+            }
+            window.location.href=window.location.href;
           },
           true
       );
@@ -409,7 +420,6 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       this.batchId=null;
       this.nxUploaded=0;
       this.nxUploadStarted=0;
-      alert("Batch " + batchId + " completed");
   }
 
 };

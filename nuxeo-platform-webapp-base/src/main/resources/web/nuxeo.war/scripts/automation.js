@@ -87,7 +87,15 @@ function AutomationWrapper(operationId,opts) {
         error: function(xhr, status, e) {
           log("Failed to execute");
           if (failureCB) {
-              failureCB(xhr,status,"No Data");
+            var errorMessage = null;
+            if (xhr.response) {
+              errorMessage =xhr.response;
+              var parsedError = JSON.parse(errorMessage);
+              if (parsedError && parsedError.error) {
+                errorMessage = parsedError.error
+              }
+            }
+              failureCB(xhr,xhr.status,errorMessage);
             } else {
               log("Error, Status =" + status);
             }
@@ -97,6 +105,7 @@ function AutomationWrapper(operationId,opts) {
           if (status=="success") {
             successCB(data,status,xhr);
           } else {
+            console.log
               if (failureCB) {
                   failureCB(xhr,status,"No Data");
                 } else {
