@@ -50,9 +50,6 @@ public class MetadataFile {
 
     private static final Log log = LogFactory.getLog(MetadataFile.class);
 
-    public static DateFormat DATE_FORMAT = new SimpleDateFormat(
-            MetadataCollector.DATE_FORMAT);
-
     protected DocumentModel doc;
 
     protected Properties metadataProperties = new Properties();

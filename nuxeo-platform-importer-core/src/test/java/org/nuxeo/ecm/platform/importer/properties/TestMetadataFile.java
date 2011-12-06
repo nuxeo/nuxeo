@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -79,8 +80,10 @@ public class TestMetadataFile {
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
         Date date = ((Calendar) formatDate((String) properties.get("dc:expired"))).getTime();
-        assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
-                MetadataFile.DATE_FORMAT.format(date));
+        DateFormat dateFormat = new SimpleDateFormat(
+                MetadataCollector.DATE_FORMAT);
+        assertEquals(dateFormat.format(calendar.getTime()),
+                dateFormat.format(date));
         assertEquals("testIcon", properties.get("common:icon"));
         assertEquals("0", properties.get("uid:major_version"));
         assertEquals("0", properties.get("uid:minor_version"));
@@ -107,8 +110,10 @@ public class TestMetadataFile {
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
         Date date = ((Calendar) formatDate((String) properties.get("dc:expired"))).getTime();
-        assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
-                MetadataFile.DATE_FORMAT.format(date));
+        DateFormat dateFormat = new SimpleDateFormat(
+                MetadataCollector.DATE_FORMAT);
+        assertEquals(dateFormat.format(calendar.getTime()),
+                dateFormat.format(date));
     }
 
     @Test
