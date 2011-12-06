@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>User Relationships</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">user_relationship</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium<br /><br /><br /> fillContent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
+	<td>jdoh</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_email&quot;]</td>
+	<td>jdoh@social.workspace.org</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstPassword&quot;]</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save and create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
+	<td>mistert</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_lastname&quot;]</td>
+	<td>Tureaud</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstname&quot;]</td>
+	<td>Laurence</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_email&quot;]</td>
+	<td>mt@social.workspace.org</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstPassword&quot;]</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save and create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
+	<td>shedlund</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_lastname&quot;]</td>
+	<td>Hedlund</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstname&quot;]</td>
+	<td>Stieg</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_email&quot;]</td>
+	<td>sh@social.workspace.org</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstPassword&quot;]</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Relationship added successfully</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@type='checkbox']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Relationship added successfully</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@type='checkbox']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Relationship removed successfully</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@type='checkbox']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=usersListingView:searchForm:searchText</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>id=usersListingView:searchForm:searchText</td>
+	<td>miste</td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Laurence</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=mistert</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@type='checkbox']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Network</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=relationshipNetworkView:searchForm:clearButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>12000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>No user matching</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Stieg Hedlund</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Laurence Tureaud</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>friends</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>jdo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='relationshipNetworkView:searchForm:searchText']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@id='relationshipNetworkView:searchForm:searchText']</td>
+	<td>jdo</td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>jdoh</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=jdoh</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Username</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

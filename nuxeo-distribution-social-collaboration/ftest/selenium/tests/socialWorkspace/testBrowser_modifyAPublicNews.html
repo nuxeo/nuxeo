@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>Modify a Public news</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Modify a Public news</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+  <td>clickAndWait</td>
+  <td>//form[@id='document_content']/table/tbody/tr/td[3]/div/a[1]</td>
+  <td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=SocialWorkspaceForNews</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=News</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Public news</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;document_edit:nxl_social_document_heading:nxw_required_description&quot;]</td>
+	<td>changing the content of the public news</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//*[@id=&quot;document_edit:edit_doc_EDIT_CURRENT_DOCUMENT&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForOpensocialGadgetsToLoad</td>
+	<td>nxDocumentListData,content</td>
+	<td>60000</td>
+</tr>
+<tr>
+	<td>selectOpenSocialGadgetFrame</td>
+	<td>news</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p</td>
+	<td>Administrator,*</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>01/01/1970</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p/a</td>
+	<td>Public news</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p[2]</td>
+	<td>changing the content of the public news</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>SocialWorkspaceMember</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForOpensocialGadgetsToLoad</td>
+	<td>nxDocumentListData,content</td>
+	<td>60000</td>
+</tr>
+<tr>
+	<td>selectOpenSocialGadgetFrame</td>
+	<td>news</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p</td>
+	<td>Administrator,*</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>01/01/1970</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p/a</td>
+	<td>Public news</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p[2]</td>
+	<td>changing the content of the public news</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectOpenSocialGadgetFrame</td>
+	<td>usersocialworkspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[@id=&quot;nxDocumentListData&quot;]/table/tbody/tr/td[2]/a</td>
+	<td>SocialWorkspaceForNews</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[@id=&quot;nxDocumentListData&quot;]/table/tbody/tr/td[4]</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[@id=&quot;nxDocumentListData&quot;]/table/tbody/tr[2]/td[2]/a</td>
+	<td>SocialWorkspaceForDashboardView</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[@id=&quot;nxDocumentListData&quot;]/table/tbody/tr[2]/td[4]</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<!--tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>OutOfSocialWorkspaceMember</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForOpensocialGadgetsToLoad</td>
+	<td>nxDocumentListData</td>
+	<td>60000</td>
+</tr>
+<tr>
+	<td>selectOpenSocialGadgetFrame</td>
+	<td>news</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p</td>
+	<td>Administrator,*</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>01/01/1970</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p/a</td>
+	<td>Public news</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p[2]</td>
+	<td>changing the content of the public news</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectOpenSocialGadgetFrame</td>
+	<td>usersocialworkspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div/p</td>
+	<td>There is no document to show</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr-->
+</tbody></table>
+</body>
+</html>

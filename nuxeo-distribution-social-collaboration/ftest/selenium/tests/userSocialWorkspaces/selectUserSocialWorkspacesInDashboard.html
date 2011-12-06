@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>Select User Social Workspaces in the Dashboard</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Select User Social Workspaces in the Dashboard</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium<br /><br /><br /> SelectUserSocialWorkspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+  <td>clickAndWait</td>
+  <td>//form[@id='document_content']/table/tbody/tr/td[3]/div/a[1]</td>
+  <td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=SocialWorkspaceForDashboardView</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//img[@alt='Social Collaboration View']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Select a workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspaceForDashboardView&quot;]</td>
+	<td>SocialWorkspaceForDashboardView</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspaceForNews&quot;]</td>
+	<td>SocialWorkspaceForNews</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspace_SocialCollaborationView_Visibility&quot;]</td>
+	<td>SocialWorkspace_SocialCollaborationView_Visibility</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_testBrowserSocialWorkspace&quot;]</td>
+	<td>testBrowserSocialWorkspace</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_testPublicationSW&quot;]</td>
+	<td>testPublicationSW</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=SocialWorkspaceForNews</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Select a workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id=&quot;title_SocialWorkspaceForDashboardView&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspaceForDashboardView&quot;]</td>
+	<td>SocialWorkspaceForDashboardView</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspaceForNews&quot;]</td>
+	<td>SocialWorkspaceForNews</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspace_SocialCollaborationView_Visibility&quot;]</td>
+	<td>SocialWorkspace_SocialCollaborationView_Visibility</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_testBrowserSocialWorkspace&quot;]</td>
+	<td>testBrowserSocialWorkspace</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_testPublicationSW&quot;]</td>
+	<td>testPublicationSW</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Go to Articles</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Select a workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspaceForDashboardView&quot;]</td>
+	<td>SocialWorkspaceForDashboardView</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspaceForNews&quot;]</td>
+	<td>SocialWorkspaceForNews</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspace_SocialCollaborationView_Visibility&quot;]</td>
+	<td>SocialWorkspace_SocialCollaborationView_Visibility</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_testBrowserSocialWorkspace&quot;]</td>
+	<td>testBrowserSocialWorkspace</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_testPublicationSW&quot;]</td>
+	<td>testPublicationSW</td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>memberSW</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Document Management</td>
+	<td></td>
+</tr>
+<tr>
+  <td>clickAndWait</td>
+  <td>//form[@id='document_content']/table/tbody/tr/td[3]/div/a[1]</td>
+  <td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=SocialWorkspace_SocialCollaborationView_Visibility</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//img[@alt='Social Collaboration View']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Select a workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspace_SocialCollaborationView_Visibility&quot;]</td>
+	<td>SocialWorkspace_SocialCollaborationView_Visibility</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>SocialWorkspaceForDashboardView</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>SocialWorkspaceForNews</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>testBrowserSocialWorkspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>testPublicationSW</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Go to Articles</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Select a workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id=&quot;title_SocialWorkspace_SocialCollaborationView_Visibility&quot;]</td>
+	<td>SocialWorkspace_SocialCollaborationView_Visibility</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>SocialWorkspaceForDashboardView</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>SocialWorkspaceForNews</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>testBrowserSocialWorkspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>testPublicationSW</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
