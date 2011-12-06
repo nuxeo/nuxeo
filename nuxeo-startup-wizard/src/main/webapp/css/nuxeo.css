@@ -15,6 +15,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 body {
   background-color: #F1F2F3;
+  text-align: center;
 }
 
 hr {
@@ -223,7 +224,8 @@ table.nav-left {
 }
 
 .logo {
-    float: left;
+  float: left;
+  margin-top:4px;    
 }
 
 .login {
@@ -283,7 +285,7 @@ div.logout {
 .leftCell {
   width:15%;
   padding:1em;
-  background-color:rgba(224,224, 224, 0.1);
+  background-color:#f9f9f9;
 }
 
 .mainCell {
@@ -544,6 +546,10 @@ select.project-choice {
     -moz-border-radius : 0 0 1em 1em;
     -webkit-border-radius : 0 0 1em 1em;
     background-color: #F1F2F3
+    color: #5b5b5b;
+    font-size: 10px;
+    text-shadow: 0 1px 0 #FFFFFF;
+    text-align: center;
 }
 
 .footer a {
@@ -554,25 +560,6 @@ select.project-choice {
 
 .footer a:hover {
     color: #00a1f5;
-}
-
-.copyrights {
-    color: #5b5b5b;
-    display: inline;
-    width: 500px;
-    font-size: 10px;
-    text-shadow: 0 1px 0 #FFFFFF;
-}
-
-.links {
-    float: right;
-}
-
-.links span {
-    color: #5b5b5b;
-    text-shadow: 0 1px 0 #FFFFFF;
-    padding: 0px 10px;
-    font-size: 10px;
 }
 
 /* Download sections*/
@@ -814,7 +801,7 @@ ul.noBullet li {
 .screenExplanations {
     margin: 0.5em 0 1em;
     color: #333;
-    background-color: rgba(255,204,0,0.5);
+    background-color: #fde37d;
     display: block;
     padding : 1em;
 }
@@ -953,8 +940,10 @@ ul.hide {
 }
 
 #wizardFrame {
+ text-align: left; 
  margin : 1em auto;
  box-shadow : 0 0 1em #CCCCCC;
+ filter:progid:DXImageTransform.Microsoft.Glow(Color=#cccccc,Strength=4); 
  width: 730px;
  border-radius : 1em;
  -moz-border-radius : 1em;
