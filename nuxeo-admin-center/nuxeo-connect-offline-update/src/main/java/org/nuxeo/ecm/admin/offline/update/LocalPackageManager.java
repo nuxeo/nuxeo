@@ -201,16 +201,15 @@ public class LocalPackageManager {
     public void printHelp() {
         log.error("\nLocalPackageManager usage: working_directory command [parameters]");
         log.error("Commands:");
-        log.error("\tlist\t\t\t\tLists local packages and their status.");
-        log.error("\tadd /path/to/upgrade/file\t\t\tReads the given package"
-                + " file and stores it in the local cache.");
-        log.error("\tinstall /path/to/upgrade/file\t\t\tReads the given package"
-                + " file and performs install.");
-        log.error("\tinstallpkg [/path/to/package|packageId]\t\tInstalls the given"
-                + " package (as a file or its ID).");
-        log.error("\tuninstall packageId\t\t\t\tUninstalls the specified package.");
-        log.error("\tremove packageId\t\t\t\tRemoves the specified package.");
-        log.error("\treset\t\t\t\t\tReset all package states to DOWNLOADED. "
+        log.error("\tlist\t\t\t\t\t\tList local packages and their status.");
+        log.error("\tadd </path/to/package>...\t\t\tAdd the given package(s)"
+                + " into the local cache.");
+        log.error("\tinstall </path/to/package>...\t\t\tInstall the given package(s).");
+        log.error("\tinstallpkg </path/to/package|packageId>...\tInstall the given"
+                + " package(s) (as a file or its ID).");
+        log.error("\tuninstall packageId...\t\t\t\tUninstall the specified package(s).");
+        log.error("\tremove packageId...\t\t\t\tRemove the specified package(s).");
+        log.error("\treset\t\t\t\t\t\tReset all package states to DOWNLOADED. "
                 + "This may be useful after a manual upgrade of the server.");
     }
 
