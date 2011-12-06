@@ -96,18 +96,18 @@ public class DocumentListZipExporter {
             }
             BlobHolder bh = docChild.getAdapter(BlobHolder.class);
             String newPath = null;
-            if ( path.length() == 0 ) {
+            if (path.length() == 0) {
                 newPath = title;
             } else {
                 newPath = path + "/" + title;
             }
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {
-                addFolderToZip(newPath, out, docChild, data,
-                        documentManager, blobList, exportAllBlobs);
+                addFolderToZip(newPath, out, docChild, data, documentManager,
+                        blobList, exportAllBlobs);
             } else if (bh != null) {
-                addBlobHolderToZip(newPath, out, docChild, data,
-                        blobList, bh, exportAllBlobs);
+                addBlobHolderToZip(newPath, out, docChild, data, blobList, bh,
+                        exportAllBlobs);
             }
         }
     }
@@ -169,7 +169,7 @@ public class DocumentListZipExporter {
         if (blobs.size() > 0) { // add document info
             SimpleDateFormat format = new SimpleDateFormat(
                     "dd-MM-yyyy HH:mm:ss");
-            if ( path.length() > 0 ) {
+            if (path.length() > 0) {
                 blobList.append(path).append('/');
             }
             blobList.append(doc.getTitle()).append(" ");
@@ -200,7 +200,7 @@ public class DocumentListZipExporter {
                         entryName = formatFileName(fileName, "(" + tryCount
                                 + ")");
                     }
-                    if ( path.length() == 0 ) {
+                    if (path.length() == 0) {
                         entryPath = entryName;
                     } else {
                         entryPath = path + "/" + entryName;
