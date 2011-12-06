@@ -92,7 +92,7 @@ for line in os.popen("mvn -N help:effective-pom"):
     if not m:
         continue
     module = m.group(1)
-    if m == "addons":
+    if module == "addons":
         continue
     fetch(module)
 
