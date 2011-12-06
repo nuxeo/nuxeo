@@ -9,11 +9,11 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:c="http://java.sun.com/jstl/core" onLoad="loadCSs()">
-  
+
   <a4j:region rendered="#{documents != null}">
 
   <ui:include src="/incl/picture_download_form.xhtml"/>
-  
+
     <h:form id="#{documents.name}">
       <div class="foldableBox">
         <h3 class="nofold">
@@ -24,10 +24,11 @@
           </h:graphicImage>
         </h3>
         <div id="popupReceiver" />
+        <div id="pictureBookDropZone" class="dropzone" context="ContentView">
         <div class="boxBody pictureBook">
-          <ui:include src="/pagination/pageNavigationControls.xhtml" /> 
+          <ui:include src="/pagination/pageNavigationControls.xhtml" />
           <c:forEach varStatus="status" items="#{documents.rows}" var="row">
-            
+
             <div id="#{row.data.ref}"
               class="#{nxu:test(row.selected,'pictureBookItem itemSelected','pictureBookItem')}">
                 <script type="text/javascript">
@@ -41,7 +42,7 @@
                             document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=true;
                             document.getElementById('<h:outputText value="#{row.data.ref}" />').className='pictureBookItem itemSelected';
                            }
-                           selectDataTableRow('<h:outputText value="#{row.data.ref}" />' , 
+                           selectDataTableRow('<h:outputText value="#{row.data.ref}" />' ,
                              '<h:outputText value="#{providerName}" />',
                              document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0],
                              '<h:outputText value="#{listName}" />');
@@ -63,22 +64,22 @@
                 <!--  Image -->
                 <div id="docRef:#{row.data.ref}" class="cell">
                   <h:graphicImage rendered="#{row.data.type eq 'PictureBook'}"
-                    value="/icons/big_picturebook.png" height="100" width="100" /> 
+                    value="/icons/big_picturebook.png" height="100" width="100" />
                   <h:graphicImage rendered="#{row.data.type eq 'Picture'}"
                     value="#{nxd:fileUrl('downloadPicture', row.data , 'Thumbnail:content', currentDocument.dublincore.modified)}" />
                 </div>
               </div>
               <div class="pictureBookItemTitle">
-                <!--  Title  --> 
+                <!--  Title  -->
                 <nxd:restDocumentLink
                   document="#{row.data}">
                   <nxh:outputText rendered="#{15 > fn:length(nxd:titleOrId(row.data))}" value="#{nxd:titleOrId(row.data)}" />
-                  <f:subview rendered="#{fn:length(nxd:titleOrId(row.data)) > 14}" > 
+                  <f:subview rendered="#{fn:length(nxd:titleOrId(row.data)) > 14}" >
                     <span title="#{nxd:titleOrId(row.data)}">
                       <nxh:outputText value="#{fn:substring(nxd:titleOrId(row.data),0,7)}...#{fn:substring(nxd:titleOrId(row.data),fn:length(nxd:titleOrId(row.data)) - 7,fn:length(nxd:titleOrId(row.data)))}" />
                     </span>
-                  </f:subview>  
-                </nxd:restDocumentLink> 
+                  </f:subview>
+                </nxd:restDocumentLink>
                 <!-- external link-->
                 <nxd:restDocumentLink document="#{row.data}" newConversation="true"
                   target="_blank">
@@ -100,6 +101,7 @@
           <div style="clear: both" />
 
           <ui:include src="/pagination/pageNavigationControls.xhtml" />
+        </div>
         </div>
       </div>
       <ui:insert name="buttons" />
