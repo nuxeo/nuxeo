@@ -159,10 +159,6 @@ public class ConfigurationGenerator {
     // if PARAM_FORCE_GENERATION=false, set to once; else keep the current value
     private boolean setFalseToOnce = false;
 
-    private String wizardParam = null;
-
-    private String templatesParam = null;
-
     public boolean isConfigurable() {
         return configurable;
     }
@@ -637,10 +633,6 @@ public class ConfigurationGenerator {
             throws ConfigurationException {
         this.setOnceToFalse = setGenerationOnceToFalse;
         this.setFalseToOnce = setGenerationFalseToOnce;
-        // Will change wizardParam value instead of appending it
-        wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
-        // Will change templatesParam value instead of appending it
-        templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
         writeConfiguration(loadConfiguration(changedParameters),
                 changedParameters);
         for (String key : changedParameters.keySet()) {
@@ -734,6 +726,10 @@ public class ConfigurationGenerator {
 
     private StringBuffer loadConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
+        // Will change wizardParam value instead of appending it
+        String wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
+        // Will change templatesParam value instead of appending it
+        String templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
         StringBuffer newContent = new StringBuffer();
         BufferedReader reader = null;
         try {
