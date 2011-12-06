@@ -35,6 +35,9 @@
   <platforms>
     <platform>cap-5.5-SNAPSHOT</platform>
   </platforms>
+  <dependencies>
+    <package>nuxeo-content-browser-cmf:@VERSION@</package>
+  </dependencies>
   <license>LGPL</license>
   <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
 </package>
