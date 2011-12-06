@@ -60,6 +60,15 @@
       </modules>
     </profile>
     <profile>
+      <id>nuxeo-cmf</id>
+      <modules>
+        <module>nuxeo-distribution-coreserver</module>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-cmf</module>
+        <module>nuxeo-marketplace-cmf</module>
+      </modules>
+    </profile>
+    <profile>
       <!-- Build JBoss distributions -->
       <id>jboss</id>
       <modules>
@@ -67,12 +76,14 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-content-browser</module>
-        <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-distribution-dam</module>
-        <module>nuxeo-marketplace-dam</module>
-        <module>nuxeo-distribution-social-collaboration</module>
-        <module>nuxeo-marketplace-social-collaboration</module>
+        <!-- <module>nuxeo-marketplace-content-browser</module> -->
+        <!-- <module>nuxeo-marketplace-dm</module> -->
+        <!-- <module>nuxeo-distribution-dam</module> -->
+        <!-- <module>nuxeo-marketplace-dam</module> -->
+        <!-- <module>nuxeo-distribution-social-collaboration</module> -->
+        <!-- <module>nuxeo-marketplace-social-collaboration</module> -->
+        <!-- <module>nuxeo-distribution-cmf</module> -->
+        <!-- <module>nuxeo-marketplace-cmf</module> -->
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
@@ -90,6 +101,8 @@
         <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
+        <module>nuxeo-distribution-cmf</module>
+        <module>nuxeo-marketplace-cmf</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
@@ -110,6 +123,8 @@
         <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
+        <module>nuxeo-distribution-cmf</module>
+        <module>nuxeo-marketplace-cmf</module>
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
@@ -147,6 +162,7 @@
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
         <!-- <module>nuxeo-distribution-dam/ftest/selenium</module> -->
+        <!-- <module>nuxeo-distribution-cmf/ftest/selenium</module> -->
       </modules>
     </profile>
     <profile>
@@ -230,12 +246,18 @@
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
-      <!-- <dependency> -->
-      <!-- <groupId>org.nuxeo.ecm.distribution</groupId> -->
-      <!-- <artifactId>nuxeo-marketplace-cmf</artifactId> -->
-      <!-- <version>${nuxeo.distribution.version}</version> -->
-      <!-- <type>zip</type> -->
-      <!-- </dependency> -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-marketplace-cmf</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-cmf</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-jboss</artifactId>

@@ -78,7 +78,7 @@
     <antcall target="build-nuxeo-cap" />
     <antcall target="build-nuxeo-dm" />
     <antcall target="build-nuxeo-dam" />
-    <!-- <antcall target="build-nuxeo-cmf" /> -->
+    <antcall target="build-nuxeo-cmf" />
     <delete dir="${tomcat}" failonerror="false" />
   </target>
 
@@ -173,7 +173,7 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-content-browser::zip:cmf" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dam::zip" />
-      <!-- <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-cmf::zip" /> -->
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-cmf::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-social-collaboration::zip" />
     </copy>
     <!-- compute MD5 checksums -->
@@ -185,8 +185,8 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
               property="DMMPMD5" />
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dam-${nuxeo.distribution.version}.zip"
               property="DAMMPMD5" />
-    <!-- <checksum file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
-              property="CMFMPMD5" /> -->
+    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
+              property="CMFMPMD5" />
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
               property="SCMPMD5" />
 
@@ -213,8 +213,8 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
           tofile="${tomcat}/setupWizardDownloads/${DMMPMD5}" />
     <move file="${maven.project.build.directory}/nuxeo-marketplace-dam-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${DAMMPMD5}" />
-    <!-- <move file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
-          tofile="${tomcat}/setupWizardDownloads/${CMFMPMD5}" /> -->
+    <move file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
+          tofile="${tomcat}/setupWizardDownloads/${CMFMPMD5}" />
     <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
 
