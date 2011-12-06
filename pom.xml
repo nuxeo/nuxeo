@@ -62,6 +62,7 @@
     <module>nuxeo-social-collaboration</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
+    <module>nuxeo-cmf</module>
   </modules>
 
   <dependencyManagement>
@@ -91,7 +92,7 @@
         <scope>test</scope>
       </dependency>
 
-      <!-- Correspondence marianne -->
+      <!-- Correspondence Marianne -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-correspondence-marianne-api</artifactId>
@@ -580,7 +581,7 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Birt reporting -->
+      <!-- BIRT reporting -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-birt-reporting</artifactId>
@@ -592,7 +593,7 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- suggestbox -->
+      <!-- Suggest Box -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-suggestbox-core</artifactId>
@@ -616,7 +617,7 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- DAM -->
+      <!-- Digital Asset Management -->
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-api</artifactId>
@@ -645,6 +646,55 @@
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-importer-jaxrs</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Case Management Framework -->
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-case-management-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-case-management-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-case-management-facade</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-case-management-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-case-management-lang</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-case-management-test</artifactId>
+        <version>${nuxeo.addons.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Case Management - Correspondence -->
+      <dependency>
+        <groupId>org.nuxeo.correspondence</groupId>
+        <artifactId>nuxeo-correspondence-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.correspondence</groupId>
+        <artifactId>nuxeo-correspondence-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.correspondence</groupId>
+        <artifactId>nuxeo-correspondence-web</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
