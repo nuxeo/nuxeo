@@ -67,6 +67,9 @@
     <platform>cap-@VERSION@</platform>
     <platform>dm-@VERSION@</platform>
   </platforms>
+  <dependencies>
+    <package>nuxeo-content-browser:@VERSION@</package>
+  </dependencies>
   <license>LGPL</license>
   <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
 </package>
