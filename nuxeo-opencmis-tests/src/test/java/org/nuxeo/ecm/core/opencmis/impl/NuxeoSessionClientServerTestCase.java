@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,10 +11,14 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.Servlet;
 
@@ -24,12 +28,15 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.resource.Resource;
+import org.mortbay.thread.QueuedThreadPool;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler;
 import org.nuxeo.ecm.core.opencmis.bindings.TrustingLoginProvider;
 
@@ -38,6 +45,8 @@ import org.nuxeo.ecm.core.opencmis.bindings.TrustingLoginProvider;
  */
 public abstract class NuxeoSessionClientServerTestCase extends
         NuxeoSessionTestCase {
+
+    private static final Log log = LogFactory.getLog(NuxeoSessionClientServerTestCase.class);
 
     public static final String HOST = "localhost";
 
@@ -109,9 +118,38 @@ public abstract class NuxeoSessionClientServerTestCase extends
 
     protected void tearDownServer() throws Exception {
         System.clearProperty(NuxeoCmisAuthHandler.LOGIN_PROVIDER_PROP);
+        ((QueuedThreadPool) server.getThreadPool()).setMaxStopTimeMs(1000);
         server.stop();
+        killRemainingServerThreads();
         server.join();
         server = null;
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void killRemainingServerThreads() throws Exception {
+        QueuedThreadPool tp = (QueuedThreadPool) server.getThreadPool();
+        int n = tp.getThreads();
+        if (n == 0) {
+            return;
+        }
+        log.error(n + " Jetty threads failed to stop, killing them");
+        Object threadsLock = getFieldValue(tp, "_threadsLock");
+        @SuppressWarnings("unchecked")
+        Set<Thread> threadSet = (Set<Thread>) getFieldValue(tp, "_threads");
+        List<Thread> threads;
+        synchronized (threadsLock) {
+            threads = new ArrayList<Thread>(threadSet);
+        }
+        for (Thread t : threads) {
+            t.stop(); // try to stop thread brutally
+        }
+    }
+
+    protected static Object getFieldValue(Object object, String name)
+            throws Exception {
+        Field f = object.getClass().getDeclaredField(name);
+        f.setAccessible(true);
+        return f.get(object);
     }
 
     protected abstract EventListener[] getEventListeners();
