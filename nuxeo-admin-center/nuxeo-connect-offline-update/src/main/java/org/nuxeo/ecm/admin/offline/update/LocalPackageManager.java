@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +126,14 @@ public class LocalPackageManager {
         }
         command = args[1];
         config = new File(args[2]);
+        if (args.length < 4
+                && Arrays.asList(
+                        new String[] { "installpkg", "uninstall", "add",
+                                "remove" }).contains(command)) {
+            log.error("Missing parameter");
+            printHelp();
+            System.exit(1);
+        }
 
         home = new File(System.getProperty("nuxeo.runtime.home"));
         if (home == null) {
@@ -147,32 +156,31 @@ public class LocalPackageManager {
                 readPackages();
                 update();
             } else if ("installpkg".equalsIgnoreCase(command)) {
-                String packageParam = args[3];
-                if (new File(packageParam).exists()) {
-                    // packageParam is a file
-                    update(packageParam);
-                } else {
-                    // packageParam maybe an ID
-                    updatePackage(packageParam);
+                for (String packageParam : Arrays.copyOfRange(args, 3,
+                        args.length)) {
+                    if (new File(packageParam).exists()) {
+                        // packageParam is a file
+                        update(packageParam);
+                    } else {
+                        // packageParam maybe an ID
+                        updatePackage(packageParam);
+                    }
                 }
             } else if ("uninstall".equalsIgnoreCase(command)) {
-                if (args.length < 4) {
-                    throw new PackageException(
-                            "Missing package id as parameter.");
+                for (String packageParam : Arrays.copyOfRange(args, 3,
+                        args.length)) {
+                    uninstall(packageParam);
                 }
-                uninstall(args[3]);
             } else if ("add".equalsIgnoreCase(command)) {
-                if (args.length < 4) {
-                    throw new PackageException(
-                            "Missing file name as parameter.");
+                for (String packageParam : Arrays.copyOfRange(args, 3,
+                        args.length)) {
+                    add(packageParam);
                 }
-                add(args[3]);
             } else if ("remove".equalsIgnoreCase(command)) {
-                if (args.length < 4) {
-                    throw new PackageException(
-                            "Missing package id as parameter.");
+                for (String packageParam : Arrays.copyOfRange(args, 3,
+                        args.length)) {
+                    remove(packageParam);
                 }
-                remove(args[3]);
             } else if ("list".equalsIgnoreCase(command)) {
                 readPackages();
                 listPackages();
@@ -274,7 +282,7 @@ public class LocalPackageManager {
                     uninstall = true;
                 } else if (pkgId.startsWith("install ")) {
                     pkgId = pkgId.substring(8);
-                    uninstall=false;
+                    uninstall = false;
                 }
                 if (pkgId.startsWith("file:")) {
                     String packageFileName = pkgId.substring(5);
@@ -415,7 +423,8 @@ public class LocalPackageManager {
             throw new IllegalStateException("No package found: " + pkgId);
         }
         if (pkg.getState() != PackageState.DOWNLOADED) {
-            throw new IllegalStateException("Can only remove packages in DOWNLOADED state");
+            throw new IllegalStateException(
+                    "Can only remove packages in DOWNLOADED state");
         }
         log.info("Removing " + pkgId);
         try {
