@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.query.nxql;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,9 +47,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  */
 public class NXQLQueryBuilder {
-
-    public static final SimpleDateFormat sf = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss");
 
     private NXQLQueryBuilder() {
     }
@@ -522,10 +520,10 @@ public class NXQLQueryBuilder {
         String value;
         if (rawValue instanceof GregorianCalendar) {
             GregorianCalendar gc = (GregorianCalendar) rawValue;
-            value = "TIMESTAMP '" + sf.format(gc.getTime()) + "'";
+            value = "TIMESTAMP '" + getDateFormat().format(gc.getTime()) + "'";
         } else if (rawValue instanceof Date) {
             Date date = (Date) rawValue;
-            value = "TIMESTAMP '" + sf.format(date) + "'";
+            value = "TIMESTAMP '" + getDateFormat().format(date) + "'";
         } else if (rawValue instanceof Integer || rawValue instanceof Long
                 || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
@@ -545,6 +543,11 @@ public class NXQLQueryBuilder {
             }
         }
         return value;
+    }
+
+    protected static DateFormat getDateFormat() {
+        // not thread-safe so don't use a static instance
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     @SuppressWarnings("unchecked")
