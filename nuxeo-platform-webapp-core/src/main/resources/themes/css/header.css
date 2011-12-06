@@ -49,8 +49,8 @@ author: lkemen@nuxeo.com
 .nxHeader .userMenuActions a { background-color: #fff; font-size: 1.1em; display: block }
 
 .userMenuActions a.userButton {
-    background: url("${basePath}/icons/user.png") no-repeat scroll 5px center transparent;
-    padding: .15em .4em 0 2.1em }
+    background: url("${basePath}/icons/user_menu.png") no-repeat scroll right center transparent;
+    padding: .15em 1.7em 0 .8em }
 .userMenuActions ul:hover a, .userMenuActions ul:hover li, .userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)" }
 .userMenuActions li ul {
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
