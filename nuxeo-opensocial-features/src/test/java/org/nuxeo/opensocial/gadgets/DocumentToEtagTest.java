@@ -46,47 +46,34 @@ public class DocumentToEtagTest {
     @Inject
     CoreSession session;
 
-    private DocumentModel doc2;
-
-    private DocumentModel doc1;
-
-    @Inject
-    public DocumentToEtagTest(CoreSession session) throws ClientException {
-        doc1 = createDocForFile("blob1", "testBlob1.txt", session);
-        doc2 = createDocForFile("blob2", "testBlob2.txt", session);
-    }
-
     @Test
     public void sameDocProducesSameEtag() throws Exception {
-
+        DocumentModel doc1 = createDocForFile("blob1", "testBlob1.txt", session);
         EntityTag tag1 = GadgetDocument.getEntityTagForDocument(doc1);
         DocumentModel diffDoc = session.getDocument(new PathRef("/blob1"));
         EntityTag tag2 = GadgetDocument.getEntityTagForDocument(diffDoc);
-
         assertEquals(tag1.getValue(), tag2.getValue());
     }
 
     @Test
     public void differentDocProducesDifferentEtag() throws Exception {
-
+        DocumentModel doc1 = createDocForFile("blob1", "testBlob1.txt", session);
+        DocumentModel doc2 = createDocForFile("blob2", "testBlob2.txt", session);
         EntityTag tag1 = GadgetDocument.getEntityTagForDocument(doc1);
         EntityTag tag2 = GadgetDocument.getEntityTagForDocument(doc2);
         assertFalse(tag2.getValue().equals(tag1.getValue()));
-
     }
 
     @Test
     public void changingDocChangesEtag() throws Exception {
+        DocumentModel doc1 = createDocForFile("blob1", "testBlob1.txt", session);
         EntityTag tag1 = GadgetDocument.getEntityTagForDocument(doc1);
-
         doc1.setPropertyValue("dc:title", "new Title");
         session.saveDocument(doc1);
         session.save();
         doc1 = session.getDocument(new PathRef("/blob1"));
-
         EntityTag tag2 = GadgetDocument.getEntityTagForDocument(doc1);
         assertFalse(tag2.getValue().equals(tag1.getValue()));
-
     }
 
     private DocumentModel createDocForFile(String name, String path,
@@ -105,7 +92,6 @@ public class DocumentToEtagTest {
         session.saveDocument(doc);
         session.save();
         return doc;
-
     }
 
     private static URL getResource(String resource) {
