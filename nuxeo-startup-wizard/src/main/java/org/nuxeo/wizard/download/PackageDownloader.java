@@ -354,13 +354,13 @@ public class PackageDownloader {
 
     protected Properties getDefaultPackageSelection() {
         File desc = new File(getDownloadDirectory(), PACKAGES_DEFAULT_SELECTION);
-        if (desc!=null) {
+        if (desc!=null && desc.exists()) {
             try {
                 Properties props = new Properties();
                 props.load(new FileReader(desc));
                 return props;
             } catch (IOException e) {
-                log.error("Unable to load presets", e);
+                log.warn("Unable to load presets", e);
             }
         }
         return null;
