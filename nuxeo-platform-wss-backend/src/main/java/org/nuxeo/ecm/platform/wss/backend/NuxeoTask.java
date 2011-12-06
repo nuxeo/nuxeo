@@ -68,7 +68,7 @@ public class NuxeoTask extends AbstractTask implements Task {
                 }
                 commentBuffer.append(commentAuthor);
                 commentBuffer.append(" : ");
-                AbstractTask.TASK_DATE_FORMAT.format(comment.getTime());
+                AbstractTask.getDateFormat().format(comment.getTime());
                 commentBuffer.append("\n");
                 commentBuffer.append(comment.getMessage());
                 commentBuffer.append("^n");
