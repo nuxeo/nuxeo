@@ -60,6 +60,7 @@ table.dataOutput th a img { margin: 0 0 0 .2em; padding: 0; vertical-align: bott
 
 .labelColumn { font-weight: bold; text-align: right; vertical-align: top; width: 11em }
 .labelColumn span { display: block; padding-right: 1em }
+.labelColumn .widgetHelpLabel span { display: inline }
 .workflowLabelColumn { width: 120px }
 
 .relationCommentList td { border: 0 none }
