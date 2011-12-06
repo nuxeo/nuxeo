@@ -17,29 +17,37 @@
           <nxl:layoutRowWidget>
             <c:choose>
               <c:when test="#{widget.translated}">
-                <td class="iconColumn" style="vertical-align:top;">
-                  <c:if test="#{!empty widget.helpLabel}">
-                    <h:graphicImage value="/icons/lightbulb.png"
-                      styleClass="layoutHelpLabel"
-                      title="#{messages[widget.helpLabel]}" />
-                  </c:if>
-                </td>
                 <td class="labelColumn">
-                  <h:outputText value="#{messages[widget.label]}"
-                    styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                  <c:if test="#{empty widget.helpLabel}">
+                    <h:outputText value="#{messages[widget.label]}"
+                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                  </c:if>
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <div class="widgetHelpLabel">
+                      <h:outputText value="#{messages[widget.label]}"
+                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                    </div>
+                    <div class="tooltip">
+                      #{messages[widget.helpLabel]}
+                    </div>
+                  </c:if>
                 </td>
               </c:when>
               <c:otherwise>
-                <td class="iconColumn" style="vertical-align:top;">
-                  <c:if test="#{!empty widget.helpLabel}">
-                    <h:graphicImage value="/icons/lightbulb.png"
-                      styleClass="layoutHelpLabel"
-                      title="#{widget.helpLabel}" />
-                  </c:if>
-                </td>
                 <td class="labelColumn">
-                  <h:outputText value="#{widget.label}"
-                    styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                  <c:if test="#{empty widget.helpLabel}">
+                    <h:outputText value="#{widget.label}"
+                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                  </c:if>
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <div class="widgetHelpLabel">
+                      <h:outputText value="#{widget.label}"
+                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                    </div>
+                    <div class="tooltip">
+                      #{widget.helpLabel}
+                    </div>
+                  </c:if>
                 </td>
               </c:otherwise>
             </c:choose>
@@ -55,7 +63,7 @@
 
 <script>
   jQuery(document).ready(function() {
-    jQuery("img.layoutHelpLabel[title]").tooltip({delay:1000, predelay:250, offset: [0, 100], position: 'center center'});
+    jQuery(".widgetHelpLabel").tooltip();
   });
 </script>
 
