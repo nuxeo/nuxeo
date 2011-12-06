@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +46,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class,
@@ -69,14 +68,16 @@ public class TestShibbolethGroupHelper {
 
     @Test
     public void testCreateGroup() throws Exception {
-        assertSame(0, ShibbolethGroupHelper.getGroups().size());
+        assertEquals(0, ShibbolethGroupHelper.getGroups().size());
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
 
         group.setPropertyValue("shibbolethGroup:groupName", "group1");
         group.setPropertyValue("shibbolethGroup:expressionLanguage", CORRECT_EL);
         ShibbolethGroupHelper.createGroup(group);
 
-        assertSame(1, ShibbolethGroupHelper.getGroups().size());
+        assertEquals(1, ShibbolethGroupHelper.getGroups().size());
+        deleteShibbGroups();
+        assertEquals(0, ShibbolethGroupHelper.getGroups().size());
     }
 
     @Test
@@ -87,10 +88,11 @@ public class TestShibbolethGroupHelper {
         createShibbGroup("test");
         createShibbGroup("group6");
 
-        assertSame(1, ShibbolethGroupHelper.searchGroup("test").size());
-        assertSame(6, ShibbolethGroupHelper.searchGroup("").size());
-        assertSame(5, ShibbolethGroupHelper.searchGroup("group%").size());
-        assertSame(5, ShibbolethGroupHelper.searchGroup("group").size());
+        assertEquals(1, ShibbolethGroupHelper.searchGroup("test").size());
+        assertEquals(5, ShibbolethGroupHelper.searchGroup("").size());
+        assertEquals(4, ShibbolethGroupHelper.searchGroup("group%").size());
+        assertEquals(4, ShibbolethGroupHelper.searchGroup("group").size());
+        deleteShibbGroups();
     }
 
     @Test
@@ -118,6 +120,7 @@ public class TestShibbolethGroupHelper {
         SQLSession ses = (SQLSession) directoryService.open(
                 userManager.getGroupDirectoryName());
         DocumentModel tmp = ses.getEntry("testRef");
+        @SuppressWarnings("unchecked")
         List<String> subs = (List<String>) tmp.getProperty(
                 userManager.getGroupSchemaName(),
                 userManager.getGroupSubGroupsField());
@@ -130,6 +133,7 @@ public class TestShibbolethGroupHelper {
         assertTrue(dirRef.getTargetIdsForSource("testRef").size() > 0);
         assertTrue(dirRef.getSourceIdsForTarget("refShib").size() > 0);
         assertEquals("testRef", dirRef.getSourceIdsForTarget("refShib").get(0));
+        deleteShibbGroups();
     }
 
     @Test
@@ -190,6 +194,7 @@ public class TestShibbolethGroupHelper {
 
         assertNotNull(parent);
         assertEquals(2, parent.size());
+        deleteShibbGroups();
     }
 
     protected DocumentModel createShibbGroup(String name) throws Exception {
@@ -201,4 +206,12 @@ public class TestShibbolethGroupHelper {
         session.save();
         return group;
     }
+
+    protected void deleteShibbGroups() throws Exception {
+        for (DocumentModel group : ShibbolethGroupHelper.getGroups()) {
+            ShibbolethGroupHelper.deleteGroup(group);
+        }
+        session.save();
+    }
+
 }
