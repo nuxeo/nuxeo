@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -83,8 +85,14 @@ public class TestMetadataFileHelper {
         assertEquals("testAuthor",
                 properties.get(Constants.DAM_COMMON_AUTHOR_PROPERTY));
         Date date = ((Calendar) new DateType().decode((String) properties.get(Constants.DAM_COMMON_AUTHORING_DATE_PROPERTY))).getTime();
-        assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
-                MetadataFile.DATE_FORMAT.format(date));
+        DateFormat dateFormat = new SimpleDateFormat(
+                MetadataCollector.DATE_FORMAT);
+        assertEquals(dateFormat.format(calendar.getTime()),
+                dateFormat.format(date));
+
+        assertEquals(dateFormat.format(calendar.getTime()),
+                dateFormat.format(date));
+
         assertEquals("testDescription",
                 properties.get(Constants.DUBLINCORE_DESCRIPTION_PROPERTY));
         assertEquals("testDescription",
@@ -92,8 +100,8 @@ public class TestMetadataFileHelper {
         assertEquals("testCoverage",
                 properties.get(Constants.DUBLINCORE_COVERAGE_PROPERTY));
         date = ((Calendar) new DateType().decode((String) properties.get(Constants.DUBLINCORE_EXPIRED_PROPERTY))).getTime();
-        assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
-                MetadataFile.DATE_FORMAT.format(date));
+        assertEquals(dateFormat.format(calendar.getTime()),
+                dateFormat.format(date));
 
         assertFalse(properties.containsKey(Constants.DUBLINCORE_TITLE_PROPERTY));
         assertFalse(properties.containsKey("common:icon"));
