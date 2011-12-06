@@ -17,13 +17,12 @@
 
 package org.nuxeo.wss.spi;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public abstract class AbstractWSSListItem implements WSSListItem {
-
-    public static final SimpleDateFormat WSS_DATE_FORMAT = new SimpleDateFormat("dd MMM yyyy HH:mm:ss -0000", Locale.US);
 
     protected String icon;
 
@@ -37,12 +36,17 @@ public abstract class AbstractWSSListItem implements WSSListItem {
         this.icon = icon;
     }
 
+    protected static DateFormat getDateFormat() {
+        // not thread-safe so don't use a static instance
+        return new SimpleDateFormat("dd MMM yyyy HH:mm:ss -0000", Locale.US);
+    }
+
     public String getCreatedTS() {
-        return WSS_DATE_FORMAT.format(getCreationDate());
+        return getDateFormat().format(getCreationDate());
     }
 
     public String getModifiedTS() {
-        return WSS_DATE_FORMAT.format(getModificationDate());
+        return getDateFormat().format(getModificationDate());
     }
 
     protected abstract Date getCheckoutDate();
@@ -50,11 +54,11 @@ public abstract class AbstractWSSListItem implements WSSListItem {
     protected abstract Date getCheckoutExpiryDate();
 
     public String getCheckoutTS() {
-        return WSS_DATE_FORMAT.format(getCheckoutDate());
+        return getDateFormat().format(getCheckoutDate());
     }
 
     public String getCheckoutExpiryTS() {
-        return WSS_DATE_FORMAT.format(getCheckoutExpiryDate());
+        return getDateFormat().format(getCheckoutExpiryDate());
     }
 
     protected String getExtension() {

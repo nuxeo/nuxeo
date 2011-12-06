@@ -16,6 +16,7 @@
  */
 package org.nuxeo.wss.spi.dws;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -23,8 +24,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 public abstract class AbstractDWSItem implements DWSItem {
-
-    public static final SimpleDateFormat TASK_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 
     protected String authorId = "unset";
     protected String editorId = "unset";
@@ -42,6 +41,11 @@ public abstract class AbstractDWSItem implements DWSItem {
         this.created=created;
         this.modified=modified;
         this.fileRef=fileRef;
+    }
+
+    protected static DateFormat getDateFormat() {
+        // not thread-safe so don't use a static instance
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
     }
 
     public String getAuthorRef() {
@@ -82,7 +86,7 @@ public abstract class AbstractDWSItem implements DWSItem {
         if (date==null) {
             date = new Date(System.currentTimeMillis());
         }
-        return TASK_DATE_FORMAT.format(date);
+        return getDateFormat().format(date);
     }
 
     public String getModifiedTS() {
@@ -93,7 +97,7 @@ public abstract class AbstractDWSItem implements DWSItem {
         if (date==null) {
             date = new Date(System.currentTimeMillis());
         }
-        return TASK_DATE_FORMAT.format(date);
+        return getDateFormat().format(date);
     }
 
     public String getAuthorLogin() {

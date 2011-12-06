@@ -39,7 +39,7 @@ public abstract class AbstractTask extends AbstractDWSItem implements Task {
         if (date==null) {
             date = new Date(System.currentTimeMillis());
         }
-        return TASK_DATE_FORMAT.format(date);    }
+        return getDateFormat().format(date);    }
 
     public void updateReferences(List<User> users, List<User> assignees) {
 
