@@ -210,7 +210,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         WizardPage packageSelectiondPage = connectFinish.nav(WizardPage.class,
                 "Continue", true);
         assertNotNull(packageSelectiondPage);
-        assertEquals("Select packages", packageSelectiondPage.getTitle());
+        assertEquals("Select modules", packageSelectiondPage.getTitle());
 
         // use specific url
         String currentUrl = driver.getCurrentUrl();
@@ -226,7 +226,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
         WizardPage packageDownloadPage = packageSelectiondPage.next(true);
         assertNotNull(packageDownloadPage);
-        assertEquals("Packages download", packageDownloadPage.getTitle());
+        assertEquals("Modules download", packageDownloadPage.getTitle());
 
         // **********************
         // Summary screen
