@@ -742,7 +742,6 @@ public class ConfigurationGenerator {
             boolean onConfiguratorContent = false;
             while ((line = reader.readLine()) != null) {
                 if (!onConfiguratorContent) {
-                    boolean templatesParamSet = false, wizardParamSet = false;
                     if (!line.startsWith(BOUNDARY_BEGIN)) {
                         if (line.startsWith(PARAM_FORCE_GENERATION)) {
                             if (setOnceToFalse && onceGeneration) {
@@ -754,24 +753,24 @@ public class ConfigurationGenerator {
                         } else if (line.startsWith(PARAM_WIZARD_DONE)) {
                             if (wizardParam != null) {
                                 line = PARAM_WIZARD_DONE + "=" + wizardParam;
-                                wizardParamSet = true;
+                                wizardParam = null;
                             }
                         } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
                             if (templatesParam != null) {
                                 line = PARAM_TEMPLATES_NAME + "="
                                         + templatesParam;
-                                templatesParamSet = true;
+                                templatesParam = null;
                             }
                         }
                         newContent.append(line
                                 + System.getProperty("line.separator"));
                     } else {
-                        if (templatesParam != null && !templatesParamSet) {
+                        if (templatesParam != null) {
                             newContent.append(PARAM_TEMPLATES_NAME + "="
                                     + templatesParam
                                     + System.getProperty("line.separator"));
                         }
-                        if (wizardParam != null && !wizardParamSet) {
+                        if (wizardParam != null) {
                             newContent.append(PARAM_WIZARD_DONE + "="
                                     + wizardParam
                                     + System.getProperty("line.separator"));
