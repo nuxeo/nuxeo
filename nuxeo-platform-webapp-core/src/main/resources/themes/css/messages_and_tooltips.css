@@ -31,14 +31,21 @@ author: lkemen@nuxeo.com
 .help { color: "gray.medium (__FLAVOR__ color)" }
 
 /* =Tips */
+.widgetHelpLabel {
+  border-bottom: 1px dashed #FFCC1D;
+  cursor: help;
+  display: inline;
+  padding-bottom: 0.2em }
 .tooltip {
-  background-color: #ffe179;
-  border-radius: 4px;
+  background-color: #FFE179;
+  border-radius: 0 4px;
+  box-shadow: 2px 2px 0 #DCB632;
   color: #000;
   display: none;
   font-weight: normal;
-  max-width: 12%;
-  padding: .6em .6em .8em;
+  font-size: 90%;
+  max-width: 14em;
+  padding: .6em .8em .8em;
   white-space: normal;
   z-index: 2000 }
 .tips {
