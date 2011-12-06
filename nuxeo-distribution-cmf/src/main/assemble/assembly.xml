@@ -28,6 +28,7 @@
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <mkdir dir="${nuxeo.ear}" />
     <antcall target="build-standard" />
+    <antcall target="build-resources" />
   </target>
 
   <target name="build-standard"
@@ -68,6 +69,20 @@
       </fileset>
     </move>
     <nx:rmdups dir="${nuxeo.ear}/lib" />
+  </target>
+  
+  <target name="build-resources">
+    <delete dir="${outdir}/template-cmf" failonerror="false" />
+    <copy todir="${outdir}/template-cmf" overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+         basedir="${outdir}/template-cmf" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip"
+                     classifier="resources" />
   </target>
 
 </project>
