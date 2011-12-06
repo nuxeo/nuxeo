@@ -184,6 +184,10 @@ public class DocumentListZipExporter {
 
         for (Blob content : blobs) {
             String fileName = content.getFilename();
+            if (fileName == null) {
+                // use a default value
+                fileName = "file.bin";
+            }
             BufferedInputStream buffi = new BufferedInputStream(
                     content.getStream(), BUFFER);
 
