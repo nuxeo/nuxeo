@@ -147,9 +147,6 @@ class TargetContainerCreator extends UnrestrictedSessionRunner {
 
     public static final String DEFAULT_IMPORT_FOLDER_TITLE = "Automatic Import";
 
-    public static DateFormat IMPORT_SET_NAME_FORMAT = new SimpleDateFormat(
-            "yyyyMMdd HH:mm");
-
     private static final Log log = LogFactory.getLog(TargetContainerCreator.class);
 
     public DocumentModel targetContainer;
@@ -245,7 +242,8 @@ class TargetContainerCreator extends UnrestrictedSessionRunner {
 
     protected String generateImportSetName() {
         Calendar calendar = Calendar.getInstance();
-        return IMPORT_SET_NAME_FORMAT.format(calendar.getTime());
+        // not thread-safe so don't use a static instance
+        return new SimpleDateFormat("yyyyMMdd HH:mm").format(calendar.getTime());
     }
 
     protected DocumentModel setImportSetProperties(DocumentModel importSet)
