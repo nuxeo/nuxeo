@@ -51,9 +51,6 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
 
     private static final long serialVersionUID = -9090607163794413025L;
 
-    private static final DateFormat DATE_PARSER = new SimpleDateFormat(
-            "dd-MM-yyyy HH:mm:ss");
-
     private String marker = " ";
 
     private String bullet = "* ";
@@ -98,7 +95,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         this.uuid = uuid;
         this.title = title;
         if (modifiedDate != null) {
-            this.modifiedDate = DATE_PARSER.format(modifiedDate);
+            this.modifiedDate = getDateFormat().format(modifiedDate);
         }
         this.filename = filename;
         this.version = version;
@@ -139,7 +136,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         }
 
         if (date != null) {
-            modifiedDate = DATE_PARSER.format(((Calendar) date).getTime());
+            modifiedDate = getDateFormat().format(((Calendar) date).getTime());
         }
         try {
             filename = (String) doc.getProperty("file", "filename");
@@ -153,6 +150,11 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     }
 
     public SummaryEntry() {
+    }
+
+    public static DateFormat getDateFormat() {
+        // not thread-safe so don't use a static instance
+        return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
 
     public String getUuid() {
