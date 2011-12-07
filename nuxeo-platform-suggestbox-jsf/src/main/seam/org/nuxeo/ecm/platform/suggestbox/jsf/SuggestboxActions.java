@@ -12,11 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Mariana Cedica
+ *     Olivier Grisel
  *
  * $Id$
  */
-
 package org.nuxeo.ecm.platform.suggestbox.jsf;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionHandlingException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
+import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,7 +53,8 @@ import edu.emory.mathcs.backport.java.util.Collections;
 @Name("suggestboxActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
-public class SuggestboxActions implements Serializable {
+public class SuggestboxActions extends DocumentContextBoundActionBean implements
+        Serializable {
 
     private static final Log log = LogFactory.getLog(SuggestboxActions.class);
 
@@ -80,6 +81,12 @@ public class SuggestboxActions implements Serializable {
     @In(create = true)
     protected ContentViewActions contentViewActions;
 
+    // keep suggestions in cache for maximum 10 seconds to avoid useless and
+    // costly re-computation of the suggestions by rich:suggestionbox at
+    // selection time
+    protected Cached<List<Suggestion>> cachedSuggestions = new Cached<List<Suggestion>>(
+            10000);
+
     public DocumentModel getDocumentModel(String id) throws ClientException {
         return documentManager.getDocument(new IdRef(id));
     }
@@ -96,16 +103,21 @@ public class SuggestboxActions implements Serializable {
 
     @SuppressWarnings("unchecked")
     public List<Suggestion> getSuggestions(Object input) {
-        SuggestionService service = Framework.getLocalService(SuggestionService.class);
-        SuggestionContext ctx = getSuggestionContext();
-        try {
-            return service.suggest(input.toString(), ctx);
-        } catch (SuggestionException e) {
-            // log the exception rather than trying to display it since this
-            // method is called by ajax events when typing in the searchbox.
-            log.error(e, e);
-            return Collections.emptyList();
+        if (cachedSuggestions.hasExpired(input, locale)) {
+            SuggestionService service = Framework.getLocalService(SuggestionService.class);
+            SuggestionContext ctx = getSuggestionContext();
+            try {
+                List<Suggestion> suggestions = service.suggest(
+                        input.toString(), ctx);
+                cachedSuggestions.cache(suggestions, input, locale);
+            } catch (SuggestionException e) {
+                // log the exception rather than trying to display it since this
+                // method is called by ajax events when typing in the searchbox.
+                log.error(e, e);
+                return Collections.emptyList();
+            }
         }
+        return cachedSuggestions.value;
     }
 
     protected SuggestionContext getSuggestionContext() {
@@ -132,6 +144,11 @@ public class SuggestboxActions implements Serializable {
         dm.setPropertyValue("fsd:ecm_fulltext", searchKeywords);
         multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
         return "faceted_search_results";
+    }
+
+    @Override
+    protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
+        cachedSuggestions.expire();
     }
 
 }
