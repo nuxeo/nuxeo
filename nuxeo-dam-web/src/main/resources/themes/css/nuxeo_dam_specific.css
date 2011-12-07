@@ -177,7 +177,7 @@ legend { color: #333; font-weight: bold; padding: 0 .4em }
 .summary_div_0 { float:left; width: 440px }
 .summary_div_1 { float:right; width: 440px }
 
-.buttonsGadget { border-top: 2px dotted #E9E9E9; font-size: 1.1em; margin: .5em 0 0; padding: .5em 0 0 }
+.buttonsGadget { border-top: 2px dotted #E9E9E9; font-size: 1.1em; margin: .5em 0 0; padding: .5em 0 0; text-align: center }
 
 #importSetFormPanelContentDiv { height: 480px; overflow-y: auto }
 .smallBox { height: 140px }
@@ -185,18 +185,19 @@ legend { color: #333; font-weight: bold; padding: 0 .4em }
 .rich-fileupload-table-td { border: none }
 .rich-fileupload-ico { padding: .2em .5em .2em 1.6em }
 .dr-mpnl-pnl-b { padding: 1em 1em 0 }
-#fancybox-content { font-size: .7em; width: 96%; height: 480px; overflow: auto }
+#fancybox-content { width: 96%; height: 480px; overflow: auto }
 #fancybox-content h3 { border-bottom: 2px dotted #ddd; margin: 0 0 .5em; padding: .5em 0 }
 #fancybox-content .dataInput { margin: .4em auto; width: 100% }
 #fancybox-content .dataInput td { vertical-align: top }
 #fancybox-content .dataInput .labelColumn { padding-right: .8em }
 #fancybox-content .dataInput .dataInputText { max-width: 20em }
 #fancybox-content .dataInput select { max-width: 20em }
-#fancybox-content fieldset { margin: 0 auto; max-width: 910px; padding: .6em 0 }
+#fancybox-content legend { font-size: 110% }
+#fancybox-content fieldset { font-size: 90%; margin: 0 auto; max-width: 910px; padding: .6em 0 }
 #fancybox-content fieldset .button { margin: .5em 1em 0 0 }
 #fileUploadForm { height:98px; width:410px; margin: 0 0 1.3em }
 
-#importSetPanel .dataInput td { padding: 0 }
+#importSetPanel .dataInput td { padding: .1em }
 #importSetPanel .iconColumn { padding: 0; width: 0 }
 
 .treeNav_popup .refresh { float: right }
