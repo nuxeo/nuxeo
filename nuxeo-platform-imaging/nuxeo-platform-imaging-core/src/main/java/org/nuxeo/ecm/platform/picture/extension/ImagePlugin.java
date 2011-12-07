@@ -18,9 +18,7 @@
 package org.nuxeo.ecm.platform.picture.extension;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,12 +27,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -72,11 +69,8 @@ public class ImagePlugin extends AbstractFileImporter {
                 documentManager.checkIn(docRef, null, null);
             }
 
-            ((Map) ((List) docModel.getDataModel("picture").getData("views")).get(0)).put(
-                    "content", content.persist());
-            // To do: Generate Picture views
-            // docModel.setProperty("file", "content", content.persist());
-
+            BlobHolder bh = docModel.getAdapter(BlobHolder.class);
+            bh.setBlob(content.persist());
         } else {
             PathSegmentService pss;
             try {
@@ -84,24 +78,12 @@ public class ImagePlugin extends AbstractFileImporter {
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-            String title = FileManagerUtils.fetchTitle(filename);
-            docModel = documentManager.createDocumentModel(docType);
-            try {
-                DocumentModel parent = documentManager.getDocument(new PathRef(
-                        path));
-                ArrayList<Map<String, Object>> pictureTemplates = null;
-                if (parent.getType().equals(
-                        ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME)) {
-                    // Use PictureBook Properties
-                    pictureTemplates = (ArrayList<Map<String, Object>>) parent.getPropertyValue(ImagingDocumentConstants.PICTURETEMPLATES_PROPERTY_NAME);
-                }
-                PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-                picture.createPicture(content, filename, title,
-                        pictureTemplates);
 
-            } catch (Exception e) {
-                log.error("Picture.views generation failed", e);
-            }
+            docModel = documentManager.createDocumentModel(docType);
+            String title = FileManagerUtils.fetchTitle(filename);
+            docModel.setPropertyValue("dc:title", title);
+            docModel.setPropertyValue("file:content",
+                    (Serializable) content.persist());
             docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
         }
