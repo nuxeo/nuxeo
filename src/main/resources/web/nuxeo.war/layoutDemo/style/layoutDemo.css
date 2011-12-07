@@ -71,67 +71,11 @@ div.customButtons a:hover {
   color:#fff;
 }
 
-
-/* FOLDABLE BOX */
-
-.foldableBox {
-  border:1px solid #4e9ae1;
-  margin:10px!important;
-}
-
-.foldableBox h3 {
-  border-bottom: 1px solid #4e9ae1;
-  color: #fff;
-  background: #4e9ae1;
-  padding:3px 3px 3px 18px;
-  font-size:11px;
-}
-
-.foldableBox h3.folded {
-  background: #4e9ae1 url(/nuxeo/img/theme_galaxy/arrow_folded.gif) top left no-repeat;
-}
-
-.foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover {
-  color: #fff;
-}
-
-.foldableBox h3.unfolded {
-  background: #4e9ae1 url(/nuxeo/img/theme_galaxy/arrow_unfolded.gif) top left no-repeat;
-}
-
-.foldableBox h3 a {
-  color: #fff;
-  display: block;
-}
-
-.foldableBox .boxBody {
-  padding: 10px;
-}
-
-.tabsContent .foldableBox {
-  margin:10px 0 !important;
-  border:1px solid #c7c7c7;  
-}
-
-.tabsContent .foldableBox  h3 {
-  border:none;
-  background-color:#f1f2f3,
-  color:#666;
-}
-
-.tabsContent .foldableBox h3.folded {
-  background: #f1f2f3 url(/nuxeo/layoutDemo/img/arrow_dark_folded.png) top left no-repeat;
-}
-
-.tabsContent .foldableBox h3 a:link, .tabsContent .foldableBox h3 a:visited, .tabsContent .foldableBox h3 a:hover, .tabsContent .foldableBox h3 a:visited:hover {
-  color: #666;
-}
-
-.tabsContent .foldableBox h3.unfolded {
-  background: #f1f2f3 url(/nuxeo/layoutDemo/img/arrow_dark_unfolded.png) top left no-repeat;
-}
-
 /* MENU */
+
+div.layoutDemoLeftMenu {
+  padding:10px;
+}
 
 ul.layoutDemoMenu {
   margin:0;
