@@ -2,7 +2,7 @@
 
 import re, os, sys
 
-BRANCH = "5.4"
+BRANCH = "5.4.2-I20110404_0115"
 
 if len(sys.argv) == 2:
     branch = sys.argv[1]
