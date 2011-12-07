@@ -42,6 +42,28 @@
       <pageSize>2</pageSize>
     </genericPageProvider>
 
+
+    <coreQueryPageProvider name="ADVANCED_SEARCH">
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+        <predicate parameter="dc:title" operator="LIKE">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:modified" operator="IS NULL">
+          <field schema="advanced_search" name="isPresent" />
+        </predicate>
+        <fixedPart>
+          ecm:parentId = ?
+        </fixedPart>
+      </whereClause>
+      <parameter>#{currentDocument.id}</parameter>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>

@@ -388,6 +388,16 @@ public class NXQLQueryBuilder {
                 value = escaper.escape(value);
             }
             return lhs + ' ' + serializeFullText(value);
+        } else if (operator.equals("IS NULL")) {
+            Boolean value = getBooleanValue(model, values[0]);
+            if (value == null) {
+                // value not provided: ignore predicate
+                return "";
+            } else if (Boolean.TRUE.equals(value)) {
+                return parameter + " IS NULL";
+            } else {
+                return parameter + " IS NOT NULL";
+            }
         } else {
             throw new ClientException("Unsupported operator: " + operator);
         }
