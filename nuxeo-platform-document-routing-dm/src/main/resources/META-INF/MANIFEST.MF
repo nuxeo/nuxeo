@@ -12,4 +12,6 @@ Nuxeo-Component: OSGI-INF/dm-routing-adapter-contrib.xml,
  OSGI-INF/dm-task-operation-chains-contrib.xml,
  OSGI-INF/dm-task-type-chains-contrib.xml,
  OSGI-INF/dm-task-operations-contrib.xml
+ OSGI-INF/config/listener-config.xml
+ OSGI-INF/config/note-layout-config.xml
 
