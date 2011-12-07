@@ -72,7 +72,7 @@ public class TestZipImporter {
 
     protected static final String IMPORT_FOLDER_NAME = "import-folder";
 
-    protected static final String TEST_FILE_PATH = "test-data/test.zip";
+    protected static final String TEST_FILE_PATH = "test-data"+File.separator+"test.zip";
 
     protected static final String IMPORT_SET_QUERY = "SELECT * FROM Document WHERE ecm:primaryType = 'ImportSet'";
 
