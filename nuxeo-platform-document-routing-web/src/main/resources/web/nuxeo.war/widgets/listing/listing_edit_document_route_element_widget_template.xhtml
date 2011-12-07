@@ -10,20 +10,15 @@
       value="#{routingWebActions.getEditStepActions(field_0)}"
       cache="true">
       <c:if test="#{!empty actions}">
-        <div class="action_bar">
-          <nxu:dataList layout="unorderedList"
-            var="action" styleClass="ctxMenuStyle"
-            value="#{actions}"
-            id="editStepListTable">
-            <nxh:commandLink action="#{action.getLink()}"
-              id="documentActionSubviewUpperListLink">
+        <c:forEach items="#{actions}" var="action">
+          <li><nxh:commandLink action="#{action.getLink()}">
               <nxu:graphicImage value="#{action.icon}"
                 rendered="#{not empty action.icon}" />
               <h:outputText value="#{messages[action.label]}" />
               <f:param name="stepId" value="#{field_1}" />
             </nxh:commandLink>
-          </nxu:dataList>
-        </div>
+          </li>
+        </c:forEach>
       </c:if>
     </nxu:set>
   </c:if>
