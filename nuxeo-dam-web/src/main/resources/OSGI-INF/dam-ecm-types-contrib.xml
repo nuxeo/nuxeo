@@ -92,10 +92,12 @@
     <type id="Picture">
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>picture</layout>
         <layout>dam_common</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
+        <layout>picture</layout>
         <layout>dam_common</layout>
         <layout>dublincore</layout>
       </layouts>
