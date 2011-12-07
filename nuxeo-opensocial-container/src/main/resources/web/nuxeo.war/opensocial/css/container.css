@@ -173,7 +173,7 @@ html,body {
 }
 .messenger {
 	margin: 0;
-	padding: 3px 10px 5px 12px;
+	padding: 3px 10px 5px 12px !important;
 	font:normal 13px "Lucida Grande", Helvetica, sans-serif;
 	color: #000;
 	float: right;

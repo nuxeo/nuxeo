@@ -90,17 +90,6 @@ border-collapse:collapse;
 margin:0pt;
 }
 
-.dataRowEven {
-  background-color:#F2F7FC;
-}
-
-.dataRowOdd {
-}
-
-.contextPanel {
-
-}
-
 .context-edit-button {
   float: right;
 }
