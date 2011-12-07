@@ -28,6 +28,11 @@
         <layout>heading</layout>
         <layout>picture</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>picture</layout>
+        <layout>dublincore</layout>
+      </layouts>
       <layouts mode="summary">
         <layout>picture_summary_layout</layout>
       </layouts>
