@@ -19,6 +19,7 @@
     <module>nuxeo-platform-document-routing-api</module>
     <module>nuxeo-platform-document-routing-core</module>
     <module>nuxeo-platform-document-routing-web</module>
+    <module>nuxeo-platform-document-routing-dm</module>
   </modules>
 
   <developers>

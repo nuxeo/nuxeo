@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.platform.routing.actions.dm" version="1.0">
+
+ <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_ROUTING_TASK"
+      link="/incl/tabs/routing_tasks.xhtml" order="100"
+      label="label.action.routingtask">
+      <category>VIEW_ACTION_LIST</category>
+    </action>
+  </extension>
+
+</component>

@@ -1,0 +1,10 @@
+<component name="org.nuxeo.ecm.platform.routing.dm.chainsToType.contrib"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.routing.service"
+    point="chainsToType">
+    <mapping documentType="SimpleTask" chainId="simpleTask"
+      undoChainIdFromRunning="simpleUndo" undoChainIdFromDone="simpleUndo" />
+  </extension>
+
+</component>

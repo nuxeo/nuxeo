@@ -1,0 +1,32 @@
+<component name="org.nuxeo.ecm.platform.routing.dm.operation.chains"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+
+    <chain id="simpleTask">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateRoutingTask">
+        <param type="string" name="task name">single test task</param>
+        <param type="string" name="directive">test directive</param>
+        <param type="string" name="comment">test comment</param>
+        <param type="string" name="accept operation chain">
+          setTaskDone
+        </param>
+        <param type="string" name="reject operation chain">
+          setTaskDone
+        </param>
+        <!-- define actors here, it's easier for tests -->
+        <param type="string" name="additional list of actors prefixed ids">
+          Administrator, members
+        </param>
+        <param type="boolean" name="create one task per actor">false</param>
+      </operation>
+    </chain>
+
+    <chain id="setTaskDone">
+      <operation id="Document.Routing.Task.Done" />
+    </chain>
+  </extension>
+
+</component>
