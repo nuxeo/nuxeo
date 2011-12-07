@@ -283,13 +283,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-resources</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
@@ -382,20 +375,6 @@
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
         <classifier>resources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-dam</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-dam-importer</classifier>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>

@@ -18,35 +18,8 @@
     <condition property="build.cap">
       <or>
         <isset property="maven.profile.nuxeo-cap" />
-        <isset property="maven.profile.nuxeo-dm" />
-        <isset property="maven.profile.nuxeo-dam" />
-        <isset property="maven.profile.nuxeo-cmf" />
         <isset property="maven.profile.all" />
         <isset property="maven.profile.all-distributions" />
-      </or>
-    </condition>
-    <condition property="build.dm">
-      <or>
-        <isset property="maven.profile.nuxeo-dm" />
-        <isset property="maven.profile.all" />
-        <isset property="maven.profile.all-distributions" />
-        <isset property="maven.profile.sdk" />
-      </or>
-    </condition>
-    <condition property="build.dam">
-      <or>
-        <isset property="maven.profile.nuxeo-dam" />
-        <isset property="maven.profile.all" />
-        <isset property="maven.profile.all-distributions" />
-        <isset property="maven.profile.sdk" />
-      </or>
-    </condition>
-    <condition property="build.cmf">
-      <or>
-        <isset property="maven.profile.nuxeo-cmf" />
-        <isset property="maven.profile.all" />
-        <isset property="maven.profile.all-distributions" />
-        <isset property="maven.profile.sdk" />
       </or>
     </condition>
     <condition property="build.sdk">
@@ -74,11 +47,12 @@
     <artifact:attach file="pom.xml"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="pom" />
-    <antcall target="build-nuxeo-coreserver" />
-    <antcall target="build-nuxeo-cap" />
-    <antcall target="build-nuxeo-dm" />
-    <antcall target="build-nuxeo-dam" />
-    <antcall target="build-nuxeo-cmf" />
+    <antcall target="build-nuxeo-coreserver">
+      <param name="classifier" value="coreserver" />
+    </antcall>
+    <antcall target="build-nuxeo-cap">
+      <param name="classifier" value="nuxeo-cap" />
+    </antcall>
     <delete dir="${tomcat}" failonerror="false" />
   </target>
 
@@ -127,7 +101,6 @@
           if="build.core"
           description="Build Tomcat distribution with Nuxeo CoreServer">
     <echo>Building Nuxeo CoreServer...</echo>
-    <property name="classifier" value="coreserver" />
     <property name="distribution.dir"
               value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
@@ -238,7 +211,6 @@ file:setupWizardDownloads/${CMFMPMD5}
           depends="add-marketplace-packages"
           description="Build Tomcat distribution with Nuxeo CAP">
     <echo>Building Nuxeo CAP...</echo>
-    <property name="classifier" value="nuxeo-cap" />
     <property name="distribution.dir"
               value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
@@ -260,127 +232,6 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     </echo>
 
     <antcall target="reorganize-libs-zip-attach" />
-  </target>
-
-  <target name="build-nuxeo-dm"
-          if="build.dm"
-          depends="add-marketplace-packages"
-          description="DEPRECATED - Build Tomcat distribution with Nuxeo DM">
-    <echo>DEPRECATED - Building Nuxeo DM...</echo>
-    <property name="classifier" value="nuxeo-dm" />
-    <property name="distribution.dir"
-              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
-    <delete failonerror="false" dir="${distribution.dir}" />
-    <copy todir="${distribution.dir}">
-      <fileset dir="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />
-    </copy>
-    <antcall target="chmodx" />
-
-    <copy file="${distribution.dir}/nxserver/data/installAfterRestart-DM.log"
-          tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
-          overwrite="true" />
-    <echo message="preset=nuxeo-dm"
-          append="false"
-          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
-
-    <unzip dest="${distribution.dir}/sdk"
-           src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
-      <patternset>
-        <include name="install/*artifacts*.properties" />
-      </patternset>
-      <mapper type="flatten" />
-    </unzip>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
-         basedir="${outdir}"
-         includes="${classifier}-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="${classifier}"
-                     type="zip" />
-    <antcall target="build-sdk" />
-  </target>
-
-  <target name="build-nuxeo-dam"
-          if="build.dam"
-          depends="add-marketplace-packages"
-          description="DEPRECATED - Build Tomcat distribution with Nuxeo DAM">
-    <echo>DEPRECATED - Building Nuxeo DAM...</echo>
-    <property name="classifier" value="nuxeo-dam" />
-    <property name="distribution.dir"
-              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
-    <delete failonerror="false" dir="${distribution.dir}" />
-    <copy todir="${distribution.dir}">
-      <fileset dir="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />
-    </copy>
-    <antcall target="chmodx" />
-
-    <copy file="${distribution.dir}/nxserver/data/installAfterRestart-DAM.log"
-          tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
-          overwrite="true" />
-    <echo message="preset=nuxeo-dam"
-          append="false"
-          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
-
-    <unzip dest="${distribution.dir}/sdk"
-           src="${distribution.dir}/setupWizardDownloads/${DMMPMD5}">
-      <patternset>
-        <include name="install/*artifacts*.properties" />
-      </patternset>
-      <mapper type="flatten" />
-    </unzip>
-    <unzip dest="${distribution.dir}/sdk"
-           src="${distribution.dir}/setupWizardDownloads/${DAMMPMD5}">
-      <patternset>
-        <include name="install/*artifacts*.properties" />
-      </patternset>
-      <mapper type="flatten" />
-    </unzip>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
-         basedir="${outdir}"
-         includes="${classifier}-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="${classifier}"
-                     type="zip" />
-    <antcall target="build-sdk" />
-  </target>
-
-  <target name="build-nuxeo-cmf"
-          if="build.cmf"
-          depends="add-marketplace-packages"
-          description="DEPRECATED - Build Tomcat distribution with Nuxeo CMF">
-    <echo>DEPRECATED - Building Nuxeo CMF...</echo>
-    <property name="classifier" value="nuxeo-cmf" />
-    <property name="distribution.dir"
-              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
-    <delete failonerror="false" dir="${distribution.dir}" />
-    <copy todir="${distribution.dir}">
-      <fileset dir="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />
-    </copy>
-    <antcall target="chmodx" />
-
-    <copy file="${distribution.dir}/nxserver/data/installAfterRestart-CMF.log"
-          tofile="${distribution.dir}/nxserver/data/installAfterRestart.log"
-          overwrite="true" />
-    <echo message="preset=nuxeo-cmf"
-          append="false"
-          file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties" />
-
-    <unzip dest="${distribution.dir}/sdk"
-           src="${distribution.dir}/setupWizardDownloads/${CMFMPMD5}">
-      <patternset>
-        <include name="install/*artifacts*.properties" />
-      </patternset>
-      <mapper type="flatten" />
-    </unzip>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
-         basedir="${outdir}"
-         includes="${classifier}-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="${classifier}"
-                     type="zip" />
-    <antcall target="build-sdk" />
   </target>
 
   <target name="reorganize-libs-zip-attach">

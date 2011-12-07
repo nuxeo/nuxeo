@@ -68,18 +68,6 @@
       <!-- profile for building Tomcat with only Nuxeo CAP -->
     </profile>
     <profile>
-      <id>nuxeo-dm</id>
-      <!-- profile for building Tomcat with already chosen Nuxeo DM -->
-    </profile>
-    <profile>
-      <id>nuxeo-dam</id>
-      <!-- profile for building Tomcat with already chosen Nuxeo DAM -->
-    </profile>
-    <profile>
-      <id>nuxeo-cmf</id>
-      <!-- profile for building Tomcat with already chosen Nuxeo CMF -->
-    </profile>
-    <profile>
       <id>sdk</id>
       <!-- profile for building SDK distributions (they are always built when release
         profile is activated) -->
@@ -108,7 +96,6 @@
         <configuration>
           <buildFiles>
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-            <!-- <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile> -->
           </buildFiles>
         </configuration>
         <executions>
