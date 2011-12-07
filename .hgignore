@@ -45,3 +45,10 @@ nuxeo-distribution-osgi/.metadata
 ((?!nuxeo-distribution-osgi)).*/.classpath
 ^\.project$
 ^\.classpath$
+
+nuxeo-distribution-dam/ftest/selenium/data
+nuxeo-distribution-dam/ftest/selenium/results
+nuxeo-distribution-dam/ftest/selenium/run.conf
+nuxeo-distribution-dam/ftest/selenium/user-extensions.js
+nuxeo-distribution-dam/ftest/selenium/ffprofile/prefs.js
+nuxeo-distribution-dam/ftest/selenium/selenium-server.jar

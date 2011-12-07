@@ -132,37 +132,32 @@
     <profile>
       <id>itest</id>
       <modules>
-        <module>nuxeo-distribution-coreserver</module>
-        <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cap-tests</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-content-browser</module>
-        <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-distribution-dam</module>
-        <module>nuxeo-marketplace-dam</module>
-        <module>nuxeo-distribution-social-collaboration</module>
-        <module>nuxeo-marketplace-social-collaboration</module>
-        <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-tomcat-tests</module>
       </modules>
     </profile>
     <profile>
-      <id>ftest</id>
+      <id>ftest-dm</id>
       <modules>
-        <module>nuxeo-distribution-coreserver</module>
-        <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-cap-tests</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-content-browser</module>
-        <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-distribution-dam</module>
-        <module>nuxeo-marketplace-dam</module>
-        <module>nuxeo-distribution-social-collaboration</module>
-        <module>nuxeo-marketplace-social-collaboration</module>
-        <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
-        <!-- <module>nuxeo-distribution-dam/ftest/selenium</module> -->
-        <!-- <module>nuxeo-distribution-cmf/ftest/selenium</module> -->
+      </modules>
+    </profile>
+    <profile>
+      <id>ftest-dam</id>
+      <modules>
+        <module>nuxeo-distribution-dam/ftest/selenium</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ftest-cmf</id>
+      <modules>
+        <module>nuxeo-distribution-cmf/ftest/selenium</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ftest-sc</id>
+      <modules>
+        <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
       </modules>
     </profile>
     <profile>

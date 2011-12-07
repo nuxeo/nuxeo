@@ -38,7 +38,7 @@
   <tr>
     <td>select</td>
     <td>//select[@class='login_input']</td>
-    <td>label=English</td>
+    <td>label=English (United States)</td>
   </tr>
   <tr>
     <td>clickAndWait</td>
@@ -46,8 +46,18 @@
     <td></td>
   </tr>
   <tr>
-    <td>verifyElementPresent</td>
-    <td>//img[@alt="Nuxeo DAM"]</td>
+    <td>verifyTextPresent</td>
+    <td>Asset Library</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>DAM</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>link=DAM</td>
     <td></td>
   </tr>
   <tr>
@@ -64,7 +74,7 @@
   </tr>
   <tr>
     <td>storeExpression</td>
-    <td>javascript{'/nuxeo/site/damImporter/run?inputPath=' + storedVars.testfolderpath + '/data/toImport&interactive=true&nbThreads=1&importSetTitle=Test%20import%20set%20title';}</td>
+    <td>javascript{'/nuxeo/site/damImporter/run?inputPath=' + storedVars.testfolderpath + 'toImport&interactive=true&nbThreads=1&importSetTitle=Test%20import%20set%20title';}</td>
     <td>importUrl</td>
   </tr>
   <tr>
