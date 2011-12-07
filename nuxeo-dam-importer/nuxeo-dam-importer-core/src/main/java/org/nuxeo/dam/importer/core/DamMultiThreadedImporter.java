@@ -257,8 +257,7 @@ class TargetContainerCreator extends UnrestrictedSessionRunner {
             MetadataCollector metadataCollector = new MetadataCollector();
             metadataCollector.addPropertyFile(metadataFile);
 
-            String contextPath = new Path(metadataFile.getAbsolutePath()).removeLastSegments(
-                    1).toString();
+            String contextPath = metadataFile.getAbsoluteFile().getParent();
             for (Map.Entry<String, Serializable> entry : metadataCollector.getProperties(
                     contextPath).entrySet()) {
                 try {

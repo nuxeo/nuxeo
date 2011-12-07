@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.dam.Constants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -78,8 +77,7 @@ public class TestMetadataFileHelper {
         MetadataCollector collector = new MetadataCollector();
         collector.addPropertyFile(file);
 
-        String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
-                1).toString();
+        String contextPath = file.getAbsoluteFile().getParent();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
         assertEquals(5, properties.size());
         assertEquals("testAuthor",
