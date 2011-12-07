@@ -12,11 +12,7 @@
   <artifactId>nuxeo-distribution-tomcat</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Tomcat Build</name>
-  <description>Package Nuxeo CAP or DM WAR with Tomcat</description>
-
-  <properties>
-    <product.name>dm</product.name>
-  </properties>
+  <description>Package Nuxeo with Tomcat</description>
 
   <dependencies>
     <dependency>
@@ -80,7 +76,7 @@
             <groupId>org.jboss.tattletale</groupId>
             <artifactId>tattletale-maven</artifactId>
             <configuration>
-              <source>${project.build.directory}/nuxeo-${product.name}-${project.version}-tomcat/nxserver/lib</source>
+              <source>${project.build.directory}/nuxeo-cap-${project.version}-tomcat/nxserver/lib</source>
             </configuration>
           </plugin>
         </plugins>
