@@ -123,25 +123,31 @@
           </f:subview>
 
           <h:panelGrid class="dataOutput"
-                       columnClasses="labelColumn, fieldColumn" columns="2">
-            <h:outputText value="#{messages['label.content.size']}"/>
+                       columnClasses="iconColumn, labelColumn, fieldColumn" columns="3">
             <h:panelGroup>
-              <h:outputText id="imgSize"
-                      value="#{nxu:printFormatedFileSize(damDocumentActions.currentSelection.picture.views[1].content.length, 'JEDEC', true)}"
-                      rendered="#{!damDocumentActions.currentSelection.hasSchema('file') and damDocumentActions.currentSelection.hasSchema('picture') and !empty damDocumentActions.currentSelection.picture.views}"/>
-              <h:outputText
-                      value="#{nxu:printFormatedFileSize(damDocumentActions.currentSelection.file.content.length, 'JEDEC', true)}"
-                      rendered="#{damDocumentActions.currentSelection.hasSchema('file')}"/>
+            </h:panelGroup>
+            <h:panelGroup>
+              <span><h:outputText value="#{messages['label.content.size']}"/></span>
+            </h:panelGroup>
+            <h:panelGroup>
+              <h:outputText id="fileSize"
+                value="#{nxu:printFormatedFileSize(damDocumentActions.currentSelection.file.content.length, 'JEDEC', true)}"
+                rendered="#{damDocumentActions.currentSelection.hasSchema('file')}"/>
             </h:panelGroup>
           </h:panelGrid>
           <h:panelGrid class="dataOutput"
-                       columnClasses="labelColumn, fieldColumn" columns="2"
+                       columnClasses="iconColumn, labelColumn, fieldColumn" columns="3"
                        rendered="#{damDocumentActions.currentSelection.hasSchema('picture') and !empty damDocumentActions.currentSelection.picture.views}">
-            <h:outputText value="#{messages['label.content.height']}"/>
-            <h:outputText id="imgHeight" value="#{damDocumentActions.currentSelection.picture.views[1].height}"/>
-
+            <h:panelGroup>
+            </h:panelGroup>
             <h:outputText value="#{messages['label.content.width']}"/>
-            <h:outputText id="imgWidth" value="#{damDocumentActions.currentSelection.picture.views[1].width}"/>
+            <h:outputText id="imgWidth" value="#{damDocumentActions.currentSelection.picture.views[1].width} px"/>
+
+
+            <h:panelGroup>
+            </h:panelGroup>
+            <h:outputText value="#{messages['label.content.height']}"/>
+            <h:outputText id="imgHeight" value="#{damDocumentActions.currentSelection.picture.views[1].height} px"/>
           </h:panelGrid>
           <!-- Save and cancel buttons appear above comments when in edit mode -->
         <f:subview rendered="#{damDocumentActions.displayMode == 'edit'}">
