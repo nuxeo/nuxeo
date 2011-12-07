@@ -1100,7 +1100,7 @@
       <dependency>
         <groupId>opensymphony</groupId>
         <artifactId>quartz-all</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.3</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
