@@ -19,9 +19,6 @@ package org.nuxeo.ecm.platform.picture.listener;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,10 +28,10 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 
 /**
+ * Listener updating the views of a Picture if the main Blob has changed.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
