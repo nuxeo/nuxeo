@@ -115,7 +115,7 @@ so you can upgrade to newer versions easier. */
 .vjs-progress-holder { /* Box containing play and load progresses */
   position: relative; padding: 0; overflow:hidden; cursor: pointer !important;
   height: 9px; border: 1px solid #777;
-  margin: 7px 1px 0 5px; /* Placement within the progress control item */
+  margin: 7px 1px 0 5px !important; /* Placement within the progress control item */
   border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
 }
 .vjs-progress-holder div { /* Progress Bars */
@@ -166,7 +166,7 @@ so you can upgrade to newer versions easier. */
 .vjs-fullscreen-control { cursor: pointer !important; }
 .vjs-fullscreen-control div {
   padding: 0; text-align: left; vertical-align: top; cursor: pointer !important; 
-  margin: 5px 0 0 5px; /* Placement within the fullscreen control item */
+  margin: 5px 0 0 5px !important; /* Placement within the fullscreen control item */
   width: 20px; height: 20px;
 }
 /* Drawing the fullscreen icon using 4 span elements */
@@ -194,7 +194,7 @@ so you can upgrade to newer versions easier. */
 ---------------------------------------------------------*/
 div.vjs-big-play-button {
   display: none; /* Start hidden */ z-index: 2;
-  position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; margin: -43px 0 0 -43px; text-align: center; vertical-align: center; cursor: pointer !important;
+  position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; margin: -43px 0 0 -43px!important; text-align: center; vertical-align: center; cursor: pointer !important;
   border: 3px solid #fff; opacity: 0.9;
   border-radius: 20px; -webkit-border-radius: 20px; -moz-border-radius: 20px;
   
