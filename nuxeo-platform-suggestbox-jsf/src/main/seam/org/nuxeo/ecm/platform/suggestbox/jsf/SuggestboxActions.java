@@ -106,6 +106,14 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     public void setSearchKeywords(String searchKeywords) {
         this.searchKeywords = searchKeywords;
     }
+    
+    protected SuggestionContext getSuggestionContext() {
+        SuggestionContext ctx = new SuggestionContext("searchbox",
+                documentManager.getPrincipal()).withSession(documentManager).withCurrentDocument(
+                navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
+                messages);
+        return ctx;
+    }
 
     /**
      * Callback for the ajax keypress event that triggers the generation of
@@ -133,14 +141,6 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
         return cachedSuggestions.value;
     }
 
-    protected SuggestionContext getSuggestionContext() {
-        SuggestionContext ctx = new SuggestionContext("searchbox",
-                documentManager.getPrincipal()).withSession(documentManager).withCurrentDocument(
-                navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
-                messages);
-        return ctx;
-    }
-
     /**
      * Callback for the ajax selection of an item in the rich:suggestionbox
      * list.
@@ -155,7 +155,7 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     }
 
     /**
-     * Action listener for the old-style search button keypress.
+     * Action listener for the old-style search button.
      */
     public Object performKeywordsSearch() throws SuggestionException,
             SuggestionHandlingException {
