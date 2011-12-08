@@ -9,7 +9,7 @@
    <nxu:set var="actions" value="#{routingWebActions.getAddStepInActions(field_0)}" cache="true">
       <c:if test="#{!empty actions}">
         <c:forEach items="#{actions}" var="action">
-          <li><a4j:commandLink
+          <li><a4j:commandLink id="#{action}"
               onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"
               reRender="selectRouteElementsTypeForCreationRegion">
               <nxu:graphicImage value="#{action.icon}"
@@ -26,7 +26,7 @@
    <nxu:set var="actions" value="#{routingWebActions.getAddStepActions(field_0)}" cache="true">
       <c:if test="#{!empty actions}">
         <c:forEach items="#{actions}" var="action">
-          <li><a4j:commandLink
+          <li><a4j:commandLink id="#{action}"
               onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"
               reRender="selectRouteElementsTypeForCreationRegion">
               <h:graphicImage value="#{action.icon}"

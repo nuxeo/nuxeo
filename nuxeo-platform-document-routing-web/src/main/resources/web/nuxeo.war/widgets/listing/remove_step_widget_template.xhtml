@@ -11,8 +11,7 @@
       cache="true">
       <c:if test="#{!empty actions}">
         <c:forEach items="#{actions}" var="action">
-          <li><nxh:commandLink action="#{action.getLink()}"
-              id="documentActionSubviewUpperListLink">
+          <li><nxh:commandLink id="#{action}" action="#{action.getLink()}">
               <nxu:graphicImage value="#{action.icon}"
                 rendered="#{not empty action.icon}" />
               <h:outputText value="#{messages[action.label]}" />
