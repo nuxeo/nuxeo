@@ -7,20 +7,12 @@
     <chain id="simpleTask">
       <operation id="Context.FetchDocument" />
       <operation id="Workflow.CreateRoutingTask">
-        <param type="string" name="task name">single test task</param>
-        <param type="string" name="directive">test directive</param>
-        <param type="string" name="comment">test comment</param>
         <param type="string" name="accept operation chain">
           setTaskDone
         </param>
         <param type="string" name="reject operation chain">
           setTaskDone
         </param>
-        <!-- define actors here, it's easier for tests -->
-        <param type="string" name="additional list of actors prefixed ids">
-          Administrator, members
-        </param>
-        <param type="boolean" name="create one task per actor">false</param>
       </operation>
     </chain>
 

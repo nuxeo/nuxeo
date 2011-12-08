@@ -21,16 +21,13 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.task.CreateTask.OperationTaskVariableName;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.helper.StepResumeRunner;
-import org.nuxeo.ecm.platform.task.Task;
 
 
 @Operation(id = SetTaskDone.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Task Done", description = "Set the task as done.")
-public class SetTaskDone {
+public class SetTaskDone extends AbstractTaskStepOperation {
     public final static String ID = "Document.Routing.Task.Done";
 
     @Context
@@ -38,15 +35,7 @@ public class SetTaskDone {
 
     @OperationMethod
     public void setTaskDone() throws ClientException {
-        DocumentModel taskDoc = (DocumentModel) context.get(OperationTaskVariableName.taskDocument.name());
-        if (taskDoc == null) {
-            return;
-        }
-        Task task = taskDoc.getAdapter(Task.class);
-        if (task == null) {
-            return;
-        }
-        String stepDocumentId = task.getVariable(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
+        String stepDocumentId = getRoutingStepDocumentId(context);
         StepResumeRunner runner = new StepResumeRunner(stepDocumentId);
         runner.resumeStep(context.getCoreSession());
     }

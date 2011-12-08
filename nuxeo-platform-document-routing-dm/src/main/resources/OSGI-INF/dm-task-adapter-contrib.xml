@@ -4,6 +4,8 @@
     point="adapters">
     <adapter class="org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask"
       factory="org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTaskAdapterFactory" />
+    <adapter class="org.nuxeo.ecm.platform.routing.dm.adapter.TaskStep"
+      factory="org.nuxeo.ecm.platform.routing.dm.adapter.TaskStepAdapterFactory" />
   </extension>
 
 </component>

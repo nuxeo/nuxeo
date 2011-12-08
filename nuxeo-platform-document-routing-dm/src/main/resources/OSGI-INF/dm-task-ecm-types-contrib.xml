@@ -14,9 +14,7 @@
       <edit-view>edit_route_element</edit-view>
       <layouts mode="any">
         <layout>heading</layout>
-      </layouts>
-      <layouts mode="edit">
-        <layout>heading</layout>
+        <layout>task_step</layout>
       </layouts>
     </type>
 

@@ -16,16 +16,18 @@
  */
 package org.nuxeo.ecm.platform.routing.dm.adapter;
 
+import org.nuxeo.ecm.automation.task.CreateTask.OperationTaskVariableName;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.task.TaskImpl;
 
-/**
- *
- *
- */
 public class RoutingTaskImpl extends TaskImpl implements RoutingTask {
 
     public RoutingTaskImpl(DocumentModel doc) {
@@ -35,28 +37,46 @@ public class RoutingTaskImpl extends TaskImpl implements RoutingTask {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public DocumentModelList getAttachedDocuments(CoreSession arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public DocumentModelList getAttachedDocuments(CoreSession coreSession) {
+        try {
+            DocumentRef stepIdRef = new IdRef(getTargetDocumentId());
+            DocumentModel targetDocument = coreSession.getDocument(stepIdRef);
+            DocumentModelList docList = new DocumentModelListImpl();
+            docList.add(targetDocument);
+            return docList;
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public DocumentRouteStep getDocumentRouteStep(CoreSession arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public DocumentRouteStep getDocumentRouteStep(CoreSession coreSession) {
+        try {
+            String docStepId = getVariable(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
+            DocumentRef stepIdRef = new IdRef(docStepId);
+            DocumentModel docStep = coreSession.getDocument(stepIdRef);
+            return docStep.getAdapter(DocumentRouteStep.class);
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String getRefuseOperationChainId() {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            return getVariable(OperationTaskVariableName.rejectOperationChain.name());
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String getValidateOperationChainId() {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            return getVariable(OperationTaskVariableName.acceptOperationChain.name());
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
     }
-
 
 }

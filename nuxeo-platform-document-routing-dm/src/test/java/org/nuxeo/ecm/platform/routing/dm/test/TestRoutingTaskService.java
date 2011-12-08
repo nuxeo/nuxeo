@@ -65,6 +65,7 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
+        deployBundle("org.nuxeo.ecm.platform.routing.core");
 
         deployBundle(TestConstants.DM_BUNDLE);
 
@@ -95,7 +96,6 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        closeSession();
     }
 
     public void testService() throws Exception {
@@ -108,6 +108,14 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         DocumentModel taskDoc = session.getDocument(new PathRef("/RoutingTask"));
         RoutingTask routingTask = taskDoc.getAdapter(RoutingTask.class);
         assertNotNull(routingTask);
+        closeSession(session);
+    }
 
+    public void testTaskStep() throws Exception {
+        DocumentModel taskStep = session.createDocumentModel("/","simpleTask","SimpleTask");
+        assertNotNull(taskStep);
+        taskStep = session.createDocument(taskStep);
+        assertNotNull(taskStep);
+        closeSession(session);
     }
 }

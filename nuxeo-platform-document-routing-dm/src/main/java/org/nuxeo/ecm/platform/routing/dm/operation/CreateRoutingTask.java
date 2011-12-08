@@ -12,14 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     ldoguin
  */
 
 package org.nuxeo.ecm.platform.routing.dm.operation;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,31 +33,29 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.dm.adapter.TaskStep;
+import org.nuxeo.ecm.platform.routing.dm.task.RoutingTaskService;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
-import org.nuxeo.ecm.platform.task.TaskService;
 
 /**
- * Creates a task
+ * Creates a routing task
  *
- * @author Anahide Tchertchian
- * @since 5.5
+ * @author ldoguin
+ * @since 5.6
  */
-@Operation(id = CreateRoutingTask.ID, category = Constants.CAT_SERVICES, label = "Create task", since = "5.3.2", description = "Enable to create a task bound to the document. "
-        + "<p><b>Directive</b>, <b>comment</b> and <b>due date</b> will be displayed in the task list of the user. "
+@Operation(id = CreateRoutingTask.ID, category = Constants.CAT_SERVICES, label = "Create task", since = "5.6", description = "Enable to create a routingTask bound to a route and its document. "
         + "In <b>accept operation chain</b> and <b>reject operation chain</b> fields, "
         + "you can put the operation chain ID of your choice among the one you contributed. "
         + "Those operations will be executed when the user validates the task, "
-        + "depending on  whether he accepts or rejects the task. "
-        + "You have to specify a variable name (the <b>key for ... </b> parameter) to resolve target users and groups to which the task will be assigned. "
-        + "You can use Get Users and Groups to update a context variable with some users and groups. "
-        + "If you check <b>create one task per actor</b>, each of the actors will have a task to achieve, "
-        + "versus \"the first who achieve the task makes it disappear for the others\".</p>")
+        + "depending on  whether he accepts or rejects the task. ")
 public class CreateRoutingTask {
 
     public static final String ID = "Workflow.CreateRoutingTask";
@@ -67,7 +63,7 @@ public class CreateRoutingTask {
     private static final Log log = LogFactory.getLog(CreateRoutingTask.class);
 
     public enum OperationTaskVariableName {
-        acceptOperationChain, rejectOperationChain, createdFromCreateTaskOperation, taskDocument
+        acceptOperationChain, rejectOperationChain, createdFromCreateTaskOperation, taskDocuments
     }
 
     @Context
@@ -77,19 +73,7 @@ public class CreateRoutingTask {
     protected CoreSession coreSession;
 
     @Context
-    protected TaskService TaskService;
-
-    @Param(name = "task name", required = true, order = 0)
-    protected String taskName;
-
-    @Param(name = "due date", required = false, order = 1)
-    protected Date dueDate;
-
-    @Param(name = "directive", required = false, order = 2)
-    protected String directive;
-
-    @Param(name = "comment", required = false, order = 3)
-    protected String comment;
+    protected RoutingTaskService routingTaskService;
 
     @Param(name = "accept operation chain", required = false, order = 4)
     protected String acceptOperationChain;
@@ -97,57 +81,21 @@ public class CreateRoutingTask {
     @Param(name = "reject operation chain", required = false, order = 5)
     protected String rejectOperationChain;
 
-    @Param(name = "variable name for actors prefixed ids", required = false, order = 6)
-    protected String keyForActors;
-
-    @Param(name = "additional list of actors prefixed ids", required = false, order = 7)
-    protected StringList additionalPrefixedActors;
-
-    @Param(name = "create one task per actor", required = false, values = "true", order = 8)
-    protected boolean createOneTaskPerActor = true;
-
     @OperationMethod(collector = DocumentModelCollector.class)
-    @SuppressWarnings("unchecked")
-    public DocumentModel run(DocumentModel document) throws Exception {
+    public DocumentModel createTask(DocumentModel document)
+            throws Exception {
         Principal pal = coreSession.getPrincipal();
         if (!(pal instanceof NuxeoPrincipal)) {
             throw new OperationException(
                     "Principal is not an instance of NuxeoPrincipal");
         }
 
-        List<String> prefixedActorIds = new ArrayList<String>();
-        Object actors = ctx.get(keyForActors);
-        if (actors != null) {
-            boolean throwError = false;
-            try {
-                if (actors instanceof List) {
-                    prefixedActorIds.addAll((List<String>) actors);
-                } else if (actors instanceof String[]) {
-                    for (String actor : (String[]) actors) {
-                        prefixedActorIds.add(actor);
-                    }
-                } else if (actors instanceof String) {
-                    prefixedActorIds.add((String) actors);
-                } else {
-                    throwError = true;
-                }
-            } catch (ClassCastException e) {
-                throwError = true;
-            }
-            if (throwError) {
-                throw new OperationException(String.format(
-                        "Invalid key to retrieve a list, array or single "
-                                + "string of prefixed actor "
-                                + "ids '%s', value is not correct: %s",
-                        keyForActors, actors));
-            }
-        }
+        DocumentRouteStep step = (DocumentRouteStep) ctx.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
+        DocumentModel stepDocument = step.getDocument();
+        TaskStep taskStep = stepDocument.getAdapter(TaskStep.class);
+        List<String> actors = taskStep.getActors();
 
-        if (additionalPrefixedActors != null) {
-            prefixedActorIds.addAll(additionalPrefixedActors);
-        }
-
-        if (prefixedActorIds.isEmpty()) {
+        if (actors.isEmpty()) {
             // no actors: do nothing
             log.debug("No actors could be resolved => do not create any task");
             return document;
@@ -155,6 +103,8 @@ public class CreateRoutingTask {
 
         // create the task, passing operation chains in task variables
         Map<String, String> taskVariables = new HashMap<String, String>();
+        taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
+                step.getDocument().getId());
         taskVariables.put(
                 OperationTaskVariableName.createdFromCreateTaskOperation.name(),
                 "true");
@@ -169,20 +119,22 @@ public class CreateRoutingTask {
                     rejectOperationChain);
         }
 
-
-        DocumentRouteStep step = (DocumentRouteStep) ctx.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
-        taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, step.getDocument().getId());
-
         // disable notification service
         taskVariables.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE, "true");
 
-        if (TaskService == null) {
-            throw new OperationException("Service taskService not found");
+        if (routingTaskService == null) {
+            throw new OperationException("Service routingTaskService not found");
         }
-        TaskService.createTask(coreSession, (NuxeoPrincipal) pal, document,
-                taskName, prefixedActorIds, createOneTaskPerActor, directive,
-                comment, dueDate, taskVariables, null);
-
+        List<Task> tasks = routingTaskService.createRoutingTask(coreSession,
+                (NuxeoPrincipal) pal, document, taskStep.getName(), actors,
+                taskStep.createOneTaskPerActors(), taskStep.getDirective(),
+                taskStep.getComment(), taskStep.getDueDate(), taskVariables,
+                null);
+        DocumentModelList docList = new DocumentModelListImpl(tasks.size());
+        for (Task task : tasks) {
+            docList.add(task.getDocument());
+        }
+        ctx.put(OperationTaskVariableName.taskDocuments.name(), docList);
         return document;
     }
 
