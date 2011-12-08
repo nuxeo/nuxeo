@@ -1167,8 +1167,11 @@ public class NuxeoCmisService extends AbstractCmisService {
         IterableQueryResult res = null;
         try {
             Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
+            if (searchAllVersions == null) {
+                searchAllVersions = Boolean.FALSE; // spec default 2.2.6.1.1
+            }
             res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
-                    this, typeInfo);
+                    this, typeInfo, searchAllVersions);
 
             // convert from Nuxeo to CMIS format
             list = new ArrayList<ObjectData>();
@@ -1761,7 +1764,8 @@ public class NuxeoCmisService extends AbstractCmisService {
         String statement = "SELECT " + StringUtils.join(props, ", ") + " FROM "
                 + BaseTypeId.CMIS_DOCUMENT.value() + " WHERE "
                 + StringUtils.join(clauses, " AND ") + order;
-        return query(repositoryId, statement, Boolean.FALSE,
+        Boolean searchAllVersions = Boolean.TRUE;
+        return query(repositoryId, statement, searchAllVersions,
                 includeAllowableActions, includeRelationships, renditionFilter,
                 maxItems, skipCount, extension);
     }

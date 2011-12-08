@@ -189,8 +189,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected ObjectList query(String statement) {
-        return discService.query(repositoryId, statement, null, null, null,
-                null, null, null, null);
+        return discService.query(repositoryId, statement, Boolean.TRUE, null,
+                null, null, null, null, null);
     }
 
     protected static Object getValue(ObjectData data, String key) {
@@ -2068,8 +2068,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         List<ObjectData> objects;
         String statement = "SELECT cmis:name FROM cmis:document"
                 + " WHERE cmis:name LIKE 'somedoc%' ORDER BY cmis:name";
-        res = discService.query(repositoryId, statement, null, null, null,
-                null, null, null, null);
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
+                null, null, null, null, null);
         assertEquals(NUM, res.getNumItems().intValue());
         objects = res.getObjects();
         assertEquals(NUM, objects.size());
@@ -2077,8 +2077,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("somedoc019",
                 getString(objects.get(objects.size() - 1), PropertyIds.NAME));
         // batch
-        res = discService.query(repositoryId, statement, null, null, null,
-                null, BigInteger.valueOf(10), BigInteger.valueOf(5), null);
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
+                null, null, BigInteger.valueOf(10), BigInteger.valueOf(5), null);
         assertEquals(NUM, res.getNumItems().intValue());
         objects = res.getObjects();
         assertEquals(10, objects.size());
@@ -2120,6 +2120,37 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("testfile3_Title", getValue(objects.get(0), "cmis:name"));
         assertEquals("testfile2_Title", getValue(objects.get(1), "cmis:name"));
         assertEquals("testfile1_Title", getValue(objects.get(2), "cmis:name"));
+    }
+
+    @Test
+    public void testQueryAllVersions() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+
+        // two versions
+        Holder<String> idHolder = new Holder<String>(id);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
+                "comment", null, null, null, null);
+        verService.checkOut(repositoryId, idHolder, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
+                "comment", null, null, null, null);
+
+        ObjectList res;
+        String statement = "SELECT cmis:objectId FROM cmis:document"
+                + " WHERE cmis:name = 'testfile1_Title'";
+
+        // search all versions
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null, null,
+                null, null, null, null);
+        assertEquals(3, res.getNumItems().intValue());
+
+        // do not search all versions (only latest)
+        res = discService.query(repositoryId, statement, Boolean.FALSE, null,
+                null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+        res = discService.query(repositoryId, statement, null, null, null,
+                null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
     }
 
     @Test
@@ -2565,7 +2596,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // object from query have relationship info
         statement = "SELECT cmis:objectId FROM File WHERE cmis:name = 'testfile1_Title'";
-        res = discService.query(repositoryId, statement, null, null,
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
                 IncludeRelationships.BOTH, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
         od1 = res.getObjects().get(0);

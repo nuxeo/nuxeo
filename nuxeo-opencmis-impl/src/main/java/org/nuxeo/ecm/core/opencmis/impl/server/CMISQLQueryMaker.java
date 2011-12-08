@@ -164,7 +164,10 @@ public class CMISQLQueryMaker implements QueryMaker {
     protected Map<String, ColumnReference> virtualColumns = new HashMap<String, ColumnReference>();
 
     /** Type info returned to caller. */
-    protected Map<String, PropertyDefinition<?>> typeInfo;
+    protected Map<String, PropertyDefinition<?>> typeInfo = null;
+
+    /** Search only latest version = !searchAllVersions. */
+    protected boolean searchLatestVersion = false;
 
     /** used for diagnostic when using DISTINCT */
     protected List<String> virtualColumnNames = new LinkedList<String>();
@@ -205,7 +208,9 @@ public class CMISQLQueryMaker implements QueryMaker {
      * {@inheritDoc}
      * <p>
      * The optional parameters must be passed: {@code params[0]} is the
-     * {@link NuxeoCmisService}, optional {@code params[1]} is a type info map.
+     * {@link NuxeoCmisService}, optional {@code params[1]} is a type info map,
+     * optional {@code params[2]} is searchAllVersions (default
+     * {@code Boolean.TRUE} for this method).
      */
     @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model,
@@ -215,8 +220,13 @@ public class CMISQLQueryMaker implements QueryMaker {
         dialect = sqlInfo.dialect;
         this.model = model;
         NuxeoCmisService service = (NuxeoCmisService) params[0];
-        typeInfo = params.length > 1 ? (Map<String, PropertyDefinition<?>>) params[1]
-                : null;
+        if (params.length > 1) {
+            typeInfo = (Map<String, PropertyDefinition<?>>) params[1];
+        }
+        if (params.length > 2) {
+            Boolean searchAllVersions = (Boolean) params[2];
+            searchLatestVersion = Boolean.FALSE.equals(searchAllVersions);
+        }
         TypeManagerImpl typeManager = service.repository.getTypeManager();
 
         boolean addSystemColumns = true; // TODO
@@ -412,6 +422,18 @@ public class CMISQLQueryMaker implements QueryMaker {
                 whereParams.add(LifeCycleConstants.DELETED_STATE);
             }
 
+            // searchAllVersions filter
+
+            if (searchLatestVersion) {
+                // add islatestversion = true
+                Table ver = getTable(
+                        database.getTable(model.VERSION_TABLE_NAME), qual);
+                Column latestver = ver.getColumn(model.VERSION_IS_LATEST_KEY);
+                whereClauses.add(String.format("%s = ?",
+                        latestver.getFullQuotedName()));
+                whereParams.add(Boolean.TRUE);
+            }
+
             // security check
 
             boolean checkSecurity = !isRelation //
@@ -601,10 +623,17 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
         }
 
-        // per qualifier, include hier in fragments
+        // for all qualifiers
         for (String qual : allQualifiers) {
+            // include hier in fragments
             recordFragment(qual, getTable(hierTable, qual));
+            // if only latest version include the version table
+            if (searchLatestVersion) {
+                Table ver = database.getTable(Model.VERSION_TABLE_NAME);
+                recordFragment(qual, getTable(ver, qual));
+            }
         }
+
     }
 
     /**
