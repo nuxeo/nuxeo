@@ -261,7 +261,7 @@
     </flavor>
 
     <flavor name="rainbow">
-      <label>label.theme.flavor.nuxeo.raimbow</label>
+      <label>label.theme.flavor.nuxeo.rainbow</label>
       <logo>
         <path>/img/nuxeo_logo.png</path>
         <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
@@ -283,8 +283,8 @@
           <color>#aafff2</color>
           <color>#99163e</color>
           <color>#a9ff70</color>
-          <color>#F78600</color>
-          <color>#00A2CB</color>
+          <color>#e74c36</color>
+          <color>#00a2cb</color>
           <color>#474747</color>
         </colors>
       </palettePreview>
