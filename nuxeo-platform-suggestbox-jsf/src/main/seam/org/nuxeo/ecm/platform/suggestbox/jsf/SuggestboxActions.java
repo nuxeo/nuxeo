@@ -30,10 +30,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
@@ -59,8 +58,6 @@ import edu.emory.mathcs.backport.java.util.Collections;
 @AutomaticDocumentBasedInvalidation
 public class SuggestboxActions extends DocumentContextBoundActionBean implements
         Serializable {
-
-    public String KEYWORD_SEARCH_SUGGESTER = "searchByKeywords";
 
     private static final Log log = LogFactory.getLog(SuggestboxActions.class);
 
@@ -93,11 +90,9 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     protected Cached<List<Suggestion>> cachedSuggestions = new Cached<List<Suggestion>>(
             10000);
 
-    public DocumentModel getDocumentModel(String id) throws ClientException {
-        return documentManager.getDocument(new IdRef(id));
-    }
-
     protected String searchKeywords = "";
+
+    protected String suggesterGroup;
 
     public String getSearchKeywords() {
         return searchKeywords;
@@ -106,9 +101,18 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     public void setSearchKeywords(String searchKeywords) {
         this.searchKeywords = searchKeywords;
     }
-    
+
+    public String getSuggesterGroup() {
+        return suggesterGroup;
+    }
+
+    @RequestParameter
+    public void setSuggesterGroup(String suggesterGroup) {
+        this.suggesterGroup = suggesterGroup;
+    }
+
     protected SuggestionContext getSuggestionContext() {
-        SuggestionContext ctx = new SuggestionContext("searchbox",
+        SuggestionContext ctx = new SuggestionContext(suggesterGroup,
                 documentManager.getPrincipal()).withSession(documentManager).withCurrentDocument(
                 navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
                 messages);
@@ -157,14 +161,14 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     /**
      * Action listener for the old-style search button.
      */
-    public Object performKeywordsSearch() throws SuggestionException,
+    public Object performKeywordsSearch(String suggesterName) throws SuggestionException,
             SuggestionHandlingException {
         // make it possible to override how the default search is performed by
         // using the suggestion service
         SuggestionService service = Framework.getLocalService(SuggestionService.class);
         SuggestionContext context = getSuggestionContext();
         List<Suggestion> suggestions = service.suggest(searchKeywords, context,
-                KEYWORD_SEARCH_SUGGESTER);
+                suggesterName);
         if (suggestions.size() != 1) {
             throw new SuggestionException(String.format(
                     "Expected 1 keyword search suggestion, got %d",

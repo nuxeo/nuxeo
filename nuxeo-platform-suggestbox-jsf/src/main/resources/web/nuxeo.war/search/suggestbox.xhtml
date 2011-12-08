@@ -41,14 +41,14 @@
           for="faceted_search_suggest_box" tokens=""
           suggestionAction="#{suggestboxActions.getSuggestions}"
           var="result" fetchValue="" width="300"
-          nothingLabel="Search with key words"
+          nothingLabel="#{messages['label.noSuggestions']}"
           requestDelay="200" ajaxSingle="true"
           ignoreDupResponses="true">
-          <f:param name="facetedSuggestionSearchType"
-            value="#{widget.properties['facetedSuggestionSearchType']}" />
+          <f:param name="suggesterGroup" value="searchbox" />
           <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
             focus="" bypassUpdates="true" reRender=""
             action="#{suggestboxActions.handleSelection(result)}">
+            <f:param name="suggesterGroup" value="searchbox" />
           </a4j:support>
           <h:column>
             <h:graphicImage value="#{result.iconURL}" />
@@ -58,7 +58,7 @@
           </h:column>
         </rich:suggestionbox>
         <h:commandButton
-          action="#{suggestboxActions.performKeywordsSearch}"
+          action="#{suggestboxActions.performKeywordsSearch('searchByKeywords')}"
           value="#{messages['command.search']}" styleClass="button"
           id="simpleSearchSubmitButton" />
       </h:panelGroup>
