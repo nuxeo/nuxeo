@@ -1,12 +1,6 @@
 // import form popup
 function showImportSetForm() {
-  jQuery('<a href="#importSetFormPopup"></a>').fancybox({
-    'autoScale': true,
-    'transitionIn': 'none',
-    'transitionOut': 'none',
-    'enableEscapeButton': true,
-    'centerOnScroll': true
-  }).click();
+  showFancyBox('#importSetFormPopup');
 }
 
 function processInProgress() {
@@ -27,13 +21,7 @@ function fileUploadComplete() {
 
 // bulk edit popup
 function showBulkEditPopup() {
-  jQuery('<a href="#bulkEditPopup"></a>').fancybox({
-    'autoScale': true,
-    'transitionIn': 'none',
-    'transitionOut': 'none',
-    'enableEscapeButton': true,
-    'centerOnScroll': true
-  }).click();
+  showFancyBox('#bulkEditPopup');
 }
 
 // common
