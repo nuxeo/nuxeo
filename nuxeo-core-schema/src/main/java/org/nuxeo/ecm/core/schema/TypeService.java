@@ -36,7 +36,6 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TypeService extends DefaultComponent {
 
@@ -55,7 +54,8 @@ public class TypeService extends DefaultComponent {
 
     private static SchemaManager schemaManagerInstance;
 
-    //TODO: use a static Services class in runtime to use as only entry point to service lookups
+    // TODO: use a static Services class in runtime to use as only entry point
+    // to service lookups
     // and register singleton services there
     // or use a ServiceRef<T> for each singleton service we need to get quickly
     public static SchemaManager getSchemaManager() {
@@ -124,7 +124,8 @@ public class TypeService extends DefaultComponent {
             if (contribs.length > 0) {
                 TypeHelperDescriptor thd = (TypeHelperDescriptor) contribs[0];
                 try {
-                    typeManager.registerHelper(thd.schema, thd.type, thd.helperClass.newInstance());
+                    typeManager.registerHelper(thd.schema, thd.type,
+                            thd.helperClass.newInstance());
                 } catch (Exception e) {
                     log.error("Failed to instantiate type helper: "
                             + thd.helperClass, e);
@@ -134,13 +135,15 @@ public class TypeService extends DefaultComponent {
             Object[] contribs = extension.getContributions();
             if (contribs.length > 0) {
                 TypeProviderDescriptor tpd = (TypeProviderDescriptor) contribs[0];
-                ServiceManager sm = Framework.getLocalService(
-                        ServiceManager.class);
-                // the JNDI lookup should be done in the ear class loader context
-                // otherwise we can have class loading problems (e.g. TypeProvider not found)
+                ServiceManager sm = Framework.getLocalService(ServiceManager.class);
+                // the JNDI lookup should be done in the ear class loader
+                // context
+                // otherwise we can have class loading problems (e.g.
+                // TypeProvider not found)
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 try {
-                    Thread.currentThread().setContextClassLoader(TypeService.class.getClassLoader());
+                    Thread.currentThread().setContextClassLoader(
+                            TypeService.class.getClassLoader());
                     TypeProvider provider = null;
                     if (tpd.uri != null) {
                         provider = (TypeProvider) sm.getService(tpd.uri);
@@ -169,7 +172,8 @@ public class TypeService extends DefaultComponent {
                 } catch (Exception e) {
                     log.error("Failed to register type provider", e);
                 } finally {
-                    Thread.currentThread().setContextClassLoader(cl); //restore initial class loader
+                    // restore initial class loader
+                    Thread.currentThread().setContextClassLoader(cl);
                 }
             }
         }
@@ -220,9 +224,11 @@ public class TypeService extends DefaultComponent {
                     FileUtils.copyToFile(in, file); // may overwrite
                     Schema oldschema = typeManager.getSchema(sd.name);
                     // loadSchema also (re)registers it with the typeManager
-                    schemaLoader.loadSchema(sd.name, sd.prefix, file, sd.override);
+                    schemaLoader.loadSchema(sd.name, sd.prefix, file,
+                            sd.override);
                     if (oldschema == null) {
-                        log.info("Registered schema: " + sd.name + " from " + url.toString());
+                        log.info("Registered schema: " + sd.name + " from "
+                                + url.toString());
                     } else {
                         log.info("Reregistered schema: " + sd.name);
                     }
@@ -240,7 +246,8 @@ public class TypeService extends DefaultComponent {
     public void setConfiguration(TypeConfiguration configuration) {
         this.configuration = configuration;
         if (typeManager != null) {
-            typeManager.setPrefetchInfo(new PrefetchInfo(configuration.prefetchInfo));
+            typeManager.setPrefetchInfo(new PrefetchInfo(
+                    configuration.prefetchInfo));
         }
     }
 
