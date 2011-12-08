@@ -213,7 +213,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       }
       // Add the status bar on top of body
       var panel=jQuery("#dropzone-info-panel");
-      panel.css({ position : 'absolute', right : '0px', top : '0px', 'background-color' : '#FFFFF1'});
+      panel.css({ position : 'absolute', left : '30%', top : '30%' });
       //panel.css("width",jQuery("body").width()-100);
       panel.css("display","block");
       jQuery("#dndMsgUploadInProgress").css("display","block");
@@ -280,7 +280,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
          jQuery("#dndFormSubmitButton").css("display","none");
          var iframe = jQuery("<iframe></iframe>");
          iframe.attr("width", "330px");
-         iframe.attr("height", "400px");
+         iframe.attr("height", "550px");
          iframe.attr("frameborder", "0");
          iframe.attr("src", this.operationsDef[i].link);
          desc.append(iframe);
