@@ -19,6 +19,10 @@ package org.nuxeo.ecm.platform.video;
 import java.io.Serializable;
 import java.util.Calendar;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -30,6 +34,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.video.service.VideoConversionId;
 import org.nuxeo.ecm.platform.video.service.VideoService;
+import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -101,4 +106,21 @@ public class VideoActions implements Serializable {
         videoService.launchConversion(doc, conversionName);
     }
 
+    public boolean isSafariHTML5() {
+        return UserAgentMatcher.isSafari5(getUserAgent());
+    }
+
+    public boolean isChromeHTML5() {
+        return UserAgentMatcher.isChrome(getUserAgent());
+    }
+
+    public boolean isFirefoxHTML5() {
+        return UserAgentMatcher.isFirefox4OrMore(getUserAgent());
+    }
+
+    protected String getUserAgent() {
+        ExternalContext econtext = FacesContext.getCurrentInstance().getExternalContext();
+        HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
+        return request.getHeader("User-Agent");
+    }
 }
