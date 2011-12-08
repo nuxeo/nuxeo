@@ -275,6 +275,19 @@
         <presets category="font" src="themes/palettes/rainbow-fonts.properties" />
         <presets category="color" src="themes/palettes/rainbow-colors.properties" />
       </presetsList>
+      <palettePreview>
+        <colors>
+          <color>#4a3a6e</color>
+          <color>#feffe6</color>
+          <color>#cfffd1</color>
+          <color>#aafff2</color>
+          <color>#99163e</color>
+          <color>#a9ff70</color>
+          <color>#F78600</color>
+          <color>#00A2CB</color>
+          <color>#474747</color>
+        </colors>
+      </palettePreview>
     </flavor>
 
   </extension>
