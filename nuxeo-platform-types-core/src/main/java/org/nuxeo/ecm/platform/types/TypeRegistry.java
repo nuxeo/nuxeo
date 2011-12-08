@@ -236,8 +236,6 @@ public class TypeRegistry extends ExtensionRegistry<Type> {
             oldType.setContentViews(cvMerged);
         }
 
-        // TODO: actions
-
         return oldType;
     }
 
