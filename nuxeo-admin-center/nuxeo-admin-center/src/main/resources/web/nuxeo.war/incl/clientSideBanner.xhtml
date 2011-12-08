@@ -53,14 +53,17 @@
 
          <div class="bannerBottom unregistered" >
            <div class="bannerMessage">
-            <p>This Nuxeo #{connectUpdateStatusInfo.distributionName} instance is not registered to Nuxeo Connect: you won't be able to get the most recent fixes and stay up to date.
-            <span class="bold" id="connectHotFixesCountMsg" style="display:none"><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span id="connectHotFixesCount">3</span> hotfix(es) published since this release.</a></span>
+            <p><h:outputText value="#{messages['label.nuxeo.connect.footer.instance.status']}" />
+            <span class="bold" id="connectHotFixesCountMsg" style="display:none"><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span id="connectHotFixesCount">3</span> hotfix(es) published since this release.</a></span></p>
+            <p><h:outputText value="#{messages['label.nuxeo.connect.footer.version']} #{connectUpdateStatusInfo.distributionVersion}. #{messages['label.nuxeo.connect.footer.instance.invitation']}"/>
             </p>
-            <p>Nuxeo #{connectUpdateStatusInfo.distributionName} version: #{connectUpdateStatusInfo.distributionVersion}. Register and enable Nuxeo Connect to benefit from automatic maintenance.</p>
            </div>
            <div class="links">
-            <a href="https://doc.nuxeo.com/x/l4FH" target="_blank"> &gt; How to enable Nuxeo Connect</a>
-            <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form?source=unregisteredClientBanner&#38;product=#{connectUpdateStatusInfo.distributionLabel}" target="_blank"> &gt; Subscribe to Nuxeo Connect</a>
+            <a href="https://doc.nuxeo.com/x/l4FH" target="_blank">
+            &gt; <h:outputText value=" #{messages['label.nuxeo.connect.footer.helper']}"/></a>
+            <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form?source=unregisteredClientBanner&#38;product=#{connectUpdateStatusInfo.distributionLabel}" target="_blank"> 
+            &gt; <h:outputText value=" #{messages['label.nuxeo.connect.footer.subscribe']}"/>
+            </a>
            </div>
            <div class="clear" />
         </div>
