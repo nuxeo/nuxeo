@@ -13,7 +13,7 @@ public class SuggesterGroupDescriptor implements Cloneable {
     @XNode("@name")
     protected String name = "default";
 
-    @XNodeList(value = "suggesterName", type = ArrayList.class, componentType = String.class)
+    @XNodeList(value = "suggesters/suggesterName", type = ArrayList.class, componentType = String.class)
     List<String> suggesters;
     
     // TODO make it possible to do incremental contribution with

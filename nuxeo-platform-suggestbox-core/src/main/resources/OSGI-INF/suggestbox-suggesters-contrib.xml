@@ -45,10 +45,12 @@
     point="suggesterGroups">
 
     <suggesterGroup name="searchbox">
-      <suggesterName>documentLookupByTitle</suggesterName>
-      <suggesterName>searchByUsersAndGroups</suggesterName>
-      <suggesterName>searchByDate</suggesterName>
-      <suggesterName>searchByKeywords</suggesterName>
+      <suggesters>
+        <suggesterName>documentLookupByTitle</suggesterName>
+        <suggesterName>searchByUsersAndGroups</suggesterName>
+        <suggesterName>searchByDate</suggesterName>
+        <suggesterName>searchByKeywords</suggesterName>
+      </suggesters>
     </suggesterGroup>
 
   </extension>
