@@ -24,31 +24,42 @@ import java.util.regex.Pattern;
  * string
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
 public class UserAgentMatcher {
 
-    private static final Pattern UA_FIREFOX = Pattern.compile("^[Mm]ozilla.*[Ff]irefox(/|\\s)?((3\\.[6789].*)|([456789].*))");
+    private static final Pattern UA_FIREFOX_3 = Pattern.compile("^[Mm]ozilla.*[Ff]irefox(/|\\s)?(3\\.[6789].*)");
 
-    private static final Pattern UA_SAFARI = Pattern.compile("^Mozilla.*AppleWebKit.*Version/5.*");
+    private static final Pattern UA_FIREFOX_FROM_4 = Pattern.compile("^[Mm]ozilla.*[Ff]irefox(/|\\s)?(([456789].*)|(1[0123456789].*))");
+
+    private static final Pattern UA_SAFARI_5 = Pattern.compile("^Mozilla.*AppleWebKit.*Version/5.*");
 
     private static final Pattern UA_CHROME = Pattern.compile("^Mozilla.*AppleWebKit.*Chrom(e|ium)/(1[0123456789]).*");
 
+    private UserAgentMatcher() {
+        // Helper class
+    }
+
+    public static boolean isFirefox3(String UA) {
+        return UA_FIREFOX_3.matcher(UA).matches();
+    }
+
+    public static boolean isFirefox4OrMore(String UA) {
+        return UA_FIREFOX_FROM_4.matcher(UA).matches();
+    }
+
+    public static boolean isSafari5(String UA) {
+        return UA_SAFARI_5.matcher(UA).matches();
+    }
+
+    public static boolean isChrome(String UA) {
+        return UA_CHROME.matcher(UA).matches();
+    }
+
     public static boolean html5DndIsSupported(String UA) {
-
-        if (UA_FIREFOX.matcher(UA).matches()) {
-            return true;
-        }
-
-        if (UA_SAFARI.matcher(UA).matches()) {
-            return true;
-        }
-
-        if (UA_CHROME.matcher(UA).matches()) {
-            return true;
-        }
-
-        return false;
+        return isFirefox3(UA) || isFirefox4OrMore(UA) || isSafari5(UA)
+                || isChrome(UA);
     }
 
 }
