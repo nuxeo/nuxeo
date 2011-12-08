@@ -14,7 +14,7 @@ boolean showRegistrationForm = !ctx.isConnectRegistrationDone();
 <script>
 var connectFormLoaded=false;
 function setSize() {
- $('#connectForm').css('height','450px');
+ $('#connectForm').css('height','500px');
  $('#connectForm').css('display','block');
  connectFormLoaded=true;
 }
