@@ -12,18 +12,14 @@
 
   <documentation>
     The SuggestionService provides a pluggable way to
-    generate explicit
-    suggestions for user actions / intents based on
-    contextual text user
-    input and the content of repositories and user
-    directories for
-    instance.
+    generate explicit suggestions for user actions / intents based on
+    contextual text user input and the content of repositories and user
+    directories for instance.
 
     The default use-case is to implement the
-    auto-suggest feature in the top
-    right search box of the Nuxeo DM user
-    interface for quick keyboard
-    based navigation in the repository.
+    auto-suggest feature in the top right search box of the Nuxeo DM
+    user interface for quick keyboard based navigation in the
+    repository.
   </documentation>
 
   <extension-point name="suggesters">
