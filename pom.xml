@@ -2893,11 +2893,6 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.birt</groupId>
-        <artifactId>org.mozilla.javascript</artifactId>
-        <version>1.7.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.birt</groupId>
         <artifactId>script-api</artifactId>
         <version>2.6.1</version>
       </dependency>
@@ -2911,6 +2906,11 @@
         <groupId>rhino</groupId>
         <artifactId>js</artifactId>
         <version>1.7R1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.nekohtml</groupId>
