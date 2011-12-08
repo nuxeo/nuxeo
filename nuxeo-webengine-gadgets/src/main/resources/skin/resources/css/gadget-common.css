@@ -1,28 +1,12 @@
-html, body {
-  overflow-x:hidden;
- }
+html, body {}
+body { font: normal 11px 'Lucida Grande', Verdana, Arial, sans-serif }
 
-body {
-  font:normal 11px 'Lucida Grande', Verdana, Arial, sans-serif;  
-}
+p, div, table { margin: 0; padding: 0 }
 
-p, div, table {
-  margin:0;
-  padding:0;
-}
+a:link { color:#0066cc; text-decoration: none }
+a:hover { text-decoration: underline }
 
-a:link {
-  color:#0066cc;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-img {
-	border: none;
-}
+img { border: none }
 
 button {
   line-height: 100%;
@@ -45,18 +29,11 @@ button {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f1f2f3');
 }
 
-#content {
-  padding:0.5em;
-  overflow: auto;
-}
+#content { padding: .5em; overflow: auto }
 
-.tools {
-  background-color: #f7f7f7;
-  padding:0.5em;
-}
+.tools { background-color: #f7f7f7; padding: .5em }
 
-#nxDocumentList {
-  width:98%;
-  margin:0 auto;
-}
+#nxDocumentList { width:98%; margin:0 auto }
 
+/* Override GWT default values */
+iframe.gwt-Frame { overflow: auto!important; overflow-x: scroll!important }
