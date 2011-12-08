@@ -15,6 +15,7 @@ List<PendingDownload> downloads = PackageDownloader.instance().getPendingDownloa
 boolean downloadStarted = PackageDownloader.instance().isDownloadStarted();
 boolean downloadCompleted = PackageDownloader.instance().isDownloadCompleted();
 boolean downloadInProgress = PackageDownloader.instance().isDownloadInProgress();
+String selectedPackageIds="";
 %>
 
 <%@ include file="includes/form-start.jsp" %>
@@ -29,7 +30,9 @@ boolean downloadInProgress = PackageDownloader.instance().isDownloadInProgress()
 <fmt:message key="label.packagesDownload.selectedPackages" /> <br/>
 </span>
 <ul>
-<%for (DownloadPackage pkg : packages) {%>
+<%for (DownloadPackage pkg : packages) {
+    selectedPackageIds+=pkg.getId() + "|";
+%>
   <li><%=pkg.getFilename()%> &nbsp;
   <%if (pkg.isAlreadyInLocal()) {%>
     (already in local)
@@ -74,6 +77,9 @@ $(document).ready(function(){
   console.log("Staring reload!!!!");
   refreshDownloadTable();
 <%}%>
+
+  $("#connectBannerIframe").attr("src","<%=currentPage.getAssociatedIFrameUrl()%>?pkgs=<%=selectedPackageIds%>");
+
 });
 </script>
 

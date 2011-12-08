@@ -82,7 +82,7 @@ function drawBloc(container, idx, node2Display, parent, nbSiblings) {
     if (node == null) {
         return;
     }
-    var span = $("<div class=\"nxpblock\">" + node.package + "</div>");
+    var span = $("<div class=\"nxpblock\">" + node.shortlabel + "</div>");
     span.attr('pkg', node.package);
     if (node2Display.root) {
       span.attr('root', true);

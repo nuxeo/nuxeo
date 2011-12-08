@@ -141,4 +141,10 @@ public class DownloadablePackageOption {
         return parent;
     }
 
+    public String getShortLabel() {
+        if (pkg!=null) {
+            return pkg.getShortLabel();
+        }
+        return null;
+    }
 }

@@ -47,6 +47,8 @@ public class DownloadPackage {
 
     protected String downloadUrl;
 
+    protected String shortLabel;
+
     protected boolean alreadyInLocal = false;
 
     protected final List<String> impliedDeps = new ArrayList<String>();
@@ -179,6 +181,14 @@ public class DownloadPackage {
 
     public void setTextColor(String textColor) {
         this.textColor = textColor;
+    }
+
+    public String getShortLabel() {
+        return shortLabel;
+    }
+
+    public void setShortLabel(String shortLabel) {
+        this.shortLabel = shortLabel;
     }
 
 }
