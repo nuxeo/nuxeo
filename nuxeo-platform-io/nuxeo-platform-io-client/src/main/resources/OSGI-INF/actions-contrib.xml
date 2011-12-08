@@ -35,7 +35,7 @@
     </action>
 
     <action id="exportViewZIPExport"
-      link="#{importExportAction.documentZIPExportURL}" order="20"
+      link="#{importExportAction.documentZIPTreeExportURL}" order="20"
       label="label.exportview.zipExport" icon="/icons/zip_export.png">
       <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
       <filter-id>not_folder</filter-id>
