@@ -98,7 +98,7 @@ body {
   background: none repeat scroll 0 0 #fff;
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-  margin-left: 5em;
+  margin-left: 10em;
   filter: alpha(opacity = 80);
   opacity: 0.8;
   padding: 1.5em 0 1em;
