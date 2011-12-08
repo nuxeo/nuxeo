@@ -75,6 +75,7 @@
               <c:forEach var="action" items="#{exportCommandActions}">
                 <nxh:commandLink action="#{action.getLink()}"
                   immediate="#{action.immediate}"
+                  onclick="#{action.confirm}"
                   styleClass="exportHelpTooltip">
                   <h:graphicImage value="#{action.icon}"
                     rendered="#{not empty action.icon}" />
