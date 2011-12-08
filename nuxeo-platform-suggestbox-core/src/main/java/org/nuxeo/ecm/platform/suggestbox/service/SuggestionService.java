@@ -27,7 +27,7 @@ public interface SuggestionService {
     /**
      * Call the suggesters registered for the given suggestion point mentioned
      * in the context and aggregate the results.
-     * 
+     *
      * @param userInput text typed by the user
      * @param context user context (with suggestPoint name and more)
      * @return generated suggestion for the given input and context
@@ -36,9 +36,21 @@ public interface SuggestionService {
             throws SuggestionException;
 
     /**
+     * Call a single suggester registered under the provided name.
+     *
+     * @param userInput text typed by the user
+     * @param context user context (with suggestPoint name and more)
+     * @param suggester the registration name of the suggester to use
+     * @return generated suggestion for the given input and context
+     */
+    public List<Suggestion> suggest(String searchKeywords,
+            SuggestionContext suggestionContext, String suggester)
+            throws SuggestionException;
+
+    /**
      * Call the Content Automation Operation chain matching the suggestion
      * selected by the user.
-     * 
+     *
      * @param suggestion the selected suggestion to execute
      * @param context the suggestion context that is also passed to as Content
      *            Automation context.
@@ -49,4 +61,5 @@ public interface SuggestionService {
      */
     public Object handleSelection(Suggestion suggestion,
             SuggestionContext context) throws SuggestionHandlingException;
+
 }

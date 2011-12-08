@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
@@ -50,11 +49,18 @@ import org.nuxeo.runtime.api.Framework;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
+/**
+ * Back seam component for the top right search box using the suggestion service
+ * to help decode the user intent and minimize the number of clicks to find the
+ * relevant information.
+ */
 @Name("suggestboxActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
 public class SuggestboxActions extends DocumentContextBoundActionBean implements
         Serializable {
+
+    public String KEYWORD_SEARCH_SUGGESTER = "searchByKeywords";
 
     private static final Log log = LogFactory.getLog(SuggestboxActions.class);
 
@@ -101,6 +107,13 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
         this.searchKeywords = searchKeywords;
     }
 
+    /**
+     * Callback for the ajax keypress event that triggers the generation of
+     * context sensitive action suggestions. The most specific actions (e.g.
+     * direct navigation to a document with matching titles) should be suggested
+     * in the first position and more generic (traditional free-text search for
+     * documents) last.
+     */
     @SuppressWarnings("unchecked")
     public List<Suggestion> getSuggestions(Object input) {
         if (cachedSuggestions.hasExpired(input, locale)) {
@@ -128,22 +141,36 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
         return ctx;
     }
 
+    /**
+     * Callback for the ajax selection of an item in the rich:suggestionbox
+     * list.
+     */
     public Object handleSelection(Suggestion selectedSuggestion)
             throws SuggestionHandlingException {
         SuggestionService service = Framework.getLocalService(SuggestionService.class);
         SuggestionContext ctx = getSuggestionContext();
+        // reset the search field on explicit selection from the list.
+        this.searchKeywords = "";
         return service.handleSelection(selectedSuggestion, ctx);
     }
 
-    public String performKeywordsSearch() throws ClientException {
-        facetedSearchActions.clearSearch();
-        facetedSearchActions.setCurrentContentViewName(null);
-        String contentViewName = facetedSearchActions.getCurrentContentViewName();
-        ContentView contentView = contentViewActions.getContentView(contentViewName);
-        DocumentModel dm = contentView.getSearchDocumentModel();
-        dm.setPropertyValue("fsd:ecm_fulltext", searchKeywords);
-        multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
-        return "faceted_search_results";
+    /**
+     * Action listener for the old-style search button keypress.
+     */
+    public Object performKeywordsSearch() throws SuggestionException,
+            SuggestionHandlingException {
+        // make it possible to override how the default search is performed by
+        // using the suggestion service
+        SuggestionService service = Framework.getLocalService(SuggestionService.class);
+        SuggestionContext context = getSuggestionContext();
+        List<Suggestion> suggestions = service.suggest(searchKeywords, context,
+                KEYWORD_SEARCH_SUGGESTER);
+        if (suggestions.size() != 1) {
+            throw new SuggestionException(String.format(
+                    "Expected 1 keyword search suggestion, got %d",
+                    suggestions.size()));
+        }
+        return service.handleSelection(suggestions.get(0), context);
     }
 
     @Override

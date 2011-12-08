@@ -63,6 +63,78 @@ public class SuggestionServiceImpl extends DefaultComponent implements
         return suggestions;
     }
 
+    @Override
+    public List<Suggestion> suggest(String input, SuggestionContext context,
+            String suggesterName) throws SuggestionException {
+        SuggesterDescriptor suggesterDescriptor = suggesters.getSuggesterDescriptor(suggesterName);
+        if (suggesterDescriptor == null) {
+            throw new SuggestionException(String.format(
+                    "No suggester registered under the name '%s'.",
+                    suggesterName));
+        }
+        if (!suggesterDescriptor.isEnabled()) {
+            throw new SuggestionException(String.format(
+                    "Suggester registered under the name '%s' is disabled.",
+                    suggesterName));
+        }
+        Suggester suggester = suggesterDescriptor.getSuggester();
+        if (suggester == null) {
+            String message = "Suggester with id '" + suggesterName
+                    + "' has a configuration that prevents instanciation"
+                    + " (no className in aggregate descriptor)";
+            throw new SuggestionException(message);
+        }
+        return suggester.suggest(input, context);
+    }
+
+    @Override
+    public Object handleSelection(Suggestion suggestion,
+            SuggestionContext suggestionContext)
+            throws SuggestionHandlingException {
+        AutomationService automation = Framework.getLocalService(AutomationService.class);
+
+        for (SuggestionHandlerDescriptor handler : suggestionHandlers.getHandlers()) {
+            if (handler.isEnabled()
+                    && suggestion.getType().equals(handler.getType())
+                    && suggestionContext.suggesterGroup.equals(handler.getSuggesterGroup())) {
+                OperationContext operationContext = new OperationContext(
+                        suggestionContext.session);
+                operationContext.putAll(suggestionContext);
+                operationContext.setInput(suggestion);
+
+                String chainName = handler.getOperationChain();
+                String operationName = handler.getOperation();
+                if (chainName != null && !chainName.isEmpty()) {
+                    try {
+                        return automation.run(operationContext, chainName);
+                    } catch (Throwable t) {
+                        throw new SuggestionHandlingException(String.format(
+                                "Error executing chain '%s' on %s", chainName,
+                                suggestion.toString()), t);
+                    }
+                } else if (operationName != null && !operationName.isEmpty()) {
+                    try {
+                        Map<String, Object> emptyContext = Collections.emptyMap();
+                        return automation.run(operationContext, operationName,
+                                emptyContext);
+                    } catch (Throwable t) {
+                        throw new SuggestionHandlingException(String.format(
+                                "Error executing operation '%s' on %s",
+                                operationName, suggestion.toString()), t);
+                    }
+                } else {
+                    throw new SuggestionHandlingException(String.format(
+                            "SuggestionHandlerDescriptor %s should have either"
+                                    + " operation or operationChain defined",
+                            handler.getName()));
+                }
+            }
+        }
+        throw new SuggestionHandlingException(String.format(
+                "No suggestion handler registered for type %s and group %s",
+                suggestion.getType(), suggestionContext.suggesterGroup));
+    }
+
     // Nuxeo Runtime Component API
 
     @Override
@@ -128,51 +200,4 @@ public class SuggestionServiceImpl extends DefaultComponent implements
         }
     }
 
-    @Override
-    public Object handleSelection(Suggestion suggestion,
-            SuggestionContext suggestionContext)
-            throws SuggestionHandlingException {
-        AutomationService automation = Framework.getLocalService(AutomationService.class);
-
-        for (SuggestionHandlerDescriptor handler : suggestionHandlers.getHandlers()) {
-            if (handler.isEnabled()
-                    && suggestion.getType().equals(handler.getType())
-                    && suggestionContext.suggesterGroup.equals(handler.getSuggesterGroup())) {
-                OperationContext operationContext = new OperationContext(
-                        suggestionContext.session);
-                operationContext.putAll(suggestionContext);
-                operationContext.setInput(suggestion);
-
-                String chainName = handler.getOperationChain();
-                String operationName = handler.getOperation();
-                if (chainName != null && !chainName.isEmpty()) {
-                    try {
-                        return automation.run(operationContext, chainName);
-                    } catch (Throwable t) {
-                        throw new SuggestionHandlingException(String.format(
-                                "Error executing chain '%s' on %s", chainName,
-                                suggestion.toString()), t);
-                    }
-                } else if (operationName != null && !operationName.isEmpty()) {
-                    try {
-                        Map<String, Object> emptyContext = Collections.emptyMap();
-                        return automation.run(operationContext, operationName,
-                                emptyContext);
-                    } catch (Throwable t) {
-                        throw new SuggestionHandlingException(String.format(
-                                "Error executing operation '%s' on %s",
-                                operationName, suggestion.toString()), t);
-                    }
-                } else {
-                    throw new SuggestionHandlingException(String.format(
-                            "SuggestionHandlerDescriptor %s should have either"
-                                    + " operation or operationChain defined",
-                            handler.getName()));
-                }
-            }
-        }
-        throw new SuggestionHandlingException(String.format(
-                "No suggestion handler registered for type %s and group %s",
-                suggestion.getType(), suggestionContext.suggesterGroup));
-    }
 }
