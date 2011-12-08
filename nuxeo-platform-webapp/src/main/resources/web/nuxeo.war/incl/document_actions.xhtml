@@ -21,7 +21,8 @@
             id="documentActionSubviewUpperListTable">
             <nxh:commandLink action="#{action.getLink()}"
               id="documentActionSubviewUpperListLink"
-              immediate="#{action.immediate}">
+              immediate="#{action.immediate}"
+              onclick="#{action.confirm}">
               <h:graphicImage value="#{action.icon}"
                 rendered="#{not empty action.icon}" />
               <h:outputText value="#{messages[action.label]}" />

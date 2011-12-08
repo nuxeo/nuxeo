@@ -9,7 +9,8 @@
     value="#{webActions.getActionsList('DOCUMENT_UPPER_ACTION')}">
     <nxu:dataList layout="simple" var="action" value="#{actions}">
       <nxh:commandLink action="#{action.getLink()}"
-        immediate="#{action.immediate}">
+        immediate="#{action.immediate}"
+        onclick="#{action.confirm}">
         <h:graphicImage value="#{action.icon}"
           rendered="#{not empty action.icon}"
           title="#{messages[action.label]}"
@@ -22,6 +23,7 @@
     value="#{webActions.getActionsList('DOCUMENT_UPPER_ACTION_BLANK_TARGET')}">
     <nxu:dataList layout="simple" var="action" value="#{actions}">
       <nxh:commandLink action="#{action.getLink()}"
+        onclick="#{action.confirm}"
         immediate="#{action.immediate}"
         target="_blank">
         <h:graphicImage value="#{action.icon}"

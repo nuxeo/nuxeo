@@ -48,6 +48,7 @@
             <div>
               <nxh:commandButton action="#{action.getLink()}"
                 immediate="#{action.immediate}"
+                onclick="#{action.confirm}"
                 id="#{widget.id}_#{action.id}"
                 value="#{messages[action.label]}"
                 styleClass="button" />
@@ -60,6 +61,7 @@
             <div>
               <nxh:commandLink action="#{action.getLink()}"
                 immediate="#{action.immediate}"
+                onclick="#{action.confirm}"
                 id="#{widget.id}_#{action.id}"
                 value="#{messages[action.label]}"
                 styleClass="button" />
@@ -72,6 +74,7 @@
             <div>
               <nxh:commandLink action="#{action.getLink()}"
                 id="#{widget.id}_#{action.id}"
+                onclick="#{action.confirm}"
                 immediate="#{action.immediate}">
                 <h:graphicImage value="#{action.icon}"
                   rendered="#{not empty action.icon}"
@@ -88,6 +91,7 @@
             <div>
               <nxh:commandLink action="#{action.getLink()}"
                 id="#{widget.id}_#{action.id}"
+                onclick="#{action.confirm}"
                 immediate="#{action.immediate}">
                 <h:graphicImage value="#{action.icon}"
                   rendered="#{not empty action.icon}"

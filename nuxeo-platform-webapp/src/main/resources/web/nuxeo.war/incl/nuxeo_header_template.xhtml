@@ -45,6 +45,7 @@
               id="searchActionsTable">
               <span class="advancedSearchLink">
                 <nxh:commandLink action="#{action.getLink()}"
+                  onclick="#{action.confirm}"
                   value="#{messages[action.label]}"
                   immediate="true"
                   id="searchActionsButton" />
@@ -114,6 +115,7 @@
                       <nxh:commandLink action="#{action.getLink()}"
                         rendered="#{fn:startsWith(action.link,'#')}"
                         immediate="#{action.immediate}"
+                        onclick="#{action.confirm}"
                         id="menuActionCommand_#{action.id}">
                         <h:outputText value="#{messages[action.label]}" />
                       </nxh:commandLink>
@@ -128,6 +130,7 @@
                     <li>
                       <nxh:commandLink action="#{action.getLink()}"
                         immediate="#{action.immediate}"
+                        onclick="#{action.confirm}"
                         id="userServicesCommand_#{action.id}">
                         <h:outputText value="#{messages[action.label]}" />
                       </nxh:commandLink>
@@ -159,6 +162,7 @@
             <nxh:commandLink action="#{action.getLink()}"
               rendered="#{fn:startsWith(action.link,'#')}"
               immediate="#{action.immediate}"
+              onclick="#{action.confirm}"
               id="userServicesBottomActionCommandLink">
               <h:outputText value="#{messages[action.label]}" />
             </nxh:commandLink>
