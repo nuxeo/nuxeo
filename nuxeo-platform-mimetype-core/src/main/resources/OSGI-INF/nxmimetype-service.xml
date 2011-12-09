@@ -906,6 +906,15 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="audio/x-matroska" binary="true" iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/x-matroska</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mka</extension>
+      </extensions>
+    </mimetype>
+
     <mimetype normalized="audio/x-ms-wax" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/x-ms-wax</mimetype>
@@ -972,6 +981,15 @@
       </mimetypes>
       <extensions>
         <extension>webm</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="video/x-matroska" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-matroska</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mkv</extension>
       </extensions>
     </mimetype>
 
