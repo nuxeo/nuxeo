@@ -92,6 +92,9 @@ public class VideoActions implements Serializable {
     }
 
     public String getStatusMessageFor(VideoConversionStatus status) {
+        if (status == null) {
+            return "";
+        }
         String i18nMessageTemplate = resourcesAccessor.getMessages().get(
                 status.getMessage());
         if (i18nMessageTemplate == null) {
