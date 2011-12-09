@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webapp.tree;
 import java.io.Serializable;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.quota.QuotaStats;
+
 /**
  * Tree node of documents.
  *
@@ -33,6 +35,14 @@ public interface DocumentTreeNode extends Serializable {
     String getId();
 
     String getPath();
+
+    /**
+     * Returns the {@link QuotaStats} adapter for the underlying document of
+     * this {@code DocumentTreeNode}.
+     *
+     * @since 5.5
+     */
+    QuotaStats getQuotaStats();
 
     // XXX add icon, url, label methods.
 

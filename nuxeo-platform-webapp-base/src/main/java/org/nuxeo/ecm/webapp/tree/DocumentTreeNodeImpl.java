@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.api.quota.QuotaStats;
+import org.nuxeo.ecm.core.api.quota.QuotaStatsNonFolderishCount;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
@@ -280,4 +282,9 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         return res;
     }
 
+    @Override
+    public QuotaStats getQuotaStats() {
+        return document != null ? document.getAdapter(QuotaStatsNonFolderishCount.class)
+                : null;
+    }
 }
