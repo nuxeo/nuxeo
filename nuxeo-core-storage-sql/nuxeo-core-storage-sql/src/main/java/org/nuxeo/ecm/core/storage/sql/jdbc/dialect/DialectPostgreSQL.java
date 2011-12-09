@@ -297,6 +297,11 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    protected int getMaxNameSize() {
+        return 63;
+    }
+
+    @Override
     public String getCreateFulltextIndexSql(String indexName,
             String quotedIndexName, Table table, List<Column> columns,
             Model model) {

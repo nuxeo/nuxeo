@@ -275,7 +275,7 @@ public abstract class Dialect {
     }
 
     protected int getMaxIndexNameSize() {
-        return 999;
+        return getMaxNameSize();
     }
 
     /*

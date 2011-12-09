@@ -233,6 +233,11 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    protected int getMaxNameSize() {
+        return 128;
+    }
+
+    @Override
     public boolean getMaterializeFulltextSyntheticColumn() {
         return false;
     }
