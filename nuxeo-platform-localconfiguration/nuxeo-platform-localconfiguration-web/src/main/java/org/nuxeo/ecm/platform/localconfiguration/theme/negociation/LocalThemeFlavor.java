@@ -78,7 +78,7 @@ public class LocalThemeFlavor implements Scheme {
                     return null;
                 }
                 List<String> flavors = service.getFlavorNames(theme);
-                if (flavors.contains(flavor)) {
+                if (flavors != null && flavors.contains(flavor)) {
                     return flavor;
                 } else {
                     if (log.isDebugEnabled()) {
