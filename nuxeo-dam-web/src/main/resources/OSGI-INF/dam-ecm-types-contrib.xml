@@ -24,6 +24,14 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
     </type>
 
     <type id="ImportFolder">
@@ -45,6 +53,14 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
     </type>
 
     <type id="ImportSet">
@@ -73,6 +89,14 @@
       <layouts mode="dam">
         <layout>importset</layout>
       </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
     </type>
 
     <type id="File">
