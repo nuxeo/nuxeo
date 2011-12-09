@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -270,12 +271,13 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getDialectFulltextQuery(String query) {
-        query = query.replace("*", "%");
+        query = query.replace("%", "*");
         FulltextQuery ft = analyzeFulltextQuery(query);
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return translateFulltext(ft, "OR", "AND", "AND NOT", "\"");
+        return translateFulltext(ft, "OR", "AND", "AND NOT", "\"", "\"",
+                Collections.<Character> emptySet(), "\"", "\"", false);
     }
 
     // SELECT ..., FTTBL.RANK / 1000.0

@@ -628,9 +628,8 @@ public abstract class Dialect {
                                 buf.append(" ");
                             }
                             first = false;
-                            buf.append(wordStart);
-                            buf.append(w);
-                            buf.append(wordEnd);
+                            appendWord(w, buf, wordStart, wordEnd,
+                                    wordCharsReserved);
                         }
                     } else {
                         buf.append(phraseStart);
@@ -638,23 +637,28 @@ public abstract class Dialect {
                         buf.append(phraseEnd);
                     }
                 } else {
-                    boolean quoteWord = true;
-                    if (!wordCharsReserved.isEmpty()) {
-                        for (char c : word.toCharArray()) {
-                            if (wordCharsReserved.contains(Character.valueOf(c))) {
-                                quoteWord = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (quoteWord) {
-                        buf.append(wordStart);
-                    }
-                    buf.append(word);
-                    if (quoteWord) {
-                        buf.append(wordEnd);
+                    appendWord(word, buf, wordStart, wordEnd, wordCharsReserved);
+                }
+            }
+        }
+
+        protected static void appendWord(String word, StringBuilder buf,
+                String start, String end, Set<Character> reserved) {
+            boolean quote = true;
+            if (!reserved.isEmpty()) {
+                for (char c : word.toCharArray()) {
+                    if (reserved.contains(Character.valueOf(c))) {
+                        quote = false;
+                        break;
                     }
                 }
+            }
+            if (quote) {
+                buf.append(start);
+            }
+            buf.append(word);
+            if (quote) {
+                buf.append(end);
             }
         }
 

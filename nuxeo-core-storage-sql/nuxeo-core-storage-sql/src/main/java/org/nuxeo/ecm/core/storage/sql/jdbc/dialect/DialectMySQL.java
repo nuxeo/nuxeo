@@ -221,6 +221,7 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public String getDialectFulltextQuery(String query) {
+        query = query.replace("%", "*");
         FulltextQuery ft = analyzeFulltextQuery(query);
         if (ft == null || ft.op == Op.NOTWORD) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";

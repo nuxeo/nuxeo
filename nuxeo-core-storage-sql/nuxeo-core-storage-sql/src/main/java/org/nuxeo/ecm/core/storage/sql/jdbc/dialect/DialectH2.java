@@ -208,6 +208,7 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getDialectFulltextQuery(String query) {
+        query = query.replace("%", "*");
         FulltextQuery ft = analyzeFulltextQuery(query);
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";

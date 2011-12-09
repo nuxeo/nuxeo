@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,6 +65,13 @@ public class DialectPostgreSQL extends Dialect {
     private static final String DEFAULT_FULLTEXT_ANALYZER = "english";
 
     private static final String DEFAULT_USERS_SEPARATOR = ",";
+
+    private static final String PREFIX_SEARCH = ":*";
+
+    // prefix search syntax foo* or foo% or foo:*-> foo:*
+    private static final Pattern PREFIX_PATTERN = Pattern.compile("(\\*|%|:\\*)( |\"|$)");
+
+    private static final String PREFIX_REPL = PREFIX_SEARCH + "$2";
 
     protected final String fulltextAnalyzer;
 
@@ -315,6 +323,7 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
+        query = PREFIX_PATTERN.matcher(query).replaceAll(PREFIX_REPL);
         FulltextQuery ft = analyzeFulltextQuery(query);
         if (ft == null) {
             return ""; // won't match anything
@@ -474,8 +483,12 @@ public class DialectPostgreSQL extends Dialect {
             // SQL escaping
             word = word.replace("'", "''");
             word = word.replace("\\", ""); // don't take chances
+            word = word.replace(PREFIX_SEARCH, "%");
             buf.append(word);
-            buf.append(" %'");
+            if (!word.endsWith("%")) {
+                buf.append(" %");
+            }
+            buf.append("'");
         }
     }
 

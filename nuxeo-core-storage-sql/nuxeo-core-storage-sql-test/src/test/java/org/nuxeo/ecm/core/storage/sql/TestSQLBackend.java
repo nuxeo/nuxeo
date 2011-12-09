@@ -2030,6 +2030,71 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    public void testFulltextPrefix() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.setSimpleProperty("tst:title", "hello world citizens");
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        PartialList<Serializable> res;
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'wor*'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'wor%'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+
+        // BBB for direct PostgreSQL syntax
+        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL) {
+            res = session.query(
+                    "SELECT * FROM TestDoc WHERE ecm:fulltext = 'wor:*'",
+                    QueryFilter.EMPTY, false);
+            assertEquals(1, res.list.size());
+        }
+
+        // prefix in phrase search
+        // not in H2 (with Lucene default parser)
+        // not in MySQL
+        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL
+                || DatabaseHelper.DATABASE instanceof DatabaseOracle
+                || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
+            res = session.query(
+                    "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hello wor*\"'",
+                    QueryFilter.EMPTY, false);
+            assertEquals(1, res.list.size());
+        }
+        // prefix wildcard in the middle of a phrase
+        // really only in Oracle, and approximation in PostgreSQL
+        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL
+                || DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+            res = session.query(
+                    "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hel* world\"'",
+                    QueryFilter.EMPTY, false);
+            assertEquals(1, res.list.size());
+            res = session.query(
+                    "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hel* wor*\"'",
+                    QueryFilter.EMPTY, false);
+            assertEquals(1, res.list.size());
+            // PostgreSQL mid-phrase wildcards are too greedy
+            if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+                // no match wanted here
+                res = session.query(
+                        "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hel* citizens\"'",
+                        QueryFilter.EMPTY, false);
+                assertEquals(0, res.list.size());
+            }
+        }
+    }
+
     public void testFulltextCompatibilityPostgreSQL() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
