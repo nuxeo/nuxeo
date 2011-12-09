@@ -78,6 +78,7 @@
         </div>
       </c:when>
       <c:otherwise>
+        <c:if test="#{not empty mp4URL}">
         <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,45,2"
             width="#{width}" height="#{height}" class="vjs-flash-fallback">
           <param name="movie" value="#{baseURL}swf/JarisFLVPlayer.swf" />
@@ -104,7 +105,7 @@
             seamlesstabbing="false">
           </embed>
         </object>
-
+        </c:if>
       </c:otherwise>
     </c:choose>
 
