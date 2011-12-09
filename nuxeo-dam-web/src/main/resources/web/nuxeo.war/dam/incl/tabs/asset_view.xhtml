@@ -12,7 +12,7 @@
       <tr>
         <td class="assetContainer">
           <f:subview rendered="#{!damDocumentActions.currentSelection.hasSchema('video') and !damDocumentActions.currentSelection.hasSchema('audio')}">
-          <a id="showAnnotationsButton" href="#{annotationsActions.annotationsURL}">
+            <a id="showAnnotationsButton" href="javascript:showFancyBox('#{previewActions.getPreviewPopupURL(damDocumentActions.currentSelection)}');">
 
             <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('picture') and damDocumentActions.currentSelection.picture.views.size > 0}">
                 <f:subview rendered="#{pictureActions.isLandscape(damDocumentActions.currentSelection)}">
@@ -49,18 +49,6 @@
        </td>
      </tr>
     </table>
-    <script type="text/javascript">
-      jQuery("#showAnnotationsButton").fancybox({
-        'width': '95%',
-        'height': '95%',
-        'autoScale': true,
-        'transitionIn': 'none',
-        'transitionOut': 'none',
-        'type': 'iframe',
-        'enableEscapeButton': true,
-        'centerOnScroll': true
-      });
-    </script>
 
     <a4j:form id="assetView">
       <div class="documentPreviewTitle">
