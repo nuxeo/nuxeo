@@ -39,7 +39,7 @@ h3.summaryTitle {
 .rank_block, .publication_block, .attachments { margin-top: 1.3em }
 
 .content_block table { margin-bottom: 1em; width: 100% }
-.content_block td { padding: 0; vertical-align: top }
+.content_block td { padding-left: .5em; vertical-align: top }
 .content_block .labelColumn { width: 100px }
 .content_block .actionsColumn { text-align: right; vertical-align: top; width: 20% }
 .content_block img { padding: 0 .5em }
