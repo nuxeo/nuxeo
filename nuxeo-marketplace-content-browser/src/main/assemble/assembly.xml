@@ -14,9 +14,9 @@
     <copy todir="${maven.project.build.directory}/marketplace">
       <fileset dir="src/main/resources" />
       <filterset>
-        <filter token="NAME" value="nuxeo-content-browser" />
         <filter token="TITLE" value="Nuxeo Content Browser" />
         <filter token="VERSION" value="${nuxeo.distribution.version}" />
+        <filter token="VERSION" value="1.0" />
       </filterset>
     </copy>
 
@@ -29,15 +29,15 @@
     <copy todir="${maven.project.build.directory}/marketplace" overwrite="true">
       <fileset dir="src/main/resources" />
       <filterset>
-        <filter token="NAME" value="nuxeo-content-browser-cmf" />
         <filter token="TITLE" value="Nuxeo Content Browser for CMF" />
         <filter token="VERSION" value="${nuxeo.distribution.version}" />
+        <filter token="VERSION" value="1.0-cmf" />
       </filterset>
     </copy>
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}-cmf.zip"
          basedir="${maven.project.build.directory}/marketplace" />
-    <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
+    <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}-cmf.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="cmf"
                      type="zip" />

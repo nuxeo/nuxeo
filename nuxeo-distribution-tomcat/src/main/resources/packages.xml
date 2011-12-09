@@ -6,7 +6,7 @@
     <package id="nuxeo-sc" label="Social Collaboration (SC)" filename="nuxeo-sc-@VERSION@.zip" md5="@SCMPMD5@" color="#ff736e" textcolor="#FFF" shortlabel="SC"/>
     <package id="nuxeo-cmf" label="Case Management Framework (CMF)" filename="nuxeo-@VERSION@-cmf.zip" md5="@CMFMPMD5@" implies="nuxeo-content-browser-cmf" color="#94b340" textcolor="#FFF" shortlabel="CMF"/>
     <package id="nuxeo-content-browser" label="Standard Content Browser" filename="nuxeo-content-browser-@VERSION@.zip" md5="@VPCBMPMD5@" />
-    <package id="nuxeo-content-browser-cmf" label="CMF Content Browser" filename="nuxeo-content-browser-cmf-@VERSION@.zip" md5="@VPCBCMFMPMD@" />
+    <package id="nuxeo-content-browser-cmf" label="CMF Content Browser" filename="nuxeo-content-browser-cmf-@VERSION@.zip" md5="@VPCBCMFMPMD5@" />
   </packageDefinitions>
   <install>
     <packageOptions>
