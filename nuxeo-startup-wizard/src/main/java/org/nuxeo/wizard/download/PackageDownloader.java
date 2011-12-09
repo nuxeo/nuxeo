@@ -274,13 +274,14 @@ public class PackageDownloader {
                 if (response.getStatusLine().getStatusCode() == 200) {
                     canReachServer = true;
                 } else {
-                    log.warn("Unable to ping server -> status code :"
+                    log.info("Unable to ping server -> status code :"
                             + response.getStatusLine().getStatusCode() + " ("
                             + response.getStatusLine().getReasonPhrase() + ")");
                     canReachServer = false;
                 }
             } catch (Exception e) {
-                log.warn("Unable to ping remote server", e);
+                log.info("Unable to ping remote server " + e.getMessage());
+                log.debug("Unable to ping remote server", e);
                 canReachServer = false;
             }
         }
@@ -295,6 +296,11 @@ public class PackageDownloader {
             }
             if (packageFile == null) {
                 packageFile = getLocalPackagesDescriptor();
+                if (packageFile==null) {
+                    log.warn("Unable to find local copy of packages.xml");
+                } else {
+                    log.info("Wizard will use the local copy of packages.xml.");
+                }
             }
             if (packageFile != null) {
                 try {
