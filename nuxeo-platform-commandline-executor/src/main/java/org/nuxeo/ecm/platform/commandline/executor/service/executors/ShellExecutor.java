@@ -61,16 +61,17 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
             cmd = new String[] { "/bin/sh", "-c",
                     cmdDesc.getCommand() + " " + paramsString };
         }
+        String commandLine = StringUtils.join(cmd, " ");
 
         Process p1;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Running system command: "
-                        + StringUtils.join(cmd, " "));
+                        + commandLine);
             }
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
-            return new ExecResult(e);
+            return new ExecResult(commandLine, e);
         }
 
         ThreadedStreamGobbler out = new ThreadedStreamGobbler(
@@ -87,11 +88,12 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
             out.join();
             err.join();
         } catch (InterruptedException e) {
-            return new ExecResult(e);
+            return new ExecResult(commandLine, e);
         }
 
         long t1 = System.currentTimeMillis();
-        return new ExecResult(output, t1 - t0, exitCode);
+        return new ExecResult(commandLine, output, t1 - t0,
+                exitCode);
     }
 
 }

@@ -26,6 +26,7 @@ import java.util.List;
 /**
  * Wraps result of the command-line execution:
  * <ul>
+ * <li>executed command line,
  * <li>output buffer,
  * <li>return code,
  * <li>java Exception.
@@ -37,6 +38,8 @@ public class ExecResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    protected final String commandLine;
+
     protected final List<String> output;
 
     protected final long execTime;
@@ -47,7 +50,8 @@ public class ExecResult implements Serializable {
 
     protected int returnCode;
 
-    public ExecResult(List<String> output, long execTime, int returnCode) {
+    public ExecResult(String commandLine, List<String> output, long execTime, int returnCode) {
+        this.commandLine = commandLine;
         this.execTime = execTime;
         this.output = output;
         this.returnCode = returnCode;
@@ -58,8 +62,9 @@ public class ExecResult implements Serializable {
         }
     }
 
-    public ExecResult(Exception error) {
+    public ExecResult(String commandLine, Exception error) {
         this.error = error;
+        this.commandLine = commandLine;
         execTime = 0;
         output = null;
         success = false;
@@ -83,6 +88,14 @@ public class ExecResult implements Serializable {
 
     public int getReturnCode() {
         return returnCode;
+    }
+
+    /**
+     * @since 5.5
+     * @return the executed command line
+     */
+    public String getCommandLine() {
+        return commandLine;
     }
 
 }
