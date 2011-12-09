@@ -122,6 +122,8 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
 
+    public static final String INSTALL_AFTER_RESTART = "installAfterRestart.log";
+
     private final File nuxeoHome;
 
     // User configuration file
@@ -1106,8 +1108,7 @@ public class ConfigurationGenerator {
      * @since 5.4.1
      */
     public File getInstallFile() {
-        return new File(serverConfigurator.getDataDir(),
-                "installAfterRestart.log");
+        return new File(serverConfigurator.getDataDir(), INSTALL_AFTER_RESTART);
     }
 
     /**
