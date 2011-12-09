@@ -11,6 +11,9 @@
 
   <c:if test="#{value.hasFacet('Video')}">
 
+  <c:set var="width" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, 550)}" />
+  <c:set var="height" value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, 310)}" />
+
   <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(value)}">
   <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(value, 'MP4 480p')}">
   <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(value, 'WebM 480p')}">
@@ -30,78 +33,80 @@
         </c:if>
       </nxu:set>
     </c:if>
-    <c:if test="#{(not empty mp4URL or not empty webmURL) and HTML5Available}">
-      <div class="video-js-box">
-        <!-- HTML5 player -->
-        <video class="video-js" width="450" height="337" controls="controls" preload="auto" poster="#{staticPreview}">
-          <c:if test="#{not empty mp4URL and safariHTML5}">
-            <source src="#{mp4URL}" type='video/mp4' />
-          </c:if>
-          <c:if test="#{not empty webmURL and (firefoxHTML5 or chromeHTML5)}">
-            <source src="#{webmURL}" type='video/webm' />
-          </c:if>
-          <c:if test="#{not empty mp4URL}">
-            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,45,2"
-                width="450" height="337" class="vjs-flash-fallback">
-              <param name="movie" value="#{baseURL}swf/JarisFLVPlayer.swf" />
-              <param name="menu" value="false"/>
-              <param name="scale" value="noscale" />
-              <param name="allowFullscreen" value="true"/>
-              <param name="allowScriptAccess" value="always"/>
-              <param name="bgcolor" value="#000000"/>
-              <param name="quality" value="high"/>
-              <param name="wmode" value="opaque"/>
-              <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1" />
-              <embed type="application/x-shockwave-flash" class="vjs-flash-fallback"
-                pluginspage="http://www.adobe.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"
-                width="450" height="337"
-                src="#{baseURL}swf/JarisFLVPlayer.swf"
-                menu="false"
-                scale="noscale"
-                allowfullscreen="true"
-                allowscriptaccess="always"
-                bgcolor="#000000"
-                quality="high"
-                wmode="opaque"
-                flashvars="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"
-                seamlesstabbing="false">
-                <img src="#{staticPreview}" height="480" alt="Poster Image"
-                  title="No video playback capabilities." />
-              </embed>
-            </object>
-          </c:if>
-        </video>
-      </div>
-    </c:if>
-    <c:if test="#{not empty mp4URL and not HTML5Available}">
-      <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,45,2"
-          width="450" height="337" class="vjs-flash-fallback">
-        <param name="movie" value="#{baseURL}swf/JarisFLVPlayer.swf" />
-        <param name="menu" value="false"/>
-        <param name="scale" value="noscale" />
-        <param name="allowFullscreen" value="true"/>
-        <param name="allowScriptAccess" value="always"/>
-        <param name="bgcolor" value="#000000"/>
-        <param name="quality" value="high"/>
-        <param name="wmode" value="opaque"/>
-        <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1" />
-        <embed type="application/x-shockwave-flash"
-          pluginspage="http://www.adobe.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"
-          width="450" height="337"
-          src="#{baseURL}swf/JarisFLVPlayer.swf"
-          menu="false"
-          scale="noscale"
-          allowfullscreen="true"
-          allowscriptaccess="always"
-          bgcolor="#000000"
-          quality="high"
-          wmode="opaque"
-          flashvars="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"
-          seamlesstabbing="false">
-        </embed>
-      </object>
+    <c:choose>
+      <c:when test="#{(not empty mp4URL and safariHTML5) or (not empty webmURL and (chromeHTML5 or firefoxHTML5))}">
+        <div class="video-js-box">
+          <!-- HTML5 player -->
+          <video class="video-js" width="#{width}" height="#{height}" controls="controls" preload="auto" poster="#{staticPreview}">
+            <c:if test="#{not empty mp4URL and safariHTML5}">
+              <source src="#{mp4URL}" type='video/mp4' />
+            </c:if>
+            <c:if test="#{not empty webmURL and (firefoxHTML5 or chromeHTML5)}">
+              <source src="#{webmURL}" type='video/webm' />
+            </c:if>
+            <c:if test="#{not empty mp4URL}">
+              <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,45,2"
+                  width="#{width}" height="#{height}" class="vjs-flash-fallback">
+                <param name="movie" value="#{baseURL}swf/JarisFLVPlayer.swf" />
+                <param name="menu" value="false"/>
+                <param name="scale" value="noscale" />
+                <param name="allowFullscreen" value="true"/>
+                <param name="allowScriptAccess" value="always"/>
+                <param name="bgcolor" value="#000000"/>
+                <param name="quality" value="high"/>
+                <param name="wmode" value="opaque"/>
+                <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1" />
+                <embed type="application/x-shockwave-flash" class="vjs-flash-fallback"
+                  pluginspage="http://www.adobe.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"
+                  width="#{width}" height="#{height}"
+                  src="#{baseURL}swf/JarisFLVPlayer.swf"
+                  menu="false"
+                  scale="noscale"
+                  allowfullscreen="true"
+                  allowscriptaccess="always"
+                  bgcolor="#000000"
+                  quality="high"
+                  wmode="opaque"
+                  flashvars="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"
+                  seamlesstabbing="false">
+                  <img src="#{staticPreview}" height="480" alt="Poster Image"
+                    title="No video playback capabilities." />
+                </embed>
+              </object>
+            </c:if>
+          </video>
+        </div>
+      </c:when>
+      <c:otherwise>
+        <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,45,2"
+            width="#{width}" height="#{height}" class="vjs-flash-fallback">
+          <param name="movie" value="#{baseURL}swf/JarisFLVPlayer.swf" />
+          <param name="menu" value="false"/>
+          <param name="scale" value="noscale" />
+          <param name="allowFullscreen" value="true"/>
+          <param name="allowScriptAccess" value="always"/>
+          <param name="bgcolor" value="#000000"/>
+          <param name="quality" value="high"/>
+          <param name="wmode" value="opaque"/>
+          <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1" />
+          <embed type="application/x-shockwave-flash"
+            pluginspage="http://www.adobe.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"
+            width="#{width}" height="#{height}"
+            src="#{baseURL}swf/JarisFLVPlayer.swf"
+            menu="false"
+            scale="noscale"
+            allowfullscreen="true"
+            allowscriptaccess="always"
+            bgcolor="#000000"
+            quality="high"
+            wmode="opaque"
+            flashvars="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(value)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"
+            seamlesstabbing="false">
+          </embed>
+        </object>
 
-    </c:if>
+      </c:otherwise>
+    </c:choose>
 
   </nxu:set>
   </nxu:set>
