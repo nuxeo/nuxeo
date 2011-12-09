@@ -18,6 +18,7 @@ package org.nuxeo.functionaltests.pages.wizard;
 
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -31,8 +32,13 @@ public class SummaryWizardPage extends WizardPage {
 
     public LoginPage restart() {
         nav(WizardPage.class, "Start Nuxeo");
-        findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
-        return asPage(LoginPage.class);
+        try {
+            findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
+            return asPage(LoginPage.class);
+        } catch (NoSuchElementException e) {
+            String currentUrl = driver.getCurrentUrl();
+            throw new NoSuchElementException(String.format("Unable to find login screen after %s minutes, currentUrl=%s", RESTART_TIMEOUT_MINUTES, currentUrl));
+        }
     }
 
     public String getRegistration() {
