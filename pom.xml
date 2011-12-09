@@ -63,6 +63,7 @@
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
     <module>nuxeo-cmf</module>
+    <module>nuxeo-poll</module>
   </modules>
 
   <dependencyManagement>
@@ -695,6 +696,22 @@
       <dependency>
         <groupId>org.nuxeo.correspondence</groupId>
         <artifactId>nuxeo-correspondence-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <!-- Poll -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-poll-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-poll-gadget</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-poll-web</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
