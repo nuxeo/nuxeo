@@ -26,6 +26,8 @@ author: lkemen@nuxeo.com
 .adminContentColumn { padding: 2em }
 .adminViewContent h2 { padding: 2em 0 1em }
 .adminViewContent p { padding: .4em 0 }
+.adminContentColumn .tabsContent { font-size: normal }
+
 
 /* =Override GWT styles*/
 body, table td, select { font-family: "default (__FLAVOR__ font)"; }
