@@ -399,7 +399,7 @@ public class PackageDownloader {
     }
 
     public List<DownloadPackage> getSelectedPackages() {
-        List<DownloadPackage> pkgs = downloadOptions.getPkg4Download();
+        List<DownloadPackage> pkgs = getPackageOptions().getPkg4Download();
         for (DownloadPackage pkg : pkgs) {
             if (needToDownload(pkg)) {
                 pkg.setAlreadyInLocal(false);
