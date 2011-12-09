@@ -70,8 +70,12 @@
         <property name="height">310</property>
       </properties>
     </widget>
-    <widget name="summary_video_storyboard"
-      type="video_storyboard" />
+    <widget name="summary_video_storyboard" type="video_storyboard">
+      <labels>
+        <label mode="any">heading.storyboard</label>
+      </labels>
+      <translated>true</translated>
+    </widget>
     <widget name="summary_video_conversions"
           type="video_conversions" />
     <widget name="summary_video_info"

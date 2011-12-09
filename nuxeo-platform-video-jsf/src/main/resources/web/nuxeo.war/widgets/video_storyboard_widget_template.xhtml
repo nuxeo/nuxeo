@@ -11,7 +11,11 @@
 
   <c:if test="#{value.hasFacet('Video')}">
 
-  <h3 class="summaryTitle">#{messages['heading.storyboard']}</h3>
+  <h3 class="summaryTitle">#{messages[widget.label]}</h3>
+
+  <c:if test="#{not empty label}">
+    <h3 class="summaryTitle">#{messages[label]}</h3>
+  </c:if>
 
   <ui:repeat var="item" value="#{storyboardActions.getItems(value)}">
     <span class="videoStoryboardItem" timecode="#{item.timecode}">
