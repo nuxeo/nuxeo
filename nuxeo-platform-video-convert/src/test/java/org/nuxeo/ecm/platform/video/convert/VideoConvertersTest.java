@@ -82,7 +82,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
     public void testStoryboardConverter() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
-        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-storyboard");
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg is not avalaible, skipping test");
             return;
@@ -92,8 +92,8 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         List<Blob> blobs = result.getBlobs();
         assertEquals(9, blobs.size());
         assertEquals("00000.000-seconds.jpeg", blobs.get(0).getFilename());
-        assertEquals("00070.000-seconds.jpeg", blobs.get(1).getFilename());
-        assertEquals("00560.000-seconds.jpeg", blobs.get(8).getFilename());
+        assertEquals("00072.000-seconds.jpeg", blobs.get(1).getFilename());
+        assertEquals("00580.000-seconds.jpeg", blobs.get(8).getFilename());
     }
 
     public void testScreenshotConverter() throws Exception {

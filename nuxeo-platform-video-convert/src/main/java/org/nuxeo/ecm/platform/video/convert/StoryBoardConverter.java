@@ -18,16 +18,16 @@
  */
 package org.nuxeo.ecm.platform.video.convert;
 
+import static org.nuxeo.ecm.platform.video.convert.Constants.INPUT_FILE_PATH_PARAMETER;
+import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_PATH_PARAMETER;
+import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -59,9 +59,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
 
     public static final String FFMPEG_INFO_COMMAND = "ffmpeg-info";
 
-    public static final String FFMPEG_STORYBOARD_COMMAND = "ffmpeg-storyboard";
-
-    public static final String RATE_PARAM = "rate";
+    public static final String FFMPEG_SCREENSHOT_RESIZE_COMMAND = "ffmpeg-screenshot-resize";
 
     public static final String WIDTH_PARAM = "width";
 
@@ -82,12 +80,6 @@ public class StoryboardConverter extends BaseVideoConverter implements
             return;
         }
         commonParams = descriptor.getParameters();
-        if (!commonParams.containsKey(RATE_PARAM)) {
-            // NB: the minimum rate accepted by the current version of ffmpeg
-            // (SVN-r19352-4:0.5+svn20090706-2ubuntu2) is 0.1, i.e. at least one
-            // thumbnail every 10s
-            commonParams.put(RATE_PARAM, "0.1");
-        }
         if (!commonParams.containsKey(WIDTH_PARAM)) {
             commonParams.put(WIDTH_PARAM, "100");
         }
@@ -96,6 +88,9 @@ public class StoryboardConverter extends BaseVideoConverter implements
         }
         if (commonParams.containsKey(THUMBNAIL_NUMBER_PARAM)) {
             numberOfThumbnails = Integer.parseInt(commonParams.get(THUMBNAIL_NUMBER_PARAM));
+        }
+        if (numberOfThumbnails < 1) {
+            numberOfThumbnails = 1;
         }
     }
 
@@ -106,6 +101,16 @@ public class StoryboardConverter extends BaseVideoConverter implements
         File outFolder = null;
         InputFile inputFile = null;
         Blob blob = null;
+
+        // Build the empty output structure
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        List<Blob> blobs = new ArrayList<Blob>();
+        List<Double> timecodes = new ArrayList<Double>();
+        List<String> comments = new ArrayList<String>();
+        properties.put("timecodes", (Serializable) timecodes);
+        properties.put("comments", (Serializable) comments);
+        SimpleBlobHolderWithProperties bh = new SimpleBlobHolderWithProperties(
+                blobs, properties);
         try {
             blob = blobHolder.getBlob();
             inputFile = new InputFile(blob);
@@ -113,52 +118,83 @@ public class StoryboardConverter extends BaseVideoConverter implements
             outFolder = File.createTempFile("StoryboardConverter-out-", "-tmp");
             outFolder.delete();
             outFolder.mkdir();
-            Map<String, Serializable> properties = new HashMap<String, Serializable>();
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath",
+            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER,
                     quoteFilePath(inputFile.file.getAbsolutePath()));
 
             Double duration = (Double) parameters.get("duration");
-            if (duration == null || duration < 3.0) {
+            if (duration == null) {
+                log.warn(String.format(
+                        "Cannot extract storyboard for file '%s'"
+                                + " with missing duration info.",
+                        blob.getFilename()));
+                return bh;
+            }
+            if (duration < 10.0) {
                 // do not extract a storyboard for so short videos
-                return collectBlobs(outFolder, properties, blob.getFilename(),
-                        0.0);
+                return bh;
             }
-
-            Double rate = numberOfThumbnails / duration;
-            if (rate < 0.1) {
-                // NB: the minimum rate accepted by the current version of
-                // ffmpeg (SVN-r19352-4:0.5+svn20090706-2ubuntu2) is 0.1,
-                // i.e. at least one thumbnail every 10s
-                rate = 0.1;
-            }
-            String rateParam = String.format(Locale.US, "%f", rate);
-
             // add the command line parameters for the storyboard extraction and
             // run it
-            params.addNamedParameter("outFolderPath",
-                    quoteFilePath(outFolder.getAbsolutePath()));
-            params.addNamedParameter(RATE_PARAM, rateParam);
-            params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
-            params.addNamedParameter(HEIGHT_PARAM,
-                    commonParams.get(HEIGHT_PARAM));
-            ExecResult result = cleService.execCommand(
-                    FFMPEG_STORYBOARD_COMMAND, params);
-            if (!result.isSuccessful()) {
-                Exception error = result.getError();
-                if (error != null) {
-                    throw error;
-                } else {
-                    throw new ConversionException(StringUtils.join(
-                            result.getOutput(), " "));
+            for (int i = 0; i < numberOfThumbnails; i++) {
+                long timecode = Double.valueOf(
+                        Math.floor(i * duration / numberOfThumbnails)).longValue();
+                File outSubFolder = new File(outFolder,
+                        String.format("%04d", i));
+                outSubFolder.mkdir();
+                File outFile = new File(outSubFolder, "video-thumb-%04d.jpeg");
+                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER,
+                        quoteFilePath(outFile.getAbsolutePath()));
+                params.addNamedParameter(POSITION_PARAMETER,
+                        String.valueOf(timecode));
+                params.addNamedParameter(WIDTH_PARAM,
+                        commonParams.get(WIDTH_PARAM));
+                params.addNamedParameter(HEIGHT_PARAM,
+                        commonParams.get(HEIGHT_PARAM));
+                ExecResult result = cleService.execCommand(
+                        FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
+                if (!result.isSuccessful()) {
+                    String commandLine = result.getCommandLine();
+                    log.error("Error executing command: " + commandLine);
+                    String output = StringUtils.join(result.getOutput(), "\n");
+                    log.error(output);
+                    Exception error = result.getError();
+                    if (error != null) {
+                        throw error;
+                    } else {
+                        throw new ConversionException(String.format(
+                                "Error computing video storyboard on"
+                                        + " file '%s' with command: %s",
+                                blob.getFilename(), commandLine));
+                    }
                 }
+                @SuppressWarnings("unchecked")
+                List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(
+                        outSubFolder, new String[] { "jpeg" }, false));
+                if (thumbs.isEmpty()) {
+                    String commandLine = result.getCommandLine();
+                    log.error("Error executing command: " + commandLine);
+                    String output = StringUtils.join(result.getOutput(), "\n");
+                    log.error(output);
+                    throw new ConversionException(String.format(
+                            "Failed taking storyboard screenshot for"
+                                    + " video file '%s' with command: %s",
+                            blob.getFilename(), commandLine));
+                }
+                Blob thumbBlob = StreamingBlob.createFromStream(
+                        new FileInputStream(thumbs.get(0)), "image/jpeg").persist();
+                thumbBlob.setFilename(String.format("%05d.000-seconds.jpeg",
+                        timecode));
+                blobs.add(thumbBlob);
+                timecodes.add(Double.valueOf(timecode));
+                comments.add(String.format("%s %d", blob.getFilename(), i));
             }
-            return collectBlobs(outFolder, properties, blob.getFilename(), rate);
+            return bh;
         } catch (Exception e) {
             if (blob != null) {
                 throw new ConversionException(
-                        "error extracting story board from '"
+                        "Error extracting story board from '"
                                 + blob.getFilename() + "': " + e.getMessage(),
                         e);
             } else {
@@ -171,45 +207,4 @@ public class StoryboardConverter extends BaseVideoConverter implements
             }
         }
     }
-
-    @SuppressWarnings("unchecked")
-    protected BlobHolder collectBlobs(File outFolder,
-            Map<String, Serializable> properties, String filename, Double rate)
-            throws IOException, FileNotFoundException {
-
-        List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(outFolder,
-                new String[] { "jpeg" }, false));
-        Collections.sort(thumbs);
-        List<Blob> blobs = new ArrayList<Blob>();
-        List<Double> timecodes = new ArrayList<Double>();
-        List<String> comments = new ArrayList<String>();
-        int skip = 1;
-        if (thumbs.size() > numberOfThumbnails) {
-            skip = thumbs.size() / numberOfThumbnails;
-        }
-        // skip the first screenshot which seems to be duplicated
-        for (int i = 1; i < thumbs.size(); i += skip) {
-            Blob keptBlob = StreamingBlob.createFromStream(
-                    new FileInputStream(thumbs.get(i)), "image/jpeg").persist();
-            // TODO: 10s is a match for the default rate of 0.1 fps: need to
-            // make it dynamic
-            int timecode = (int) Math.floor((i - 1) * (1.0 / rate));
-            keptBlob.setFilename(String.format("%05d.000-seconds.jpeg",
-                    timecode));
-            blobs.add(keptBlob);
-            timecodes.add(Double.valueOf(timecode));
-            comments.add(String.format("%s %d", filename, ((i - 1) / skip) + 1));
-            if (blobs.size() >= numberOfThumbnails) {
-                // depending of the remainder of the Euclidean division we might
-                // get an additional unwanted blob, skip the last
-                break;
-            }
-        }
-        properties.put("timecodes", (Serializable) timecodes);
-        properties.put("comments", (Serializable) comments);
-        SimpleBlobHolderWithProperties bh = new SimpleBlobHolderWithProperties(
-                blobs, properties);
-        return bh;
-    }
-
 }
