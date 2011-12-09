@@ -409,16 +409,19 @@ public class PackageDownloader {
         List<String> fileEntries = new ArrayList<String>();
 
         List<DownloadPackage> pkgs = downloadOptions.getPkg4Download();
+        List<String> pkgInstallIds = new ArrayList<String>();
         for (DownloadPackage pkg : pkgs) {
             if (pkg.isAlreadyInLocal()) {
                 File file = pkg.getLocalFile();
-                fileEntries.add("file:" + file.getAbsolutePath());
+                fileEntries.add("install file:" + file.getAbsolutePath());
+                pkgInstallIds.add(pkg.getId());
             } else {
                 for (PendingDownload download : pendingDownloads) {
                     if (download.getPkg().equals(pkg)) {
                         if (download.getStatus() == PendingDownload.VERIFIED) {
                             File file = download.getDowloadingFile();
-                            fileEntries.add("file:" + file.getAbsolutePath());
+                            fileEntries.add("install file:" + file.getAbsolutePath());
+                            pkgInstallIds.add(pkg.getId());
                         } else {
                             log.error("One selected package has not been downloaded : "
                                     + pkg.getId());
@@ -427,6 +430,14 @@ public class PackageDownloader {
                 }
             }
         }
+
+        // make downloaded packages available in Admin Center for later offline usage
+        for (DownloadPackage pkg :downloadOptions.getAllPackages()) {
+            if (!pkgInstallIds.contains(pkg.getId()) && !needToDownload(pkg)) {
+                fileEntries.add("add file:" + pkg.getLocalFile().getAbsolutePath());
+            }
+        }
+
         File installLog = new File(installationFilePath);
         if (!installLog.exists()) {
             File parent = installLog.getParentFile();
