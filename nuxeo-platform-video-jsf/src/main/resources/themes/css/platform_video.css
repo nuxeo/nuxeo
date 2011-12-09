@@ -1,0 +1,8 @@
+/*
+Styles for Videos in Summary view, displayed in the Document Management view
+author: lkemen@nuxeo.com
+*/
+
+.videoConversionRow:hover { background-color: "color.major.light (__FLAVOR__ background)" }
+
+.vjs-flash-fallback, .video-js-box { margin: 0 auto }

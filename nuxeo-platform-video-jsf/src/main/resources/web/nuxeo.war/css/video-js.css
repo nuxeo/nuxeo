@@ -144,7 +144,7 @@ so you can upgrade to newer versions easier. */
 /* Volume
 -------------------------------------------------------------------------------- */
 .vjs-volume-control { cursor: pointer !important; }
-.vjs-volume-control div { display: block; margin: 0 5px 0 5px; padding: 4px 0 0 0; }
+.vjs-volume-control div { display: block; margin: 0 5px 0 5px!important; padding: 4px 0 0 0!important; }
 /* Drawing the volume icon using 6 span elements */
 .vjs-volume-control div span { /* Individual volume bars */
   float: left; padding: 0;

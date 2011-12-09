@@ -29,5 +29,20 @@
     </resource>
   </extension>
 
+  <!-- mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+    <themePage name="galaxy/default">
+      <styles append="true">
+        <style>platform_video</style>
+      </styles>
+    </themePage>
+  </extension>
+
+  <!-- CSS path declaration -->
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="platform_video">
+      <src>themes/css/platform_video.css</src>
+    </style>
+  </extension>
 
 </component>
