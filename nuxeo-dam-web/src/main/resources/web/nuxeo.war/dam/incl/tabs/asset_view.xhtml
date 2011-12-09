@@ -8,6 +8,13 @@
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <div class="infoTabContent">
+    <div class="documentPreviewTitle">
+      <h4>
+        <h:outputText
+                value="#{damDocumentActions.currentSelection.dublincore.title}" />
+      </h4>
+    </div>
+
     <table>
       <tr>
         <td class="assetContainer">
@@ -40,7 +47,7 @@
             </f:subview>
 
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-            <nxl:widgetType name="video_player" mode="view" value="#{damDocumentActions.currentSelection}" />
+            <nxl:widgetType name="video_player" mode="view" value="#{damDocumentActions.currentSelection}" width="450" height="253" />
           </f:subview>
           <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('audio')}">
             <nxl:widgetType name="audio_player" mode="view"
@@ -51,15 +58,8 @@
     </table>
 
     <a4j:form id="assetView">
-      <div class="documentPreviewTitle">
-        <h4>
-          <h:outputText
-                  value="#{damDocumentActions.currentSelection.dublincore.title}" />
-        </h4>
-      </div>
-
       <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('video')}">
-        <nxl:widgetType name="video_storyboard" mode="view" value="#{damDocumentActions.currentSelection}" />
+        <ui:include src="/dam/incl/tabs/asset_view_panels/asset_view_video_storyboard.xhtml" />
       </f:subview>
 
       <div class="togglePanel">

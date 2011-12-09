@@ -19,10 +19,9 @@
       <div class="dataBlockActions"></div>
       <div style="clear:both;"></div>
     </div>
-    <div class="togglePanelBody" style="max-height: 400px; overflow-y: scroll; text-align: center">
-      <ui:include src="/incl/video/storyboard.xhtml">
-        <ui:param name="videoDocument" value="#{damDocumentActions.currentSelection}" />
-      </ui:include>
+    <div class="togglePanelBody textAlignC">
+      <nxl:widgetType name="video_storyboard" mode="view" value="#{damDocumentActions.currentSelection}"
+        label="" />
     </div>
   </a4j:outputPanel>
 </div>
