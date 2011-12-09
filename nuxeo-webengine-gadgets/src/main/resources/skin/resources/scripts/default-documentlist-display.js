@@ -144,7 +144,7 @@ function mkCell(colDef, dashBoardItem) {
             html += "\" href=\"";
             html += NXGadgetContext.clientSideBaseUrl;
             html += codec + "/default";
-            html += escape(dashBoardItem.path);
+            html += encode(dashBoardItem.path);
             html += "@" + view;
             html += "\" />";
             html += dashBoardItem.title;
@@ -160,6 +160,14 @@ function mkCell(colDef, dashBoardItem) {
         html += "</td>";
     }
     return html;
+}
+
+function encode(path) {
+  var segments = path.split('/');
+  for (var i = 0; i < segments.length; i++) {
+    segments[i] = encodeURIComponent(segments[i]);
+  }
+  return segments.join('/');
 }
 
 function nextPage(nxParams) {
