@@ -251,8 +251,11 @@ public class GadgetServiceImpl extends DefaultComponent implements
         Map<String, GadgetDeclaration> gadgets = getInternalAndExternalGadgets();
         List<String> categories = new ArrayList<String>();
         for (GadgetDeclaration gadget : gadgets.values()) {
-            if (!categories.contains(gadget.getCategory()))
-                categories.add(gadget.getCategory());
+            if (gadget.getCategory() != null) {
+                if (!categories.contains(gadget.getCategory())) {
+                    categories.add(gadget.getCategory());
+                }
+            }
         }
         return categories;
     }

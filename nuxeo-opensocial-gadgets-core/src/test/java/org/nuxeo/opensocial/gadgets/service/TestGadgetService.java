@@ -17,12 +17,14 @@
 
 package org.nuxeo.opensocial.gadgets.service;
 
+import static org.junit.Assert.*;
 import static org.nuxeo.launcher.config.Environment.NUXEO_LOOPBACK_URL;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.shindig.gadgets.spec.GadgetSpec;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Session;
@@ -111,5 +113,12 @@ public class TestGadgetService extends NXRuntimeTestCase {
         //System.out.println(spec.getModulePrefs());
 
 
+    }
+    
+    @Test
+    public void testGadgetCategories() throws Exception {
+        GadgetService service = Framework.getService(GadgetService.class);
+        assertNotNull(service);
+        assertFalse(service.getGadgetCategory().contains(null));
     }
 }

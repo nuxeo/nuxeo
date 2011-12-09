@@ -9,5 +9,11 @@
       <icon>meteo_icon.png</icon>
     </internalGadget>
 
+     <internalGadget name="gadgetNoCategory">
+      <mountPoint>/meteo</mountPoint>
+      <entryPoint>meteo.xml</entryPoint>
+      <icon>meteo_icon.png</icon>
+    </internalGadget>
+
   </extension>
 </component>
