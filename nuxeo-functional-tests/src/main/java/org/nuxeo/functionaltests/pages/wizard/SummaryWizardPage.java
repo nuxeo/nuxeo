@@ -23,13 +23,15 @@ import org.openqa.selenium.WebElement;
 
 public class SummaryWizardPage extends WizardPage {
 
+    private static final int RESTART_TIMEOUT_MINUTES = 10;
+
     public SummaryWizardPage(WebDriver driver) {
         super(driver);
     }
 
     public LoginPage restart() {
         nav(WizardPage.class, "Start Nuxeo");
-        findElementWithTimeout(By.id("username"), 240 * 1000);
+        findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
         return asPage(LoginPage.class);
     }
 
