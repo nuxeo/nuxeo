@@ -63,17 +63,17 @@ public final class VideoInfo implements Serializable {
     public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0, 0, 0, null,
             null);
 
-    private static final String DURATION = "duration";
+    public static final String DURATION = "duration";
 
-    private static final String WIDTH = "width";
+    public static final String WIDTH = "width";
 
-    private static final String HEIGHT = "height";
+    public static final String HEIGHT = "height";
 
-    private static final String FRAME_RATE = "frameRate";
+    public static final String FRAME_RATE = "frameRate";
 
-    private static final String FORMAT = "format";
+    public static final String FORMAT = "format";
 
-    private static final String STREAMS = "streams";
+    public static final String STREAMS = "streams";
 
     private final double duration;
 

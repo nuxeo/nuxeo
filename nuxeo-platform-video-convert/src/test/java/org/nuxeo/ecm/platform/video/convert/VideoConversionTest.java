@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -71,12 +72,16 @@ public class VideoConversionTest extends NXRuntimeTestCase {
     }
 
     protected BlobHolder applyConverter(String converter, String fileName,
-            String mimeType, long height) throws Exception {
+            String mimeType, long newHeight) throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertNotNull(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getBlobFromPath(fileName, mimeType);
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-        parameters.put("height", height);
+        Map<String, Serializable> videoInfo = new HashMap<String, Serializable>();
+        videoInfo.put(VideoInfo.WIDTH, 768L);
+        videoInfo.put(VideoInfo.HEIGHT, 480L);
+        parameters.put("videoInfo", VideoInfo.fromMap(videoInfo));
+        parameters.put("height", newHeight);
         BlobHolder result = cs.convert(converter, in, parameters);
         assertNotNull(result);
         return result;
@@ -85,7 +90,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
     public void testWebMConversion() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
-        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-towebm-480p");
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-towebm");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg is not avalaible, skipping test");
             return;
@@ -104,7 +109,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
     public void testOggConversion() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
-        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toogg-480p");
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toogg");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg is not avalaible, skipping test");
             return;
@@ -123,7 +128,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
     public void testMP4Conversion() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
-        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toogg-480p");
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toogg");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg is not avalaible, skipping test");
             return;
