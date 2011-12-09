@@ -332,6 +332,10 @@ public class ImportActions implements Serializable {
         this.newImportFolder = newImportFolder;
     }
 
+    public boolean getCanImport() throws ClientException {
+        return !getImportFolders().isEmpty();
+    }
+
 }
 
 /**

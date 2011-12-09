@@ -15,10 +15,12 @@
   <a4j:form id="filterForm">
 
   <div class="actionBar">
-    <a4j:commandLink styleClass="button import" action="#{importActions.invalidateImportContext}" oncomplete="showImportSetForm();"
-      id="importset_creation_button" reRender="importSetPanel">
-      <h:outputText styleClass="importButton" value="${messages['label.action.createImportSet']}"/>
-    </a4j:commandLink>
+    <c:if test="#{importActions.canImport}">
+      <a4j:commandLink styleClass="button import" action="#{importActions.invalidateImportContext}" oncomplete="showImportSetForm();"
+        id="importset_creation_button" reRender="importSetPanel">
+        <h:outputText styleClass="importButton" value="${messages['label.action.createImportSet']}"/>
+      </a4j:commandLink>
+    </c:if>
 
     <a4j:commandButton id="filterFormClear"
       type="button"
