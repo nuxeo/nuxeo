@@ -728,10 +728,14 @@ public class ConfigurationGenerator {
 
     private StringBuffer loadConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
-        // Will change wizardParam value instead of appending it
-        String wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
-        // Will change templatesParam value instead of appending it
-        String templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
+        String wizardParam = null, templatesParam = null;
+        boolean wizardParamSet = false, templatesParamSet = false;
+        if (changedParameters != null) {
+            // Will change wizardParam value instead of appending it
+            wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
+            // Will change templatesParam value instead of appending it
+            templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
+        }
         StringBuffer newContent = new StringBuffer();
         BufferedReader reader = null;
         try {
@@ -749,26 +753,39 @@ public class ConfigurationGenerator {
                                 line = PARAM_FORCE_GENERATION + "=once";
                             }
                         } else if (line.startsWith(PARAM_WIZARD_DONE)) {
-                            if (wizardParam != null) {
-                                line = PARAM_WIZARD_DONE + "=" + wizardParam;
-                                wizardParam = null;
+                            if (wizardParamSet) {
+                                // do not recopy multiple occurrences
+                                line = null;
+                            } else {
+                                if (wizardParam != null) {
+                                    line = PARAM_WIZARD_DONE + "="
+                                            + wizardParam;
+                                }
+                                wizardParamSet = true;
                             }
                         } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
-                            if (templatesParam != null) {
-                                line = PARAM_TEMPLATES_NAME + "="
-                                        + templatesParam;
-                                templatesParam = null;
+                            if (templatesParamSet) {
+                                line = null;
+                            } else {
+                                if (templatesParam != null) {
+                                    line = PARAM_TEMPLATES_NAME + "="
+                                            + templatesParam;
+                                }
+                                templatesParamSet = true;
                             }
                         }
-                        newContent.append(line
-                                + System.getProperty("line.separator"));
+                        if (line != null) {
+                            newContent.append(line
+                                    + System.getProperty("line.separator"));
+                        }
                     } else {
-                        if (templatesParam != null) {
+                        // What must be written just before the BOUNDARY_BEGIN
+                        if (!templatesParamSet && templatesParam != null) {
                             newContent.append(PARAM_TEMPLATES_NAME + "="
                                     + templatesParam
                                     + System.getProperty("line.separator"));
                         }
-                        if (wizardParam != null) {
+                        if (!wizardParamSet && wizardParam != null) {
                             newContent.append(PARAM_WIZARD_DONE + "="
                                     + wizardParam
                                     + System.getProperty("line.separator"));

@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -120,5 +122,20 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                 originalTemplates,
                 configGenerator.getUserConfig().getProperty(
                         ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+    }
+
+    @Test
+    public void testSetWizardDone() throws ConfigurationException {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        Map<String, String> changedParameters = new HashMap<String, String>();
+        changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
+        configGenerator.saveFilteredConfiguration(changedParameters);
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        assertEquals(
+                "true",
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_WIZARD_DONE));
     }
 }
