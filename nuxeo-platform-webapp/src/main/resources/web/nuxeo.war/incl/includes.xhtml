@@ -24,6 +24,8 @@
   src="#{baseURL}js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js|tooltip.js">
 </script>
 
+<ui:include src="/incl/dnd/dnd-common.xhtml" />
+
 <c:if test="#{useHtml5DragAndDrop}">
   <ui:include src="/incl/dnd/dnd.xhtml" />
 </c:if>
