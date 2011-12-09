@@ -42,15 +42,16 @@ public class JsonNodeToProperties implements TypeAdapter {
                 if (size == 0) {
                     map.put(key, null);
                 }
-                if (size == 1) {
+                else if (size == 1) {
                     map.put(key, value.get(0).getValueAsText());
+                } else {
+                    StringBuilder buf = new StringBuilder(size*32);
+                    buf.append(value.get(0).getValueAsText());
+                    for (int i=1; i<size; i++) {
+                        buf.append(',').append(value.get(i).getValueAsText());
+                    }
+                    map.put(key, buf.toString());
                 }
-                StringBuilder buf = new StringBuilder(size*32);
-                buf.append(value.get(0).getValueAsText());
-                for (int i=1; i<size; i++) {
-                    buf.append(',').append(value.get(i).getValueAsText());
-                }
-                map.put(key, buf.toString());
             } else {
                 map.put(key, value.getValueAsText());
             }
