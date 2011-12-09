@@ -186,25 +186,15 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Nuxeo Shell EJB (deprecated) -->
+      <!-- Nuxeo Web Embedded -->
       <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-core</artifactId>
+        <groupId>org.nuxeo.ecm.web</groupId>
+        <artifactId>nuxeo-web-embedded-servlet</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-servlet</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-servlet-handlers</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-ejb-distribution</artifactId>
+        <groupId>org.nuxeo.ecm.web</groupId>
+        <artifactId>nuxeo-web-embedded-distribution</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
