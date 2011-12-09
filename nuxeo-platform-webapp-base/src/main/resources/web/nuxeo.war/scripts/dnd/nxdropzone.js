@@ -386,6 +386,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       batchExec.setContext(this.ctx);
       batchExec.addParameters(params);
       log(batchExec);
+      var cancelHandler= this;
       batchExec.batchExecute(this.batchId,
           function(data, status,xhr) {
               log("Import operation executed OK");
@@ -393,11 +394,11 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
               log("refresh-done");
           },
           function(xhr,status,errorMessage) {
-            this.cancelUpload();
+            cancelHandler.cancelUpload();
             if (status==403) {
               alert("Security Error : \n" + errorMessage);
             } else {
-              if (errorMessage) {
+              if (errorMessage && errorMessage != 'null') {
                 alert("Server Error : \n" + errorMessage);
               } else {
                 alert("Unknown Server Error");
