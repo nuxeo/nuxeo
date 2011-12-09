@@ -275,23 +275,27 @@ public class LocalPackageManager {
         log.info("Performing update ...");
         for (String pkgId : packages) {
             try {
-                boolean uninstall = false;
+                String cmd = "install";
                 if (pkgId.startsWith("uninstall ")) {
                     pkgId = pkgId.substring(10);
-                    uninstall = true;
+                    cmd = "uninstall";
                 } else if (pkgId.startsWith("install ")) {
                     pkgId = pkgId.substring(8);
-                    uninstall = false;
+                    cmd = "install";
+                } else if (pkgId.startsWith("add ")) {
+                    pkgId = pkgId.substring(4);
+                    cmd = "add";
                 }
+
                 if (pkgId.startsWith("file:")) {
                     String packageFileName = pkgId.substring(5);
                     log.info("Getting Installation package " + packageFileName);
                     LocalPackage pkg = pus.addPackage(new File(packageFileName));
                     pkgId = pkg.getId();
                 }
-                if (uninstall) {
+                if ("uninstall".equals(cmd)) {
                     uninstall(pkgId);
-                } else {
+                } else if ("install".equals(cmd)) {
                     updatePackage(pkgId);
                 }
             } catch (PackageException e) {
