@@ -33,22 +33,19 @@ public class VersionEventListener implements PostCommitEventListener {
 
     private static final Log log = LogFactory.getLog(VersionEventListener.class);
 
-    private GraphManagerEventListener manager;
-
-    private List<String> eventNames;
-
     public VersionEventListener() {
         try {
-            AnnotationsRepositoryConfigurationService service = Framework.getService(
-                    AnnotationsRepositoryConfigurationService.class);
-            eventNames = service.getEventIds();
-            manager = service.getGraphManagerEventListener();
+
         } catch (Exception e) {
             log.error(e);
         }
     }
 
     public void handleEvent(EventBundle events) throws ClientException {
+        AnnotationsRepositoryConfigurationService service = Framework.getLocalService(AnnotationsRepositoryConfigurationService.class);
+        GraphManagerEventListener manager = service.getGraphManagerEventListener();
+        List<String> eventNames = service.getEventIds();
+        
         boolean processEvents = false;
         for (String eventName : eventNames) {
             if (events.containsEventName(eventName)) {

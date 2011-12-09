@@ -33,10 +33,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 public class AnnotationsRepositoryComponent extends DefaultComponent {
-    private AnnotationsRepositoryServiceImpl annotationsRepositoryService;
+    
+    public static AnnotationsRepositoryComponent instance;
+    
+    protected AnnotationsRepositoryServiceImpl annotationsRepositoryService;
 
-    private AnnotationsRepositoryConfigurationServiceImpl confImpl;
+    protected AnnotationsRepositoryConfigurationServiceImpl confImpl;
 
+    protected AnnotationsFulltextInjector injector;
+    
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -66,14 +71,22 @@ public class AnnotationsRepositoryComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        instance = this;
         annotationsRepositoryService = new AnnotationsRepositoryServiceImpl();
         confImpl = new AnnotationsRepositoryConfigurationServiceImpl();
+        injector = new AnnotationsFulltextInjector();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        instance = null;
         annotationsRepositoryService.clear();
         annotationsRepositoryService = null;
+        injector = null;
+    }
+
+    public AnnotationsFulltextInjector getFulltextInjector() {
+        return injector;
     }
 
     @SuppressWarnings("unchecked")

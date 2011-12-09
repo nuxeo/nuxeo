@@ -40,10 +40,6 @@ public class AnnotatedEventListenerTest extends AbstractRepositoryTestCase {
 
     public void testEventLister() throws Exception {
 
-        // deploy the dummy event listener instead of the default core event
-        // broadcasting listener
-        deployBundle("org.nuxeo.ecm.annotations.repository.test");
-
         DummyDocumentEventListener.resetTest();
         assertNotNull(annotation);
         NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(),

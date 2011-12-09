@@ -96,6 +96,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.annotations.contrib");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.annotations.repository");
+        deployBundle("org.nuxeo.ecm.annotations.repository.test");
         deployBundle("org.nuxeo.ecm.platform.url.core");
         deployBundle("org.nuxeo.ecm.platform.url.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");

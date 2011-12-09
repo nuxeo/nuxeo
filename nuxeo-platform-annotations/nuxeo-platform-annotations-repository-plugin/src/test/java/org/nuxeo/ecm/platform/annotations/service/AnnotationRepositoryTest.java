@@ -109,19 +109,21 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
                 "I would like to create a new major version");
         myfile = session.saveDocument(myfile);
         session.save();
+        
         closeSession();
-        openSession();
-
+        
         waitForAsyncExec();
 
-        // we only find the live document, not the archived version: this is
+        openSession();
+
+
+        // we  find no documents: this is
         // intentional: even if the annotation have been copied to the archived
         // versioned, but not the potential proxies pointed to them, we do not
         // want to fulltext index the body of annotation on achived versions
         results = session.query(
                 "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
-        assertEquals(1, results.size());
-        assertEquals(myfile.getRef(), results.get(0).getRef());
+        assertEquals(0, results.size());
 
         newVersionSameAnnotations(session, myfile, uriMyfileServer1);
         annotationOnNewVersion(uriMyfileServer1);
@@ -133,7 +135,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         assertNotNull(annotation);
         List<Annotation> annotations = service.queryAnnotations(new URI(u1),
                 null, user);
-        assertEquals(2, annotations.size());
+        assertEquals(1, annotations.size());
         String versionUrl = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(version1), true, SERVER1);
         annotations = service.queryAnnotations(new URI(versionUrl), null, user);
@@ -146,7 +148,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         List<Annotation> annotations = service.queryAnnotations(new URI(
                 uriAnnotatedDoc), null, user);
         log.debug(annotations.size() + " annotations for: " + uriAnnotatedDoc);
-        assertEquals(1, annotations.size());
+        assertEquals(0, annotations.size());
         List<DocumentModel> versions = session.getVersions(myfile.getRef());
         assertEquals(1, versions.size());
         version1 = versions.get(0);

@@ -18,27 +18,18 @@
  */
 package org.nuxeo.ecm.platform.annotations.repository.listener;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEventListener;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsFulltextInjector;
+import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryComponent;
 
 /**
  * Extract the text of the body of the annotation to register it as a related
@@ -46,16 +37,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnnotationFulltextEventListener implements EventListener {
 
-    public static final String RELATED_TEXT_PROPERTY = "relatedtext";
-
-    public static final String RELATED_TEXT_ID_PROPERTY = "relatedtextid";
-
-    public static final String RELATED_TEXT_LIST_PROPERTY = "relatedtext:relatedtextresources";
-
-    public static final String ANNOTATION_RESOURCE_ID_PREFIX = "annotation_";
-
     @Override
     public void handleEvent(Event event) throws ClientException {
+        AnnotationsFulltextInjector injector = AnnotationsRepositoryComponent.instance.getFulltextInjector();
         if (!(event.getContext() instanceof DocumentEventContext)) {
             return;
         }
@@ -74,88 +58,26 @@ public class AnnotationFulltextEventListener implements EventListener {
         String annotationBody = (String) context.getProperty(AnnotatedDocumentEventListener.ANNOTATION_BODY);
 
         if (AnnotatedDocumentEventListener.ANNOTATION_CREATED.equals(event.getName())) {
-            setAnnotationText(doc, annotationId, annotationBody);
+            injector.setAnnotationText(doc, annotationId, annotationBody);
             session.saveDocument(doc);
         } else if (AnnotatedDocumentEventListener.ANNOTATION_DELETED.equals(event.getName())) {
-            if (removeAnnotationText(doc, annotationId)) {
+            if (injector.removeAnnotationText(doc, annotationId)) {
                 session.saveDocument(doc);
             }
         } else if (AnnotatedDocumentEventListener.ANNOTATION_UPDATED.equals(event.getName())) {
-            removeAnnotationText(doc, annotationId);
-            setAnnotationText(doc, annotationId, annotationBody);
+            injector.removeAnnotationText(doc, annotationId);
+            injector.setAnnotationText(doc, annotationId, annotationBody);
             session.saveDocument(doc);
         } else if (DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName())) {
             // clean all annotation text before check-in: checked-in versions
             // handle their own annotations independently of the live version
             DocumentRef versionRef = (DocumentRef) context.getProperty("checkedInVersionRef");
             DocumentModel version = session.getDocument(versionRef);
-            if (removeAnnotationText(version, null)) {
+            if (injector.removeAnnotationText(version, null)) {
                 session.saveDocument(version);
             }
         } else {
             return;
         }
-    }
-
-    protected boolean removeAnnotationText(DocumentModel doc,
-            String annotationId) throws ClientException {
-        @SuppressWarnings("unchecked")
-        List<Map<String, String>> relatedResources = doc.getProperty(
-                RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
-        String resourceIdToRemove = annotationId == null ? null
-                : makeResourceId(annotationId);
-        List<Map<String, String>> resourcesToRemove = new ArrayList<Map<String, String>>();
-        for (Map<String, String> resource : relatedResources) {
-            String resourceId = resource.get(RELATED_TEXT_ID_PROPERTY);
-            if (resourceIdToRemove != null) {
-                if (resourceIdToRemove.equals(resourceId)) {
-                    resourcesToRemove.add(resource);
-                }
-            } else {
-                // remove all annotations
-                if (resourceId == null
-                        || resourceId.startsWith(ANNOTATION_RESOURCE_ID_PREFIX)) {
-                    resourcesToRemove.add(resource);
-                }
-            }
-        }
-        if (!resourcesToRemove.isEmpty()) {
-            relatedResources.removeAll(resourcesToRemove);
-            doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY,
-                    (Serializable) relatedResources);
-            return true;
-        }
-        return false;
-    }
-
-    protected void setAnnotationText(DocumentModel doc, String annotationId,
-            String annotationBody) throws ClientException {
-        if (annotationBody == null) {
-            return;
-        }
-        try {
-            // strip HTML markup if any
-            BlobHolder bh = new SimpleBlobHolder(new StringBlob(annotationBody,
-                    "text/html"));
-            ConversionService service = Framework.getService(ConversionService.class);
-            if (service != null) {
-                annotationBody = service.convert("html2text", bh, null).getBlob().getString();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        @SuppressWarnings("unchecked")
-        List<Map<String, String>> relatedResources = doc.getProperty(
-                RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
-        HashMap<String, String> resource = new HashMap<String, String>();
-        resource.put(RELATED_TEXT_ID_PROPERTY, makeResourceId(annotationId));
-        resource.put(RELATED_TEXT_PROPERTY, annotationBody);
-        relatedResources.add(resource);
-        doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY,
-                (Serializable) relatedResources);
-    }
-
-    public static String makeResourceId(String annotationId) {
-        return ANNOTATION_RESOURCE_ID_PREFIX + annotationId;
     }
 }
