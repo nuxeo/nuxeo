@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,13 @@ public class DocumentLookupSuggester implements Suggester {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) context.session);
+
+        userInput = userInput.trim();
+        if (userInput.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // perform a prefix search on the last typed word
+        userInput += "*";
         try {
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(

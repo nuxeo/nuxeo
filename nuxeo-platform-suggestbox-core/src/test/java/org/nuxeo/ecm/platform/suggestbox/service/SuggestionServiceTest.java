@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -118,7 +119,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         DocumentModel file1 = session.createDocumentModel("/default-domain",
                 "file1", "File");
-        file1.setPropertyValue("dc:title", "First document");
+        file1.setPropertyValue("dc:title",
+                "First document with a superuniqueword in the title");
         session.createDocument(file1);
 
         DocumentModel file2 = session.createDocumentModel("/default-domain",
@@ -128,8 +130,14 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         DocumentModel file3 = session.createDocumentModel("/default-domain",
                 "file3", "File");
-        file3.setPropertyValue("dc:title", "The 2012 document about Bob Marley");
+        file3.setPropertyValue("dc:title", "Third document");
         session.createDocument(file3);
+
+        DocumentModel fileBob = session.createDocumentModel("/default-domain",
+                "file-bob", "File");
+        fileBob.setPropertyValue("dc:title",
+                "The 2012 document about Bob Marley");
+        session.createDocument(fileBob);
 
         session.save();
     }
@@ -143,6 +151,10 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     public void testDefaultSuggestionConfigurationWithKeyword()
             throws SuggestionException {
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            return;
+        }
+
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
         Map<String, String> messages = getTestMessages();
@@ -150,19 +162,20 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
                 Locale.US).withSession(session).withMessages(messages);
 
         // perform some test lookups to check the deployment of extension points
-        List<Suggestion> suggestions = suggestionService.suggest("first",
+        List<Suggestion> suggestions = suggestionService.suggest("superuni",
                 context);
         assertNotNull(suggestions);
         assertEquals(2, suggestions.size());
 
         Suggestion sugg1 = suggestions.get(0);
         assertEquals("document", sugg1.getType());
-        assertEquals("First document", sugg1.getLabel());
+        assertEquals("First document with a superuniqueword in the title",
+                sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
 
         Suggestion sugg2 = suggestions.get(1);
         assertEquals("searchDocuments", sugg2.getType());
-        assertEquals("Search documents with keywords: 'first'",
+        assertEquals("Search documents with keywords: 'superuni'",
                 sugg2.getLabel());
         assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
     }
@@ -170,6 +183,10 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     public void testDefaultSuggestionConfigurationWithDate()
             throws SuggestionException {
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            return;
+        }
+
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
         Map<String, String> messages = getTestMessages();
@@ -225,6 +242,10 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     public void testDefaultSuggestionConfigurationWithUsersAndGroups()
             throws SuggestionException {
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            return;
+        }
+
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
         Map<String, String> messages = getTestMessages();
@@ -232,7 +253,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
                 Locale.US).withSession(session).withMessages(messages);
 
         // perform some test lookups to check the deployment of extension points
-        List<Suggestion> suggestions = suggestionService.suggest("bob", context);
+        List<Suggestion> suggestions = suggestionService.suggest("marl",
+                context);
         assertNotNull(suggestions);
         assertEquals(4, suggestions.size());
 
@@ -253,7 +275,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         Suggestion sugg4 = suggestions.get(3);
         assertEquals("searchDocuments", sugg4.getType());
-        assertEquals("Search documents with keywords: 'bob'", sugg4.getLabel());
+        assertEquals("Search documents with keywords: 'marl'", sugg4.getLabel());
         assertEquals("/img/facetedSearch.png", sugg4.getIconURL());
     }
 

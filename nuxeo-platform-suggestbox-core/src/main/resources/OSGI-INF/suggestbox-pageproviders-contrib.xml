@@ -6,7 +6,7 @@
 
       <coreQueryPageProvider name="DEFAULT_DOCUMENT_SUGGESTION">
         <pattern quoteParameters="false" escapeParameters="true">
-          SELECT * FROM Document WHERE ecm:fulltext_title LIKE '?' AND ecm:mixinType !=
+          SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState != 'deleted'
         </pattern>
