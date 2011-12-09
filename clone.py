@@ -147,7 +147,7 @@ def git_fetch(module, branch):
     else:
         system("git checkout %s" % branch)
         log("Updating branch")
-        system("git pull %s" % alias)
+        system("git pull %s %s" % (alias, branch))
 
     os.chdir(cwd)
     log("")
