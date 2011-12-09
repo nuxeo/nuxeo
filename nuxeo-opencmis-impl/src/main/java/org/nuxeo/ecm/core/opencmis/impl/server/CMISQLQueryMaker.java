@@ -862,6 +862,9 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (id.equals(PropertyIds.PARENT_ID)) {
             return hierTable.getColumn(model.HIER_PARENT_KEY);
         }
+        if (id.equals(NuxeoTypeHelper.NX_PARENT_ID)) {
+            return hierTable.getColumn(model.HIER_PARENT_KEY);
+        }
         if (id.equals(PropertyIds.OBJECT_TYPE_ID)) {
             // joinedHierTable
             return hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);

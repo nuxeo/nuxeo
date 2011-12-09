@@ -201,6 +201,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.PARENT_ID.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataParentId(
                     (PropertyDefinition<String>) pd, doc);
+        } else if (NuxeoTypeHelper.NX_PARENT_ID.equals(name)) {
+            return (PropertyData<U>) new NuxeoPropertyDataParentId(
+                    (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.PATH.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataPath(
                     (PropertyDefinition<String>) pd, doc);
@@ -231,7 +234,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             } catch (ClientException e) {
                 throw new CmisRuntimeException(e.toString(), e);
             }
-            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
+            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
                     (PropertyDefinition<String>) pd, state);
         } else {
             boolean readOnly = pd.getUpdatability() != Updatability.READWRITE;
@@ -738,7 +741,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     }
 
     /**
-     * Property for cmis:parentId.
+     * Property for cmis:parentId and nuxeo:parentId.
      */
     public static class NuxeoPropertyDataParentId extends
             NuxeoPropertyDataBase<String> implements PropertyId {

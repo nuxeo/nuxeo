@@ -502,6 +502,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 getValue(data, NuxeoTypeHelper.NX_ISVERSION));
         assertEquals("project",
                 getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
+        assertEquals(rootFolderId, getValue(data, NuxeoTypeHelper.NX_PARENT_ID));
         @SuppressWarnings("unchecked")
         List<String> facets = (List<String>) getValues(data,
                 NuxeoTypeHelper.NX_FACETS);
@@ -1228,6 +1229,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         checkWhereTerm("File", NuxeoTypeHelper.NX_ISVERSION, "false");
         checkWhereTerm("File", NuxeoTypeHelper.NX_LIFECYCLE_STATE, "'project'");
+        checkWhereTerm("File", NuxeoTypeHelper.NX_PARENT_ID, NOT_NULL);
 
         // ----- Folder -----
 
@@ -1311,6 +1313,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.LAST_MODIFIED_BY, "john");
         checkReturnedValue(PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
         checkReturnedValue(PropertyIds.CHANGE_TOKEN, null);
+        checkReturnedValue(NuxeoTypeHelper.NX_PARENT_ID, NOT_NULL);
 
         // ----- Folder -----
 

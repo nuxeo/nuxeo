@@ -111,6 +111,8 @@ public class NuxeoTypeHelper {
 
     public static final String NX_LIFECYCLE_STATE = "nuxeo:lifecycleState";
 
+    public static final String NX_PARENT_ID = "nuxeo:parentId";
+
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
     protected AbstractTypeDefinition t;
@@ -333,6 +335,9 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(NX_FACETS, "Facets",
                 PropertyType.STRING, Cardinality.MULTI, Updatability.READONLY,
                 true, false, true, false));
+        t.addPropertyDefinition(newPropertyDefinition(NX_PARENT_ID,
+                "Nuxeo Parent ID", PropertyType.ID, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, true, true));
     }
 
     protected static void addFolderPropertyDefinitions(
