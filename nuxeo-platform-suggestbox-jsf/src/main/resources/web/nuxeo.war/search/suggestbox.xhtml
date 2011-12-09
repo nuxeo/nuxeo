@@ -42,7 +42,7 @@
           suggestionAction="#{suggestboxActions.getSuggestions}"
           var="result" fetchValue="" width="300"
           nothingLabel="#{messages['label.noSuggestions']}"
-          requestDelay="200" ajaxSingle="true"
+          requestDelay="100" ajaxSingle="true"
           ignoreDupResponses="true">
           <f:param name="suggesterGroup" value="searchbox" />
           <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
