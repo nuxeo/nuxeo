@@ -33,10 +33,10 @@
   <NuxeoValidationState>nuxeo_certified</NuxeoValidationState>
   <ProductionState>production_ready</ProductionState>
   <platforms>
-    <platform>cap-5.5-SNAPSHOT</platform>
+    <platform>cap-@VERSION@</platform>
   </platforms>
   <dependencies>
-    <package>nuxeo-content-browser-cmf:@VERSION@</package>
+    <package>nuxeo-content-browser:1.0-cmf</package>
   </dependencies>
   <license>LGPL</license>
   <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
