@@ -445,14 +445,20 @@ public class PackageDownloader {
         }
 
         File installLog = new File(installationFilePath);
-        if (!installLog.exists()) {
-            File parent = installLog.getParentFile();
-            if (!parent.exists()) {
-                parent.mkdirs();
+        if (fileEntries.size()>0) {
+            if (!installLog.exists()) {
+                File parent = installLog.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                installLog.createNewFile();
             }
-            installLog.createNewFile();
+            FileUtils.writeLines(installLog, fileEntries);
+        } else {
+            if (installLog.exists()) {
+                installLog.delete();
+            }
         }
-        FileUtils.writeLines(installLog, fileEntries);
 
         // Save presets
         saveSelectedPackages(pkgs);
