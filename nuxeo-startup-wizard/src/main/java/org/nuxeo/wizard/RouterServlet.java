@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -349,8 +349,8 @@ public class RouterServlet extends HttpServlet {
                 regTargetPath = regTargetPath + "/";
             }
 
-            String CLID1 = ctx.getConnectMap().get("CLID").split("--")[0];
-            String CLID2 = ctx.getConnectMap().get("CLID").split("--")[1];
+            String CLID1 = Context.getConnectMap().get("CLID").split("--")[0];
+            String CLID2 = Context.getConnectMap().get("CLID").split("--")[1];
             String regFileContent = CLID1 + "\n" + CLID2 + "\nnew instance";
 
             File regFile = new File(regTargetPath + "instance.clid");
@@ -438,8 +438,10 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.host", null);
             collector.addConfigurationParam("nuxeo.http.proxy.port", null);
             collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
-            collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain", null);
-            PackageDownloader.instance().setProxy(null, 0, null, null,null,null);
+            collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain",
+                    null);
+            PackageDownloader.instance().setProxy(null, 0, null, null, null,
+                    null);
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
                 ctx.trackError("nuxeo.http.proxy.port",
@@ -451,15 +453,18 @@ public class RouterServlet extends HttpServlet {
             }
             if ("anonymous".equals(proxyType)) {
                 collector.addConfigurationParam("nuxeo.http.proxy.login", null);
-                collector.addConfigurationParam("nuxeo.http.proxy.password",null);
-                collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
-                collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain", null);
+                collector.addConfigurationParam("nuxeo.http.proxy.password",
+                        null);
+                collector.addConfigurationParam("nuxeo.http.proxy.ntml.host",
+                        null);
+                collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain",
+                        null);
 
                 if (!ctx.hasErrors()) {
                     PackageDownloader.instance().setProxy(
-                        collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
-                        Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
-                        null, null, null, null);
+                            collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
+                            Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
+                            null, null, null, null);
                 }
             } else {
                 if (collector.getConfigurationParam("nuxeo.http.proxy.login").isEmpty()) {
@@ -468,13 +473,12 @@ public class RouterServlet extends HttpServlet {
                 } else {
                     if (!ctx.hasErrors()) {
                         PackageDownloader.instance().setProxy(
-                            collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
-                            Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
-                            collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
-                            collector.getConfigurationParamValue("nuxeo.http.proxy.password"),
-                            collector.getConfigurationParamValue("nuxeo.http.proxy.ntlm.host"),
-                            collector.getConfigurationParamValue("nuxeo.http.proxy.ntml.domain")
-                        );
+                                collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
+                                Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
+                                collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
+                                collector.getConfigurationParamValue("nuxeo.http.proxy.password"),
+                                collector.getConfigurationParamValue("nuxeo.http.proxy.ntlm.host"),
+                                collector.getConfigurationParamValue("nuxeo.http.proxy.ntml.domain"));
                     }
                 }
             }
@@ -527,6 +531,7 @@ public class RouterServlet extends HttpServlet {
             HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         List<String> options = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
         Enumeration<String> params = req.getParameterNames();
         while (params.hasMoreElements()) {
             String p = params.nextElement();
@@ -555,11 +560,12 @@ public class RouterServlet extends HttpServlet {
     public void handlePackagesDownloadPOST(Page currentPage,
             HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        ParamCollector collector = Context.instance(req).getCollector();
 
-        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
-        configurationGenerator.init();
+        String installationFilePath = new File(
+                collector.getConfigurationParam(org.nuxeo.common.Environment.NUXEO_DATA_DIR),
+                ConfigurationGenerator.INSTALL_AFTER_RESTART).getAbsolutePath();
 
-        String installationFilePath = configurationGenerator.getInstallFile().getAbsolutePath();
         PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(
                 installationFilePath);
 

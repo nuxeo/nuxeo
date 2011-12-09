@@ -208,17 +208,18 @@ public class PackageDownloader {
         }
     }
 
-    public void setProxy(String proxy, int port, String login, String password, String NTLMHost, String NTLMDomain ) {
+    public void setProxy(String proxy, int port, String login, String password,
+            String NTLMHost, String NTLMDomain) {
         if (proxy != null) {
             HttpHost proxyHost = new HttpHost(proxy, port);
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
                     proxyHost);
             if (login != null) {
-                if (NTLMHost!=null && !NTLMHost.trim().isEmpty()) {
-                    NTCredentials ntlmCredentials = new NTCredentials(login, password, NTLMHost, NTLMDomain);
+                if (NTLMHost != null && !NTLMHost.trim().isEmpty()) {
+                    NTCredentials ntlmCredentials = new NTCredentials(login,
+                            password, NTLMHost, NTLMDomain);
                     httpClient.getCredentialsProvider().setCredentials(
-                            new AuthScope(proxy, port),
-                            ntlmCredentials);
+                            new AuthScope(proxy, port), ntlmCredentials);
                 } else {
                     httpClient.getCredentialsProvider().setCredentials(
                             new AuthScope(proxy, port),
@@ -296,7 +297,7 @@ public class PackageDownloader {
             }
             if (packageFile == null) {
                 packageFile = getLocalPackagesDescriptor();
-                if (packageFile==null) {
+                if (packageFile == null) {
                     log.warn("Unable to find local copy of packages.xml");
                 } else {
                     log.info("Wizard will use the local copy of packages.xml.");
@@ -309,9 +310,10 @@ public class PackageDownloader {
 
                     // manage init from presets if available
                     Properties defaultSelection = getDefaultPackageSelection();
-                    if (defaultSelection!=null) {
-                        String presetId = defaultSelection.getProperty(PACKAGES_DEFAULT_SELECTION_PRESETS, null);
-                        if (presetId!=null && !presetId.isEmpty()) {
+                    if (defaultSelection != null) {
+                        String presetId = defaultSelection.getProperty(
+                                PACKAGES_DEFAULT_SELECTION_PRESETS, null);
+                        if (presetId != null && !presetId.isEmpty()) {
                             for (Preset preset : downloadOptions.getPresets()) {
                                 if (preset.getId().equals(presetId)) {
                                     List<String> pkgIds = Arrays.asList(preset.getPkgs());
@@ -320,8 +322,9 @@ public class PackageDownloader {
                                 }
                             }
                         } else {
-                            String pkgIdsList = defaultSelection.getProperty(PACKAGES_DEFAULT_SELECTION_PACKAGES, null);
-                            if (pkgIdsList!=null && !pkgIdsList.isEmpty()) {
+                            String pkgIdsList = defaultSelection.getProperty(
+                                    PACKAGES_DEFAULT_SELECTION_PACKAGES, null);
+                            if (pkgIdsList != null && !pkgIdsList.isEmpty()) {
                                 String[] ids = pkgIdsList.split(",");
                                 List<String> pkgIds = Arrays.asList(ids);
                                 downloadOptions.select(pkgIds);
@@ -360,7 +363,7 @@ public class PackageDownloader {
 
     protected Properties getDefaultPackageSelection() {
         File desc = new File(getDownloadDirectory(), PACKAGES_DEFAULT_SELECTION);
-        if (desc!=null && desc.exists()) {
+        if (desc.exists()) {
             try {
                 Properties props = new Properties();
                 props.load(new FileReader(desc));
@@ -377,7 +380,7 @@ public class PackageDownloader {
         Properties props = new Properties();
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < pkgs.size(); i++) {
-            if (i>0) {
+            if (i > 0) {
                 sb.append(",");
             }
             sb.append(pkgs.get(i).getId());
@@ -386,7 +389,7 @@ public class PackageDownloader {
         try {
             props.store(new FileWriter(desc), "Saved from Nuxeo SetupWizard");
         } catch (IOException e) {
-           log.error("Unable to save package selection", e);
+            log.error("Unable to save package selection", e);
         }
     }
 
@@ -426,7 +429,8 @@ public class PackageDownloader {
                     if (download.getPkg().equals(pkg)) {
                         if (download.getStatus() == PendingDownload.VERIFIED) {
                             File file = download.getDowloadingFile();
-                            fileEntries.add("install file:" + file.getAbsolutePath());
+                            fileEntries.add("install file:"
+                                    + file.getAbsolutePath());
                             pkgInstallIds.add(pkg.getId());
                         } else {
                             log.error("One selected package has not been downloaded : "
@@ -437,15 +441,17 @@ public class PackageDownloader {
             }
         }
 
-        // make downloaded packages available in Admin Center for later offline usage
-        for (DownloadPackage pkg :downloadOptions.getAllPackages()) {
+        // make downloaded packages available in Admin Center for later offline
+        // usage
+        for (DownloadPackage pkg : downloadOptions.getAllPackages()) {
             if (!pkgInstallIds.contains(pkg.getId()) && !needToDownload(pkg)) {
-                fileEntries.add("add file:" + pkg.getLocalFile().getAbsolutePath());
+                fileEntries.add("add file:"
+                        + pkg.getLocalFile().getAbsolutePath());
             }
         }
 
         File installLog = new File(installationFilePath);
-        if (fileEntries.size()>0) {
+        if (fileEntries.size() > 0) {
             if (!installLog.exists()) {
                 File parent = installLog.getParentFile();
                 if (!parent.exists()) {
