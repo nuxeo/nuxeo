@@ -22,7 +22,7 @@
 
     <specificAuthenticationChain name="WebDAV">
       <headers>
-        <header name="User-Agent">(Microsoft-WebDAV-MiniRedir|DavClnt|litmus|gvfs|davfs|WebDAV|cadaver|BitKinex|GoodReader|DataAccess|iWorkHTTPKit).*</header>
+        <header name="User-Agent">(Microsoft-WebDAV-MiniRedir|DavClnt|litmus|gvfs|gnome-vfs|davfs|WebDAV|cadaver|BitKinex|GoodReader|DataAccess|iWorkHTTPKit).*</header>
       </headers>
 
       <replacementChain>
