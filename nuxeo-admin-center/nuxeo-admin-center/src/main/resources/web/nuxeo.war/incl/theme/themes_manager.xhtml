@@ -6,8 +6,13 @@
   xmlns:f="http://java.sun.com/jsf/core">
 
   <p>#{messages['label.themes.management.description']}</p>
+  <div class="warningMessage">
+    <h:outputText escape="false"
+      value="#{messages['label.themes.management.migrationWarning']}" />
+  </div>
   <h:form>
     <h:commandLink action="#{themeEditorAction.startEditor}"
       value="#{messages['label.themes.management.editor']}"/>
   </h:form>
+
 </div>
