@@ -27,14 +27,14 @@
     <unzip dest="${stagedir}">
       <artifact:resolveFile
         key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.distribution.version}:zip"
-        classifier="nuxeo-dm" />
+        classifier="nuxeo-cap" />
       <patternset>
         <exclude name="**/templates/common-sfsl/**" />
         <exclude name="**/templates/stateful/**" />
         <exclude name="**/templates/stateless/**" />
       </patternset>
     </unzip>
-    <property name="app.path" value="${stagedir}/nuxeo-dm-server" />
+    <property name="app.path" value="${stagedir}/nuxeo-cap-server" />
     <nx:rename from="${stagedir}/nuxeo-*" to="${app.path}" />
     <chmod dir="${app.path}" perm="750" includes="*.sh,bin/*.sh,bin/nuxeoctl" />
     <!-- Deploy Custom plugins -->
