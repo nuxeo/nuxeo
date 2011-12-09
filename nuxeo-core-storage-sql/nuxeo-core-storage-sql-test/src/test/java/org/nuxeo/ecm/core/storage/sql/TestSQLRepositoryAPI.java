@@ -202,7 +202,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.getDocument(docRef);
         Map<String, Object> attachedFile = new HashMap<String, Object>();
         List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
-        attachedFile.put("name", "some name");
+        attachedFile.put("name", "somename");
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
@@ -221,7 +221,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         // test fulltext indexing of complex property at level one
         DocumentModelList results = session.query(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'some name'", 1);
+                "SELECT * FROM Document WHERE ecm:fulltext = 'somename'", 1);
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("complex-doc", results.get(0).getTitle());
