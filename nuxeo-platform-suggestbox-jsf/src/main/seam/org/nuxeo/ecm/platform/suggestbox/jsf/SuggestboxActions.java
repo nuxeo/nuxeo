@@ -161,8 +161,10 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     /**
      * Action listener for the old-style search button.
      */
-    public Object performKeywordsSearch(String suggesterName) throws SuggestionException,
+    public Object performKeywordsSearch(String suggesterName,
+            String suggesterGroup) throws SuggestionException,
             SuggestionHandlingException {
+        this.suggesterGroup = suggesterGroup;
         // make it possible to override how the default search is performed by
         // using the suggestion service
         SuggestionService service = Framework.getLocalService(SuggestionService.class);
