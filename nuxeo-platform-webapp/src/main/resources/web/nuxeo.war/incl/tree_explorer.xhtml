@@ -47,6 +47,15 @@
                         <h:outputText value="#{nxd:titleOrId(node.document)}" />
                       </nxd:restDocumentLink>
                     </span>
+                    <nxu:set var="quotaStats" value="#{node.quotaStats}">
+                      <f:subview id="descendantCount" rendered="#{not empty quotaStats}">
+                        <span>
+                          (<h:outputText value="#{quotaStats.total}">
+                            <f:convertNumber groupingUsed="true" />
+                          </h:outputText>)
+                        </span>
+                      </f:subview>
+                    </nxu:set>
                   </div>
                 </rich:treeNode>
               </rich:recursiveTreeNodesAdaptor>
