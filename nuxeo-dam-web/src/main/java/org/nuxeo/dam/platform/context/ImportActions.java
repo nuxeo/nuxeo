@@ -150,6 +150,10 @@ public class ImportActions implements Serializable {
     }
 
     public void createImportSet() throws Exception {
+        if(!getCanImport()) {
+            return;
+        }
+
         String title = (String) newImportSet.getProperty("dublincore", "title");
         if (title == null) {
             title = "";
