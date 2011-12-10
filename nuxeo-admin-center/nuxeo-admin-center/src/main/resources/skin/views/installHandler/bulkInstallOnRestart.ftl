@@ -18,7 +18,7 @@ function closePopup() {
        </#list>
    </ul>
 
-   <#if (rmPkgIds?size)>0 >
+   <#if (rmPkgIds?size>0) >
    <h1> You have scheduled uninstallation of the following packages</h1>
    <ul>
        <#list rmPkgIds as pkgId>

@@ -24,7 +24,7 @@ function closePopup() {
          <div style="white-space:pre">${descs[pkgId_index]}</div>
        </#list>
        </div>
-   <#if (rmPkgIds?size)>0 >
+   <#if (rmPkgIds?size>0) >
     <h1> The following packages will be uninstalled </h1>
    <ul>
        <#list rmPkgIds as pkgId>
