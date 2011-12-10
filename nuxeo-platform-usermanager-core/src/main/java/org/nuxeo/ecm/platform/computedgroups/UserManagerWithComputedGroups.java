@@ -59,7 +59,8 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     protected boolean activateComputedGroup() {
-        if (useComputedGroup == null) {
+        // NXP-8133: recompute during tests, need to find a cleaner fix
+        if (useComputedGroup == null || Framework.isTestModeSet()) {
             useComputedGroup = getService().activateComputedGroups();
         }
         return useComputedGroup;
