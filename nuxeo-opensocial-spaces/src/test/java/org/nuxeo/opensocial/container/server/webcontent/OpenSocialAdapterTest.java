@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.opensocial.container.OpenSocialContainerFeature;
 import org.nuxeo.opensocial.container.server.webcontent.OpenSocialAdapterRepositoryInit;
@@ -30,7 +31,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(OpenSocialContainerFeature.class)
-@RepositoryConfig(init=OpenSocialAdapterRepositoryInit.class)
+@RepositoryConfig(init=OpenSocialAdapterRepositoryInit.class, cleanup = Granularity.METHOD)
 public class OpenSocialAdapterTest {
 
     @Inject
@@ -48,7 +49,7 @@ public class OpenSocialAdapterTest {
         assertEquals("pref1", pref1.get("name"));
         assertEquals("val1", pref1.get("value"));
     }
-    
+
     @Test
     public void iCanFeedDataWithExistingUserPref() throws Exception {
         OpenSocialData data = new OpenSocialData();
@@ -63,7 +64,7 @@ public class OpenSocialAdapterTest {
         OpenSocialAdapter adapter = (OpenSocialAdapter) wco.getAdapter(WebContentAdapter.class);
         assertNotNull(adapter);
         adapter.feedFrom(data);
-        session.saveDocument(wco);
+        wco = session.saveDocument(wco);
         session.save();
         List<Map<String, Serializable>> prefs = (List<Map<String, Serializable>>) wco.getPropertyValue("wcopensocial:userPrefs");
         assertNotNull(prefs);
@@ -72,7 +73,7 @@ public class OpenSocialAdapterTest {
         assertEquals("pref1", pref1.get("name"));
         assertEquals("val1", pref1.get("value"));
     }
-    
+
     @Test
     public void iCanModifyUserPrefValue() throws Exception {
         OpenSocialData data = new OpenSocialData();
@@ -87,7 +88,7 @@ public class OpenSocialAdapterTest {
         OpenSocialAdapter adapter = (OpenSocialAdapter) wco.getAdapter(WebContentAdapter.class);
         assertNotNull(adapter);
         adapter.feedFrom(data);
-        session.saveDocument(wco);
+        wco = session.saveDocument(wco);
         session.save();
         List<Map<String, Serializable>> prefs = (List<Map<String, Serializable>>) wco.getPropertyValue("wcopensocial:userPrefs");
         assertNotNull(prefs);
@@ -111,14 +112,14 @@ public class OpenSocialAdapterTest {
         OpenSocialAdapter adapter = (OpenSocialAdapter) wco.getAdapter(WebContentAdapter.class);
         assertNotNull(adapter);
         adapter.feedFrom(data);
-        session.saveDocument(wco);
+        wco = session.saveDocument(wco);
         session.save();
         List<Map<String, Serializable>> prefs = (List<Map<String, Serializable>>) wco.getPropertyValue("wcopensocial:userPrefs");
         assertNotNull(prefs);
         assertEquals(2, prefs.size());
         Map<String, Serializable> pref = prefs.get(0);
         assertEquals("pref1", pref.get("name"));
-        assertEquals("val0", pref.get("value"));
+        assertEquals("val1", pref.get("value"));
         pref = prefs.get(1);
         assertEquals("pref2", pref.get("name"));
         assertEquals("val2", pref.get("value"));
