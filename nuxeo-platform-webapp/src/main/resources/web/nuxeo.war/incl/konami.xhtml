@@ -1,9 +1,5 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
- xmlns:nxu="http://nuxeo.org/nxweb/util"
- xmlns:ui="http://java.sun.com/jsf/facelets"
- xmlns:c="http://java.sun.com/jstl/core">
-
-<c:if test="#{frameworkPropertyActions.getProperty('disableKonamiCode') != 'true'}">
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  test="#{frameworkPropertyActions.getProperty('disableKonamiCode') != 'true'}">
   <script type="text/javascript"
     src="#{baseURL}js/?scripts=jquery/jquery.konami.js">
   </script>
@@ -13,5 +9,3 @@
     });
   </script>
 </c:if>
-
-</div>
