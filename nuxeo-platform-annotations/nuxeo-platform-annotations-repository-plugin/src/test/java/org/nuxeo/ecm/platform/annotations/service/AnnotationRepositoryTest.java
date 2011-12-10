@@ -71,6 +71,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
         session.save();
         closeSession();
+        waitForAsyncExec();
         openSession();
 
         // the text 'zombie' is not found in the document
@@ -90,7 +91,9 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         sameDocumentFrom2Servers(uriMyfileServer1, uriMyFileserver2);
 
         session.save();
-        closeSession();
+        
+        closeSession();      
+        waitForAsyncExec();    
         openSession();
 
         // the body of the text is annotated on the document
@@ -110,10 +113,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         myfile = session.saveDocument(myfile);
         session.save();
         
-        closeSession();
-        
+        closeSession();  
         waitForAsyncExec();
-
         openSession();
 
 
