@@ -7,8 +7,9 @@
   <vendor>Nuxeo</vendor>
   <installer restart="true" />
   <uninstaller restart="true" />
-  <NuxeoValidationState>nuxeo_certified</NuxeoValidationState>
-  <ProductionState>production_ready</ProductionState>
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
   <platforms>
   </platforms>
   <license>LGPL</license>

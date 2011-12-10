@@ -10,8 +10,9 @@
   <!-- <hotreload-support>false</hotreload-support> -->
   <!-- <require-terms-and-conditions-acceptance>false -->
   <!-- </require-terms-and-conditions-acceptance> -->
-  <NuxeoValidationState>nuxeo_certified</NuxeoValidationState>
-  <ProductionState>production_ready</ProductionState>
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
   <platforms>
     <platform>dm-@VERSION@</platform>
   </platforms>
