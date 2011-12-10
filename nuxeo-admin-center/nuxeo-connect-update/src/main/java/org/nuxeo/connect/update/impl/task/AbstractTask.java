@@ -38,6 +38,7 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
+import org.nuxeo.connect.update.impl.task.update.UpdateManager;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.runtime.api.Framework;
 
@@ -85,14 +86,14 @@ public abstract class AbstractTask implements Task {
 
     /**
      * The host application name.
-     *
+     * 
      * @see Environment#getHostApplicationName()
      */
     public static final String ENV_HOSTAPP_NAME = "env.hostapp.name";
 
     /**
      * The host application version
-     *
+     * 
      * @see Environment#getHostApplicationVersion()
      */
     public static final String ENV_HOSTAPP_VERSION = "env.hostapp.version";
@@ -100,6 +101,14 @@ public abstract class AbstractTask implements Task {
     protected boolean restart;
 
     protected LocalPackage pkg;
+
+    protected String serverPathPrefix;
+
+    protected UpdateManager updateMgr;
+
+    protected boolean updateMgrLoaded = false;
+
+    protected PackageUpdateService service;
 
     /**
      * A map of environment key/values that can be used in XML install files as
@@ -113,6 +122,10 @@ public abstract class AbstractTask implements Task {
         File serverHome = nxenv.getServerHome();
         File nxHome = nxenv.getRuntimeHome();
         File config = nxenv.getConfig();
+        serverPathPrefix = serverHome.getAbsolutePath();
+        if (!serverPathPrefix.endsWith("/")) {
+            serverPathPrefix = serverPathPrefix.concat("/");
+        }
         env.put(ENV_SERVER_HOME, serverHome.getAbsolutePath());
         env.put(ENV_HOME, nxHome.getAbsolutePath());
         env.put(ENV_CONFIG, config.getAbsolutePath());
@@ -132,6 +145,9 @@ public abstract class AbstractTask implements Task {
                 new File(serverHome, "templates").getAbsolutePath());
         env.put(ENV_TIMESTAMP,
                 new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
+        this.service = Framework.getLocalService(PackageUpdateService.class);
+        updateMgr = new UpdateManager(serverHome, new File(
+                service.getDataDir(), "registry.xml"));
     }
 
     public abstract boolean isInstallTask();
@@ -156,7 +172,7 @@ public abstract class AbstractTask implements Task {
     /**
      * Get a file given its key in the environment map. If no key exists then
      * null is returned.
-     *
+     * 
      * @param key
      */
     public File getFile(String key) {
@@ -238,6 +254,18 @@ public abstract class AbstractTask implements Task {
         saveParams(params);
         doRun(params);
         taskDone();
+        if (updateMgrLoaded) {
+            updateMgr.store();
+        }
+    }
+
+    public synchronized UpdateManager getUpdateManager()
+            throws PackageException {
+        if (!updateMgrLoaded) {
+            updateMgr.load();
+            updateMgrLoaded = true;
+        }
+        return updateMgr;
     }
 
     protected abstract void rollbackDone() throws PackageException;
@@ -290,4 +318,14 @@ public abstract class AbstractTask implements Task {
         }
         return null;
     }
+
+    @Override
+    public String getRelativeFilePath(File file) {
+        String path = file.getAbsolutePath();
+        if (path.startsWith(serverPathPrefix)) {
+            return path.substring(serverPathPrefix.length());
+        }
+        return path;
+    }
+
 }

@@ -29,7 +29,7 @@ import java.util.Map;
  * pattern variable will be <code>v=5.3.2</code>.
  * <p>
  * Note that only one pattern variable is supported.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class FileRef {
@@ -48,7 +48,7 @@ public abstract class FileRef {
     /**
      * Gets the file referenced by this object. If the FileRef could not be
      * resolved then null is returned.
-     *
+     * 
      * @return the referred file or null if none was found.
      */
     public abstract File getFile();
@@ -87,18 +87,18 @@ public abstract class FileRef {
         }
     }
 
-    static class PatternFileRef extends FileRef {
+    public static class PatternFileRef extends FileRef {
         protected File file;
 
         protected String key;
 
         protected String value;
 
-        PatternFileRef(String path) {
+        public PatternFileRef(String path) {
             this(new File(path));
         }
 
-        PatternFileRef(File file) {
+        public PatternFileRef(File file) {
             File dir = file.getParentFile();
             File[] files = dir.listFiles();
             if (files != null) {
@@ -116,6 +116,14 @@ public abstract class FileRef {
 
         public File getFile() {
             return file;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getKey() {
+            return key;
         }
 
         public boolean hasPattern() {

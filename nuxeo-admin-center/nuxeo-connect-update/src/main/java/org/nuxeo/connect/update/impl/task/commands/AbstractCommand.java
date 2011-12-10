@@ -36,17 +36,17 @@ import org.w3c.dom.Element;
  * {@link #doValidate} methods instead of the one in the interface. These
  * methods are first testing for ignore and fail guards and then if needed
  * delegated to the doXXX method versions.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractCommand implements Command {
 
     /**
      * List of files which must never be deleted at runtime.
-     *
+     * 
      * @since 5.5
      */
-    protected static final String[] FILES_TO_DELETE_ONLY_ON_EXIT = { "nuxeo-core-storage-sql" };
+    public static final String[] FILES_TO_DELETE_ONLY_ON_EXIT = { "nuxeo-core-storage-sql" };
 
     protected final String id;
 
@@ -68,7 +68,7 @@ public abstract class AbstractCommand implements Command {
 
     /**
      * Override to implement command actions
-     *
+     * 
      * @param task
      * @param prefs
      * @return Rollback command
@@ -79,7 +79,7 @@ public abstract class AbstractCommand implements Command {
 
     /**
      * Override to implement validation.
-     *
+     * 
      * @param task The task being validated
      * @param status Use {@link ValidationStatus#addError(String)} or
      *            {@link ValidationStatus#addWarning(String)} to provide

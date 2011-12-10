@@ -160,6 +160,7 @@ public abstract class CommandsTask extends AbstractTask {
             // corresponding variable otherwise the uninstall will not work
             // after renaming the installation directory
             String content = parametrizePaths(writer.toString());
+            content = content.replace("//", "/"); // replace '//' by '/' is any
             FileUtils.writeFile(file, content);
         } catch (IOException e) {
             throw new PackageException("Failed to write commands", e);
@@ -167,11 +168,7 @@ public abstract class CommandsTask extends AbstractTask {
     }
 
     public String parametrizePaths(String content) {
-        String serverHome = env.get(ENV_SERVER_HOME);
-        if (!serverHome.endsWith("/")) {
-            serverHome += "/";
-        }
-        return content.replace(serverHome, "${" + ENV_SERVER_HOME + "}/");
+        return content.replace(serverPathPrefix, "${" + ENV_SERVER_HOME + "}/");
     }
 
     public void readLog(Reader reader) throws PackageException {

@@ -55,6 +55,8 @@ import org.nuxeo.connect.update.impl.task.commands.Undeploy;
 import org.nuxeo.connect.update.impl.task.commands.UndeployConfig;
 import org.nuxeo.connect.update.impl.task.commands.Uninstall;
 import org.nuxeo.connect.update.impl.task.commands.UnloadJar;
+import org.nuxeo.connect.update.impl.task.update.Rollback;
+import org.nuxeo.connect.update.impl.task.update.Update;
 import org.nuxeo.connect.update.impl.xml.FormsDefinition;
 import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.model.PackageDefinition;
@@ -79,6 +81,11 @@ public class UpdateServiceImpl implements PackageUpdateService {
     public UpdateServiceImpl() throws IOException {
         persistence = new PackagePersistence();
         commands = new HashMap<String, Class<? extends Command>>();
+    }
+
+    @Override
+    public File getDataDir() {
+        return persistence.getRoot();
     }
 
     public PackagePersistence getPersistence() {
@@ -163,6 +170,8 @@ public class UpdateServiceImpl implements PackageUpdateService {
         addCommand(LoadJar.ID, LoadJar.class);
         addCommand(UnloadJar.ID, UnloadJar.class);
         addCommand(Config.ID, Config.class);
+        addCommand(Update.ID, Update.class);
+        addCommand(Rollback.ID, Rollback.class);
         startInstalledPackages();
     }
 
