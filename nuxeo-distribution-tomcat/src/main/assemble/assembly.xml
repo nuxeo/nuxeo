@@ -131,9 +131,6 @@
     <antcall target="set-distribution-properties">
       <param name="org.nuxeo.distribution.name" value="coreserver" />
     </antcall>
-    <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
-org.nuxeo.ecm.product.name=Nuxeo CoreServer
-    </echo>
 
     <antcall target="reorganize-libs-zip-attach" />
   </target>
@@ -227,9 +224,6 @@ file:setupWizardDownloads/${CMFMPMD5}
     <antcall target="set-distribution-properties">
       <param name="org.nuxeo.distribution.name" value="cap" />
     </antcall>
-    <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
-org.nuxeo.ecm.product.name=Nuxeo CAP
-    </echo>
 
     <antcall target="reorganize-libs-zip-attach" />
   </target>
