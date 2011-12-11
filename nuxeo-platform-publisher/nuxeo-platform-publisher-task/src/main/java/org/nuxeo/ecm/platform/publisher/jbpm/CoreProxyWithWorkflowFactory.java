@@ -237,7 +237,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             throws PublishingException {
         try {
             List<Task> tis = getTaskService().getTaskInstances(document,
-                    (NuxeoPrincipal) null, session);
+                    currentUser, session);
             String initiator = null;
             for (Task task : tis) {
                 if (task.getName().equals(TASK_NAME)) {
@@ -304,8 +304,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
+            NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
             List<Task> tasks = getTaskService().getTaskInstances(proxy,
-                    (NuxeoPrincipal) null, coreSession);
+                    principal, coreSession);
             for (Task task : tasks) {
                 if (task.getName().equals(TASK_NAME)) {
                     // if there is a task on this doc, then it is not yet
