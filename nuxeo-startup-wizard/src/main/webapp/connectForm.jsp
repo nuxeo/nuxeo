@@ -1,5 +1,5 @@
 <%@ include file="includes/header.jsp" %>
-
+<%@page import="org.nuxeo.wizard.helpers.ConnectRegistrationHelper"%>
 <%
 String cbUrl = (String) request.getAttribute("callBackUrl");
 
@@ -9,6 +9,10 @@ formUrl = formUrl + "?WizardCB=" + cbUrl;
 formUrl = formUrl + "&source=wizard&pkg=" + ctx.getDistributionKey();
 
 boolean showRegistrationForm = !ctx.isConnectRegistrationDone();
+
+if (ConnectRegistrationHelper.isConnectRegistrationFileAlreadyPresent(ctx)) {
+    showRegistrationForm = false;
+}
 
 %>
 <script>

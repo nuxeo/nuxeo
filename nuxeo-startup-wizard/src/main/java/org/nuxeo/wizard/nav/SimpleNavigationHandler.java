@@ -48,6 +48,7 @@ public class SimpleNavigationHandler {
             "ConnectFinish|connectFinish.jsp|0|0",
             "PackagesSelection|packagesSelection.jsp|1|0",
             "PackagesDownload|packagesDownload.jsp|1|0",
+            "PackagesSelectionDone|packagesSelectionDone.jsp|0|0",
             "Recap|recapScreen.jsp|1|0",
             "Restart|reStarting.jsp|1|1",
             "Reset|Welcome.jsp|1|1",
