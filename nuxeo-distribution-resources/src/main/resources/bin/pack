@@ -304,6 +304,8 @@ else
 fi
 
 pack() {
+    echo "" >> "$NUXEO_CONF"
+    echo "nuxeo.updatecenter.disbaled=true" >> "$NUXEO_CONF"
     java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" \

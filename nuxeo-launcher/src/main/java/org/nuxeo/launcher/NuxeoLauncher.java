@@ -516,6 +516,8 @@ public abstract class NuxeoLauncher {
     private boolean pack() {
         try {
             checkNoRunningServer();
+            configurationGenerator.setProperty("nuxeo.updatecenter.disbaled",
+                    "true");
             List<String> startCommand = new ArrayList<String>();
             startCommand.add(getJavaExecutable().getPath());
             startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
@@ -566,6 +568,9 @@ public abstract class NuxeoLauncher {
             log.error(
                     "The server must not be running while running pack command",
                     e);
+        } catch (ConfigurationException e) {
+            errorValue = 1;
+            log.error(e);
         }
         return errorValue == 0;
     }
