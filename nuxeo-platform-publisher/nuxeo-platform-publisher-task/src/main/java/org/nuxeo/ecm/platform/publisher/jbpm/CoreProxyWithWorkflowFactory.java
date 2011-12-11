@@ -69,6 +69,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
 
+    // TODO: remove when refactoring
+    public static final String JBPM_ACL_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
+
     public static final String PUBLISH_TASK_TYPE = "publish_moderate";
 
     protected TaskService taskService;
@@ -225,7 +228,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             throws PublishingException {
         try {
             RemoveACLUnrestricted remover = new RemoveACLUnrestricted(
-                    coreSession, document, ACL_NAME);
+                    coreSession, document, ACL_NAME, JBPM_ACL_NAME);
             remover.runUnrestricted();
         } catch (ClientException e) {
             throw new PublishingException(e);

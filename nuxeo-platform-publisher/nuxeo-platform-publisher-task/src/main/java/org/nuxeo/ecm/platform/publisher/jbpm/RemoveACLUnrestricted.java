@@ -24,21 +24,31 @@ import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
  * @author arussel
- *
+ * @author ataillefer
+ * 
+ *         TODO: get rid of oldAclName when refactoring
+ * 
  */
 public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;
+
     private final String aclName;
-    public RemoveACLUnrestricted(CoreSession session, DocumentModel document, String aclName) {
+
+    private final String oldAclName;
+
+    public RemoveACLUnrestricted(CoreSession session, DocumentModel document,
+            String aclName, String oldAclName) {
         super(session);
         this.document = document;
         this.aclName = aclName;
+        this.oldAclName = oldAclName;
     }
 
     @Override
     public void run() throws ClientException {
         ACP acp = document.getACP();
         acp.removeACL(aclName);
+        acp.removeACL(oldAclName);
         session.setACP(document.getRef(), acp, true);
         session.save();
         acp = document.getACP();
