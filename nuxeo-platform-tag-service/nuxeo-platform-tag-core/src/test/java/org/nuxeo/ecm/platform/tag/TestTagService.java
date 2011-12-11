@@ -197,7 +197,13 @@ public class TestTagService extends SQLRepositoryTestCase {
         int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null),
                 propsComparator);
         assertTrue(ti > 0);
-        assertEquals(props[ti].toString(), "tags:othertag,mytag");
+        String expected = "tags:othertag,mytag";
+        String prop = props[ti].toString();
+        if (!expected.equals(prop)) {
+            // order depends on database
+            expected = "tags:mytag,othertag";
+        }
+        assertEquals(expected, prop);
         // remove explicit tagging
         tagService.untag(session, file2Id, "mytag", null);
         tags = tagService.getDocumentTags(session, file2Id, null);
