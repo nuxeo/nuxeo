@@ -12,11 +12,8 @@
 
 package org.nuxeo.runtime.jtajca;
 
-import java.util.Hashtable;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -49,7 +46,6 @@ import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.nuxeo.common.jndi.InitialContextAccessor;
 import org.nuxeo.common.jndi.NamingContextFactory;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Internal helper for the Nuxeo-defined transaction manager and connection
@@ -182,7 +178,15 @@ public class NuxeoContainer {
     @SuppressWarnings("unchecked")
     protected static <T> T jndiLookup(String name) throws NamingException {
         InitialContext ctx = new InitialContext();
-        return (T) ctx.lookup(name);
+       try {
+           return (T)ctx.lookup("java:comp/"+name);
+       } catch (NamingException compe) {
+           try {
+               return (T)ctx.lookup("java:comp/env/"+name);
+           } catch (NamingException enve) {
+               return (T)ctx.lookup(name);
+           }
+       }
     }
 
     /**
@@ -241,7 +245,7 @@ public class NuxeoContainer {
             throws NamingException {
         TransactionManager tm;
         try {
-            tm = TransactionHelper.lookupTransactionManager();
+            tm = jndiLookup("TransactionManager");
         } catch (NamingException e) {
             return null;
         }
@@ -264,11 +268,11 @@ public class NuxeoContainer {
         }
         cm.reset();
     }
-
+   
     protected static ConnectionManagerWrapper lookupConnectionManager() {
         ConnectionManager cm;
         try {
-            cm = jndiLookup(JNDI_NUXEO_CONNECTION_MANAGER);
+            cm = jndiLookup("NuxeoConnectionManager");
         } catch (NamingException e) {
             return null;
         }
