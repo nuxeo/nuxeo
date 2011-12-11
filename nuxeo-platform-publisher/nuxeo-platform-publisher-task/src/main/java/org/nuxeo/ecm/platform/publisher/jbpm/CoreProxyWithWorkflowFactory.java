@@ -69,7 +69,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
 
-    // TODO: remove when refactoring
+    // XXX ataillefer: remove if refactor old JBPM ACL name
     public static final String JBPM_ACL_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
 
     public static final String PUBLISH_TASK_TYPE = "publish_moderate";
