@@ -384,7 +384,12 @@ public class TaskAutomationTest {
         @Override
         public int compare(Task o1, Task o2) {
             try {
-                return o1.getCreated().compareTo(o2.getCreated());
+                // return o1.getCreated().compareTo(o2.getCreated());
+                // stupid MySQL doesn't have subsecond resolution
+                // sorting by first actor is enough for this test
+                String a1 = o1.getActors().get(0);
+                String a2 = o2.getActors().get(0);
+                return a1.compareTo(a2);
             } catch (ClientException e) {
                 throw new ClientRuntimeException();
             }
