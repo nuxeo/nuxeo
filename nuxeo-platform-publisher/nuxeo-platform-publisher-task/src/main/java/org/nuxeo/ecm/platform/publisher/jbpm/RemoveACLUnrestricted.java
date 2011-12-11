@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
  * @author arussel
  * @author ataillefer
  * 
- *         TODO: get rid of oldAclName when refactoring
- * 
+ *         XXX ataillefer: get rid of oldAclName if refactor old JBPM ACL name
  */
 public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;
