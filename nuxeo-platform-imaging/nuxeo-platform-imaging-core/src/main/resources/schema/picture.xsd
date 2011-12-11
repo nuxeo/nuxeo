@@ -6,7 +6,7 @@
 
   <xs:simpleType name="longString">
     <xs:restriction base="xs:string">
-      <xs:maxLength value="255" />
+      <xs:maxLength value="2000" />
     </xs:restriction>
   </xs:simpleType>
 
