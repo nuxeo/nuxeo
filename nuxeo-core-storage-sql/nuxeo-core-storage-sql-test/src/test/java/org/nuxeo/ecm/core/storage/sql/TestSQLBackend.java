@@ -909,7 +909,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // immediate check, invalidation delay means not done yet
         session2.save();
         Node doc2 = session2.getChildNode(folder2, "gee", false);
-        assertNull(doc2);
+        // assertNull(doc2); // could fail if machine very slow
         Thread.sleep(DELAY + 1); // wait invalidation delay
         session2.save(); // process invalidations (non-transactional)
         doc2 = session2.getChildNode(folder2, "gee", false);
@@ -924,7 +924,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNull(title2.getString());
         // immediate check, invalidation delay means not done yet
         session2.save();
-        assertNull(title2.getString());
+        // assertNull(title2.getString()); // could fail if machine very slow
         Thread.sleep(DELAY + 1); // wait invalidation delay
         session2.save();
         // after commit, invalidations have been processed
