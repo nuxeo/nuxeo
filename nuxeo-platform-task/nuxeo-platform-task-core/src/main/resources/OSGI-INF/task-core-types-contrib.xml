@@ -29,6 +29,7 @@
       <schema name="common" />
       <schema name="dublincore" />
       <facet name="Task" />
+      <facet name="HiddenInNavigation" />
     </doctype>
 
   </extension>

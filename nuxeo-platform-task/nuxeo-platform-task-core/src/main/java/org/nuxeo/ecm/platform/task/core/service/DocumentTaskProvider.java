@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskProvider;
@@ -35,6 +34,8 @@ import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
  * @since 5.5
  */
 public class DocumentTaskProvider implements TaskProvider {
+
+    private static final long serialVersionUID = 1L;
 
     @Override
     public List<Task> getCurrentTaskInstances(CoreSession coreSession)
@@ -52,7 +53,7 @@ public class DocumentTaskProvider implements TaskProvider {
     /**
      * Returns a list of task instances assigned to one of the actors in the
      * list or to its pool.
-     * 
+     *
      * @param actors a list used as actorId to retrieve the tasks.
      * @param filter
      * @return

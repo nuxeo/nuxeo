@@ -286,7 +286,6 @@ public class TaskImpl implements Task {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     protected void setPropertyValue(String propertyName, Object value) {
         try {
             if (value != null) {

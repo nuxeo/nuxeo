@@ -191,7 +191,6 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void endTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment, String eventName, boolean isValidated)
             throws ClientException {
