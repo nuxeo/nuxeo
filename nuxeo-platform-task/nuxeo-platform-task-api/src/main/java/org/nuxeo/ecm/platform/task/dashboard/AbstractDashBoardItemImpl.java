@@ -67,6 +67,9 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
 
     public String getI18nDirective() {
         String directiveKey = getDirective();
+        if (directiveKey == null) {
+            directiveKey = getName();
+        }
         if (locale == null || !needi18n()) {
             return directiveKey;
         }

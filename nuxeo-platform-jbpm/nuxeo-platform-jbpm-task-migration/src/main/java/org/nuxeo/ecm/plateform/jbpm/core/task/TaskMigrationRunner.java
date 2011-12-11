@@ -135,7 +135,10 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
         if (vars == null) {
             vars = new HashMap<String, String>();
         }
+        // Kepp all task instance variables
         vars.putAll(ti.getVariables());
+        // Task name needs to be translated in the My Tasks dashboard gadget
+        vars.put(Task.TaskVariableName.needi18n.name(), "true");
         Set<PooledActor> pooledActors = ti.getPooledActors();
         List<String> actors = new ArrayList<String>();
         for (PooledActor pooledActor : pooledActors) {
