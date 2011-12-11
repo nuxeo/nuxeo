@@ -33,7 +33,7 @@ String selectedPackageIds="";
 <%for (DownloadPackage pkg : packages) {
     selectedPackageIds+=pkg.getId() + "|";
 %>
-  <li><%=pkg.getFilename()%> &nbsp;
+  <li><%=pkg.getLabel()%> <br/>(<%=pkg.getFilename()%>) &nbsp;
   <%if (pkg.isAlreadyInLocal()) {%>
     (already in local)
   <%} else {
@@ -88,7 +88,7 @@ $(document).ready(function(){
 <table>
 <%for (PendingDownload dw : downloads) {%>
   <tr>
-     <td> <%=dw.getPkg().getFilename() %></td>
+     <td> <%=dw.getPkg().getLabel()%> <br/>( <%=dw.getPkg().getFilename() %>)</td>
      <td>
      <%
      switch (dw.getStatus()) {
@@ -112,11 +112,11 @@ $(document).ready(function(){
              %><fmt:message key="label.downloadStatus.COMPLETED"/><%
              break;
          case PendingDownload.CORRUPTED:
-             %><fmt:message key="label.downloadStatus.MISSING"/>
+             %><fmt:message key="label.downloadStatus.CORRUPTED"/>
              <img src="<%=contextPath%>/images/broken.png" height="18"/><%
              break;
          case PendingDownload.MISSING:
-             %><fmt:message key="label.downloadStatus.CORRUPTED"/>
+             %><fmt:message key="label.downloadStatus.MISSING"/>
              <img src="<%=contextPath%>/images/broken.png" height="18"/><%
              break;
      }%>
