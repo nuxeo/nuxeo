@@ -64,7 +64,7 @@ public class DeleteTaskForDeletedDocumentListener implements EventListener {
                     (NuxeoPrincipal) null, coreSession);
             if (!tasks.isEmpty()) {
                 for (Task task : tasks) {
-                    getTaskService().deleteTaskInstance(coreSession,
+                    getTaskService().deleteTask(coreSession,
                             task.getId());
                 }
             }

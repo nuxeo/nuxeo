@@ -369,7 +369,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public void deleteTaskInstance(CoreSession coreSession, String taskId)
+    public void deleteTask(CoreSession coreSession, String taskId)
             throws ClientException {
         final DocumentRef docRef = new IdRef(taskId);
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(

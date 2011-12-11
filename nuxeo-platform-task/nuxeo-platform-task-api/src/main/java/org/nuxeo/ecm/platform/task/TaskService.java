@@ -139,7 +139,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * @throws ClientException
      * @Since 5.5
      */
-    void deleteTaskInstance(CoreSession coreSession, String taskId)
+    void deleteTask(CoreSession coreSession, String taskId)
             throws ClientException;
 
     /**

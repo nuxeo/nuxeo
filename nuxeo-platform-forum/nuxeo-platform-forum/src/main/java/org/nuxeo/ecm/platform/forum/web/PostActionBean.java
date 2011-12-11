@@ -245,7 +245,7 @@ public class PostActionBean implements PostAction {
                 && ForumConstants.PENDING_STATE.equals(post.getCurrentLifeCycleState())) {
             Task task = getModerationTask(thread, deletePostId);
             if (task != null) {
-                taskService.deleteTaskInstance(documentManager, task.getId());
+                taskService.deleteTask(documentManager, task.getId());
             }
         }
         commentManagerActions.deleteComment(deletePostId);
