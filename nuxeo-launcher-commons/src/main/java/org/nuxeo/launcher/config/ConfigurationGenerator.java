@@ -729,14 +729,14 @@ public class ConfigurationGenerator {
     private StringBuffer loadConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
         String wizardParam = null, templatesParam = null;
-        boolean wizardParamSet = false, templatesParamSet = false;
+        Integer generationIndex = null, wizardIndex = null, templatesIndex = null;
         if (changedParameters != null) {
             // Will change wizardParam value instead of appending it
             wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
             // Will change templatesParam value instead of appending it
             templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
         }
-        StringBuffer newContent = new StringBuffer();
+        ArrayList<String> newLines = new ArrayList<String>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(nuxeoConf));
@@ -752,51 +752,56 @@ public class ConfigurationGenerator {
                             if (setFalseToOnce && !forceGeneration) {
                                 line = PARAM_FORCE_GENERATION + "=once";
                             }
-                        } else if (line.startsWith(PARAM_WIZARD_DONE)) {
-                            if (wizardParamSet) {
-                                // do not recopy multiple occurrences
-                                line = null;
+                            if (generationIndex == null) {
+                                newLines.add(line);
+                                generationIndex = newLines.size() - 1;
                             } else {
-                                if (wizardParam != null) {
-                                    line = PARAM_WIZARD_DONE + "="
-                                            + wizardParam;
-                                }
-                                wizardParamSet = true;
+                                newLines.set(generationIndex, line);
+                            }
+                        } else if (line.startsWith(PARAM_WIZARD_DONE)) {
+                            if (wizardParam != null) {
+                                line = PARAM_WIZARD_DONE + "="
+                                        + wizardParam;
+                            }
+                            if (wizardIndex == null) {
+                                newLines.add(line);
+                                wizardIndex = newLines.size() -1;
+                            } else {
+                                newLines.set(wizardIndex, line);
                             }
                         } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
-                            if (templatesParamSet) {
-                                line = null;
-                            } else {
-                                if (templatesParam != null) {
-                                    line = PARAM_TEMPLATES_NAME + "="
-                                            + templatesParam;
-                                }
-                                templatesParamSet = true;
+                            if (templatesParam != null) {
+                                line = PARAM_TEMPLATES_NAME + "="
+                                        + templatesParam;
                             }
-                        }
-                        if (line != null) {
-                            newContent.append(line
-                                    + System.getProperty("line.separator"));
+                            if (templatesIndex == null) {
+                                newLines.add(line);
+                                templatesIndex = newLines.size() -1;
+                            } else {
+                                newLines.set(templatesIndex, line);
+                            }
+                        } else if (line != null) {
+                            newLines.add(line);
                         }
                     } else {
                         // What must be written just before the BOUNDARY_BEGIN
-                        if (!templatesParamSet && templatesParam != null) {
-                            newContent.append(PARAM_TEMPLATES_NAME + "="
-                                    + templatesParam
-                                    + System.getProperty("line.separator"));
+                        if (templatesIndex == null && templatesParam != null) {
+                            newLines.add(PARAM_TEMPLATES_NAME + "="
+                                    + templatesParam);
+                            templatesIndex = newLines.size() -1;
                         }
-                        if (!wizardParamSet && wizardParam != null) {
-                            newContent.append(PARAM_WIZARD_DONE + "="
-                                    + wizardParam
-                                    + System.getProperty("line.separator"));
+                        if (wizardIndex == null && wizardParam != null) {
+                            newLines.add(PARAM_WIZARD_DONE + "="
+                                    + wizardParam);
+                            wizardIndex = newLines.size() -1;
                         }
+                        newLines.add(line);
                         onConfiguratorContent = true;
                     }
                 } else {
                     if (!line.startsWith(BOUNDARY_END)) {
                         if (changedParameters == null) {
-                            newContent.append(line
-                                    + System.getProperty("line.separator"));
+                            newLines.add(line);
                         } else {
                             int equalIdx = line.indexOf("=");
                             if (line.startsWith("#" + PARAM_TEMPLATES_NAME)
@@ -819,6 +824,7 @@ public class ConfigurationGenerator {
                             }
                         }
                     } else {
+                        newLines.add(line);
                         onConfiguratorContent = false;
                     }
                 }
@@ -834,6 +840,10 @@ public class ConfigurationGenerator {
                     throw new ConfigurationException(e);
                 }
             }
+        }
+        StringBuffer newContent = new StringBuffer();
+        for (int i = 0; i < newLines.size(); i++) {
+            newContent.append(newLines.get(i).trim() + System.getProperty("line.separator"));
         }
         return newContent;
     }
