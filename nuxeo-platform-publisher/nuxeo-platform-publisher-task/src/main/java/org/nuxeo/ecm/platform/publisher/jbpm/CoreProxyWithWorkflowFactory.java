@@ -304,9 +304,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
-            NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
             List<Task> tasks = getTaskService().getTaskInstances(proxy,
-                    principal, coreSession);
+                    (NuxeoPrincipal) null, coreSession);
             for (Task task : tasks) {
                 if (task.getName().equals(TASK_NAME)) {
                     // if there is a task on this doc, then it is not yet
