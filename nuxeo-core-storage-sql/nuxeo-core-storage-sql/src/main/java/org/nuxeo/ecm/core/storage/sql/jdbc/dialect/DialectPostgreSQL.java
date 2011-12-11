@@ -63,6 +63,8 @@ public class DialectPostgreSQL extends Dialect {
 
     private static final String DEFAULT_USERS_SEPARATOR = ",";
 
+    private static final String PREFIX_SEARCH = ":*";
+
     protected final String fulltextAnalyzer;
 
     protected final boolean supportsWith;
@@ -260,6 +262,8 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
+        // prefix search syntax foo:* or foo% or foo* -> foo:*
+        query = query.replaceAll("(:\\*|\\*|%)( |\"|$)", PREFIX_SEARCH + "$2");
         FulltextQuery ft = analyzeFulltextQuery(query);
         if (ft == null) {
             return ""; // won't match anything
