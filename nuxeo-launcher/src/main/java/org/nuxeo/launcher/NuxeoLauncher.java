@@ -104,6 +104,10 @@ public abstract class NuxeoLauncher {
 
     private static final long STREAM_MAX_WAIT = 3000;
 
+    private static final String PACK_JBOSS_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackZip";
+
+    private static final String PACK_TOMCAT_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackWar";
+
     protected ConfigurationGenerator configurationGenerator;
 
     public final ConfigurationGenerator getConfigurationGenerator() {
@@ -401,9 +405,11 @@ public abstract class NuxeoLauncher {
         File classPathEntry = new File(configurationGenerator.getNuxeoHome(),
                 filename);
         if (!classPathEntry.exists()) {
+            classPathEntry = new File(filename);
+        }
+        if (!classPathEntry.exists()) {
             throw new RuntimeException(
-                    "Tried to add inexistent classpath entry: "
-                            + classPathEntry);
+                    "Tried to add inexistent classpath entry: " + filename);
         }
         cp += System.getProperty("path.separator") + classPathEntry.getPath();
         return cp;
@@ -477,8 +483,9 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = false;
             }
         } else if ("pack".equalsIgnoreCase(launcher.command)) {
-            log.error("Not implemented. Use \"pack\" Shell script.");
-            exitStatus = 3;
+            commandSucceeded = launcher.pack();
+            // log.error("Not implemented. Use \"pack\" Shell script.");
+            // exitStatus = 3;
         } else if ("mp-list".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgList();
         } else if ("mp-add".equalsIgnoreCase(launcher.command)) {
@@ -501,6 +508,66 @@ public abstract class NuxeoLauncher {
         if (exitStatus != 0) {
             System.exit(exitStatus);
         }
+    }
+
+    /**
+     * Since 5.5
+     */
+    private boolean pack() {
+        try {
+            checkNoRunningServer();
+            List<String> startCommand = new ArrayList<String>();
+            startCommand.add(getJavaExecutable().getPath());
+            startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
+            startCommand.add("-cp");
+            String classpath = getClassPath();
+            classpath = addToClassPath(classpath, "bin" + File.separator
+                    + "nuxeo-launcher.jar");
+            classpath = getClassPath(
+                    classpath,
+                    configurationGenerator.getServerConfigurator().getServerLibDir());
+            classpath = getClassPath(
+                    classpath,
+                    configurationGenerator.getServerConfigurator().getNuxeoLibDir());
+            classpath = getClassPath(
+                    classpath,
+                    new File(configurationGenerator.getRuntimeHome(), "bundles"));
+            startCommand.add(classpath);
+            startCommand.addAll(getNuxeoProperties());
+            if (configurationGenerator.isJBoss) {
+                startCommand.add(PACK_JBOSS_CLASS);
+            } else if (configurationGenerator.isTomcat) {
+                startCommand.add(PACK_TOMCAT_CLASS);
+            } else {
+                errorValue = 1;
+                return false;
+            }
+            startCommand.add(configurationGenerator.getRuntimeHome().getPath());
+            for (String param : params) {
+                startCommand.add(param);
+            }
+            ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
+            pb.directory(configurationGenerator.getNuxeoHome());
+            log.debug("Pack command: " + pb.command());
+            Process process = pb.start();
+            ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
+                    process, true);
+            Thread.sleep(100);
+            process.waitFor();
+            waitForProcessStreams(sgArray);
+        } catch (IOException e) {
+            errorValue = 1;
+            log.error("Could not start process", e);
+        } catch (InterruptedException e) {
+            errorValue = 1;
+            log.error("Could not start process", e);
+        } catch (IllegalStateException e) {
+            errorValue = 1;
+            log.error(
+                    "The server must not be running while running pack command",
+                    e);
+        }
+        return errorValue == 0;
     }
 
     private boolean startWizard() {
@@ -787,7 +854,7 @@ public abstract class NuxeoLauncher {
      */
     protected void callPackageManager(String pkgCommand, String[] pkgParams) {
         try {
-            // checkNoRunningServer();
+            checkNoRunningServer();
             List<String> startCommand = new ArrayList<String>();
             startCommand.add(getJavaExecutable().getPath());
             startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
@@ -821,9 +888,11 @@ public abstract class NuxeoLauncher {
         } catch (InterruptedException e) {
             errorValue = 1;
             log.error("Could not start process", e);
-            // } catch (IllegalStateException e) {
-            // errorValue = 1;
-            // log.error("The server must not be running while managing marketplace packages",e);
+        } catch (IllegalStateException e) {
+            errorValue = 1;
+            log.error(
+                    "The server must not be running while managing marketplace packages",
+                    e);
         }
     }
 
@@ -885,23 +954,50 @@ public abstract class NuxeoLauncher {
      * @return completed classpath
      * @throws IOException in case of copy error
      */
-    private String getTempClassPath(File tmpDir, String classpath,
+    protected String getTempClassPath(File tmpDir, String classpath,
             File baseDir, String[] filenames) throws IOException {
         File targetDir = new File(tmpDir, baseDir.getName());
         targetDir.mkdirs();
         for (final String filePattern : filenames) {
-            File[] files = baseDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File basedir, String filename) {
-                    return filename.matches(filePattern + "(-[0-9].*)?\\.jar");
-                }
-            });
+            File[] files = getFilename(baseDir, filePattern);
             FileUtils.copyFileToDirectory(files[0], targetDir);
             File classPathEntry = new File(targetDir, files[0].getName());
             classpath += System.getProperty("path.separator")
                     + classPathEntry.getPath();
         }
         return classpath;
+    }
+
+    /**
+     * @since 5.5
+     * @param classpath
+     * @param baseDir
+     * @return classpath with all jar files in baseDir
+     * @throws IOException
+     */
+    protected String getClassPath(String classpath, File baseDir)
+            throws IOException {
+        File[] files = getFilename(baseDir, ".*");
+        for (File file : files) {
+            classpath += System.getProperty("path.separator") + file.getPath();
+        }
+        return classpath;
+    }
+
+    /**
+     * @since 5.5
+     * @param baseDir
+     * @param filePattern
+     * @return filename matching filePattern in baseDir
+     */
+    protected File[] getFilename(File baseDir, final String filePattern) {
+        File[] files = baseDir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File basedir, String filename) {
+                return filename.matches(filePattern + "(-[0-9].*)?\\.jar");
+            }
+        });
+        return files;
     }
 
     protected class ShutdownThread extends Thread {
@@ -1243,7 +1339,7 @@ public abstract class NuxeoLauncher {
         log.error("\t\t status\t\t\tPrint server status (running or not).");
         log.error("\t\t startbg\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
         log.error("\t\t restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
-        log.error("\t\t pack\t\t\tNot implemented. Use \"pack\" Shell script.");
+        log.error("\t\t pack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
         log.error("\t\t mp-list\t\tList marketplace packages.");
         log.error("\t\t mp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
         log.error("\t\t mp-install\t\tRun marketplace package installation. "

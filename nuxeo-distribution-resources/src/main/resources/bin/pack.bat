@@ -1,6 +1,6 @@
 @echo off
 rem ##
-rem ## (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+rem ## (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
 rem ##
 rem ## All rights reserved. This program and the accompanying materials
 rem ## are made available under the terms of the GNU Lesser General Public License
@@ -15,8 +15,10 @@ rem ##
 rem ## Contributors:
 rem ##     Julien Carsique, Arnaud Kervern
 rem ##
-rem ## DOS script calling Jboss pack generation
+rem ## DOS script generating a static archive for Tomcat or JBoss
 rem ##
+
+echo DEPRECATED - You should use "nuxeoctl pack <target> [options]"
 
 @if "%OS%" == "Windows_NT" setlocal
 

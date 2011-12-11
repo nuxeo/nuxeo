@@ -1,10 +1,24 @@
 #!/bin/bash
-#####
-#
-# Nuxeo startup script
-# Inspired/copied from RedHat JBoss's run.sh and Apache Tomcat's catalina.sh
-#
-#####
+## (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+##
+## All rights reserved. This program and the accompanying materials
+## are made available under the terms of the GNU Lesser General Public License
+## (LGPL) version 2.1 which accompanies this distribution, and is available at
+## http://www.gnu.org/licenses/lgpl.html
+##
+## This library is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+## Lesser General Public License for more details.
+##
+## Contributors:
+##     Julien Carsique
+##
+## Shell script generating a static archive for Tomcat or JBoss
+##
+
+echo 'DEPRECATED - You should use "nuxeoctl pack <target> [options]"'
+
 MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
 
 # Helper functions
@@ -77,9 +91,6 @@ if [ -r "$NUXEO_CONF" ]; then
     if [[ "$key" == "nuxeo.data.dir" ]]; then
       read -r DATA_DIR <<< $value
     fi
-    if [[ "$key" == "nuxeo.tmp.dir" ]]; then
-      read -r TMP_DIR <<< $value
-    fi
     if [[ "$key" == "nuxeo.bind.address" ]]; then
       read -r BIND_ADDRESS <<< $value
     fi
@@ -100,7 +111,6 @@ if [ "$cygwin" = "true" ]; then
   [ -n "$CATALINA_HOME" ] && CATALINA_HOME=`cygpath --unix "$CATALINA_HOME"`
   [ -n "$JETTY_HOME" ] && JETTY_HOME=`cygpath --unix "$JETTY_HOME"`
   [ -n "$NUXEO_HOME" ] && NUXEO_HOME=`cygpath --unix "$NUXEO_HOME"`
-  [ -n "$TMP_DIR" ] && TMP_DIR=`cygpath --unix "$TMP_DIR"`
   [ -n "$DATA_DIR" ] && DATA_DIR=`cygpath --unix "$DATA_DIR"`
 fi
 
@@ -243,26 +253,22 @@ if [ "$jboss" = "true" ]; then
   fi
 
   # Paths and specific options
-  TMP_OVERRIDE="false"
-  if [ -n "$TMP_DIR" ]; then
-    TMP_OVERRIDE="true"
-  fi
-  TMP_DIR=${TMP_DIR:-server/default/tmp}
-
   DATA_DIR=${DATA_DIR:-server/default/data/NXRuntime/data}
-  JBOSS_DATA_DIR=${JBOSS_DATA_DIR:-"$NUXEO_HOME"/server/default/data}
-  NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
-  NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
   NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
-  NUXEO_CONFIG_CLASSPATH="$NUXEO_HOME/bin/nuxeo-launcher.jar:$CLASSPATH:$NUXEO_BOOTJAR_PATH"
   LOG4J_CONF="$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
+  MAIN_CLASS=org.nuxeo.runtime.deployment.preprocessor.PackZip
 
 #
 # TOMCAT
 #
 elif [ "$tomcat" = "true" ]; then
-  die pack works only for JBoss
-  
+  # Paths and specific options
+  NUXEO_EAR="$NUXEO_HOME/nxserver"
+  DATA_DIR=${DATA_DIR:-nxserver/data}
+  NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/lib/*"
+  LOG4J_CONF="$NUXEO_HOME/lib/log4j.xml"
+  MAIN_CLASS=org.nuxeo.runtime.deployment.preprocessor.PackWar
+
 #
 # JETTY
 #
@@ -276,29 +282,21 @@ else
   die "Oops, something went very wrong, I'm not supposed to be here !"
 fi
 
+NUXEO_CONFIG_CLASSPATH="$NUXEO_HOME/bin/nuxeo-launcher.jar:$CLASSPATH:$NUXEO_BOOTJAR_PATH"
+
 # Set absolute path for data directory
 if [[ "$DATA_DIR" != \$* ]] && [[ "$DATA_DIR" != /* ]]; then
   DATA_DIR="$NUXEO_HOME/$DATA_DIR"
 fi
 
-# Set absolute path for tmp directory if any
-if [ -n "$TMP_DIR" ]; then
-  if [[ "$TMP_DIR" != /* ]]; then
-    TMP_DIR="$NUXEO_HOME/$TMP_DIR"
-  fi
-fi
-
 if [ "$cygwin" = "true" ]; then
-  NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
   NUXEO_CONFIG_CLASSPATH=`cygpath --path --windows "$NUXEO_CONFIG_CLASSPATH"`
   NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
   NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
-  [ -n "$TMP_DIR" ] && TMP_DIR=`cygpath --absolute --windows "$TMP_DIR"`
   [ -n "$DATA_DIR" ] && DATA_DIR=`cygpath --absolute --windows "$DATA_DIR"`
   LOG_DIR=`cygpath --absolute --windows "$LOG_DIR"`
   LOG4J_CONF="file:///"`cygpath --absolute --mixed "$LOG4J_CONF"`
 
-  [ "$jboss" = "true" ] && NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
   [ "$tomcat" = "true" ] && CATALINA_TEMP=`cygpath --absolute --windows "$CATALINA_TEMP"`
   [ "$jetty" = "true" ] && NUXEO_BUNDLES=`cygpath --path --windows "$NUXEO_BUNDLES"`
 else
@@ -308,9 +306,9 @@ fi
 pack() {
     java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
-      org.nuxeo.runtime.deployment.preprocessor.PackZip $1 $2
+      $MAIN_CLASS $1 $2
 }
 
 pack $NUXEO_EAR $1
