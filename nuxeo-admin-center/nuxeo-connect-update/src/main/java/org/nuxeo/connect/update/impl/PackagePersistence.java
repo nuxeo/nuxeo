@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.impl;
 
@@ -28,6 +28,7 @@ import java.util.Random;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.connect.update.AlreadyExistsPackageException;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
@@ -40,7 +41,7 @@ import org.nuxeo.connect.update.task.Task;
  * Each local package have a corresponding directory in
  * {@code nxserver/data/features/store} which is named: {@code <package_uid>}
  * ("id-version")
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PackagePersistence {
@@ -169,8 +170,8 @@ public class PackagePersistence {
                 // 2. remove the package data
                 FileUtils.deleteTree(dir);
             } else {
-                throw new PackageException("Package " + pkg.getId()
-                        + " already exists");
+                throw new AlreadyExistsPackageException("Package "
+                        + pkg.getId() + " already exists");
             }
         }
         file.renameTo(dir);
@@ -195,9 +196,8 @@ public class PackagePersistence {
      * <li> {@link PackageState#INSTALLED}
      * <li> {@link PackageState#STARTED}
      * </ul>
-     * 
+     *
      * @param name
-     * @return
      */
     public LocalPackage getActivePackage(String name) throws PackageException {
         String pkgId = getActivePackageId(name);
@@ -267,12 +267,11 @@ public class PackagePersistence {
     }
 
     protected File newTempDir(String id) {
-        File tmp = new File(temp, id + "-" + random.nextInt());
+        File tmp;
         synchronized (temp) {
-            // FIXME: logic error here - while doesn't loop!
-            while (tmp.exists()) {
-                return newTempDir(id);
-            }
+            do {
+                tmp = new File(temp, id + "-" + random.nextInt());
+            } while (tmp.exists());
             tmp.mkdirs();
         }
         return tmp;
