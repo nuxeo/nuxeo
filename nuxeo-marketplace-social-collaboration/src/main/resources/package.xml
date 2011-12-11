@@ -14,8 +14,12 @@
   <production-state>production_ready</production-state>
   <supported>true</supported>
   <platforms>
+    <platform>cap-@VERSION@</platform>
     <platform>dm-@VERSION@</platform>
   </platforms>
+  <dependencies>
+    <package>nuxeo-dm:@VERSION@</package>
+  </dependencies>
   <license>LGPL</license>
   <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
 </package>
