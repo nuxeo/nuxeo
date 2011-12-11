@@ -27,7 +27,7 @@ import org.nuxeo.runtime.api.Framework;
  *              subscribers
  * @since 5.5
  * @author vpasquier
- * 
+ *
  */
 public class CommentNotificationListener implements NotificationListenerHook {
 
@@ -40,8 +40,10 @@ public class CommentNotificationListener implements NotificationListenerHook {
                 || docCtx.getSourceDocument().getType().equals("Comment")) {
             CommentManager commentManager = Framework.getService(CommentManager.class);
             DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
-            Object[] args = { thread, null };
-            docCtx.setArgs(args);
+            if (thread !=null) {
+                Object[] args = { thread, null };
+                docCtx.setArgs(args);
+            }
         }
         return docCtx;
     }

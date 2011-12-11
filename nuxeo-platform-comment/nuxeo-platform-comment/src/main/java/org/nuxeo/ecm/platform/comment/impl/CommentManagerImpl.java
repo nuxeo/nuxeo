@@ -642,11 +642,14 @@ public class CommentManagerImpl implements CommentManager {
     public DocumentModel getThreadForComment(DocumentModel comment)
             throws ClientException {
         List<DocumentModel> threads = getDocumentsForComment(comment);
-        DocumentModel thread = (DocumentModel) threads.get(0);
-        while (thread.getType().equals("Post")
-                || thread.getType().equals("Comment")) {
-            thread = getThreadForComment(thread);
+        if (threads.size()>0) {
+            DocumentModel thread = (DocumentModel) threads.get(0);
+            while (thread.getType().equals("Post")
+                    || thread.getType().equals("Comment")) {
+                thread = getThreadForComment(thread);
+            }
+            return thread;
         }
-        return thread;
+        return null;
     }
 }
