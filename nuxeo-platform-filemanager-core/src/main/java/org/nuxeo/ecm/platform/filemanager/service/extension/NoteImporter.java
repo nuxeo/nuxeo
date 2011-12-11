@@ -20,6 +20,15 @@
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,6 +73,7 @@ public class NoteImporter extends AbstractFileImporter {
         return NOTE_TYPE;
     }
 
+    @Override
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
@@ -80,7 +90,8 @@ public class NoteImporter extends AbstractFileImporter {
 
         if (overwrite && docModel != null) {
 
-            docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, content.getString());
+            docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, getString(content));
+            docModel.setProperty(NOTE_SCHEMA, MT_FIELD, content.getMimeType());
             docModel = overwriteAndIncrementversion(documentManager, docModel);
         } else {
             PathSegmentService pss;
@@ -94,7 +105,7 @@ public class NoteImporter extends AbstractFileImporter {
 
             // Update known attributes (title, note)
             docModel.setProperty(DUBLINCORE_SCHEMA, TITLE_FIELD, title);
-            docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, content.getString());
+            docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, getString(content));
             docModel.setProperty(NOTE_SCHEMA, MT_FIELD, content.getMimeType());
 
             // Create the new document in the repository
@@ -106,6 +117,70 @@ public class NoteImporter extends AbstractFileImporter {
         log.debug("Created the Note: " + docModel.getName() + " with icon: "
                 + docModel.getProperty(COMMON_SCHEMA, ICON_FIELD));
         return docModel;
+    }
+
+    protected String getString(Blob blob) throws IOException {
+        String s = guessEncoding(blob);
+        if (s == null) {
+            s = blob.getString(); // uses default charset
+        }
+        return s;
+    }
+
+    protected static String guessEncoding(Blob blob) throws IOException {
+        // encoding already known?
+        if (blob.getEncoding() != null) {
+            return null;
+        }
+
+        // bad mime type?
+        String mimeType = blob.getMimeType();
+        if (mimeType == null) {
+            return null;
+        }
+        if (!mimeType.startsWith("text/")
+                && !mimeType.startsWith("application/xhtml")) {
+            // not a text file, we shouldn't be in the Note importer
+            return null;
+        }
+
+        byte[] bytes = blob.getByteArray();
+
+        List<String> charsets = Arrays.asList("utf-8", "iso-8859-1");
+
+        // charset specified in MIME type?
+        String CSEQ = "charset=";
+        int i = mimeType.indexOf(CSEQ);
+        if (i > 0) {
+            String onlyMimeType = mimeType.substring(0, i).replace(";", "").trim();
+            blob.setMimeType(onlyMimeType);
+            String charset = mimeType.substring(i + CSEQ.length());
+            i = charset.indexOf(";");
+            if (i > 0) {
+                charset = charset.substring(0, i);
+            }
+            charset = charset.trim().replace("\"", "");
+            charsets = new ArrayList<String>(charsets);
+            charsets.add(0, charset);
+        }
+
+        // resort to auto-detection
+        for (String charset : charsets) {
+            try {
+                Charset cs = Charset.forName(charset);
+                CharsetDecoder d = cs.newDecoder().onMalformedInput(
+                        CodingErrorAction.REPORT).onUnmappableCharacter(
+                        CodingErrorAction.REPORT);
+                CharBuffer cb = d.decode(ByteBuffer.wrap(bytes));
+                return cb.toString();
+            } catch (IllegalArgumentException e) {
+                // illegal charset
+            } catch (CharacterCodingException e) {
+                // could not decode
+            }
+        }
+        // nothing worked, use platform
+        return null;
     }
 
 }
