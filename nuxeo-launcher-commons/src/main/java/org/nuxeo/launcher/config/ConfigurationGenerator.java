@@ -795,7 +795,6 @@ public class ConfigurationGenerator {
                                     + wizardParam);
                             wizardIndex = newLines.size() -1;
                         }
-                        newLines.add(line);
                         onConfiguratorContent = true;
                     }
                 } else {
@@ -824,7 +823,6 @@ public class ConfigurationGenerator {
                             }
                         }
                     } else {
-                        newLines.add(line);
                         onConfiguratorContent = false;
                     }
                 }
