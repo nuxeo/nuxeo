@@ -89,7 +89,8 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             tasks = new ArrayList<Task>();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument != null) {
-                tasks = taskService.getTaskInstances(currentDocument, (NuxeoPrincipal) null, documentManager);
+                NuxeoPrincipal principal = (NuxeoPrincipal)documentManager.getPrincipal();
+                tasks = taskService.getTaskInstances(currentDocument, principal, documentManager);
             }
         }
         return tasks;
@@ -158,8 +159,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
 
     }
 
-    public void rejectTask(Task task, String comment)
-            throws ClientException {
+    public void rejectTask(Task task, String comment) throws ClientException {
         taskService.rejectTask(documentManager,
                 (NuxeoPrincipal) documentManager.getPrincipal(), task, comment);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_REJECTED);
