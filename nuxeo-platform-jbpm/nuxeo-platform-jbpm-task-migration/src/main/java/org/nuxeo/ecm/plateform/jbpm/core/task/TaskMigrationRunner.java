@@ -188,9 +188,6 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
             CoreSession coreSession) throws ClientException {
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(
-                CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
-                "true");
-        vars.put(
                 CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
                 CommentsConstants.ACCEPT_CHAIN_NAME);
         vars.put(
