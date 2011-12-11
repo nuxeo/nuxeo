@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -145,7 +145,8 @@ public class PackZip {
         File newf = new File(nuxeoEar, "META-INF" + File.separator
                 + "nuxeo-structure-zip.xml");
         if (oldf.exists() && !FileUtils.deleteQuietly(oldf)) {
-            log.warn("Cannot delete " + oldf.getName() + ", it may not replace it with the new file.");
+            log.warn("Cannot delete " + oldf.getName()
+                    + ", it may not replace it with the new file.");
         }
         FileUtils.moveFile(newf, oldf);
     }

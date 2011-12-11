@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -117,10 +117,14 @@ public class PackWar {
     }
 
     protected void runTemplatePreprocessor() throws Exception {
-        System.setProperty(ConfigurationGenerator.NUXEO_HOME,
-                nxserver.getPath());
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
-                nxserver, "config").getPath());
+        if (System.getProperty(ConfigurationGenerator.NUXEO_HOME) == null) {
+            System.setProperty(ConfigurationGenerator.NUXEO_HOME,
+                    nxserver.getParent());
+        }
+        if (System.getProperty(ConfigurationGenerator.NUXEO_CONF) == null) {
+            System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
+                    nxserver.getParentFile(), "bin/nuxeo.conf").getPath());
+        }
         new ConfigurationGenerator().run();
     }
 
@@ -154,10 +158,8 @@ public class PackWar {
                 }
             }
         } finally {
-            if (zout != null) {
-                zout.finish();
-                zout.close();
-            }
+            zout.finish();
+            zout.close();
         }
     }
 
