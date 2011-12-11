@@ -4,8 +4,14 @@
 
   <xs:include schemaLocation="core-types.xsd"/>
 
-  <xs:element name="headline" type="xs:string"/>
-  <xs:element name="subheadline" type="xs:string"/>
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="255" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="headline" type="nxs:longString"/>
+  <xs:element name="subheadline" type="nxs:longString"/>
   <xs:element name="byline" type="xs:string"/>
   <xs:element name="dateline" type="xs:string"/>
   <xs:element name="slugline" type="xs:string"/>
@@ -14,7 +20,7 @@
   <xs:element name="source" type="xs:string"/>
   <xs:element name="origin" type="xs:string"/>
   <xs:element name="genre" type="xs:string"/>
-  <xs:element name="caption" type="xs:string"/>
+  <xs:element name="caption" type="nxs:longString"/>
   <xs:element name="typage" type="xs:string"/>
   <xs:element name="cropCoords" type="xs:string"/>
 
