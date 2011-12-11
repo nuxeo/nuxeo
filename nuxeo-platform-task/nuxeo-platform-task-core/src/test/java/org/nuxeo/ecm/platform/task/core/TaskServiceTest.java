@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -37,6 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
+ * @author Antoine Taillefer
  */
 public class TaskServiceTest extends SQLRepositoryTestCase {
 
@@ -412,6 +414,225 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
                 session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
+    }
+
+    /**
+     * Test user tasks.
+     * 
+     * @throws Exception the exception
+     */
+    public void testUserTasks() throws Exception {
+
+        DocumentModel document = getDocument();
+        assertNotNull(document);
+
+        // ----------------------------------------------------------------------
+        // Create a task assigned to user1 and check that user1 has 1 task
+        // assigned
+        // ----------------------------------------------------------------------
+        // set task actors
+        List<String> actors = new ArrayList<String>();
+        actors.add(user1.getName());
+
+        // create task
+        taskService.createTask(session, administrator, document,
+                "Task assigned to user1", actors, false, null, null, null,
+                null, null);
+
+        // get user1 tasks
+        List<Task> tasks = taskService.getTaskInstances(document, user1,
+                session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        Task task = tasks.get(0);
+        assertEquals("Task assigned to user1", task.getName());
+
+        List<String> pooledActorIds = task.getActors();
+        assertEquals(1, pooledActorIds.size());
+        assertTrue(pooledActorIds.contains(user1.getName()));
+
+        // ----------------------------------------------------------------------
+        // Create a task assigned to user2 and check that:
+        // - user2 has 1 task assigned
+        // - the total number of tasks is 2
+        // ----------------------------------------------------------------------
+        // set task actors
+        actors.clear();
+        actors.add(user2.getName());
+
+        // create task
+        taskService.createTask(session, administrator, document,
+                "Task assigned to user2", actors, false, null, null, null,
+                null, null);
+
+        // get user2 tasks
+        tasks = taskService.getTaskInstances(document, user2, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        task = tasks.get(0);
+        assertEquals("Task assigned to user2", task.getName());
+
+        pooledActorIds = task.getActors();
+        assertEquals(1, pooledActorIds.size());
+        assertTrue(pooledActorIds.contains(user2.getName()));
+
+        // get all tasks
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+
+        // ----------------------------------------------------------------------
+        // Create a task assigned to user3 and user4 (using
+        // createOneTaskPerActor) and check that:
+        // - user3 has 1 task assigned
+        // - user4 has 1 task assigned
+        // - the total number of tasks is 4
+        // ----------------------------------------------------------------------
+        // set task actors
+        actors.clear();
+        actors.add(user3.getName());
+        actors.add(user4.getName());
+
+        // create task
+        taskService.createTask(session, administrator, document,
+                "Task assigned to user3 and user4", actors, true, null, null,
+                null, null, null);
+
+        // get user3 tasks
+        tasks = taskService.getTaskInstances(document, user3, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        task = tasks.get(0);
+        assertEquals("Task assigned to user3 and user4", task.getName());
+
+        pooledActorIds = task.getActors();
+        assertEquals(1, pooledActorIds.size());
+        assertTrue(pooledActorIds.contains(user3.getName()));
+
+        // get user4 tasks
+        tasks = taskService.getTaskInstances(document, user4, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        task = tasks.get(0);
+        assertEquals("Task assigned to user3 and user4", task.getName());
+
+        pooledActorIds = task.getActors();
+        assertEquals(1, pooledActorIds.size());
+        assertTrue(pooledActorIds.contains(user4.getName()));
+
+        // get all tasks
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
+        assertNotNull(tasks);
+        assertEquals(4, tasks.size());
+
+        // ----------------------------------------------------------------------
+        // Create a task assigned to members and check that all users that are
+        // in the members group have this task assigned (user1, user2, user3).
+        // Since at this point each user has 1 task assigned,
+        // these users should then have 2.
+        // The total number of tasks should be 5.
+        // ----------------------------------------------------------------------
+        // set task actors
+        actors.clear();
+        actors.add(SecurityConstants.MEMBERS);
+
+        // create task
+        taskService.createTask(session, administrator, document,
+                "Task assigned to members", actors, false, null, null, null,
+                null, null);
+
+        // get user1 tasks
+        tasks = taskService.getTaskInstances(document, user1, session);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+
+        // get user2 tasks
+        tasks = taskService.getTaskInstances(document, user2, session);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+
+        // get user3 tasks
+        tasks = taskService.getTaskInstances(document, user3, session);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+
+        // get user4 tasks
+        tasks = taskService.getTaskInstances(document, user4, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        // get all tasks
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
+        assertNotNull(tasks);
+        assertEquals(5, tasks.size());
+
+    }
+
+    /**
+     * Check prefixed and unprefixed names in actors list.
+     * <p>
+     * It should have no impact since the DocumentTaskProvider rebuilds a clean
+     * actors list with both prefixed and unprefixed names of the principal and
+     * all its groups.
+     * 
+     * @throws Exception the exception
+     */
+    public void testPrefixedUnprefixedActorNames() throws Exception {
+
+        DocumentModel document = getDocument();
+        assertNotNull(document);
+
+        // set task actors mixing user and groups, prefixed and unprefixed
+        // names
+        List<String> actors = new ArrayList<String>();
+        actors.add(user1.getName());
+        actors.add(NuxeoPrincipal.PREFIX + user2.getName());
+        actors.add(SecurityConstants.ADMINISTRATORS);
+        actors.add(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS);
+
+        // create task
+        taskService.createTask(session, administrator, document,
+                "Task assigned to prefixed ans unprefixed users and groups",
+                actors, true, null, null, null, null, null);
+
+        // get user1 tasks: should have 2 since in members group
+        List<Task> tasks = taskService.getTaskInstances(document, user1,
+                session);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+
+        // get user2 tasks: should have 2 since in members group
+        tasks = taskService.getTaskInstances(document, user2, session);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+
+        // get user3 tasks: should have 1 since in members group
+        tasks = taskService.getTaskInstances(document, user3, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        // get user4 tasks: should have 0 since not in members group
+        tasks = taskService.getTaskInstances(document, user4, session);
+        assertNotNull(tasks);
+        assertEquals(0, tasks.size());
+
+        // get administrator tasks: should have 1 since in administrators group
+        tasks = taskService.getTaskInstances(document, administrator, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        // get all tasks: should have 4 (1 per actor)
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
+        assertNotNull(tasks);
+        assertEquals(4, tasks.size());
     }
 
     protected Task getTask(final String taskId) throws ClientException {
