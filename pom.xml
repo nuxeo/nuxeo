@@ -3850,7 +3850,7 @@
                 <version>[1.6,)</version>
               </requireJavaVersion>
             </rules>
-            <skip>true</skip>
+            <skip>false</skip>
           </configuration>
         </plugin>
         <plugin>
