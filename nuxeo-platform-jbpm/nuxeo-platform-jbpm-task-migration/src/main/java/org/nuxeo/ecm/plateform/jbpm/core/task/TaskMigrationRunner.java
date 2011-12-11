@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.core.service.CreateTaskUnrestricted;
@@ -46,9 +47,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Encapsulate migration of task from JBPM to DocumentModel
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @author ataillefer (ataillefer@nuxeo.com)
+ * 
  */
 public class TaskMigrationRunner extends UnrestrictedSessionRunner {
 
@@ -161,8 +163,13 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
             Comment jbpmComment = (Comment) ti.getComments().get(0);
             comment = jbpmComment.getMessage();
         }
+        String taskName = ti.getName();
+        // Migrate publisher task name
+        if (JBPMDocTaskProvider.PUBLISHER_JBPMTASK_NAME.equals(taskName)) {
+            taskName = JBPMDocTaskProvider.PUBLISHER_TASK_NAME;
+        }
         CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
-                user, doc, ti.getName(), actors, false, directive, comment,
+                user, doc, taskName, actors, false, directive, comment,
                 ti.getDueDate(), vars, parentPath);
         runner.runUnrestricted();
         List<Task> tasks = runner.getTasks();
@@ -193,7 +200,13 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
 
     private Task migratePublisherTask(TaskInstance ti, JbpmContext context,
             CoreSession coreSession) throws ClientException {
-        return migrateGenericTask(ti, context, coreSession, null);
+
+        // Add taskType var, needed to filter tasks in single tasks widget
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(Task.TaskVariableName.taskType.name(),
+                CoreProxyWithWorkflowFactory.PUBLISH_TASK_TYPE);
+
+        return migrateGenericTask(ti, context, coreSession, vars);
     }
 
 }
