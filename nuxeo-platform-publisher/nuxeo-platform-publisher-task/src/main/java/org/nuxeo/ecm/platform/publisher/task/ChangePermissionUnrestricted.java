@@ -14,7 +14,7 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.publisher.jbpm;
+package org.nuxeo.ecm.platform.publisher.task;
 
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.security.ACL;

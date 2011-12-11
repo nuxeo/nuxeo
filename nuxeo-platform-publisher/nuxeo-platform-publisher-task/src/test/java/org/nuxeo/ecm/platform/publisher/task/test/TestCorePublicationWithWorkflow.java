@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.ecm.platform.publisher.jbpm.test;
+package org.nuxeo.ecm.platform.publisher.task.test;
 
 import java.util.List;
 

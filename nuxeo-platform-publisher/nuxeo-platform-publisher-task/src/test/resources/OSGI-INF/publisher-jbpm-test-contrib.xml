@@ -7,7 +7,7 @@
       point="factory">
 
     <publishedDocumentFactory name="CoreProxyWithWorkflow"
-                              class="org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory"
+                              class="org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory"
                               validatorsRule="CoreValidatorsRule"/>
 
   </extension>

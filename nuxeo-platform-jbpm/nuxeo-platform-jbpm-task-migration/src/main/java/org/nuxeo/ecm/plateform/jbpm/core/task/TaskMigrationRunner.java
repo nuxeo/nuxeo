@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory;
+import org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.core.service.CreateTaskUnrestricted;
@@ -47,10 +47,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Encapsulate migration of task from JBPM to DocumentModel
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author ataillefer (ataillefer@nuxeo.com)
- * 
+ *
  */
 public class TaskMigrationRunner extends UnrestrictedSessionRunner {
 

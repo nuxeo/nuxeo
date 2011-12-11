@@ -14,46 +14,43 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.publisher.jbpm;
+package org.nuxeo.ecm.platform.publisher.task;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
  * @author arussel
+ * @author ataillefer
+ * 
+ *         XXX ataillefer: get rid of oldAclName if refactor old JBPM ACL name
  */
-public class PublishUnrestricted extends UnrestrictedSessionRunner {
-    private DocumentModel newProxy;
+public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
+    private final DocumentModel document;
 
-    private final DocumentModel docToPublish;
+    private final String aclName;
 
-    private final DocumentModel sectionToPublishTo;
+    private final String oldAclName;
 
-    private final boolean overwriteProxy;
-
-    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
-            DocumentModel sectionToPublishTo) {
-        this(session, docToPublish, sectionToPublishTo, true);
-    }
-
-    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
-            DocumentModel sectionToPublishTo, boolean overwriteProxy) {
+    public RemoveACLUnrestricted(CoreSession session, DocumentModel document,
+            String aclName, String oldAclName) {
         super(session);
-        this.sectionToPublishTo = sectionToPublishTo;
-        this.docToPublish = docToPublish;
-        this.overwriteProxy = overwriteProxy;
+        this.document = document;
+        this.aclName = aclName;
+        this.oldAclName = oldAclName;
     }
 
     @Override
     public void run() throws ClientException {
-        newProxy = session.publishDocument(docToPublish, sectionToPublishTo, overwriteProxy);
+        ACP acp = document.getACP();
+        acp.removeACL(aclName);
+        acp.removeACL(oldAclName);
+        session.setACP(document.getRef(), acp, true);
         session.save();
-    }
-
-    public DocumentModel getModel() {
-        return newProxy;
+        acp = document.getACP();
     }
 
 }

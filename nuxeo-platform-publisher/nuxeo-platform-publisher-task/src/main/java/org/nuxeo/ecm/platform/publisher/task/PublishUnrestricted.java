@@ -14,7 +14,7 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.publisher.jbpm;
+package org.nuxeo.ecm.platform.publisher.task;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -23,21 +23,37 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
  * @author arussel
- *
  */
-public class DeleteDocumentUnrestricted extends UnrestrictedSessionRunner {
-    private final DocumentModel document;
+public class PublishUnrestricted extends UnrestrictedSessionRunner {
+    private DocumentModel newProxy;
 
-    public DeleteDocumentUnrestricted(CoreSession session,
-            DocumentModel document) {
+    private final DocumentModel docToPublish;
+
+    private final DocumentModel sectionToPublishTo;
+
+    private final boolean overwriteProxy;
+
+    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
+            DocumentModel sectionToPublishTo) {
+        this(session, docToPublish, sectionToPublishTo, true);
+    }
+
+    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
+            DocumentModel sectionToPublishTo, boolean overwriteProxy) {
         super(session);
-        this.document = document;
+        this.sectionToPublishTo = sectionToPublishTo;
+        this.docToPublish = docToPublish;
+        this.overwriteProxy = overwriteProxy;
     }
 
     @Override
     public void run() throws ClientException {
-        session.removeDocument(document.getRef());
+        newProxy = session.publishDocument(docToPublish, sectionToPublishTo, overwriteProxy);
         session.save();
+    }
+
+    public DocumentModel getModel() {
+        return newProxy;
     }
 
 }

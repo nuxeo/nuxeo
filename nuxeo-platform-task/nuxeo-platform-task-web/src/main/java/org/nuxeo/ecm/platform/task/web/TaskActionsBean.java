@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.jbpm.web;
+package org.nuxeo.ecm.platform.task.web;
 
 import java.util.ArrayList;
 import java.util.List;
