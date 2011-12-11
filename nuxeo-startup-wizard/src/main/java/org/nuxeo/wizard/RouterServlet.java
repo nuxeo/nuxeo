@@ -19,7 +19,6 @@
 package org.nuxeo.wizard;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -45,8 +44,10 @@ import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
 import org.nuxeo.wizard.download.DownloadablePackageOptions;
 import org.nuxeo.wizard.download.PackageDownloader;
+import org.nuxeo.wizard.helpers.ConnectRegistrationHelper;
 import org.nuxeo.wizard.helpers.IPValidator;
 import org.nuxeo.wizard.helpers.NumberValidator;
+import org.nuxeo.wizard.helpers.PackageDownloaderHelper;
 import org.nuxeo.wizard.nav.Page;
 import org.nuxeo.wizard.nav.SimpleNavigationHandler;
 
@@ -336,32 +337,23 @@ public class RouterServlet extends HttpServlet {
 
     public void handleRecapPOST(Page currentPage, HttpServletRequest req,
             HttpServletResponse resp) throws ServletException, IOException {
-        // Save configuration
-        Context ctx = Context.instance(req);
 
+        Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
 
         if (ctx.isConnectRegistrationDone()) {
-            String regTargetPath = cg.getDataDir().getAbsolutePath(); // cg.getRuntimeHome();
-
-            if (!regTargetPath.endsWith("/")) {
-                regTargetPath = regTargetPath + "/";
-            }
-
-            String CLID1 = Context.getConnectMap().get("CLID").split("--")[0];
-            String CLID2 = Context.getConnectMap().get("CLID").split("--")[1];
-            String regFileContent = CLID1 + "\n" + CLID2 + "\nnew instance";
-
-            File regFile = new File(regTargetPath + "instance.clid");
-            FileWriter writer = new FileWriter(regFile);
-            writer.write(regFileContent);
-            writer.close();
+            // save Connect registration
+            ConnectRegistrationHelper.saveConnectRegistrationFile(ctx);
         }
+
+        // Mark package selection done
+        PackageDownloaderHelper.markPackageSelectionDone(ctx);
 
         Map<String, String> changedParameters = collector.getConfigurationParams();
         changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
         try {
+            // save config
             cg.saveFilteredConfiguration(changedParameters);
 
             // // => page will trigger the restart
@@ -398,6 +390,19 @@ public class RouterServlet extends HttpServlet {
         } else {
             currentPage.next().dispatchToJSP(req, resp, true);
         }
+    }
+
+    public void handleHomeGET(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+
+        Context ctx = Context.instance(req);
+        if (PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
+            navHandler.deactivatePage("PackagesSelection");
+            navHandler.deactivatePage("PackagesDownload");
+            navHandler.activatePage("PackagesSelectionDone");
+        }
+
+        handleDefaultGET(currentPage, req, resp);
     }
 
     public void handleHomePOST(Page currentPage, HttpServletRequest req,
@@ -440,8 +445,10 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
             collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain",
                     null);
-            PackageDownloader.instance().setProxy(null, 0, null, null, null,
+            if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
+                PackageDownloader.instance().setProxy(null, 0, null, null, null,
                     null);
+            }
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
                 ctx.trackError("nuxeo.http.proxy.port",
@@ -461,10 +468,12 @@ public class RouterServlet extends HttpServlet {
                         null);
 
                 if (!ctx.hasErrors()) {
-                    PackageDownloader.instance().setProxy(
+                    if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
+                        PackageDownloader.instance().setProxy(
                             collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
                             Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
                             null, null, null, null);
+                    }
                 }
             } else {
                 if (collector.getConfigurationParam("nuxeo.http.proxy.login").isEmpty()) {
@@ -472,13 +481,15 @@ public class RouterServlet extends HttpServlet {
                             "error.nuxeo.http.proxy.emptyLogin");
                 } else {
                     if (!ctx.hasErrors()) {
-                        PackageDownloader.instance().setProxy(
+                        if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
+                            PackageDownloader.instance().setProxy(
                                 collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
                                 Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
                                 collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
                                 collector.getConfigurationParamValue("nuxeo.http.proxy.password"),
                                 collector.getConfigurationParamValue("nuxeo.http.proxy.ntlm.host"),
                                 collector.getConfigurationParamValue("nuxeo.http.proxy.ntml.domain"));
+                        }
                     }
                 }
             }
@@ -568,7 +579,6 @@ public class RouterServlet extends HttpServlet {
 
         PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(
                 installationFilePath);
-
         PackageDownloader.reset();
 
         currentPage.next().dispatchToJSP(req, resp, true);
