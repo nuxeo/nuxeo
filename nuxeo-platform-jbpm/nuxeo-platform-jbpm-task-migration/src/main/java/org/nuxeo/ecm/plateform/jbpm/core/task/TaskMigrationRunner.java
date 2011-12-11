@@ -167,9 +167,6 @@ public class TaskMigrationRunner extends UnrestrictedSessionRunner {
         runner.runUnrestricted();
         List<Task> tasks = runner.getTasks();
         ti.suspend();
-        if (ti.getProcessInstance() != null) {
-            ti.getProcessInstance().suspend();
-        }
         if (tasks != null && tasks.size() > 0) {
             return tasks.get(0);
         } else {

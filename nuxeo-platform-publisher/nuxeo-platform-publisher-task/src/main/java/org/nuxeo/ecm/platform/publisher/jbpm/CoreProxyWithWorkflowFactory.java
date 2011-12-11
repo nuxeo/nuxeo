@@ -57,9 +57,10 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of the {@link PublishedDocumentFactory} for core
  * implementation using native proxy system with validation workflow.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
+ * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         PublishedDocumentFactory {
@@ -132,8 +133,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             ClientException, PublishingException {
         String[] actorIds = getValidatorsFor(document);
         Map<String, String> variables = new HashMap<String, String>();
-        variables.put(Task.TaskVariableName.needi18n.name(),"true");
-        variables.put(Task.TaskVariableName.taskType.name(),PUBLISH_TASK_TYPE);
+        variables.put(Task.TaskVariableName.needi18n.name(), "true");
+        variables.put(Task.TaskVariableName.taskType.name(), PUBLISH_TASK_TYPE);
         variables.put(TaskService.VariableName.documentId.name(),
                 document.getId());
         variables.put(TaskService.VariableName.documentRepositoryName.name(),
@@ -331,7 +332,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         assert currentUser != null;
         try {
             List<Task> tasks = getTaskService().getTaskInstances(proxy,
-                    (NuxeoPrincipal) null, coreSession);
+                    currentUser, coreSession);
             for (Task task : tasks) {
                 if (task.getName().equals(TASK_NAME)) {
                     return true;

@@ -22,13 +22,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskProvider;
 import org.nuxeo.ecm.platform.task.TaskQueryConstant;
+import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
 
 /**
  * @author Laurent Doguin
+ * @author Antoine Taillefer
  * @since 5.5
  */
 public class DocumentTaskProvider implements TaskProvider {
@@ -36,14 +39,20 @@ public class DocumentTaskProvider implements TaskProvider {
     @Override
     public List<Task> getCurrentTaskInstances(CoreSession coreSession)
             throws ClientException {
-        DocumentModelList taskDocuments = coreSession.query(TaskQueryConstant.GET_TASKS_QUERY);
-        return wrapDocModelInTask(taskDocuments);
+
+        // Get tasks for current user
+        // We need to build the task actors list: prefixed and unprefixed names
+        // of the principal and all its groups
+        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        List<String> actors = TaskActorsHelper.getTaskActors(principal);
+
+        return getCurrentTaskInstances(actors, coreSession);
     }
 
     /**
      * Returns a list of task instances assigned to one of the actors in the
      * list or to its pool.
-     *
+     * 
      * @param actors a list used as actorId to retrieve the tasks.
      * @param filter
      * @return
@@ -71,10 +80,11 @@ public class DocumentTaskProvider implements TaskProvider {
                     TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_QUERY,
                     dm.getId());
         } else {
-            String userName = String.format("'%s'", user.getName());
+            List<String> actors = TaskActorsHelper.getTaskActors(user);
+            String userNames = TaskQueryConstant.formatStringList(actors);
             query = String.format(
                     TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY,
-                    dm.getId(), userName);
+                    dm.getId(), userNames);
         }
         DocumentModelList taskDocuments = coreSession.query(query);
         return wrapDocModelInTask(taskDocuments);
