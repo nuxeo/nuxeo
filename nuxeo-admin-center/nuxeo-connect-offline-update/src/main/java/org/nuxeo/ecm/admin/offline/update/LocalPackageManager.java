@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.connect.update.AlreadyExistsPackageException;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
@@ -270,7 +271,7 @@ public class LocalPackageManager {
 
     public void update() throws PackageException {
         if (packages.isEmpty()) {
-            throw new PackageException("No package found in " + config);
+            return;
         }
         log.info("Performing update ...");
         for (String pkgId : packages) {
@@ -298,6 +299,8 @@ public class LocalPackageManager {
                 } else if ("install".equals(cmd)) {
                     updatePackage(pkgId);
                 }
+            } catch (AlreadyExistsPackageException e) {
+                log.warn(e);
             } catch (PackageException e) {
                 log.error(e);
                 errorValue = 1;
