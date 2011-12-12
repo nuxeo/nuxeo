@@ -88,7 +88,7 @@ public class PackageDownloader {
 
     public static final String BASE_URL_KEY = "nuxeo.wizard.packages.url";
 
-    public static final String DEFAULT_BASE_URL = "http://community.nuxeo.com/static/releases/"; // nuxeo-XXX/mp
+    public static final String DEFAULT_BASE_URL = "http://cdn.nuxeo.com/"; // nuxeo-XXX/mp
 
     public static final String WORKDING_DIR_NAME = "setupWizardDownloads";
 
