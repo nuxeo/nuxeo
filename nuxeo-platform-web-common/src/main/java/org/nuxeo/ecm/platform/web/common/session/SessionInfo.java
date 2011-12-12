@@ -126,6 +126,9 @@ public class SessionInfo implements Comparable<SessionInfo> {
 
     @Override
     public int compareTo(SessionInfo o) {
+        if (getInactivityInS()==o.getInactivityInS()) {
+            return 0;
+        }
         return getInactivityInS() > o.getInactivityInS() ? 1 : -1;
     }
 
