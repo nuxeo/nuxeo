@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -58,8 +58,11 @@ public class NuxeoCtlManager {
                     winEscape(new File(path, CMD_WIN).getPath()), "nogui",
                     "restartbg" };
         } else {
-            cmd = new String[] { "/bin/sh", "-c",
-                    new File(path, CMD_POSIX).getPath() + " restartbg" };
+            cmd = new String[] {
+                    "/bin/sh",
+                    "-c",
+                    "\"" + new File(path, CMD_POSIX).getPath() + "\""
+                            + " restartbg" };
         }
 
         Process p1;
