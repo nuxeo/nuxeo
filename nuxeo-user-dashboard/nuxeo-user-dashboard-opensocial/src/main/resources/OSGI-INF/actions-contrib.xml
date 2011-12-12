@@ -15,6 +15,22 @@
       label=""
       order="10">
       <category>Dashboard_sub_tab</category>
+      <filter id="notForMSIE7">
+        <rule grant="false">
+          <condition>#{isMSIE6or7}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="DashboardMain_MSIE7" link="/incl/dashboard/user_jsf_dashboard.xhtml"
+      label=""
+      order="10">
+      <category>Dashboard_sub_tab</category>
+      <filter id="fallBackForMSIE7">
+        <rule grant="true">
+          <condition>#{isMSIE6or7}</condition>
+        </rule>
+      </filter>
     </action>
 
     <action id="DashboardManagement" link="/incl/dashboard/dashboard_management.xhtml"

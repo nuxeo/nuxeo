@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -36,6 +39,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
@@ -149,4 +153,16 @@ public class JSFDashboardActions implements Serializable {
         contentViewActions.resetPageProviderOnSeamEvent(CONTENT_VIEW_OBSERVER_WORKFLOW_EVENT);
     }
 
+    @Factory(value = "isMSIE6or7", scope = ScopeType.SESSION)
+    public boolean isMSIE6or7() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context!=null) {
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+            String ua = request.getHeader("User-Agent");
+            return UserAgentMatcher.isMSIE6or7(ua);
+        } else {
+            return false;
+        }
+
+    }
 }
