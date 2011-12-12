@@ -28,7 +28,8 @@ import org.nuxeo.connect.update.util.FileMatcher;
  */
 public class JarUtils {
 
-    public final static Pattern JAR_NAME = Pattern.compile("(.+)-([0-9]+.*)\\.jar");
+    // the r? is for supporting version like: caja-r1234
+    public final static Pattern JAR_NAME = Pattern.compile("(.+)-(r?[0-9]+.*)\\.jar");
 
     /**
      * Try to find the version part in the given JAR name. Return null if name

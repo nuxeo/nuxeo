@@ -46,7 +46,7 @@ public class Update extends AbstractCommand {
 
     public static final String ID = "update";
 
-    public static final boolean ALLOW_DOWNGRADE = true;
+    public static final boolean ALLOW_DOWNGRADE = false;
 
     public static final boolean UPGRADE_ONLY = false;
 
@@ -146,11 +146,16 @@ public class Update extends AbstractCommand {
             status.addError("Cannot execute command in installer."
                     + " Invalid update command: todir should be a directory!");
         }
-        Match<String> match = JarUtils.findJarVersion(file.getName());
-        if (match == null) {
+        if (file.isFile()) {
+            Match<String> match = JarUtils.findJarVersion(file.getName());
+            if (match == null) {
+                status.addError("Cannot execute command in installer."
+                        + " Cannot use 'update' command for non versioned files!. File name must contain a version: "
+                        + file.getName());
+            }
+        } else if (!file.isDirectory()) {
             status.addError("Cannot execute command in installer."
-                    + " Cannot use 'update' command for non versioned files!. File name must contain a version: "
-                    + file.getName());
+                    + " Source file not found! " + file.getName());
         }
     }
 

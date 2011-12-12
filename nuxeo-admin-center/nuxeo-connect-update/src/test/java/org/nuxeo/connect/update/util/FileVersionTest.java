@@ -28,6 +28,27 @@ public class FileVersionTest {
 
     @Test
     public void test() {
+
+        // test version containing only major part
+        assertArrayEquals(new FileVersion("1").getSplitVersion(),
+                new Integer[] { 1 });
+        FileVersion fv = new FileVersion("1-qualifier");
+        assertArrayEquals(fv.getSplitVersion(), new Integer[] { 1 });
+        assertEquals("-qualifier", fv.getQualifier());
+        fv = new FileVersion("1_qualifier");
+        assertArrayEquals(fv.getSplitVersion(), new Integer[] { 1 });
+        assertEquals("_qualifier", fv.getQualifier());
+
+        // test caja versions
+        fv = new FileVersion("r1234");
+        assertArrayEquals(fv.getSplitVersion(), new Integer[] { 1234 });
+        fv = new FileVersion("r1234-qualifier");
+        assertArrayEquals(fv.getSplitVersion(), new Integer[] { 1234 });
+        assertEquals("-qualifier", fv.getQualifier());
+        fv = new FileVersion("r1234_qualifier");
+        assertArrayEquals(fv.getSplitVersion(), new Integer[] { 1234 });
+        assertEquals("_qualifier", fv.getQualifier());
+
         assertArrayEquals(new FileVersion("1.3.3").getSplitVersion(),
                 new Integer[] { 1, 3, 3 });
         assertEquals(new FileVersion("1.3.3").getQualifier(), "");

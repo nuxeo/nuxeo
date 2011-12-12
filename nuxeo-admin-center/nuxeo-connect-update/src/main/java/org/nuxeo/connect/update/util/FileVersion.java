@@ -22,12 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Compare versions of files as they are usually set.
- * Maven classifiers are not managed: a classifier will be considered as being
- * part of the version.
- * Maven "SNAPSHOT" keyword is taken in account.
- * Rule is: x-SNAPSHOT < x < x-AnythingButSNAPSHOT < x.y-SNAPSHOT < x.y
- *
+ * Compare versions of files as they are usually set. Maven classifiers are not
+ * managed: a classifier will be considered as being part of the version. Maven
+ * "SNAPSHOT" keyword is taken in account. Rule is: x-SNAPSHOT < x <
+ * x-AnythingButSNAPSHOT < x.y-SNAPSHOT < x.y
+ * 
  * @since 5.5
  */
 public class FileVersion implements Comparable<FileVersion> {
@@ -61,6 +60,10 @@ public class FileVersion implements Comparable<FileVersion> {
     }
 
     public void split(String value) {
+        if (value.startsWith("r")) {
+            // special case for caja-r1234 versions
+            value = value.substring(1);
+        }
         List<Integer> versions = new ArrayList<Integer>();
         this.tmpVersion = value;
         do {
@@ -94,6 +97,13 @@ public class FileVersion implements Comparable<FileVersion> {
                 separator = tmpVersion.substring(index, index + 1);
                 tmpVersion = tmpVersion.substring(index + 1);
                 return true;
+            } else {
+                // treat versions containing only major versions: "1-q", "2"
+                // etc.
+                if (versions.isEmpty()) {
+                    versions.add(Integer.valueOf(tmpVersion));
+                    return false;
+                }
             }
         } catch (NumberFormatException e) {
         }

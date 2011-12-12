@@ -158,20 +158,14 @@ public abstract class SharedFilesTest extends PackageTestCase {
 
         @Override
         protected void updatePackage(PackageBuilder builder) throws Exception {
-            addFile("b1-1.1.jar", "b1-1.1.jar");
-            addFile("b2-1.1.jar", "b2-1.1.jar");
+            addFile("bundles/b1-1.1.jar", "b1-1.1.jar");
+            addFile("bundles/b2-1.1.jar", "b2-1.1.jar");
         }
 
         @Override
         protected void writeInstallCommands(XmlWriter writer) throws Exception {
             writer.start("update");
-            writer.attr("file", "${package.root}/b1-1.1.jar");
-            writer.attr("todir", "${env.bundles}");
-            writer.attr("allowDowngrade", Boolean.toString(allowDowngrade));
-            writer.attr("upgradeOnly", Boolean.toString(upgradeOnly));
-            writer.end();
-            writer.start("update");
-            writer.attr("file", "${package.root}/b2-1.1.jar");
+            writer.attr("file", "${package.root}/bundles");
             writer.attr("todir", "${env.bundles}");
             writer.attr("allowDowngrade", Boolean.toString(allowDowngrade));
             writer.attr("upgradeOnly", Boolean.toString(upgradeOnly));
