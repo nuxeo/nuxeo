@@ -347,7 +347,7 @@ public class UpdateManager {
     protected void copy(File src, File dst) throws PackageException {
         try {
             dst.getParentFile().mkdirs();
-            File tmp = new File(dst.getPath() + ".tmp");
+            File tmp = new File(dst.getParentFile(), dst.getName() + ".tmp");
             FileUtils.copy(src, tmp);
             if (!tmp.renameTo(dst)) {
                 tmp.delete();
