@@ -56,7 +56,6 @@ String selectedPackageIds="";
 
 function refreshDownloadTable() {
   setTimeout(function() { $("#downloadTable").load('<%=currentPage.getAction()%> #downloadTable', function() {
-      console.log("Reloading!");
       if ($("#downloadInProgress").html()=="true") {
         refreshDownloadTable();
       }
@@ -74,7 +73,6 @@ $(document).ready(function(){
    $("#btnNext").css("display","inline");
 <%};
   if (downloadInProgress) {%>
-  console.log("Staring reload!!!!");
   refreshDownloadTable();
 <%}%>
 
