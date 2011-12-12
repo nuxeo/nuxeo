@@ -40,7 +40,7 @@
     </unzip>
 
     <!-- Social Collaboration properties to append -->
-    <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## nuxeo-marketplace-social-collaobration
+    <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## ${maven.project.artifactId}
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
 org.nuxeo.distribution.package=mp</echo>

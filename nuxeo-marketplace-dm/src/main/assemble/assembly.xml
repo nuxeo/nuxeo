@@ -49,7 +49,7 @@
     </unzip>
 
     <!-- DM properties to append -->
-    <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## nuxeo-marketplace-dm
+    <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## ${maven.project.artifactId}
 org.nuxeo.distribution.name=dm
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
