@@ -760,12 +760,11 @@ public class ConfigurationGenerator {
                             }
                         } else if (line.startsWith(PARAM_WIZARD_DONE)) {
                             if (wizardParam != null) {
-                                line = PARAM_WIZARD_DONE + "="
-                                        + wizardParam;
+                                line = PARAM_WIZARD_DONE + "=" + wizardParam;
                             }
                             if (wizardIndex == null) {
                                 newLines.add(line);
-                                wizardIndex = newLines.size() -1;
+                                wizardIndex = newLines.size() - 1;
                             } else {
                                 newLines.set(wizardIndex, line);
                             }
@@ -776,11 +775,11 @@ public class ConfigurationGenerator {
                             }
                             if (templatesIndex == null) {
                                 newLines.add(line);
-                                templatesIndex = newLines.size() -1;
+                                templatesIndex = newLines.size() - 1;
                             } else {
                                 newLines.set(templatesIndex, line);
                             }
-                        } else if (line != null) {
+                        } else {
                             newLines.add(line);
                         }
                     } else {
@@ -788,12 +787,11 @@ public class ConfigurationGenerator {
                         if (templatesIndex == null && templatesParam != null) {
                             newLines.add(PARAM_TEMPLATES_NAME + "="
                                     + templatesParam);
-                            templatesIndex = newLines.size() -1;
+                            templatesIndex = newLines.size() - 1;
                         }
                         if (wizardIndex == null && wizardParam != null) {
-                            newLines.add(PARAM_WIZARD_DONE + "="
-                                    + wizardParam);
-                            wizardIndex = newLines.size() -1;
+                            newLines.add(PARAM_WIZARD_DONE + "=" + wizardParam);
+                            wizardIndex = newLines.size() - 1;
                         }
                         onConfiguratorContent = true;
                     }
@@ -841,7 +839,8 @@ public class ConfigurationGenerator {
         }
         StringBuffer newContent = new StringBuffer();
         for (int i = 0; i < newLines.size(); i++) {
-            newContent.append(newLines.get(i).trim() + System.getProperty("line.separator"));
+            newContent.append(newLines.get(i).trim()
+                    + System.getProperty("line.separator"));
         }
         return newContent;
     }
