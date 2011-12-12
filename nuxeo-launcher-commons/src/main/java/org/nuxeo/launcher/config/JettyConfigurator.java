@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -56,11 +56,6 @@ public class JettyConfigurator extends ServerConfigurator {
     protected boolean isConfigured() {
         log.info("Detected Jetty server.");
         return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
-    }
-
-    @Override
-    protected File getOutputDirectory() {
-        return generator.getNuxeoHome();
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -114,7 +114,9 @@ public abstract class ServerConfigurator {
     /**
      * @return output directory for files generation
      */
-    protected abstract File getOutputDirectory();
+    protected File getOutputDirectory() {
+        return getRuntimeHome();
+    }
 
     /**
      * @return Default data directory path relative to Nuxeo Home
