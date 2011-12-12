@@ -225,6 +225,9 @@ file:setupWizardDownloads/${CMFMPMD5}
       <param name="org.nuxeo.distribution.name" value="cap" />
     </antcall>
 
+    <echo file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties"
+          message="preset=nuxeo-dm" />
+
     <antcall target="reorganize-libs-zip-attach" />
   </target>
 
