@@ -18,12 +18,15 @@
 package org.nuxeo.wizard.helpers;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
@@ -47,11 +50,16 @@ public class ServerController {
         return osName.toLowerCase().contains("windows");
     }
 
-    protected static boolean doExec(String path) {
+    private static String winEscape(String command) {
+        return command.replaceAll("([ ()<>&])", "^$1");
+    }
+
+    protected static boolean doExec(String path, String logPath) {
         String[] cmd;
         if (isWindows()) {
             cmd = new String[] { "cmd", "/C",
-                    new File(path, CMD_WIN).getPath(), "nogui", "restartbg" };
+                    winEscape(new File(path, CMD_WIN).getPath()), "nogui",
+                    "restartbg" };
         } else {
             cmd = new String[] { "/bin/sh", "-c",
                     new File(path, CMD_POSIX).getPath() + " restartbg" };
@@ -68,9 +76,27 @@ public class ServerController {
             return false;
         }
 
-        new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_OFF).start();
-        new ThreadedStreamGobbler(p1.getErrorStream(),
-                SimpleLog.LOG_LEVEL_ERROR).start();
+        if (isWindows()) {
+            File logPathDir = new File(logPath);
+            File out = new File(logPathDir, "restart-"
+                    + System.currentTimeMillis() + ".log");
+            File err = new File(logPathDir, "restart-err-"
+                    + System.currentTimeMillis() + ".log");
+            OutputStream fout = null;
+            OutputStream ferr = null;
+            try {
+                fout = new FileOutputStream(out);
+                ferr = new FileOutputStream(err);
+            } catch (Exception e) {
+            }
+            new ThreadedStreamGobbler(p1.getInputStream(), fout).start();
+            new ThreadedStreamGobbler(p1.getErrorStream(), ferr).start();
+        } else {
+            new ThreadedStreamGobbler(p1.getInputStream(),
+                    SimpleLog.LOG_LEVEL_OFF).start();
+            new ThreadedStreamGobbler(p1.getErrorStream(),
+                    SimpleLog.LOG_LEVEL_ERROR).start();
+        }
         return true;
     }
 
@@ -81,14 +107,16 @@ public class ServerController {
             return false;
         }
         ParamCollector collector = context.getCollector();
-        File nuxeoHome = collector.getConfigurationGenerator().getNuxeoHome();
+        ConfigurationGenerator cg = collector.getConfigurationGenerator();
+        File nuxeoHome = cg.getNuxeoHome();
+        final String logDir = cg.getLogDir().getPath();
         final String binPath = new File(nuxeoHome, "bin").getPath();
         new Thread("restart thread") {
             @Override
             public void run() {
                 try {
                     Thread.sleep(3000);
-                    doExec(binPath);
+                    doExec(binPath, logDir);
                 } catch (InterruptedException e) {
                     log.error("Restart failed", e);
                 }
