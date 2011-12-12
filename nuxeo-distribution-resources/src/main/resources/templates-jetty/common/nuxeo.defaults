@@ -5,5 +5,3 @@ nuxeo.template.includes=
 
 org.nuxeo.ecm.instance.name=Nuxeo 5.4
 org.nuxeo.ecm.instance.description=Nuxeo ECM server
-
-org.nuxeo.ecm.webapp.dashboard.mode=auto
