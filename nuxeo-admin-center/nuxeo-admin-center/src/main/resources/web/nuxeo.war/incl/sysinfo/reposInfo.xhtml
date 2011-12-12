@@ -8,8 +8,6 @@
   class="repoInfos">
 
 
- <h2><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo']}" /></h2>
-
  <c:if test="#{!systemInfo.isMultiRepo()}">
   <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo.2']}" />: <b> #{systemInfo.listAvailableRepositories().get(0).label}</b> </p>
  </c:if>
