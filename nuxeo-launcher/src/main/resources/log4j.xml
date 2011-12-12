@@ -31,6 +31,15 @@
   </appender>
 
   <logger name="org.nuxeo">
+    <level value="WARN" />
+  </logger>
+  <logger name="org.nuxeo.launcher">
+    <level value="INFO" />
+  </logger>
+  <logger name="org.nuxeo.ecm.admin.offline.update">
+    <level value="INFO" />
+  </logger>
+  <logger name="org.nuxeo.runtime.deployment.preprocessor">
     <level value="INFO" />
   </logger>
 
