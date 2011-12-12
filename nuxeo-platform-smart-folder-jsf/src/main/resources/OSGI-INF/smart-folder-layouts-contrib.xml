@@ -117,7 +117,7 @@
           <widget>content_view</widget>
         </row>
       </rows>
-      <widget name="content_view" type="contentView">
+      <widget name="content_view" type="contentViewWithForms">
         <labels>
           <label mode="any">label.contentview.pageSize</label>
         </labels>
