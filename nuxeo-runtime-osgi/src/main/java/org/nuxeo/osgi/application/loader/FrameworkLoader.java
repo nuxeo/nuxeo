@@ -39,6 +39,7 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 
 /**
@@ -184,6 +185,8 @@ public class FrameworkLoader {
         for (File f : bundleFiles) {
             try {
                 install(f);
+            } catch (BundleException e) {
+                log.info(e.getMessage());
             } catch (Throwable t) { // silently ignore
                 log.warn("Failed to install bundle: " + f, t);
                 // do nothing

@@ -87,7 +87,7 @@ public class BundleImpl implements Bundle {
         try {
             headers = BundleManifestReader.getHeaders(mf);
         } catch (BundleException e) {
-            throw new BundleException("Invalid Manifest in file " + file
+            throw new BundleException("Invalid OSGi Manifest in file " + file
                     + " : " + e.getMessage(), e);
         }
         symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);

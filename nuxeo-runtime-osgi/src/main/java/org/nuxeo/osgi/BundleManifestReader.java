@@ -99,10 +99,8 @@ public final class BundleManifestReader {
         Attributes attrs = mf.getMainAttributes();
         String symbolicName = attrs.getValue(Constants.BUNDLE_SYMBOLICNAME);
         if (symbolicName == null) {
-            throw new BundleException(
-                    "Missing attribute in Manifest (possibly cause by a missing"
-                            + " new line at the end of the file): "
-                            + Constants.BUNDLE_SYMBOLICNAME);
+            throw new BundleException("Missing "
+                    + Constants.BUNDLE_SYMBOLICNAME);
         }
         Hashtable<String, String> headers = new Hashtable<String, String>();
         parseSymbolicName(headers, symbolicName);
