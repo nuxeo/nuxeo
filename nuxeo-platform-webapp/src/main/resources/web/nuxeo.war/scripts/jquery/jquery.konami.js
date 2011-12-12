@@ -4,7 +4,7 @@
     var kkeys = [], konami = "38,38,40,40,37,39,37,39,66,65";
     $(this).bind("keydown", function(e) {
       kkeys.push(e.keyCode);
-      if (kkeys.toString().indexOf(konami) >= 0) {
+      if (konami == kkeys.toString()) {
         $(this).unbind(e);
         var divContent = '<div id="konamiContainer" style="overflow: hidden; position: absolute; left: 0px; top: '
           + ($(window).height() + $(window).scrollTop() - 102) + 'px; width: 100%;"><img src="'
@@ -16,6 +16,11 @@
           15000,
           'linear',
           function() { $('#konamiContainer').remove(); });
+      } else if (konami.substring(0, kkeys.toString().length) == kkeys.toString()) {
+        // startswith konami => keep on grabbing keys
+      } else {
+        kkeys=[];
+        $(this).unbind(e);
       }
     }, true);
   }
