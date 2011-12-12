@@ -751,7 +751,7 @@ table.registration .header {
 .glossyButton,a.glossyButton {
     background-color: #227ce6;
     border: 1px solid #227ce6;
-    padding: 5px 20px 7px;
+    padding: 5px 10px 7px 10px;
     color: #f1f5f7;
     text-decoration: none;
     border-radius: 6px;
@@ -890,7 +890,6 @@ ul.hide {
 
 .nxpblock {
   border : 2px solid white;
-  height:25px;
   width:100px;
   text-align:center;
   text-transform:uppercase;
@@ -899,7 +898,7 @@ ul.hide {
   -moz-border-radius: 0.5em;
   -webkit-border-radius: 0.5em;
   cursor:pointer;
-  padding-top: 7px;
+  padding: 7px 0;
 }
 
 .nxpblock:hover {
@@ -943,7 +942,6 @@ ul.hide {
  text-align: left; 
  margin : 1em auto;
  box-shadow : 0 0 1em #CCCCCC;
- filter:progid:DXImageTransform.Microsoft.Glow(Color=#cccccc,Strength=4); 
  width: 730px;
  border-radius : 1em;
  -moz-border-radius : 1em;
