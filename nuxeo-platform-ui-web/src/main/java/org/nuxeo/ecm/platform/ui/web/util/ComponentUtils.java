@@ -47,6 +47,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Generic component helper methods.
@@ -60,6 +61,8 @@ public final class ComponentUtils {
     private static final Log log = LogFactory.getLog(ComponentUtils.class);
 
     private static final String VH_HEADER = "nuxeo-virtual-host";
+
+    public static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
     // Utility class.
     private ComponentUtils() {
@@ -225,6 +228,11 @@ public final class ComponentUtils {
         return download(faces, fileBlob, filename);
     }
 
+    protected static boolean forceNoCacheOnMSIE() {
+        // see NXP-7759
+        return Boolean.parseBoolean(Framework.getProperty(FORCE_NO_CACHE_ON_MSIE, "false"));
+    }
+
     /*
      * Internet Explorer file downloads over SSL do not work with certain HTTP
      * cache control headers See http://support.microsoft.com/kb/323308/ What is
@@ -243,7 +251,7 @@ public final class ComponentUtils {
         }
         log.debug("User-Agent: " + userAgent);
         log.debug("secure: " + secure);
-        if (secure && userAgent.contains("MSIE")) {
+        if (userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
             log.debug("Setting \"Cache-Control: max-age=15, must-revalidate\"");
             response.setHeader("Cache-Control", "max-age=15, must-revalidate");
         } else {
@@ -251,7 +259,6 @@ public final class ComponentUtils {
             response.setHeader("Cache-Control", "private, must-revalidate");
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
-
         }
     }
 
