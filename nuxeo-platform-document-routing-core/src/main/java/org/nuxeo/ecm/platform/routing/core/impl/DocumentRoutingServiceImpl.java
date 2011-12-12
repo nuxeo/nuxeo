@@ -457,8 +457,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 instanceModel);
         String newName = persister.getNewModelName(instanceModel);
         try {
-            DocumentModel newmodel = session.copy(instanceModel.getRef(),
-                    parent.getRef(), newName);
+            DocumentModel newmodel = persister.saveDocumentRouteInstanceAsNewModel(
+                    instanceModel, parent, newName, session);
             DocumentRoute newRoute = newmodel.getAdapter(DocumentRoute.class);
             if (!newRoute.isDraft()) {
                 newRoute.followTransition(

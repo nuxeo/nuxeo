@@ -27,6 +27,8 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -79,7 +81,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             // copy now copies all the acls, and we don't need the readOnly
             // policy applied on the model
             // on the instance, too => removing acls
-            undoReadOnlySecurityModel(result);
+            result = undoReadOnlySecurityPolicy(result, session);
             // using the ref, the value of the attached document might not been
             // saved on the model
             result.setPropertyValue(
@@ -95,10 +97,12 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     @Override
     public DocumentModel saveDocumentRouteInstanceAsNewModel(
             DocumentModel routeInstance, DocumentModel parentFolder,
-            CoreSession session) {
+            String newName, CoreSession session) {
+        DocumentModel result = null;
         try {
-            return session.copy(routeInstance.getRef(), parentFolder.getRef(),
-                    null);
+            result = session.copy(routeInstance.getRef(),
+                    parentFolder.getRef(), newName);
+            return undoReadOnlySecurityPolicy(result, session);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -204,23 +208,48 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
     }
 
-    protected void undoReadOnlySecurityModel(DocumentModel instance)
-            throws ClientException {
-        ACP acp = new ACPImpl();
-        // remove READ for everyone
+    protected DocumentModel undoReadOnlySecurityPolicy(DocumentModel instance,
+            CoreSession session) throws ClientException {
+        UndoReadOnlySecurityPolicy runner = new UndoReadOnlySecurityPolicy(
+                session, instance.getRef());
+        runner.runUnrestricted();
+        return session.getDocument(runner.getInstanceRef());
+    }
 
-        ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
-        routingACL.remove(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.READ, true));
-        // unblock rights inheritance
+    class UndoReadOnlySecurityPolicy extends UnrestrictedSessionRunner {
 
-        ACL inheritedACL = acp.getOrCreateACL(ACL.INHERITED_ACL);
-        inheritedACL.remove(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false));
+        DocumentRef documentRef;
 
-        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        localACL.remove(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false));
-        instance.setACP(acp, true);
+        public UndoReadOnlySecurityPolicy(CoreSession session,
+                DocumentRef documentRef) {
+            super(session);
+            this.documentRef = documentRef;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel instance = session.getDocument(documentRef);
+            if (instance == null) {
+                return;
+            }
+            ACP acp = new ACPImpl();
+            // remove READ for everyone
+            ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
+            routingACL.remove(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.READ, true));
+            // unblock rights inheritance
+            ACL inheritedACL = acp.getOrCreateACL(ACL.INHERITED_ACL);
+            inheritedACL.remove(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false));
+
+            ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+            localACL.remove(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false));
+            instance.setACP(acp, true);
+        }
+
+        DocumentRef getInstanceRef() {
+            return documentRef;
+        }
     }
 }

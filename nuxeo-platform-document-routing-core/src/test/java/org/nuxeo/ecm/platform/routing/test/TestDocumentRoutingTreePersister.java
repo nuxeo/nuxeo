@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.DocumentRoutingTreePersister;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
 
@@ -52,7 +52,8 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         session.save();
         closeSession();
         CoreSession membersSession = openSessionAs("members");
-        assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
+        assertFalse(membersSession.hasPermission(doc.getRef(),
+                SecurityConstants.READ));
         closeSession(membersSession);
     }
 
@@ -94,7 +95,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(
                 model, session);
         DocumentModel newModel = persister.saveDocumentRouteInstanceAsNewModel(
-                instance, session.getRootDocument(), session);
+                instance, session.getRootDocument(), null, session);
         assertNotNull(newModel);
     }
 }

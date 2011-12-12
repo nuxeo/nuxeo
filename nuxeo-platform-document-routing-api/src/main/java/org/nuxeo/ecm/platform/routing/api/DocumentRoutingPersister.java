@@ -64,7 +64,7 @@ public interface DocumentRoutingPersister {
      */
     DocumentModel saveDocumentRouteInstanceAsNewModel(
             DocumentModel routeInstance, DocumentModel parentFolder,
-            CoreSession session);
+            String newName, CoreSession session);
 
     /**
      * Will get, and create if it does not exists the root document in which
@@ -84,12 +84,14 @@ public interface DocumentRoutingPersister {
      * @param session the session of the user
      * @param instance the instance that will be persisted as new model.
      */
-    DocumentModel getParentFolderForNewModel(CoreSession session, DocumentModel instance);
+    DocumentModel getParentFolderForNewModel(CoreSession session,
+            DocumentModel instance);
 
     /**
      * Return the new name of a model when it is created from an instance.
      *
-     * @see DocumentRoutingService#saveRouteAsNewModel(DocumentRoute, String, CoreSession)
+     * @see DocumentRoutingService#saveRouteAsNewModel(DocumentRoute, String,
+     *      CoreSession)
      * @return the new name
      */
     String getNewModelName(DocumentModel instance);
