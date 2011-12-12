@@ -43,7 +43,7 @@
           var="result" fetchValue="" width="300"
           nothingLabel="#{messages['label.noSuggestions']}"
           requestDelay="100" ajaxSingle="true"
-          ignoreDupResponses="true">
+          ignoreDupResponses="true" zindex="5000">
           <f:param name="suggesterGroup" value="searchbox" />
           <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
             focus="" bypassUpdates="true" reRender=""
