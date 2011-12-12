@@ -58,11 +58,6 @@ Needed parameters:
     <div class="boxBody"
       style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
       <a4j:form id="#{filterFormId}" ajaxSubmit="true">
-        <script>
-          jQuery(document).ready(function() {
-            jQuery('##{quickFilterFormId}').focusFirst();
-          });
-        </script>
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}" />
         <p class="buttonsGadget">

@@ -992,15 +992,19 @@
       </property>
     </widgetType>
 
-    <widgetType name="contentView">
+    <widgetType name="contentViewWithForms">
       <configuration>
         <sinceVersion>5.5</sinceVersion>
         <title>Content view</title>
         <description>
-          This widget displays a content view.
+          This widget displays a content view, with forms inside it.
         </description>
         <categories>
-          <category>summary</category>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>summary</category>
+          -->
         </categories>
         <supportedModes>
           <mode>view</mode>
@@ -1032,7 +1036,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/content_view_widget.xhtml
+        /widgets/content_view_with_forms_widget.xhtml
       </property>
     </widgetType>
 
