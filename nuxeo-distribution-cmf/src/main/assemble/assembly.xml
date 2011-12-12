@@ -70,7 +70,7 @@
     </move>
     <nx:rmdups dir="${nuxeo.ear}/lib" />
   </target>
-  
+
   <target name="build-resources">
     <delete dir="${outdir}/template-cmf" failonerror="false" />
     <copy todir="${outdir}/template-cmf" overwrite="true">

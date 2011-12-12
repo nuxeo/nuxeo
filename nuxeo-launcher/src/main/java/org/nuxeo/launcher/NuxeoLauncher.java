@@ -108,6 +108,8 @@ public abstract class NuxeoLauncher {
 
     private static final String PACK_TOMCAT_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackWar";
 
+    private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
+
     protected ConfigurationGenerator configurationGenerator;
 
     public final ConfigurationGenerator getConfigurationGenerator() {
@@ -516,7 +518,7 @@ public abstract class NuxeoLauncher {
     private boolean pack() {
         try {
             checkNoRunningServer();
-            configurationGenerator.setProperty("nuxeo.updatecenter.disbaled",
+            configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED,
                     "true");
             List<String> startCommand = new ArrayList<String>();
             startCommand.add(getJavaExecutable().getPath());
