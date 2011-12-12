@@ -18,7 +18,9 @@
 package org.nuxeo.ecm.admin;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,11 +47,16 @@ public class NuxeoCtlManager {
         return osName.toLowerCase().contains("windows");
     }
 
-    protected static boolean doExec(String path) {
+    private static String winEscape(String command) {
+        return command.replaceAll("([ ()<>&])", "^$1");
+    }
+
+    protected static boolean doExec(String path, String logPath) {
         String[] cmd;
         if (isWindows()) {
             cmd = new String[] { "cmd", "/C",
-                    new File(path, CMD_WIN).getPath(), "nogui", "restartbg" };
+                    winEscape(new File(path, CMD_WIN).getPath()), "nogui",
+                    "restartbg" };
         } else {
             cmd = new String[] { "/bin/sh", "-c",
                     new File(path, CMD_POSIX).getPath() + " restartbg" };
@@ -66,9 +73,27 @@ public class NuxeoCtlManager {
             return false;
         }
 
-        new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_OFF).start();
-        new ThreadedStreamGobbler(p1.getErrorStream(),
-                SimpleLog.LOG_LEVEL_ERROR).start();
+        if (isWindows()) {
+            File logPathDir = new File(logPath);
+            File out = new File(logPathDir, "restart-"
+                    + System.currentTimeMillis() + ".log");
+            File err = new File(logPathDir, "restart-err-"
+                    + System.currentTimeMillis() + ".log");
+            OutputStream fout = null;
+            OutputStream ferr = null;
+            try {
+                fout = new FileOutputStream(out);
+                ferr = new FileOutputStream(err);
+            } catch (Exception e) {
+            }
+            new ThreadedStreamGobbler(p1.getInputStream(), fout).start();
+            new ThreadedStreamGobbler(p1.getErrorStream(), ferr).start();
+        } else {
+            new ThreadedStreamGobbler(p1.getInputStream(),
+                    SimpleLog.LOG_LEVEL_OFF).start();
+            new ThreadedStreamGobbler(p1.getErrorStream(),
+                    SimpleLog.LOG_LEVEL_ERROR).start();
+        }
         return true;
     }
 
@@ -81,13 +106,14 @@ public class NuxeoCtlManager {
         restartInProgress = true;
         String nuxeoHome = Framework.getProperty("nuxeo.home");
         final String binPath = new File(nuxeoHome, "bin").getPath();
+        final String logDir = Framework.getProperty("nuxeo.log.dir", nuxeoHome);
         new Thread("restart thread") {
             @Override
             public void run() {
                 try {
                     log.info("Restarting Nuxeo server");
                     Thread.sleep(3000);
-                    doExec(binPath);
+                    doExec(binPath, logDir);
                 } catch (InterruptedException e) {
                     log.error("Restart failed", e);
                 }
