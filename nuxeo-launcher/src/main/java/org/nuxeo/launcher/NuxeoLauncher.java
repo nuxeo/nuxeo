@@ -941,7 +941,7 @@ public abstract class NuxeoLauncher {
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
         baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
         filenames = new String[] { "commons-io", "commons-jexl", "groovy-all",
-                "osgi-core", "xercesImpl" };
+                "osgi-core", "xercesImpl", "commons-collections" };
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
         baseDir = configurationGenerator.getServerConfigurator().getServerLibDir();
         filenames = new String[] { "commons-lang", "commons-logging", "log4j" };
