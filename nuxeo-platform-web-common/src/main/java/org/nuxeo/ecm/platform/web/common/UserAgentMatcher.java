@@ -37,6 +37,8 @@ public class UserAgentMatcher {
 
     private static final Pattern UA_CHROME = Pattern.compile("^Mozilla.*AppleWebKit.*Chrom(e|ium)/(1[0123456789]).*");
 
+    private static final Pattern UA_MSIE_67 = Pattern.compile("^Mozilla/4.0 \\(compatible; MSIE [67].[0-9].*");
+
     private UserAgentMatcher() {
         // Helper class
     }
@@ -60,6 +62,10 @@ public class UserAgentMatcher {
     public static boolean html5DndIsSupported(String UA) {
         return isFirefox3(UA) || isFirefox4OrMore(UA) || isSafari5(UA)
                 || isChrome(UA);
+    }
+
+    public static boolean isMSIE6or7(String UA) {
+        return UA_MSIE_67.matcher(UA).matches();
     }
 
 }
