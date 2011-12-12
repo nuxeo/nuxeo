@@ -23,18 +23,52 @@
 </div>
 <script type="text/javascript" src="#{baseURL}js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js|tooltip.js"></script>
 
-<c:if test="#{useHtml5DragAndDrop}">
-
 <script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js|dnd/nxinternaldnd.js"></script>
+
+  <script>
+    var baseURL='#{baseURL}';
+    function getBaseURL() {
+      return baseURL;
+    }
+    
+    var ctx = {
+      currentDocument : '#{currentDocument.id}',
+      <c:if test="#{currentDomain!=null}">
+       currentDomain : '#{currentDomain.id}',
+      </c:if>
+      <c:if test="#{currentWorkspace!=null}">
+
+        currentWorkspace : '#{currentWorkspace.id}',
+      </c:if>
+      conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
+      lang : '#{localeSelector.localeString}',
+      repository : '#{currentDocument.repositoryName}'
+    };
+    
+    function initNXDrapAndDropOnPage(scope) {
+      // init Browser Drag out support (Chrome only);
+      jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
+      // initernal DnD
+      jQuery(".nxDraggable",scope).nxInitDraggables();
+      jQuery(".nxDropTarget",scope).nxInitDropTargets();
+    }
+    
+    jQuery(document).ready(function(){
+      // init Dropout and Internal DnD
+      initNXDrapAndDropOnPage(null);
+    });
+  </script>
+
+<c:if test="#{useHtml5DragAndDrop}">
 
 <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
 <script>
-var baseURL='#{baseURL}';
-function getBaseURL()
-{
-  return baseURL;
-}
+
+    var baseURL='#{baseURL}';
+    function getBaseURL() {
+      return baseURL;
+    }
 
 var ctx = { currentDocument : '#{currentDocument.id}',
         <c:if test="#{currentDomain!=null}">
@@ -47,13 +81,6 @@ var ctx = { currentDocument : '#{currentDocument.id}',
         lang : '#{localeSelector.localeString}',
         repository : '#{currentDocument.repositoryName}'};
 
-    function initNXDrapAndDropOnPage(scope) {
-      // init Browser Drag out support (Chrome only);
-        jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
-        // initernal DnD
-        jQuery(".nxDraggable",scope).nxInitDraggables();
-        jQuery(".nxDropTarget",scope).nxInitDropTargets();
-    }
 
     jQuery(document).ready(function(){
       // init Browser DnD import
@@ -63,8 +90,6 @@ var ctx = { currentDocument : '#{currentDocument.id}',
               numConcurrentUploads : 3,
               dropContext : ctx
             });
-      // init Dropout and Internal DnD
-      initNXDrapAndDropOnPage(null);
       });
 </script>
 </c:if>
