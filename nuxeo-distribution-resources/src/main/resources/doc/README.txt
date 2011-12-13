@@ -1,6 +1,6 @@
-# Nuxeo platform 5.5-SNAPSHOT Release Notes
+# Nuxeo platform 5.5 Release Notes
 
-Welcome to the Nuxeo Platform 5.5-SNAPSHOT.
+Welcome to the Nuxeo Platform 5.5.
 
 You can always download the latest releases of Nuxeo modules
 on the Nuxeo Platform from
