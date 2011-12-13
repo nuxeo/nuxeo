@@ -58,16 +58,20 @@ public class IOUtils {
     public static String createMd5(File file) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("MD5");
         FileInputStream in = new FileInputStream(file);
-        byte[] bytes = new byte[64 * 1024];
-        int r = in.read(bytes);
-        while (r > -1) {
-            if (r > 0) {
-                digest.update(bytes, 0, r);
+        try{
+            byte[] bytes = new byte[64 * 1024];
+            int r = in.read(bytes);
+            while (r > -1) {
+                if (r > 0) {
+                    digest.update(bytes, 0, r);
+                }
+                r = in.read(bytes);
             }
-            r = in.read(bytes);
+            byte[] hash = digest.digest();
+            return md5ToHex(hash);
+        }finally{
+            in.close();
         }
-        byte[] hash = digest.digest();
-        return md5ToHex(hash);
     }
 
     public static String md5ToHex(byte[] hash) {

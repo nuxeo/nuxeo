@@ -160,7 +160,7 @@ public abstract class CommandsTask extends AbstractTask {
             // corresponding variable otherwise the uninstall will not work
             // after renaming the installation directory
             String content = parametrizePaths(writer.toString());
-            content = content.replace("//", "/"); // replace '//' by '/' is any
+            content = content.replace(File.separator.concat(File.separator), File.separator); // replace '//' by '/' is any
             FileUtils.writeFile(file, content);
         } catch (IOException e) {
             throw new PackageException("Failed to write commands", e);

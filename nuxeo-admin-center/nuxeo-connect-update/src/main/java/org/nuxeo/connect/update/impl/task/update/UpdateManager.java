@@ -132,10 +132,10 @@ public class UpdateManager {
 
     public String getKey(UpdateOptions opt) {
         String key = getServerRelativePath(opt.getTargetDir());
-        if (key.endsWith("/")) {
+        if (key.endsWith(File.separator)) {
             key = key.concat(opt.nameWithoutVersion);
         } else {
-            key = key.concat("/").concat(opt.nameWithoutVersion);
+            key = key.concat(File.separator).concat(opt.nameWithoutVersion);
         }
         return key;
     }
@@ -266,8 +266,8 @@ public class UpdateManager {
     public String getServerRelativePath(File file) {
         String path = file.getAbsolutePath();
         String serverPath = serverRoot.getAbsolutePath();
-        if (!serverPath.endsWith("/")) {
-            serverPath = serverPath.concat("/");
+        if (!serverPath.endsWith(File.separator)) {
+            serverPath = serverPath.concat(File.separator);
         }
         if (path.startsWith(serverPath)) {
             return path.substring(serverPath.length());
@@ -308,9 +308,9 @@ public class UpdateManager {
         try {
             File dst = new File(backupRoot, path);
             copy(file, dst);
-            String md5 = IOUtils.createMd5(dst);
-            FileUtils.writeFile(new File(dst.getAbsolutePath().concat(".md5")),
-                    md5);
+//            String md5 = IOUtils.createMd5(dst);
+//            FileUtils.writeFile(new File(dst.getAbsolutePath().concat(".md5")),
+//                    md5);
         } catch (Exception e) {
             throw new PackageException("Failed to backup file: " + path, e);
         }
@@ -323,22 +323,24 @@ public class UpdateManager {
      */
     protected void removeBackup(String path) {
         File dst = new File(backupRoot, path);
-        dst.delete();
-        new File(dst.getAbsolutePath().concat(".md5")).delete();
+        if(!dst.delete()) {
+            dst.deleteOnExit();
+        }
+//        new File(dst.getAbsolutePath().concat(".md5")).delete();
     }
 
     protected File getBackup(String path) {
         return new File(backupRoot, path);
     }
 
-    protected String getBackupMd5(String path) {
-        File file = new File(backupRoot, path.concat(".md5"));
-        try {
-            return FileUtils.readFile(file);
-        } catch (Exception e) {
-            return "";
-        }
-    }
+//    protected String getBackupMd5(String path) {
+//        File file = new File(backupRoot, path.concat(".md5"));
+//        try {
+//            return FileUtils.readFile(file);
+//        } catch (Exception e) {
+//            return "";
+//        }
+//    }
 
     protected File getTargetFile(String path) {
         return new File(serverRoot, path);
@@ -347,7 +349,8 @@ public class UpdateManager {
     protected void copy(File src, File dst) throws PackageException {
         try {
             dst.getParentFile().mkdirs();
-            File tmp = new File(dst.getParentFile(), dst.getName() + ".tmp");
+            File tmp = new File(dst.getPath() + ".tmp");
+            //File tmp = new File(dst.getParentFile(), dst.getName() + ".tmp");
             FileUtils.copy(src, tmp);
             if (!tmp.renameTo(dst)) {
                 tmp.delete();

@@ -52,14 +52,14 @@ public class JarUtils {
     }
 
     public static Match<File> findJar(File root, String key) {
-        return find(new File(root, key.concat("-{v:[0-9]+.*}\\.jar")));
+        return find(new File(root, key));
     }
 
     public static Match<File> find(File filePattern) {
         File dir = filePattern.getParentFile();
         File[] files = dir.listFiles();
         if (files != null) {
-            FileMatcher fm = FileMatcher.getMatcher(filePattern);
+            FileMatcher fm = FileMatcher.getMatcher(filePattern.getName().concat("-{v:[0-9]+.*}\\.jar"));
             for (File f : files) {
                 if (fm.match(f.getName())) {
                     Match<File> result = new Match<File>();

@@ -123,8 +123,8 @@ public abstract class AbstractTask implements Task {
         File nxHome = nxenv.getRuntimeHome();
         File config = nxenv.getConfig();
         serverPathPrefix = serverHome.getAbsolutePath();
-        if (!serverPathPrefix.endsWith("/")) {
-            serverPathPrefix = serverPathPrefix.concat("/");
+        if (!serverPathPrefix.endsWith(File.separator)) {
+            serverPathPrefix = serverPathPrefix.concat(File.separator);
         }
         env.put(ENV_SERVER_HOME, serverHome.getAbsolutePath());
         env.put(ENV_HOME, nxHome.getAbsolutePath());
