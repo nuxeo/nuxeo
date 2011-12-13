@@ -40,6 +40,7 @@
               <targets>
                 <target>prepare-environment</target>
                 <target>add-dam-importer-bundles</target>
+                <target>copy-test-config</target>
                 <target>add-dam-test-data</target>
                 <target>start</target>
               </targets>

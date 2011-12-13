@@ -24,9 +24,14 @@
     </copy>
   </target>
 
+  <target name="copy-test-config">
+    <copy file="resources/deactivate-automatic-video-conversions-config.xml"
+      todir="${nuxeo.home}/templates/common/config" />
+  </target>
+
   <target name="add-dam-test-data">
     <unzip dest="data/" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.dam:test-data:1.0:zip" />
+      <artifact:resolveFile key="org.nuxeo.dam:test-data:1.1:zip" />
     </unzip>
   </target>
 
