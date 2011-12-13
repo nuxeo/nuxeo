@@ -81,8 +81,8 @@ Nuxeo provides an [Open Source Content Management Platform][16] enabling
 architects and developers to easily build, deploy, and run
 content-centric  business applications. In the cloud or on premise,
 Nuxeo's Enterprise Content Management (ECM) technology offers an
-  integrated solution for [Document Management][17], [Case Management][18],
-[Digital Asset Management][19] and much more. Built on a modern,
+integrated solution for [Document Management][17], [Digital Asset Management][18],
+[Case Management][19] and much more. Built on a modern,
 Java-based architecture, the Nuxeo Platform is architected for modularity
 and extensibility, unlike traditional ECM solutions. This means that
 your content-centric application aligns with your business and technical
