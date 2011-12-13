@@ -7,7 +7,6 @@
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <property name="out.dir" value="${maven.project.build.directory}" />
-  <property name="nuxeo.home" value="${out.dir}/tomcat" />
   <property name="classifier" value="nuxeo-cap" />
 
   <unzip dest="${out.dir}/" overwrite="false">
