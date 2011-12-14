@@ -122,6 +122,8 @@ public interface NavigationContext extends ResultsProviderFarm {
 
     void setChangeableDocument(DocumentModel changeableDocument);
 
+    void setChangeableDocumentAndResetCreation(DocumentModel changeableDocument);
+
     /**
      * Saves the current copy of the document to server.
      *
