@@ -30,6 +30,7 @@
   </target>
 
   <target name="add-dam-test-data">
+	<delete dir="data/"/>
     <unzip dest="data/" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.dam:test-data:1.1:zip" />
     </unzip>
