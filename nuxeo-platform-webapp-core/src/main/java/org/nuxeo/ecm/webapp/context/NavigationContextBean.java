@@ -229,7 +229,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
     }
 
-    protected boolean isCreationEntered = false;
+    public boolean isCreationEntered = false;
 
     public void resetCreationEntered() {
         isCreationEntered = false;
@@ -269,6 +269,11 @@ public class NavigationContextBean implements NavigationContextLocal,
     public void setChangeableDocument(DocumentModel changeableDocument) {
         this.changeableDocument = changeableDocument;
         eventContext.set("changeableDocument", changeableDocument);
+    }
+
+    public void setChangeableDocumentAndResetCreation(DocumentModel changeableDocument) {
+        setChangeableDocument(changeableDocument);
+        isCreationEntered = false;
     }
 
     public DocumentModelList getCurrentPath() throws ClientException {

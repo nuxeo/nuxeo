@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-webapp-core</artifactId>
+  <version>5.3.1-CP13</version>
   <name>Nuxeo WebApp - Base</name>
   <description>
     Nuxeo Enterprise Platform: WebApp Core. This is the base of the Web UI for
@@ -84,6 +85,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
+      <version>5.3.1-CP12</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

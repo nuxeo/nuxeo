@@ -79,6 +79,7 @@ import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.action.DeleteActions;
 import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.ecm.webapp.context.NavigationContextBean;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
@@ -417,7 +418,8 @@ public class DocumentActionsBean extends InputController implements
                     navigationContext.getCurrentDocument().getPathAsString());
             DocumentModel changeableDocument = documentManager.createDocumentModel(
                     typeName, context);
-            navigationContext.setChangeableDocument(changeableDocument);
+            //changeableDocument.putContextData("parent", (String)context.get(CoreEventConstants.PARENT_PATH));
+            navigationContext.setChangeableDocumentAndResetCreation(changeableDocument);
             return navigationContext.getActionResult(changeableDocument,
                     UserAction.CREATE);
         } catch (Throwable t) {
