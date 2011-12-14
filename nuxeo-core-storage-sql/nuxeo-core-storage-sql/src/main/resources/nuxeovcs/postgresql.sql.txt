@@ -724,9 +724,8 @@ DECLARE
   update_count integer;
 BEGIN
   RAISE INFO 'nx_vacuum_read_acls vacuuming ...';
-  DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr AS r
-    LEFT JOIN hierarchy_read_acl AS h ON r.acl_id=h.acl_id
-    WHERE h.acl_id IS NULL);
+  DELETE FROM aclr r WHERE NOT EXISTS (SELECT 1 FROM hierarchy_read_acl h 
+    WHERE h.acl_id = r.acl_id LIMIT 1);
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE INFO 'nx_vacuum_read_acls done, % read acls removed.', update_count;
   TRUNCATE aclr_user;
