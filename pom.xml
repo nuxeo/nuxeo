@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.5.1-SNAPSHOT</version>
+    <version>5.6-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -23,8 +23,8 @@
   </scm>
 
   <properties>
-    <nuxeo.addons.version>5.5.1-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.opencmis.version>5.5.1-SNAPSHOT</nuxeo.opencmis.version>
+    <nuxeo.addons.version>5.6-SNAPSHOT</nuxeo.addons.version>
+    <nuxeo.opencmis.version>5.6-SNAPSHOT</nuxeo.opencmis.version>
   </properties>
 
   <modules>
