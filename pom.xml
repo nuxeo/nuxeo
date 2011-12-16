@@ -4060,7 +4060,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-              <maxmemory>512m</maxmemory>
+              <maxmemory>768m</maxmemory>
               <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css </stylesheetfile -->
               <windowtitle>
                 ${project.name} ${project.version} API Documentation
