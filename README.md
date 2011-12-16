@@ -21,7 +21,7 @@ How to compile the Nuxeo EP sources
 
 ### Short story
 
-1. Several sub-repositories need to be present to build Nuxeo:
+Several sub-repositories need to be present to build Nuxeo:
 
   - nuxeo-common
   - nuxeo-runtime
@@ -35,35 +35,37 @@ How to compile the Nuxeo EP sources
   - addons/*
   - nuxeo-distribution
 
-1.1. Clone the sources:
+#### Clone the sources
 
-  For read-only access, run `git clone git://github.com/nuxeo/nuxeo.git`
-  For read+write access, run `git clone git@github.com:nuxeo/nuxeo.git`
-  Update to master branch: `git checkout master`
-  Finally run `python clone.py [wanted branch/tag]`
+For read-only access, run `git clone git://github.com/nuxeo/nuxeo.git`
 
-  See [How to download the Nuxeo Platform source code ](http://doc.nuxeo.com/x/cwQz)
-  for more information if needed.
+For read+write access, run `git clone git@github.com:nuxeo/nuxeo.git`
 
-1.1. Launch the build:
+Update to master branch: `git checkout master`
 
-        mvn install -Dmaven.test.skip=true
-        cd addons ; mvn install -Dmaven.test.skip=true
-        cd ../nuxeo-distribution ; mvn clean install -Pnuxeo-dm,tomcat
+Finally run `python clone.py [wanted branch/tag]`
 
-  You will get your tomcat-based build in the
-  nuxeo-distribution/nuxeo-distribution-tomcat/target directory.
+See [How to download the Nuxeo Platform source code ](http://doc.nuxeo.com/x/cwQz)
+for more information if needed.
 
-1.1. Run the tests:
+#### Launch the build
 
-  If you want to run the Selenium test suite, you can run:
+    mvn install -Dmaven.test.skip=true
+    cd addons ; mvn install -Dmaven.test.skip=true
+    cd ../nuxeo-distribution ; mvn clean install -Pnuxeo-dm,tomcat
+
+You will get your tomcat-based build in the `nuxeo-distribution/nuxeo-distribution-tomcat/target directory`.
+
+#### Run the tests
+
+If you want to run the Selenium test suite, you can run:
 
 ### Packaging Nuxeo EP from sources
 
 Various pre-configured packages (various application servers and multiple
 backends) are available for download from: <http://www.nuxeo.com/downloads>
 
-In order to locally build Nuxeo EP, see nuxeo-distribution/README.txt
+In order to locally build Nuxeo EP, see `nuxeo-distribution/README.txt`.
 
 ### Long(er) story
 
