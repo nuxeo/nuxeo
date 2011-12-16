@@ -83,11 +83,12 @@ def git_fetch(module):
     cwd = os.getcwd()
     if os.path.isdir(module):
         log("Updating " + module + "...")
+        os.chdir(module)
         system("git fetch %s" % (alias))
     else:
         log("Cloning " + module + "...")
         system("git clone %s" % (repo_url))
-    os.chdir(module)
+        os.chdir(module)
 
     if version in check_output(["git", "tag"]).split():
         # the version is a tag name
@@ -127,8 +128,18 @@ version = args.version
 alias = args.remote_alias
 
 log("Cloning/updating addons parent pom")
-system("git fetch %s" % alias)
-system("git checkout %s" % version)
+system("git fetch %s" % (alias))
+if version in check_output(["git", "tag"]).split():
+    # the version is a tag name
+    system("git checkout %s" % version)
+elif version not in check_output(["git", "branch"]).split():
+    # create the local branch if missing
+    system("git checkout -b %s %s/%s" % (version, alias, version))
+else:
+    # reuse local branch
+    system("git checkout %s" % version)
+    log("Updating branch")
+    system("git merge %s/%s" % (alias, version))
 log("")
 
 # find the remote URL
