@@ -152,7 +152,7 @@ for remote_line in remote_lines:
 #root_url = url_normpath(remote_url)
 is_online = remote_url.endswith("/addons.git")
 if is_online:
-    url_pattern = remote_url.replace("addons", "module", -1)
+    url_pattern = re.sub("(.*)addons", r"\1module", remote_url)
 else:
     url_pattern = remote_url + "/module"
 
