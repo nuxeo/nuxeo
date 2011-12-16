@@ -1,10 +1,10 @@
-About the Nuxeo EP Project
+About the Nuxeo Platform Project
 ==========================
 
-What is Nuxeo EP?
+What is Nuxeo Platform?
 -----------------
 
-Nuxeo EP is an open source platform for Enterprise Content Management.
+Nuxeo Platform is an open source platform for Enterprise Content Management.
 
 See: <http://www.nuxeo.com/en/products/ep> for a list of features and
 benefits.
@@ -21,45 +21,42 @@ How to compile the Nuxeo EP sources
 
 ### Short story
 
-1. Make sure all the sources are checked out, as there are several subpackages
-that need to be present to build Nuxeo:
+1. Several sub-repositories need to be present to build Nuxeo:
 
   - nuxeo-common
-  - nuxeo-core
-  - nuxeo-dm
-  - nuxeo-features
-  - nuxeo-gwt
-  - nuxeo-jsf
   - nuxeo-runtime
+  - nuxeo-core
   - nuxeo-services
   - nuxeo-theme
+  - nuxeo-jsf
   - nuxeo-webengine
+  - nuxeo-features
+  - nuxeo-dm
+  - addons/*
   - nuxeo-distribution
 
-  Under Linux/Unix/MacOS: run `./clone.sh`
+1.1. Clone the sources:
 
-  Under Windows: run `clone.bat`
+  For read-only access, run `git clone git://github.com/nuxeo/nuxeo.git`
+  For read+write access, run `git clone git@github.com:nuxeo/nuxeo.git`
+  Update to master branch: `git checkout master`
+  Finally run `python clone.py [wanted branch/tag]`
 
-  See <http://doc.nuxeo.org/xwiki/bin/view/FAQ/DownloadingNuxeoSources> for more
-  information if needed.
+  See [How to download the Nuxeo Platform source code ](http://doc.nuxeo.com/x/cwQz)
+  for more information if needed.
 
-2. Launch the build:
-
-  You can do so by typing: "make build assemble-tomcat" (assuming you have Maven
-  and Make installed on your system).
-
-  Alternatively, if you only have Maven, you can type:
+1.1. Launch the build:
 
         mvn install -Dmaven.test.skip=true
         cd addons ; mvn install -Dmaven.test.skip=true
         cd ../nuxeo-distribution ; mvn clean install -Pnuxeo-dm,tomcat
 
-  In both cases, you will get your tomcat-based build in the
+  You will get your tomcat-based build in the
   nuxeo-distribution/nuxeo-distribution-tomcat/target directory.
 
-3. Run the tests:
+1.1. Run the tests:
 
-  If you want to run the Selenium test suite, you can run: "make selenium-tomcat".
+  If you want to run the Selenium test suite, you can run:
 
 ### Packaging Nuxeo EP from sources
 
@@ -70,7 +67,7 @@ In order to locally build Nuxeo EP, see nuxeo-distribution/README.txt
 
 ### Long(er) story
 
-If the information above are not enough, please read from the Nuxeo Book the 
+If the information above are not enough, please read from the Nuxeo Book the
 "Detailed Development Software Installation Instructions" annex:
 <http://doc.nuxeo.org/current/books/nuxeo-book/html/dev-environment-installation.html>
 
@@ -107,10 +104,10 @@ About Nuxeo
 -----------
 
 Nuxeo provides a modular, extensible Java-based
-[open source software platform for enterprise contentmanagement](http://www.nuxeo.com/en/products/ep),
-and packaged applications for [documentmanagement](http://www.nuxeo.com/en/products/document-management),
-[digital asset management](http://www.nuxeo.com/en/products/dam) and 
-[casemanagement](http://www.nuxeo.com/en/products/case-management).
+[open source software platform for enterprise content management](http://www.nuxeo.com/en/products/ep),
+and packaged applications for [document management](http://www.nuxeo.com/en/products/document-management),
+[digital asset management](http://www.nuxeo.com/en/products/dam) and
+[case management](http://www.nuxeo.com/en/products/case-management).
 
 Designed by developers for developers, the Nuxeo platform offers a modern
 architecture, a powerful plug-in model and extensive packaging
