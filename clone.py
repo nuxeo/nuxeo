@@ -152,7 +152,7 @@ for remote_line in remote_lines:
 #root_url = url_normpath(remote_url)
 is_online = remote_url.endswith("/nuxeo.git")
 if is_online:
-    url_pattern = remote_url.replace("nuxeo", "module", -1)
+    url_pattern = re.sub("(.*)nuxeo", r"\1module", remote_url)
 else:
     url_pattern = remote_url + "/module"
 
