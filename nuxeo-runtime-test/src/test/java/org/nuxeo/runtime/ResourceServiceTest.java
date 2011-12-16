@@ -46,7 +46,7 @@ public class ResourceServiceTest extends NXRuntimeTestCase {
         URL url = rs.getResource("myres");
         InputStream in = url.openStream();
         try {
-            assertEquals("test resource", FileUtils.read(in));
+            assertEquals("test resource", FileUtils.read(in).trim());
         } finally {
             in.close();
         }
