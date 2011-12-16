@@ -20,7 +20,7 @@
     <module>nuxeo-platform-splitpane</module>
     <module>nuxeo-rss-reader</module>
     <module>nuxeo-sample-project</module>
-    <module>nuxeo-shell-ejb</module>
+    <module>nuxeo-web-embedded</module>
   </modules>
 
 </project>
