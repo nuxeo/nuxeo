@@ -79,13 +79,14 @@ def check_output(cmd):
     return out.strip()
 
 def git_fetch(module):
+    repo_url = url_pattern.replace("module", module)
     cwd = os.getcwd()
     if os.path.isdir(module):
         log("Updating " + module + "...")
+        system("git fetch %s" % (alias))
     else:
         log("Cloning " + module + "...")
-        repo_url = url_pattern.replace("module", module)
-        retcode = system("git clone %s" % (repo_url))
+        system("git clone %s" % (repo_url))
     os.chdir(module)
 
     if version in check_output(["git", "tag"]).split():
@@ -98,7 +99,7 @@ def git_fetch(module):
         # reuse local branch
         system("git checkout %s" % version)
         log("Updating branch")
-        system("git pull %s %s" % (alias, version))
+        system("git merge %s/%s" % (alias, version))
     os.chdir(cwd)
     log("")
 
