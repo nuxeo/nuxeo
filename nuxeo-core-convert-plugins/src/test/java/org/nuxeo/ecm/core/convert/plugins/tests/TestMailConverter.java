@@ -59,7 +59,7 @@ public class TestMailConverter extends BaseConverterTest {
         assertEquals("text/plain", result.getMimeType());
 
         Blob expected = getTestBlob("test-docs/email/text.txt");
-        assertEquals(expected.getString(), result.getString());
+        assertEquals(expected.getString().trim(), result.getString().trim());
     }
 
     protected boolean textEquals(String txt1, String txt2) {
@@ -89,7 +89,7 @@ public class TestMailConverter extends BaseConverterTest {
         String actual = result.getString();
         String expected = getTestBlob(
                 "test-docs/email/text_and_html_with_attachments.txt").getString();
-        assertEquals(expected, actual);
+        assertEquals(expected.trim(), actual.trim());
     }
 
     public void testOnlyHtmlEmailTransformation() throws Exception {
@@ -103,7 +103,7 @@ public class TestMailConverter extends BaseConverterTest {
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
         Blob expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
-        assertEquals(expected.getString(), result.getString());
+        assertEquals(expected.getString().trim(), result.getString().trim());
     }
 
 }
