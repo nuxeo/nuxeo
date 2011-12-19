@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.lifecycle.contrib">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="TemplateSource">default</type>
+      <type name="TemplateBasedFile">default</type>
+    </types>
+  </extension>
+
+</component>

@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+<h3><h:outputText value="#{param.name}" /> :</h3>
+
+<h:panelGroup id="param_#{param.name}">
+<table border="0">
+
+<tr>
+<td> Parameter Type</td>
+<td>
+    <h:selectOneMenu  value="#{param.typeAsString}">
+        <f:selectItem itemLabel="String value" itemValue="String"/>
+        <f:selectItem itemLabel="Boolean value" itemValue="Boolean"/>
+        <f:selectItem itemLabel="Date value" itemValue="Date"/>
+        <f:selectItem itemLabel="Document property binding" itemValue="source"/>
+        <f:selectItem itemLabel="Picture property binding" itemValue="picture"/>
+        <f:selectItem itemLabel="Include" itemValue="include"/>
+        <a4j:support event="onchange" reRender="document_create" />
+    </h:selectOneMenu>
+</td>
+
+  <c:set var="widgetMode" value="edit"/>
+  <c:if test="#{param.readOnly}">
+     <c:set var="widgetMode" value="view"/>
+  </c:if>
+
+  <c:if test="#{param.simpleValue}">
+
+      <td><b>Value :</b></td>
+      <td><c:if test="#{param.typeAsString=='String'}">
+        <nxl:widgetType name="textarea" value="#{param.stringValue}"
+          mode="#{widgetMode}" />
+      </c:if> <c:if test="#{param.typeAsString=='Date'}">
+        <nxl:widgetType name="datetime" value="#{param.dateValue}"
+          mode="#{widgetMode}" />
+      </c:if> <c:if test="#{param.typeAsString=='Boolean'}">
+        <nxl:widgetType name="checkbox" value="#{param.booleanValue}"
+          mode="#{widgetMode}" />
+      </c:if></td>
+  </c:if>
+
+  <c:if test="#{param.sourceValue}">
+      <td><b>source XPath for value :</b></td>
+      <td>
+        <nxl:widgetType name="text" value="#{param.source}" mode="#{widgetMode}" />
+      </td>
+  </c:if>
+</tr>
+</table>
+</h:panelGroup>
+<br/>
+
+
+</div>

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Document template Manager
+Bundle-SymbolicName: org.nuxeo.ecm.platform.template.managaner;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/types-contrib.xml,
+ OSGI-INF/life-cycle-contrib.xml,
+ OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/adapter-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/listener-contrib.xml

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.platform.TemplateSources.layouts.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="templateChooser">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>template</widget>
+        </row>
+      </rows>
+
+      <widget name="template" type="template">
+        <labels>
+          <label mode="any">Template</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>nxts:templateId</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/filetemplate_selectone.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="template">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>params</widget>
+        </row>
+      </rows>
+      <widget name="params" type="textarea">
+        <labels>
+          <label mode="any">Parameters</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:templateData</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <layout name="templateOptions">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>allowOverride</widget>
+        </row>
+        <row>
+          <widget>converter</widget>
+        </row>
+      </rows>
+      <widget name="allowOverride" type="checkbox">
+        <labels>
+          <label mode="any">Allow paramaters override</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:allowOverride</field>
+        </fields>
+      </widget>
+      <widget name="converter" type="text">
+        <labels>
+          <label mode="any">Converter</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:converterName</field>
+        </fields>
+      </widget>
+   </layout>
+
+  </extension>
+</component>

@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+        <div>
+            <h3>
+                <h:outputText value="Edit template parameters" />
+            </h3>
+            <h:form enctype="multipart/form-data" id="document_edit">
+
+                <nxu:repeat var="param" value="#{templateActions.templateEditableInputs}">
+                    <ui:include src="/incl/template_edit_oneparam.xhtml" />
+                </nxu:repeat>
+
+                <p class="buttonsGadget">
+                    <h:commandButton type="submit" class="button" value="#{messages['command.save']}"
+                        action="#{templateActions.saveTemplateInputs}" id="button_save" />
+                    <h:commandButton class="button" value="#{messages['command.cancel']}"
+                        action="#{navigationContext.goBack()}" immediate="true" />
+                </p>
+            </h:form>
+        </div>
+
+        <c:if test="#{templateActions.canAddTemplateInputs()}">
+            <h:form enctype="multipart/form-data" id="addTemplateField">
+
+                <p>
+                Name : <h:inputText value="#{templateActions.newInput.name}"></h:inputText>
+                </p>
+                <p>
+                Type :
+                <h:selectOneMenu  value="#{templateActions.newInput.typeAsString}">
+                    <f:selectItem itemLabel="String value" itemValue="String"/>
+                    <f:selectItem itemLabel="Boolean value" itemValue="Boolean"/>
+                    <f:selectItem itemLabel="Date value" itemValue="Date"/>
+                    <f:selectItem itemLabel="Document property binding" itemValue="source"/>
+                    <f:selectItem itemLabel="Picture property binding" itemValue="picture"/>
+                    <f:selectItem itemLabel="Include" itemValue="include"/>
+                </h:selectOneMenu>
+                </p>
+                <p class="buttonsGadget">
+                    <h:commandButton type="submit" class="button" value="#{messages['command.add']}"
+                        action="#{templateActions.addTemplateInput}" id="button_add" />
+                </p>
+            </h:form>
+        </c:if>
+
+        <c:if test="#{templateActions.canRenderTemplate()}">
+            <h:form enctype="multipart/form-data" id="applyTemplate">
+
+                <p class="buttonsGadget">
+                    <h:commandButton type="submit" class="button" value="Apply to file"
+                        action="#{templateActions.updateBlob}" id="button_applyFile" />
+                    <h:commandButton type="submit" class="button" value="Read from file (update Document)"
+                        action="#{templateActions.updateDocumentFromBlob}" id="button_readFile" />
+                </p>
+            </h:form>
+        </c:if>
+
+</div>
