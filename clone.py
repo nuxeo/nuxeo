@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 ##
 ## (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
@@ -167,9 +167,9 @@ for line in os.popen("mvn -N help:effective-pom"):
     git_fetch(module)
 
 cwd = os.getcwd()
-log("$> cd addons; clone.py -r %s %s" % (alias, version))
+log("$> cd addons; ./clone.py -r %s %s" % (alias, version))
 os.chdir("addons")
-retcode = os.system("python clone.py -r %s %s" % (alias, version))
+retcode = os.system("python2.7 clone.py -r %s %s" % (alias, version))
 os.chdir(cwd)
 if retcode != 0:
     log("[ERROR]: cloning addons failed.")
