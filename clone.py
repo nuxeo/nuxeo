@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 ##
 ## (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
@@ -19,7 +19,7 @@
 ## This script clones or updates Nuxeo source code from Git repositories.
 ##
 
-import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath, time, argparse
+import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath, time, optparse
 
 driveletter = "G"
 
@@ -119,13 +119,18 @@ def get_current_version():
 
 long_path_workaround_init()
 
-parser = argparse.ArgumentParser(description='Clone or update Nuxeo source code from Git repositories.')
-parser.add_argument('version', nargs='?', default=get_current_version(), help='The version (branch or tag) to checkout')
-parser.add_argument('-r', dest='remote_alias', nargs='?', default='origin', help='The Git alias of remote URL (default: %(default)s)')
+parser = optparse.OptionParser(description='Clone or update Nuxeo source code from Git repositories.')
+parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %(default)s)')
 
-args = parser.parse_args()
-version = args.version
-alias = args.remote_alias
+(options, args) = parser.parse_args()
+alias = options.remote_alias
+if len(args) == 0:
+    version = get_current_version()
+elif len(args) == 1:
+    version = args[0]
+else:
+    log("Error: version must be a single argument")
+    sys.exit(1)
 
 log("Cloning/updating parent pom")
 system("git fetch %s" % (alias))
@@ -169,7 +174,7 @@ for line in os.popen("mvn -N help:effective-pom"):
 cwd = os.getcwd()
 log("$> cd addons; ./clone.py -r %s %s" % (alias, version))
 os.chdir("addons")
-retcode = os.system("python2.7 clone.py -r %s %s" % (alias, version))
+retcode = os.system("python clone.py -r %s %s" % (alias, version))
 os.chdir(cwd)
 if retcode != 0:
     log("[ERROR]: cloning addons failed.")
