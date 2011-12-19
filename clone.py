@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 ##
 ## (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
