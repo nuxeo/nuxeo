@@ -11,8 +11,12 @@ For exemple you can define in your template a field that will be replaced by the
 
 Each format (WordML / OpenOffice) has his own logic for defining merge fields.
 
-In the case of OpenOffice document, you can actually generate the full document since it used JODReports 
+In the case of OpenOffice document, you can actually generate the full document since it uses JODReports 
 (that use Freemarker to render an ODT file).
+
+# History
+
+This plugin is based on the DocX prototype done a long time ago here : http://hg.nuxeo.org/sandbox/nuxeo-platform-docx-templates/
 
 # Building
 
@@ -27,7 +31,6 @@ You first need to deploy the plugin inside your Nuxeo server.
 You also need to copy the 2 additional libs (there is no Marketplace package for now)
 
 	nxserver/lib/jodreports-2.4.0.jar ( http://jodreports.sourceforge.net/ )
-
         nxserver/lib/xom-1.2.7.jar ( http://www.cafeconleche.org/XOM/xom-1.2.7.jar)
 
 # Templating format
