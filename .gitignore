@@ -1,1 +1,5 @@
 nuxeo-*
+.classpath
+.project
+.settings
+target
