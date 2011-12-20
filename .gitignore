@@ -1,4 +1,5 @@
-syntax:glob
+addons
+nuxeo-*
 .checkstyle
 .classpath
 .metadata
@@ -7,8 +8,7 @@ syntax:glob
 .project
 .project.ok
 .settings
-bin
-build.properties
+.idea
 target
 *~
 *.orig
@@ -16,4 +16,5 @@ target
 *.ipr
 *.iws
 .DS_Store
-addons
+bin
+
