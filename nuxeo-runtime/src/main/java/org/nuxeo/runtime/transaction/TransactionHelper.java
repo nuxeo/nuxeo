@@ -14,6 +14,7 @@ package org.nuxeo.runtime.transaction;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
@@ -53,6 +54,11 @@ public class TransactionHelper {
             "java:comp/env/TransactionManager", // manual binding
             "java:TransactionManager" //
     };
+
+    /**
+     * @since 5.6
+     */
+    public static final String TX_TIMEOUT_HEADER_KEY = "NuxeoTxTimeout";
 
     /**
      * Looks up the User Transaction in JNDI.
@@ -175,6 +181,19 @@ public class TransactionHelper {
         return false;
     }
 
+    public static boolean startTransaction(HttpServletRequest request) {
+        String header = request.getHeader(TX_TIMEOUT_HEADER_KEY);
+        if (header != null) {
+            int to = Integer.parseInt(header);
+            try {
+                lookupTransactionManager().setTransactionTimeout(to);
+            } catch (Exception e) {
+                log.error("Unable to set requested tx timeout for " + request.getRequestURI(), e);
+                return false;
+            }
+        }
+        return startTransaction();
+    }
     /**
      * Commits or rolls back the User Transaction depending on the transaction
      * status.
