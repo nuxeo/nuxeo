@@ -74,6 +74,10 @@ public class XMLSerializer {
             }
             field.addAttribute("type", type.getValue());
 
+            if (input.isReadOnly()) {
+                field.addAttribute("readonly","true");
+            }
+
             if (InputType.StringValue.equals(type)) {
                 field.addAttribute("value", input.getStringValue());
             } else if (InputType.DateValue.equals(type)) {
@@ -122,6 +126,10 @@ public class XMLSerializer {
                 param.setBooleanValue(new Boolean(strValue));
             } else {
                 param.setSource(elem.attributeValue("source"));
+            }
+
+            if (elem.attribute("readonly")!=null) {
+                param.setReadOnly(Boolean.parseBoolean(elem.attributeValue("readonly")));
             }
 
             param.setDesciption(elem.getText());
