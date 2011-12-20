@@ -17,3 +17,13 @@ target
 *.iws
 .DS_Store
 addons
+nuxeo-common/
+nuxeo-core/
+nuxeo-distribution/
+nuxeo-dm/
+nuxeo-features/
+nuxeo-jsf/
+nuxeo-runtime/
+nuxeo-services/
+nuxeo-theme/
+nuxeo-webengine/
