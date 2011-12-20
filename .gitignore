@@ -16,3 +16,5 @@ target
 *.ipr
 *.iws
 .DS_Store
+bin
+
