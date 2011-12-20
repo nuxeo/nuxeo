@@ -21,7 +21,8 @@
 
 import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath, time, optparse
 
-driveletter = "G"
+driveletter = None
+basedir = os.getcwd()
 
 def log(message):
     sys.stdout.write(message + os.linesep)
@@ -63,12 +64,14 @@ def long_path_workaround_init():
             driveletter = letter
             cwd = os.getcwd()
             system("SUBST %s: \"%s\"" % (driveletter, cwd))
+            time.sleep(10)
             os.chdir("%s:\\" % (driveletter,))
             break
 
 def long_path_workaround_cleanup():
-    if platform.system() != "Windows": return
-    system("SUBST %s: /D" % (driveletter,), False)
+    if driveletter != None:
+        os.chdir(basedir)
+        system("SUBST %s: /D" % (driveletter,), False)
 
 def check_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
