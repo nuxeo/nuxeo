@@ -16,13 +16,13 @@
 ##     Stefane Fermigier
 ##     Julien Carsique
 ##
-## This script clones or updates Nuxeo addons source code from Mercurial and GitHub
-## repositories.
+## This script clones or updates Nuxeo addons source code from Git repositories.
 ##
 
-import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath, time
+import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath, time, optparse
 
-driveletter = "G"
+driveletter = None
+basedir = os.getcwd()
 
 def log(message):
     sys.stdout.write(message + os.linesep)
@@ -57,19 +57,24 @@ def system_with_retries(cmd, failonerror=True):
             time.sleep(10)
 
 def long_path_workaround_init():
+    global driveletter
+    global basedir
     # On Windows, try to map the current directory to an unused drive letter to shorten path names
-    if platform.system() != "Windows": return
+    if platform.system() != "Windows" or len(basedir) < 20: return
     for letter in "GHIJKLMNOPQRSTUVWXYZ":
         if not os.path.isdir("%s:\\" % (letter,)):
             driveletter = letter
             cwd = os.getcwd()
             system("SUBST %s: \"%s\"" % (driveletter, cwd))
+            time.sleep(10)
             os.chdir("%s:\\" % (driveletter,))
             break
 
 def long_path_workaround_cleanup():
-    if platform.system() != "Windows": return
-    system("SUBST %s: /D" % (driveletter,), False)
+    global driveletter
+    if driveletter != None:
+        os.chdir(basedir)
+        system("SUBST %s: /D" % (driveletter,), False)
 
 def check_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -79,79 +84,31 @@ def check_output(cmd):
         log(err)
     return out.strip()
 
-
-def hg_fetch(module, branch):
+def git_fetch(module):
+    repo_url = url_pattern.replace("module", module)
     cwd = os.getcwd()
     if os.path.isdir(module):
         log("Updating " + module + "...")
         os.chdir(module)
-        system_with_retries("hg pull")
+        system("git fetch %s" % (alias))
     else:
         log("Cloning " + module + "...")
-        system_with_retries("hg clone %s/%s %s" % (hg_url, module, module))
+        system("git clone %s" % (repo_url))
         os.chdir(module)
-    system("hg up %s" % branch)
-    os.chdir(cwd)
-    log("")
 
-
-def git_fetch(module, branch):
-    cwd = os.getcwd()
-    if git_url.startswith("git@github.com"):
-        repo_url = "%s/%s.git" % (git_url, module)
-        # backward compliance with repositories cloned with HTTP URL
-        repo_url_http = "%s/%s.git" % (git_url_http, module)
+    if version in check_output(["git", "tag"]).split():
+        # the version is a tag name
+        system("git checkout %s" % version)
+    elif version not in check_output(["git", "branch"]).split():
+        # create the local branch if missing
+        system("git checkout -b %s %s/%s" % (version, alias, version))
     else:
-        repo_url = "%s/%s" % (git_url, module)
-    if os.path.isdir(module):
-        log("Updating " + module + "...")
-    else:
-        log("Cloning " + module + "...")
-        retcode = system("git clone %s %s" % (repo_url, module), False)
-        if retcode != 0:
-            log("[WARN]: you need a GitHub account to clone from " + repo_url)
-            system("git clone %s %s" % (repo_url_http, module))
-
-    os.chdir(module)
-
-    # find the nuxeo repo alias
-    remote_lines = check_output(["git", "remote", "-v"]).split("\n")
-    alias = None
-    for remote_line in remote_lines:
-        remote_alias, remote_url, _ = remote_line.split()
-        if repo_url == remote_url:
-            alias = remote_alias
-            log("Using alias '%s' for %s" % (alias, repo_url))
-            break
-        elif repo_url_http == remote_url:
-            log("[WARN]: fallback on %s (%s is recommended for contributing)." % (repo_url_http, repo_url))
-            alias = remote_alias
-            log("Using alias '%s' for %s" % (alias, repo_url_http))
-            break
-    if alias is None:
-        raise ValueError("Failed to find remote repository alias for " + repo_url)
-
-    # check whether we should use a specific branch or the master
-    # (assumed to be the main development branch for git repos)
-    if branch not in check_output(["git", "ls-remote", alias]).split("/"):
-        #log(branch + " not found on remote repo: fallback on master.")
-        branch = "master"
-
-    # the branch is a tag name
-    if branch in check_output(["git", "tag"]).split():
-        system("git checkout %s" % branch)
-    # create the local branch if missing
-    elif branch not in check_output(["git", "branch"]).split():
-        system("git checkout -b %s %s/%s" % (branch, alias, branch))
-    # reuse local branch
-    else:
-        system("git checkout %s" % branch)
+        # reuse local branch
+        system("git checkout %s" % version)
         log("Updating branch")
-        system("git pull %s %s" % (alias, branch))
-
+        system("git merge %s/%s" % (alias, version))
     os.chdir(cwd)
     log("")
-
 
 def url_normpath(url):
     parsed = urlparse.urlparse(url)
@@ -161,51 +118,54 @@ def url_normpath(url):
         path = posixpath.normpath(parsed.path)
     return urlparse.urlunparse(parsed[:2] + (path,) + parsed[3:])
 
+def get_current_version():
+    t = check_output(["git", "describe", "--all"]).split("/")
+    return t[1]
+
 
 long_path_workaround_init()
 
-if len(sys.argv) > 1:
-    branch = sys.argv[1]
-else:
-    t = check_output(["hg", "id", "-bt"]).split()
-    branch = t[0]
-    if (len(t) > 1):
-        tag = t[1]
-    if 'tag' in globals() and tag != "tip":
-        branch = tag
+parser = optparse.OptionParser(description='Clone or update Nuxeo source code from Git repositories.')
+parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %(default)s)')
 
-log("Cloning/updating addons pom")
-system("hg pull")
-system("hg up %s" % branch)
+(options, args) = parser.parse_args()
+alias = options.remote_alias
+if len(args) == 0:
+    version = get_current_version()
+elif len(args) == 1:
+    version = args[0]
+else:
+    log("Error: version must be a single argument")
+    sys.exit(1)
+
+log("Cloning/updating addons parent pom")
+system("git fetch %s" % (alias))
+if version in check_output(["git", "tag"]).split():
+    # the version is a tag name
+    system("git checkout %s" % version)
+elif version not in check_output(["git", "branch"]).split():
+    # create the local branch if missing
+    system("git checkout -b %s %s/%s" % (version, alias, version))
+else:
+    # reuse local branch
+    system("git checkout %s" % version)
+    log("Updating branch")
+    system("git merge %s/%s" % (alias, version))
 log("")
 
-hg_url = url_normpath(check_output(["hg", "path", "default"]))
-if hg_url.startswith("http"):
-    git_url_http = url_normpath(hg_url.replace("hg.nuxeo.org/addons", "github.com/nuxeo"))
-    # prefer use of git@github.com:nuxeo/addon.git instead of https://github.com/nuxeo/addon.git
-    git_url = "git@github.com:nuxeo"
+# find the remote URL
+remote_lines = check_output(["git", "remote", "-v"]).split("\n")
+for remote_line in remote_lines:
+    remote_alias, remote_url, _ = remote_line.split()
+    if alias == remote_alias:
+        break
+
+#root_url = url_normpath(remote_url)
+is_online = remote_url.endswith("/addons.git")
+if is_online:
+    url_pattern = re.sub("(.*)addons", r"\1module", remote_url)
 else:
-    # use filesystem path as URL
-    git_url = hg_url
-
-retries = 0
-while True:
-    retries += 1
-    lines = urllib.urlopen("https://hg.nuxeo.org/?sort=name").readlines()
-    if len(lines) > 1000: break
-    if retries > 10:
-        log("[ERROR]: could not retrieve addons list from hg.nuxeo.org - giving up.")
-        sys.exit(-1)
-    log("Error retrieving addons list from hg.nuxeo.org - retrying in 10 seconds...")
-    time.sleep(10)
-
-hg_addons = []
-for line in lines:
-    if not line.startswith("<b>addons/"):
-        continue
-    hg_addon = line[len("<b>addons/"):-len("</b>\n")]
-    hg_addons.append(hg_addon)
-#log(hg_addons)
+    url_pattern = remote_url + "/module"
 
 log("Using maven introspection of the pom.xml files"
     " to find the list of addons")
@@ -218,10 +178,7 @@ for line in all_lines:
     if not m:
         continue
     addon = m.group(1)
-    if addon in hg_addons:
-        hg_fetch(addon, branch)
-    else:
-        git_fetch(addon, branch)
+    git_fetch(addon)
 
 long_path_workaround_cleanup()
 
