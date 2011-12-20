@@ -58,8 +58,9 @@ def system_with_retries(cmd, failonerror=True):
 
 def long_path_workaround_init():
     global driveletter
+    global basedir
     # On Windows, try to map the current directory to an unused drive letter to shorten path names
-    if platform.system() != "Windows": return
+    if platform.system() != "Windows" or len(basedir) < 20: return
     for letter in "GHIJKLMNOPQRSTUVWXYZ":
         if not os.path.isdir("%s:\\" % (letter,)):
             driveletter = letter
