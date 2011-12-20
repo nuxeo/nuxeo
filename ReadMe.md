@@ -51,6 +51,6 @@ For now you have to look in src/test/resources/data to find some sample ODT and 
 
  - Plug other existing rendering systems in Nuxeo (Like the DocumentRendering in Seam / JSF) ?
 
-        
+ - Look at http://code.google.com/p/xdocreport/        
         
 	

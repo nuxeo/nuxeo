@@ -30,6 +30,10 @@
             <artifactId>nuxeo-core-event</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.nuxeo.ecm.core</groupId>
+            <artifactId>nuxeo-core-convert</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-filemanager-api</artifactId>
         </dependency>
@@ -58,9 +62,26 @@
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-types-api</artifactId>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>org.nuxeo.ecm.platform</groupId>
+            <artifactId>nuxeo-platform-mimetype-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nuxeo.ecm.platform</groupId>
+            <artifactId>nuxeo-platform-mimetype-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+       -->
         <dependency>
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-types-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nuxeo.ecm.platform</groupId>
+            <artifactId>nuxeo-platform-convert</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
