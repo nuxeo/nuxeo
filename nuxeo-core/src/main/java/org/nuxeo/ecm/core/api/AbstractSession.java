@@ -507,6 +507,20 @@ public abstract class AbstractSession implements CoreSession,
 
     /**
      * Gets the document model for the given core document.
+     *
+     * @param doc the document
+     * @return the document model
+     */
+    protected DocumentModel readModel(Document doc) throws ClientException {
+        try {
+            return DocumentModelFactory.createDocumentModel(doc, null);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to create document model", e);
+        }
+    }
+
+    /**
+     * Gets the document model for the given core document.
      * <p>
      * If no schemas are specified (schemas are null) use the default schemas as
      * configured in the document type manager.
