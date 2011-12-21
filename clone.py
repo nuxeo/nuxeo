@@ -126,10 +126,12 @@ def get_current_version():
 long_path_workaround_init()
 
 parser = optparse.OptionParser(description='Clone or update Nuxeo source code from Git repositories.')
-parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %(default)s)')
+parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %default)')
+parser.add_option("-a", "--all", action="store_true", dest="with_optionals", default=False, help="Include 'optional' addons (default: %default)")
 
 (options, args) = parser.parse_args()
 alias = options.remote_alias
+with_optionals = options.with_optionals
 if len(args) == 0:
     version = get_current_version()
 elif len(args) == 1:
@@ -170,7 +172,8 @@ else:
 log("Using maven introspection of the pom.xml files"
     " to find the list of addons")
 all_lines = os.popen("mvn -N help:effective-pom").readlines()
-all_lines += os.popen("mvn -N help:effective-pom -f pom-optionals.xml").readlines()
+if with_optionals:
+    all_lines += os.popen("mvn -N help:effective-pom -f pom-optionals.xml").readlines()
 
 for line in all_lines:
     line = line.strip()
