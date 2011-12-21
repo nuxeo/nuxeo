@@ -19,7 +19,7 @@
 ## This script clones or updates Nuxeo addons source code from Git repositories.
 ##
 
-import re, os, sys, shlex, subprocess, platform, urllib, posixpath, time, optparse
+import re, os, sys, shlex, subprocess, platform, time, optparse
 
 driveletter = None
 basedir = os.getcwd()
