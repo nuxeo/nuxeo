@@ -117,7 +117,8 @@ def get_current_version():
 
 long_path_workaround_init()
 
-parser = optparse.OptionParser(description='Clone or update Nuxeo source code from Git repositories.')
+usage = "usage: %prog [options] version"
+parser = optparse.OptionParser(usage=usage, description='Clone or update Nuxeo source code from Git repositories.')
 parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %default)')
 parser.add_option("-a", "--all", action="store_true", dest="with_optionals", default=False, help="Include 'optional' addons (default: %default)")
 
