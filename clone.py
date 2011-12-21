@@ -19,7 +19,7 @@
 ## This script clones or updates Nuxeo source code from Git repositories.
 ##
 
-import re, os, sys, shlex, subprocess, platform, urllib, urlparse, posixpath, time, optparse
+import re, os, sys, shlex, subprocess, platform, urllib, posixpath, time, optparse
 
 driveletter = None
 basedir = os.getcwd()
@@ -109,14 +109,6 @@ def git_fetch(module):
     os.chdir(cwd)
     log("")
 
-def url_normpath(url):
-    parsed = urlparse.urlparse(url)
-    if parsed.path == "":
-        path = ""
-    else:
-        path = posixpath.normpath(parsed.path)
-    return urlparse.urlunparse(parsed[:2] + (path,) + parsed[3:])
-
 def get_current_version():
     t = check_output(["git", "describe", "--all"]).split("/")
     return t[1]
@@ -162,7 +154,6 @@ for remote_line in remote_lines:
     if alias == remote_alias:
         break
 
-#root_url = url_normpath(remote_url)
 is_online = remote_url.endswith("/nuxeo.git")
 if is_online:
     url_pattern = re.sub("(.*)nuxeo", r"\1module", remote_url)
