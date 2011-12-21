@@ -125,10 +125,12 @@ def get_current_version():
 long_path_workaround_init()
 
 parser = optparse.OptionParser(description='Clone or update Nuxeo source code from Git repositories.')
-parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %(default)s)')
+parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %default)')
+parser.add_option("-a", "--all", action="store_true", dest="with_optionals", default=False, help="Include 'optional' addons (default: %default)")
 
 (options, args) = parser.parse_args()
 alias = options.remote_alias
+with_optionals = options.with_optionals
 if len(args) == 0:
     version = get_current_version()
 elif len(args) == 1:
@@ -179,7 +181,10 @@ for line in os.popen("mvn -N help:effective-pom"):
 cwd = os.getcwd()
 log("$> cd addons; ./clone.py -r %s %s" % (alias, version))
 os.chdir("addons")
-retcode = os.system("python clone.py -r %s %s" % (alias, version))
+if with_optionals:
+    retcode = os.system("python clone.py -a -r %s %s" % (alias, version))
+else:
+    retcode = os.system("python clone.py -r %s %s" % (alias, version))
 os.chdir(cwd)
 if retcode != 0:
     log("[ERROR]: cloning addons failed.")
