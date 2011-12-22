@@ -16,7 +16,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.nuxeo.runtime.api.Framework;
 

@@ -20,7 +20,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Map;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -28,9 +27,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyDiff;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyFactory;
-import org.nuxeo.ecm.core.api.model.PropertyRuntimeException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
-import org.nuxeo.ecm.core.api.model.ValueExporter;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;

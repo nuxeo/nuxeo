@@ -15,7 +15,6 @@ package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

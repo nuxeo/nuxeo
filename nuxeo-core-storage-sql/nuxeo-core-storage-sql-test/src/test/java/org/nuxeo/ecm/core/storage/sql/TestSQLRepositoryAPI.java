@@ -2895,13 +2895,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         doc.setProperty("dublincore", "title", "my title");
         assertEquals("my title", doc.getPropertyValue("dc:title"));
+
         doc.setProperty("file", "filename", "the file name");
         assertEquals("the file name", doc.getPropertyValue("filename"));
         assertEquals("the file name", doc.getPropertyValue("file:filename"));
-
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void testComplexList() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),

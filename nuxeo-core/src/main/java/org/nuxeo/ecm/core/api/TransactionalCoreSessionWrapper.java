@@ -17,8 +17,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.naming.NamingException;
 import javax.transaction.Status;

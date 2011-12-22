@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.impl.SecuritySummaryEntryImpl;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;

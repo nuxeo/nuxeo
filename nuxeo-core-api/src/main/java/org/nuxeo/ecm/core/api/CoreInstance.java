@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class CoreInstance implements Serializable {
             this.threadName = Thread.currentThread().getName();
         }
     }
-    
+
     private final Map<String, RegistrationInfo> sessions = new ConcurrentHashMap<String, RegistrationInfo>();
 
     // hiding the default constructor from clients
@@ -198,7 +197,7 @@ public class CoreInstance implements Serializable {
     public CoreSession[] getSessions() {
         Collection<RegistrationInfo> infos = sessions.values();
         CoreSession[] ret = new CoreSession[infos.size()];
-       Iterator<RegistrationInfo> it = infos.iterator(); 
+       Iterator<RegistrationInfo> it = infos.iterator();
        int i = 0;
        while (it.hasNext()) {
            ret[i++] = it.next().session;
@@ -226,7 +225,7 @@ public class CoreInstance implements Serializable {
     public RegistrationInfo getSessionRegistrationInfo(String sid) {
         return sessions.get(sid);
     }
-    
+
     public void initialize(CoreSessionFactory factory) {
         // TODO: to be able to test more easily with a variety of client
         // factories

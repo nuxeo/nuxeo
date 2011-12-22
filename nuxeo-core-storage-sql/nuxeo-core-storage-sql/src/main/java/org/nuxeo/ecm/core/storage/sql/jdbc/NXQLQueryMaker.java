@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
-import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.ColumnInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.ColumnMapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;

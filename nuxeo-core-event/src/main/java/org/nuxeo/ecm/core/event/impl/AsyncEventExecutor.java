@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * ThreadPoolExecutor of listeners for event bundles.
