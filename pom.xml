@@ -90,6 +90,7 @@
     <module>nuxeo-dam</module>
     <module>nuxeo-cmf</module>
     <module>nuxeo-poll</module>
+    <module>nuxeo-rss-reader</module>
   </modules>
 
   <dependencyManagement>
