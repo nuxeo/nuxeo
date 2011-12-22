@@ -19,7 +19,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.theme.presets.GimpPaletteParser;
 import org.nuxeo.theme.presets.PaletteParser;
 
 public class TestGimpPaletteParser extends TestCase {
