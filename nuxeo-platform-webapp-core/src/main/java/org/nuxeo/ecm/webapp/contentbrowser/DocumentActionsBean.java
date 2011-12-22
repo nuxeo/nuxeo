@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -132,6 +131,7 @@ public class DocumentActionsBean extends InputController implements
 
     protected String comment;
 
+    @Override
     @Factory(autoCreate = true, value = "currentDocumentSummaryLayout", scope = EVENT)
     public String getCurrentDocumentSummaryLayout() {
         DocumentModel doc = navigationContext.getCurrentDocument();
@@ -147,6 +147,7 @@ public class DocumentActionsBean extends InputController implements
         return DEFAULT_SUMMARY_LAYOUT;
     }
 
+    @Override
     @Factory(autoCreate = true, value = "currentDocumentType", scope = EVENT)
     public Type getCurrentType() {
         DocumentModel doc = navigationContext.getCurrentDocument();
@@ -156,6 +157,7 @@ public class DocumentActionsBean extends InputController implements
         return typeManager.getType(doc.getType());
     }
 
+    @Override
     public Type getChangeableDocumentType() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         if (changeableDocument == null) {
@@ -169,6 +171,7 @@ public class DocumentActionsBean extends InputController implements
         return typeManager.getType(changeableDocument.getType());
     }
 
+    @Override
     public String editDocument() throws ClientException {
         navigationContext.setChangeableDocument(navigationContext.getCurrentDocument());
         return navigationContext.navigateToDocument(
@@ -202,6 +205,7 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Override
     public String download() throws ClientException {
         try {
             if (fileFieldFullName == null) {
@@ -219,6 +223,7 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Override
     public void download(DocumentView docView) throws ClientException {
         if (docView != null) {
             DocumentLocation docLoc = docView.getDocumentLocation();
@@ -267,6 +272,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     // XXX AT: broken right now
+    @Override
     public String downloadFromList() throws ClientException {
         try {
             // DocumentModel docMod =
@@ -325,16 +331,19 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Override
     public String updateCurrentDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return updateDocument(currentDocument);
     }
 
+    @Override
     public String updateDocument() throws ClientException {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         return updateDocument(changeableDocument);
     }
 
+    @Override
     public String updateDocumentAsNewVersion() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
@@ -355,11 +364,13 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Override
     public String createDocument() throws ClientException {
         Type docType = typesTool.getSelectedType();
         return createDocument(docType.getId());
     }
 
+    @Override
     public String createDocument(String typeName) throws ClientException {
         Type docType = typeManager.getType(typeName);
         // we cannot use typesTool as intermediary since the DataModel callback
@@ -379,6 +390,7 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Override
     public String saveDocument() throws ClientException {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         return saveDocument(changeableDocument);
@@ -387,6 +399,7 @@ public class DocumentActionsBean extends InputController implements
     @RequestParameter
     protected String parentDocumentPath;
 
+    @Override
     public String saveDocument(DocumentModel newDocument)
             throws ClientException {
         // Document has already been created if it has an id.
@@ -440,6 +453,7 @@ public class DocumentActionsBean extends InputController implements
     // SelectDataModel building should be cheap anyway
     // @Factory(value = "documentActions_childrenSelectModel", scope = EVENT)
 
+    @Override
     @Factory(value = "currentChildrenSelectModel", scope = EVENT)
     public SelectDataModel getChildrenSelectModel() throws ClientException {
         // XXX : this proves that this method is called too many times
@@ -459,6 +473,7 @@ public class DocumentActionsBean extends InputController implements
     // resultsProviderCache
     // SelectDataModel building should be cheap anyway
     // @Factory(value = "documentActions_childrenSelectModel", scope = EVENT)
+    @Override
     public SelectDataModel getSectionChildrenSelectModel()
             throws ClientException {
         // XXX : this proves that this method is called too many times
@@ -475,6 +490,7 @@ public class DocumentActionsBean extends InputController implements
 
     // SelectModelListener interface
 
+    @Override
     public void processSelectRowEvent(SelectDataModelRowEvent event) {
         // could use source to get to the SelectModel and retrieve its name,
         // but
@@ -496,6 +512,7 @@ public class DocumentActionsBean extends InputController implements
         return "ERROR: " + errorMessage;
     }
 
+    @Override
     @WebRemote
     public String checkCurrentDocAndProcessSelectRow(String docRef,
             String providerName, String listName, Boolean selection,
@@ -507,6 +524,7 @@ public class DocumentActionsBean extends InputController implements
         return processSelectRow(docRef, providerName, listName, selection);
     }
 
+    @Override
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
@@ -538,6 +556,7 @@ public class DocumentActionsBean extends InputController implements
         return computeSelectionActions(lName);
     }
 
+    @Override
     @WebRemote
     public String checkCurrentDocAndProcessSelectPage(String providerName,
             String listName, Boolean selection, String currentDocRef)
@@ -549,6 +568,7 @@ public class DocumentActionsBean extends InputController implements
         return processSelectPage(providerName, listName, selection);
     }
 
+    @Override
     @WebRemote
     public String processSelectPage(String providerName, String listName,
             Boolean selection) {
@@ -590,6 +610,7 @@ public class DocumentActionsBean extends InputController implements
         return res;
     }
 
+    @Override
     public boolean getWriteRight() throws ClientException {
         // TODO: WRITE is a high level compound permission (i.e. more like a
         // user
@@ -608,14 +629,17 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Override
     public String getComment() {
         return "";
     }
 
+    @Override
     public void setComment(String comment) {
         this.comment = comment;
     }
 
+    @Override
     public boolean getCanUnpublish() {
         List<DocumentModel> docList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
@@ -632,6 +656,7 @@ public class DocumentActionsBean extends InputController implements
         return false;
     }
 
+    @Override
     @Observer(EventNames.BEFORE_DOCUMENT_CHANGED)
     public void followTransition(DocumentModel changedDocument)
             throws ClientException {

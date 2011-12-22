@@ -129,10 +129,12 @@ public class FileManageActionsBean extends InputController implements
         log.debug("Removing Seam action listener...");
     }
 
+    @Override
     public String display() {
         return "view_documents";
     }
 
+    @Override
     public String addFile() throws ClientException {
         return addFile(getFileUpload(), getFileName());
     }
@@ -172,6 +174,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @Override
     @Deprecated
     // TODO: update the Seam remoting-based desktop plugins to stop calling
     // this
@@ -198,6 +201,7 @@ public class FileManageActionsBean extends InputController implements
      * @deprecated use addBinaryFileFromPlugin with a Blob argument API to
      *             avoid loading the content in memory
      */
+    @Override
     @Deprecated
     @WebRemote
     public String addFileFromPlugin(String content, String mimetype,
@@ -218,6 +222,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @Override
     @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             String morePath) throws ClientException {
@@ -228,6 +233,7 @@ public class FileManageActionsBean extends InputController implements
         return createDocumentFromBlob(blob, fullName, path);
     }
 
+    @Override
     @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             DocumentModel targetContainer) throws ClientException {
@@ -283,6 +289,7 @@ public class FileManageActionsBean extends InputController implements
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
+    @Override
     @WebRemote
     public String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException {
@@ -412,6 +419,7 @@ public class FileManageActionsBean extends InputController implements
         return MOVE_OK;
     }
 
+    @Override
     @SuppressWarnings("static-access")
     @WebRemote
     public String moveWithId(String docId, String containerId)
@@ -477,6 +485,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @Override
     @WebRemote
     public String copyWithId(String docId) throws ClientException {
         try {
@@ -500,6 +509,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @Override
     @WebRemote
     public String pasteWithId(String docId) throws ClientException {
         try {
@@ -579,7 +589,7 @@ public class FileManageActionsBean extends InputController implements
         Contexts.getConversationContext().remove("fileUploadHolder");
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void performAction(ActionEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
@@ -630,6 +640,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @Override
     public InputStream getFileUpload() {
         if (fileUploadHolder != null) {
             return fileUploadHolder.getFileUpload();
@@ -638,12 +649,14 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @Override
     public void setFileUpload(InputStream fileUpload) {
         if (fileUploadHolder != null) {
             fileUploadHolder.setFileUpload(fileUpload);
         }
     }
 
+    @Override
     public String getFileName() {
         if (fileUploadHolder != null) {
             return fileUploadHolder.getFileName();
@@ -651,6 +664,7 @@ public class FileManageActionsBean extends InputController implements
         return null;
     }
 
+    @Override
     public void setFileName(String fileName) {
         if (fileUploadHolder != null) {
             fileUploadHolder.setFileName(fileName);
@@ -679,6 +693,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @Override
     @WebRemote
     public String removeSingleUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
@@ -691,6 +706,7 @@ public class FileManageActionsBean extends InputController implements
         return "";
     }
 
+    @Override
     @WebRemote
     public String removeAllUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
@@ -702,6 +718,7 @@ public class FileManageActionsBean extends InputController implements
         return "";
     }
 
+    @Override
     @WebRemote
     public String removeUploadedFile(String fileName) throws ClientException {
         UploadItem fileToDelete = null;

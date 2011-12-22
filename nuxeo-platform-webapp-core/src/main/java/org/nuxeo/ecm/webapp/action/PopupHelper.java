@@ -18,7 +18,7 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.jboss.seam.ScopeType.*;
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +48,6 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 
 @Name("popupHelper")
