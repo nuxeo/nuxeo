@@ -25,6 +25,7 @@ public interface UserPreferencesService {
     SimpleUserPreferences getSimpleUserPreferences(CoreSession session)
             throws ClientException;
 
+    @SuppressWarnings("rawtypes")
     <T extends UserPreferences> T getUserPreferences(CoreSession session,
             Class<T> configurationClass, String configurationFacet)
             throws ClientException;

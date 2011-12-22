@@ -23,19 +23,9 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.introspect.BasicBeanDescription;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.codehaus.jackson.map.ser.BeanSerializer;
-import org.codehaus.jackson.map.ser.BeanSerializerModifier;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
@@ -46,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class JsonWriter {
 
@@ -107,7 +97,7 @@ public class JsonWriter {
 
     /**
      * Used to export operations to studio
-     * 
+     *
      * @param info
      * @return
      * @throws IOException

@@ -54,7 +54,7 @@ public class FeedItem extends SyndEntryImpl implements Comparable<FeedItem> {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     // Can't use List<String> here because we're overriding an external library.
     public void setContributors(List contributors) {
@@ -103,6 +103,7 @@ public class FeedItem extends SyndEntryImpl implements Comparable<FeedItem> {
         }
     }
 
+    @Override
     public int compareTo(FeedItem fi) {
         if (getUpdatedDate() != null && fi.getUpdatedDate() != null) {
             return getUpdatedDate().compareTo(fi.getUpdatedDate());

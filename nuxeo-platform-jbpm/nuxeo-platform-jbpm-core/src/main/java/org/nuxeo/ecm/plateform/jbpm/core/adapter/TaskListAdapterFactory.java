@@ -28,7 +28,8 @@ import org.nuxeo.ecm.platform.jbpm.TaskListImpl;
  */
 public class TaskListAdapterFactory implements DocumentAdapterFactory {
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("rawtypes")
     public Object getAdapter(DocumentModel doc, Class clazz) {
         if (checkDocument(doc)) {
             return new TaskListImpl(doc);

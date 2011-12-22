@@ -1371,7 +1371,6 @@ public class Main extends ModuleRoot {
 
     @POST
     @Path("update_element_visibility")
-    @SuppressWarnings("unchecked")
     public void updateElementVisibility(@FormParam("id") String id,
             @FormParam("perspectives") List<String> perspectives,
             @FormParam("always_visible") Boolean alwaysVisible) {

@@ -860,7 +860,6 @@ public class JbpmServiceImpl implements JbpmService {
             private static final long serialVersionUID = 1L;
 
             @Override
-            @SuppressWarnings("unchecked")
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 if (principal != null) {

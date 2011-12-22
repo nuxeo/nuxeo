@@ -52,6 +52,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public <T extends UserPreferences> T getUserPreferences(
             CoreSession session, Class<T> userPrefClass, String userPrefFacet)
             throws ClientException {

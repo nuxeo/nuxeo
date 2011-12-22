@@ -129,7 +129,7 @@ public class NuxeoJobExecutorThread extends JobExecutorThread {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     protected Collection acquireJobs() {
         TransactionHelper.startTransaction();

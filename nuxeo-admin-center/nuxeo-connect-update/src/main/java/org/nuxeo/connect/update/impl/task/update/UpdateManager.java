@@ -28,24 +28,22 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.impl.task.update.JarUtils.Match;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.FileVersion;
-import org.nuxeo.connect.update.util.IOUtils;
 
 /**
  * Manage jar versions update.
- * 
+ * <p>
  * To manipulate the jar version registry you need to create a new instance of
  * this class.
- * 
+ * <p>
  * If you want to modify the registry then you may want to synchronize the
  * entire update process. This is how is done in the Task run method.
- * 
+ * <p>
  * Only reading the registry is thread safe.
- * 
+ * <p>
  * TODO backup md5 are not really used since we rely on versions - we can remove
  * md5
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class UpdateManager {
 
@@ -171,11 +169,11 @@ public class UpdateManager {
 
     /**
      * Perform a rollback.
-     * 
+     *
      * TODO the deleteOnExit is inherited from the current rollback command ...
      * may be it should be read from the version that is rollbacked.
      * (deleteOnExit should be an attribute of the entry not of the version)
-     * 
+     *
      * @param opt
      * @throws PackageException
      */
@@ -278,7 +276,7 @@ public class UpdateManager {
     /**
      * Create a new entry in the registry given the entry key. A base version
      * will be automatically created if needed.
-     * 
+     *
      * @param key
      * @return
      * @throws Exception
@@ -300,7 +298,7 @@ public class UpdateManager {
     /**
      * Backup the given file in the registry storage This will also create an
      * md5.
-     * 
+     *
      * @param file
      * @param path
      */
@@ -318,7 +316,7 @@ public class UpdateManager {
 
     /**
      * Remove the backup given its path. This is also removing the md5.
-     * 
+     *
      * @param path
      */
     protected void removeBackup(String path) {

@@ -42,7 +42,6 @@ public class ImagePlugin extends AbstractFileImporter {
     private static final Log log = LogFactory.getLog(ImagePlugin.class);
 
     @Override
-    @SuppressWarnings("unchecked")
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {

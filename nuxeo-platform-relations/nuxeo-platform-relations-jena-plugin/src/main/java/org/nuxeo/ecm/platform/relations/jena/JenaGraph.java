@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -535,6 +534,7 @@ public class JenaGraph implements Graph {
         this.namespaces = namespaces;
     }
 
+    @Override
     public Map<String, String> getNamespaces() {
         return namespaces;
     }
@@ -544,6 +544,7 @@ public class JenaGraph implements Graph {
         add(Collections.singletonList(statement));
     }
 
+    @Override
     public void add(List<Statement> statements) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -598,6 +599,7 @@ public class JenaGraph implements Graph {
         remove(Collections.singletonList(statement));
     }
 
+    @Override
     public void remove(List<Statement> statements) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -634,7 +636,7 @@ public class JenaGraph implements Graph {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public List<Statement> getStatements() {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -662,7 +664,7 @@ public class JenaGraph implements Graph {
         return getStatements(new StatementImpl(subject, predicate, object));
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public List<Statement> getStatements(Statement statement) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -685,6 +687,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public List<Node> getSubjects(Node predicate, Node object) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -713,7 +716,7 @@ public class JenaGraph implements Graph {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public List<Node> getPredicates(Node subject, Node object) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -747,6 +750,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public List<Node> getObjects(Node subject, Node predicate) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -775,6 +779,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public boolean hasStatement(Statement statement) {
         if (statement == null) {
             return false;
@@ -800,6 +805,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public boolean hasResource(Resource resource) {
         if (resource == null) {
             return false;
@@ -833,6 +839,7 @@ public class JenaGraph implements Graph {
      *
      * @return integer number of statements in the graph
      */
+    @Override
     public Long size() {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -853,6 +860,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public void clear() {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -882,7 +890,7 @@ public class JenaGraph implements Graph {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public QueryResult query(String queryString, String language, String baseURI) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -935,6 +943,7 @@ public class JenaGraph implements Graph {
         return res;
     }
 
+    @Override
     public boolean read(InputStream in, String lang, String base) {
         // XXX AT: maybe update namespaces in case some new appeared
         Model graph = null;
@@ -958,6 +967,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public boolean read(String path, String lang, String base) {
         // XXX AT: maybe update namespaces in case some new appeared
         InputStream in = null;
@@ -976,6 +986,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public boolean write(OutputStream out, String lang, String base) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -998,6 +1009,7 @@ public class JenaGraph implements Graph {
         }
     }
 
+    @Override
     public boolean write(String path, String lang, String base) {
         OutputStream out = null;
         try {
@@ -1040,6 +1052,7 @@ class ConnectionFixInvocationHandler implements InvocationHandler {
         this.connection = connection;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         final String name = method.getName();

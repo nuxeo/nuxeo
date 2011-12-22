@@ -43,14 +43,11 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.restlet.VirtualHost;
 
 /**
  * Seam Action bean to handle the preview tabs and associated actions.
