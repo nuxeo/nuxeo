@@ -15,10 +15,10 @@
 package org.nuxeo.theme.webengine.negotiation.collection;
 
 import org.nuxeo.theme.negotiation.Scheme;
-import org.nuxeo.ecm.webengine.model.WebContext;
 
 public final class UnspecifiedCollection implements Scheme {
 
+    @Override
     public String getOutcome(final Object context) {
         return "*";
     }
