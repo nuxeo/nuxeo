@@ -57,7 +57,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
             for (DocumentModel rootSection : rootSections) {
                 if (isPublicationNode(rootSection)) {
                     publicationNodes.add(new CoreFolderPublicationNode(rootSection,
-                            getConfigName(), sid, (CoreFolderPublicationNode) rootNode, factory));
+                            getConfigName(), sid, rootNode, factory));
                 }
             }
             return publicationNodes;
