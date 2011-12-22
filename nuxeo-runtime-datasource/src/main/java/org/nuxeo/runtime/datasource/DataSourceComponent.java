@@ -17,9 +17,6 @@
 
 package org.nuxeo.runtime.datasource;
 
-import java.lang.reflect.Field;
-import java.util.Hashtable;
-
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;

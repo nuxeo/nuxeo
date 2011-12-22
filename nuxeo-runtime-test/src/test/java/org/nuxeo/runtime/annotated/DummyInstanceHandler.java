@@ -17,17 +17,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.javasimon.SimonManager;
-import org.javasimon.Split;
-import org.javasimon.Stopwatch;
-
 /**
  * Start a user transaction if method or class is annotated for and if there is
- * no transaction active
- * 
+ * no transaction active.
+ *
  * @author matic
- * 
- * @param <T>
  */
 public class DummyInstanceHandler<T> implements InvocationHandler {
 

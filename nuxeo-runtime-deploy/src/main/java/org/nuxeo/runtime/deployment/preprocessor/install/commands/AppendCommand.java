@@ -23,15 +23,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
-import org.nuxeo.runtime.deployment.preprocessor.install.filters.IncludeFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -43,7 +40,7 @@ public class AppendCommand implements Command {
     protected final Path dst;
 
     protected final boolean addNewLine;
-    
+
     protected final FileNamePattern pattern;
 
     public AppendCommand(Path src, Path dst, boolean addNewLine, FileNamePattern pattern) {

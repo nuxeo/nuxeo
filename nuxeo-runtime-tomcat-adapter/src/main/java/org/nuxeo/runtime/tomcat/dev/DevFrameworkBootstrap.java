@@ -18,9 +18,7 @@ package org.nuxeo.runtime.tomcat.dev;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -35,7 +33,7 @@ import org.nuxeo.osgi.application.MutableClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         DevBundlesManager {
@@ -79,6 +77,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
     }
 
+    @Override
     public void toggleTimer() {
         // start reload timer
         if (bundlesCheck != null) {
@@ -99,6 +98,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
     }
 
+    @Override
     public boolean isTimerRunning() {
         return bundlesCheck != null;
     }
@@ -112,6 +112,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         super.stop();
     }
 
+    @Override
     public String getDevBundlesLocation() {
         return devBundlesFile.getAbsolutePath();
     }
@@ -140,6 +141,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
     }
 
+    @Override
     public void loadDevBundles() {
         long tm = devBundlesFile.lastModified();
         if (lastModified >= tm) {
@@ -154,12 +156,14 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
     }
 
+    @Override
     public void resetDevBundles(String path) {
         devBundlesFile = new File(path);
         lastModified = 0;
         loadDevBundles();
     }
 
+    @Override
     public DevBundle[] getDevBundles() {
         return devBundles;
     }
