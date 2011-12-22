@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -30,7 +30,8 @@ import freemarker.template.TemplateModelException;
  */
 public class SuperBlockDirective implements TemplateDirectiveModel {
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("rawtypes")
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {
 

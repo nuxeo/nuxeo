@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -38,15 +38,18 @@ public class PropertyIteratorTemplate extends PropertyWrapper implements
         this.iterator = iterator;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("rawtypes")
     public Object getAdaptedObject(Class hint) {
         return iterator;
     }
 
+    @Override
     public boolean hasNext() throws TemplateModelException {
         return iterator.hasNext();
     }
 
+    @Override
     public TemplateModel next() throws TemplateModelException {
         return wrap(iterator.next());
     }

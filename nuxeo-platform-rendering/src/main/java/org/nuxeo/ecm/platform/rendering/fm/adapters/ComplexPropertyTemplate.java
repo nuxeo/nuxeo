@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -41,11 +41,13 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements
         this.property = property;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("rawtypes")
     public Object getAdaptedObject(Class hint) {
         return property;
     }
 
+    @Override
     public TemplateCollectionModel keys() throws TemplateModelException {
         List<String> list = new ArrayList<String>(property.size());
         for (Property p : property.getChildren()) {
@@ -54,10 +56,12 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements
         return (TemplateCollectionModel) wrapper.wrap(list);
     }
 
+    @Override
     public int size() throws TemplateModelException {
         return property.size();
     }
 
+    @Override
     public TemplateCollectionModel values() throws TemplateModelException {
         try {
             List<Object> list = new ArrayList<Object>(property.size());
@@ -72,6 +76,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements
         }
     }
 
+    @Override
     public TemplateModel get(String name) throws TemplateModelException {
         try {
             Property p = property.get(name);
@@ -81,6 +86,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements
         }
     }
 
+    @Override
     public boolean isEmpty() throws TemplateModelException {
         return property.size() == 0;
     }

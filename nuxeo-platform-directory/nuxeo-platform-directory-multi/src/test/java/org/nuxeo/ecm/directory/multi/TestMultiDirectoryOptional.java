@@ -190,7 +190,6 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertNull(entry);
     }
 
-    @SuppressWarnings("null")
     public void testGetEntries() throws Exception {
         DocumentModelList l;
         l = dir.getEntries();

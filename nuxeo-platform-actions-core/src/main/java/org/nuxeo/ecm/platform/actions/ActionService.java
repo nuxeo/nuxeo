@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.actions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -101,14 +100,17 @@ public class ActionService extends DefaultComponent implements ActionManager {
         }
     }
 
+    @Override
     public List<Action> getActions(String category, ActionContext context) {
         return getActions(category, context, true);
     }
 
+    @Override
     public List<Action> getAllActions(String category) {
         return getActionRegistry().getActions(category);
     }
 
+    @Override
     public List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions) {
         List<Action> actions = getActionRegistry().getActions(category);
@@ -127,14 +129,17 @@ public class ActionService extends DefaultComponent implements ActionManager {
         }
     }
 
+    @Override
     public Action getAction(String actionId) {
         return getActionRegistry().getAction(actionId);
     }
 
+    @Override
     public boolean isRegistered(String actionId) {
         return getActionRegistry().getAction(actionId) != null;
     }
 
+    @Override
     public boolean isEnabled(String actionId, ActionContext context) {
         Action action = getActionRegistry().getAction(actionId);
         if (action != null) {
@@ -154,6 +159,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return true;
     }
 
+    @Override
     public ActionFilter[] getFilters(String actionId) {
         Action action = getActionRegistry().getAction(actionId);
         if (action == null) {

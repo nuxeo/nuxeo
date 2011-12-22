@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -48,7 +48,8 @@ public class DocumentTemplate implements TemplateHashModelEx,
         this.wrapper = wrapper;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("rawtypes")
     public Object getAdaptedObject(Class hint) {
         return doc;
     }
@@ -57,6 +58,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
         return doc;
     }
 
+    @Override
     public TemplateModel get(String key) throws TemplateModelException {
         try {
             Object value = DefaultDocumentView.DEFAULT.get(doc, key);
@@ -77,6 +79,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
     /**
      * A doc model is never empty.
      */
+    @Override
     public boolean isEmpty() throws TemplateModelException {
         return false;
     }
@@ -85,6 +88,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
         return DefaultDocumentView.DEFAULT.getFields().keySet();
     }
 
+    @Override
     public TemplateCollectionModel keys() throws TemplateModelException {
         return (TemplateCollectionModel) wrapper.wrap(getRawKeys());
     }
@@ -102,10 +106,12 @@ public class DocumentTemplate implements TemplateHashModelEx,
         return values;
     }
 
+    @Override
     public TemplateCollectionModel values() throws TemplateModelException {
         return (TemplateCollectionModel) wrapper.wrap(getRawValues());
     }
 
+    @Override
     public int size() throws TemplateModelException {
         return DefaultDocumentView.DEFAULT.size(null);
     }

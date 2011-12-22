@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -43,6 +42,7 @@ public class Md2HtmlConverter implements Converter {
 
     private ConverterDescriptor descriptor;
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -79,6 +79,7 @@ public class Md2HtmlConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         this.descriptor = descriptor;
     }

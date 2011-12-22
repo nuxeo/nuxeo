@@ -139,6 +139,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return dirContext;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws DirectoryException {
@@ -228,15 +229,18 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
+    @Override
     public DocumentModel getEntry(String id) throws DirectoryException {
         return directory.getCache().getEntry(id, this);
     }
 
+    @Override
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
+    @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
             throws DirectoryException {
         try {
@@ -251,6 +255,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
+    @Override
     public boolean hasEntry(String id) throws DirectoryException {
         try {
             // TODO: check directory cache first
@@ -341,6 +346,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return result;
     }
 
+    @Override
     public DocumentModelList getEntries() throws DirectoryException {
         try {
             SearchControls scts = directory.getSearchControls();
@@ -361,6 +367,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         if (isReadOnlyEntry(docModel)) {
@@ -458,10 +465,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
         directory.invalidateCaches();
     }
 
+    @Override
     public void deleteEntry(DocumentModel dm) throws DirectoryException {
         deleteEntry(dm.getId());
     }
 
+    @Override
     public void deleteEntry(String id) throws DirectoryException {
         if (isReadOnly()) {
             return;
@@ -487,6 +496,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         directory.invalidateCaches();
     }
 
+    @Override
     public void deleteEntry(String id, Map<String, String> map)
             throws DirectoryException {
         log.warn("Calling deleteEntry extended on LDAP directory");
@@ -598,38 +608,45 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter)
             throws DirectoryException {
         // by default, do not fetch references of result entries
         return query(filter, emptySet, new HashMap<String, String>());
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return query(filter, fulltext, false, orderBy);
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
         return query(filter, fulltext, fetchReferences, orderBy);
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws DirectoryException {
         // by default, do not fetch references of result entries
         return query(filter, fulltext, new HashMap<String, String>());
     }
 
+    @Override
     public void commit() {
         // No LDAP support for transactions
     }
 
+    @Override
     public void rollback() {
         // No LDAP support for transactions
     }
 
+    @Override
     public void close() throws DirectoryException {
         try {
             dirContext.close();
@@ -640,11 +657,13 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
+    @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws DirectoryException {
         return getProjection(filter, emptySet, columnName);
     }
 
+    @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws DirectoryException {
         // XXX: this suboptimal code should be either optimized for LDAP or
@@ -941,6 +960,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return id;
     }
 
+    @Override
     public boolean authenticate(String username, String password)
             throws DirectoryException {
 
@@ -995,19 +1015,23 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
+    @Override
     public String getIdField() {
         return directory.getConfig().getIdField();
     }
 
+    @Override
     public String getPasswordField() {
         return directory.getConfig().getPasswordField();
     }
 
+    @Override
     public boolean isAuthenticating() throws DirectoryException {
         String password = getPasswordField();
         return schemaFieldMap.containsKey(password);
     }
 
+    @Override
     public boolean isReadOnly() {
         return directory.getConfig().getReadOnly();
     }
@@ -1068,7 +1092,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected List<String> getMandatoryAttributes() throws DirectoryException {
         return getMandatoryAttributes(null);
     }
@@ -1080,6 +1103,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 directory.getName());
     }
 
+    @Override
     public DocumentModel createEntry(DocumentModel entry)
             throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(directory.getSchema());

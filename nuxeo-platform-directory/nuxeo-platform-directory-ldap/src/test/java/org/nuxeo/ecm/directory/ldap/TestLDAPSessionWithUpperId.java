@@ -57,7 +57,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
 
     // override tests to get specific use cases
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void testGetEntry() throws Exception {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
