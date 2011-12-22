@@ -29,11 +29,8 @@ import java.util.Set;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
-import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.servlet.ServletContext;
@@ -43,13 +40,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Seam;
 import org.jboss.seam.core.Init;
-import org.jboss.seam.exception.Exceptions;
 import org.jboss.seam.init.Initialization;
-import org.jboss.seam.navigation.Pages;
 
 /**
  * Helper class to manage Seam Hot Reload
- * 
+ *
  * Most of the code comes from Jboss Seam 2.0.3-RC1 Debug package
  * (HotDeployFilter)
  */
@@ -92,7 +87,7 @@ public class SeamHotReloadHelper {
         }
 
         // re-initialized by re-deployment, why removing ?
-        // servletContext.removeAttribute(Seam.getComponentName(Pages.class)); 
+        // servletContext.removeAttribute(Seam.getComponentName(Pages.class));
         return init.getHotDeployableComponents();
     }
 

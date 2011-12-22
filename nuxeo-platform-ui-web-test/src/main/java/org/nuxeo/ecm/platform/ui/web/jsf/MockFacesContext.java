@@ -65,7 +65,7 @@ import javax.faces.validator.Validator;
  *
  * @author Anahide Tchertchian
  */
-@SuppressWarnings(value = { "deprecation", "unchecked" })
+@SuppressWarnings("deprecation")
 public abstract class MockFacesContext extends FacesContext {
 
     public void setCurrent() {
@@ -86,6 +86,7 @@ public abstract class MockFacesContext extends FacesContext {
 
     public class MockApplication extends Application {
 
+        @Override
         public Object evaluateExpressionGet(FacesContext context,
                 String expression, Class expectedType) throws ELException {
             return ((MockFacesContext) context).evaluateExpressionGet(context,

@@ -150,7 +150,6 @@ public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
         image = null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void createITextObject(FacesContext context) throws IOException,
             DocumentException {

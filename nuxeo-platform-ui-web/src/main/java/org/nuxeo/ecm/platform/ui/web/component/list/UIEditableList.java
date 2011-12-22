@@ -173,7 +173,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
     // FIXME AT: should use the list property as EditableModel instead
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Object getValue() {
         Object value = super.getValue();
         if (value == null

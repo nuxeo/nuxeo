@@ -45,7 +45,6 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
     public static final String FOOTER_FACET_NAME = "footer";
 
-    @SuppressWarnings("unchecked")
     @Override
     public void encodeBegin(FacesContext facesContext) throws IOException {
         // Get workbook and worksheet
@@ -127,7 +126,7 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void encodeChild(FacesContext facesContext, UIWorksheet sheet,
             ExcelWorkbook excelWorkbook, UIComponent child) throws IOException {
         // XXX make sure other components are processed

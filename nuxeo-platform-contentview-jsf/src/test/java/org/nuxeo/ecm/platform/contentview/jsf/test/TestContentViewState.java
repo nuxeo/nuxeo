@@ -56,7 +56,6 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     DocumentModel searchDocument;
 
     @Override
-    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         super.setUp();
 
@@ -79,6 +78,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         // set mock faces context for needed properties resolution
         facesContext = new MockFacesContext() {
             @Override
+            @SuppressWarnings("rawtypes")
             public Object evaluateExpressionGet(FacesContext context,
                     String expression, Class expectedType) throws ELException {
                 if ("#{documentManager}".equals(expression)) {
