@@ -16,5 +16,12 @@
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
   <target name="run-selenium-tests" depends="run-selenium" />
+  <target name="add-smtp-conf">
+    <echo file="${out.dir}/tomcat/bin/nuxeo.conf" append="true">
+      mail.smtp.host=merguez.in.nuxeo.com
+      mail.smtp.port=2500
+      mail.from=sc@test.com
+    </echo>
+  </target>
 
 </project>

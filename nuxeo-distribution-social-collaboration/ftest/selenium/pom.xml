@@ -39,6 +39,7 @@
               <buildFile>${basedir}/itests.xml</buildFile>
               <targets>
                 <target>prepare-environment</target>
+                <target>add-smtp-conf</target>
                 <target>start</target>
               </targets>
             </configuration>
