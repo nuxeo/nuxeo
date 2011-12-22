@@ -34,9 +34,9 @@ import org.nuxeo.runtime.model.Extension;
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class ComponentWithXPoint implements Component {
 
-    private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
-
     public static final ComponentName NAME = new ComponentName("BaseXPoint");
+
+    private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
 
     final List<DummyContribution> contribs = new ArrayList<DummyContribution>();
 

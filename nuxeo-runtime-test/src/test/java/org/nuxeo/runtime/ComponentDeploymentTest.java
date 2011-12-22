@@ -60,5 +60,4 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
         assertNotNull(co);
     }
 
-
 }
