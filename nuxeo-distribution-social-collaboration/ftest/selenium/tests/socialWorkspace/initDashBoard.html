@@ -4,13 +4,18 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
-<title>Separate OutOfSocialWorkspace Member Verification for the private news</title>
+<title>Initiate Dashboard</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Separate OutOfSocialWorkspace Member Verification for the private news</td></tr>
+<tr><td rowspan="1" colspan="3">Initiate Dashboard</td></tr>
 </thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium initDashboard</td>
+	<td></td>
+</tr>
 <tr>
 	<td>setTimeout</td>
 	<td>120000</td>
@@ -24,7 +29,7 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
-	<td>OutOfSocialWorkspaceMember</td>
+	<td>SocialWorkspaceMember</td>
 </tr>
 <tr>
 	<td>type</td>
@@ -47,43 +52,38 @@
 	<td>60000</td>
 </tr>
 <tr>
-	<td>selectOpenSocialGadgetFrame</td>
-	<td>news</td>
+	<td>click</td>
+	<td>//*[@id=&quot;addGadgetButton&quot;]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>Administrator</td>
+	<td>waitForElementPresent</td>
+	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='usersocialworkspaces']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>News for test</td>
+	<td>click</td>
+	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='usersocialworkspaces']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
+	<td>verifyElementPresent</td>
+	<td>//*[@id=&quot;addGadgetButton&quot;]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>selectOpenSocialGadgetFrame</td>
-	<td>usersocialworkspaces</td>
+	<td>click</td>
+	<td>//*[@id=&quot;addGadgetButton&quot;]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>SocialWorkspaceForNews</td>
+	<td>waitForElementPresent</td>
+	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='news']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>Administrator</td>
-	<td></td>
-</tr>
-<tr>
-	<td>selectWindow</td>
-	<td>null</td>
+	<td>click</td>
+	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='news']</td>
 	<td></td>
 </tr>
 </tbody></table>

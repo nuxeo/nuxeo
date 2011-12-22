@@ -4,13 +4,18 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
-<title>Initiate Dashboard</title>
+<title>Verify private news by the non member</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Initiate Dashboard</td></tr>
+<tr><td rowspan="1" colspan="3">Verify private news by the non member</td></tr>
 </thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium verifyPrivateNewsByNonMember</td>
+	<td></td>
+</tr>
 <tr>
 	<td>setTimeout</td>
 	<td>120000</td>
@@ -24,12 +29,12 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
-	<td>Administrator</td>
+	<td>OutOfSocialWorkspaceMember</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>password</td>
-	<td>Administrator</td>
+	<td>pwd</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -47,38 +52,43 @@
 	<td>60000</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//*[@id=&quot;addGadgetButton&quot;]</td>
+	<td>selectOpenSocialGadgetFrame</td>
+	<td>news</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='usersocialworkspaces']</td>
+	<td>verifyTextNotPresent</td>
+	<td>Administrator</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='usersocialworkspaces']</td>
+	<td>verifyTextNotPresent</td>
+	<td>News for test</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//*[@id=&quot;addGadgetButton&quot;]</td>
+	<td>selectWindow</td>
+	<td>null</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//*[@id=&quot;addGadgetButton&quot;]</td>
+	<td>selectOpenSocialGadgetFrame</td>
+	<td>usersocialworkspaces</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='news']</td>
+	<td>verifyTextNotPresent</td>
+	<td>SocialWorkspaceForNews</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//div[@id='gadgetListContainer']/div/div[@gadget-name='news']</td>
+	<td>verifyTextNotPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
 	<td></td>
 </tr>
 </tbody></table>

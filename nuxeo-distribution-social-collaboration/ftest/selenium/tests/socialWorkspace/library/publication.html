@@ -2,63 +2,64 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
-<title>testBrowser_createFolder</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="selenium.base" href="http://localhost:8080/nuxeo/"/>
+<title>Gadget Library: publication</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">testBrowser_createFolder</td></tr>
+<tr><td rowspan="1" colspan="3">Gadget Library: publication</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
-	<td>nxpath/default/collaboration/testBrowserSocialWorkspa@view_documents</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium publication</td>
+	<td></td>
+</tr>
+<!-- navigate using gadget -->
+<tr>
+	<td>open</td>
+	<td>nxpath/default/collaboration/testPublicationSW@view_documents</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//a/img[@alt=&quot;create folder&quot;]</td>
+	<td>//div[@class=&quot;customSearchBox&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//a/img[@alt=&quot;create folder&quot;]</td>
+	<td>//a[@class=&quot;navigation&quot;][ text()=&quot;News&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//input[@name=&quot;createDocument&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//input[@name=&quot;dc:title&quot;]</td>
-	<td>TestFolder</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//input[@name=&quot;createDocument&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>pause</td>
-	<td>3000</td>
+	<td>//img[@alt=&quot;publish private&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//a/img[@alt=&quot;goToParent&quot;]/..</td>
+	<td>//img[@alt=&quot;publish private&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//a[contains(@href,&quot;TestFolder&quot;)]</td>
+	<td>//button[@name=&quot;ok&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//a[contains(@href,&quot;TestFolder&quot;)]</td>
+	<td>//button[@name=&quot;ok&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//img[@alt=&quot;make it public&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//img[@alt=&quot;make it public&quot;]</td>
 	<td></td>
 </tr>
 <tr>

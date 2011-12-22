@@ -4,13 +4,18 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
-<title>Create a Public news</title>
+<title>Modify a Public news</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Create a Public news</td></tr>
+<tr><td rowspan="1" colspan="3">Modify a Public news</td></tr>
 </thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium modifyPublicNews</td>
+	<td></td>
+</tr>
 <tr>
 	<td>setTimeout</td>
 	<td>120000</td>
@@ -53,32 +58,22 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Create a News Item</td>
+	<td>link=Public news</td>
 	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//*[@id=&quot;document_create:nxl_social_document_heading:nxw_title&quot;]</td>
-	<td>Public news</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>id=document_create:nxl_news_item:nxw_social_document_visibility:nxw_social_document_visibility_checkbox:1</td>
-	<td></td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>//*[contains(@id,&quot;nxw_social_document_content_editorselector&quot;)]</td>
-	<td>label=Text</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//*[@id=&quot;document_create:nxl_social_document_heading:nxw_required_description&quot;]</td>
-	<td>And now the content of the public news</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//*[@id=&quot;document_create:create_doc_CREATE_DOCUMENT&quot;]</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;document_edit:nxl_social_document_heading:nxw_required_description&quot;]</td>
+	<td>changing the content of the public news</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//*[@id=&quot;document_edit:edit_doc_EDIT_CURRENT_DOCUMENT&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -114,7 +109,7 @@
 <tr>
 	<td>verifyText</td>
 	<td>//div/p[2]</td>
-	<td>And now the content of the public news</td>
+	<td>changing the content of the public news</td>
 </tr>
 <tr>
 	<td>selectWindow</td>
@@ -142,11 +137,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>SocialWorkspaceMember</td>
-	<td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
 	<td>link=Home</td>
 	<td></td>
@@ -179,7 +169,7 @@
 <tr>
 	<td>verifyText</td>
 	<td>//div/p[2]</td>
-	<td>And now the content of the public news</td>
+	<td>changing the content of the public news</td>
 </tr>
 <tr>
 	<td>selectWindow</td>
@@ -216,12 +206,12 @@
 	<td>null</td>
 	<td></td>
 </tr>
-<tr>
+<!--tr>
 	<td>open</td>
 	<td>logout</td>
 	<td></td>
 </tr>
-<!--tr>
+<tr>
 	<td>type</td>
 	<td>username</td>
 	<td>OutOfSocialWorkspaceMember</td>
@@ -269,7 +259,7 @@
 <tr>
 	<td>verifyText</td>
 	<td>//div/p[2]</td>
-	<td>And now the content of the public news</td>
+	<td>changing the content of the public news</td>
 </tr>
 <tr>
 	<td>selectWindow</td>

@@ -4,13 +4,18 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
-<title>Initiate Dashboard</title>
+<title>Initiate Administrator Dashboard</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Initiate Dashboard</td></tr>
+<tr><td rowspan="1" colspan="3">Initiate Administrator Dashboard</td></tr>
 </thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium initAdminDashboard</td>
+	<td></td>
+</tr>
 <tr>
 	<td>setTimeout</td>
 	<td>120000</td>
@@ -24,12 +29,12 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
-	<td>SocialWorkspaceMember</td>
+	<td>Administrator</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>password</td>
-	<td>pwd</td>
+	<td>Administrator</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
