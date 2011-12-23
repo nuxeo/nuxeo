@@ -18,11 +18,15 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.jsf;
 
+import java.io.Serializable;
+
 
 /**
  * Simple cached item holder with time + key invalidation strategy
  */
-public class Cached<T> {
+public class Cached<T> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public long cachedAt;
 

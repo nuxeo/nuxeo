@@ -64,7 +64,7 @@ public class SuggesterDescriptor implements Cloneable {
                 suggester = (Suggester) runtimeContext.loadClass(className).newInstance();
             } catch (Exception e) {
                 throw new ComponentInitializationException(String.format(
-                        "Failed to initialize suggester '%d' with class '%s'",
+                        "Failed to initialize suggester '%s' with class '%s'",
                         name, className), e);
             }
             suggester.initWithParameters(this);
@@ -80,7 +80,7 @@ public class SuggesterDescriptor implements Cloneable {
 
     public void mergeFrom(SuggesterDescriptor previousDescriptor)
             throws ComponentInitializationException {
-        if (name == null || !name.equals(previousDescriptor)) {
+        if (name == null || !name.equals(previousDescriptor.name)) {
             throw new RuntimeException("Cannot merge descriptor with name '"
                     + name + "' with another descriptor with different name "
                     + previousDescriptor.getName() + "'");
