@@ -65,6 +65,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UnlockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
+import org.nuxeo.ecm.automation.core.operations.execution.RunInNewTransaction;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
@@ -127,6 +128,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(RunScript.class);
         service.putOperation(RunOperation.class);
         service.putOperation(RunOperationOnList.class);
+        service.putOperation(RunInNewTransaction.class);
         service.putOperation(RunDocumentChain.class);
         service.putOperation(RunFileChain.class);
         service.putOperation(CopyDocument.class);
