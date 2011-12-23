@@ -125,7 +125,7 @@ public class DateMatcher {
             if (control < 2 || control > 12 + 31 || first < 1 || second < 1) {
                 return new DateMatcher(true, true, true, null);
             } else if (control < 12 + 12 + 1) {
-                new DateMatcher(true, true, true, dateToInstance(year,
+                return new DateMatcher(true, true, true, dateToInstance(year,
                         first, second));
             }
             int month = first;
@@ -151,7 +151,7 @@ public class DateMatcher {
             if (control < 2 || control > 12 + 31 || first < 1 || second < 1) {
                 return new DateMatcher(true, true, true, null);
             } else if (control < 12 + 12 + 1) {
-                new DateMatcher(true, true, true, dateToInstance(year,
+                return new DateMatcher(true, true, true, dateToInstance(year,
                         first, second));
             }
             int month = first;
