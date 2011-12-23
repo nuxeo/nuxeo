@@ -1,7 +1,6 @@
 package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,11 +23,11 @@ import org.nuxeo.ecm.platform.suggestbox.utils.DateMatcher;
  */
 public class DocumentSearchByDateSuggester implements Suggester {
 
-    final static String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;
+    static final String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;
 
-    final static String LABEL_BEFORE_PREFIX = "label.search.beforeDate_";
+    static final String LABEL_BEFORE_PREFIX = "label.search.beforeDate_";
 
-    final static String LABEL_AFTER_PREFIX = "label.search.afterDate_";
+    static final String LABEL_AFTER_PREFIX = "label.search.afterDate_";
 
     protected String[] searchFields;
 
@@ -45,8 +44,8 @@ public class DocumentSearchByDateSuggester implements Suggester {
         // TODO: use SimpleDateFormat and use the locale information from the
         // context
         DateMatcher matcher = DateMatcher.fromInput(userInput);
-        DateFormat labelDateFormatter = SimpleDateFormat.getDateInstance(
-                SimpleDateFormat.MEDIUM, context.locale);
+        DateFormat labelDateFormatter = DateFormat.getDateInstance(
+                DateFormat.MEDIUM, context.locale);
 
         if (matcher.hasMatch()) {
             Date date = matcher.getDateSuggestion().getTime();

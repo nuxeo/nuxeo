@@ -5,10 +5,10 @@ import java.util.List;
 /**
  * Pluggable service to generate user action suggestions based on text input and
  * contextual data.
- * 
+ * <p>
  * This services aims to build more natural user interfaces for search and
  * navigation by trying to interpret and make explicit possible user intents.
- * 
+ * <p>
  * Possible usages of this service:
  * 
  * <ul>
@@ -32,18 +32,18 @@ public interface SuggestionService {
      * @param context user context (with suggestPoint name and more)
      * @return generated suggestion for the given input and context
      */
-    public List<Suggestion> suggest(String userInput, SuggestionContext context)
+    List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException;
 
     /**
      * Call a single suggester registered under the provided name.
      *
      * @param userInput text typed by the user
-     * @param context user context (with suggestPoint name and more)
+     * @param suggestionContext user context (with suggestPoint name and more)
      * @param suggester the registration name of the suggester to use
      * @return generated suggestion for the given input and context
      */
-    public List<Suggestion> suggest(String searchKeywords,
+    List<Suggestion> suggest(String searchKeywords,
             SuggestionContext suggestionContext, String suggester)
             throws SuggestionException;
 
@@ -55,11 +55,11 @@ public interface SuggestionService {
      * @param context the suggestion context that is also passed to as Content
      *            Automation context.
      * @return the outcome of the selected operation chain. In a JSF / Seam
-     *         environment, the ouctome is passed as a String to the JSF
+     *         environment, the outcome is passed as a String to the JSF
      *         runtime. In a JAX-RS environment the outcome could be passed as a
      *         resource path for redirect navigation.
      */
-    public Object handleSelection(Suggestion suggestion,
+    Object handleSelection(Suggestion suggestion,
             SuggestionContext context) throws SuggestionHandlingException;
 
 }

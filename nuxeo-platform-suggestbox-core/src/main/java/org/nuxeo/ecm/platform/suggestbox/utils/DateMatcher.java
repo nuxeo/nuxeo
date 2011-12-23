@@ -1,7 +1,6 @@
 package org.nuxeo.ecm.platform.suggestbox.utils;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,32 +10,31 @@ import org.joda.time.chrono.GregorianChronology;
 
 public class DateMatcher {
 
+    private static final Pattern YEAR_ONLY_MATCHER = Pattern.compile("^\\d{4}$");
+
+    private static final Pattern MONTH_DIGIT_ONLY_MATCHER = Pattern.compile("^\\d{2}$");
+
+    private static final Pattern YEAR_MONTHS_MATCHER = Pattern.compile("^\\d{4}[_ -:]\\d{2}$");
+
+    private static final Pattern MONTHS_YEAR_MATCHER = Pattern.compile("^\\d{2}[_ -:]\\d{4}$");
+
+    private static final Pattern MONTHS_DAY_YEAR_MATCHER = Pattern.compile("^\\d{2}[_ -:]\\d{2,}[_ -:]\\d{4}$");
+
+    private static final Pattern YEAR_MONTHS_DAY_MATCHER = Pattern.compile("^\\d{4}[_ -:]\\d{2,}[_ -:]\\d{2}$");
+
     private boolean withYears = false;
 
     private boolean withMonth = false;
 
     private boolean withDay = false;
 
-    private Calendar dateSuggestion;
-
-    private final static Pattern YEAR_ONLY_MATCHER = Pattern.compile("^\\d{4}$");
-
-    private final static Pattern MONTH_DIGIT_ONLY_MATCHER = Pattern.compile("^\\d{2}$");
-
-    private final static Pattern YEAR_MONTHS_MATCHER = Pattern.compile("^\\d{4}[_ -:]\\d{2}$");
-
-    private final static Pattern MONTHS_YEAR_MATCHER = Pattern.compile("^\\d{2}[_ -:]\\d{4}$");
-
-    private final static Pattern MONTHS_DAY_YEAR_MATCHER = Pattern.compile("^\\d{2}[_ -:]\\d{2,}[_ -:]\\d{4}$");
-
-    private final static Pattern YEAR_MONTHS_DAY_MATCHER = Pattern.compile("^\\d{4}[_ -:]\\d{2,}[_ -:]\\d{2}$");
+    private final Calendar dateSuggestion;
 
     private DateMatcher(boolean withYears, boolean withMonth,
-            boolean witDay, Calendar dateSuggestion) {
-        super();
+            boolean withDay, Calendar dateSuggestion) {
         this.withYears = withYears;
         this.withMonth = withMonth;
-        this.withDay = witDay;
+        this.withDay = withDay;
         this.dateSuggestion = dateSuggestion;
     }
 
@@ -73,8 +71,7 @@ public class DateMatcher {
     }
 
     public static Matcher parsingDate(Pattern pattern, String input) {
-        Matcher matcher = pattern.matcher(input.trim());
-        return matcher;
+        return pattern.matcher(input.trim());
     }
 
     public static DateMatcher fromInput(String input) {
@@ -93,8 +90,8 @@ public class DateMatcher {
             }
             return new DateMatcher(false, true, false,
                     dateToInstance(
-                            GregorianCalendar.getInstance().get(
-                                    GregorianCalendar.YEAR), month, 1));
+                            Calendar.getInstance().get(
+                                    Calendar.YEAR), month, 1));
         }
         matcher = parsingDate(YEAR_MONTHS_MATCHER, input);
         if (matcher.find()) {
@@ -176,7 +173,6 @@ public class DateMatcher {
     }
 
     protected static Calendar dateToInstance(int year, int month, int day) {
-
         Chronology chrono = GregorianChronology.getInstance();
         DateTime dt = new DateTime(year, month, day, 12, 0, 0, 0, chrono);
         Calendar gregorianCalendar = dt.toGregorianCalendar();

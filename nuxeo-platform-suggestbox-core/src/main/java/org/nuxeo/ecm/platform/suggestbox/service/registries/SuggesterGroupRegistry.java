@@ -9,7 +9,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 public class SuggesterGroupRegistry extends
         ContributionFragmentRegistry<SuggesterGroupDescriptor> {
 
-    protected Map<String, SuggesterGroupDescriptor> suggesterGroupDescriptors = new HashMap<String, SuggesterGroupDescriptor>();
+    protected final Map<String, SuggesterGroupDescriptor> suggesterGroupDescriptors = new HashMap<String, SuggesterGroupDescriptor>();
 
     public SuggesterGroupDescriptor getSuggesterGroupDescriptor(String name) {
         return suggesterGroupDescriptors.get(name);

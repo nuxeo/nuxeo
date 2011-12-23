@@ -16,7 +16,7 @@ public interface Suggester {
      * @throws SuggestionException if the configuration or context are
      *             inconsistent, or a backing service is failing.
      */
-    public List<Suggestion> suggest(String userInput, SuggestionContext context)
+    List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException;
 
     /**
@@ -26,6 +26,6 @@ public interface Suggester {
      * @param descriptor XMap descriptor with the aggregate configuration
      *            information of the component.
      */
-    public void initWithParameters(SuggesterDescriptor descriptor)
+    void initWithParameters(SuggesterDescriptor descriptor)
             throws ComponentInitializationException;
 }

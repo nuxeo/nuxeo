@@ -39,7 +39,7 @@ public class UserGroupLookupSuggester implements Suggester {
 
     protected List<String> searchFields = new ArrayList<String>();
 
-    protected String searchLabelPrefix = "label.searchDocumentsByUser_";
+    protected final String searchLabelPrefix = "label.searchDocumentsByUser_";
 
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context)

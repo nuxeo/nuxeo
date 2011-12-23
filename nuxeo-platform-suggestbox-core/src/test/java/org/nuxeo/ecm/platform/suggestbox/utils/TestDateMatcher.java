@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 
 import org.junit.Test;
 
@@ -72,13 +72,13 @@ public class TestDateMatcher {
         assertFalse(dateOnlyYear.isWitDay());
         assertNotNull(dateOnlyYear.getDateSuggestion());
         assertEquals(1980,
-                dateOnlyYear.getDateSuggestion().get(GregorianCalendar.YEAR));
+                dateOnlyYear.getDateSuggestion().get(Calendar.YEAR));
         assertEquals(0,
-                dateOnlyYear.getDateSuggestion().get(GregorianCalendar.MONTH));
+                dateOnlyYear.getDateSuggestion().get(Calendar.MONTH));
         assertEquals(
                 1,
                 dateOnlyYear.getDateSuggestion().get(
-                        GregorianCalendar.DAY_OF_MONTH));
+                        Calendar.DAY_OF_MONTH));
 
         DateMatcher dateOnlyMonth = DateMatcher.fromInput("10");
         assertNotNull(dateOnlyMonth);
@@ -87,13 +87,13 @@ public class TestDateMatcher {
         assertFalse(dateOnlyMonth.isWitDay());
         assertNotNull(dateOnlyMonth.getDateSuggestion());
         assertEquals(2011,
-                dateOnlyMonth.getDateSuggestion().get(GregorianCalendar.YEAR));
+                dateOnlyMonth.getDateSuggestion().get(Calendar.YEAR));
         assertEquals(9,
-                dateOnlyMonth.getDateSuggestion().get(GregorianCalendar.MONTH));
+                dateOnlyMonth.getDateSuggestion().get(Calendar.MONTH));
         assertEquals(
                 1,
                 dateOnlyMonth.getDateSuggestion().get(
-                        GregorianCalendar.DAY_OF_MONTH));
+                        Calendar.DAY_OF_MONTH));
 
         DateMatcher impossibleDate = DateMatcher.fromInput("02 29 2011");
         assertNotNull(impossibleDate);
@@ -110,15 +110,15 @@ public class TestDateMatcher {
         assertNotNull(dateMonthDayYear.getDateSuggestion());
         assertEquals(
                 2011,
-                dateMonthDayYear.getDateSuggestion().get(GregorianCalendar.YEAR));
+                dateMonthDayYear.getDateSuggestion().get(Calendar.YEAR));
         assertEquals(
                 1,
                 dateMonthDayYear.getDateSuggestion().get(
-                        GregorianCalendar.MONTH));
+                        Calendar.MONTH));
         assertEquals(
                 28,
                 dateMonthDayYear.getDateSuggestion().get(
-                        GregorianCalendar.DAY_OF_MONTH));
+                        Calendar.DAY_OF_MONTH));
 
         DateMatcher dateMonthDayUnder12Year = DateMatcher.fromInput("02 12 2011");
         assertNotNull(dateMonthDayUnder12Year);
@@ -129,15 +129,15 @@ public class TestDateMatcher {
         assertEquals(
                 2011,
                 dateMonthDayUnder12Year.getDateSuggestion().get(
-                        GregorianCalendar.YEAR));
+                        Calendar.YEAR));
         assertEquals(
                 1,
                 dateMonthDayUnder12Year.getDateSuggestion().get(
-                        GregorianCalendar.MONTH));
+                        Calendar.MONTH));
         assertEquals(
                 12,
                 dateMonthDayUnder12Year.getDateSuggestion().get(
-                        GregorianCalendar.DAY_OF_MONTH));
+                        Calendar.DAY_OF_MONTH));
 
         DateMatcher dateYearMonthDay = DateMatcher.fromInput("2009 03 30");
         assertNotNull(dateYearMonthDay);
@@ -147,15 +147,15 @@ public class TestDateMatcher {
         assertNotNull(dateYearMonthDay.getDateSuggestion());
         assertEquals(
                 2009,
-                dateYearMonthDay.getDateSuggestion().get(GregorianCalendar.YEAR));
+                dateYearMonthDay.getDateSuggestion().get(Calendar.YEAR));
         assertEquals(
                 2,
                 dateYearMonthDay.getDateSuggestion().get(
-                        GregorianCalendar.MONTH));
+                        Calendar.MONTH));
         assertEquals(
                 30,
                 dateYearMonthDay.getDateSuggestion().get(
-                        GregorianCalendar.DAY_OF_MONTH));
+                        Calendar.DAY_OF_MONTH));
 
     }
 
