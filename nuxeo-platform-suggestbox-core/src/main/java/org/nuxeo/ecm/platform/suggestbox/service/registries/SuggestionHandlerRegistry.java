@@ -10,7 +10,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 public class SuggestionHandlerRegistry extends
         ContributionFragmentRegistry<SuggestionHandlerDescriptor> {
 
-    protected Map<String, SuggestionHandlerDescriptor> suggestionHandlerDescriptors = new LinkedHashMap<String, SuggestionHandlerDescriptor>();
+    protected final Map<String, SuggestionHandlerDescriptor> suggestionHandlerDescriptors = new LinkedHashMap<String, SuggestionHandlerDescriptor>();
 
     public Collection<SuggestionHandlerDescriptor> getHandlers() {
         return suggestionHandlerDescriptors.values();

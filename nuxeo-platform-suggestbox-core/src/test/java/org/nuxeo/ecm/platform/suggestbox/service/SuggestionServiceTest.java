@@ -92,20 +92,20 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     protected void makeSomeUsersAndGroups() throws ClientException {
         Session userSession = userdir.getSession();
-        HashMap<String, Object> john = new HashMap<String, Object>();
+        Map<String, Object> john = new HashMap<String, Object>();
         john.put("username", "john");
         john.put("firstName", "John");
         john.put("lastName", "Lennon");
         userSession.createEntry(john);
 
-        HashMap<String, Object> bob = new HashMap<String, Object>();
+        Map<String, Object> bob = new HashMap<String, Object>();
         bob.put("username", "bob");
         bob.put("firstName", "Bob");
         bob.put("lastName", "Marley");
         userSession.createEntry(bob);
 
         Session groupSession = groupDir.getSession();
-        HashMap<String, Object> musicians = new HashMap<String, Object>();
+        Map<String, Object> musicians = new HashMap<String, Object>();
         musicians.put("groupname", "musicians");
         musicians.put("grouplabel", "Musicians");
         musicians.put("members", Arrays.asList("john", "bob"));
@@ -280,7 +280,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     }
 
     protected Map<String, String> getTestMessages() {
-        HashMap<String, String> messages = new HashMap<String, String>();
+        Map<String, String> messages = new HashMap<String, String>();
         messages.put("label.searchDocumentsByKeyword",
                 "Search documents with keywords: '{0}'");
         messages.put("label.search.beforeDate_fsd_dc_created",
