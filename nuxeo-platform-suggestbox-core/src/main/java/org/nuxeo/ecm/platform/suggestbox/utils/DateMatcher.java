@@ -31,8 +31,8 @@ public class DateMatcher {
 
     private final static Pattern YEAR_MONTHS_DAY_MATCHER = Pattern.compile("^\\d{4}[_ -:]\\d{2,}[_ -:]\\d{2}$");
 
-    private DateMatcher(boolean withYears, boolean withMonth,
-            boolean witDay, Calendar dateSuggestion) {
+    private DateMatcher(boolean withYears, boolean withMonth, boolean witDay,
+            Calendar dateSuggestion) {
         super();
         this.withYears = withYears;
         this.withMonth = withMonth;
@@ -81,7 +81,6 @@ public class DateMatcher {
         Matcher matcher = parsingDate(YEAR_ONLY_MATCHER, input);
 
         if (matcher.find()) {
-
             return new DateMatcher(true, false, false, dateToInstance(
                     Integer.parseInt(matcher.group()), 1, 1));
         }
@@ -128,7 +127,7 @@ public class DateMatcher {
             if (control < 2 || control > 12 + 31 || first < 1 || second < 1) {
                 return new DateMatcher(true, true, true, null);
             } else if (control < 12 + 12 + 1) {
-                new DateMatcher(true, true, true, dateToInstance(year,
+                return new DateMatcher(true, true, true, dateToInstance(year,
                         first, second));
             }
             int month = first;
@@ -137,10 +136,9 @@ public class DateMatcher {
                 month = second;
                 day = first;
             }
-            Calendar dateToInstance = null; 
+            Calendar dateToInstance = null;
             try {
-                dateToInstance=    dateToInstance(year,
-                        month, day);
+                dateToInstance = dateToInstance(year, month, day);
             } catch (Exception e) {
             }
             return new DateMatcher(true, true, true, dateToInstance);
@@ -154,7 +152,7 @@ public class DateMatcher {
             if (control < 2 || control > 12 + 31 || first < 1 || second < 1) {
                 return new DateMatcher(true, true, true, null);
             } else if (control < 12 + 12 + 1) {
-                new DateMatcher(true, true, true, dateToInstance(year,
+                return new DateMatcher(true, true, true, dateToInstance(year,
                         first, second));
             }
             int month = first;
@@ -163,13 +161,12 @@ public class DateMatcher {
                 month = second;
                 day = first;
             }
-            Calendar dateToInstance = null; 
+            Calendar dateToInstance = null;
             try {
-                dateToInstance=    dateToInstance(year,
-                        month, day);
+                dateToInstance = dateToInstance(year, month, day);
             } catch (Exception e) {
             }
-            return new DateMatcher(true, true, true,dateToInstance);
+            return new DateMatcher(true, true, true, dateToInstance);
         }
 
         return new DateMatcher(false, false, false, null);
