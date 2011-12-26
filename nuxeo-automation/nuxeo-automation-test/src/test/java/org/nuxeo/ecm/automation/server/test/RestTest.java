@@ -76,9 +76,8 @@ import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.automation.test.RestFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -96,6 +95,7 @@ import com.google.inject.Inject;
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
         "org.nuxeo.ecm.automation.server:test-mvalues.xml" })
 // @RepositoryConfig(cleanup=Granularity.METHOD)
+@TransactionalConfig(autoStart=false)
 public class RestTest {
 
     @Inject
