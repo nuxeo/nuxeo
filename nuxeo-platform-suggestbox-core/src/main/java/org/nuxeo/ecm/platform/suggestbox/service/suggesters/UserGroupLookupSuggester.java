@@ -60,7 +60,8 @@ public class UserGroupLookupSuggester implements Suggester {
                 userLabel += user.getProperty("user:lastName").getValue(
                         String.class);
                 if (userLabel.trim().isEmpty()) {
-                    userLabel = user.getId();
+                    userLabel = user.getProperty("user:username").getValue(
+                            String.class);
                 }
                 suggestions.add(new UserSuggestion(user.getId(), userLabel,
                         userIconURL));
