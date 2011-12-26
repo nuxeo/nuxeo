@@ -181,12 +181,20 @@ public class TransactionHelper {
         return false;
     }
 
+    /**
+     * Set timeout from http header if requested before
+     * starting transaction
+     * 
+     * @since 5.6
+     */
     public static boolean startTransaction(HttpServletRequest request) {
         String header = request.getHeader(TX_TIMEOUT_HEADER_KEY);
         if (header != null) {
             int to = Integer.parseInt(header);
             try {
                 lookupTransactionManager().setTransactionTimeout(to);
+            } catch (NamingException e) {
+                return false;
             } catch (Exception e) {
                 log.error("Unable to set requested tx timeout for " + request.getRequestURI(), e);
                 return false;
