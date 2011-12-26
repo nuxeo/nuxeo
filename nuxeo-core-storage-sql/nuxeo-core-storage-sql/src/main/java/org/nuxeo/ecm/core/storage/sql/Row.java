@@ -26,7 +26,7 @@ import java.util.Map.Entry;
  * fragments corresponding to created data, the initial id is a temporary one,
  * and it will be changed after database insert.
  */
-public final class Row extends RowId implements Serializable {
+public final class Row extends RowId implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 

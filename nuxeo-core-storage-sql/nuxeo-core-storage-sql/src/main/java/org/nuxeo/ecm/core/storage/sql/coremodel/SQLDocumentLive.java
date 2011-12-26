@@ -654,7 +654,10 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         if (other == this) {
             return true;
         }
-        if (other instanceof SQLDocumentLive) {
+        if (other == null) {
+            return false;
+        }
+        if (other.getClass() == this.getClass()) {
             return equals((SQLDocumentLive) other);
         }
         return false;

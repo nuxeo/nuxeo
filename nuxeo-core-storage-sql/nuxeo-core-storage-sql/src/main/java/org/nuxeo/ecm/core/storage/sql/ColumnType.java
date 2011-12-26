@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -25,7 +27,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 /**
  * The database-level column types, including per-type parameters like length.
  */
-public class ColumnType {
+public class ColumnType implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** Length used internally to flag a string to use CLOB. */
     public static final int CLOB_LENGTH = 999999999;

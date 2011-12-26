@@ -309,7 +309,10 @@ public class SQLDocumentVersion extends SQLDocumentLive {
         if (other == this) {
             return true;
         }
-        if (other instanceof SQLDocumentVersion) {
+        if (other == null) {
+            return false;
+        }
+        if (other.getClass() == this.getClass()) {
             return equals((SQLDocumentVersion) other);
         }
         return false;

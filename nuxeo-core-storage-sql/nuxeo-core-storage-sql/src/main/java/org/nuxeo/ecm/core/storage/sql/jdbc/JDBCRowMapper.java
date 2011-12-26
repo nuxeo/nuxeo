@@ -1066,7 +1066,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         childMixinTypes));
                 if (debugValues != null) {
                     debugValues.add(childId + "/" + childPrimaryType + "/"
-                            + childMixinTypes);
+                            + Arrays.toString(childMixinTypes));
                 }
             }
             if (debugValues != null) {

@@ -36,7 +36,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     @Override
     public void setUp() {
         metadata = getDatabaseMetaData();
-        binaryManager = null;
+        // binaryManager = null;
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
