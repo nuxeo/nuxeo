@@ -58,7 +58,7 @@ public class TransactionHelper {
     /**
      * @since 5.6
      */
-    public static final String TX_TIMEOUT_HEADER_KEY = "NuxeoTxTimeout";
+    public static final String TX_TIMEOUT_HEADER_KEY = "Nuxeo-Transaction-Timeout";
 
     /**
      * Looks up the User Transaction in JNDI.
@@ -184,7 +184,7 @@ public class TransactionHelper {
     /**
      * Set timeout from http header if requested before
      * starting transaction
-     * 
+     *
      * @since 5.6
      */
     public static boolean startTransaction(HttpServletRequest request) {
