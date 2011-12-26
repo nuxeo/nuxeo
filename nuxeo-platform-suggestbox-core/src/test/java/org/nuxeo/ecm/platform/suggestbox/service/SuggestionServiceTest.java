@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
@@ -92,24 +93,32 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     protected void makeSomeUsersAndGroups() throws ClientException {
         Session userSession = userdir.getSession();
-        Map<String, Object> john = new HashMap<String, Object>();
-        john.put("username", "john");
-        john.put("firstName", "John");
-        john.put("lastName", "Lennon");
-        userSession.createEntry(john);
+        try {
+            Map<String, Object> john = new HashMap<String, Object>();
+            john.put("username", "john");
+            john.put("firstName", "John");
+            john.put("lastName", "Lennon");
+            userSession.createEntry(john);
 
-        Map<String, Object> bob = new HashMap<String, Object>();
-        bob.put("username", "bob");
-        bob.put("firstName", "Bob");
-        bob.put("lastName", "Marley");
-        userSession.createEntry(bob);
+            Map<String, Object> bob = new HashMap<String, Object>();
+            bob.put("username", "bob");
+            bob.put("firstName", "Bob");
+            bob.put("lastName", "Marley");
+            userSession.createEntry(bob);
+        } finally {
+            userSession.close();
+        }
 
         Session groupSession = groupDir.getSession();
-        Map<String, Object> musicians = new HashMap<String, Object>();
-        musicians.put("groupname", "musicians");
-        musicians.put("grouplabel", "Musicians");
-        musicians.put("members", Arrays.asList("john", "bob"));
-        groupSession.createEntry(musicians);
+        try {
+            Map<String, Object> musicians = new HashMap<String, Object>();
+            musicians.put("groupname", "musicians");
+            musicians.put("grouplabel", "Musicians");
+            musicians.put("members", Arrays.asList("john", "bob"));
+            groupSession.createEntry(musicians);
+        } finally {
+            groupSession.close();
+        }
     }
 
     protected void makeSomeDocuments() throws ClientException {
@@ -237,6 +246,41 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("document", sugg1.getType());
         assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
+    }
+
+    public void testSearchUserLimit() throws Exception {
+        Session userSession = userdir.getSession();
+        try {
+            for (int i = 0; i < 10; i++) {
+                Map<String, Object> user = new HashMap<String, Object>();
+                user.put("username", String.format("user%d", i));
+                user.put("firstName", "Nemo");
+                user.put("lastName", "Homonym");
+                userSession.createEntry(user);
+            }
+        } finally {
+            userSession.close();
+        }
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            return;
+        }
+
+        // build a suggestion context
+        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        Map<String, String> messages = getTestMessages();
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(
+                Locale.US).withSession(session).withMessages(messages);
+
+        // count user suggestions only
+        int count = 0;
+        List<Suggestion> suggestions = suggestionService.suggest("homonym",
+                context);
+        for (Suggestion suggestion : suggestions) {
+            if ("user".equals(suggestion.getType())) {
+                count++;
+            }
+        }
+        assertEquals(5, count);
     }
 
     @Test

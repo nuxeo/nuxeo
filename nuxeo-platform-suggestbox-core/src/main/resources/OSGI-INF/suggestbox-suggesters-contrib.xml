@@ -34,6 +34,8 @@
     <suggester name="searchByUsersAndGroups"
       class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.UserGroupLookupSuggester">
       <parameters>
+        <parameter name="userSuggestionsLimit">5</parameter>
+        <parameter name="groupSuggestionsLimit">5</parameter>
         <parameter name="searchFields">fsd:dc_creator</parameter>
       </parameters>
     </suggester>

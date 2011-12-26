@@ -41,6 +41,10 @@ public class UserGroupLookupSuggester implements Suggester {
 
     protected final String searchLabelPrefix = "label.searchDocumentsByUser_";
 
+    protected int userSuggestionsLimit = 5;
+
+    protected int groupSuggestionsLimit = 5;
+
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
@@ -52,6 +56,7 @@ public class UserGroupLookupSuggester implements Suggester {
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
         List<Suggestion> searchSuggestions = new ArrayList<Suggestion>();
         try {
+            int count = 0;
             for (DocumentModel user : userManager.searchUsers(userInput)) {
                 // suggest to navigate to the user profile
                 String userLabel = user.getProperty("user:firstName").getValue(
@@ -75,7 +80,12 @@ public class UserGroupLookupSuggester implements Suggester {
                             searchField, user.getId());
                     searchSuggestions.add(suggestion);
                 }
+                count++;
+                if (count >= userSuggestionsLimit ) {
+                    break;
+                }
             }
+            count = 0;
             for (DocumentModel group : userManager.searchGroups(userInput)) {
                 String label = group.getProperty("group:grouplabel").getValue(
                         String.class);
@@ -85,6 +95,10 @@ public class UserGroupLookupSuggester implements Suggester {
                 }
                 suggestions.add(new GroupSuggestion(group.getId(), label,
                         groupIconURL));
+                count++;
+                if (count >= groupSuggestionsLimit) {
+                    break;
+                }
             }
             suggestions.addAll(searchSuggestions);
             return suggestions;
@@ -109,6 +123,14 @@ public class UserGroupLookupSuggester implements Suggester {
         String searchIconURL = params.get("searchIconURL");
         if (searchIconURL != null) {
             this.searchIconURL = searchIconURL;
+        }
+        String userSuggestionsLimit = params.get("userSuggestionsLimit");
+        if (userSuggestionsLimit != null) {
+            this.userSuggestionsLimit = Integer.valueOf(userSuggestionsLimit).intValue();
+        }
+        String groupSuggestionsLimit = params.get("groupSuggestionsLimit");
+        if (groupSuggestionsLimit != null) {
+            this.groupSuggestionsLimit = Integer.valueOf(groupSuggestionsLimit).intValue();
         }
         String searchFields = params.get("searchFields");
         if (searchFields != null && !searchFields.isEmpty()) {
