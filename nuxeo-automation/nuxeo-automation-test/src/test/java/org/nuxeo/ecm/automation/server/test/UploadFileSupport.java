@@ -24,15 +24,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 import org.nuxeo.ecm.automation.client.Constants;
+import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.StreamBlob;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author matic
- * 
+ *
  */
 public class UploadFileSupport {
 
@@ -86,27 +88,35 @@ public class UploadFileSupport {
             return MessageDigest.isEqual(sentSum, receivedSum);
         }
     }
-    
+
    public static MockInputStream newMockInput(long size, boolean digest) throws NoSuchAlgorithmException {
        if (digest) {
            return new DigestMockInputStream(size);
        }
        return new MockInputStream(size);
    }
-   
+
     public UploadFileSupport(Session session) {
         this.session = session;
     }
-    
+
     protected final Session session;
 
     public FileInputStream testUploadFile(InputStream source) throws Exception {
+        return testUploadFile(source, 0);
+    }
+
+    public FileInputStream testUploadFile(InputStream source, int timeout) throws Exception {
         Blob blob = new StreamBlob(source, "big-blob", "application/octet-stream");
         Document root = (Document) session.newRequest("Document.Fetch").set(
                 "value", "/").execute();
-        Document doc = (Document) session.newRequest("Document.Create").setInput(
+        OperationRequest upload = session.newRequest("Document.Create").setInput(
                 root).set("type", "File").set("name", "bigfile").set(
-                "properties", "dc:title=Big File").execute();
+                "properties", "dc:title=Big File");
+        if (timeout > 0) {
+            upload = upload.setHeader(TransactionHelper.TX_TIMEOUT_HEADER_KEY, Integer.toString(timeout));
+        }
+        Document doc = (Document)upload.execute();
         session.newRequest("Blob.Attach").setHeader(Constants.HEADER_NX_VOIDOP,
                 "true").setInput(blob).set("document", "/bigfile").execute();
         FileBlob serverBlob = (FileBlob) session.newRequest("Blob.Get").setInput(

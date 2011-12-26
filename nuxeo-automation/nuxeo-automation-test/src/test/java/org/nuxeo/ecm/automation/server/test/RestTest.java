@@ -11,8 +11,16 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,12 +76,14 @@ import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -94,18 +104,18 @@ public class RestTest {
     @Inject
     AutomationService service;
 
-    @Inject 
+    @Inject
     Session session;
-    
-    @Inject 
+
+    @Inject
     HttpAutomationClient client;
-    
-    @BeforeClass 
+
+    @BeforeClass
     public static void setupCodecs() throws OperationException {
         Framework.getLocalService(ObjectCodecService.class).addCodec(new MyObjectCodec());
         Framework.getLocalService(AutomationService.class).putOperation(MyObjectOperation.class);
     }
-    
+
     protected File newFile(String content) throws IOException {
         File file = File.createTempFile("automation-test-", ".xml");
         file.deleteOnExit();
@@ -515,6 +525,13 @@ public class RestTest {
         assertTrue(source.checkDigest(in));
     }
 
+    @Test(expected=RemoteException.class)
+    public void testTxTimeout() throws Exception {
+        session.
+            newRequest(WaitForTxTimeoutOperation.ID).
+            setHeader(TransactionHelper.TX_TIMEOUT_HEADER_KEY, "1").
+            execute();
+    }
     /**
      * test a chain invocation
      */
@@ -562,8 +579,6 @@ public class RestTest {
      */
     @Test
     public void testChainRollback() throws Exception {
-
-        NuxeoContainer.install();
 
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
