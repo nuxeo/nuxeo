@@ -11,11 +11,8 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import java.lang.annotation.Annotation;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
 
 import org.nuxeo.common.Environment;
@@ -35,37 +32,21 @@ public class TransactionalFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        config = runner.getDescription().getAnnotation(
+         config = runner.getDescription().getAnnotation(
                 TransactionalConfig.class);
-        if (config == null) {
-            config = new TransactionalConfig() {
-
-                @Override
-                public Class<? extends Annotation> annotationType() {
-                    return TransactionalConfig.class;
-                }
-
-                @Override
-                public boolean autoStart() {
-                    return true;
-                }
-            };
-        }
-        try {
+         try {
             Context comp = (Context) new InitialContext().lookup("java:comp/");
             if (comp == null) {
                 NamingContextFactory.setAsInitial();
             }
         } catch (NoInitialContextException e) {
-            NuxeoContainer.install();
+            NamingContextFactory.setAsInitial();
         }
+         NuxeoContainer.install();
     }
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        if (config.autoStart() == false) {
-            return;
-        }
         Environment.getDefault().setHostApplicationName(
                 Environment.NXSERVER_HOST);
     }
