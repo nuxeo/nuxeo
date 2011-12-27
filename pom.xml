@@ -1429,11 +1429,10 @@
         <artifactId>jstl</artifactId>
         <version>1.1.2</version>
       </dependency>
-      <!-- Jetty package uses 2.5 -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
-        <version>2.4</version>
+        <version>2.5</version>
       </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
