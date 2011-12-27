@@ -93,7 +93,7 @@ public class QueryModel implements Serializable {
         } else {
             // detach and keep a copy of the original to be able to reset
             try {
-                ((DocumentModelImpl) documentModel).detach(true);
+                documentModel.detach(true);
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
@@ -190,7 +190,7 @@ public class QueryModel implements Serializable {
             if (detachResults()) {
                 // detach the document so that we can use it beyond the session
                 try {
-                    ((DocumentModelImpl) doc).detach(true);
+                    doc.detach(true);
                 } catch (DocumentSecurityException e) {
                     // no access to the document (why?)
                     continue;

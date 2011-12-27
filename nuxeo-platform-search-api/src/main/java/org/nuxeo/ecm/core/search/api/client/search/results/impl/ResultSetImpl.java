@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
@@ -155,7 +154,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
                         // detach the document so that we can use it beyond the
                         // session
                         try {
-                            ((DocumentModelImpl) doc).detach(true);
+                            doc.detach(true);
                         } catch (DocumentSecurityException e) {
                             // no access to the document (why?)
                             continue;
