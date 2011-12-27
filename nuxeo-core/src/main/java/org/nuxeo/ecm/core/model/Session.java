@@ -243,21 +243,6 @@ public interface Session {
             throws DocumentException;
 
     /**
-     * Creates a proxy to the given version of the given document inside the
-     * given parent.
-     *
-     * @param parent the parent
-     * @param doc the document
-     * @param versionLabel the version
-     * @return the proxy
-     * @throws DocumentException if any error occurs
-     * @deprecated
-     */
-    @Deprecated
-    Document createProxyForVersion(Document parent, Document doc,
-            String versionLabel) throws DocumentException;
-
-    /**
      * Finds the proxies for a document. If the folder is not null, the search
      * will be limited to its children.
      * <p>

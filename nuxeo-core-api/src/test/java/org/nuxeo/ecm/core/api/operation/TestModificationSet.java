@@ -18,6 +18,7 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 
 public class TestModificationSet extends TestCase {
@@ -29,6 +30,15 @@ public class TestModificationSet extends TestCase {
         set = new ModificationSet();
     }
 
+    protected Modification getModification(DocumentRef ref) {
+        for (Modification m : set) {
+            if (m.ref.equals(ref)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
     public void test() {
         set.add(new IdRef("a"), Modification.CREATE);
         set.add(new IdRef("b"), Modification.REMOVE);
@@ -36,14 +46,14 @@ public class TestModificationSet extends TestCase {
         set.add(new IdRef("e"), Modification.SECURITY);
         set.add(new IdRef("d"), Modification.STATE);
 
-        assertTrue(set.getModification(new IdRef("a")).isCreate());
-        assertTrue(set.getModification(new IdRef("b")).isRemove());
-        assertTrue(set.getModification(new IdRef("c")).isUpdateModification());
-        assertTrue(set.getModification(new IdRef("e")).isSecurityUpdate());
-        assertTrue(set.getModification(new IdRef("d")).isStateUpdate());
+        assertTrue(getModification(new IdRef("a")).isCreate());
+        assertTrue(getModification(new IdRef("b")).isRemove());
+        assertTrue(getModification(new IdRef("c")).isUpdateModification());
+        assertTrue(getModification(new IdRef("e")).isSecurityUpdate());
+        assertTrue(getModification(new IdRef("d")).isStateUpdate());
 
-        assertFalse(set.getModification(new IdRef("a")).isRemove());
-        assertFalse(set.getModification(new IdRef("b")).isCreate());
+        assertFalse(getModification(new IdRef("a")).isRemove());
+        assertFalse(getModification(new IdRef("b")).isCreate());
 
         Iterator<Modification> it = set.iterator();
         assertEquals("a [8]", it.next().toString());

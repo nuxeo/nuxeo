@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.TypeHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,8 +46,6 @@ import org.nuxeo.runtime.api.Framework;
 public class SchemaManagerImpl implements SchemaManager {
 
     private static final Log log = LogFactory.getLog(SchemaManagerImpl.class);
-
-    private final Map<String, TypeHelper> helpers = new Hashtable<String, TypeHelper>();
 
     private final Map<String, Type> typeReg = new HashMap<String, Type>();
 
@@ -589,36 +585,6 @@ public class SchemaManagerImpl implements SchemaManager {
             }
         }
         return null;
-    }
-
-    @Override
-    public void registerHelper(String schema, String type, TypeHelper helper) {
-        if (schema == null) {
-            // a primitive type helper
-            helpers.put(type, helper);
-        } else {
-            helpers.put(schema + ':' + type, helper);
-        }
-    }
-
-    @Override
-    public void unregisterHelper(String schema, String type) {
-        if (schema == null) {
-            // a primitive type helper
-            helpers.remove(type);
-        } else {
-            helpers.remove(schema + ':' + type);
-        }
-    }
-
-    @Override
-    public TypeHelper getHelper(String schema, String type) {
-        if (schema == null) {
-            // a primitive type helper
-            return helpers.get(type);
-        } else {
-            return helpers.get(schema + ':' + type);
-        }
     }
 
 }

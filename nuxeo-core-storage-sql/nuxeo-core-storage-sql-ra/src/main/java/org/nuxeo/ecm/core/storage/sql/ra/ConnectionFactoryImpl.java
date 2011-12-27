@@ -240,16 +240,6 @@ public class ConnectionFactoryImpl implements Repository,
         return new SQLSession(session, this, context);
     }
 
-    /**
-     * @deprecated unused
-     */
-    @Override
-    @Deprecated
-    public org.nuxeo.ecm.core.model.Session getSession(long sessionId)
-            throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
     @Override
     public SecurityManager getNuxeoSecurityManager() {
         initializeServices();

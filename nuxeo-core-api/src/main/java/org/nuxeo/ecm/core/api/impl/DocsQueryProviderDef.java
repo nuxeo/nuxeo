@@ -27,7 +27,7 @@ public class DocsQueryProviderDef implements Serializable {
     private static final long serialVersionUID = 6296251214655196508L;
 
     public enum DefType {
-        TYPE_CHILDREN, TYPE_CHILDREN_NON_FOLDER, TYPE_CHILDREN_FOLDERS, TYPE_QUERY, TYPE_QUERY_FTS
+        TYPE_CHILDREN, TYPE_CHILDREN_NON_FOLDER, TYPE_CHILDREN_FOLDERS, TYPE_QUERY
     }
 
     private final DefType type;

@@ -81,7 +81,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
@@ -287,28 +286,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     @Override
     public DocumentType getDocumentType(String type) {
         return NXSchema.getSchemaManager().getDocumentType(type);
-    }
-
-    /**
-     * Utility method to generate VersionModel labels.
-     *
-     * @return the String representation of an auto-incremented counter that
-     *         not used in any label of docRef
-     */
-    @Override
-    public String generateVersionLabelFor(DocumentRef docRef)
-            throws ClientException {
-        // find the biggest label that is castable to an int
-        int max = 0;
-        for (VersionModel version : getVersionsForDocument(docRef)) {
-            try {
-                int current = Integer.parseInt(version.getLabel());
-                max = current > max ? current : max;
-            } catch (NumberFormatException e) {
-                // ignore labels that are not parsable as int
-            }
-        }
-        return Integer.toString(max + 1);
     }
 
     @Override
@@ -1218,22 +1195,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         }
     }
 
-    /**
-     * @deprecated unused
-     */
-    @Override
-    @Deprecated
-    public DocumentModel getDocument(DocumentRef docRef, String[] schemas)
-            throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            return readModel(doc, schemas);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get document " + docRef, e);
-        }
-    }
-
     @Override
     public DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException {
@@ -1625,66 +1586,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             return tryToExtractMeaningfulErrMsg(t.getCause());
         }
         return t.getMessage();
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModelList querySimpleFts(String keywords)
-            throws ClientException {
-        return querySimpleFts(keywords, null);
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModelList querySimpleFts(String keywords, Filter filter)
-            throws ClientException {
-        try {
-            // TODO this is hardcoded query : need to add support for CONTAINS
-            // in NXQL
-            // TODO check (repair) for keywords sanity to avoid xpath injection
-            final String xpathQ = "//element(*, ecmnt:document)[jcr:contains(.,'*"
-                    + keywords + "*')]";
-            final Query compiledQuery = getSession().createQuery(xpathQ,
-                    Query.Type.XPATH);
-            final QueryResult qr = compiledQuery.execute();
-
-            final DocumentModelList retrievedDocs = qr.getDocumentModels();
-
-            final DocumentModelList docs = new DocumentModelListImpl();
-            for (DocumentModel model : retrievedDocs) {
-                if (hasPermission(model.getRef(), READ)) {
-                    if (filter == null || filter.accept(model)) {
-                        docs.add(model);
-                    }
-                }
-            }
-
-            return docs;
-
-        } catch (Exception e) {
-            log.error("failed to execute query", e);
-            throw new ClientException("Failed to get the root document", e);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModelIterator querySimpleFtsIt(String query, Filter filter,
-            int pageSize) throws ClientException {
-        return querySimpleFtsIt(query, null, filter, pageSize);
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModelIterator querySimpleFtsIt(String query,
-            String startingPath, Filter filter, int pageSize)
-            throws ClientException {
-        DocsQueryProviderDef def = new DocsQueryProviderDef(
-                DocsQueryProviderDef.DefType.TYPE_QUERY_FTS);
-        def.setQuery(query);
-        def.setStartingPath(startingPath);
-        return new DocumentModelIteratorImpl(this, pageSize, def, null, BROWSE,
-                filter);
     }
 
     @Override
@@ -2467,71 +2368,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         }
     }
 
-    @Override
-    @Deprecated
-    public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
-            VersionModel version, boolean overwriteExistingProxy)
-            throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            Document sec = resolveReference(parentRef);
-            checkPermission(doc, READ);
-            checkPermission(sec, ADD_CHILDREN);
-
-            DocumentModel proxyModel = null;
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            String vlabel = version.getLabel();
-
-            if (overwriteExistingProxy) {
-                Document target = getSession().getVersion(doc.getUUID(),
-                        version);
-                if (target == null) {
-                    throw new ClientException("Document " + docRef
-                            + " has no version " + vlabel);
-                }
-                proxyModel = updateExistingProxies(doc, sec, target);
-                // proxyModel is null is update fails
-                if (proxyModel != null) {
-                    // notify for proxy updates
-                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED,
-                            proxyModel, options, null, null, true, false);
-                } else {
-                    List<String> removedProxyIds = Collections.emptyList();
-                    removedProxyIds = removeExistingProxies(doc, sec);
-                    options.put(CoreEventConstants.REPLACED_PROXY_IDS,
-                            (Serializable) removedProxyIds);
-                }
-            }
-
-            if (proxyModel == null) {
-                // create the new proxy
-                Document proxy = getSession().createProxyForVersion(sec, doc,
-                        vlabel);
-                log.debug("Created proxy for version " + vlabel
-                        + " of the document " + doc.getPath());
-                // notify for reindexing
-                proxyModel = readModel(proxy);
-
-                // notify for document creation (proxy)
-                notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
-                        options, null, null, true, false);
-            }
-
-            notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
-                    proxyModel, options, null, null, true, false);
-
-            DocumentModel sectionModel = readModel(sec);
-            notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
-                    sectionModel, options, null, null, true, false);
-
-            return proxyModel;
-
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to create proxy for doc "
-                    + docRef + " , version: " + version.getLabel(), e);
-        }
-    }
-
     /**
      * Remove proxies for the same base document in the folder. doc may be a
      * normal document or a proxy.
@@ -2636,21 +2472,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    @Deprecated
-    public DataModel getDataModel(DocumentRef docRef, String schema)
-            throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            Schema docSchema = doc.getType().getSchema(schema);
-            return DocumentModelFactory.createDataModel(doc, docSchema);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get data model for " + docRef
-                    + ':' + schema, e);
-        }
-    }
-
-    @Override
     public DataModel getDataModel(DocumentRef docRef, Schema schema)
             throws ClientException {
         try {
@@ -2663,9 +2484,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         }
     }
 
-    @Override
-    @Deprecated
-    public Object getDataModelField(DocumentRef docRef, String schema,
+    protected Object getDataModelField(DocumentRef docRef, String schema,
             String field) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2688,35 +2507,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         } catch (DocumentException e) {
             throw new ClientException("Failed to get data model field "
                     + schema + ':' + field, e);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public Object[] getDataModelFields(DocumentRef docRef, String schema,
-            String[] fields) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            Schema docSchema = doc.getType().getSchema(schema);
-            String prefix = docSchema.getNamespace().prefix;
-            if (prefix != null && prefix.length() > 0) {
-                prefix += ':';
-            }
-            // prefix is not used for the moment
-            // else {
-            // prefix = null;
-            // }
-            Object[] values = new Object[fields.length];
-            for (int i = 0; i < fields.length; i++) {
-                if (prefix != null) {
-                    values[i] = doc.getPropertyValue(fields[i]);
-                }
-            }
-            return values;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check out document " + docRef,
-                    e);
         }
     }
 

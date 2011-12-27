@@ -68,38 +68,6 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
         return ar[index];
     }
 
-    /**
-     * Retrieves the merged modification value for the DocumentRef
-     *
-     * @param ref The document ref
-     * @return Merged modification relating to this document
-     * @deprecated returns a merged modification, unsafe to use this where order
-     *             of notifications is important
-     */
-    @Deprecated
-    public Modification getModification(DocumentRef ref) {
-        Modification m = null;
-        for (int i = 0; i < length; i++) {
-            if (ar[i].ref.equals(ref)) {
-                if (m == null) {
-                    m = new Modification(ref, ar[i].type);
-                } else {
-                    m.type |= ar[i].type;
-                }
-            }
-        }
-        return m;
-    }
-
-    /**
-     * Deprecated (spelling mistake in method name). Use getModification
-     * insteas.
-     */
-    @Deprecated
-    public Modification getModifcation(DocumentRef ref) {
-        return getModification(ref);
-    }
-
     public int indexOf(DocumentRef ref) {
         for (int i = 0; i < length; i++) {
             if (ar[i].ref.equals(ref)) {
@@ -121,24 +89,6 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
             length--;
         }
         return mod;
-    }
-
-    /**
-     * Removes any modifications for the provided document ref
-     *
-     * @param ref The document ref
-     * @return Merged modification relating to this document
-     * @deprecated returns a merged modification, unsafe to use this where order
-     *             of notifications is important
-     */
-    @Deprecated
-    public Modification removeModification(DocumentRef ref) {
-        Modification m = new Modification(ref, 0);
-        int index = -1;
-        while ((index = indexOf(ref)) != -1) {
-            m.type |= remove(index).type;
-        }
-        return m;
     }
 
     public Modification[] toArray() {

@@ -131,15 +131,6 @@ public class SQLRepository implements Repository {
     public void initialize() {
     }
 
-    /**
-     * @deprecated unused
-     */
-    @Override
-    @Deprecated
-    public Session getSession(long sessionId) {
-        throw new UnsupportedOperationException("unused");
-    }
-
     /*
      * Used only by JCR MBean.
      */

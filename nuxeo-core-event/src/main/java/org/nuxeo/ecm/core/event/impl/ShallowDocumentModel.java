@@ -247,11 +247,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public long getFlags() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String getLifeCyclePolicy() throws ClientException {
         throw new UnsupportedOperationException();
     }

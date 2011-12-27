@@ -351,25 +351,6 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Document createProxyForVersion(Document parent, Document document,
-            String label) throws DocumentException {
-        try {
-            Serializable versionableId = ((SQLDocument) document).getNode().getId();
-            Node versionNode = session.getVersionByLabel(versionableId, label);
-            if (versionNode == null) {
-                throw new DocumentException("Unknown version: " + label);
-            }
-            Node parentNode = ((SQLDocument) parent).getNode();
-            String name = findFreeName(parentNode, document.getName());
-            Node proxy = session.addProxy(versionNode.getId(), versionableId,
-                    parentNode, name, null);
-            return newDocument(proxy);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    @Override
     public Collection<Document> getProxies(Document document, Document parent)
             throws DocumentException {
         Collection<Node> proxyNodes;

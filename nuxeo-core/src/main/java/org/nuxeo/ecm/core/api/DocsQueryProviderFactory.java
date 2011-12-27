@@ -8,14 +8,9 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
@@ -26,10 +21,7 @@ import org.nuxeo.ecm.core.query.QueryException;
 /**
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
-@SuppressWarnings({"SuppressionAnnotation"})
 final class DocsQueryProviderFactory {
-
-    private static final Log log = LogFactory.getLog(DocsQueryProviderFactory.class);
 
     private final AbstractSession session;
 
@@ -53,10 +45,6 @@ final class DocsQueryProviderFactory {
                     break;
                 case TYPE_QUERY:
                     dqp = getDQPQueryResult(dqpDef.getQuery());
-                    break;
-                case TYPE_QUERY_FTS:
-                    dqp = getDQPQueryFtsResult(dqpDef.getQuery(),
-                            dqpDef.getStartingPath());
                     break;
                 default:
                     throw new IllegalArgumentException("cannot get here");
@@ -95,58 +83,6 @@ final class DocsQueryProviderFactory {
                 return true;
             }
         };
-    }
-
-    private DocsQueryProvider getDQPQueryFtsResult(String keywords, String startingPath)
-            throws ClientException {
-
-        final StringBuffer xpathPrefix = new StringBuffer("//");
-        // extract path elements and send as params
-        // so they could be escaped correctly
-        String[] pathElements = new String[0];
-        if (startingPath != null) {
-            pathElements = startingPath.split("\\/");
-            for (String element : pathElements) {
-                xpathPrefix.append("?/");
-            }
-        }
-
-        //final String xpathQ = xpathPrefix + "element(*, ecmnt:document)[jcr:contains(.,'*" + keywords
-        //        + "*')]";
-        final String xpathQ = xpathPrefix + "element(*, ecmnt:document)[jcr:contains(.,'*?*')]";
-
-        String[] params = new String[pathElements.length + 1];
-        System.arraycopy(pathElements, 0, params, 0, pathElements.length);
-        params[params.length - 1] = keywords;
-
-        final Query compiledQuery;
-        try {
-            compiledQuery = session.getSession().createQuery(xpathQ,
-                    Query.Type.XPATH, params);
-        } catch (QueryException e) {
-            log.error("Error executing xpath query: " + xpathQ, e);
-            throw new ClientException("qe", e);
-        }
-
-        DocsQueryProvider dqProvider = new DocsQueryProvider() {
-            @Override
-            public DocumentIterator getDocs(int start) throws ClientException {
-                DocumentIterator documents;
-                try {
-                    documents = (DocumentIterator) compiledQuery.execute().getDocuments(
-                            start);
-                } catch (QueryException e) {
-                    throw new ClientException("Query exception, ", e);
-                }
-                return documents;
-            }
-
-            @Override
-            public boolean accept(Document child) {
-                return true;
-            }
-        };
-        return dqProvider;
     }
 
     private DocsQueryProvider getDQPChildren(DocumentRef parent)

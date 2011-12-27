@@ -91,20 +91,6 @@
       class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
   </extension-point>
 
-  <extension-point name="typeHelpers">
-    <documentation>
-      This extension point let you contribute new type helpers that control extended
-      type handling like encondig, decodig values etc.
-      <p/>
-      A contribution example:
-      <code>
-        <helper schema="file" type="content" class="BlobHelper"/>
-      </code>
-    </documentation>
-    <object class="org.nuxeo.ecm.core.schema.TypeHelperDescriptor" />
-  </extension-point>
-
-
   <extension-point name="provider">
     <documentation>
     Extension point to register type providers. Type providsers are usually used to import types

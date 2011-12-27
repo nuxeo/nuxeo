@@ -878,14 +878,6 @@ public interface DocumentModel extends Serializable {
             throws PropertyException, ClientException;
 
     /**
-     * Returns the flags set on the document model.
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    long getFlags();
-
-    /**
      * Clears any prefetched or cached document data.
      * <p>
      * This will force the document to lazily update its data when required.

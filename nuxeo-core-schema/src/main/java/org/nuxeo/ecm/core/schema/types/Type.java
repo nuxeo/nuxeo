@@ -67,7 +67,7 @@ import org.nuxeo.ecm.core.schema.TypeRef;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface Type extends Serializable, ValueConverter {
+public interface Type extends Serializable {
 
     AnyType ANY = AnyType.INSTANCE;
 
@@ -91,15 +91,6 @@ public interface Type extends Serializable, ValueConverter {
      * @return
      */
     Schema getSchema();
-
-    /**
-     * Get the type helper. Must never return null
-     * <p>
-     * The type helper is used to handle operations on value of that type.
-     *
-     * @return the type helper
-     */
-    TypeHelper getHelper();
 
     /**
      * Gets a proxy (or reference to this type).
@@ -232,5 +223,14 @@ public interface Type extends Serializable, ValueConverter {
      * @return
      */
     Object newInstance();
+
+    /**
+     * Converts the given value to an object compatible with the associated type.
+     *
+     * @param value the value to convert
+     * @return the converted value
+     * @throws TypeException if the value to convert is not compatible with the associated type
+     */
+    Object convert(Object value) throws TypeException;
 
 }

@@ -58,44 +58,6 @@ public class DocumentModelFactory {
     private DocumentModelFactory() {
     }
 
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public static DocumentModel newDocument(DocumentModel parent, String type) {
-        return newDocument(parent, null, type);
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public static DocumentModel newDocument(DocumentModel parent, String name,
-            String type) {
-        DocumentType docType = parent.getCoreSession().getDocumentType(type);
-        return newDocument(parent, name, docType);
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public static DocumentModel newDocument(DocumentModel parent,
-            DocumentType type) {
-        return newDocument(parent, null, type);
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public static DocumentModel newDocument(DocumentModel parent, String name,
-            DocumentType type) {
-        return new DocumentModelImpl(null, type.getName(), null,
-                parent.getPath(), null, null, parent.getRef(), null, null,
-                null, parent.getRepositoryName());
-    }
-
     public static DocumentModelImpl createDocumentModel(Document doc)
             throws DocumentException {
         DocumentType docType = doc.getType();
@@ -281,25 +243,6 @@ public class DocumentModelFactory {
     public static DocumentModelImpl createDocumentModel(DocumentType docType)
             throws DocumentException {
         return createDocumentModel(null, docType);
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public static DocumentModelImpl createDocumentModel(String parentPath,
-            String id, DocumentType docType, String[] schemas)
-            throws DocumentException {
-        DocumentModelImpl docModel = new DocumentModelImpl(parentPath, id,
-                docType.getName());
-        // populate models
-        if (schemas != null) {
-            for (String schemaName : schemas) {
-                Schema schema = docType.getSchema(schemaName);
-                docModel.addDataModel(createDataModel(null, schema));
-            }
-        }
-        return docModel;
     }
 
     /**

@@ -295,56 +295,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return schemas;
     }
 
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public DocumentModelImpl(String sid, String type) {
-        this(type);
-        this.sid = sid;
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
     public DocumentModelImpl(DocumentModel parent, String name, String type) {
         this(parent.getPathAsString(), name, type);
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public DocumentModelImpl(DocumentModel parent, String name, String type,
-            DataModelMap data) {
-        this(parent.getPathAsString(), name, type);
-        if (data != null) {
-            dataModels = data;
-        }
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public DocumentModelImpl(String parentPath, String name, String type,
-            DataModelMap data) {
-        this(parentPath, name, type);
-        if (data != null) {
-            dataModels = data;
-        }
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    public DocumentModelImpl(String sid, String type, String id, Path path,
-            DocumentRef docRef, DocumentRef parentRef, String[] schemas,
-            Set<String> facets) {
-        this(sid, type, id, path, null, docRef, parentRef, schemas, facets,
-                null, null);
     }
 
     @Override
@@ -456,32 +408,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 }
             }
         }
-    }
-
-    /** @deprecated use {@link #getCoreSession} instead. */
-    @Deprecated
-    public final CoreSession getClient() throws ClientException {
-        if (sid == null) {
-            throw new UnsupportedOperationException(
-                    "Cannot load data models for client defined models");
-        }
-        if (reentrantCoreSession.get().containsKey(sid)) {
-            return reentrantCoreSession.get().get(sid);
-        }
-        CoreSession session = CoreInstance.getInstance().getSession(sid);
-        if (session == null && sid != null && repositoryName != null) {
-            // session was closed => open a new one
-            try {
-                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                Repository repo = mgr.getRepository(repositoryName);
-                session = repo.open();
-                // set new session id
-                sid = session.getSessionId();
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        }
-        return session;
     }
 
     /**
@@ -1179,16 +1105,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
-    /** @deprecated unused */
-    @Deprecated
-    public void copyContentInto(DocumentModelImpl other) {
-        other.schemas = schemas;
-        other.facets = facets;
-        other.instanceFacets = instanceFacets;
-        other.instanceFacetsOrig = instanceFacetsOrig;
-        other.dataModels = dataModels;
-    }
-
     @Override
     public void copyContent(DocumentModel sourceDoc) throws ClientException {
         schemas = new HashSet<String>(Arrays.asList(sourceDoc.getSchemas()));
@@ -1352,35 +1268,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public void prefetchLifeCyclePolicy(String lifeCyclePolicy) {
         this.lifeCyclePolicy = lifeCyclePolicy;
-    }
-
-    /** @deprecated unused */
-    @Deprecated
-    public void setFlags(long flags) {
-        this.flags |= flags;
-    }
-
-    /** @deprecated unused */
-    @Deprecated
-    public void clearFlags(long flags) {
-        this.flags &= ~flags;
-    }
-
-    /** @deprecated unused */
-    @Deprecated
-    public void clearFlags() {
-        flags = 0L;
-    }
-
-    @Override
-    public long getFlags() {
-        return flags;
-    }
-
-    /** @deprecated unused */
-    @Deprecated
-    public boolean hasFlags(long flags) {
-        return (this.flags & flags) == flags;
     }
 
     @Override

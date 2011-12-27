@@ -591,11 +591,6 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public long getFlags() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void reset() {
         throw new UnsupportedOperationException();
     }

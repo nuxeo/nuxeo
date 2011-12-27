@@ -48,8 +48,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
@@ -68,6 +66,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
@@ -1732,7 +1731,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         session.saveDocument(childFile);
 
-        DataModel dm = session.getDataModel(childFile.getRef(), "dublincore");
+        Schema dublincore = childFile.getDocumentType().getSchema("dublincore");
+        DataModel dm = session.getDataModel(childFile.getRef(), dublincore);
 
         assertNotNull(dm);
         assertNotNull(dm.getMap());
@@ -1741,72 +1741,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("f1", dm.getData("title"));
         assertEquals("desc 1", dm.getData("description"));
 
-        dm = session.getDataModel(childFile.getRef(), "file");
+        Schema file = childFile.getDocumentType().getSchema("file");
+        dm = session.getDataModel(childFile.getRef(), file);
 
         assertNotNull(dm);
         assertNotNull(dm.getMap());
         assertNotNull(dm.getSchema());
         assertEquals("file", dm.getSchema());
         assertEquals("second name", dm.getData("filename"));
-    }
-
-    public void testGetDataModelField() throws ClientException {
-        DocumentModel root = session.getRootDocument();
-
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-        childFile = createChildDocument(childFile);
-
-        session.save();
-
-        childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("dublincore", "title", "f1");
-        childFile.setProperty("dublincore", "description", "desc 1");
-
-        session.saveDocument(childFile);
-
-        assertEquals("f1", session.getDataModelField(childFile.getRef(),
-                "dublincore", "title"));
-        assertEquals("desc 1", session.getDataModelField(childFile.getRef(),
-                "dublincore", "description"));
-        assertEquals("second name", session.getDataModelField(
-                childFile.getRef(), "file", "filename"));
-    }
-
-    public void testGetDataModelFields() throws ClientException {
-        DocumentModel root = session.getRootDocument();
-
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-        childFile = createChildDocument(childFile);
-
-        session.save();
-
-        childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("dublincore", "title", "f1");
-        childFile.setProperty("dublincore", "description", "desc 1");
-
-        session.saveDocument(childFile);
-
-        String[] fields = { "title", "description" };
-
-        Object[] values = session.getDataModelFields(childFile.getRef(),
-                "dublincore", fields);
-
-        assertNotNull(values);
-        assertEquals(2, values.length);
-        assertEquals("f1", values[0]);
-        assertEquals("desc 1", values[1]);
-
-        String[] fields2 = { "filename" };
-
-        values = session.getDataModelFields(childFile.getRef(), "file", fields2);
-
-        assertNotNull(values);
-        assertEquals(1, values.length);
-        assertEquals("second name", values[0]);
     }
 
     public void testDocumentReferenceEqualityDifferentInstances()
@@ -2733,69 +2675,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             throw new ClientException(e);
         }
         assertEquals("myfile", content);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void testDocumentModelTreeSort() throws Exception {
-        // create a folder tree
-        DocumentModel root = session.getRootDocument();
-        DocumentModel a_folder = new DocumentModelImpl(root.getPathAsString(),
-                "a_folder", "Folder");
-        a_folder.setProperty("dublincore", "title", "Z title for a_folder");
-        DocumentModel b_folder = new DocumentModelImpl(root.getPathAsString(),
-                "b_folder", "Folder");
-        b_folder.setProperty("dublincore", "title", "B title for b_folder");
-        DocumentModel c_folder = new DocumentModelImpl(root.getPathAsString(),
-                "c_folder", "Folder");
-        c_folder.setProperty("dublincore", "title", "C title for c_folder");
-
-        DocumentModel a1_folder = new DocumentModelImpl(
-                a_folder.getPathAsString(), "a1_folder", "Folder");
-        a1_folder.setProperty("dublincore", "title", "ZZ title for a1_folder");
-        DocumentModel a2_folder = new DocumentModelImpl(
-                a_folder.getPathAsString(), "a2_folder", "Folder");
-        a2_folder.setProperty("dublincore", "title", "AA title for a2_folder");
-
-        DocumentModel b1_folder = new DocumentModelImpl(
-                b_folder.getPathAsString(), "b1_folder", "Folder");
-        b1_folder.setProperty("dublincore", "title", "A title for b1_folder");
-        DocumentModel b2_folder = new DocumentModelImpl(
-                b_folder.getPathAsString(), "b2_folder", "Folder");
-        b2_folder.setProperty("dublincore", "title", "B title for b2_folder");
-
-        a_folder = createChildDocument(a_folder);
-        b_folder = createChildDocument(b_folder);
-        c_folder = createChildDocument(c_folder);
-        a1_folder = createChildDocument(a1_folder);
-        a2_folder = createChildDocument(a2_folder);
-        b1_folder = createChildDocument(b1_folder);
-        b2_folder = createChildDocument(b2_folder);
-
-        DocumentModelTreeImpl tree = new DocumentModelTreeImpl();
-        tree.add(a_folder, 1);
-        tree.add(a1_folder, 2);
-        tree.add(a2_folder, 2);
-        tree.add(b_folder, 1);
-        tree.add(b1_folder, 2);
-        tree.add(b2_folder, 2);
-        tree.add(c_folder, 1);
-
-        // sort using title
-        DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
-                tree.getPathTitles());
-        Collections.sort((ArrayList) tree, comp);
-
-        assertEquals(b_folder, tree.get(0).getDocument());
-        assertEquals(b1_folder, tree.get(1).getDocument());
-        assertEquals(b2_folder, tree.get(2).getDocument());
-
-        assertEquals(c_folder, tree.get(3).getDocument());
-
-        assertEquals(a_folder, tree.get(4).getDocument());
-        assertEquals(a2_folder, tree.get(5).getDocument());
-        assertEquals(a1_folder, tree.get(6).getDocument());
-
-        session.cancel();
     }
 
     // ------------------------------------

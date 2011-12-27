@@ -37,8 +37,6 @@ public interface Repository {
 
     void initialize() throws DocumentException;
 
-    Session getSession(long sessionId) throws DocumentException;
-
     Session[] getOpenedSessions() throws DocumentException;
 
     void shutdown();

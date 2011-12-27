@@ -119,18 +119,6 @@ public class TypeService extends DefaultComponent {
             if (contribs.length > 0) {
                 setConfiguration((TypeConfiguration) contribs[0]);
             }
-        } else if ("helper".equals(xp)) {
-            Object[] contribs = extension.getContributions();
-            if (contribs.length > 0) {
-                TypeHelperDescriptor thd = (TypeHelperDescriptor) contribs[0];
-                try {
-                    typeManager.registerHelper(thd.schema, thd.type,
-                            thd.helperClass.newInstance());
-                } catch (Exception e) {
-                    log.error("Failed to instantiate type helper: "
-                            + thd.helperClass, e);
-                }
-            }
         } else if ("provider".equals(xp)) {
             Object[] contribs = extension.getContributions();
             if (contribs.length > 0) {
@@ -195,12 +183,6 @@ public class TypeService extends DefaultComponent {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 typeManager.unregisterSchema(((SchemaBindingDescriptor) contrib).name);
-            }
-        } else if ("helper".equals(xp)) {
-            Object[] contribs = extension.getContributions();
-            if (contribs.length > 0) {
-                TypeHelperDescriptor thd = (TypeHelperDescriptor) contribs[0];
-                typeManager.unregisterHelper(thd.schema, thd.type);
             }
         } else if ("provider".equals(xp)) {
             // ignore provider removal

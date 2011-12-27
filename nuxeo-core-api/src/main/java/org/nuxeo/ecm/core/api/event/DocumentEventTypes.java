@@ -41,12 +41,6 @@ public final class DocumentEventTypes {
 
     public static final String DOCUMENT_IMPORTED = "documentImported";
 
-    @Deprecated
-    public static final String ABOUT_TO_INITIALIZE = "aboutToInitialize";
-
-    @Deprecated
-    public static final String DOCUMENT_INITIALIZED = "documentInitialized";
-
     public static final String ABOUT_TO_REMOVE = "aboutToRemove";
 
     public static final String DOCUMENT_REMOVED = "documentRemoved";

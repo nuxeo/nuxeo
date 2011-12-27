@@ -42,4 +42,10 @@ public interface LifeCycleConstants {
      */
     static final String DOCUMENT_UNDELETED = "documentUndeleted";
 
+    /**
+     * Key in context map to specify initial lifecycle state on document
+     * creation.
+     */
+    static final String INITIAL_LIFECYCLE_STATE_OPTION_NAME = "initialLifecycleState";
+
 }
