@@ -305,12 +305,6 @@
         <artifactId>nuxeo-core-event-jms</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
-      <!-- NXP-3179 - DEPRECATED to be deleted -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-event-compat</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-io</artifactId>
