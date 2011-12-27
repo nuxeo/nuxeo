@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.web.requestcontroller.filter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -75,6 +76,17 @@ public class TestBufferingServletResponse extends TestCase {
         assertEquals("", bout.toString());
         out.stopBuffering();
         assertEquals("", bout.toString());
+    }
+
+    public void testWriter() throws Exception {
+        PrintWriter w = response.getWriter();
+        w.write("abc");
+        // no flush, let stopBuffering do it
+        response.stopBuffering();
+        assertEquals("abc", bout.toString());
+        w.write("def");
+        w.flush();
+        assertEquals("abcdef", bout.toString());
     }
 
     protected void doBig(String initial) throws Exception {

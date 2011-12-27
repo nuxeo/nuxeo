@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -54,7 +53,7 @@ public class BufferingHttpServletResponse extends HttpServletResponseWrapper {
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        return new PrintWriter(new OutputStreamWriter(bufferingOutputStream));
+        return bufferingOutputStream.getWriter();
     }
 
     /**
