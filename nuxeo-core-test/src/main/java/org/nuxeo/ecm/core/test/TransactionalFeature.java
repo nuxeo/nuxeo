@@ -32,9 +32,15 @@ public class TransactionalFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-         config = runner.getDescription().getAnnotation(
+        config = runner.getDescription().getAnnotation(
                 TransactionalConfig.class);
-         try {
+    }
+
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
+        Environment.getDefault().setHostApplicationName(
+                Environment.NXSERVER_HOST);
+        try {
             Context comp = (Context) new InitialContext().lookup("java:comp/");
             if (comp == null) {
                 NamingContextFactory.setAsInitial();
@@ -42,13 +48,7 @@ public class TransactionalFeature extends SimpleFeature {
         } catch (NoInitialContextException e) {
             NamingContextFactory.setAsInitial();
         }
-         NuxeoContainer.install();
-    }
-
-    @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        Environment.getDefault().setHostApplicationName(
-                Environment.NXSERVER_HOST);
+        NuxeoContainer.install();
     }
 
     boolean txStarted;
