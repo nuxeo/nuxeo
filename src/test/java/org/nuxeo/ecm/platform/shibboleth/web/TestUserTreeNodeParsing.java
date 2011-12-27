@@ -32,10 +32,15 @@ import static org.junit.Assert.assertNotSame;
 @LocalDeploy({"org.nuxeo.ecm.platform.shibboleth.groups.web:OSGI-INF/test-shibboleth-groups-contrib.xml"})
 public class TestUserTreeNodeParsing {
 
+    protected DocumentModel newDoc(String id, String type) {
+        return new DocumentModelImpl(null, type, id, null, null, null, null,
+                null, null, null, null);
+    }
+
     @Test
     public void testParsing() {
-        DocumentModel doc1 = new DocumentModelImpl("doc1", "type", "hello:::world:::john", null,null, null, null, null);
-        DocumentModel doc2 = new DocumentModelImpl("doc2", "type", "hello:::world:::john2", null,null, null, null, null);
+        DocumentModel doc1 = newDoc("hello:::world:::john", "type");
+        DocumentModel doc2 = newDoc("hello:::world:::john2", "type");
 
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         docs.add(doc1);
@@ -52,9 +57,9 @@ public class TestUserTreeNodeParsing {
 
     @Test
     public void testMixedGroup() {
-        DocumentModel doc1 = new DocumentModelImpl("doc1", "type", "Administrators", null,null, null, null, null);
-        DocumentModel doc2 = new DocumentModelImpl("doc1", "type", "Administrator:::Admini", null,null, null, null, null);
-        DocumentModel doc3 = new DocumentModelImpl("doc1", "type", "Administrator:::Admini:::hello", null,null, null, null, null);
+        DocumentModel doc1 = newDoc("Administrators", "type");
+        DocumentModel doc2 = newDoc("Administrator:::Admini", "type");
+        DocumentModel doc3 = newDoc("Administrator:::Admini:::hello", "type");
 
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         docs.add(doc1);
@@ -73,8 +78,8 @@ public class TestUserTreeNodeParsing {
 
     @Test
     public void testBuildBranch() {
-        DocumentModel doc1 = new DocumentModelImpl("doc1", "type", "test", null,null, null, null, null);
-        DocumentModel doc2 = new DocumentModelImpl("doc1", "type", "test:::test", null,null, null, null, null);
+        DocumentModel doc1 = newDoc("test", "type");
+        DocumentModel doc2 = newDoc("test:::test", "type");
 
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         docs.add(doc1);
@@ -91,7 +96,7 @@ public class TestUserTreeNodeParsing {
 
     @Test
     public void testParsingHandling() {
-        DocumentModel doc1 = new DocumentModelImpl("doc1", "type", "empty", null,null, null, null, null);
+        DocumentModel doc1 = newDoc("empty", "type");
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         docs.add(doc1);
 
@@ -99,7 +104,7 @@ public class TestUserTreeNodeParsing {
         assertEquals(1, nodes.size());
         assertEquals("empty", nodes.get(0).getId());
 
-        doc1 = new DocumentModelImpl("doc1", "type", ":::hello:::", null,null, null, null, null);
+        doc1 = newDoc(":::hello:::", "type");
         docs = new ArrayList<DocumentModel>();
         docs.add(doc1);
 
@@ -116,13 +121,13 @@ public class TestUserTreeNodeParsing {
         assertEquals("node", new UserTreeNode("node").getDisplayedName());
         assertNotSame("node", new UserTreeNode("node2").getDisplayedName());
 
-        DocumentModel doc1 = new DocumentModelImpl("doc1", "type", "empty", null,null, null, null, null);
+        DocumentModel doc1 = newDoc("empty", "type");
         assertEquals("empty", new UserTreeNode(doc1).getDisplayedName());
 
-        doc1 = new DocumentModelImpl("doc1", "type", "empty:::hello", null,null, null, null, null);
+        doc1 = newDoc("empty:::hello", "type");
         assertEquals("hello", new UserTreeNode(doc1).getDisplayedName());
 
-        doc1 = new DocumentModelImpl("doc1", "type", "empty:::hello:::", null,null, null, null, null);
+        doc1 = newDoc("empty:::hello:::", "type");
         assertEquals("", new UserTreeNode(doc1).getDisplayedName());
     }
 }
