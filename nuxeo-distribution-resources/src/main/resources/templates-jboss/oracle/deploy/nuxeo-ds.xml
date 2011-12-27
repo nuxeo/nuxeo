@@ -2,7 +2,7 @@
 <datasources>
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
-    <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+    <driver-class>oracle.jdbc.OracleDriver</driver-class>
     <connection-url>jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}</connection-url>
     <user-name>${nuxeo.db.user}</user-name>
     <password>${nuxeo.db.password}</password>

@@ -26,44 +26,44 @@
     For example java:comp/env/jdbc/nxsqldirectory This means you need to update corresponding
     JNDI bindings in nuxeo data source definitions in the config directory -->
   <Resource name="jdbc/nxsqldirectory" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/nxrelations-default-jena" auth="Container"
     type="javax.sql.DataSource" maxActive="100" maxIdle="30" maxWait="10000"
-    driverClassName="oracle.jdbc.driver.OracleDriver"
+    driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/comment-relations" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/nxaudit-logs" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/nxjbpm" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/placeful_service_ds" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/nxwebwidgets" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/nxuidsequencer" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/nxquartz" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="jdbc/nxquartz_no_tx" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
   <Resource name="TransactionManager" auth="Container"
