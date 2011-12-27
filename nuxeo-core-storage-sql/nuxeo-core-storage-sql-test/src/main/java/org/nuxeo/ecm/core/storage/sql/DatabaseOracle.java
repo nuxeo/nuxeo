@@ -45,7 +45,7 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
 
-    private static final String DRIVER = "oracle.jdbc.driver.OracleDriver";
+    private static final String DRIVER = "oracle.jdbc.OracleDriver";
 
     private void setProperties() {
         Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
