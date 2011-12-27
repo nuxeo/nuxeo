@@ -202,6 +202,14 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    public void detach(boolean loadAll) {
+    }
+
+    @Override
+    public void attach(String sid) {
+    }
+
+    @Override
     public String getCurrentLifeCycleState() throws ClientException {
         throw new UnsupportedOperationException();
     }

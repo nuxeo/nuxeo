@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -99,7 +98,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(new StringBlob("test"));
         doc = repo.createDocument(doc);
-        ((DocumentModelImpl) doc).detach(true);
+        doc.detach(true);
     }
 
     public static class SynchHandler implements PostCommitEventListener {

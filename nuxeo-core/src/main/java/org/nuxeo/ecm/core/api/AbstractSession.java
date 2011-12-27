@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
@@ -3191,8 +3190,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         if (doc != null) {
             DocumentModel docModel = readModel(doc);
             loadDataModelsForFacet(docModel, doc, facet);
-            // detach the DocumentModel
-            ((DocumentModelImpl) docModel).detach(false);
+            docModel.detach(false);
             return docModel.getAdapter(adapterClass);
         }
         return null;

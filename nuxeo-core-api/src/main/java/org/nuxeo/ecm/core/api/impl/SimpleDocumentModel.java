@@ -303,6 +303,14 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public void detach(boolean loadAll) {
+    }
+
+    @Override
+    public void attach(String sid) {
+    }
+
+    @Override
     public DocumentRef getRef() {
         throw new UnsupportedOperationException();
     }
@@ -652,6 +660,7 @@ public class SimpleDocumentModel implements DocumentModel {
         return true;
     }
 
+    @Override
     public String getChangeToken() {
         return null;
     }

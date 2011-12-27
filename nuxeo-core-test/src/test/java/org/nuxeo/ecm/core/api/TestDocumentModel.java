@@ -48,4 +48,29 @@ public class TestDocumentModel extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         assertEquals(doc.getContextData("key"), "value");
     }
+
+    public void testDetachAttach() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        String sid = doc.getSessionId();
+        assertNotNull(sid);
+        assertEquals("project", doc.getCurrentLifeCycleState());
+
+        doc.detach(false);
+        doc.prefetchCurrentLifecycleState(null);
+        assertNull(doc.getSessionId());
+        assertNull(doc.getCurrentLifeCycleState());
+
+        doc.attach(sid);
+        session.saveDocument(doc);
+        assertEquals("project", doc.getCurrentLifeCycleState());
+
+        try {
+            doc.attach("fakesid");
+            fail("Should not allow attach");
+        } catch (ClientException e) {
+            // ok
+        }
+    }
+
 }

@@ -410,13 +410,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
-    /**
-     * Detaches the documentImpl from its existing session, so that it can
-     * survive beyond the session's closing.
-     *
-     * @param loadAll if {@code true}, load all data and ACP from the session
-     *            before detaching
-     */
+    @Override
     public void detach(boolean loadAll) throws ClientException {
         if (sid == null) {
             return;
@@ -433,6 +427,15 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             }
         }
         sid = null;
+    }
+
+    @Override
+    public void attach(String sid) throws ClientException {
+        if (this.sid != null) {
+            throw new ClientException(
+                    "Cannot attach a document that is already attached");
+        }
+        this.sid = sid;
     }
 
     /**

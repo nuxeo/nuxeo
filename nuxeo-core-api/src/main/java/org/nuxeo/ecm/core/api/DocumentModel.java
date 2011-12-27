@@ -133,6 +133,24 @@ public interface DocumentModel extends Serializable {
     CoreSession getCoreSession();
 
     /**
+     * Detaches the documentImpl from its existing session, so that it can
+     * survive beyond the session's closing.
+     *
+     * @param loadAll if {@code true}, load all data and ACP from the session
+     *            before detaching
+     * @since 5.6
+     */
+    void detach(boolean loadAll) throws ClientException;
+
+    /**
+     * Reattaches a document impl to an existing session.
+     *
+     * @param sid the session id
+     * @since 5.6
+     */
+    void attach(String sid) throws ClientException;
+
+    /**
      * Gets a reference to the core document that can be used either remotely or
      * locally (opens the core JVM).
      *
