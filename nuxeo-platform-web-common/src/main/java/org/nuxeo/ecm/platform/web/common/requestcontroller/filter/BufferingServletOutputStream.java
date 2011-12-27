@@ -23,6 +23,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletOutputStream;
 
@@ -59,6 +61,8 @@ public class BufferingServletOutputStream extends ServletOutputStream {
 
     protected final OutputStream outputStream;
 
+    protected PrintWriter writer;
+
     protected ByteArrayOutputStream memory;
 
     protected OutputStream file;
@@ -76,6 +80,13 @@ public class BufferingServletOutputStream extends ServletOutputStream {
      */
     public BufferingServletOutputStream(OutputStream outputStream) {
         this.outputStream = outputStream;
+    }
+
+    public PrintWriter getWriter() {
+        if (writer == null) {
+            writer = new PrintWriter(new OutputStreamWriter(this));
+        }
+        return writer;
     }
 
     /**
@@ -174,6 +185,9 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     public void stopBuffering() throws IOException {
         if (streaming) {
             return;
+        }
+        if (writer != null) {
+            writer.flush(); // don't close, streaming needs it
         }
         streaming = true;
         if (log.isDebugEnabled()) {
