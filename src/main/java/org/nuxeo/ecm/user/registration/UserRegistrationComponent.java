@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
@@ -306,7 +305,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             EventContext evContext = sendEvent(session, registrationDoc,
                     UserRegistrationService.REGISTRATION_VALIDATED_EVENT);
 
-            ((DocumentModelImpl) registrationDoc).detach(sessionIsAlreadyUnrestricted);
+            registrationDoc.detach(sessionIsAlreadyUnrestricted);
             registrationData.put("registrationDoc", registrationDoc);
             registrationData.put("registeredUser",
                     evContext.getProperty("registeredUser"));
