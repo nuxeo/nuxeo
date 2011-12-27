@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -57,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of the {@link PublishedDocumentFactory} for core
  * implementation using native proxy system with validation workflow.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
@@ -529,16 +528,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 }
             }
             if (proxy != null) {
-                detachDocument(proxy);
+                proxy.detach(true);
             }
         }
-
-        private void detachDocument(DocumentModel doc) throws ClientException {
-            if (doc instanceof DocumentModelImpl) {
-                ((DocumentModelImpl) doc).detach(true);
-            }
-        }
-
     }
 
 }
