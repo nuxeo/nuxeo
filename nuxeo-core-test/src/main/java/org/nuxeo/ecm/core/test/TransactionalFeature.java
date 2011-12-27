@@ -28,12 +28,15 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @TransactionalConfig()
 public class TransactionalFeature extends SimpleFeature {
 
-    protected TransactionalConfig config;
+    protected boolean autoStart = true;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        config = runner.getDescription().getAnnotation(
+        TransactionalConfig config = runner.getDescription().getAnnotation(
                 TransactionalConfig.class);
+        if (config != null) {
+            autoStart = config.autoStart();
+        }
     }
 
     @Override
@@ -55,7 +58,7 @@ public class TransactionalFeature extends SimpleFeature {
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        if (config.autoStart() == false) {
+        if (autoStart == false) {
             return;
         }
         txStarted = TransactionHelper.startTransaction();
