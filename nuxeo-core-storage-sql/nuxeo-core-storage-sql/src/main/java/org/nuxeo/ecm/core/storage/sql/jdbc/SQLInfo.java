@@ -811,6 +811,9 @@ public class SQLInfo {
             column = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
+            column = table.getColumn(model.MAIN_MIXIN_TYPES_KEY);
+            whatColumns.add(column);
+            whats.add(column.getQuotedName());
             Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());

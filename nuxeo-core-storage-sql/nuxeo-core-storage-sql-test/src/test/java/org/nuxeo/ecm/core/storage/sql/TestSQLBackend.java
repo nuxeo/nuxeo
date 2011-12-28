@@ -2029,6 +2029,31 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(Arrays.asList("bar", "gee"), Arrays.asList(p2.getValue()));
     }
 
+    public void testMixinCopyDeep() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        Node folder = session.addChildNode(root, "folder", null, "TestDoc",
+                false);
+        session.save();
+
+        Node node = session.addChildNode(folder, "foo", null, "TestDoc", false);
+        node.addMixinType("Aged");
+        node.setSimpleProperty("age:age", "123");
+        node.setCollectionProperty("age:nicknames",
+                new String[] { "bar", "gee" });
+        session.save();
+
+        // copy the folder
+        session.copy(folder, root, "folder2");
+
+        Node copy = session.getNodeByPath("/folder2/foo", null);
+        SimpleProperty p = copy.getSimpleProperty("age:age");
+        assertEquals("123", p.getValue());
+        CollectionProperty p2 = copy.getCollectionProperty("age:nicknames");
+        assertEquals(Arrays.asList("bar", "gee"), Arrays.asList(p2.getValue()));
+    }
+
     public void testMixinFulltext() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
