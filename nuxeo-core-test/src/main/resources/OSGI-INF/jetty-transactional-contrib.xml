@@ -1,0 +1,7 @@
+<component name="jetty-transactional-contrib">
+
+  <extension target="org.nuxeo.runtime.server" point="listeners">
+    <listener name="jtajca" class="org.nuxeo.ecm.core.test.JettyTransactionalListener"/>
+  </extension>
+
+</component>
