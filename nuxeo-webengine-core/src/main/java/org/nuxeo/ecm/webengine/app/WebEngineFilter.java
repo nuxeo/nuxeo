@@ -200,7 +200,7 @@ public class WebEngineFilter implements Filter {
     public void initTx(Config config, HttpServletRequest req) {
         if (!config.isStatic && config.autoTx
                 && !TransactionHelper.isTransactionActive()) {
-            config.txStarted = TransactionHelper.startTransaction();
+            config.txStarted = TransactionHelper.startTransaction(req);
         }
     }
 
