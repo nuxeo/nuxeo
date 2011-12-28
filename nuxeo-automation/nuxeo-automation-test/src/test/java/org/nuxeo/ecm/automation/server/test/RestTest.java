@@ -90,10 +90,10 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
+@LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
+"org.nuxeo.ecm.automation.server:test-mvalues.xml" })
 @Features(RestFeature.class)
 @Jetty(port = 18080)
-@LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
-        "org.nuxeo.ecm.automation.server:test-mvalues.xml" })
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 @TransactionalConfig(autoStart=false)
 public class RestTest {
