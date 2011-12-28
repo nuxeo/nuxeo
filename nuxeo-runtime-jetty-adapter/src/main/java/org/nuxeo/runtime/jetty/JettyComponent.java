@@ -24,9 +24,12 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.component.LifeCycle;
+import org.mortbay.component.LifeCycle.Listener;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.webapp.Configuration;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -67,11 +70,15 @@ public class JettyComponent extends DefaultComponent {
     public static final String XP_WEB_APP = "webapp";
 
     public static final String XP_SERVLET = "servlet";
+
     public static final String XP_FILTER = "filter";
+
+    public static final String XP_LISTENERS = "listeners";
 
     public static final String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir";
 
     protected Server server;
+
     protected ContextManager ctxMgr;
 
     // here we are putting all regular war contexts
@@ -131,6 +138,7 @@ public class JettyComponent extends DefaultComponent {
                 }
             }
             server = new Server(p);
+
         }
 
         // if a jetty.xml is present we don't configure logging - this should be
@@ -148,10 +156,17 @@ public class JettyComponent extends DefaultComponent {
             server.addHandler(requestLogHandler);
             server.setSendServerVersion(true);
             server.setStopAtShutdown(true);
+
         }
-        // create the war context
-        warContexts = new ContextHandlerCollection();
-        server.addHandler(warContexts);
+
+        // create the war context handler if needed
+        HandlerCollection hc = (HandlerCollection) server.getHandler();
+        warContexts = (ContextHandlerCollection) hc.getChildHandlerByClass(ContextHandlerCollection.class);
+        if (warContexts == null) {
+            // create the war context
+            warContexts = new ContextHandlerCollection();
+            server.addHandler(warContexts);
+        }
 
         // scan for WAR files
         // deploy any war found in web directory
@@ -184,15 +199,16 @@ public class JettyComponent extends DefaultComponent {
         if (XP_WEB_APP.equals(extensionPoint)) {
             File home = Environment.getDefault().getHome();
             WebApplication app = (WebApplication) contribution;
-            // TODO preprocessing was removed from this component - preprocessing should be done in another bundle
+            // TODO preprocessing was removed from this component -
+            // preprocessing should be done in another bundle
             // if still required (on equinox distribution)
-//            if (app.needsWarPreprocessing()) {
-//                logger.info("Starting deployment preprocessing");
-//                DeploymentPreprocessor dp = new DeploymentPreprocessor(home);
-//                dp.init();
-//                dp.predeploy();
-//                logger.info("Deployment preprocessing terminated");
-//            }
+            // if (app.needsWarPreprocessing()) {
+            // logger.info("Starting deployment preprocessing");
+            // DeploymentPreprocessor dp = new DeploymentPreprocessor(home);
+            // dp.init();
+            // dp.predeploy();
+            // logger.info("Deployment preprocessing terminated");
+            // }
 
             WebAppContext ctx = new WebAppContext();
             ctx.setContextPath(app.getContextPath());
@@ -228,9 +244,11 @@ public class JettyComponent extends DefaultComponent {
             }
 
         } else if (XP_FILTER.equals(extensionPoint)) {
-            ctxMgr.addFilter((FilterDescriptor)contribution);
+            ctxMgr.addFilter((FilterDescriptor) contribution);
         } else if (XP_SERVLET.equals(extensionPoint)) {
-            ctxMgr.addServlet((ServletDescriptor)contribution);
+            ctxMgr.addServlet((ServletDescriptor) contribution);
+        } else if (XP_LISTENERS.equals(extensionPoint)) {
+            ctxMgr.addLifecycleListener((ServletContextListenerDescriptor) contribution);
         }
     }
 
@@ -245,9 +263,11 @@ public class JettyComponent extends DefaultComponent {
         if (XP_WEB_APP.equals(extensionPoint)) {
 
         } else if (XP_FILTER.equals(extensionPoint)) {
-            ctxMgr.removeFilter((FilterDescriptor)contribution);
+            ctxMgr.removeFilter((FilterDescriptor) contribution);
         } else if (XP_SERVLET.equals(extensionPoint)) {
-            ctxMgr.removeServlet((ServletDescriptor)contribution);
+            ctxMgr.removeServlet((ServletDescriptor) contribution);
+        } else if (XP_LISTENERS.equals(extensionPoint)) {
+            ctxMgr.removeLifecycleListener((ServletContextListenerDescriptor) contribution);
         }
     }
 
@@ -261,20 +281,23 @@ public class JettyComponent extends DefaultComponent {
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
-        if (server != null) {
-            try {
-                Thread t = Thread.currentThread();
-                ClassLoader oldcl = t.getContextClassLoader();
-                t.setContextClassLoader(getClass().getClassLoader());
-                try {
-                    server.start();
-                } finally {
-                    t.setContextClassLoader(oldcl);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to start Jetty server", e);
-            }
+        if (server == null) {
+            return;
         }
+        ctxMgr.applyLifecycleListeners();
+        try {
+            Thread t = Thread.currentThread();
+            ClassLoader oldcl = t.getContextClassLoader();
+            t.setContextClassLoader(getClass().getClassLoader());
+            try {
+                server.start();
+            } finally {
+                t.setContextClassLoader(oldcl);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to start Jetty server", e);
+        }
+
     }
 
     private void scanForWars(File dir) {

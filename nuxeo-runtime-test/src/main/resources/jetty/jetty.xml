@@ -12,15 +12,6 @@
 
 <Configure id="Server" class="org.mortbay.jetty.Server">
 
-  <Array id="plusConfig" type="java.lang.String">
-    <Item>org.mortbay.jetty.webapp.WebInfConfiguration</Item>
-    <Item>org.mortbay.jetty.plus.webapp.EnvConfiguration</Item>
-    <Item>org.mortbay.jetty.plus.webapp.Configuration</Item>
-    <Item>org.mortbay.jetty.webapp.JettyWebXmlConfiguration</Item>
-    <Item>org.mortbay.jetty.webapp.TagLibConfiguration</Item>
-  </Array>
-
-
     <!-- =========================================================== -->
     <!-- Server Thread Pool                                          -->
     <!-- =========================================================== -->
