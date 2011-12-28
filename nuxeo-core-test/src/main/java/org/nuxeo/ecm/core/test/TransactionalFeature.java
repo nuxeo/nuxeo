@@ -19,23 +19,25 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.runtime.jtajca" })
-@TransactionalConfig()
 public class TransactionalFeature extends SimpleFeature {
 
-    protected boolean autoStart = true;
+    protected TransactionalConfig config;
+
+    protected boolean txStarted;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        TransactionalConfig config = runner.getDescription().getAnnotation(
+        config = runner.getDescription().getAnnotation(
                 TransactionalConfig.class);
-        if (config != null) {
-            autoStart = config.autoStart();
+        if (config == null) {
+            config = Defaults.of(TransactionalConfig.class);
         }
     }
 
@@ -54,11 +56,9 @@ public class TransactionalFeature extends SimpleFeature {
         NuxeoContainer.install();
     }
 
-    boolean txStarted;
-
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        if (autoStart == false) {
+        if (config.autoStart() == false) {
             return;
         }
         txStarted = TransactionHelper.startTransaction();
