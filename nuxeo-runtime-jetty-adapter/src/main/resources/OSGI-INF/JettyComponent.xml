@@ -24,5 +24,9 @@
   <extension-point name="filter">
     <object class="org.nuxeo.runtime.jetty.FilterDescriptor"/>
   </extension-point>
+  
+  <extension-point name="listeners">
+    <object class="org.nuxeo.runtime.jetty.ServletContextListenerDescriptor"/>
+  </extension-point>
 
 </component>
