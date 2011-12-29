@@ -448,7 +448,7 @@ public final class FileUtils {
     }
 
     public static String getParentPath(String path) {
-        int p = path.lastIndexOf('/');
+        int p = path.lastIndexOf(File.separator);
         if (p == -1) {
             return null;
         }
@@ -456,7 +456,7 @@ public final class FileUtils {
     }
 
     public static String getFileName(String path) {
-        int p = path.lastIndexOf('/');
+        int p = path.lastIndexOf(File.separator);
         if (p == -1) {
             return path;
         }
