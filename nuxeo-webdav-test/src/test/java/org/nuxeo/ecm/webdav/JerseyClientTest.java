@@ -17,20 +17,19 @@
 
 package org.nuxeo.ecm.webdav;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 
 /**
  * Simple test using the Jersey HTTP client.
  * Only standard HTTP methods are supported, so we're only testing GET, PUT and DELETE.
  */
-@Ignore
 public class JerseyClientTest extends AbstractServerTest {
 
     @Test
@@ -53,9 +52,9 @@ public class JerseyClientTest extends AbstractServerTest {
 
         r.path("file").delete();
         try {
-            String e4 = r.path("file").get(String.class);
+            r.path("file").get(String.class);
             fail("Should have raise a 'doc not found' exception");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // OK.
         }
     }

@@ -28,7 +28,7 @@ public abstract class AbstractServerTest {
 
     public static final String TEST_URI = "http://localhost:" + PORT;
 
-    static final String ROOT_URI = TEST_URI + "/dav/workspaces/";
+    static final String ROOT_URI = TEST_URI + "/workspace/";
 
     @BeforeClass
     public static void startServer() throws Exception {
@@ -37,8 +37,9 @@ public abstract class AbstractServerTest {
     }
 
     @AfterClass
-    public static void stopServer() {
+    public static void stopServer() throws Exception {
         Server.stopServer();
+        Server.stopRuntime();
     }
 
 }

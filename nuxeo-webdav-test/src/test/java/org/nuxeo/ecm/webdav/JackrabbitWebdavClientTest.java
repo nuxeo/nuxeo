@@ -44,7 +44,6 @@ import static org.junit.Assert.assertTrue;
  * server.
  */
 
-@Ignore
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     private static HttpClient client;
@@ -79,7 +78,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
         for (DavPropertyName propName : props.getPropertyNames()) {
-            System.out.println(propName + "  " + props.get(propName).getValue());
+            // System.out.println(propName + "  " + props.get(propName).getValue());
         }
     }
 
@@ -94,7 +93,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
         for (DavPropertyName propName : props.getPropertyNames()) {
-            System.out.println(propName + "  " + props.get(propName).getValue());
+            // System.out.println(propName + "  " + props.get(propName).getValue());
         }
     }
 

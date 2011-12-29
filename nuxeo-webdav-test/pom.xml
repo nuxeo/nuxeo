@@ -9,9 +9,8 @@
     <version>5.6-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-webdav</artifactId>
-  <name>Nuxeo WebDAV</name>
-  <description>JAX-RS based WebDAV interface to Nuxeo</description>
+  <artifactId>nuxeo-webdav-test</artifactId>
+  <name>Nuxeo WebDAV Tests</name>
 
   <dependencies>
     <!-- specific deps for this project -->
@@ -30,6 +29,15 @@
 
     <!-- dependencies on Nuxeo -->
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-webdav</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-wi-backend</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
     </dependency>
@@ -39,11 +47,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -62,11 +66,46 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- needed for some reason (to check!) -->
+    <!-- for tests -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.grizzly</groupId>
+      <artifactId>grizzly-servlet-webserver</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-webdav</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- needed for some reason (to check!) -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -81,16 +120,8 @@
       <artifactId>jta</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -101,6 +132,11 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
