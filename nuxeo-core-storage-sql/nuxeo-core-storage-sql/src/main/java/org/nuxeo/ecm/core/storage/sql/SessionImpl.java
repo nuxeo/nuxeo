@@ -578,6 +578,9 @@ public class SessionImpl implements Session, XAResource {
 
     protected Node getNodeById(Serializable id, boolean prefetch)
             throws StorageException {
+        if (context.isDeleted(id)) {
+            return null;
+        }
         List<Node> nodes = getNodesByIds(Collections.singletonList(id),
                 prefetch);
         return nodes.get(0);

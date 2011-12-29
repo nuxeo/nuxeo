@@ -414,6 +414,8 @@ public class HierarchyContext {
         removeChild(hierFragment, complexProp);
         hierFragment.put(model.HIER_PARENT_KEY, parentId);
         addExistingChild(hierFragment, complexProp, true);
+        // path invalidated
+        source.path = null;
     }
 
     /**
