@@ -151,7 +151,7 @@
        </helpLabels>
        <translated>true</translated>
        <fields>
-         <field>dc:contributors/0</field>
+         <field>dc:creator</field>
        </fields>
        <widgetModes>
          <mode value="any">view</mode>
