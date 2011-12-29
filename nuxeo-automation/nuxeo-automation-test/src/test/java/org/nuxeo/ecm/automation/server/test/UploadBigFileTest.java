@@ -42,9 +42,9 @@ import com.google.inject.Inject;
 @Features(RestFeature.class)
 @Jetty(port = 18080)
 public class UploadBigFileTest {
-    
+
     @Inject Session session;
-    
+
     @Test
     public void withMaxMemory() throws Exception {
         MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
@@ -53,4 +53,5 @@ public class UploadBigFileTest {
         FileInputStream result = new UploadFileSupport(session).testUploadFile(source);
         assertEquals(source.consumed, result.getChannel().size());
     }
+
 }
