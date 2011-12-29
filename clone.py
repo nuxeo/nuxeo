@@ -101,7 +101,7 @@ def git_fetch(module):
         system("git checkout %s" % version)
     elif version not in check_output(["git", "branch"]).split():
         # create the local branch if missing
-        system("git checkout -b %s %s/%s" % (version, alias, version))
+        system("git checkout --track -b %s %s/%s" % (version, alias, version))
     else:
         # reuse local branch
         system("git checkout %s" % version)
@@ -118,9 +118,15 @@ def get_current_version():
 long_path_workaround_init()
 
 usage = "usage: %prog [options] version"
-parser = optparse.OptionParser(usage=usage, description='Clone or update Nuxeo source code from Git repositories.')
-parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %default)')
-parser.add_option("-a", "--all", action="store_true", dest="with_optionals", default=False, help="Include 'optional' addons (default: %default)")
+parser = optparse.OptionParser(
+    usage=usage,
+    description='Clone or update Nuxeo source code from Git repositories.')
+parser.add_option(
+    '-r', action="store", type="string", dest='remote_alias', default='origin',
+    help='The Git alias of remote URL (default: %default)')
+parser.add_option(
+    "-a", "--all", action="store_true", dest="with_optionals", default=False,
+    help="Include 'optional' addons (default: %default)")
 
 (options, args) = parser.parse_args()
 alias = options.remote_alias
@@ -140,7 +146,7 @@ if version in check_output(["git", "tag"]).split():
     system("git checkout %s" % version)
 elif version not in check_output(["git", "branch"]).split():
     # create the local branch if missing
-    system("git checkout -b %s %s/%s" % (version, alias, version))
+    system("git checkout --track -b %s %s/%s" % (version, alias, version))
 else:
     # reuse local branch
     system("git checkout %s" % version)
