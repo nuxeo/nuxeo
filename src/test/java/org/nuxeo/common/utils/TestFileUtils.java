@@ -100,8 +100,15 @@ public class TestFileUtils extends TestCase {
 
 
     public void testFilePathMethods() {
-        String path = "/a/b/c/d.pdf";
-        assertEquals("/a/b/c", FileUtils.getParentPath(path));
+        String path, testPath;
+        if (isWindows()) {
+            path = "\\a\\b\\c\\d.pdf";
+            testPath = "\\a\\b\\c";
+        } else {
+            path = "/a/b/c/d.pdf";
+            testPath = "/a/b/c";
+        }
+        assertEquals(testPath, FileUtils.getParentPath(path));
         assertEquals("pdf", FileUtils.getFileExtension(path));
         assertEquals("d.pdf", FileUtils.getFileName(path));
         assertEquals("d", FileUtils.getFileNameNoExt(path));
@@ -119,4 +126,8 @@ public class TestFileUtils extends TestCase {
         assertEquals("a", FileUtils.getFileNameNoExt(path));
     }
 
+    public static boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf("win") >= 0);
+    }
 }
