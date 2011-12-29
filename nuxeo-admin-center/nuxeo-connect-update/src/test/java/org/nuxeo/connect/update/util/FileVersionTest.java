@@ -107,5 +107,30 @@ public class FileVersionTest {
         assertEquals("5.5-SNAPSHOT must be equal to 5.5-SNAPSHOT",
                 new FileVersion("5.5-SNAPSHOT"),
                 new FileVersion("5.5-SNAPSHOT"));
+        // Release candidate, alpha and beta versions must be lower than the
+        // final version
+        assertTrue(
+                "5.5 must be greater than 5.5-RC1",
+                new FileVersion("5.5").compareTo(new FileVersion("5.5-RC1")) > 0);
+        assertTrue("5.5-RC2 must be greater than 5.5-RC1", new FileVersion(
+                "5.5-RC2").compareTo(new FileVersion("5.5-RC1")) > 0);
+        assertTrue(
+                "5.5 must be greater than 5.5-alpha1",
+                new FileVersion("5.5").compareTo(new FileVersion("5.5-alpha1")) > 0);
+        assertTrue(
+                "5.5 must be greater than 5.5-BETA6",
+                new FileVersion("5.5").compareTo(new FileVersion("5.5-BETA6")) > 0);
+        // Date-based versions must be lower than the final version
+        assertTrue("5.5 must be greater than 5.5-I20120101_0115",
+                new FileVersion("5.5").compareTo(new FileVersion(
+                        "5.5-I20120101_0115")) > 0);
+        assertTrue(
+                "5.5.1-I20120101_0115 must be greater than 5.5",
+                new FileVersion("5.5.1-I20120101_0115").compareTo(new FileVersion(
+                        "5.5")) > 0);
+        assertTrue(
+                "5.5.1-I20120101_0115 must be greater than 5.5.1-I20110101_0115",
+                new FileVersion("5.5.1-I20120101_0115").compareTo(new FileVersion(
+                        "5.5.1-I20110101_0115")) > 0);
     }
 }

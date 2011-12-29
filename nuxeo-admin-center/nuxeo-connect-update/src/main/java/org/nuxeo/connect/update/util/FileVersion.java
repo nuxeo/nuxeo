@@ -20,13 +20,14 @@ package org.nuxeo.connect.update.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Compare versions of files as they are usually set. Maven classifiers are not
  * managed: a classifier will be considered as being part of the version. Maven
  * "SNAPSHOT" keyword is taken in account. Rule is: x-SNAPSHOT < x <
  * x-AnythingButSNAPSHOT < x.y-SNAPSHOT < x.y
- * 
+ *
  * @since 5.5
  */
 public class FileVersion implements Comparable<FileVersion> {
@@ -37,6 +38,8 @@ public class FileVersion implements Comparable<FileVersion> {
 
     protected boolean snapshot;
 
+    protected boolean specialQualifier;
+
     protected Integer[] splitVersion;
 
     protected String qualifier = "";
@@ -44,6 +47,8 @@ public class FileVersion implements Comparable<FileVersion> {
     private String separator = "";
 
     private String tmpVersion;
+
+    private static final Pattern SPECIAL_QUALIFIER = Pattern.compile("^-(((RC)|(rc)|(alpha)|(ALPHA)|(beta)|(BETA)\\d+)|([a-zA-Z][0-9]{8})).*$");
 
     public String getQualifier() {
         return qualifier;
@@ -57,6 +62,7 @@ public class FileVersion implements Comparable<FileVersion> {
         this.version = value;
         this.snapshot = value.endsWith(SNAPSHOT);
         split(getVersionWithoutSnapshot());
+        this.specialQualifier = SPECIAL_QUALIFIER.matcher(qualifier).matches();
     }
 
     public void split(String value) {
@@ -112,10 +118,14 @@ public class FileVersion implements Comparable<FileVersion> {
 
     @Override
     public int compareTo(FileVersion o) {
-        if (snapshot && getVersionWithoutSnapshot().equals(o.getVersion())) {
+        if (snapshot && getVersionWithoutSnapshot().equals(o.getVersion())
+                || specialQualifier
+                && getVersionWithoutQualifier().equals(o.getVersion())) {
             return -1;
         } else if (o.isSnapshot()
-                && version.equals(o.getVersionWithoutSnapshot())) {
+                && version.equals(o.getVersionWithoutSnapshot())
+                || o.hasSpecialQualifier()
+                && version.equals(o.getVersionWithoutQualifier())) {
             return 1;
         }
 
@@ -168,6 +178,20 @@ public class FileVersion implements Comparable<FileVersion> {
 
     public boolean isSnapshot() {
         return snapshot;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public boolean hasSpecialQualifier() {
+        return specialQualifier;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public String getVersionWithoutQualifier() {
+        return version.substring(0, version.lastIndexOf(qualifier));
     }
 
     @Override
