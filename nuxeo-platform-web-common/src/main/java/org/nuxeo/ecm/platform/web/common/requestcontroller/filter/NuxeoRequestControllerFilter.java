@@ -155,7 +155,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         boolean txStarted = false;
         try {
             if (useTx) {
-                txStarted = TransactionHelper.startTransaction();
+                txStarted = TransactionHelper.startTransaction(httpRequest);
                 if (txStarted) {
                     response = new BufferingHttpServletResponse(httpResponse);
                 }
