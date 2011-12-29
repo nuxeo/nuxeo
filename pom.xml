@@ -14,12 +14,25 @@
   <name>Nuxeo Platform Diff</name>
   <description>Provides a document diff feature</description>
 
+  <properties>
+    <xmlunit.version>1.3</xmlunit.version>
+  </properties>
+
   <dependencies>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-io</artifactId>
+    </dependency>
+    
+    <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
-      <version>1.3</version>
+      <version>${xmlunit.version}</version>
     </dependency>
 
   </dependencies>
