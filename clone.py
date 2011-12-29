@@ -31,7 +31,8 @@ def log(message):
 def system(cmd, failonerror=True):
     log("$> " + cmd)
     args = shlex.split(cmd)
-    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
     out, err = p.communicate()
     sys.stdout.write(out)
     sys.stdout.flush()
@@ -58,7 +59,8 @@ def system_with_retries(cmd, failonerror=True):
 
 def long_path_workaround_init():
     global driveletter
-    # On Windows, try to map the current directory to an unused drive letter to shorten path names
+    # On Windows, try to map the current directory to an unused drive letter to
+    # shorten path names
     if platform.system() != "Windows": return
     for letter in "GHIJKLMNOPQRSTUVWXYZ":
         if not os.path.isdir("%s:\\" % (letter,)):
@@ -92,7 +94,7 @@ def git_fetch(module):
         system("git fetch %s" % (alias))
     else:
         log("Cloning " + module + "...")
-        system("git clone %s" % (repo_url))
+        system("git clone --track %s" % (repo_url))
         os.chdir(module)
 
     if version in check_output(["git", "tag"]).split():
@@ -100,7 +102,7 @@ def git_fetch(module):
         system("git checkout %s" % version)
     elif version not in check_output(["git", "branch"]).split():
         # create the local branch if missing
-        system("git checkout -b %s %s/%s" % (version, alias, version))
+        system("git checkout --track -b %s %s/%s" % (version, alias, version))
     else:
         # reuse local branch
         system("git checkout %s" % version)
@@ -117,9 +119,15 @@ def get_current_version():
 long_path_workaround_init()
 
 usage = "usage: %prog [options] version"
-parser = optparse.OptionParser(usage=usage, description='Clone or update Nuxeo source code from Git repositories.')
-parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin', help='The Git alias of remote URL (default: %default)')
-parser.add_option("-a", "--all", action="store_true", dest="with_optionals", default=False, help="Include 'optional' addons (default: %default)")
+parser = optparse.OptionParser(
+    usage=usage,
+    description='Clone or update Nuxeo source code from Git repositories.')
+parser.add_option(
+    '-r', action="store", type="string", dest='remote_alias',
+    default='origin', help='The Git alias of remote URL (default: %default)')
+parser.add_option(
+    "-a", "--all", action="store_true", dest="with_optionals", default=False,
+    help="Include 'optional' addons (default: %default)")
 
 (options, args) = parser.parse_args()
 alias = options.remote_alias
@@ -139,7 +147,7 @@ if version in check_output(["git", "tag"]).split():
     system("git checkout %s" % version)
 elif version not in check_output(["git", "branch"]).split():
     # create the local branch if missing
-    system("git checkout -b %s %s/%s" % (version, alias, version))
+    system("git checkout --track -b %s %s/%s" % (version, alias, version))
 else:
     # reuse local branch
     system("git checkout %s" % version)
