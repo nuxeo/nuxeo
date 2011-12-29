@@ -94,7 +94,7 @@ def git_fetch(module):
         system("git fetch %s" % (alias))
     else:
         log("Cloning " + module + "...")
-        system("git clone --track %s" % (repo_url))
+        system("git clone %s" % (repo_url))
         os.chdir(module)
 
     if version in check_output(["git", "tag"]).split():
