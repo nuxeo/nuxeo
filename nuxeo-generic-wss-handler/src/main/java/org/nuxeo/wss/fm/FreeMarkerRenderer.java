@@ -16,6 +16,7 @@
  */
 package org.nuxeo.wss.fm;
 
+import java.io.File;
 import java.io.Writer;
 import java.util.Map;
 
@@ -45,7 +46,8 @@ public class FreeMarkerRenderer {
     protected static ClassTemplateLoader addLoader;
     protected PluggableTemplareLoader loader;
 
-    public static final String FM_TEMPLATE_PATH = "/templates/";
+    public static final String FM_TEMPLATE_PATH = File.separator + "templates"
+            + File.separator;
 
     private static final Log log = LogFactory.getLog(FreeMarkerRenderer.class);
 
