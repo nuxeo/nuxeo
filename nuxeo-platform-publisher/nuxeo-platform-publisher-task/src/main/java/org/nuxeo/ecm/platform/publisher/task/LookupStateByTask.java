@@ -6,29 +6,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 
 class LookupStateByTask implements LookupState {
-
-    protected static class TasksChecker extends UnrestrictedSessionRunner {
-        protected final DocumentModel doc;
-
-        protected boolean ownTasks = false;
-
-        protected TasksChecker(DocumentModel doc, CoreSession session) {
-            super(session);
-            this.doc = doc;
-        }
-
-        @Override
-        public void run() throws ClientException {
-
-        }
-
-    }
 
     @Override
     public boolean isPublished(DocumentModel doc, CoreSession session)
