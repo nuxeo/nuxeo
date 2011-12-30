@@ -57,4 +57,27 @@ public class SimplePropertyDiff implements PropertyDiff {
     public void setRightValue(String rightValue) {
         this.rightValue = rightValue;
     }
+
+    @Override
+    public boolean equals(Object other) {
+
+        boolean res = false;
+
+        if (other != null && other instanceof SimplePropertyDiff) {
+
+            String objLeftValue = ((SimplePropertyDiff) other).getLeftValue();
+            String objRightValue = ((SimplePropertyDiff) other).getRightValue();
+
+            res = (leftValue == null && objLeftValue == null
+                    && rightValue == null && objRightValue == null)
+                    || (leftValue == null && objLeftValue == null
+                            && rightValue != null && rightValue.equals(objRightValue))
+                    || (rightValue == null && objRightValue == null
+                            && leftValue != null && leftValue.equals(objLeftValue))
+                    || (leftValue != null && rightValue != null
+                            && leftValue.equals(objLeftValue) && rightValue.equals(objRightValue));
+        }
+
+        return res;
+    }
 }

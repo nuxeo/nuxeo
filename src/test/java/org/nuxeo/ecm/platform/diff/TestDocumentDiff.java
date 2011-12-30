@@ -21,8 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,6 +28,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
+import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.xmlexport.DocumentXMLExporter;
 import org.nuxeo.runtime.api.Framework;
@@ -38,8 +37,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author ataillefer
  */
 public class TestDocumentDiff extends SQLRepositoryTestCase {
-
-    private static final Log LOGGER = LogFactory.getLog(TestDocumentDiff.class);
 
     private static final String NUXEO_PLATFORM_DIFF_BUNDLE = "org.nuxeo.platform.diff";
 
@@ -87,61 +84,62 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         // Check system elements
         // ---------------------------
         SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 2);
+
         // type
-        checkFieldDiff(schemaDiff, "type", "SampleType", "OtherSampleType");
+        checkSimpleFieldDiff(schemaDiff, "type", "SampleType",
+                "OtherSampleType");
         // path
-        checkFieldDiff(schemaDiff, "path", "leftDoc", "rightDoc");
+        checkSimpleFieldDiff(schemaDiff, "path", "leftDoc", "rightDoc");
 
         // ---------------------------
         // Check dublincore schema
         // ---------------------------
-        schemaDiff = checkSchemaDiff(docDiff, "dublincore", 5);
+        schemaDiff = checkSchemaDiff(docDiff, "dublincore", 6);
 
-        // title
-        checkFieldDiff(schemaDiff, "title", "My first sample",
+        // title => different
+        checkSimpleFieldDiff(schemaDiff, "title", "My first sample",
                 "My second sample");
+        // description => different
+        checkSimpleFieldDiff(schemaDiff, "description", "description", null);
+        // created => different
+        checkSimpleFieldDiff(schemaDiff, "created", "2011-12-29T11:24:25Z",
+                "2011-12-30T12:05:02Z");
+        // creator => same
+        checkIdenticalField(schemaDiff, "creator");
+        // modified => different
+        checkSimpleFieldDiff(schemaDiff, "created", "2011-12-29T11:24:25Z",
+                "2011-12-30T12:05:02Z");
+        // lastContributor => same once trimmed
+        checkIdenticalField(schemaDiff, "lastContributor");
+        // contributors => different (update) / same / different (add)
 
-    }
+        // subjects => same / different (remove)
 
-    /**
-     * Checks a schema diff.
-     * 
-     * @param docDiff the doc diff
-     * @param schema the schema
-     * @param expectedFieldCount the expected field count
-     * @return the schema diff
-     */
-    protected final SchemaDiff checkSchemaDiff(DocumentDiff docDiff,
-            String schema, int expectedFieldCount) {
+        // ---------------------------
+        // Check simpletypes schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "simpletypes", 4);
 
-        SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
-        assertNotNull("Schema diff should not be null", schemaDiff);
-        assertEquals("Wrong field count.", expectedFieldCount,
-                schemaDiff.getFieldCount());
+        // string => different
+        checkSimpleFieldDiff(schemaDiff, "string", "a string property",
+                "a different string property");
+        // textarea => same
+        checkIdenticalField(schemaDiff, "textarea");
+        // boolean => different
+        checkSimpleFieldDiff(schemaDiff, "boolean",
+                String.valueOf(Boolean.TRUE), null);
+        // integer => same
+        checkIdenticalField(schemaDiff, "integer");
+        // date => same
+        checkIdenticalField(schemaDiff, "date");
+        // htmlText => different
+        checkSimpleFieldDiff(
+                schemaDiff,
+                "htmlText",
+                "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
+                "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
+        // multivalued => different
 
-        return schemaDiff;
-    }
-
-    /**
-     * Checks a field diff.
-     * 
-     * @param schemaDiff the schema diff
-     * @param field the field
-     * @param expectedLeftValue the expected left value
-     * @param expectedRightValue the expected right value
-     * @return the property diff
-     */
-    protected final PropertyDiff checkFieldDiff(SchemaDiff schemaDiff,
-            String field, String expectedLeftValue, String expectedRightValue) {
-
-        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
-        assertNotNull("Field diff should not be null", fieldDiff);
-        assertEquals("Wrong left value.", expectedLeftValue,
-                fieldDiff.getLeftValue());
-        assertEquals("Wrong right value.", expectedRightValue,
-                fieldDiff.getRightValue());
-
-        return fieldDiff;
     }
 
     /**
@@ -166,6 +164,8 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         doc.setPropertyValue("dc:lastContributor", "Administrator");
         doc.setPropertyValue("dc:contributors", new String[] { "Administrator",
                 "joe" });
+        doc.setPropertyValue("dc:subjects", new String[] { "Art",
+                "Architecture" });
 
         // -----------------------
         // simpletypes
@@ -179,7 +179,7 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
                 "st:htmlText",
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
         doc.setPropertyValue("st:multivalued", new String[] { "monday",
-                "tuesday", "wednesday" });
+                "tuesday", "wednesday", "thursday" });
 
         return session.createDocument(doc);
     }
@@ -212,23 +212,84 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         // different (update) / same / different (add)
         doc.setPropertyValue("dc:contributors", new String[] {
                 "anotherAdministrator", "joe", "jack" });
+        // same / different (remove)
+        doc.setPropertyValue("dc:subjects", new String[] { "Art" });
 
         // -----------------------
         // simpletypes
         // -----------------------
-        doc.setPropertyValue("st:string", "a string property");
+        // different
+        doc.setPropertyValue("st:string", "a different string property");
+        // same
         doc.setPropertyValue("st:textarea", "a textarea property");
-        doc.setPropertyValue("st:boolean", true);
+        // no boolean => different
+        // same
         doc.setPropertyValue("st:integer", 10);
+        // same
         doc.setPropertyValue("st:date", "2011-12-28T23:00:00Z");
+        // different
         doc.setPropertyValue(
                 "st:htmlText",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
-        // different
-        doc.setPropertyValue("st:multivalued", new String[] { "monday",
-                "tuesday", "wednesday" });
+        // no multivalued => different
 
         return session.createDocument(doc);
+    }
+
+    /**
+     * Checks a schema diff.
+     * 
+     * @param docDiff the doc diff
+     * @param schema the schema
+     * @param expectedFieldCount the expected field count
+     * @return the schema diff
+     */
+    protected final SchemaDiff checkSchemaDiff(DocumentDiff docDiff,
+            String schema, int expectedFieldCount) {
+
+        SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
+        assertNotNull("Schema diff should not be null", schemaDiff);
+        assertEquals("Wrong field count.", expectedFieldCount,
+                schemaDiff.getFieldCount());
+
+        return schemaDiff;
+    }
+
+    /**
+     * Check identical field.
+     * 
+     * @param schemaDiff the schema diff
+     * @param field the field
+     */
+    protected final void checkIdenticalField(SchemaDiff schemaDiff, String field) {
+
+        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
+        assertNull("Field diff should be null", fieldDiff);
+    }
+
+    /**
+     * Checks a field diff.
+     * 
+     * @param schemaDiff the schema diff
+     * @param field the field
+     * @param expectedLeftValue the expected left value
+     * @param expectedRightValue the expected right value
+     * @return the property diff
+     */
+    protected final PropertyDiff checkSimpleFieldDiff(SchemaDiff schemaDiff,
+            String field, String expectedLeftValue, String expectedRightValue) {
+
+        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
+        assertNotNull("Field diff should not be null", fieldDiff);
+        assertTrue("Wrong PropertyDiff implementation.",
+                fieldDiff instanceof SimplePropertyDiff);
+
+        assertEquals("Wrong left value.", expectedLeftValue,
+                ((SimplePropertyDiff) fieldDiff).getLeftValue());
+        assertEquals("Wrong right value.", expectedRightValue,
+                ((SimplePropertyDiff) fieldDiff).getRightValue());
+
+        return fieldDiff;
     }
 
     /**

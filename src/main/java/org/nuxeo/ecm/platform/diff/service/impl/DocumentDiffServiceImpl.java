@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.NodeDetail;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -32,14 +33,18 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
+import org.nuxeo.ecm.platform.diff.model.PropertyDiffType;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
+import org.nuxeo.ecm.platform.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.DocumentDiffImpl;
+import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.xmlexport.DocumentXMLExporter;
 import org.nuxeo.runtime.api.Framework;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -163,6 +168,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      */
     protected void configureXMLUnit() {
 
+        // XXX ATA: contribute this configuration to the service
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
     }
@@ -174,6 +180,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      */
     private void configureDiff(Diff diff) {
 
+        // XXX ATA: contribute this configuration to the service
         diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
         diff.overrideDifferenceListener(new IgnoreStructuralDifferenceListener());
     }
@@ -214,6 +221,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
                     String currentNodeName = currentNode.getNodeName();
                     String field = null;
+                    PropertyDiffType propertyDiffType = PropertyDiffType.simple;
 
                     // Detect a schema element,
                     // for instance: <schema name="dublincore" xmlns:dc="...">,
@@ -230,6 +238,8 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
                                 || Arrays.asList(SYSTEM_ELEMENTS).contains(
                                         currentNode.getNodeName())) {
                             field = currentNode.getLocalName();
+                            propertyDiffType = getPropertyDiffType(currentNode);
+
                         }
                         currentNode = parentNode;
                         currentNodeName = currentNode.getNodeName();
@@ -257,15 +267,17 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
                         // log field diffrence
                         fieldDifferenceCount++;
                         LOGGER.info(String.format(
-                                "Found field difference #%d on schema [%s] / field [%s]: [%s (%s)] {%s --> %s}",
+                                "Found field difference #%d on [%s]/[%s] (%s): [%s (%s)] {%s --> %s}",
                                 fieldDifferenceCount, schema, field,
+                                propertyDiffType.name(),
                                 difference.getDescription(),
                                 difference.getId(),
                                 controlNodeDetail.getValue(),
                                 testNodeDetail.getValue()));
 
                         // Compute field diff
-                        computeFieldDiff(docDiff, schema, field,
+                        computeFieldDiff(docDiff, difference.getId(),
+                                propertyDiffType, schema, field,
                                 controlNodeDetail, testNodeDetail);
                     } else {// Non-field difference
                         LOGGER.debug(String.format(
@@ -282,31 +294,109 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     }
 
     /**
+     * Gets the property diff type.
+     * 
+     * @param node the node
+     * @return the property diff type
+     */
+    protected final PropertyDiffType getPropertyDiffType(Node node) {
+
+        // Default: simple type
+        PropertyDiffType propertyDiffType = PropertyDiffType.simple;
+
+        NodeList childNodes = node.getChildNodes();
+        int childNodesLength = childNodes.getLength();
+        if (childNodesLength > 1) {
+            // At least 2 child nodes => list type
+            propertyDiffType = PropertyDiffType.list;
+            String firstChildNodeName = childNodes.item(0).getNodeName();
+            for (int i = 1; i < childNodes.getLength(); i++) {
+                if (!firstChildNodeName.equals(childNodes.item(i).getNodeName())) {
+                    // All child nodes don't have the same name => complex type
+                    propertyDiffType = PropertyDiffType.complex;
+                    break;
+                }
+            }
+        }
+
+        return propertyDiffType;
+    }
+
+    /**
      * Compute field diff.
      * 
      * @param docDiff the doc diff
+     * @param differenceId the difference id
+     * @param propertyDiffType the property diff type
      * @param schema the schema
      * @param field the field
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
      */
-    protected final void computeFieldDiff(DocumentDiff docDiff, String schema,
+    protected final void computeFieldDiff(DocumentDiff docDiff,
+            int differenceId, PropertyDiffType propertyDiffType, String schema,
             String field, NodeDetail controlNodeDetail,
             NodeDetail testNodeDetail) {
+
+        String leftValue;
+        String rightValue;
+
+        switch (differenceId) {
+        case DifferenceConstants.HAS_CHILD_NODES_ID:
+            leftValue = getTextNodeValue(controlNodeDetail);
+            rightValue = getTextNodeValue(testNodeDetail);
+            break;
+        default:
+            leftValue = controlNodeDetail.getValue();
+            rightValue = testNodeDetail.getValue();
+            break;
+        }
 
         SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
         if (schemaDiff == null) {
             schemaDiff = docDiff.initSchemaDiff(schema);
         }
 
-        PropertyDiff propertyDiff = schemaDiff.getFieldDiff(field);
+        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
 
-        // XXX:ATA Manage complex types here
-        if (propertyDiff == null) {
-            PropertyDiff fieldDiff = new SimplePropertyDiff(
-                    controlNodeDetail.getValue(), testNodeDetail.getValue());
-            schemaDiff.putFieldDiff(field, fieldDiff);
+        switch (propertyDiffType) {
+        case list:
+            if (fieldDiff == null) {
+                fieldDiff = new ListPropertyDiff();
+            }
+            break;
+        case complex:
+            if (fieldDiff == null) {
+                fieldDiff = new ComplexPropertyDiff();
+            }
+            break;
+        default:
+            if (fieldDiff == null) {
+                fieldDiff = new SimplePropertyDiff(leftValue, rightValue);
+            }
+            break;
         }
+        
+        schemaDiff.putFieldDiff(field, fieldDiff);
+
     }
 
+    protected final String getTextNodeValue(NodeDetail nodeDetail) {
+
+        String textNodeValue = nodeDetail.getValue();
+
+        if (String.valueOf(Boolean.FALSE).equals(textNodeValue)) {
+            textNodeValue = null;
+        } else {
+            Node node = nodeDetail.getNode();
+            if (node != null) {
+                NodeList childNodes = node.getChildNodes();
+                if (childNodes.getLength() > 0) {
+                    textNodeValue = childNodes.item(0).getNodeValue();
+                }
+            }
+        }
+
+        return textNodeValue;
+    }
 }

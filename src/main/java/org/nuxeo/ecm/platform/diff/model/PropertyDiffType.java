@@ -16,15 +16,12 @@
  */
 package org.nuxeo.ecm.platform.diff.model;
 
-import java.io.Serializable;
-
 /**
- * XXX ATA: maybe this interface is useless
- * <p>
- * Representation of a property (or field) diff.
+ * Enumerates property diff types: simple, list, complex.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public interface PropertyDiff extends Serializable {
+public enum PropertyDiffType {
 
+    simple, list, complex;
 }

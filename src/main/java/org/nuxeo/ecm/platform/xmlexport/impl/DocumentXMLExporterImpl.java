@@ -20,8 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,8 +40,6 @@ import org.xml.sax.InputSource;
 public class DocumentXMLExporterImpl implements DocumentXMLExporter {
 
     private static final long serialVersionUID = 4086449614391137730L;
-
-    private static final Log LOGGER = LogFactory.getLog(DocumentXMLExporterImpl.class);
 
     /**
      * {@inheritDoc}

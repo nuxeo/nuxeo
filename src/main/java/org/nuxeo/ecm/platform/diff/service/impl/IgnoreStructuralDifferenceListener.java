@@ -24,9 +24,17 @@ import org.custommonkey.xmlunit.DifferenceListener;
 import org.w3c.dom.Node;
 
 /**
- * Implementation ...
+ * Custom DifferenceListener for XMLUnit Diff.
  * <p>
- * The clas...
+ * It ignores what we call "structural" differences, ie.:
+ * <ul>
+ * <li>DOCTYPE related</li>
+ * <li>Namespace URI</li>
+ * <li>Attribute value</li>
+ * <li>Element tag name</li>
+ * <li>Child node list sequence</li>
+ * <li>Child node list length</li>
+ * </ul>
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
@@ -41,7 +49,7 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
             DifferenceConstants.ATTR_VALUE_ID,
             DifferenceConstants.ELEMENT_TAG_NAME_ID,
             DifferenceConstants.CHILD_NODELIST_SEQUENCE_ID,
-            DifferenceConstants.CHILD_NODELIST_LENGTH_ID};
+            DifferenceConstants.CHILD_NODELIST_LENGTH_ID };
 
     static {
         Arrays.sort(IGNORE);
