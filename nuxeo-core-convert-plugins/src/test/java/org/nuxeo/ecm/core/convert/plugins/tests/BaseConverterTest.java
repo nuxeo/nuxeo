@@ -64,7 +64,12 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         String converterName = cs.getConverterName(srcMT, "text/plain");
         assertEquals(converter, converterName);
 
-        BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
+        BlobHolder hg;
+        if (isWindows()) {
+            hg = getBlobFromPath("test-docs\\" + fileName);
+        } else {
+            hg = getBlobFromPath("test-docs/" + fileName);
+        }
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         BlobHolder result = cs.convert(converterName, hg, parameters);
@@ -82,7 +87,12 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
 
-        BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
+        BlobHolder hg;
+        if (isWindows()) {
+            hg = getBlobFromPath("test-docs\\" + fileName);
+        } else {
+            hg = getBlobFromPath("test-docs/" + fileName);
+        }
         hg.getBlob().setMimeType(srcMT);
 
         BlobHolder result = cs.convert(converterName, hg, parameters);
@@ -100,7 +110,12 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         String converterName = cs.getConverterName(srcMT, "text/plain");
         assertEquals(converter, converterName);
 
-        BlobHolder hg = getBlobFromPath("test-docs/right-to-left/" + fileName);
+        BlobHolder hg;
+        if (isWindows()) {
+            hg = getBlobFromPath("test-docs\\right-to-left\\" + fileName);
+        } else {
+            hg = getBlobFromPath("test-docs/right-to-left/" + fileName);
+        }
 
         BlobHolder result = cs.convert(converterName, hg, null);
         assertNotNull(result);
@@ -121,4 +136,8 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertTrue(textContent.contains("FTP"));
     }
 
+    public static boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf("win") >= 0);
+    }
 }

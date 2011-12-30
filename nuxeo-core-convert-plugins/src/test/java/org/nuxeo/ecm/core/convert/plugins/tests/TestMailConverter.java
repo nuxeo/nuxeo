@@ -50,15 +50,26 @@ public class TestMailConverter extends BaseConverterTest {
     }
 
     public void testTextEmailTransformation() throws Exception {
-        BlobHolder bh = cs.convert(CONVERTER_NAME,
-                getBlobFromPath("test-docs/email/text.eml"), null);
+        BlobHolder bh;
+        if (isWindows()) {
+            bh = cs.convert(CONVERTER_NAME,
+                    getBlobFromPath("test-docs\\email\\text.eml"), null);
+        } else {
+            bh = cs.convert(CONVERTER_NAME,
+                    getBlobFromPath("test-docs/email/text.eml"), null);
+        }
         assertNotNull(bh);
 
         Blob result = bh.getBlob();
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
 
-        Blob expected = getTestBlob("test-docs/email/text.txt");
+        Blob expected;
+        if (isWindows()) {
+            expected = getTestBlob("test-docs\\email\\text.txt");
+        } else {
+            expected = getTestBlob("test-docs/email/text.txt");
+        }
         assertEquals(expected.getString().trim(), result.getString().trim());
     }
 
@@ -76,10 +87,18 @@ public class TestMailConverter extends BaseConverterTest {
     }
 
     public void testTextAndHtmlEmailTransformation() throws Exception {
-        BlobHolder bh = cs.convert(
-                CONVERTER_NAME,
-                getBlobFromPath("test-docs/email/text_and_html_with_attachments.eml"),
-                null);
+        BlobHolder bh;
+        if (isWindows()) {
+            bh = cs.convert(
+                    CONVERTER_NAME,
+                    getBlobFromPath("test-docs\\email\\text_and_html_with_attachments.eml"),
+                    null);
+        } else {
+            bh = cs.convert(
+                    CONVERTER_NAME,
+                    getBlobFromPath("test-docs/email/text_and_html_with_attachments.eml"),
+                    null);
+        }
         assertNotNull(bh);
 
         Blob result = bh.getBlob();
@@ -87,22 +106,41 @@ public class TestMailConverter extends BaseConverterTest {
         assertEquals("text/plain", result.getMimeType());
 
         String actual = result.getString();
-        String expected = getTestBlob(
-                "test-docs/email/text_and_html_with_attachments.txt").getString();
+        String expected;
+        if (isWindows()) {
+            expected = getTestBlob(
+                    "test-docs\\email\\text_and_html_with_attachments.txt").getString();
+        } else {
+            expected = getTestBlob(
+                    "test-docs/email/text_and_html_with_attachments.txt").getString();
+        }
         assertEquals(expected.trim(), actual.trim());
     }
 
     public void testOnlyHtmlEmailTransformation() throws Exception {
-        BlobHolder bh = cs.convert(
-                CONVERTER_NAME,
-                getBlobFromPath("test-docs/email/only_html_with_attachments.eml"),
-                null);
+        BlobHolder bh;
+        if (isWindows()) {
+            bh = cs.convert(
+                    CONVERTER_NAME,
+                    getBlobFromPath("test-docs\\email\\only_html_with_attachments.eml"),
+                    null);
+        } else {
+            bh = cs.convert(
+                    CONVERTER_NAME,
+                    getBlobFromPath("test-docs/email/only_html_with_attachments.eml"),
+                    null);
+        }
         assertNotNull(bh);
 
         Blob result = bh.getBlob();
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
-        Blob expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
+        Blob expected;
+        if (isWindows()) {
+            expected = getTestBlob("test-docs\\email\\only_html_with_attachments.txt");
+        } else {
+            expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
+        }
         assertEquals(expected.getString().trim(), result.getString().trim());
     }
 
