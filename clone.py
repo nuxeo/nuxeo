@@ -18,15 +18,24 @@
 ##
 ## This script clones or updates Nuxeo source code from Git repositories.
 ##
+import sys
+import os
+import re
+import shlex
+import subprocess
+import platform
+import time
+import optparse
 
-import re, os, sys, shlex, subprocess, platform, time, optparse
 
 driveletter = None
 basedir = os.getcwd()
 
+
 def log(message):
     sys.stdout.write(message + os.linesep)
     sys.stdout.flush()
+
 
 def system(cmd, failonerror=True):
     log("$> " + cmd)
@@ -44,6 +53,7 @@ def system(cmd, failonerror=True):
             sys.exit(retcode)
     return retcode
 
+
 def system_with_retries(cmd, failonerror=True):
     retries = 0
     while True:
@@ -57,11 +67,13 @@ def system_with_retries(cmd, failonerror=True):
             log("Error executing %s - retrying in 10 seconds..." % cmd)
             time.sleep(10)
 
+
 def long_path_workaround_init():
     global driveletter
     # On Windows, try to map the current directory to an unused drive letter to
     # shorten path names
-    if platform.system() != "Windows": return
+    if platform.system() != "Windows":
+        return
     for letter in "GHIJKLMNOPQRSTUVWXYZ":
         if not os.path.isdir("%s:\\" % (letter,)):
             driveletter = letter
@@ -71,11 +83,13 @@ def long_path_workaround_init():
             os.chdir("%s:\\" % (driveletter,))
             break
 
+
 def long_path_workaround_cleanup():
     global driveletter
     if driveletter != None:
         os.chdir(basedir)
         system("SUBST %s: /D" % (driveletter,), False)
+
 
 def check_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -84,6 +98,7 @@ def check_output(cmd):
         log("[ERROR]: command", str(cmd), " returned an error:")
         log(err)
     return out.strip()
+
 
 def git_fetch(module):
     repo_url = url_pattern.replace("module", module)
@@ -110,6 +125,7 @@ def git_fetch(module):
         system("git merge %s/%s" % (alias, version))
     os.chdir(cwd)
     log("")
+
 
 def get_current_version():
     t = check_output(["git", "describe", "--all"]).split("/")
