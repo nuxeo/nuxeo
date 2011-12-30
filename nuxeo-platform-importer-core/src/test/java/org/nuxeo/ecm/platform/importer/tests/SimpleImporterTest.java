@@ -52,6 +52,12 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
      * assertTrue(createdDocs > 0); }
      */
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testRamdomImport() throws Exception {
 
         System.out.println("Starting prefil");

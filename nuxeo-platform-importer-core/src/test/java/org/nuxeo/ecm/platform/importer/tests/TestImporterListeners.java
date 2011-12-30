@@ -41,6 +41,12 @@ public class TestImporterListeners extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testImportWithListeners() throws Exception {
         SourceNode src = RandomTextSourceNode.init(10);
         String targetPath = "/default-domain/workspaces/";

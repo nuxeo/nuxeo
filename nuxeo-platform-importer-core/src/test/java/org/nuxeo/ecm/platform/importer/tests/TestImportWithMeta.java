@@ -50,6 +50,12 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testMDImport() throws Exception {
 
         File source = FileUtils.getResourceFileFromContext("import-src");

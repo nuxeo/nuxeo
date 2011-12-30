@@ -79,8 +79,8 @@ public class TestDefaultImporterServiceWithMeta extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        super.tearDown();
         closeSession();
+        super.tearDown();
     }
 
 }
