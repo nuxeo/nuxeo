@@ -81,19 +81,67 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 2, docDiff.getSchemaCount());
+        assertEquals("Wrong schema count.", 3, docDiff.getSchemaCount());
 
-        SchemaDiff schemaDiff = docDiff.getSchemaDiff("dublincore");
+        // ---------------------------
+        // Check system elements
+        // ---------------------------
+        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 2);
+        // type
+        checkFieldDiff(schemaDiff, "type", "SampleType", "OtherSampleType");
+        // path
+        checkFieldDiff(schemaDiff, "path", "leftDoc", "rightDoc");
+
+        // ---------------------------
+        // Check dublincore schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "dublincore", 5);
+
+        // title
+        checkFieldDiff(schemaDiff, "title", "My first sample",
+                "My second sample");
+
+    }
+
+    /**
+     * Checks a schema diff.
+     * 
+     * @param docDiff the doc diff
+     * @param schema the schema
+     * @param expectedFieldCount the expected field count
+     * @return the schema diff
+     */
+    protected final SchemaDiff checkSchemaDiff(DocumentDiff docDiff,
+            String schema, int expectedFieldCount) {
+
+        SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
         assertNotNull("Schema diff should not be null", schemaDiff);
-        assertEquals("Wrong field count.", 5, schemaDiff.getFieldCount());
+        assertEquals("Wrong field count.", expectedFieldCount,
+                schemaDiff.getFieldCount());
 
-        PropertyDiff fieldDiff = schemaDiff.getFieldDiff("title");
+        return schemaDiff;
+    }
+
+    /**
+     * Checks a field diff.
+     * 
+     * @param schemaDiff the schema diff
+     * @param field the field
+     * @param expectedLeftValue the expected left value
+     * @param expectedRightValue the expected right value
+     * @return the property diff
+     */
+    protected final PropertyDiff checkFieldDiff(SchemaDiff schemaDiff,
+            String field, String expectedLeftValue, String expectedRightValue) {
+
+        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
         assertNotNull("Field diff should not be null", fieldDiff);
-        assertEquals("Wrong left value.", "My first sample",
+        assertEquals("Wrong left value.", expectedLeftValue,
                 fieldDiff.getLeftValue());
-        assertEquals("Wrong right value.", "My second sample",
+        assertEquals("Wrong right value.", expectedRightValue,
                 fieldDiff.getRightValue());
 
+        return fieldDiff;
     }
 
     /**
@@ -107,7 +155,9 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         DocumentModel doc = session.createDocumentModel("/", "leftDoc",
                 "SampleType");
 
+        // -----------------------
         // dublincore
+        // -----------------------
         doc.setPropertyValue("dc:title", "My first sample");
         doc.setPropertyValue("dc:description", "description");
         doc.setPropertyValue("dc:created", "2011-12-29T11:24:25Z");
@@ -117,7 +167,9 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         doc.setPropertyValue("dc:contributors", new String[] { "Administrator",
                 "joe" });
 
+        // -----------------------
         // simpletypes
+        // -----------------------
         doc.setPropertyValue("st:string", "a string property");
         doc.setPropertyValue("st:textarea", "a textarea property");
         doc.setPropertyValue("st:boolean", true);
@@ -146,7 +198,6 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         // -----------------------
         // dublincore
         // -----------------------
-
         // different
         doc.setPropertyValue("dc:title", "My second sample");
         // no description => different
@@ -181,7 +232,7 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
     }
 
     /**
-     * Creates the xml export temp file.
+     * Creates an XML export temp file.
      * 
      * @param doc the doc
      * @throws ClientException the client exception

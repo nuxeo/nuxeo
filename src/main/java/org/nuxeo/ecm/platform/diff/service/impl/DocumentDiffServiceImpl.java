@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.diff.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -55,6 +56,15 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
     private static final Log LOGGER = LogFactory.getLog(DocumentDiffServiceImpl.class);
 
+    private static final String SYSTEM_ELEMENT = "system";
+
+    private static final String TYPE_ELEMENT = "type";
+
+    private static final String PATH_ELEMENT = "path";
+
+    private static final String[] SYSTEM_ELEMENTS = { TYPE_ELEMENT,
+            PATH_ELEMENT };
+
     private static final String SCHEMA_ELEMENT = "schema";
 
     private static final String NAME_ATTRIBUTE = "name";
@@ -65,15 +75,17 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     public DocumentDiff diff(CoreSession session, DocumentModel leftDoc,
             DocumentModel rightDoc) throws ClientException {
 
-        // Export leftDoc and rightDoc to XML
+        // Input sources to hold XML exports
         InputSource leftDocXMLInputSource = new InputSource();
         InputSource rightDocXMLInputSource = new InputSource();
+
+        // Export leftDoc and rightDoc to XML
         exportXML(session, leftDoc, rightDoc, leftDocXMLInputSource,
                 rightDocXMLInputSource);
 
         // Process the XML diff
         DetailedDiff detailedDiff = diffXML(leftDocXMLInputSource,
-                rightDocXMLInputSource, leftDoc.getTitle(), rightDoc.getTitle());
+                rightDocXMLInputSource);
 
         // Fill in the DocumentDiff object using the result of the detailed diff
         DocumentDiff docDiff = computeDocDiff(detailedDiff);
@@ -105,8 +117,8 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * @param session the session
      * @param leftDoc the left doc
      * @param rightDoc the right doc
-     * @param leftDocXMLInputSource the left doc xml input source
-     * @param rightDocXMLInputSource the right doc xml input source
+     * @param leftDocXMLInputSource the left doc XML input source
+     * @param rightDocXMLInputSource the right doc XML input source
      * @throws ClientException the client exception
      */
     protected final void exportXML(CoreSession session, DocumentModel leftDoc,
@@ -124,16 +136,13 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * Processes the XML diff using the XMLUnit Diff feature.
      * 
-     * @param leftDocXMLInputSource the left doc xml input source
-     * @param rightDocXMLInputSource the right doc xml input source
-     * @param leftDocTitle the left doc title
-     * @param rightDocTitle the right doc title
+     * @param leftDocXMLInputSource the left doc XML input source
+     * @param rightDocXMLInputSource the right doc XML input source
      * @return the detailed diff
      * @throws ClientException the client exception
      */
     protected final DetailedDiff diffXML(InputSource leftDocXMLInputSource,
-            InputSource rightDocXMLInputSource, String leftDocTitle,
-            String rightDocTitle) throws ClientException {
+            InputSource rightDocXMLInputSource) throws ClientException {
 
         DetailedDiff detailedDiff;
         try {
@@ -143,25 +152,23 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
             detailedDiff = new DetailedDiff(diff);
         } catch (Exception e) {
             throw new ClientException(
-                    String.format(
-                            "Error while trying to make a detailed diff between the documents %s and %s.",
-                            leftDocTitle, rightDocTitle), e);
+                    "Error while trying to make a detailed diff between two documents.",
+                    e);
         }
         return detailedDiff;
     }
 
     /**
-     * Configure XMLUnit.
+     * Configures XMLUnit.
      */
     protected void configureXMLUnit() {
 
         XMLUnit.setIgnoreWhitespace(true);
-        // XMLUnit.setNormalizeWhitespace(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
     }
 
     /**
-     * Configure the diff.
+     * Configures the diff.
      * 
      * @param diff the diff
      */
@@ -185,7 +192,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
         // Iterate on differences
         List<Difference> differences = detailedDiff.getAllDifferences();
-        LOGGER.info(String.format("Found %d differences.", differences.size()));
+        LOGGER.debug(String.format("Found %d differences.", differences.size()));
 
         int fieldDifferenceCount = 0;
         for (Difference difference : differences) {
@@ -205,50 +212,64 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
                 }
                 if (currentNode != null) {
 
+                    String currentNodeName = currentNode.getNodeName();
                     String field = null;
 
-                    // Detect a schema element.
-                    // For instance : <schema name="dublincore" xmlns:dc="...">
+                    // Detect a schema element,
+                    // for instance: <schema name="dublincore" xmlns:dc="...">,
+                    // or the <system> element.
                     Node parentNode = currentNode.getParentNode();
                     while (parentNode != null
-                            && !SCHEMA_ELEMENT.equals(currentNode.getNodeName())) {
+                            && !SCHEMA_ELEMENT.equals(currentNodeName)
+                            && !SYSTEM_ELEMENT.equals(currentNodeName)) {
 
                         // Detect a field element, ie. an element that has a
-                        // prefix.
-                        // For instance: <dc:title> (prefix = "dc")
-                        if (currentNode.getPrefix() != null) {
+                        // prefix, for instance: <dc:title>,
+                        // or an element nested in <system>.
+                        if (currentNode.getPrefix() != null
+                                || Arrays.asList(SYSTEM_ELEMENTS).contains(
+                                        currentNode.getNodeName())) {
                             field = currentNode.getLocalName();
                         }
-
                         currentNode = parentNode;
+                        currentNodeName = currentNode.getNodeName();
                         parentNode = parentNode.getParentNode();
                     }
 
-                    // If we found a schema element (ie. we did not reached the
-                    // root element, ie. parentNode != null) and a nested field
-                    // element, we can compute the diff for this field.
+                    // If we found a schema or system element (ie. we did not
+                    // reached the root element, ie. parentNode != null) and a
+                    // nested field element, we can compute the diff for this
+                    // field.
                     if (parentNode != null && field != null) {
-                        NamedNodeMap attr = currentNode.getAttributes();
-                        if (attr != null && attr.getLength() > 0) {
-                            Node nameAttr = attr.getNamedItem(NAME_ATTRIBUTE);
-                            if (nameAttr != null) {
-                                String schema = nameAttr.getNodeValue();
-                                fieldDifferenceCount++;
-                                LOGGER.info(String.format(
-                                        "Found field difference %d on schema [%s] / field [%s]: [%s (%s)] {%s --> %s}",
-                                        fieldDifferenceCount, schema, field,
-                                        difference.getDescription(),
-                                        difference.getId(),
-                                        controlNodeDetail.getValue(),
-                                        testNodeDetail.getValue()));
-
-                                computeFieldDiff(docDiff, schema, field,
-                                        controlNodeDetail, testNodeDetail);
+                        String schema = currentNodeName;
+                        // Get schema name if not system
+                        if (!SYSTEM_ELEMENT.equals(schema)) {
+                            NamedNodeMap attr = currentNode.getAttributes();
+                            if (attr != null && attr.getLength() > 0) {
+                                Node nameAttr = attr.getNamedItem(NAME_ATTRIBUTE);
+                                if (nameAttr != null) {
+                                    schema = nameAttr.getNodeValue();
+                                }
                             }
                         }
-                    } else {
+
+                        // Increment field differences count and pretty
+                        // log field diffrence
+                        fieldDifferenceCount++;
+                        LOGGER.info(String.format(
+                                "Found field difference #%d on schema [%s] / field [%s]: [%s (%s)] {%s --> %s}",
+                                fieldDifferenceCount, schema, field,
+                                difference.getDescription(),
+                                difference.getId(),
+                                controlNodeDetail.getValue(),
+                                testNodeDetail.getValue()));
+
+                        // Compute field diff
+                        computeFieldDiff(docDiff, schema, field,
+                                controlNodeDetail, testNodeDetail);
+                    } else {// Non-field difference
                         LOGGER.debug(String.format(
-                                "Found difference: [%s (%s)] {%s --> %s}",
+                                "Found non-field difference: [%s (%s)] {%s --> %s}",
                                 difference.getDescription(),
                                 difference.getId(),
                                 controlNodeDetail.getValue(),
