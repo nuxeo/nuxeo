@@ -84,8 +84,7 @@ html,body {
 }
 
 .header .facet {
-	background: url("/nuxeo/opensocial/images/tool-sprites.png") no-repeat scroll 0 0
-		transparent;
+	background: url("../images/tool-sprites.png") no-repeat scroll 0 0 transparent;
 	cursor: pointer;
 	float: right;
 	height: 16px;
@@ -249,7 +248,7 @@ div.builder {
 .preferences-title {
 	width: 273px;
 	height: 18px;
-	background: url("/nuxeo/opensocial/images/text-bg.gif") repeat-x scroll 0 0 #FFFFFF;
+	background: url("../images/text-bg.gif") repeat-x scroll 0 0 #FFFFFF;
 	border: 1px solid #B5B8C8;
 	padding: 1px 3px;
 	font: 12px tahoma, arial, helvetica, sans-serif;
@@ -824,12 +823,6 @@ em.subMenuLink {
 
 #FKtabs .sub_menu>li>a:hover {
 	text-decoration: underline;
-}
-
-.nouveau-rayon {
-	background: url(/nuxeo/img/themes/common/add.png) no-repeat 0 0;
-	border-top: 1px solid #000;
-	padding-left: 17px;
 }
 
 .editer {

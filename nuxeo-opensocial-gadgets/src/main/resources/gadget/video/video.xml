@@ -20,6 +20,9 @@
   <head>
   <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
     <style type='text/css'>
+      /* A ${specDirectoryUrl} is added in each picture path to keep a relative url.
+      Without this, the browser is looking for a 127.0.0.1 url instead of localhost,
+      and pictures paths are broken unless you refresh the page. */
       *{
        font-family:Trebuchet, Arial,Verdana;
        font-size:11px;
@@ -79,7 +82,7 @@
       #show a{
     text-decoration:none;
     padding-left:20px;
-    background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+    background:url(${specDirectoryUrl}edit.png) no-repeat 0 0;
     display:inline-block;
     height:16px;
   }
@@ -94,7 +97,7 @@
 
       #valid{
         padding-left:14px;
-        background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+        background:url(${specDirectoryUrl}accept.png) no-repeat 0 0;
         color:#555;
         display:block;
         float:right;
@@ -121,7 +124,7 @@
       <div id="perm" style="display:none;">
         <div id="form" style="display:none;margin:auto">
           <form style="text-align:center;" method="post" id="formUpload" enctype="application/x-www-form-urlencoded" action="#">
-            <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
+            <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="${specDirectoryUrl}x.png"></a></div>
             <table style="width:100%" id="formVideo">
               <tr>
                 <td style="width:30%">

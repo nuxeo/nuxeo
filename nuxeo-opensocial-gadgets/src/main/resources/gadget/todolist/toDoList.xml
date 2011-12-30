@@ -60,6 +60,9 @@
       </script>
        <link rel="stylesheet" href="datePicker.css" type="text/css" media="screen" charset="utf-8" />
       <style type="text/css">
+      /* A ${specDirectoryUrl} is added in each picture path to keep a relative url.
+      Without this, the browser is looking for a 127.0.0.1 url instead of localhost,
+      and pictures paths are broken unless you refresh the page. */
         *{
           font-size:11px;
           font-family:Arial,Verdana, sans-serif;
@@ -94,7 +97,7 @@
 
         a.deleteLink{
          display:block;
-         background-image:url(/nuxeo/img/x.gif);
+         background-image:url(${specDirectoryUrl}x.png);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -102,7 +105,7 @@
 
         a.editLink{
         display:block;
-         background-image:url(/nuxeo/img/editFolder.gif);
+         background-image:url(${specDirectoryUrl}editFolder.gif);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -111,7 +114,7 @@
 
         a.newWindowLink{
          display:block;
-         background-image:url(/nuxeo/img/newWindow.gif);
+         background-image:url(${specDirectoryUrl}newWindow.gif);
          background-repeat:no-repeat;
          width:13px;
          height:13px;
@@ -185,7 +188,7 @@
         .addItem{
          display:inline-block;
         text-decoration:none;
-        background-image:url(bookmark_add.jpg);
+        background-image:url(${specDirectoryUrl}bookmark_add.jpg);
         background-repeat:no-repeat;
         padding-left:20px;
         height: 16px;
@@ -235,7 +238,7 @@
          padding: 4px;
         }
         #todolistTable thead tr .header {
-         background-image: url(bg.gif);
+         background-image: url(${specDirectoryUrl}bg.gif);
          background-repeat: no-repeat;
          background-position: center right;
          cursor: pointer;
@@ -246,11 +249,13 @@
         }
 
         #todolistTable thead tr .headerSortUp {
-         background-image: url(/nuxeo/img/asc.gif);
+         background-image: url(${specDirectoryUrl}asc.gif);
         }
+
         #todolistTable thead tr .headerSortDown {
-         background-image: url(/nuxeo/img/desc.gif);
-        }
+         background-image: url(${specDirectoryUrl}desc.gif);
+         }
+
         #todolistTable thead tr .headerSortDown, #todolistTable thead tr .headerSortUp {
         /*background-color: #8dbdd8;*/
         text-decoration:underline;
@@ -265,7 +270,7 @@
     }
 
     #valider{
-    background:url("/nuxeo/img/accept.png") no-repeat scroll 0 0 transparent;
+    background:url(${specDirectoryUrl}accept.png) no-repeat scroll 0 0 transparent;
     color:#555;
     display:block;
     float:right;
@@ -288,7 +293,7 @@
       <div id="addItemForm" style="display: none">
         <div id="hideContainer">
           <a href="javascript: toogleForms();" id="hide" title="fermer">
-            <img src="x.gif">
+            <img src="${specDirectoryUrl}x.png">
           </a>
         </div>
         <form id="newFormItem" name = "newItemForm" style="margin:0px;">

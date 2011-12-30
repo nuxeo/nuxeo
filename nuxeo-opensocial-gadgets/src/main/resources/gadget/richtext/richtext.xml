@@ -34,6 +34,9 @@
   <link rel="stylesheet" type="text/css" href="template.css" title="template" media="screen" />
 
   <style type='text/css'>
+  /* A ${specDirectoryUrl} is added in each picture path to keep a relative url.
+      Without this, the browser is looking for a 127.0.0.1 url instead of localhost,
+      and pictures paths are broken unless you refresh the page. */
 
     * {
       font-family: Arial,Verdana;
@@ -64,7 +67,7 @@
   #show a {
     text-decoration:none;
       padding-left:20px;
-      background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+      background:url(${specDirectoryUrl}edit.png) no-repeat 0 0;
       height: 16px;
       display: inline-block;
   }
@@ -80,7 +83,7 @@
 
     #upload,#fileuploadBtn{
       padding-left:14px;
-      background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+      background:url(${specDirectoryUrl}accept.png) no-repeat 0 0;
       color:#555;
       display:block;
       float:right;
@@ -136,8 +139,8 @@
 
    <div style="margin:auto;display:none;" id="form">
     <div id="hideContainer">
-    <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
-    <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
+    <a href="#" id="refresh" title="refresh"><img src="${specDirectoryUrl}page_refresh.png"></a>
+    <a href="#" id="hide" title="fermer"><img src="${specDirectoryUrl}x.png"></a>
     </div>
        <form method="post" id="formUpload" action="#">
         <table style="width:100%;margin-bottom:10px;" class="form">
@@ -146,7 +149,7 @@
             <td style="width:70%"><input type="text" name="title" id="title-field" /></td>
           </tr>
         </table>
-        <textarea name="gadget:htmlContent" id="richtext" cols="35" style="width:100%"></textarea>
+        <textarea name="gadget:htmlContent" id="richtext" cols="30" style="width:95%"></textarea>
         <table style="width:100%" class="form ">
                 <tr>
                   <td style="width:30%"><label for="link">Lien</label></td>
@@ -170,7 +173,7 @@
             <tr>
               <td>
                 <div>
-                  <label>Photo</label><a href="" title="Supprimer la photo" id="deletePhoto"><img src="/nuxeo/img/x.png" style="vertical-align:middle;"></a>
+                  <label>Photo</label><a href="" title="Supprimer la photo" id="deletePhoto"><img src="${specDirectoryUrl}x.png" style="vertical-align:middle;"></a>
                 </div>
                 <img id="imgPreview" width="60" />
               </td>

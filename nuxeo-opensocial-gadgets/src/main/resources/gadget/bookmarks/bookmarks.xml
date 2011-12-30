@@ -50,6 +50,9 @@
     })
       </script>
       <style type="text/css">
+      /* A ${specDirectoryUrl} is added in each picture path to keep a relative url.
+      Without this, the browser is looking for a 127.0.0.1 url instead of localhost,
+      and pictures paths are broken unless you refresh the page. */
 
       *{
           font-size:11px;
@@ -77,7 +80,7 @@
 
         a.deleteLink{
          display:block;
-         background-image:url(/nuxeo/img/x.png);
+         background-image:url(${specDirectoryUrl}x.png);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -85,7 +88,7 @@
 
         a.editLink{
         display:block;
-         background-image:url(editFolder.png);
+         background-image:url(${specDirectoryUrl}editFolder.png);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -93,7 +96,7 @@
 
         a.newWindowLink{
          display:block;
-         background-image:url(/nuxeo/img/newWindow.png);
+         background-image:url(${specDirectoryUrl}newWindow.png);
          background-repeat:no-repeat;
          width:13px;
          height:13px;
@@ -167,7 +170,7 @@
         }
 
         .addBookmark{
-          background-image:url(bookmark_add.jpg);
+          background-image:url(${specDirectoryUrl}bookmark_add.jpg);
           background-repeat:no-repeat;
           padding-left:20px;
           display:inline-block;
@@ -201,7 +204,7 @@
         }
 
         #addButton{
-          background:url("/nuxeo/img/accept.png") no-repeat scroll 0 0 transparent;
+          background:url(${specDirectoryUrl}accept.png) no-repeat scroll 0 0 transparent;
           border:medium none;
           color:#555;
           display:block;
@@ -232,7 +235,7 @@
       <div id="addBookmarkForm" style="display: none">
         <div id="hideContainer">
           <a href="javascript: toogleForms();" id="hide" title="fermer">
-            <img src="x.png">
+            <img src="${specDirectoryUrl}x.png">
           </a>
         </div>
         <form name = "newBookmarkForm" onsubmit="return addBookmark(document.newBookmarkForm.newNameInput.value,document.newBookmarkForm.newUrlInput.value, false)" style="margin:0px;">
