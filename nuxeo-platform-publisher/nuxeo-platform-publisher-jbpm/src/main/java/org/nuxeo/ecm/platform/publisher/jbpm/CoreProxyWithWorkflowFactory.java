@@ -55,6 +55,8 @@ import org.nuxeo.ecm.platform.publisher.impl.core.CoreFolderPublicationNode;
 import org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
+
+import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -72,9 +74,42 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
 
-    protected JbpmService jbpmService;
 
-    protected UserManager userManager;
+    // XXX ataillefer: remove if refactor old JBPM ACL name
+    public static final String JBPM_ACL_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
+
+    public static final String PUBLISH_TASK_TYPE = "publish_moderate";
+
+    public static final String LOOKUP_STATE_PARAM_KEY = "lookupState";
+
+    public static final String LOOKUP_STATE_PARAM_BYACL = "byACL";
+
+    public static final String LOOKUP_STATE_PARAM_BYTASK = "byTask";
+
+    protected LookupState lookupState = new LookupStateByACL();
+
+    @Override
+    public void init(CoreSession coreSession, ValidatorsRule validatorsRule,
+            Map<String, String> parameters) throws ClientException {
+        super.init(coreSession, validatorsRule, parameters);
+        // setup lookup state strategy if requested
+        String lookupState = parameters.get(LOOKUP_STATE_PARAM_KEY);
+        if (lookupState != null) {
+            if (LOOKUP_STATE_PARAM_BYACL.equals(lookupState)) {
+                setLookupByACL();
+            } else if (LOOKUP_STATE_PARAM_BYTASK.equals(lookupState)) {
+                setLookupByTask();
+            }
+        }
+    }
+
+    public void setLookupByTask() {
+        this.lookupState = new LookupStateByTask();
+    }
+
+    public void setLookupByACL() {
+        this.lookupState = new LookupStateByACL();
+    }
 
     @Override
     public PublishedDocument publishDocument(DocumentModel doc,
@@ -96,9 +131,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return runner.getPublishedDocument();
     }
 
-    protected boolean isPublishedDocWaitingForPublication(
-            DocumentModel documentModel) throws ClientException {
-        return documentModel.getACP().getACL(ACL_NAME) != null;
+    protected boolean isPublishedDocWaitingForPublication(DocumentModel doc, CoreSession session)
+            throws ClientException {
+        return !lookupState.isPublished(doc, session);
     }
 
     protected boolean isValidator(DocumentModel document,
@@ -139,7 +174,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             if (s.contains(":")) {
                 prefixedActorIds.add(s);
             } else {
-                UserManager userManager = getUserManager();
+                UserManager userManager = Framework.getLocalService(UserManager.class);
                 String prefix;
                 try {
                     prefix = userManager.getPrincipal(s) == null ? NuxeoGroup.PREFIX
@@ -177,27 +212,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     }
 
-    private UserManager getUserManager() {
-        if (userManager == null) {
-            try {
-                userManager = Framework.getService(UserManager.class);
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }
-        return userManager;
-    }
 
     protected JbpmService getJbpmService() {
-        if (jbpmService == null) {
-            try {
-                jbpmService = Framework.getService(JbpmService.class);
-            } catch (Exception e) {
-                throw new IllegalStateException(
-                        "Jbpm service is not deployed.", e);
-            }
-        }
-        return jbpmService;
+        return Framework.getLocalService(JbpmService.class);
     }
 
     @Override
@@ -239,7 +256,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             CoreSession session, String comment, PublishingEvent event)
             throws PublishingException {
         try {
-            List<TaskInstance> tis = getJbpmService().getTaskInstances(
+            final JbpmService jbpmService = getJbpmService();
+            List<TaskInstance> tis = jbpmService.getTaskInstances(
                     document, currentUser, null);
             String initiator = null;
             for (TaskInstance ti : tis) {
@@ -297,31 +315,30 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
     @Override
     public PublishedDocument wrapDocumentModel(DocumentModel doc)
             throws ClientException {
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.wrapDocumentModel(doc);
-        if (!isPublished(publishedDocument)) {
-            publishedDocument.setPending(true);
-        }
+        final SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.wrapDocumentModel(doc);
+
+        new UnrestrictedSessionRunner(coreSession) {
+            @Override
+            public void run() throws ClientException {
+                if (!isPublished(publishedDocument, session)) {
+                    publishedDocument.setPending(true);
+                }
+
+            }
+        }.runUnrestricted();
+
         return publishedDocument;
     }
 
-    protected boolean isPublished(PublishedDocument publishedDocument)
+    protected boolean isPublished(PublishedDocument publishedDocument, CoreSession session)
             throws PublishingException {
         // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
-            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
-                    (NuxeoPrincipal) null, null);
-            for (TaskInstance ti : tis) {
-                if (ti.getName().equals(TASK_NAME)) {
-                    // if there is a task on this doc, then it is not yet
-                    // published
-                    return false;
-                }
-            }
-        } catch (NuxeoJbpmException e) {
+            return lookupState.isPublished(proxy, session);
+        } catch (ClientException e) {
             throw new PublishingException(e);
         }
-        return true;
     }
 
     @Override
@@ -466,7 +483,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 result = publishedDocument;
             } else if (list.size() == 1) {
                 // one doc is already published or waiting for publication
-                if (isPublishedDocWaitingForPublication(list.get(0))) {
+                if (isPublishedDocWaitingForPublication(list.get(0), session)) {
                     DocumentModel proxy = session.publishDocument(
                             session.getDocument(docRef),
                             session.getDocument(targetRef));
