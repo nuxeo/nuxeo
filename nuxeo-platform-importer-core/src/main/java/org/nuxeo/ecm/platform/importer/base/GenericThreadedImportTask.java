@@ -362,7 +362,12 @@ public class GenericThreadedImportTask implements Runnable {
         }
         LoginContext lc = null;
         try {
+            log.info("Starting new import task");
             lc = Framework.login();
+            if (rootDoc != null) {
+                // reopen the root to be sure the session is valid
+                rootDoc = getCoreSession().getDocument(rootDoc.getRef());
+            }
             recursiveCreateDocumentFromNode(rootDoc, rootSource);
             getCoreSession().save();
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
@@ -375,6 +380,7 @@ public class GenericThreadedImportTask implements Runnable {
             }
             log.error("Error during import", e);
         } finally {
+            log.info("End of task");
             if (session != null) {
                 CoreInstance.getInstance().close(session);
                 session = null;
