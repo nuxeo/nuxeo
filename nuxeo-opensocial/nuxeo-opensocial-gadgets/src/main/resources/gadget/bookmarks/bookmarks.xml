@@ -72,7 +72,7 @@
 
         a.deleteLink{
          display:block;
-         background-image:url(x.png);
+         background-image:url(${specDirectoryUrl}x.png);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -80,7 +80,7 @@
 
         a.editLink{
         display:block;
-         background-image:url(editFolder.png);
+         background-image:url(${specDirectoryUrl}editFolder.png);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -88,7 +88,7 @@
 
         a.newWindowLink{
          display:block;
-         background-image:url(newWindow.png);
+         background-image:url(${specDirectoryUrl}newWindow.png);
          background-repeat:no-repeat;
          width:13px;
          height:13px;
@@ -170,7 +170,7 @@
         }
 
         .addBookmark{
-          background-image:url(bookmark_add.jpg);
+          background-image:url(${specDirectoryUrl}bookmark_add.jpg);
           background-repeat:no-repeat;
           padding-left:20px;
           font-weight:bold;
@@ -234,7 +234,7 @@
       <div id="addBookmarkForm" style="display: none">
         <div id="hideContainer">
           <a href="javascript: toogleForms();" id="hide" title="fermer">
-            <img src="x.png">
+            <img src="${specDirectoryUrl}x.png">
           </a>
         </div>
         <form name = "newBookmarkForm" onsubmit="return addBookmark(document.newBookmarkForm.newNameInput.value,document.newBookmarkForm.newUrlInput.value, false)" style="margin:0px;">

@@ -77,7 +77,7 @@
         #show a{
       text-decoration:none;
       padding-left:20px;
-      background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+      background:url(${specDirectoryUrl}edit.png) no-repeat 0 0;
       color:#000000;
       font-weight:bold;
       display:inline-block;
@@ -94,7 +94,7 @@
 
         #valid{
           padding-left:14px;
-          background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+          background:url(${specDirectoryUrl}accept.png) no-repeat 0 0;
           color:#FFFFFF;
           display:block;
           float:right;
@@ -125,7 +125,7 @@
 
       <div id="form" style="display:none;margin:auto">
         <form style="text-align:center;" method="post" id="formUpload" enctype="application/x-www-form-urlencoded" action="#">
-        <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
+        <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="${specDirectoryUrl}x.png"></a></div>
         <table style="width:100%" id="formVideo">
           <tr>
             <td style="width:30%">

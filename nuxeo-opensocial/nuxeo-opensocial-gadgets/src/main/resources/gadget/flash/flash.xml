@@ -39,7 +39,7 @@
     #show a{
       text-decoration:none;
       padding-left:20px;
-      background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+      background:url(${specDirectoryUrl}edit.png) no-repeat 0 0;
       color:#000000;
       font-weight:bold;
       display:inline-block;
@@ -83,7 +83,7 @@
 
   #upload{
     padding-left:14px;
-    background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+    background:url(${specDirectoryUrl}accept.png) no-repeat 0 0;
     color:#FFFFFF;
     display:block;
     float:right;
@@ -109,7 +109,7 @@
 
 
    <div style="text-align:center;margin:auto;">
-       <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
+       <img id="loader" src="${specDirectoryUrl}standart_waiter.gif"/>
        <div id="flash"></div>
    </div>
    <div id="perm">
@@ -118,7 +118,7 @@
      </div>
       <div style="display:none;margin:auto" id="form">
 
-       <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
+       <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="${specDirectoryUrl}x.png"></a></div>
        <table style="width:100%" id="formFlash">
         <tr>
           <td style="width:30%"><label for="title">Titre</label></td>

@@ -63,7 +63,7 @@
     #show a {
       text-decoration:none;
         padding-left:20px;
-        background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+        background:url(${specDirectoryUrl}edit.png) no-repeat 0 0;
         color:#000000;
         font-weight:bold;
     }
@@ -79,7 +79,7 @@
 
     #upload,#fileuploadBtn{
       padding-left:14px;
-      background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+      background:url(${specDirectoryUrl}accept.png) no-repeat 0 0;
       color:#FFFFFF;
       display:block;
       float:right;
@@ -133,7 +133,7 @@
    <div style="margin:auto;display:none;" id="form">
     <div id="hideContainer">
     <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
-    <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
+    <a href="#" id="hide" title="fermer"><img src="${specDirectoryUrl}x.png"></a>
     </div>
        <form method="post" id="formUpload" action="#">
         <table style="width:100%;margin-bottom:10px;" class="form">
@@ -166,7 +166,7 @@
             <tr>
               <td>
                 <div>
-                  <label>Photo</label><a href="" title="Supprimer la photo" id="deletePhoto"><img src="/nuxeo/img/x.png" style="vertical-align:middle;"></a>
+                  <label>Photo</label><a href="" title="Supprimer la photo" id="deletePhoto"><img src="${specDirectoryUrl}x.png" style="vertical-align:middle;"></a>
                 </div>
                 <img id="imgPreview" width="60" />
               </td>
