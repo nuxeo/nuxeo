@@ -132,6 +132,16 @@ def get_current_version():
     return t[1]
 
 
+def assert_git_config():
+    t = check_output(["git", "config", "--get", "color.branch"])
+    if "always" in t:
+        log("Error: The git color mode should be auto not always, try:")
+        log(" git config --global color.branch auto")
+        log(" git config --global color.status auto")
+        sys.exit(1)
+
+
+assert_git_config()
 long_path_workaround_init()
 
 usage = "usage: %prog [options] version"
