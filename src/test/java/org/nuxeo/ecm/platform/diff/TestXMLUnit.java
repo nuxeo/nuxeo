@@ -14,7 +14,7 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.platform.diff.xml;
+package org.nuxeo.ecm.platform.diff;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.DifferenceListener;
+import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.ElementNameAndTextQualifier;
 import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.NodeTest;
@@ -115,7 +116,7 @@ public class TestXMLUnit extends XMLTestCase {
                 "Repeated child elements in different sequence order are not equal by default",
                 myControlXML, myTestXML);
         Diff myDiff = new Diff(myControlXML, myTestXML);
-        myDiff.overrideElementQualifier(new ElementNameAndTextQualifier());
+        myDiff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
         assertXMLEqual(
                 "But they are equal when an ElementQualifier controls which test element is compared with each control element",
                 myDiff, true);

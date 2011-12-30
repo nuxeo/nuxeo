@@ -1,0 +1,10 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.platform.diff.test
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo Platform Diff
+Bundle-Version: 5.5
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.platform.diff.test;singleton:=true
+Nuxeo-Component: OSGI-INF/test-types-contrib.xml

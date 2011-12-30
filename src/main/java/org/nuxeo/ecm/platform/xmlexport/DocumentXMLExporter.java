@@ -43,7 +43,7 @@ public interface DocumentXMLExporter extends Serializable {
             throws ClientException;
 
     /**
-     * Export docupent xml as an input source.
+     * Export docupent xml as an InputSource.
      * 
      * @param doc the doc
      * @param session the session
@@ -51,6 +51,17 @@ public interface DocumentXMLExporter extends Serializable {
      * @throws ClientException the client exception
      */
     InputSource exportXMLAsInputSource(DocumentModel doc, CoreSession session)
+            throws ClientException;
+
+    /**
+     * Export document XML as a byte array.
+     * 
+     * @param doc the doc
+     * @param session the session
+     * @return the byte[]
+     * @throws ClientException the client exception
+     */
+    byte[] exportXMLAsByteArray(DocumentModel doc, CoreSession session)
             throws ClientException;
 
 }

@@ -51,6 +51,31 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     public InputStream exportXML(DocumentModel doc, CoreSession session)
             throws ClientException {
 
+        byte[] xmlExportByteArray = exportXMLAsByteArray(doc, session);
+        return new ByteArrayInputStream(xmlExportByteArray);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public InputSource exportXMLAsInputSource(DocumentModel doc,
+            CoreSession session) throws ClientException {
+
+        InputStream xmlExportInputStream = exportXML(doc, session);
+        return new InputSource(xmlExportInputStream);
+    }
+
+    /**
+     * Export XML as byte array.
+     * 
+     * @param doc the doc
+     * @param session the session
+     * @return the byte[]
+     * @throws ClientException the client exception
+     */
+    public final byte[] exportXMLAsByteArray(DocumentModel doc,
+            CoreSession session) throws ClientException {
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         DocumentWriter documentWriter = new XMLDocumentWriter(outputStream);
         DocumentReader documentReader = new SingleDocumentReader(session, doc);
@@ -73,16 +98,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
             }
         }
 
-        return new ByteArrayInputStream(outputStream.toByteArray());
+        return outputStream.toByteArray();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public InputSource exportXMLAsInputSource(DocumentModel doc,
-            CoreSession session) throws ClientException {
-
-        InputStream inputStream = exportXML(doc, session);
-        return (new InputSource(inputStream));
-    }
 }

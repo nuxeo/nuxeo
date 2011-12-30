@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
+import org.nuxeo.ecm.platform.xmlexport.DocumentXMLExporter;
 
 /**
  * Handles a diff between two documents.
@@ -42,5 +43,13 @@ public interface DocumentDiffService extends Serializable {
      */
     DocumentDiff diff(CoreSession session, DocumentModel leftDoc,
             DocumentModel rightDoc) throws ClientException;
+
+    /**
+     * Gets the document XML exporter service.
+     * 
+     * @return the document XML exporter
+     * @throws ClientException the client exception
+     */
+    DocumentXMLExporter getDocumentXMLExporter() throws ClientException;
 
 }
