@@ -32,9 +32,9 @@ driveletter = None
 basedir = os.getcwd()
 
 
-def log(message):
-    sys.stdout.write(message + os.linesep)
-    sys.stdout.flush()
+def log(message, out=sys.stdout):
+    out.write(message + os.linesep)
+    out.flush()
 
 
 def system(cmd, failonerror=True):
@@ -47,7 +47,7 @@ def system(cmd, failonerror=True):
     sys.stdout.flush()
     retcode = p.returncode
     if retcode != 0:
-        log("[ERROR]: command returned non-zero exit code: %s" % cmd)
+        log("[ERROR]: command returned non-zero exit code: %s" % cmd, sys.stderr)
         if failonerror:
             long_path_workaround_cleanup()
             sys.exit(retcode)
@@ -64,7 +64,7 @@ def system_with_retries(cmd, failonerror=True):
         elif retries > 10:
             return system(cmd, failonerror)
         else:
-            log("Error executing %s - retrying in 10 seconds..." % cmd)
+            log("Error executing %s - retrying in 10 seconds..." % cmd, sys.stderr)
             time.sleep(10)
 
 
@@ -95,8 +95,8 @@ def check_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p.communicate()
     if err != None:
-        log("[ERROR]: command", str(cmd), " returned an error:")
-        log(err)
+        log("[ERROR]: command", str(cmd), " returned an error:", sys.stderr)
+        log(err, sys.stderr)
     return out.strip()
 
 
@@ -135,9 +135,9 @@ def get_current_version():
 def assert_git_config():
     t = check_output(["git", "config", "--get", "color.branch"])
     if "always" in t:
-        log("Error: The git color mode should be auto not always, try:")
-        log(" git config --global color.branch auto")
-        log(" git config --global color.status auto")
+        log("[ERROR]: The git color mode should be auto not always, try:", sys.stderr)
+        log(" git config --global color.branch auto", sys.stderr)
+        log(" git config --global color.status auto", sys.stderr)
         sys.exit(1)
 
 
@@ -163,7 +163,7 @@ if len(args) == 0:
 elif len(args) == 1:
     version = args[0]
 else:
-    log("Error: version must be a single argument")
+    log("[ERROR]: version must be a single argument", sys.stderr)
     sys.exit(1)
 
 log("Cloning/updating parent pom")
@@ -213,7 +213,7 @@ else:
     retcode = os.system("python clone.py -r %s %s" % (alias, version))
 os.chdir(cwd)
 if retcode != 0:
-    log("[ERROR]: cloning addons failed.")
+    log("[ERROR]: cloning addons failed.", sys.stderr)
     sys.exit(retcode)
 
 long_path_workaround_cleanup()
