@@ -122,7 +122,7 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         expectedListFieldDiff = new ListPropertyDiff();
         expectedListFieldDiff.addDiff(new SimplePropertyDiff("Architecture",
                 null));
-        //checkListFieldDiff(schemaDiff, "subjects", expectedListFieldDiff);
+        checkListFieldDiff(schemaDiff, "subjects", expectedListFieldDiff);
 
         // ---------------------------
         // Check simpletypes schema

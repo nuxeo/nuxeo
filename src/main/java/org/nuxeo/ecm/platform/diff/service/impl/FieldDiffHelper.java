@@ -103,8 +103,47 @@ public final class FieldDiffHelper {
             PropertyDiffType propertyDiffType, NodeDetail controlNodeDetail,
             NodeDetail testNodeDetail) {
 
+        // Default: use control node and test node values
         String leftValue = controlNodeDetail.getValue();
         String rightValue = testNodeDetail.getValue();
+
+        /**
+         * Check if we are in a "CHILD_NODE_NOT_FOUND on the test side" case,
+         * which, I don't really understand why, is marked as a TEXT_VALUE
+         * difference...
+         * 
+         * For example in this case we will have a TEXT_VALUE difference
+         * {green/red}.
+         * 
+         * <pre>
+         * [----- control ------]   [----- test ------]
+         * 
+         * <field>                  <field>
+         *   <item>red</item>         <item>red</item>
+         *   <item>green</item>     </field>
+         * </field>
+         * 
+         * <pre>
+         */
+        Node controlNode = controlNodeDetail.getNode();
+        Node testNode = testNodeDetail.getNode();
+        if (controlNode != null && testNode != null) {
+            Node controlParentNode = controlNode.getParentNode();
+            Node testParentNode = testNode.getParentNode();
+            if (controlParentNode != null && testParentNode != null) {
+                int controlNodePos = getNodePosition(controlParentNode);
+                int testNodePos = getNodePosition(testParentNode);
+
+                if (controlNodePos > testNodePos) {
+                    rightValue = null;
+                }
+                // Should never happen as then it would be marked as a
+                // CHILD_NODE_NOT_FOUND difference.
+                else if (controlNodePos < testNodePos) {
+                    leftValue = null;
+                }
+            }
+        }
 
         switch (propertyDiffType) {
         default:
@@ -118,6 +157,23 @@ public final class FieldDiffHelper {
         case complex:
             break;
         }
+    }
+
+    /**
+     * Gets the node position.
+     * 
+     * @param node the node
+     * @return the node position
+     */
+    private static int getNodePosition(Node node) {
+
+        int nodePos = 0;
+        Node previousSibling = node.getPreviousSibling();
+        while (previousSibling != null) {
+            nodePos++;
+            previousSibling = previousSibling.getPreviousSibling();
+        }
+        return nodePos;
     }
 
     /**
@@ -136,7 +192,10 @@ public final class FieldDiffHelper {
         boolean isControlNodeNotFound = "null".equals(controlNodeDetail.getValue());
         if (isControlNodeNotFound) {
             childNode = testNodeDetail.getNode();
-        } else {
+        }
+        // Should never happen as then it would be marked as a
+        // TEXT_VALUE difference.
+        else {
             childNode = controlNodeDetail.getNode();
         }
 
