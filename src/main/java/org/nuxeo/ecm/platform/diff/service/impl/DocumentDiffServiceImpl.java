@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
-import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.NodeDetail;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -32,13 +31,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
-import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiffType;
-import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
-import org.nuxeo.ecm.platform.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.DocumentDiffImpl;
-import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
-import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.xmlexport.DocumentXMLExporter;
 import org.nuxeo.runtime.api.Framework;
@@ -178,7 +172,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * 
      * @param diff the diff
      */
-    private void configureDiff(Diff diff) {
+    protected void configureDiff(Diff diff) {
 
         // XXX ATA: contribute this configuration to the service
         diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
@@ -264,7 +258,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
                         }
 
                         // Increment field differences count and pretty
-                        // log field diffrence
+                        // log field difference
                         fieldDifferenceCount++;
                         LOGGER.info(String.format(
                                 "Found field difference #%d on [%s]/[%s] (%s): [%s (%s)] {%s --> %s}",
@@ -276,8 +270,8 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
                                 testNodeDetail.getValue()));
 
                         // Compute field diff
-                        computeFieldDiff(docDiff, difference.getId(),
-                                propertyDiffType, schema, field,
+                        FieldDiffHelper.computeFieldDiff(docDiff, schema,
+                                field, propertyDiffType, difference.getId(),
                                 controlNodeDetail, testNodeDetail);
                     } else {// Non-field difference
                         LOGGER.debug(String.format(
@@ -307,11 +301,14 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
         NodeList childNodes = node.getChildNodes();
         int childNodesLength = childNodes.getLength();
         if (childNodesLength > 1) {
+
             // At least 2 child nodes => list type
             propertyDiffType = PropertyDiffType.list;
-            String firstChildNodeName = childNodes.item(0).getNodeName();
+
             for (int i = 1; i < childNodes.getLength(); i++) {
+                String firstChildNodeName = childNodes.item(0).getNodeName();
                 if (!firstChildNodeName.equals(childNodes.item(i).getNodeName())) {
+
                     // All child nodes don't have the same name => complex type
                     propertyDiffType = PropertyDiffType.complex;
                     break;
@@ -322,81 +319,4 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
         return propertyDiffType;
     }
 
-    /**
-     * Compute field diff.
-     * 
-     * @param docDiff the doc diff
-     * @param differenceId the difference id
-     * @param propertyDiffType the property diff type
-     * @param schema the schema
-     * @param field the field
-     * @param controlNodeDetail the control node detail
-     * @param testNodeDetail the test node detail
-     */
-    protected final void computeFieldDiff(DocumentDiff docDiff,
-            int differenceId, PropertyDiffType propertyDiffType, String schema,
-            String field, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail) {
-
-        String leftValue;
-        String rightValue;
-
-        switch (differenceId) {
-        case DifferenceConstants.HAS_CHILD_NODES_ID:
-            leftValue = getTextNodeValue(controlNodeDetail);
-            rightValue = getTextNodeValue(testNodeDetail);
-            break;
-        default:
-            leftValue = controlNodeDetail.getValue();
-            rightValue = testNodeDetail.getValue();
-            break;
-        }
-
-        SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
-        if (schemaDiff == null) {
-            schemaDiff = docDiff.initSchemaDiff(schema);
-        }
-
-        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
-
-        switch (propertyDiffType) {
-        case list:
-            if (fieldDiff == null) {
-                fieldDiff = new ListPropertyDiff();
-            }
-            break;
-        case complex:
-            if (fieldDiff == null) {
-                fieldDiff = new ComplexPropertyDiff();
-            }
-            break;
-        default:
-            if (fieldDiff == null) {
-                fieldDiff = new SimplePropertyDiff(leftValue, rightValue);
-            }
-            break;
-        }
-        
-        schemaDiff.putFieldDiff(field, fieldDiff);
-
-    }
-
-    protected final String getTextNodeValue(NodeDetail nodeDetail) {
-
-        String textNodeValue = nodeDetail.getValue();
-
-        if (String.valueOf(Boolean.FALSE).equals(textNodeValue)) {
-            textNodeValue = null;
-        } else {
-            Node node = nodeDetail.getNode();
-            if (node != null) {
-                NodeList childNodes = node.getChildNodes();
-                if (childNodes.getLength() > 0) {
-                    textNodeValue = childNodes.item(0).getNodeValue();
-                }
-            }
-        }
-
-        return textNodeValue;
-    }
 }

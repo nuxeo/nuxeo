@@ -17,8 +17,10 @@
 package org.nuxeo.ecm.platform.diff.model.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.ListUtils;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 
 /**
@@ -49,5 +51,42 @@ public class ListPropertyDiff implements PropertyDiff {
 
     public void setDiffList(List<PropertyDiff> diffList) {
         this.diffList = diffList;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null || !(other instanceof ListPropertyDiff)) {
+            return false;
+        }
+
+        List<PropertyDiff> otherDiffList = ((ListPropertyDiff) other).getDiffList();
+
+        return (diffList == null && otherDiffList == null)
+                || (diffList != null && otherDiffList != null && ListUtils.isEqualList(
+                        diffList, otherDiffList));
+
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder("{");
+        Iterator<PropertyDiff> diffListIt = diffList.iterator();
+        while (diffListIt.hasNext()) {
+            PropertyDiff diff = diffListIt.next();
+            sb.append(diff);
+            if (diffListIt.hasNext()) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append("}");
+
+        return sb.toString();
     }
 }

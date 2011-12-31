@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
+import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.xmlexport.DocumentXMLExporter;
@@ -112,7 +113,11 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff, "lastContributor");
         // contributors => different (update) / same / different (add)
-
+        ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff();
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff("Administrator",
+                "anotherAdministrator"));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "jack"));
+        checkListFieldDiff(schemaDiff, "contributors", expectedListFieldDiff);
         // subjects => same / different (remove)
 
         // ---------------------------
@@ -139,6 +144,12 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
         // multivalued => different
+        expectedListFieldDiff = new ListPropertyDiff();
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff("monday", null));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff("tuesday", null));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff("wednesday", null));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff("thursday", null));
+        checkListFieldDiff(schemaDiff, "multivalued", expectedListFieldDiff);
 
     }
 
@@ -198,40 +209,25 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         // -----------------------
         // dublincore
         // -----------------------
-        // different
         doc.setPropertyValue("dc:title", "My second sample");
-        // no description => different
-        // different
         doc.setPropertyValue("dc:created", "2011-12-30T12:05:02Z");
-        // same
         doc.setPropertyValue("dc:creator", "Administrator");
-        // different
         doc.setPropertyValue("dc:modified", "2011-12-30T12:05:02Z");
-        // same once trimmed
         doc.setPropertyValue("dc:lastContributor", " Administrator ");
-        // different (update) / same / different (add)
         doc.setPropertyValue("dc:contributors", new String[] {
                 "anotherAdministrator", "joe", "jack" });
-        // same / different (remove)
         doc.setPropertyValue("dc:subjects", new String[] { "Art" });
 
         // -----------------------
         // simpletypes
         // -----------------------
-        // different
         doc.setPropertyValue("st:string", "a different string property");
-        // same
         doc.setPropertyValue("st:textarea", "a textarea property");
-        // no boolean => different
-        // same
         doc.setPropertyValue("st:integer", 10);
-        // same
         doc.setPropertyValue("st:date", "2011-12-28T23:00:00Z");
-        // different
         doc.setPropertyValue(
                 "st:htmlText",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
-        // no multivalued => different
 
         return session.createDocument(doc);
     }
@@ -268,7 +264,7 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
     }
 
     /**
-     * Checks a field diff.
+     * Checks a simple field diff.
      * 
      * @param schemaDiff the schema diff
      * @param field the field
@@ -276,20 +272,45 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
      * @param expectedRightValue the expected right value
      * @return the property diff
      */
-    protected final PropertyDiff checkSimpleFieldDiff(SchemaDiff schemaDiff,
-            String field, String expectedLeftValue, String expectedRightValue) {
+    protected final SimplePropertyDiff checkSimpleFieldDiff(
+            SchemaDiff schemaDiff, String field, String expectedLeftValue,
+            String expectedRightValue) {
 
         PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
         assertNotNull("Field diff should not be null", fieldDiff);
         assertTrue("Wrong PropertyDiff implementation.",
                 fieldDiff instanceof SimplePropertyDiff);
 
+        SimplePropertyDiff simpleFieldDiff = (SimplePropertyDiff) fieldDiff;
         assertEquals("Wrong left value.", expectedLeftValue,
-                ((SimplePropertyDiff) fieldDiff).getLeftValue());
+                simpleFieldDiff.getLeftValue());
         assertEquals("Wrong right value.", expectedRightValue,
-                ((SimplePropertyDiff) fieldDiff).getRightValue());
+                simpleFieldDiff.getRightValue());
 
-        return fieldDiff;
+        return simpleFieldDiff;
+    }
+
+    /**
+     * Checks a list field diff.
+     * 
+     * @param schemaDiff the schema diff
+     * @param field the field
+     * @param expectedListFieldDiff the expected list field diff
+     * @return the property diff
+     */
+    protected final PropertyDiff checkListFieldDiff(SchemaDiff schemaDiff,
+            String field, ListPropertyDiff expectedListFieldDiff) {
+
+        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
+        assertNotNull("Field diff should not be null", fieldDiff);
+        assertTrue("Wrong PropertyDiff implementation.",
+                fieldDiff instanceof ListPropertyDiff);
+
+        ListPropertyDiff listFieldDiff = (ListPropertyDiff) fieldDiff;
+        assertEquals("Wrong list diff.", expectedListFieldDiff, listFieldDiff);
+
+        return listFieldDiff;
+
     }
 
     /**

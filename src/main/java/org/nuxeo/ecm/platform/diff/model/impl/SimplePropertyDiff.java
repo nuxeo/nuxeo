@@ -33,6 +33,12 @@ public class SimplePropertyDiff implements PropertyDiff {
 
     /**
      * Instantiates a new simple property diff.
+     */
+    public SimplePropertyDiff() {
+    }
+
+    /**
+     * Instantiates a new simple property diff with leftValue and rightValue.
      * 
      * @param leftValue the left value
      * @param rightValue the right value
@@ -61,23 +67,35 @@ public class SimplePropertyDiff implements PropertyDiff {
     @Override
     public boolean equals(Object other) {
 
-        boolean res = false;
-
-        if (other != null && other instanceof SimplePropertyDiff) {
-
-            String objLeftValue = ((SimplePropertyDiff) other).getLeftValue();
-            String objRightValue = ((SimplePropertyDiff) other).getRightValue();
-
-            res = (leftValue == null && objLeftValue == null
-                    && rightValue == null && objRightValue == null)
-                    || (leftValue == null && objLeftValue == null
-                            && rightValue != null && rightValue.equals(objRightValue))
-                    || (rightValue == null && objRightValue == null
-                            && leftValue != null && leftValue.equals(objLeftValue))
-                    || (leftValue != null && rightValue != null
-                            && leftValue.equals(objLeftValue) && rightValue.equals(objRightValue));
+        if (this == other) {
+            return true;
+        }
+        if (other == null || !(other instanceof SimplePropertyDiff)) {
+            return false;
         }
 
-        return res;
+        String otherLeftValue = ((SimplePropertyDiff) other).getLeftValue();
+        String otherRightValue = ((SimplePropertyDiff) other).getRightValue();
+
+        return (leftValue == null && otherLeftValue == null
+                && rightValue == null && otherRightValue == null)
+                || (leftValue == null && otherLeftValue == null
+                        && rightValue != null && rightValue.equals(otherRightValue))
+                || (rightValue == null && otherRightValue == null
+                        && leftValue != null && leftValue.equals(otherLeftValue))
+                || (leftValue != null && rightValue != null
+                        && leftValue.equals(otherLeftValue) && rightValue.equals(otherRightValue));
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(leftValue);
+        sb.append(" --> ");
+        sb.append(rightValue);
+
+        return sb.toString();
     }
 }
