@@ -181,12 +181,13 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
     /**
      * Computes the doc diff.
-     * 
+     *
      * @param detailedDiff the detailed diff
      * @return the document diff
+     * @throws ClientException the client exception
      */
     @SuppressWarnings("unchecked")
-    protected final DocumentDiff computeDocDiff(DetailedDiff detailedDiff) {
+    protected final DocumentDiff computeDocDiff(DetailedDiff detailedDiff) throws ClientException {
 
         // Document diff object
         DocumentDiff docDiff = new DocumentDiffImpl();

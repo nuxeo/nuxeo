@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
 
 /**
- * Implementation of SchemaDiff using a LinkedHashMap.
+ * Implementation of SchemaDiff using a HashMap.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
@@ -43,7 +43,7 @@ public class SchemaDiffImpl implements SchemaDiff {
      * Instantiates a new schema diff impl.
      */
     public SchemaDiffImpl() {
-        schemaDiff = new LinkedHashMap<String, PropertyDiff>();
+        schemaDiff = new HashMap<String, PropertyDiff>();
     }
 
     public Map<String, PropertyDiff> getSchemaDiff() {

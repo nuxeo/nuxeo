@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.diff.service.impl;
 
 import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.NodeDetail;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiffType;
@@ -45,10 +46,12 @@ public final class FieldDiffHelper {
      * @param differenceId the difference id
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
+     * @throws ClientException the client exception
      */
     public static void computeFieldDiff(DocumentDiff docDiff, String schema,
             String field, PropertyDiffType propertyDiffType, int differenceId,
-            NodeDetail controlNodeDetail, NodeDetail testNodeDetail) {
+            NodeDetail controlNodeDetail, NodeDetail testNodeDetail)
+            throws ClientException {
 
         // Get schema diff, initialize it if null
         SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
@@ -155,6 +158,14 @@ public final class FieldDiffHelper {
                     leftValue, rightValue));
             break;
         case complex:
+            if (controlNode != null) {
+                Node controlParentNode = controlNode.getParentNode();
+                if (controlParentNode != null) {
+                    ((ComplexPropertyDiff) fieldDiff).putDiff(
+                            controlParentNode.getNodeName(),
+                            new SimplePropertyDiff(leftValue, rightValue));
+                }
+            }
             break;
         }
     }
@@ -183,10 +194,11 @@ public final class FieldDiffHelper {
      * @param propertyDiffType the property diff type
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
+     * @throws ClientException the client exception
      */
     private static void computeChildNodeNotFoundDiff(PropertyDiff fieldDiff,
             PropertyDiffType propertyDiffType, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail) {
+            NodeDetail testNodeDetail) throws ClientException {
 
         Node childNode;
         boolean isControlNodeNotFound = "null".equals(controlNodeDetail.getValue());
@@ -217,7 +229,8 @@ public final class FieldDiffHelper {
                         leftValue, rightValue));
                 break;
             case complex:
-                break;
+                throw new ClientException(
+                        "A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
             }
         }
     }
@@ -253,6 +266,11 @@ public final class FieldDiffHelper {
                         hasControlNodeChildNodes, nodeWithChilds);
                 break;
             case complex:
+                SimplePropertyDiff simplePropertyDiff = new SimplePropertyDiff();
+                setChildTextNodeValue(simplePropertyDiff,
+                        hasControlNodeChildNodes, nodeWithChilds);
+                ((ComplexPropertyDiff) fieldDiff).putDiff(
+                        nodeWithChilds.getNodeName(), simplePropertyDiff);
                 break;
             }
         }

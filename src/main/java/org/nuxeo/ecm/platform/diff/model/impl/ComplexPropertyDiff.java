@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
@@ -36,15 +36,15 @@ public class ComplexPropertyDiff implements PropertyDiff {
      * Instantiates a new complex property diff.
      */
     public ComplexPropertyDiff() {
-        diffMap = new LinkedHashMap<String, PropertyDiff>();
+        diffMap = new HashMap<String, PropertyDiff>();
     }
 
-    public void getDiff(String item) {
-        diffMap.get(item);
+    public PropertyDiff getDiff(String item) {
+        return diffMap.get(item);
     }
 
-    public void putDiff(String item, PropertyDiff diff) {
-        diffMap.put(item, diff);
+    public PropertyDiff putDiff(String item, PropertyDiff diff) {
+        return diffMap.put(item, diff);
     }
 
     public Map<String, PropertyDiff> getDiffMap() {
@@ -53,5 +53,29 @@ public class ComplexPropertyDiff implements PropertyDiff {
 
     public void setDiffMap(Map<String, PropertyDiff> diffMap) {
         this.diffMap = diffMap;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null || !(other instanceof ComplexPropertyDiff)) {
+            return false;
+        }
+
+        Map<String, PropertyDiff> otherDiffMap = ((ComplexPropertyDiff) other).getDiffMap();
+
+        return (diffMap == null && otherDiffMap == null)
+                || (diffMap != null && otherDiffMap != null && diffMap.equals(otherDiffMap));
+
+    }
+
+    @Override
+    public String toString() {
+
+        return diffMap.toString();
     }
 }

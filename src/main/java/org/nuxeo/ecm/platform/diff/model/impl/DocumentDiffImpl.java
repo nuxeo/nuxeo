@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
 
 /**
- * Implementation of DocumentDiff using a LinkedHashMap.
+ * Implementation of DocumentDiff using a HashMap.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
@@ -43,7 +43,7 @@ public class DocumentDiffImpl implements DocumentDiff {
      * Instantiates a new document diff impl.
      */
     public DocumentDiffImpl() {
-        docDiff = new LinkedHashMap<String, SchemaDiff>();
+        docDiff = new HashMap<String, SchemaDiff>();
     }
 
     public Map<String, SchemaDiff> getDocDiff() {

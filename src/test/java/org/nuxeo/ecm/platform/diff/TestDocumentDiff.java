@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -28,6 +31,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
+import org.nuxeo.ecm.platform.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
@@ -79,7 +83,7 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 3, docDiff.getSchemaCount());
+        assertEquals("Wrong schema count.", 4, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check system elements
@@ -147,13 +151,28 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
                 "htmlText",
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
-        // multivalued => different
+        // multivalued => different (remove) * 4
         expectedListFieldDiff = new ListPropertyDiff();
         expectedListFieldDiff.addDiff(new SimplePropertyDiff("monday", null));
         expectedListFieldDiff.addDiff(new SimplePropertyDiff("tuesday", null));
         expectedListFieldDiff.addDiff(new SimplePropertyDiff("wednesday", null));
         expectedListFieldDiff.addDiff(new SimplePropertyDiff("thursday", null));
         checkListFieldDiff(schemaDiff, "multivalued", expectedListFieldDiff);
+
+        // ---------------------------
+        // Check complextypes schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "complextypes", 1);
+
+        // complex => same / different (update) / different (remove) / different (add)
+        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
+        expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
+                String.valueOf(Boolean.TRUE), String.valueOf(Boolean.FALSE)));
+        expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
+                "10", null));
+        expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(
+                null, "2011-12-29T23:00:00Z"));
+        checkComplexFieldDiff(schemaDiff, "complex", expectedComplexFieldDiff);
 
     }
 
@@ -196,6 +215,15 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         doc.setPropertyValue("st:multivalued", new String[] { "monday",
                 "tuesday", "wednesday", "thursday" });
 
+        // -----------------------
+        // complextypes
+        // -----------------------
+        Map<String, Serializable> complexPropValue = new HashMap<String, Serializable>();
+        complexPropValue.put("stringItem", "string of a complex type");
+        complexPropValue.put("booleanItem", true);
+        complexPropValue.put("integerItem", 10);
+        doc.setPropertyValue("ct:complex", (Serializable) complexPropValue);
+
         return session.createDocument(doc);
     }
 
@@ -232,6 +260,15 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         doc.setPropertyValue(
                 "st:htmlText",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
+
+        // -----------------------
+        // complextypes
+        // -----------------------
+        Map<String, Serializable> complexPropValue = new HashMap<String, Serializable>();
+        complexPropValue.put("stringItem", "string of a complex type");
+        complexPropValue.put("booleanItem", false);
+        complexPropValue.put("dateItem", "2011-12-29T23:00:00Z");
+        doc.setPropertyValue("ct:complex", (Serializable) complexPropValue);
 
         return session.createDocument(doc);
     }
@@ -314,6 +351,30 @@ public class TestDocumentDiff extends SQLRepositoryTestCase {
         assertEquals("Wrong list diff.", expectedListFieldDiff, listFieldDiff);
 
         return listFieldDiff;
+
+    }
+
+    /**
+     * Checks a complex field diff.
+     * 
+     * @param schemaDiff the schema diff
+     * @param field the field
+     * @param expectedComplexFieldDiff the expected complex field diff
+     * @return the property diff
+     */
+    protected final PropertyDiff checkComplexFieldDiff(SchemaDiff schemaDiff,
+            String field, ComplexPropertyDiff expectedComplexFieldDiff) {
+
+        PropertyDiff fieldDiff = schemaDiff.getFieldDiff(field);
+        assertNotNull("Field diff should not be null", fieldDiff);
+        assertTrue("Wrong PropertyDiff implementation.",
+                fieldDiff instanceof ComplexPropertyDiff);
+
+        ComplexPropertyDiff complexFieldDiff = (ComplexPropertyDiff) fieldDiff;
+        assertEquals("Wrong complex diff.", expectedComplexFieldDiff,
+                complexFieldDiff);
+
+        return complexFieldDiff;
 
     }
 
