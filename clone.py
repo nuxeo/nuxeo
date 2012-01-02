@@ -122,7 +122,7 @@ def git_fetch(module):
         # reuse local branch
         system("git checkout %s" % version)
         log("Updating branch")
-        system("git merge %s/%s" % (alias, version))
+        system("git rebase %s/%s" % (alias, version))
     os.chdir(cwd)
     log("")
 
@@ -178,7 +178,7 @@ else:
     # reuse local branch
     system("git checkout %s" % version)
     log("Updating branch")
-    system("git merge %s/%s" % (alias, version))
+    system("git rebase %s/%s" % (alias, version))
 log("")
 
 # find the remote URL
