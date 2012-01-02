@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.core.test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.automation.core.operations.document.SetDocumentLifeCycle;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
+import org.nuxeo.ecm.automation.core.operations.execution.RunInNewTransaction;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.operations.stack.PopDocument;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
@@ -68,11 +70,13 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -80,7 +84,7 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features( { CoreFeature.class, TransactionalFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
@@ -334,8 +338,7 @@ public class CoreOperationsTest {
         assertEquals("mydesc", out.getPropertyValue("dc:description"));
         assertEquals("MyDoc2", out.getPropertyValue("dc:title"));
         assertTrue(out.isLocked());
-        assertEquals(
-                "parentdoc",
+        assertEquals("parentdoc",
                 session.getDocument(src.getRef()).getPropertyValue(
                         "dc:description"));
     }
@@ -424,12 +427,10 @@ public class CoreOperationsTest {
         assertEquals(2, list.size());
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
-        assertEquals(
-                "samedesc",
+        assertEquals("samedesc",
                 session.getDocument(src.getRef()).getPropertyValue(
                         "dc:description"));
-        assertEquals(
-                "samedesc",
+        assertEquals("samedesc",
                 session.getDocument(dst.getRef()).getPropertyValue(
                         "dc:description"));
     }
@@ -636,6 +637,31 @@ public class CoreOperationsTest {
         service.run(ctx, chain);
         String result = (String) ctx.get("result");
         assertEquals("foo, bar", result);
+    }
+
+    @Test
+    public void testRunInNewTxOperation() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        OperationChain chain = new OperationChain("testChain");
+
+        chain = new OperationChain("testChain");
+        // test that the global transaction is not marked for rollback
+        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set(
+                "isolate", "false").set("rollbackGlobalOnError", "false");
+        try {
+            service.run(ctx, chain);
+        } finally {
+            assertFalse(TransactionHelper.isTransactionMarkedRollback());
+        }
+
+        // test that the global transaction is marked for rollback
+        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set(
+                "isolate", "false").set("rollbackGlobalOnError", "true");
+        try {
+            service.run(ctx, chain);
+        } catch (Exception e) {
+            assertTrue(TransactionHelper.isTransactionMarkedRollback());
+        }
     }
 
 }

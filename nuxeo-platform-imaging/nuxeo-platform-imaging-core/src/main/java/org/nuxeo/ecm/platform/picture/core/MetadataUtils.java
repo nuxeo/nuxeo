@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.picture.core;
 
-import java.io.File;
-import java.io.InputStream;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;

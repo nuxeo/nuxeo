@@ -51,7 +51,10 @@
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.CreatePicture" />
-
+      
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.RunOperationOnProvider" />
+      
   </extension>
 
   <extension point="chains"

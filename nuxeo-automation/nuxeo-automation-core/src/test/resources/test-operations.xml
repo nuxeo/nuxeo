@@ -14,6 +14,7 @@
     <operation class="org.nuxeo.ecm.automation.core.test.ControlOperation" />
     <operation class="org.nuxeo.ecm.automation.core.test.GetVarOperation" />
     <operation class="org.nuxeo.ecm.automation.core.test.StringListOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.test.ExitOperation" />
   </extension>
 
   <extension point="chains"
@@ -79,6 +80,13 @@
         <param type="boolean" name="save">true</param>
       </operation>
     </chain>
+    
+    <chain id="testExitChain">
+      <operation id="Test.Exit" >
+        <param type="boolean" name="error">true</param>
+        <param type="boolean" name="rollback">true</param>
+      </operation>
+    </chain>  
 
   </extension>
 

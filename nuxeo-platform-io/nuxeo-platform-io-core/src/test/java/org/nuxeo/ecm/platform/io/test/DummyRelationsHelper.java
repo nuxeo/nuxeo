@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.io.test;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

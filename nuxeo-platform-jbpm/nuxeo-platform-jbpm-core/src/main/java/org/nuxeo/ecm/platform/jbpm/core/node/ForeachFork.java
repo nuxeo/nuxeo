@@ -48,7 +48,8 @@ public class ForeachFork implements ActionHandler {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("rawtypes")
     public void execute(ExecutionContext executionContext) {
         assert list != null;
         assert var != null;

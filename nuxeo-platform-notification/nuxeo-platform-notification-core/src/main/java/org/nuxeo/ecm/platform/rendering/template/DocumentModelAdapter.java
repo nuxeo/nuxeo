@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.ValueExporter;
 
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.ObjectWrapper;
@@ -62,11 +61,13 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         this(doc, ObjectWrapper.DEFAULT_WRAPPER);
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("rawtypes")
     public Object getAdaptedObject(Class hint) {
         return doc;
     }
 
+    @Override
     public TemplateModel get(String key) throws TemplateModelException {
         DocumentFieldAccessor accessor = DocumentFieldAccessor.get(key);
         if (accessor != null) {
@@ -110,10 +111,12 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
     /**
      * a doc model is never empty
      */
+    @Override
     public boolean isEmpty() throws TemplateModelException {
         return false;
     }
 
+    @Override
     public TemplateCollectionModel keys() throws TemplateModelException {
         if (keys == null) {
             List<String> keysCol = new ArrayList<String>();
@@ -126,6 +129,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         return keys;
     }
 
+    @Override
     public TemplateCollectionModel values() throws TemplateModelException {
         List<Object> values = new ArrayList<Object>();
         for (DocumentFieldAccessor accessor : DocumentFieldAccessor.getAcessors()) {
@@ -143,6 +147,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         return (TemplateCollectionModel)wrapper.wrap(values);
     }
 
+    @Override
     public int size() throws TemplateModelException {
         if (size == -1) {
             size = DocumentFieldAccessor.getAcessorsCount() + doc.getSchemas().length;

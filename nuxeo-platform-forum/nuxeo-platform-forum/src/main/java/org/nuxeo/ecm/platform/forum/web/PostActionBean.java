@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
@@ -352,7 +351,6 @@ public class PostActionBean implements PostAction {
 
     }
 
-    @SuppressWarnings("unchecked")
     protected Task getModerationTask(DocumentModel thread, String postId)
             throws ClientException {
         String query = TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_QUERY;

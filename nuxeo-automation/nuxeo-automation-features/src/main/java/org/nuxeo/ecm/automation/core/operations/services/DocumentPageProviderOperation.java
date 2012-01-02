@@ -25,7 +25,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -79,7 +78,7 @@ public class DocumentPageProviderOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public PaginableDocumentModelListImpl run() throws Exception {
 
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 

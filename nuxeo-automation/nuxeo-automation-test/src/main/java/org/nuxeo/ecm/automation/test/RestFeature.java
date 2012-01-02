@@ -16,9 +16,9 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -31,20 +31,20 @@ import com.google.inject.Scopes;
 
 /**
  * Shortcut to deploy bundles required by automation in your test
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.core",
+@Deploy({ "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.query.api" })
-@Features(WebEngineFeature.class)
-public class RestFeature extends SimpleFeature {
+@Features({WebEngineFeature.class, TransactionalFeature.class})
+public class RestFeature extends SimpleFeature  {
 
     protected HttpAutomationClient client ;
 
     protected Session session;
 
-    @Override
+     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
         if (client != null) {
             client.shutdown();
@@ -62,7 +62,7 @@ public class RestFeature extends SimpleFeature {
                     @Override
                     public HttpAutomationClient get() {
                         if (client ==null) {
-                            client = new HttpAutomationClient("http://localhost:18080/automation");                           
+                            client = new HttpAutomationClient("http://localhost:18080/automation");
                         }
                         return client;
                     }

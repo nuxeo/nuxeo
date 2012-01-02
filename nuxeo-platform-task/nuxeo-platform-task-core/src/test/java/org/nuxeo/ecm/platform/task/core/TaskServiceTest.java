@@ -98,7 +98,6 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    @SuppressWarnings("unchecked")
     public void testSingleTaskWithAccept() throws Exception {
         DocumentModel document = getDocument();
         assertNotNull(document);
@@ -418,7 +417,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
     /**
      * Test user tasks.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testUserTasks() throws Exception {
@@ -581,7 +580,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
      * It should have no impact since the DocumentTaskProvider rebuilds a clean
      * actors list with both prefixed and unprefixed names of the principal and
      * all its groups.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testPrefixedUnprefixedActorNames() throws Exception {

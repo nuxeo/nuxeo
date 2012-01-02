@@ -171,7 +171,6 @@ public class Main extends ModuleRoot {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{bank}/json/styles")
-    @SuppressWarnings("rawtypes")
     public String listBankStyles(@PathParam("bank") String bankName) {
         try {
             return Utils.listBankStyles(bankName);
@@ -183,7 +182,6 @@ public class Main extends ModuleRoot {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{bank}/json/skins")
-    @SuppressWarnings("rawtypes")
     public String listBankSkins(@PathParam("bank") String bankName) {
         try {
             return Utils.listBankSkins(bankName);
@@ -195,7 +193,6 @@ public class Main extends ModuleRoot {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{bank}/json/presets")
-    @SuppressWarnings("rawtypes")
     public String listBankPresets(@PathParam("bank") String bankName) {
         try {
             return Utils.listBankPresets(bankName);

@@ -116,6 +116,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String getFileurlPicture() throws ClientException {
         ArrayList<Map<String, Object>> views = (ArrayList) getCurrentDocument().getProperty(
                 "picture", "views");
@@ -127,6 +128,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         this.fileurlPicture = fileurlPicture;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void initSelectItems() throws ClientException {
         selectItems = new ArrayList<Map<String, Object>>();
         DocumentModel doc = getCurrentDocument();

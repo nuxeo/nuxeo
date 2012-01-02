@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOpe
 import org.nuxeo.ecm.automation.core.operations.services.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -41,7 +43,8 @@ import com.google.inject.Inject;
 @Deploy( { "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.versioning" })
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-providers.xml")
+@LocalDeploy( { "org.nuxeo.ecm.automation.core:test-providers.xml",
+        "org.nuxeo.ecm.automation.core:test-operations.xml" })
 public class CoreProviderTest {
 
     @Inject
@@ -96,6 +99,7 @@ public class CoreProviderTest {
         // test page size
         assertEquals(2, result.getPageSize());
         assertEquals(2, result.getNumberOfPages());
+        assertTrue(result.getProvider().isNextPageAvailable());
 
         // change page size
         chain = new OperationChain("fakeChain");
@@ -203,4 +207,11 @@ public class CoreProviderTest {
 
     }
 
+    @Test
+    public void testRunOnPageProviderOperation() throws Exception {
+        OperationContext context = new OperationContext(session);
+        service.run(context, "runOnProviderTestchain");
+        DocumentModelList list = (DocumentModelList) context.get("result");
+        assertEquals(3, list.size());
+    }
 }

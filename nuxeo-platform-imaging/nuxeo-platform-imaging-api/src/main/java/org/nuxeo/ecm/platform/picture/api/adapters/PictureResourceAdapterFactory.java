@@ -24,7 +24,6 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUR
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 
 /**
  * Factory instantiating {@link PictureResourceAdapter} adapter.

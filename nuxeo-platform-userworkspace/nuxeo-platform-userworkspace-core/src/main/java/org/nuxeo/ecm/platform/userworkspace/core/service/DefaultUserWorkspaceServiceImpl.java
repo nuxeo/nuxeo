@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -361,7 +360,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
             userWorkspace = getCurrentUserPersonalWorkspace(userName, session,
                     context);
             if (userWorkspace != null) {
-                ((DocumentModelImpl) userWorkspace).detach(true);
+                userWorkspace.detach(true);
             }
         }
 

@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -50,6 +49,7 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     private Graph graph;
 
+    @Override
     public Resource getSubject() {
         QueryResult result = graph.query("SELECT ?s WHERE {?s <"
                 + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
@@ -57,10 +57,12 @@ public class AnnotationImpl implements Annotation, Serializable {
         return node.isBlank() ? null : (Resource) node;
     }
 
+    @Override
     public void setBody(Statement body) {
         graph.add(body);
     }
 
+    @Override
     public URI getAnnotates() throws AnnotationException {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <"
                 + AnnotationsConstants.A_ANNOTATES + "> ?o}", "sparql", null);
@@ -72,6 +74,7 @@ public class AnnotationImpl implements Annotation, Serializable {
         }
     }
 
+    @Override
     public URI getBody() throws AnnotationException {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <"
                 + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
@@ -83,6 +86,7 @@ public class AnnotationImpl implements Annotation, Serializable {
         }
     }
 
+    @Override
     public String getBodyAsText() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <"
                 + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
@@ -110,6 +114,7 @@ public class AnnotationImpl implements Annotation, Serializable {
         graph.add(newStatement);
     }
 
+    @Override
     public String getContext() throws AnnotationException {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <"
                 + AnnotationsConstants.A_CONTEXT + "> ?o}", "sparql", null);
@@ -117,18 +122,22 @@ public class AnnotationImpl implements Annotation, Serializable {
         return node.isBlank() ? null : ((Literal) node).getValue();
     }
 
+    @Override
     public void setContext(Statement context) {
         graph.add(context);
     }
 
+    @Override
     public List<Statement> getStatements() {
         return graph.getStatements();
     }
 
+    @Override
     public void setStatements(List<Statement> statements) {
         graph.add(statements);
     }
 
+    @Override
     public void setSubject(Resource resource) {
         List<Statement> statements = new ArrayList<Statement>();
         for (Statement statement : graph.getStatements()) {
@@ -139,10 +148,12 @@ public class AnnotationImpl implements Annotation, Serializable {
         graph.add(statements);
     }
 
+    @Override
     public void setAnnotates(Statement statement) {
         graph.add(statement);
     }
 
+    @Override
     public String getCreator() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <"
                 + AnnotationsConstants.D_CREATOR + "> ?o .}", "sparql", null);
@@ -153,12 +164,14 @@ public class AnnotationImpl implements Annotation, Serializable {
         return node.isBlank() ? null : ((Literal) node).getValue();
     }
 
+    @Override
     public void addMetadata(String predicate, String value) {
         Statement statement = new StatementImpl(getSubject(), new ResourceImpl(
                 predicate), new LiteralImpl(value));
         graph.add(statement);
     }
 
+    @Override
     public String getId() {
         Resource subject = getSubject();
         String uri = subject.getUri().toString();

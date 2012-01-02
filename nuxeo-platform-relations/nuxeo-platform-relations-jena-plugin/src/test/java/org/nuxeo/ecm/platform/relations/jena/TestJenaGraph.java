@@ -46,7 +46,6 @@ import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
-import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -105,7 +104,6 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
-    @SuppressWarnings({"unchecked"})
     public void testGetGraph() {
         Model jenaGraph = graph.openGraph().getGraph();
         Map<String, String> map = jenaGraph.getNsPrefixMap();
@@ -144,7 +142,6 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         graph.setOptions(options);
     }
 
-    @SuppressWarnings({"unchecked"})
     public void testSetNamespaces() {
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("dummy", "http://dummy");
@@ -475,7 +472,6 @@ public class TestJenaGraph extends NXRuntimeTestCase {
 
     // XXX AT: test serialization of the graph because the RelationServiceBean
     // will attempt to keep references to graphs it manages.
-    @SuppressWarnings({"unchecked"})
     public void testSerialization() throws Exception {
         graph.add(statements);
 

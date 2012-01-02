@@ -87,6 +87,8 @@
       class="org.nuxeo.ecm.automation.server.test.ExitOperation" />
     <operation
       class="org.nuxeo.ecm.automation.server.test.ReturnOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
   </extension>
   
 </component>

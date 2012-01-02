@@ -42,10 +42,6 @@ public class FakeRepository implements Repository {
         return new FakeSecurityManager();
     }
 
-    public Session getSession(long sessionId) throws DocumentException {
-        return FakeSession.getSession();
-    }
-
     public Session getSession(Map<String, Serializable> context)
             throws DocumentException {
         return FakeSession.getSession();

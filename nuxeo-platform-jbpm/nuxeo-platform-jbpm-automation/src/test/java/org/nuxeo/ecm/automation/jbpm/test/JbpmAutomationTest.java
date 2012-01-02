@@ -29,7 +29,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import junit.framework.Assert;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -41,7 +40,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jbpm.CreateTask.OperationTaskVariableName;
@@ -410,6 +408,7 @@ public class JbpmAutomationTest {
     }
 
     class TaskInstanceComparator implements Comparator<TaskInstance> {
+        @Override
         public int compare(TaskInstance o1, TaskInstance o2) {
             return o1.getCreate().compareTo(o2.getCreate());
         }

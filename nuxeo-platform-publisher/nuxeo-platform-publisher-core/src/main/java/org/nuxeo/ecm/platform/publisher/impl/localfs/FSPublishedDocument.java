@@ -17,19 +17,23 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
-import org.dom4j.*;
+import java.io.File;
+import java.io.StringReader;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.CoreIODocumentModelMarshaler;
 import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
-
-import java.io.File;
-import java.io.StringReader;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.CoreIODocumentModelMarshaler;
 
 public class FSPublishedDocument implements PublishedDocument {
 
@@ -144,18 +148,22 @@ public class FSPublishedDocument implements PublishedDocument {
         xmlRepresentation = xml.asXML();
     }
 
+    @Override
     public DocumentRef getSourceDocumentRef() {
         return sourceDocumentRef;
     }
 
+    @Override
     public String getSourceRepositoryName() {
         return sourceRepositoryName;
     }
 
+    @Override
     public String getSourceServer() {
         return sourceServer;
     }
 
+    @Override
     public String getSourceVersionLabel() {
         return sourceVersion;
     }
@@ -164,18 +172,22 @@ public class FSPublishedDocument implements PublishedDocument {
         return persistPath;
     }
 
+    @Override
     public String getPath() {
         return getPersistPath();
     }
 
+    @Override
     public String getParentPath() {
         return parentPath;
     }
 
+    @Override
     public boolean isPending() {
         return isPending;
     }
 
+    @Override
     public Type getType() {
         return Type.FILE_SYSTEM;
     }
