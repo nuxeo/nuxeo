@@ -13,7 +13,7 @@ public abstract class AbstractJaxRSImporterExecutor extends
         AbstractImporterExecutor {
 
     @Override
-    protected ImporterLogger getLogger() {
+    public ImporterLogger getLogger() {
         if (log == null) {
             log = new BufferredLogger(getJavaLogger());
         }

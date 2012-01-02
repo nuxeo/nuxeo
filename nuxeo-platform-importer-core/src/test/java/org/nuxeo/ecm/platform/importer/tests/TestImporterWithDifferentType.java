@@ -45,6 +45,12 @@ public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testNoteImport() throws Exception {
 
         System.out.println("Starting prefil");

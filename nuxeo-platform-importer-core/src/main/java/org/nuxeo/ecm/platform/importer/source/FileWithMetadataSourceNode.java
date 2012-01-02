@@ -50,6 +50,10 @@ public class FileWithMetadataSourceNode extends FileSourceNode {
         super(file);
     }
 
+    public FileWithMetadataSourceNode(String path) {
+        super(path);
+    }
+
     @Override
     public BlobHolder getBlobHolder() {
         BlobHolder bh = new SimpleBlobHolderWithProperties(new FileBlob(file),

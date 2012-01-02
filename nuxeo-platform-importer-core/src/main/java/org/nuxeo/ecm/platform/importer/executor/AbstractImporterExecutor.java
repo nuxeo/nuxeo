@@ -49,7 +49,7 @@ public abstract class AbstractImporterExecutor {
 
     protected ImporterDocumentModelFactory factory;
 
-    protected ImporterLogger getLogger() {
+    public ImporterLogger getLogger() {
         if (log == null) {
             log = new BasicLogger(getJavaLogger());
         }
@@ -128,4 +128,18 @@ public abstract class AbstractImporterExecutor {
         this.factory = factory;
     }
 
+    /***
+     * since 5.4.3 this method is invoked when using the
+     * <code>DefaultImporterService</code> and passing the executor to the
+     * importDocuments method
+     *
+     * @param runner
+     * @param interactive
+     * @return
+     * @throws Exception
+     */
+    public String run(ImporterRunner runner, Boolean interactive)
+            throws Exception {
+        return doRun(runner, interactive);
+    }
 }
