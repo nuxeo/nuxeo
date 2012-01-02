@@ -130,4 +130,31 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         assertEquals("123631", response.getProperties(200).get("getcontentlength").getValue());
     }
 
+    @Test
+    public void testGetFolderPropertiesAcceptTextXml() throws Exception {
+        checkAccept("text/xml");
+    }
+
+    @Test
+    public void testGetFolderPropertiesAcceptTextMisc() throws Exception {
+        checkAccept("text/html, image/jpeg;q=0.9, image/png;q=0.9, text/*;q=0.9, image/*;q=0.9, */*;q=0.8");
+    }
+
+    protected void checkAccept(String accept) throws Exception {
+        DavMethod pFind = new PropFindMethod(ROOT_URI,
+                DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        pFind.setRequestHeader("Accept", accept);
+        client.executeMethod(pFind);
+
+        MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
+        MultiStatusResponse[] responses = multiStatus.getResponses();
+        assertEquals(1, responses.length);
+
+        MultiStatusResponse response = responses[0];
+        assertEquals(
+                "nuxeo",
+                response.getProperties(200).get(
+                        DavConstants.PROPERTY_DISPLAYNAME).getValue());
+    }
+
 }
