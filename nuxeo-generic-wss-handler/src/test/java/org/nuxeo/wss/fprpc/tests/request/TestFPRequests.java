@@ -64,7 +64,8 @@ public class TestFPRequests extends TestCase {
 
         String result= response.getOutput();
 
-        String[] lines = result.split("\n");
+        String eol = System.getProperty( "line.separator" );
+        String[] lines = result.split(eol);
         assertEquals("<p>message=successfully put document 'DocLib0/Workspace-1-1/Document-2-1.doc' as 'DocLib0/Workspace-1-1/Document-2-1.doc'", lines[3]);
     }
 

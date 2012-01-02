@@ -48,7 +48,8 @@ public class TestInfoRequests extends TestCase {
 
         // System.out.println(result);
 
-        String[] lines = result.split("\n");
+        String eol = System.getProperty( "line.separator" );
+        String[] lines = result.split(eol);
         assertEquals("FPVersion=\"12.0.0.000\"", lines[1]);
         assertEquals("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"", lines[2]);
         assertEquals("FPAuthorScriptUrl=\"_vti_bin/_vti_aut/author.dll\"", lines[3]);
@@ -69,7 +70,8 @@ public class TestInfoRequests extends TestCase {
 
         // System.out.println(result);
 
-        String[] lines = result.split("\n");
+        String eol = System.getProperty( "line.separator" );
+        String[] lines = result.split(eol);
 
         assertEquals("<p>method=server version:6.0.2.5523", lines[2]);
         assertEquals("<li>ver incr=6421", lines[8]);
@@ -87,7 +89,8 @@ public class TestInfoRequests extends TestCase {
 
         // System.out.println(result);
 
-        String[] lines = result.split("\n");
+        String eol = System.getProperty( "line.separator" );
+        String[] lines = result.split(eol);
 
         assertEquals("<p>method=open service:6.0.2.5523", lines[2]);
         assertEquals("<li>SX|http://localhost/_layouts/toolpane.aspx", lines[17]);
