@@ -40,7 +40,8 @@ public class TestFMRendering extends TestCase {
 
         String result = writer.getBuffer().toString();
 
-        String[] lines = result.split("\n");
+        String eol = System.getProperty( "line.separator" );
+        String[] lines = result.split(eol);
 
         assertEquals("ABCD", lines[0]);
         assertEquals("success", lines[1]);
@@ -60,7 +61,8 @@ public class TestFMRendering extends TestCase {
 
         String result = writer.getBuffer().toString();
 
-        String[] lines = result.split("\n");
+        String eol = System.getProperty( "line.separator" );
+        String[] lines = result.split(eol);
 
         assertEquals("BEFORE", lines[0]);
         assertEquals("ABCD", lines[1]);
@@ -81,7 +83,8 @@ public class TestFMRendering extends TestCase {
 
         String result = writer.getBuffer().toString();
 
-        String[] lines = result.split("\n");
+        String eol = System.getProperty( "line.separator" );
+        String[] lines = result.split(eol);
 
         assertEquals("FPVersion=\"12.0.0.000\"", lines[1]);
         assertEquals("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"",
