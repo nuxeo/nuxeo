@@ -62,9 +62,11 @@ public class TestManager extends NXRuntimeTestCase {
         assertEquals("/skin/nxthemes-webwidgets/samples/widget-icon.png",
                 widgetType.getIcon());
 
+        String eol = System.getProperty( "line.separator" );
         assertEquals("content", widgetType.getBody());
-        assertEquals("\nalert('test &');\n\n", widgetType.getScripts());
-        assertEquals("\nh2 {color: red;}\n", widgetType.getStyles());
+        assertEquals(eol + "alert('test &');" + eol + "\n",
+                widgetType.getScripts());
+        assertEquals(eol+"h2 {color: red;}"+eol, widgetType.getStyles());
 
         List<WidgetFieldType> schema = widgetType.getSchema();
         assertEquals("Title", schema.get(0).getLabel());
