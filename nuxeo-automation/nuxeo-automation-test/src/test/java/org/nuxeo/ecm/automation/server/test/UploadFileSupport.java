@@ -30,7 +30,7 @@ import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.StreamBlob;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 
 /**
  * @author matic
@@ -114,7 +114,7 @@ public class UploadFileSupport {
                 root).set("type", "File").set("name", "bigfile").set(
                 "properties", "dc:title=Big File");
         if (timeout > 0) {
-            upload = upload.setHeader(TransactionHelper.TX_TIMEOUT_HEADER_KEY, Integer.toString(timeout));
+            upload = upload.setHeader(ServletHelper.TX_TIMEOUT_HEADER_KEY, Integer.toString(timeout));
         }
         Document doc = (Document)upload.execute();
         session.newRequest("Blob.Attach").setHeader(Constants.HEADER_NX_VOIDOP,

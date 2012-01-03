@@ -77,12 +77,12 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -529,7 +529,7 @@ public class RestTest {
     public void testTxTimeout() throws Exception {
         session.
             newRequest(WaitForTxTimeoutOperation.ID).
-            setHeader(TransactionHelper.TX_TIMEOUT_HEADER_KEY, "1").
+            setHeader(ServletHelper.TX_TIMEOUT_HEADER_KEY, "1").
             execute();
     }
     /**

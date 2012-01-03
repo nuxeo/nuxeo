@@ -23,7 +23,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 
 @Operation(id = WaitForTxTimeoutOperation.ID, category = Constants.CAT_EXECUTION, label = "TxTimeout", description = "Wait for tx timeout")
 public class WaitForTxTimeoutOperation {
@@ -36,7 +36,7 @@ public class WaitForTxTimeoutOperation {
     @OperationMethod
     public void run() throws Exception {
         HttpServletRequest req = (HttpServletRequest)context.get("request");
-        String delay = req.getHeader(TransactionHelper.TX_TIMEOUT_HEADER_KEY);
+        String delay = req.getHeader(ServletHelper.TX_TIMEOUT_HEADER_KEY);
         if (delay == null) {
             return;
         }
