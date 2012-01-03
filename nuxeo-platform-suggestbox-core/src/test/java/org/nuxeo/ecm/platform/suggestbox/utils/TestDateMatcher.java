@@ -86,7 +86,7 @@ public class TestDateMatcher {
         assertTrue(dateOnlyMonth.isWithMonth());
         assertFalse(dateOnlyMonth.isWitDay());
         assertNotNull(dateOnlyMonth.getDateSuggestion());
-        assertEquals(2011,
+        assertEquals(Calendar.getInstance().get(Calendar.YEAR),
                 dateOnlyMonth.getDateSuggestion().get(Calendar.YEAR));
         assertEquals(9,
                 dateOnlyMonth.getDateSuggestion().get(Calendar.MONTH));
