@@ -73,6 +73,10 @@
       <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
 
     <!-- Needed by H2 fulltext -->
     <dependency>
