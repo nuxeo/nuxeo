@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.quota.QuotaStatsService">
+
+  <documentation>
+    Service used to compute quota and statistics on documents.
+
+    @author Thomas Roger (troger@nuxeo.com)
+    @since 5.5
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.quota.QuotaStatsServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.quota.QuotaStatsService" />
+  </service>
+
+  <extension-point name="quotaStatsUpdaters">
+    <documentation>
+      Extension point to register QuotaStatsUpdaters that will be used
+      by the service to update the statistics.
+
+      @since 5.5
+    </documentation>
+    <object class="org.nuxeo.ecm.quota.QuotaStatsUpdaterDescriptor" />
+  </extension-point>
+
+</component>
