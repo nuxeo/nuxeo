@@ -25,10 +25,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.quota.QuotaStatsNonFolderishCount;
 
 /**
- * Adapter implementing {@QuotaStatsNonFolderishCount
- *
- * } to have information about children and
- * descendants count.
+ * Adapter implementing {@code QuotaStatsNonFolderishCount} to have information
+ * about children and descendants count.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
