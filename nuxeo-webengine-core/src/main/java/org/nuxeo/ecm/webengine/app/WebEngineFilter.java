@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 import org.nuxeo.ecm.webengine.PathDescriptor;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -200,7 +201,7 @@ public class WebEngineFilter implements Filter {
     public void initTx(Config config, HttpServletRequest req) {
         if (!config.isStatic && config.autoTx
                 && !TransactionHelper.isTransactionActive()) {
-            config.txStarted = TransactionHelper.startTransaction(req);
+            config.txStarted = ServletHelper.startTransaction(req);
         }
     }
 
