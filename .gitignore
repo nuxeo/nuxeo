@@ -1,4 +1,3 @@
-syntax:glob
 .checkstyle
 .classpath
 .metadata
@@ -15,6 +14,8 @@ target
 *.iml
 *.ipr
 *.iws
+bin
+*.pyc
 .DS_Store
 addons
 nuxeo-common/
@@ -27,3 +28,4 @@ nuxeo-runtime/
 nuxeo-services/
 nuxeo-theme/
 nuxeo-webengine/
+nuxeo-gwt/
