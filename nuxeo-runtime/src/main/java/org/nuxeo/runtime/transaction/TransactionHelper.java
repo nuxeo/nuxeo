@@ -14,12 +14,8 @@ package org.nuxeo.runtime.transaction;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
-import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
@@ -54,11 +50,6 @@ public class TransactionHelper {
             "java:comp/env/TransactionManager", // manual binding
             "java:TransactionManager" //
     };
-
-    /**
-     * @since 5.6
-     */
-    public static final String TX_TIMEOUT_HEADER_KEY = "Nuxeo-Transaction-Timeout";
 
     /**
      * Looks up the User Transaction in JNDI.
@@ -182,36 +173,33 @@ public class TransactionHelper {
     }
 
     /**
-     * Set timeout from http header if requested before
-     * starting transaction
+     * Starts a new User Transaction with the specified timeout.
+     *
+     * @param timeout the timeout in seconds, <= 0 for the default
+     * @return {@code true} if the transaction was successfully started,
+     *         {@code false} otherwise
      *
      * @since 5.6
      */
-    public static boolean startTransaction(HttpServletRequest request) {
-        String header = request.getHeader(TX_TIMEOUT_HEADER_KEY);
-        if (header != null) {
-            int to = Integer.parseInt(header);
-            try {
-                lookupTransactionManager().setTransactionTimeout(to);
-            } catch (NamingException e) {
-                return false;
-            } catch (Exception e) {
-                log.error("Unable to set requested tx timeout for " + request.getRequestURI(), e);
-                return false;
-            }
+    public static boolean startTransaction(int timeout) {
+        if (timeout < 0) {
+            timeout = 0;
+        }
+        try {
+            lookupTransactionManager().setTransactionTimeout(timeout);
+        } catch (NamingException e) {
+            // no transaction
+            return false;
+        } catch (Exception e) {
+            log.error("Unable to set transaction timeout: " + timeout, e);
+            return false;
         }
         return startTransaction();
     }
+
     /**
      * Commits or rolls back the User Transaction depending on the transaction
      * status.
-     *
-     * @throws SystemException
-     * @throws HeuristicRollbackException
-     * @throws HeuristicMixedException
-     * @throws RollbackException
-     * @throws IllegalStateException
-     * @throws SecurityException
      */
     public static void commitOrRollbackTransaction() {
         UserTransaction ut;
