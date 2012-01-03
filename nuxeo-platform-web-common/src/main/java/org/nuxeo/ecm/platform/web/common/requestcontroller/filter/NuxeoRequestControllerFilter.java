@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -155,7 +156,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         boolean txStarted = false;
         try {
             if (useTx) {
-                txStarted = TransactionHelper.startTransaction(httpRequest);
+                txStarted = ServletHelper.startTransaction(httpRequest);
                 if (txStarted) {
                     response = new BufferingHttpServletResponse(httpResponse);
                 }
