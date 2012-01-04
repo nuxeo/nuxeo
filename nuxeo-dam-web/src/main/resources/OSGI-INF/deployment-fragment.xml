@@ -11,13 +11,6 @@
     </unzip>
   </install>
 
-  <extension target="web#CONTEXT-PARAM-RICHFACES" mode="replace">
-    <context-param>
-     <param-name>org.richfaces.SKIN</param-name>
-     <param-value>blueGrayDam</param-value>
-    </context-param>
-  </extension>
-
   <extension target="web#STD-AUTH-FILTER">
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
