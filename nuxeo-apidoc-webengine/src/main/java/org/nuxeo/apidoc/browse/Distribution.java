@@ -19,6 +19,7 @@ package org.nuxeo.apidoc.browse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -169,6 +171,9 @@ public class Distribution extends ModuleRoot {
         if (!isEditor()) {
             return null;
         }
+        FormData formData = getContext().getForm();
+        String distribLabel = formData.getString("name");
+
         log.info("Start Snapshot...");
         boolean startedTx = false;
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
@@ -179,7 +184,7 @@ public class Distribution extends ModuleRoot {
         }
         try {
             getSnapshotManager().persistRuntimeSnapshot(
-                    getContext().getCoreSession());
+                    getContext().getCoreSession(), distribLabel);
         } catch (Exception e) {
             log.error("Error during storage", e);
             if (tx != null) {
@@ -191,7 +196,7 @@ public class Distribution extends ModuleRoot {
         if (tx != null && startedTx) {
             tx.commit();
         }
-        return getView("index");
+        return Response.temporaryRedirect(new URI(getContext().getBaseURL())).build();
     }
 
     @POST
@@ -245,7 +250,7 @@ public class Distribution extends ModuleRoot {
         if (tx != null && startedTx) {
             tx.commit();
         }
-        return getView("index");
+        return Response.temporaryRedirect(new URI(getContext().getBaseURL())).build();
     }
 
     public String getDocumentationInfo() throws Exception {

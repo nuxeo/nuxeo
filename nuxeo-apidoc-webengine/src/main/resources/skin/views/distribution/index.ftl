@@ -27,6 +27,7 @@ Here are the currently available distributions:
 
 <table class="tablesorter distributions">
 <tr>
+<th> Name</th>
 <th> Version</th>
 <th> Creation date</th>
 <th></th>
@@ -42,10 +43,21 @@ Here are the currently available distributions:
 
 <td>
 <#if Root.isEditor()>
-  <div id="stdSave">
+  <div id="saveBtn">
   <form method="POST" action="${Root.path}/save">
-  <input type="submit" value="Save">
-  <input type="button" value="Save Partial Snapshot" onclick="$('#extendedSave').css('display','block');$('#stdSave').css('display','none')">
+  <input type="button" value="Save" onclick="$('#stdSave').css('display','block');$('#saveBtn').css('display','none')">
+  <input type="button" value="Save Partial Snapshot" onclick="$('#extendedSave').css('display','block');$('#saveBtn').css('display','none')">
+  </form>
+  </div>
+  <div style="display:none" id="stdSave">
+  <form method="POST" action="${Root.path}/save">
+    <table>
+    <tr>
+      <td>name : </td>
+      <td><input type="text" name="name"/> </td>
+    </tr>
+    </table>
+    <input type="submit" value="Save"/>
   </form>
   </div>
   <div style="display:none" id="extendedSave">

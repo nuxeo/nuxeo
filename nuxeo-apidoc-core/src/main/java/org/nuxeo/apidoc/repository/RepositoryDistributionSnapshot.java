@@ -70,8 +70,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
             doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
         } else {
             doc.setPropertyValue("dc:title", label);
-            doc.setPropertyValue(PROP_KEY, label);
-            doc.setPropertyValue(PROP_NAME, label + "-" + distrib.getVersion());
+            doc.setPropertyValue(PROP_KEY, label + "-" + distrib.getVersion());
+            doc.setPropertyValue(PROP_NAME, label);
             doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
         }
 

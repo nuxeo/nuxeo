@@ -116,9 +116,6 @@ public class SnapshotPersister {
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot,
             CoreSession session, String label, SnapshotFilter filter) throws ClientException {
-        if (label == null || "".equals(label.trim())) {
-            label = snapshot.getName() + "-" + snapshot.getVersion();
-        }
 
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(
                 snapshot, session, label);
