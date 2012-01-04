@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -37,8 +37,8 @@ public class DocumentDiffImpl implements DocumentDiff {
      * Keys are schema names. Values represent the differences between the
      * fields of the schema.
      */
-    protected Map<String, SchemaDiff> docDiff;
-
+    private Map<String, SchemaDiff> docDiff;
+    
     /**
      * Instantiates a new document diff impl.
      */

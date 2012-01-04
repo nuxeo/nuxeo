@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -37,7 +37,7 @@ public class SchemaDiffImpl implements SchemaDiff {
      * Keys are field names. Values represent the difference between the left
      * doc and the right doc for the given field.
      */
-    protected Map<String, PropertyDiff> schemaDiff;
+    private Map<String, PropertyDiff> schemaDiff;
 
     /**
      * Instantiates a new schema diff impl.

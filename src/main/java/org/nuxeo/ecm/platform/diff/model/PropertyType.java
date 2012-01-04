@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,11 +17,11 @@
 package org.nuxeo.ecm.platform.diff.model;
 
 /**
- * Enumerates property diff types: simple, list, complex.
+ * Enumerates property types: simple, list, complex.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public enum PropertyDiffType {
+public enum PropertyType {
 
     simple, list, complex;
 }

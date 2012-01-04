@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
+import org.nuxeo.ecm.platform.diff.model.PropertyType;
 
 /**
  * Implementation of PropertyDiff for a complex property.
@@ -39,10 +40,27 @@ public class ComplexPropertyDiff implements PropertyDiff {
         diffMap = new HashMap<String, PropertyDiff>();
     }
 
+    public PropertyType getPropertyType() {
+        return PropertyType.complex;
+    }
+
+    /**
+     * Gets the diff.
+     * 
+     * @param item the item
+     * @return the diff
+     */
     public PropertyDiff getDiff(String item) {
         return diffMap.get(item);
     }
 
+    /**
+     * Put diff.
+     * 
+     * @param item the item
+     * @param diff the diff
+     * @return the property diff
+     */
     public PropertyDiff putDiff(String item, PropertyDiff diff) {
         return diffMap.put(item, diff);
     }
@@ -61,13 +79,10 @@ public class ComplexPropertyDiff implements PropertyDiff {
         if (this == other) {
             return true;
         }
-
         if (other == null || !(other instanceof ComplexPropertyDiff)) {
             return false;
         }
-
         Map<String, PropertyDiff> otherDiffMap = ((ComplexPropertyDiff) other).getDiffMap();
-
         return (diffMap == null && otherDiffMap == null)
                 || (diffMap != null && otherDiffMap != null && diffMap.equals(otherDiffMap));
 

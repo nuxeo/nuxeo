@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.diff.model.impl;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
+import org.nuxeo.ecm.platform.diff.model.PropertyType;
 
 /**
  * Implementation of PropertyDiff for a simple property.
@@ -46,6 +47,10 @@ public class SimplePropertyDiff implements PropertyDiff {
     public SimplePropertyDiff(String leftValue, String rightValue) {
         this.leftValue = leftValue;
         this.rightValue = rightValue;
+    }
+
+    public PropertyType getPropertyType() {
+        return PropertyType.simple;
     }
 
     public String getLeftValue() {

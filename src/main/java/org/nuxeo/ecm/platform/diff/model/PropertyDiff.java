@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -26,5 +26,12 @@ import java.io.Serializable;
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public interface PropertyDiff extends Serializable {
+
+    /**
+     * Gets the property type.
+     * 
+     * @return the property type
+     */
+    PropertyType getPropertyType();
 
 }

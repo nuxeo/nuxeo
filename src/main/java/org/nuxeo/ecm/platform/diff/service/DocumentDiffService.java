@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -43,6 +43,17 @@ public interface DocumentDiffService extends Serializable {
      */
     DocumentDiff diff(CoreSession session, DocumentModel leftDoc,
             DocumentModel rightDoc) throws ClientException;
+
+    /**
+     * Makes a diff between leftXML and rightXML. Returns a DocumentDiff object
+     * that wraps the differences, schema by schema and field by field.
+     * 
+     * @param leftXML the left XML
+     * @param rightXML the right XML
+     * @return the document diff
+     * @throws ClientException the client exception
+     */
+    DocumentDiff diff(String leftXML, String rightXML) throws ClientException;
 
     /**
      * Gets the document XML exporter service.
