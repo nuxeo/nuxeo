@@ -64,7 +64,7 @@ public class TestDocumentDiff extends DiffTestCase {
     protected DocumentDiffService docDiffService;
 
     /**
-     * Test doc diff.
+     * Tests doc diff.
      * 
      * @throws ClientException the client exception
      */
@@ -212,6 +212,158 @@ public class TestDocumentDiff extends DiffTestCase {
 
         checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
                 expectedListFieldDiff);
+
+    }
+
+    /**
+     * Tests inverse doc diff.
+     * 
+     * @throws ClientException the client exception
+     */
+    @Test
+    public void testInverseDocDiff() throws ClientException {
+
+        // Get left and right docs
+        DocumentModel leftDoc = session.getDocument(new PathRef(
+                DocumentDiffRepositoryInit.RIGHT_DOC_PATH));
+        DocumentModel rightDoc = session.getDocument(new PathRef(
+                DocumentDiffRepositoryInit.LEFT_DOC_PATH));
+
+        // Create XML export temporary files
+        createXMLExportTempFile(leftDoc);
+        createXMLExportTempFile(rightDoc);
+
+        // Do doc diff
+        DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
+        assertEquals("Wrong schema count.", 4, docDiff.getSchemaCount());
+
+        // ---------------------------
+        // Check system elements
+        // ---------------------------
+        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 2);
+
+        // type
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
+                "OtherSampleType", "SampleType");
+        // path
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"), "rightDoc",
+                "leftDoc");
+
+        // ---------------------------
+        // Check dublincore schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "dublincore", 6);
+
+        // title => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"),
+                "My second sample", "My first sample");
+        // description => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), null,
+                "description");
+        // created => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
+                "2011-12-30T12:05:02Z", "2011-12-29T11:24:25Z");
+        // creator => same
+        checkIdenticalField(schemaDiff.getFieldDiff("creator"));
+        // modified => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
+                "2011-12-30T12:05:02Z", "2011-12-29T11:24:25Z");
+        // lastContributor => same once trimmed
+        checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
+        // contributors => different (update) / same / different (add)
+        ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff();
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff(
+                "anotherAdministrator", "Administrator"));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff("jack", null));
+        checkListFieldDiff(schemaDiff.getFieldDiff("contributors"),
+                expectedListFieldDiff);
+        // subjects => same / different (remove)
+        expectedListFieldDiff = new ListPropertyDiff();
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null,
+                "Architecture"));
+        checkListFieldDiff(schemaDiff.getFieldDiff("subjects"),
+                expectedListFieldDiff);
+
+        // ---------------------------
+        // Check simpletypes schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "simpletypes", 4);
+
+        // string => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("string"),
+                "a different string property", "a string property");
+        // textarea => same
+        checkIdenticalField(schemaDiff.getFieldDiff("textarea"));
+        // boolean => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("boolean"), null,
+                String.valueOf(Boolean.TRUE));
+        // integer => same
+        checkIdenticalField(schemaDiff.getFieldDiff("integer"));
+        // date => same
+        checkIdenticalField(schemaDiff.getFieldDiff("date"));
+        // htmlText => different
+        checkSimpleFieldDiff(
+                schemaDiff.getFieldDiff("htmlText"),
+                "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
+                "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
+        // multivalued => different (remove) * 4
+        expectedListFieldDiff = new ListPropertyDiff();
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "monday"));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "tuesday"));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "wednesday"));
+        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "thursday"));
+        checkListFieldDiff(schemaDiff.getFieldDiff("multivalued"),
+                expectedListFieldDiff);
+
+        // ---------------------------
+        // Check complextypes schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "complextypes", 2);
+
+        // complex => same / different (update) / different (remove) / different
+        // (add)
+        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
+        expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
+                String.valueOf(Boolean.FALSE), String.valueOf(Boolean.TRUE)));
+        expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
+                null, "10"));
+        expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(
+                "2011-12-29T23:00:00Z", null));
+        checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"),
+                expectedComplexFieldDiff);
+
+        // complexList =>
+        // item1: same / different (update) / different (remove) / different
+        // (add)
+        // item2: add
+        expectedListFieldDiff = new ListPropertyDiff();
+
+        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item1ExpectedComplexFieldDiff.putDiff(
+                "booleanItem",
+                new SimplePropertyDiff(String.valueOf(Boolean.FALSE),
+                        String.valueOf(Boolean.TRUE)));
+        item1ExpectedComplexFieldDiff.putDiff("integerItem",
+                new SimplePropertyDiff(null, "12"));
+        item1ExpectedComplexFieldDiff.putDiff("dateItem",
+                new SimplePropertyDiff("2011-12-30T23:00:00Z", null));
+
+        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item2ExpectedComplexFieldDiff.putDiff(
+                "stringItem",
+                new SimplePropertyDiff("second element of a complex list", null));
+        item2ExpectedComplexFieldDiff.putDiff("booleanItem",
+                new SimplePropertyDiff(String.valueOf(Boolean.FALSE), null));
+        item2ExpectedComplexFieldDiff.putDiff("integerItem",
+                new SimplePropertyDiff("20", null));
+        item2ExpectedComplexFieldDiff.putDiff("dateItem",
+                new SimplePropertyDiff("", null));
+
+        expectedListFieldDiff.addDiff(item1ExpectedComplexFieldDiff);
+        expectedListFieldDiff.addDiff(item2ExpectedComplexFieldDiff);
+
+        // checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
+        // expectedListFieldDiff);
 
     }
 

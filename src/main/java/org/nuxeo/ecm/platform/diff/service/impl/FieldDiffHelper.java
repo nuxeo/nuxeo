@@ -97,8 +97,26 @@ public final class FieldDiffHelper {
      * </pre>
      * 
      * </li>
-     * </ul>
+     * <li>
+     * isChildNodeNotFoundOnTestSide: boolean to check if we are in a
+     * "CHILD_NODE_NOT_FOUND on the test side" case, which, I don't really
+     * understand why, is marked as a TEXT_VALUE difference...
      * 
+     * For example in this case we will have a TEXT_VALUE difference
+     * {green/red}.
+     * 
+     * <pre>
+     * [----- control ------]   [----- test ------]
+     * 
+     * <field>                  <field>
+     * <item>red</item>         <item>red</item>
+     * <item>green</item>     </field>
+     * </field>
+     * 
+     * </pre>
+     * 
+     * </li>
+     * </ul>
      * 
      * @param docDiff the doc diff
      * @param controlNodeDetail the control node detail
@@ -141,8 +159,10 @@ public final class FieldDiffHelper {
                     && !SYSTEM_ELEMENT.equals(currentNodeName)) {
 
                 // Get property type
-                PropertyType propertyType = getPropertyType(currentNode);
-                PropertyType parentPropertyType = getPropertyType(parentNode);
+                PropertyType propertyType = getPropertyType(currentNode,
+                        otherCurrentNode);
+                PropertyType parentPropertyType = getPropertyType(parentNode,
+                        otherParentNode);
 
                 // Fill in property hierarchy
                 if (PropertyType.list.equals(parentPropertyType)) {
@@ -246,7 +266,7 @@ public final class FieldDiffHelper {
      * @param node the node
      * @return the property diff type
      */
-    public static PropertyType getPropertyType(Node node) {
+    public static PropertyType getPropertyType(Node node, Node testNode) {
 
         // Default: simple type
         PropertyType propertyType = PropertyType.simple;
@@ -260,14 +280,25 @@ public final class FieldDiffHelper {
         NodeList childNodes = node.getChildNodes();
         int childNodesLength = childNodes.getLength();
 
+        if (testNode != null) {
+            NodeList testChildNodes = testNode.getChildNodes();
+            int testChildNodesLength = testChildNodes.getLength();
+            if (childNodesLength == 0 && testChildNodesLength > 0) {
+                childNodes = testChildNodes;
+                childNodesLength = testChildNodesLength;
+            }
+        }
+
         // Only one child node
         if (childNodesLength == 1) {
             Node childNode = childNodes.item(0);
-            // If the only child node is an element node, but not a list element
-            // => list type with one item (could also be a complex type with one
+            // If the only child node is an element node, but not a list
+            // element
+            // => list type with one item (could also be a complex type with
+            // one
             // item but we have to chose and this makes less sense)
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-                if (!(PropertyType.list.equals(getPropertyType(childNode)))) {
+                if (!(PropertyType.list.equals(getPropertyType(childNode, null)))) {
                     propertyType = PropertyType.list;
                 }
             }
@@ -359,22 +390,12 @@ public final class FieldDiffHelper {
                 int propertyIndex = Integer.parseInt(propertyValue);
                 int listPropertyDiffSize = ((ListPropertyDiff) propertyDiff).size();
                 // Check that index is not greater than list size
-                // if (propertyIndex > listPropertyDiffSize) {
-                // throw new ClientException(
-                // "Found propertyIndex > listPropertyDiffSize but should never happen.");
-                // }
-                // Get the real index in the property diff list
-                // while (propertyIndex > listPropertyDiffSize
-                // && propertyIndex > 0) {
-                // propertyIndex--;
-                // }
-
-                // Get list diff if index within list size, otherwise initialize
-                // it
                 if (propertyIndex > listPropertyDiffSize) {
                     throw new ClientException(
                             "First property hierarchy node should not have an index > than the property diff list size.");
                 }
+                // Get list diff if index within list size, otherwise initialize
+                // it
                 if (propertyIndex < listPropertyDiffSize) {
                     childPropertyDiff = ((ListPropertyDiff) propertyDiff).getDiff(propertyIndex);
                 } else {
@@ -534,78 +555,6 @@ public final class FieldDiffHelper {
     }
 
     /**
-     * Check if we are in a "CHILD_NODE_NOT_FOUND on the test side" case, which,
-     * I don't really understand why, is marked as a TEXT_VALUE difference...
-     * 
-     * For example in this case we will have a TEXT_VALUE difference
-     * {green/red}.
-     * 
-     * <pre>
-     * [----- control ------]   [----- test ------]
-     * 
-     * <field>                  <field>
-     * <item>red</item>         <item>red</item>
-     * <item>green</item>     </field>
-     * </field>
-     * 
-     * </pre>
-     * 
-     * @param controlNodeDetail the control node detail
-     * @param testNodeDetail the test node detail
-     * @param propertyHierarchy the property hierarchy
-     * @return the simple property diff
-     */
-    private static SimplePropertyDiff checkChildNodeNotFoundOnTestSide(
-            NodeDetail controlNodeDetail, NodeDetail testNodeDetail,
-            List<PropertyHierarchyNode> propertyHierarchy) {
-
-        // Default: use control node and test node values
-        String leftValue = controlNodeDetail.getValue();
-        String rightValue = testNodeDetail.getValue();
-
-        Node controlNode = controlNodeDetail.getNode();
-        Node testNode = testNodeDetail.getNode();
-
-        int hierarchyNodeIndex = propertyHierarchy.size() - 1;
-        while (hierarchyNodeIndex >= 0 && controlNode != null
-                && testNode != null) {
-
-            Node controlParentNode = controlNode.getParentNode();
-            Node testParentNode = testNode.getParentNode();
-            if (controlParentNode != null && testParentNode != null) {
-
-                PropertyType controlParentNodeType = getPropertyType(controlParentNode);
-                PropertyHierarchyNode hierarchyNode = propertyHierarchy.get(hierarchyNodeIndex);
-
-                if (controlParentNodeType.equals(hierarchyNode.getNodeType())) {
-                    hierarchyNodeIndex--;
-                    if (PropertyType.list.equals(hierarchyNode.getNodeType())) {
-                        int hierarchyNodePos = Integer.parseInt(hierarchyNode.getNodeValue());
-                        int testNodePos = getNodePosition(testNode);
-                        if (testNodePos < hierarchyNodePos) {
-                            rightValue = null;
-                            break;
-                        }
-                        // Should never happen as then it would be marked as
-                        // a CHILD_NODE_NOT_FOUND difference instead of a
-                        // TEXT_VALUE one.
-                        else {
-                            int controlNodePos = getNodePosition(controlNode);
-                            if (controlNodePos < hierarchyNodePos) {
-                                leftValue = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            controlNode = controlParentNode;
-            testNode = testParentNode;
-        }
-        return new SimplePropertyDiff(leftValue, rightValue);
-    }
-
-    /**
      * Computes a CHILD_NODE_NOT_FOUND diff.
      * 
      * @param fieldDiff the field diff
@@ -642,10 +591,6 @@ public final class FieldDiffHelper {
                 ((ListPropertyDiff) fieldDiff).addDiff(childNodeDiff);
                 break;
             case complex:
-                // childNodeDiff = getChildNodePropertyDiff(childNode,
-                // isTestNodeNotFound);
-                // ((ComplexPropertyDiff) fieldDiff).putDiff(
-                // childNode.getNodeName(), childNodeDiff);
                 throw new ClientException(
                         "A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
 
@@ -687,7 +632,8 @@ public final class FieldDiffHelper {
                 }
                 break;
             case complex:
-                if (PropertyType.complex.equals(getPropertyType(nodeWithChilds))) {
+                if (PropertyType.complex.equals(getPropertyType(nodeWithChilds,
+                        null))) {
                     throw new ClientException(
                             "A HAS_CHILD_NODES difference should never be found on a complex type.");
                 }
@@ -719,13 +665,14 @@ public final class FieldDiffHelper {
         boolean isEmptyListItem = false;
         Node parentNode = node.getParentNode();
         if (parentNode != null) {
-            PropertyType parentNodeType = getPropertyType(parentNode);
+            PropertyType parentNodeType = getPropertyType(parentNode, null);
             if (PropertyType.list.equals(parentNodeType)) {
                 isEmptyListItem = true;
             } else if (PropertyType.simple.equals(parentNodeType)) {
                 parentNode = parentNode.getParentNode();
                 if (parentNode != null
-                        && PropertyType.list.equals(getPropertyType(parentNode))) {
+                        && PropertyType.list.equals(getPropertyType(parentNode,
+                                null))) {
                     isEmptyListItem = true;
                 }
             }
@@ -736,14 +683,15 @@ public final class FieldDiffHelper {
                     "Found an empty list item (<item/>), this should never happen.");
         }
 
-        PropertyType nodePropertyType = getPropertyType(node);
+        PropertyType nodePropertyType = getPropertyType(node, null);
 
         // Manage the specific case of a list child node
         if (firstChildNode != null) {
-            PropertyType firstChildNodePropertyType = getPropertyType(firstChildNode);
+            PropertyType firstChildNodePropertyType = getPropertyType(
+                    firstChildNode, null);
 
             if (PropertyType.list.equals(firstChildNodePropertyType)) {
-                nodePropertyType = getPropertyType(firstChildNode);
+                nodePropertyType = getPropertyType(firstChildNode, null);
                 node = firstChildNode;
             }
         }

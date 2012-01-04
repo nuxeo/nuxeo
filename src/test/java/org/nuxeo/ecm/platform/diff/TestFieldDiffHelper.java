@@ -51,43 +51,69 @@ public class TestFieldDiffHelper extends DiffTestCase {
         // Simple type
         String xml = "<title>joe</title>";
         Node node = getNode(xml, "/title/text()");
-        PropertyType propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        PropertyType propertyDiffType = FieldDiffHelper.getPropertyType(node,
+                null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         // Simple type "schema" with a nested simple type
         xml = "<schema><title>joe</title></schema>";
         node = getNode(xml, "/schema");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
+
+        node = getNode(xml, "/schema/title");
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
+        assertEquals(PropertyType.simple, propertyDiffType);
+
+        // Simple type "schema" with a nested list that has no item
+        xml = "<schema><list/></schema>";
+        String testXml = "<schema><list><item>joe</item></list></schema>";
+        node = getNode(xml, "/schema");
+        Node testNode = getNode(testXml, "/schema");
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, testNode);
+        assertEquals(PropertyType.simple, propertyDiffType);
+
+        node = getNode(xml, "/schema/list");
+        testNode = getNode(testXml, "/schema/list");
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, testNode);
+        assertEquals(PropertyType.list, propertyDiffType);
 
         // Simple type "schema" with a nested list that has only one item
         xml = "<schema><list><item>joe</item></list></schema>";
         node = getNode(xml, "/schema");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         // Simple type "schema" with a nested list that has two items
         xml = "<schema><list><item>joe</item><item>jack</item></list></schema>";
         node = getNode(xml, "/schema");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         // Simple type "schema" with a nested complex type
         xml = "<schema><complex><stringItem>joe</stringItem><booleanItem>true</booleanItem></complex></schema>";
         node = getNode(xml, "/schema");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
+
+        // List type with no item
+        xml = "<contributors/>";
+        testXml = "<contributors><item>joe</item></contributors>";
+        node = getNode(xml, "/contributors");
+        testNode = getNode(testXml, "/contributors");
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, testNode);
+        assertEquals(PropertyType.list, propertyDiffType);
 
         // List type with only one item
         xml = "<contributors><item>joe</item></contributors>";
         node = getNode(xml, "/contributors");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.list, propertyDiffType);
 
         // List type with two items
         xml = "<contributors><item>joe</item><item>jack</item></contributors>";
         node = getNode(xml, "/contributors");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.list, propertyDiffType);
 
         // List type with a nested complex item
@@ -95,15 +121,15 @@ public class TestFieldDiffHelper extends DiffTestCase {
                 + "<complexItem><firstname>Antoine</firstname><lastname>Taillefer</lastname></complexItem>"
                 + "</contributors>";
         node = getNode(xml, "/contributors");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.list, propertyDiffType);
 
         node = getNode(xml, "/contributors/complexItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.complex, propertyDiffType);
 
         node = getNode(xml, "/contributors/complexItem/firstname");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         // List type with a nested list item
@@ -111,29 +137,29 @@ public class TestFieldDiffHelper extends DiffTestCase {
                 + "<item><listItem><subItem>subItem1</subItem><subItem>subItem2</subItem></listItem></item>"
                 + "</contributors>";
         node = getNode(xml, "/contributors");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.list, propertyDiffType);
 
         node = getNode(xml, "/contributors/item");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         node = getNode(xml, "/contributors/item/listItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.list, propertyDiffType);
 
         node = getNode(xml, "/contributors/item/listItem/subItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         // Complex type
         xml = "<complex><stringItem>joe</stringItem><booleanItem>true</booleanItem></complex>";
         node = getNode(xml, "/complex");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.complex, propertyDiffType);
 
         node = getNode(xml, "/complex/stringItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         // Complex type with a nested list item
@@ -141,19 +167,19 @@ public class TestFieldDiffHelper extends DiffTestCase {
                 + "<listItem><item>Hey</item><item>Joe</item></listItem>"
                 + "</complex>";
         node = getNode(xml, "/complex");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.complex, propertyDiffType);
 
         node = getNode(xml, "/complex/stringItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         node = getNode(xml, "/complex/listItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.list, propertyDiffType);
 
         node = getNode(xml, "/complex/listItem/item");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         // Complex type with a nested complex item
@@ -161,19 +187,19 @@ public class TestFieldDiffHelper extends DiffTestCase {
                 + "<complexItem><booleanItem>Hey</booleanItem><integerItem>10</integerItem></complexItem>"
                 + "</complex>";
         node = getNode(xml, "/complex");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.complex, propertyDiffType);
 
         node = getNode(xml, "/complex/stringItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
         node = getNode(xml, "/complex/complexItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.complex, propertyDiffType);
 
         node = getNode(xml, "/complex/complexItem/booleanItem");
-        propertyDiffType = FieldDiffHelper.getPropertyType(node);
+        propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
         assertEquals(PropertyType.simple, propertyDiffType);
 
     }
