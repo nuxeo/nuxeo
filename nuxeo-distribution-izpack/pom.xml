@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -53,15 +52,15 @@
             </goals>
             <configuration>
               <tasks>
-                <property file="build.properties" />
-                <property name="nuxeo.zip" value="nuxeo-cap.zip" />
+                <property file="build.properties"></property>
+                <property name="nuxeo.zip" value="nuxeo-cap.zip"></property>
                 <copy todir="${staging.dir}">
-                  <fileset dir="${basedir}/src/izpack" />
+                  <fileset dir="${basedir}/src/izpack"></fileset>
                 </copy>
-                <unzip src="${nuxeo.zip}" dest="${staging.dir}/tmp" />
+                <unzip dest="${staging.dir}/tmp" src="${nuxeo.zip}"></unzip>
                 <exec executable="./rename-nuxeo-cap.sh" failonerror="true">
-                  <arg value="${staging.dir}/tmp" />
-                  <arg value="${staging.dir}/nuxeo-cap" />
+                  <arg value="${staging.dir}/tmp"></arg>
+                  <arg value="${staging.dir}/nuxeo-cap"></arg>
                 </exec>
               </tasks>
             </configuration>
