@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.diff.model.PropertyType;
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public class ListPropertyDiff implements PropertyDiff {
+public class ListPropertyDiff extends PropertyDiff {
 
     private static final long serialVersionUID = -1100714461537900354L;
 
@@ -46,7 +46,7 @@ public class ListPropertyDiff implements PropertyDiff {
 
     /**
      * Checks if is a simple list property.
-     *
+     * 
      * @return true, if is simple list property
      */
     public boolean isSimpleListProperty() {
@@ -56,12 +56,30 @@ public class ListPropertyDiff implements PropertyDiff {
 
     /**
      * Checks if is a complex list property.
-     *
+     * 
      * @return true, if is complex list property
      */
     public boolean isComplexListProperty() {
         return !diffList.isEmpty()
                 && PropertyType.complex.equals(diffList.get(0).getPropertyType());
+    }
+
+    public boolean isLeftSideEmpty() {
+        for (PropertyDiff listItemDiff : diffList) {
+            if (!listItemDiff.isLeftSideEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isRightSideEmpty() {
+        for (PropertyDiff listItemDiff : diffList) {
+            if (!listItemDiff.isRightSideEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

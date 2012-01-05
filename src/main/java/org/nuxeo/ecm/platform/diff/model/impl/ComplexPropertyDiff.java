@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.diff.model.PropertyType;
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public class ComplexPropertyDiff implements PropertyDiff {
+public class ComplexPropertyDiff extends PropertyDiff {
 
     private static final long serialVersionUID = -1100714461537900354L;
 
@@ -92,6 +92,24 @@ public class ComplexPropertyDiff implements PropertyDiff {
      */
     public List<PropertyDiff> getComplexItemValues() {
         return new ArrayList<PropertyDiff>(diffMap.values());
+    }
+
+    public boolean isLeftSideEmpty() {
+        for (PropertyDiff complexItemDiff : diffMap.values()) {
+            if (!complexItemDiff.isLeftSideEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isRightSideEmpty() {
+        for (PropertyDiff complexItemDiff : diffMap.values()) {
+            if (!complexItemDiff.isRightSideEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Map<String, PropertyDiff> getDiffMap() {

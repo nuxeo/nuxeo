@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.diff.model.PropertyType;
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public class SimplePropertyDiff implements PropertyDiff {
+public class SimplePropertyDiff extends PropertyDiff {
 
     private static final long serialVersionUID = -1100714461537900354L;
 
@@ -51,6 +51,14 @@ public class SimplePropertyDiff implements PropertyDiff {
 
     public PropertyType getPropertyType() {
         return PropertyType.simple;
+    }
+
+    public boolean isLeftSideEmpty() {
+        return leftValue == null;
+    }
+
+    public boolean isRightSideEmpty() {
+        return rightValue == null;
     }
 
     public String getLeftValue() {

@@ -1,36 +1,45 @@
 <f:subview xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
   
-  <table class="complexDiffTable">
-    <thead>
-      <tr>
-        <ui:repeat value="#{complexPropertyDiff.complexItemNames}" var="complexItemName">
-          <th>
-            <h:outputText value="#{complexItemName}"/>
-          </th>
-        </ui:repeat>
-      </tr>
-    </thead>
-    <tboby>
-      <tr>
-        <ui:repeat value="#{complexPropertyDiff.complexItemValues}" var="complexItemValue">
-          <td>
-            <f:subview rendered="#{complexItemValue.propertyType.name() == 'simple'}">
-              <ui:include src="/incl/diff/simple_property_diff_#{side}_value.xhtml">
-                <ui:param name="simplePropertyDiff" value="#{complexItemValue}"/>
-              </ui:include>
-            </f:subview>
-            <f:subview rendered="#{complexItemValue.propertyType.name() == 'complex'}">
-              /!\ A complex type nested in a complex type is not taken into account yet.
-            </f:subview>
-            <f:subview rendered="#{complexItemValue.propertyType.name() == 'list'}">
-              /!\ A list type nested in a complex type is not taken into account yet.
-            </f:subview>
-          </td>
-        </ui:repeat>
-      </tr>
-    </tboby>
-  </table>
-
+  <!-- If want to not display the table in case of an empty diff on the 'side' side -->
+  <ui:remove>
+  <f:subview rendered="#{complexPropertyDiff.isEmpty(side == 'left')}">
+    <span class="emptyTextDiff leftDiff"></span>
+  </f:subview>
+  </ui:remove>
+  <f:subview rendered="#{true}">
+    <table class="complexDiffTable">
+      <thead>
+        <tr>
+          <ui:repeat value="#{complexPropertyDiff.complexItemNames}" var="complexItemName">
+            <th>
+              <h:outputText value="#{complexItemName}"/>
+            </th>
+          </ui:repeat>
+        </tr>
+      </thead>
+      <tboby>
+        <tr>
+          <ui:repeat value="#{complexPropertyDiff.complexItemValues}" var="complexItemValue">
+            <td>
+              <f:subview rendered="#{complexItemValue.propertyType.name() == 'simple'}">
+                <ui:include src="/incl/diff/simple_property_diff_#{side}_value.xhtml">
+                  <ui:param name="simplePropertyDiff" value="#{complexItemValue}"/>
+                </ui:include>
+              </f:subview>
+              <f:subview rendered="#{complexItemValue.propertyType.name() == 'complex'}">
+                /!\ A complex type nested in a complex type is not taken into account yet.
+              </f:subview>
+              <f:subview rendered="#{complexItemValue.propertyType.name() == 'list'}">
+                /!\ A list type nested in a complex type is not taken into account yet.
+              </f:subview>
+            </td>
+          </ui:repeat>
+        </tr>
+      </tboby>
+    </table>
+  </f:subview>
+  
 </f:subview>

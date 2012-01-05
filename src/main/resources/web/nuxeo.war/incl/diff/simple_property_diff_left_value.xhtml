@@ -1,8 +1,13 @@
 <f:subview xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
-  
-  <span class="#{(simplePropertyDiff.leftValue == null or empty simplePropertyDiff.leftValue) ? 'emptyTextDiff' : 'textDiff'} leftDiff">
-    <h:outputText value="#{simplePropertyDiff.leftValue}"/>
-  </span>
-  
+
+  <f:subview rendered="#{simplePropertyDiff.leftValue == null or empty simplePropertyDiff.leftValue}">
+    <span class="emptyTextDiff leftDiff"></span>
+  </f:subview>
+  <f:subview rendered="#{simplePropertyDiff.leftValue != null and !(empty simplePropertyDiff.leftValue)}">
+    <span class="textDiff leftDiff">
+      <h:outputText value="#{simplePropertyDiff.leftValue}"/>
+    </span>
+  </f:subview>
+
 </f:subview>

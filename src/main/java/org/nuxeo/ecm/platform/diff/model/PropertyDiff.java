@@ -24,13 +24,39 @@ import java.io.Serializable;
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public interface PropertyDiff extends Serializable {
+public abstract class PropertyDiff implements Serializable {
+
+    private static final long serialVersionUID = -8458912212588012911L;
 
     /**
      * Gets the property type.
      * 
      * @return the property type
      */
-    PropertyType getPropertyType();
+    public abstract PropertyType getPropertyType();
+
+    /**
+     * Checks if is left side empty.
+     * 
+     * @return true, if is left side empty
+     */
+    public abstract boolean isLeftSideEmpty();
+
+    /**
+     * Checks if is right side empty.
+     * 
+     * @return true, if is right side empty
+     */
+    public abstract boolean isRightSideEmpty();
+
+    /**
+     * Checks if is empty.
+     * 
+     * @param leftSide the left side
+     * @return true, if is empty
+     */
+    public boolean isEmpty(boolean leftSide) {
+        return leftSide ? isLeftSideEmpty() : isRightSideEmpty();
+    }
 
 }
