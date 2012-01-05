@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="nuxeo-platform-diff" default="web-tomcat" basedir=".">
+
+  <property file="build.properties" />
+
+  <target name="web-tomcat" description="Deploy Web components to the live Tomcat server">
+    <copy todir="${tomcat.nuxeo.war.dir}">
+      <fileset dir="${basedir}/src/main/resources/web/nuxeo.war" />
+    </copy>
+  </target>
+
+
+</project>
