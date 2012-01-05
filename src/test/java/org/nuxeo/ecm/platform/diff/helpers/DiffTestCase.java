@@ -37,6 +37,20 @@ public class DiffTestCase extends TestCase {
     protected XpathEngine xPathEngine = XMLUnit.newXpathEngine();
 
     /**
+     * Checks a null schema diff: docDiff holds no diff for schema.
+     * 
+     * @param docDiff the doc diff
+     * @param schema the schema
+     * @return the schema diff
+     */
+    protected final void checkNullSchemaDiff(DocumentDiff docDiff, String schema) {
+
+        SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
+        assertNull(String.format("Schema diff should be null for schema %s",
+                schema), schemaDiff);
+    }
+
+    /**
      * Checks a schema diff.
      * 
      * @param docDiff the doc diff

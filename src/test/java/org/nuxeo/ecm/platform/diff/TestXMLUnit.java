@@ -91,10 +91,15 @@ public class TestXMLUnit extends XMLTestCase {
      * @throws Exception the exception
      */
     public void testCompareToSkeletonXML() throws Exception {
+
         String myControlXML = "<location><street-address>22 any street</street-address><postcode>XY00 99Z</postcode></location>";
         String myTestXML = "<location><street-address>20 east cheap</street-address><postcode>EC3M 1EB</postcode></location>";
-        DifferenceListener myDifferenceListener = new IgnoreTextAndAttributeValuesDifferenceListener();
+
         Diff myDiff = new Diff(myControlXML, myTestXML);
+        assertFalse("test XML matches control skeleton XML", myDiff.similar());
+
+        myDiff = new Diff(myControlXML, myTestXML);
+        DifferenceListener myDifferenceListener = new IgnoreTextAndAttributeValuesDifferenceListener();
         myDiff.overrideDifferenceListener(myDifferenceListener);
         assertTrue("test XML matches control skeleton XML", myDiff.similar());
     }
@@ -212,4 +217,5 @@ public class TestXMLUnit extends XMLTestCase {
         }
 
     }
+
 }

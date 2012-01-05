@@ -21,6 +21,8 @@ import java.util.Arrays;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.DifferenceListener;
+import org.custommonkey.xmlunit.NodeDetail;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -40,6 +42,10 @@ import org.w3c.dom.Node;
  */
 public class IgnoreStructuralDifferenceListener implements DifferenceListener {
 
+    private static final String SCHEMA_ELEMENT = "schema";
+
+    private static final String NAME_ATTRIBUTE = "name";
+
     private static final int[] IGNORE = new int[] {
             DifferenceConstants.HAS_DOCTYPE_DECLARATION_ID,
             DifferenceConstants.DOCTYPE_NAME_ID,
@@ -47,6 +53,7 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
             DifferenceConstants.DOCTYPE_SYSTEM_ID_ID,
             DifferenceConstants.NAMESPACE_URI_ID,
             DifferenceConstants.ATTR_VALUE_ID,
+            DifferenceConstants.ATTR_NAME_NOT_FOUND_ID,
             DifferenceConstants.ELEMENT_TAG_NAME_ID,
             DifferenceConstants.CHILD_NODELIST_SEQUENCE_ID,
             DifferenceConstants.CHILD_NODELIST_LENGTH_ID };
@@ -56,7 +63,48 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
     }
 
     public int differenceFound(Difference difference) {
-        return Arrays.binarySearch(IGNORE, difference.getId()) >= 0 ? RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL
+
+        // Check if the difference concerns the same schemas by going up to the
+        // schema node.
+        boolean sameSchemas = true;
+
+        NodeDetail controlNodeDetail = difference.getControlNodeDetail();
+        NodeDetail testNodeDetail = difference.getTestNodeDetail();
+
+        Node controlNode = controlNodeDetail.getNode();
+        Node testNode = testNodeDetail.getNode();
+
+        while (controlNode != null
+                && !SCHEMA_ELEMENT.equals(controlNode.getNodeName())) {
+            controlNode = controlNode.getParentNode();
+        }
+        while (testNode != null
+                && !SCHEMA_ELEMENT.equals(testNode.getNodeName())) {
+            testNode = testNode.getParentNode();
+        }
+        if (controlNode != null && testNode != null) {
+            sameSchemas = false;
+            String controlNodeSchema = null;
+            String testNodeSchema = null;
+            NamedNodeMap controlNodeAttr = controlNode.getAttributes();
+            NamedNodeMap testNodeAttr = testNode.getAttributes();
+            if (controlNodeAttr != null) {
+                Node controlNodeNameAttr = controlNodeAttr.getNamedItem(NAME_ATTRIBUTE);
+                if (controlNodeNameAttr != null) {
+                    controlNodeSchema = controlNodeNameAttr.getNodeValue();
+                }
+            }
+            if (testNodeAttr != null) {
+                Node testNodeNameAttr = testNodeAttr.getNamedItem(NAME_ATTRIBUTE);
+                if (testNodeNameAttr != null) {
+                    testNodeSchema = testNodeNameAttr.getNodeValue();
+                }
+            }
+            sameSchemas = (controlNodeSchema == null && testNodeSchema == null)
+                    || (controlNodeSchema != null && testNodeSchema != null && testNodeSchema.equals(controlNodeSchema));
+        }
+
+        return (Arrays.binarySearch(IGNORE, difference.getId()) >= 0 || !sameSchemas) ? RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL
                 : RETURN_ACCEPT_DIFFERENCE;
     }
 

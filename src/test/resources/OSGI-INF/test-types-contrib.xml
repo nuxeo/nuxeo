@@ -30,15 +30,16 @@
       <schema name="complextypes" />
       <schema name="listoflists" />
     </doctype>
-    
-    <doctype name="OtherSampleType" extends="Document">
-      <schema name="dublincore"/>
+
+    <!--doctype name="OtherSampleType" extends="Document" -->
+    <doctype name="OtherSampleType" extends="File">
+      <!-- schema name="dublincore"/ -->
       <schema name="simpletypes" />
       <schema name="complextypes" />
       <schema name="listoflists" />
-      <schema name="note"/>
+      <!-- schema name="note"/ -->
     </doctype>
-    
+
   </extension>
 
 </component>

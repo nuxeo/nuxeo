@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.diff.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,13 +48,6 @@ public final class FieldDiffHelper {
     private static final Log LOGGER = LogFactory.getLog(FieldDiffHelper.class);
 
     private static final String SYSTEM_ELEMENT = "system";
-
-    private static final String TYPE_ELEMENT = "type";
-
-    private static final String PATH_ELEMENT = "path";
-
-    private static final String[] SYSTEM_ELEMENTS = { TYPE_ELEMENT,
-            PATH_ELEMENT };
 
     private static final String SCHEMA_ELEMENT = "schema";
 
@@ -189,9 +181,8 @@ public final class FieldDiffHelper {
                 // Detect a field element, ie. an element that has a
                 // prefix, for instance: <dc:title>,
                 // or an element nested in <system>.
-                if (currentNode.getPrefix() != null
-                        || Arrays.asList(SYSTEM_ELEMENTS).contains(
-                                currentNode.getNodeName())) {
+                if (SCHEMA_ELEMENT.equals(parentNode.getNodeName())
+                        || SYSTEM_ELEMENT.equals(parentNode.getNodeName())) {
                     field = currentNode.getLocalName();
                     if (PropertyType.simple.equals(propertyType)) {
                         propertyHierarchy.add(new PropertyHierarchyNode(
@@ -632,15 +623,15 @@ public final class FieldDiffHelper {
                 }
                 break;
             case complex:
-                if (PropertyType.complex.equals(getPropertyType(nodeWithChilds,
-                        null))) {
-                    throw new ClientException(
-                            "A HAS_CHILD_NODES difference should never be found on a complex type.");
-                }
                 PropertyDiff childNodeDiff = getChildNodePropertyDiff(
                         nodeWithChilds, hasControlNodeChildNodes);
-                ((ComplexPropertyDiff) fieldDiff).putDiff(
-                        nodeWithChilds.getNodeName(), childNodeDiff);
+                if (PropertyType.complex.equals(getPropertyType(nodeWithChilds,
+                        null))) {
+                    ((ComplexPropertyDiff) fieldDiff).putAll((ComplexPropertyDiff) childNodeDiff);
+                } else {
+                    ((ComplexPropertyDiff) fieldDiff).putDiff(
+                            nodeWithChilds.getNodeName(), childNodeDiff);
+                }
                 break;
             }
         }
