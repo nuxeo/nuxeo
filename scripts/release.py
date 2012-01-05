@@ -215,7 +215,7 @@ class Release(object):
 
         if self.maintenance is None:
             # Delete maintenance branches
-            self.repo.system_recurse("git branch -D" % self.tag)
+            self.repo.system_recurse("git branch -D %s" % self.tag)
 
         # Build, test and package
         self.repo.system_recurse("git checkout release-%s" % self.tag)
