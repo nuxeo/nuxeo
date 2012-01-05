@@ -341,6 +341,7 @@ public class TestXMLDiff extends DiffTestCase {
         ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff();
         expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff("joe",
                 "jack"));
+        expectedFieldDiff.putDiff("booleanItem", null);
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
 
         // Complex type with a nested list item with missing node on the right
@@ -766,6 +767,7 @@ public class TestXMLDiff extends DiffTestCase {
         expectedFieldDiff = new ComplexPropertyDiff();
         expectedFieldDiff.putDiff("booleanItem", new SimplePropertyDiff("true",
                 null));
+        expectedFieldDiff.putDiff("stringItem", null);
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
 
         // Complex type with a nested list item

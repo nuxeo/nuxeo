@@ -171,6 +171,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // complex => same / different (update) / different (remove) / different
         // (add)
         ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
+        expectedComplexFieldDiff.putDiff("stringItem", null);
         expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
                 String.valueOf(Boolean.TRUE), String.valueOf(Boolean.FALSE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -187,6 +188,8 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff();
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item1ExpectedComplexFieldDiff.putDiff(
+                "stringItem",null);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(String.valueOf(Boolean.TRUE),
@@ -323,6 +326,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // complex => same / different (update) / different (remove) / different
         // (add)
         ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
+        expectedComplexFieldDiff.putDiff("stringItem", null);
         expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
                 String.valueOf(Boolean.FALSE), String.valueOf(Boolean.TRUE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -339,6 +343,8 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff();
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item1ExpectedComplexFieldDiff.putDiff(
+                "stringItem",null);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(String.valueOf(Boolean.FALSE),

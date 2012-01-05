@@ -515,11 +515,6 @@ public final class FieldDiffHelper {
             List<PropertyHierarchyNode> propertyHierarchy,
             boolean isChildNodeNotFoundOnTestSide) {
 
-        // SimplePropertyDiff propertyDiff = checkChildNodeNotFoundOnTestSide(
-        // controlNodeDetail, testNodeDetail, propertyHierarchy);
-        // String leftValue = propertyDiff.getLeftValue();
-        // String rightValue = propertyDiff.getRightValue();
-
         String leftValue = controlNodeDetail.getValue();
         String rightValue = testNodeDetail.getValue();
         if (isChildNodeNotFoundOnTestSide) {
@@ -543,6 +538,9 @@ public final class FieldDiffHelper {
                     ((ComplexPropertyDiff) fieldDiff).putDiff(
                             controlParentNode.getNodeName(),
                             new SimplePropertyDiff(leftValue, rightValue));
+
+                    // Put all complex items into to fieldDiff
+                    putComplexItemsIntoFieldDiff(fieldDiff, controlParentNode);
                 }
             }
             break;
@@ -635,8 +633,35 @@ public final class FieldDiffHelper {
                 } else {
                     ((ComplexPropertyDiff) fieldDiff).putDiff(
                             nodeWithChilds.getNodeName(), childNodeDiff);
+                    // Put all complex items into to fieldDiff
+                    putComplexItemsIntoFieldDiff(fieldDiff, nodeWithChilds);
                 }
                 break;
+            }
+        }
+    }
+
+    /**
+     * Put complex items into field diff.
+     * 
+     * @param fieldDiff the field diff
+     * @param controlParentNode the control parent node
+     */
+    private static void putComplexItemsIntoFieldDiff(PropertyDiff fieldDiff,
+            Node controlParentNode) {
+
+        Node controlParentParentNode = controlParentNode.getParentNode();
+        if (controlParentParentNode != null) {
+            NodeList complexItemNodes = controlParentParentNode.getChildNodes();
+            for (int i = 0; i < complexItemNodes.getLength(); i++) {
+                Node complexItemNode = complexItemNodes.item(i);
+                String complexItemNodeName = complexItemNode.getNodeName();
+                if (((ComplexPropertyDiff) fieldDiff).getDiff(complexItemNodeName) == null
+                        && !controlParentNode.getNodeName().equals(
+                                complexItemNodeName)) {
+                    ((ComplexPropertyDiff) fieldDiff).putDiff(
+                            complexItemNodeName, null);
+                }
             }
         }
     }
