@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -50,7 +49,7 @@ public class DocumentToEtagTest {
     public void sameDocProducesSameEtag() throws Exception {
         DocumentModel doc1 = createDocForFile("blob1", "testBlob1.txt", session);
         EntityTag tag1 = GadgetDocument.getEntityTagForDocument(doc1);
-        DocumentModel diffDoc = session.getDocument(new PathRef("/blob1"));
+        DocumentModel diffDoc = session.getDocument(doc1.getRef());
         EntityTag tag2 = GadgetDocument.getEntityTagForDocument(diffDoc);
         assertEquals(tag1.getValue(), tag2.getValue());
     }
@@ -69,9 +68,8 @@ public class DocumentToEtagTest {
         DocumentModel doc1 = createDocForFile("blob1", "testBlob1.txt", session);
         EntityTag tag1 = GadgetDocument.getEntityTagForDocument(doc1);
         doc1.setPropertyValue("dc:title", "new Title");
-        session.saveDocument(doc1);
-        session.save();
-        doc1 = session.getDocument(new PathRef("/blob1"));
+        Thread.sleep(10); // ETag depends on millisecond time
+        doc1 = session.saveDocument(doc1);
         EntityTag tag2 = GadgetDocument.getEntityTagForDocument(doc1);
         assertFalse(tag2.getValue().equals(tag1.getValue()));
     }
@@ -89,7 +87,6 @@ public class DocumentToEtagTest {
 
         // writing the new document to the repository
         doc = session.createDocument(doc);
-        session.saveDocument(doc);
         session.save();
         return doc;
     }

@@ -57,7 +57,7 @@ public class GadgetDocument extends DocumentObject {
 
     private static final String ENABLE_CACHE_HEADER = "opensocial.features.enableCacheHeader";
 
-    private static final String DTEFORMAT = "ddMMMyyyyHH:mm:ss z";
+    private static final String DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
 
@@ -433,8 +433,8 @@ public class GadgetDocument extends DocumentObject {
         } catch (ClientException e) {
             modified = Calendar.getInstance();
         }
-        return new EntityTag(computeDigest(doc.getId()
-                + new SimpleDateFormat(DTEFORMAT).format(modified.getTime())));
+        return new EntityTag(computeDigest(doc.getId() + " "
+                + new SimpleDateFormat(DATEFORMAT).format(modified.getTime())));
     }
 
     private static String computeDigest(String content) {
