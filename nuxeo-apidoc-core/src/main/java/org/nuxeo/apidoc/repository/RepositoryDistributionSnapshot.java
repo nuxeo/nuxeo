@@ -154,12 +154,21 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
                 BundleGroup.PROP_KEY, groupId);
     }
 
+    protected DocumentModel getBundleContainer() {
+        try {
+            return getCoreSession().getChild(doc.getRef(), SnapshotPersister.Bundle_Root_NAME);
+        } catch (ClientException e) {
+            // for compatibility with the previous persistence model
+            return doc;
+        }
+    }
+
     @Override
     public List<BundleGroup> getBundleGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
         try {
             String query = QueryHelper.select(BundleGroup.TYPE_NAME, doc,
-                    NXQL.ECM_PARENTID, doc.getId());
+                    NXQL.ECM_PARENTID, getBundleContainer().getId());
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
                 BundleGroup bg = child.getAdapter(BundleGroup.class);

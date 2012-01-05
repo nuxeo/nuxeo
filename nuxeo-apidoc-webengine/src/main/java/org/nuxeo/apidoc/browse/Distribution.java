@@ -31,7 +31,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -148,6 +147,10 @@ public class Distribution extends ModuleRoot {
         return getSnapshotManager().getRuntimeSnapshot();
     }
 
+    public List<DistributionSnapshot> listPersistedDistributions() {
+        return getSnapshotManager().listPersistentSnapshots(ctx.getCoreSession());
+    }
+
     public Map<String, DistributionSnapshot> getPersistedDistributions() {
         return getSnapshotManager().getPersistentSnapshots(ctx.getCoreSession());
     }
@@ -190,13 +193,16 @@ public class Distribution extends ModuleRoot {
             if (tx != null) {
                 tx.rollback();
             }
-            return getView("index");
+            return getView("savedKO").arg("message", e.getMessage());
         }
         log.info("Snapshot saved.");
         if (tx != null && startedTx) {
             tx.commit();
         }
-        return Response.temporaryRedirect(new URI(getContext().getBaseURL())).build();
+
+        String redirectUrl = getContext().getBaseURL()+  getPath();
+        log.error("Path => " + redirectUrl);
+        return getView("saved");
     }
 
     @POST
@@ -244,13 +250,13 @@ public class Distribution extends ModuleRoot {
             if (tx != null) {
                 tx.rollback();
             }
-            return getView("index");
+            return getView("savedKO").arg("message", e.getMessage());
         }
         log.info("Snapshot saved.");
         if (tx != null && startedTx) {
             tx.commit();
         }
-        return Response.temporaryRedirect(new URI(getContext().getBaseURL())).build();
+        return getView("saved");
     }
 
     public String getDocumentationInfo() throws Exception {

@@ -57,6 +57,12 @@ public class SnapshotPersister {
 
     public static final String Root_NAME = "nuxeo-distributions";
 
+    public static final String Seam_Root_NAME = "Seam";
+
+    public static final String Operation_Root_NAME = "Automation";
+
+    public static final String Bundle_Root_NAME = "Bundles";
+
     public static final String Read_Grp = "Everyone";
 
     public static final String Write_Grp = "members";
@@ -67,8 +73,17 @@ public class SnapshotPersister {
 
         protected DocumentRef rootRef;
 
-        public UnrestrictedRootCreator(CoreSession session) {
+        protected final String parentPath;
+
+        protected final String name;
+
+        protected final boolean setAcl;
+
+        public UnrestrictedRootCreator(CoreSession session, String parentPath, String name, boolean setAcl) {
             super(session);
+            this.name=name;
+            this.parentPath=parentPath;
+            this.setAcl= setAcl;
         }
 
         public DocumentRef getRootRef() {
@@ -78,17 +93,19 @@ public class SnapshotPersister {
         @Override
         public void run() throws ClientException {
 
-            DocumentModel root = session.createDocumentModel(Root_PATH,
-                    Root_NAME, "Workspace");
-            root.setProperty("dublincore", "title", Root_NAME);
+            DocumentModel root = session.createDocumentModel(parentPath,
+                    name, "Workspace");
+            root.setProperty("dublincore", "title", name);
             root = session.createDocument(root);
 
-            ACL acl = new ACLImpl();
-            acl.add(new ACE(Write_Grp, "Write", true));
-            acl.add(new ACE(Read_Grp, "Read", true));
-            ACP acp = root.getACP();
-            acp.addACL(acl);
-            session.setACP(root.getRef(), acp, true);
+            if (setAcl) {
+                ACL acl = new ACLImpl();
+                acl.add(new ACE(Write_Grp, "Write", true));
+                acl.add(new ACE(Read_Grp, "Read", true));
+                ACP acp = root.getACP();
+                acp.addACL(acl);
+                session.setACP(root.getRef(), acp, true);
+            }
 
             rootRef = root.getRef();
             // flush caches
@@ -97,18 +114,28 @@ public class SnapshotPersister {
 
     }
 
-    public DocumentModel getDistributionRoot(CoreSession session)
-            throws ClientException {
-        DocumentRef rootRef = new PathRef(Root_PATH + Root_NAME);
 
+    public DocumentModel getSubRoot(CoreSession session, DocumentModel root, String name) throws ClientException {
+
+        DocumentRef rootRef = new PathRef(root.getPathAsString() + name);
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session);
-
+        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, root.getPathAsString(), name, false);
         creator.runUnrestricted();
+        // flush caches
+        session.save();
+        return session.getDocument(creator.getRootRef());
+    }
 
+    public DocumentModel getDistributionRoot(CoreSession session)
+            throws ClientException {
+        DocumentRef rootRef = new PathRef(Root_PATH + Root_NAME);
+        if (session.exists(rootRef)) {
+            return session.getDocument(rootRef);
+        }
+        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, Root_PATH, Root_NAME, true);
+        creator.runUnrestricted();
         // flush caches
         session.save();
         return session.getDocument(creator.getRootRef());
@@ -120,6 +147,8 @@ public class SnapshotPersister {
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(
                 snapshot, session, label);
 
+        DocumentModel bundleContainer = getSubRoot(session, distribContainer.getDoc(), Bundle_Root_NAME);
+
         if (filter!=null) {
             // create VGroup that contain,s only the target bundles
             BundleGroupImpl vGroup = new BundleGroupImpl(filter.getBundleGroupName(), snapshot.getVersion());
@@ -129,19 +158,22 @@ public class SnapshotPersister {
                 }
             }
             persistBundleGroup(snapshot, vGroup, session, label + "-bundles",
-                    distribContainer.getDoc());
+                    bundleContainer);
         } else {
             List<BundleGroup> bundleGroups = snapshot.getBundleGroups();
             for (BundleGroup bundleGroup : bundleGroups) {
                 persistBundleGroup(snapshot, bundleGroup, session, label,
-                        distribContainer.getDoc());
+                        bundleContainer);
             }
         }
-        persistSeamComponents(snapshot, snapshot.getSeamComponents(), session,
-                label, distribContainer.getDoc(), filter);
 
+        DocumentModel seamContainer = getSubRoot(session, distribContainer.getDoc(), Seam_Root_NAME);
+        persistSeamComponents(snapshot, snapshot.getSeamComponents(), session,
+                label, seamContainer, filter);
+
+        DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
         persistOperations(snapshot, snapshot.getOperations(), session, label,
-                distribContainer.getDoc(), filter);
+                opContainer, filter);
 
         return distribContainer;
     }

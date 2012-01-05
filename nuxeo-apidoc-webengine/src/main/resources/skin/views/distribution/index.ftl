@@ -23,7 +23,7 @@ Here are the currently available distributions:
 </p>
 
 <#assign rtSnap=Root.runtimeDistribution/>
-<#assign snapMap=Root.persistedDistributions/>
+<#assign snapList=Root.listPersistedDistributions()/>
 
 <table class="tablesorter distributions">
 <tr>
@@ -54,7 +54,7 @@ Here are the currently available distributions:
     <table>
     <tr>
       <td>name : </td>
-      <td><input type="text" name="name"/> </td>
+      <td><input type="text" name="name" value="${rtSnap.name}"/> </td>
     </tr>
     </table>
     <input type="submit" value="Save"/>
@@ -65,7 +65,7 @@ Here are the currently available distributions:
     <table>
     <tr>
       <td>name : </td>
-      <td><input type="text" name="name"/> </td>
+      <td><input type="text" name="name" value="${rtSnap.name}"/> </td>
     </tr>
     <tr>
       <td>bundle prefixes : </td>
@@ -89,11 +89,9 @@ Here are the currently available distributions:
 
 </tr>
 
-<#assign names=snapMap?keys/>
-<#list names as name>
+<#list snapList as distrib>
 <tr><td colspan="6">&nbsp;</td></tr>
 <tr>
-  <#assign distrib=snapMap[name]/>
   <td>${distrib.name}</td>
   <td>${distrib.version}</td>
   <td>${distrib.creationDate?datetime}</td>

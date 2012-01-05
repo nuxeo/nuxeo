@@ -12,7 +12,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>All Seam components</h1>
+<h1>All Seam components (${seamComponents?size})</h1>
 <@tableFilterArea/>
 <table id="seamComponentsTable" class="tablesorter">
   <thead>

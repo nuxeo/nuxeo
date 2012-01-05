@@ -145,6 +145,10 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
                 if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
                     break;
                 }
+                if (doc.getType().equals(DistributionSnapshot.CONTAINER_TYPE_NAME)) {
+                    // skip containers
+                    continue;
+                }
                 NuxeoArtifact item = doc.getAdapter(NuxeoArtifact.class);
 
                 path = "/" + item.getId() + path;

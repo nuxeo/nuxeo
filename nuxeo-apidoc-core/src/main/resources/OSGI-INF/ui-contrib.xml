@@ -20,6 +20,13 @@
           document_trash_content
         </contentView>
       </contentViews>
+      <subtypes>
+        <type>NXBundleGroup</type>
+        <type>NXBundle</type>
+        <type>NXOperation</type>
+        <type>NXSeamComponent</type>
+        <type>Workspace</type>
+      </subtypes>
     </type>
 
     <type id="NXBundleGroup">
@@ -40,6 +47,9 @@
           document_trash_content
         </contentView>
       </contentViews>
+      <subtypes>
+        <type>NXBundleGroup</type>
+      </subtypes>
     </type>
 
     <type id="NXBundle">
@@ -60,6 +70,12 @@
           document_trash_content
         </contentView>
       </contentViews>
+      <subtypes>
+        <type>NXComponent</type>
+        <type>NXService</type>
+        <type>NXExtensionPoint</type>
+        <type>NXContribution</type>
+      </subtypes>
     </type>
 
     <type id="NXComponent">
@@ -80,6 +96,11 @@
           document_trash_content
         </contentView>
       </contentViews>
+      <subtypes>
+        <type>NXService</type>
+        <type>NXExtensionPoint</type>
+        <type>NXContribution</type>
+      </subtypes>
     </type>
 
     <type id="NXService">

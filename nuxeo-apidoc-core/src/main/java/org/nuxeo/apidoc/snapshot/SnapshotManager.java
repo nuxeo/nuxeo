@@ -39,6 +39,8 @@ public interface SnapshotManager {
 
     List<DistributionSnapshot> readPersistentSnapshots(CoreSession session);
 
+    List<DistributionSnapshot> listPersistentSnapshots(CoreSession session);
+
     Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session);
 
     List<String> getPersistentSnapshotNames(CoreSession session);

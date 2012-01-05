@@ -12,7 +12,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>All operations</h1>
+<h1>All operations (${operations?size})</h1>
 <@tableFilterArea/>
 <table id="operationsTable" class="tablesorter">
   <thead>

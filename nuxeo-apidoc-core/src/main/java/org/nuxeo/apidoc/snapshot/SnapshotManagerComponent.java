@@ -19,6 +19,8 @@ package org.nuxeo.apidoc.snapshot;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +87,24 @@ public class SnapshotManagerComponent extends DefaultComponent implements
             CoreSession session) {
         List<DistributionSnapshot> snaps = RepositoryDistributionSnapshot.readPersistentSnapshots(session);
         return snaps;
+    }
+
+    public List<DistributionSnapshot> listPersistentSnapshots(CoreSession session) {
+
+        List<DistributionSnapshot> distribs = readPersistentSnapshots(session);
+
+        Collections.sort(distribs, new Comparator<DistributionSnapshot>() {
+            @Override
+            public int compare(DistributionSnapshot dist0,DistributionSnapshot dist1) {
+                if (dist0.getVersion().equals(dist1.getVersion())) {
+                    return dist0.getName().compareTo(dist1.getName());
+                } else {
+                    return - dist0.getVersion().compareTo(dist1.getVersion());
+                }
+            }
+        });
+
+        return distribs;
     }
 
     @Override

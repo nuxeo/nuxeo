@@ -3,7 +3,7 @@
 
 <@block name="right">
 
-<h1>All bundle groups</h1>
+<h1>All bundle groups (${tree?size})</h1>
 
 <#assign prevLevel=-1/>
 

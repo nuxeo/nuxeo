@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>All services</h1>
+<h1>All services (${services?size})</h1>
 <@tableFilterArea/>
 <table id="servicesTable" class="tablesorter">
 <thead>
