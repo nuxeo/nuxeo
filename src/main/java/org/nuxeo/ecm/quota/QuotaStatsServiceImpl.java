@@ -61,6 +61,22 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    public void computeInitialStatistics(String repositoryName) {
+        try {
+            new UnrestrictedSessionRunner(repositoryName) {
+                @Override
+                public void run() throws ClientException {
+                    for (QuotaStatsUpdater updater : quotaStatsUpdaterRegistry.getQuotaStatsUpdaters()) {
+                        updater.computeInitialStatistics(session);
+                    }
+                }
+            }.runUnrestricted();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {

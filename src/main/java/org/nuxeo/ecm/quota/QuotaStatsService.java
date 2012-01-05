@@ -34,4 +34,11 @@ public interface QuotaStatsService {
      */
     void updateStatistics(DocumentEventContext docCtx, String eventName);
 
+    /**
+     * Compute the initial statistics for the given @{code repositoryName}.
+     * <p>
+     * Call all the registered {@link QuotaStatsUpdater}s.
+     */
+    void computeInitialStatistics(String repositoryName);
+
 }

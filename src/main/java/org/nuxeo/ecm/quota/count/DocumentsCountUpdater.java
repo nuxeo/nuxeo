@@ -22,11 +22,16 @@ import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_CHI
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_FACET;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 
 /**
@@ -146,4 +151,104 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
             return 1;
         }
     }
+
+    @Override
+    public void computeInitialStatistics(CoreSession session)
+            throws ClientException {
+        Map<String, String> folders = getFolders(session);
+        Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(
+                session, folders);
+        saveDocumentsCount(session, documentsCountByFolder);
+    }
+
+    protected Map<String, String> getFolders(CoreSession session)
+            throws ClientException {
+        IterableQueryResult res = session.queryAndFetch(
+                "SELECT ecm:uuid, ecm:parentId FROM Document WHERE ecm:mixinType = 'Folderish'",
+                "NXQL");
+        Map<String, String> folders = new HashMap<String, String>();
+
+        for (Map<String, Serializable> r : res) {
+            folders.put((String) r.get("ecm:uuid"),
+                    (String) r.get("ecm:parentId"));
+        }
+        return folders;
+    }
+
+    protected Map<String, Count> computeDocumentsCountByFolder(
+            CoreSession session, Map<String, String> folders)
+            throws ClientException {
+        IterableQueryResult res = session.queryAndFetch(
+                "SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL");
+        Map<String, Count> foldersCount = new HashMap<String, Count>();
+        for (Map<String, Serializable> r : res) {
+            String uuid = (String) r.get("ecm:uuid");
+            if (folders.containsKey(uuid)) {
+                // a folder
+                continue;
+            }
+
+            String folderId = (String) r.get("ecm:parentId");
+            if (!foldersCount.containsKey(folderId)) {
+                foldersCount.put(folderId, new Count());
+            }
+            Count count = foldersCount.get(folderId);
+            count.childrenCount++;
+            count.descendantsCount++;
+
+            updateParentsDocumentsCount(folders, foldersCount, folderId);
+        }
+        return foldersCount;
+    }
+
+    protected void updateParentsDocumentsCount(Map<String, String> folders,
+            Map<String, Count> foldersCount, String folderId) {
+        String parent = folders.get(folderId);
+        while (parent != null) {
+            if (!foldersCount.containsKey(parent)) {
+                foldersCount.put(parent, new Count());
+            }
+            Count c = foldersCount.get(parent);
+            c.descendantsCount++;
+            parent = folders.get(parent);
+        }
+    }
+
+    protected void saveDocumentsCount(CoreSession session,
+            Map<String, Count> foldersCount) throws ClientException {
+        for (Map.Entry<String, Count> entry : foldersCount.entrySet()) {
+            DocumentModel folder = session.getDocument(new IdRef(entry.getKey()));
+            if (folder.getPath().isRoot()) {
+                // Root document
+                continue;
+            }
+            saveDocumentsCount(session, folder, entry.getValue());
+        }
+        session.save();
+    }
+
+    protected void saveDocumentsCount(CoreSession session,
+            DocumentModel folder, Count count) throws ClientException {
+        if (!folder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
+            folder.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
+        }
+        folder.setPropertyValue(
+                DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY,
+                count.childrenCount);
+        folder.setPropertyValue(
+                DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
+                count.descendantsCount);
+        session.saveDocument(folder);
+    }
+
+    /**
+     * Object to store documents count for a folder
+     */
+    private static class Count {
+
+        public long childrenCount = 0;
+
+        public long descendantsCount = 0;
+    }
+
 }

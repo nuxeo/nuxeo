@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_FACET;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -263,6 +265,24 @@ public class TestDocumentsCountUpdater {
         assertEquals(
                 2L,
                 ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+    }
+
+
+    @Test
+    public void testComputeInitialStatistics() throws Exception {
+        List<DocumentModel> folders = session.query("SELECT * FROM Document where ecm:mixinType = 'Folderish'");
+        for (DocumentModel folder : folders) {
+            if (folder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
+                folder.removeFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
+                session.saveDocument(folder);
+            }
+        }
+        session.save();
+
+        quotaStatsService.computeInitialStatistics(session.getRepositoryName());
+
+        session.save();
+        testDocumentsCount();
     }
 
 }
