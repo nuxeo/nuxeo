@@ -86,8 +86,8 @@ public class DocumentPageProviderOperation {
         if (sortInfoAsStringList != null) {
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
-                if (sortInfoDesc.contains(":")) {
-                    String[] parts = sortInfoDesc.split(":");
+                if (sortInfoDesc.contains("|")) {
+                    String[] parts = sortInfoDesc.split("|");
                     sortInfo = new SortInfo(parts[0],
                             Boolean.parseBoolean(parts[1]));
                 } else {
