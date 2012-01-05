@@ -45,6 +45,26 @@ public class ListPropertyDiff implements PropertyDiff {
     }
 
     /**
+     * Checks if is a simple list property.
+     *
+     * @return true, if is simple list property
+     */
+    public boolean isSimpleListProperty() {
+        return !diffList.isEmpty()
+                && PropertyType.simple.equals(diffList.get(0).getPropertyType());
+    }
+
+    /**
+     * Checks if is a complex list property.
+     *
+     * @return true, if is complex list property
+     */
+    public boolean isComplexListProperty() {
+        return !diffList.isEmpty()
+                && PropertyType.complex.equals(diffList.get(0).getPropertyType());
+    }
+
+    /**
      * Gets the diff.
      * 
      * @param index the index

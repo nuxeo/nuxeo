@@ -42,7 +42,7 @@ public interface DocumentDiff extends Serializable {
     int getSchemaCount();
 
     /**
-     * Gets the schema names.
+     * Gets the schema names as a list.
      * 
      * @return the schema names
      */

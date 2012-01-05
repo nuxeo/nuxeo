@@ -1,0 +1,8 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+  
+  <span class="#{(simplePropertyDiff.rightValue == null or empty simplePropertyDiff.rightValue) ? 'emptyTextDiff' : 'textDiff'} rightDiff">
+    <h:outputText value="#{simplePropertyDiff.rightValue}"/>
+  </span>
+  
+</f:subview>

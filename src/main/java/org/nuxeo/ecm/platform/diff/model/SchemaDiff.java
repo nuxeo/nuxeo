@@ -42,7 +42,7 @@ public interface SchemaDiff extends Serializable {
     int getFieldCount();
 
     /**
-     * Gets the field names.
+     * Gets the field names as a list.
      * 
      * @return the field names
      */

@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
@@ -72,6 +74,24 @@ public class ComplexPropertyDiff implements PropertyDiff {
      */
     public void putAll(ComplexPropertyDiff otherDiff) {
         diffMap.putAll(otherDiff.getDiffMap());
+    }
+
+    /**
+     * Gets the complex item names as a list.
+     * 
+     * @return the complex item names
+     */
+    public List<String> getComplexItemNames() {
+        return new ArrayList<String>(diffMap.keySet());
+    }
+
+    /**
+     * Gets the complex item values as a list.
+     * 
+     * @return the complex item values
+     */
+    public List<PropertyDiff> getComplexItemValues() {
+        return new ArrayList<PropertyDiff>(diffMap.values());
     }
 
     public Map<String, PropertyDiff> getDiffMap() {
