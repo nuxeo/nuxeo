@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-platform-relations-io</artifactId>
   <name>Nuxeo Platform Relations IO Fragment</name>
-  <description />
+  <description></description>
 
   <dependencies>
     <dependency>

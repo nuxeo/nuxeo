@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-platform-io-facade</artifactId>
   <name>Nuxeo Platform IO Facade Fragment</name>
-  <description />
+  <description></description>
 
   <dependencies>
     <dependency>
