@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -37,13 +38,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
-    public static final String NAME = "org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceServiceComponent";
+    public static final String NAME = "org.nuxeo.ecm.platform.userworkspace.UserWorkspaceService";
 
     private static final Log log = LogFactory.getLog(UserWorkspaceService.class);
 
-    private static UserWorkspaceDescriptor descriptor;
+    protected UserWorkspaceDescriptor descriptor;
 
-    private static UserWorkspaceService userWorkspaceService;
+    protected UserWorkspaceService userWorkspaceService;
 
     @Override
     public void activate(ComponentContext context) {
@@ -104,11 +105,15 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     }
 
     public static String getTargetDomainName() {
-        return descriptor.getTargetDomainName();
+        UserWorkspaceServiceImplComponent s = (UserWorkspaceServiceImplComponent) Framework.getRuntime().getComponent(
+                NAME);
+        return s.descriptor.getTargetDomainName();
     }
 
     public static void reset() {
-        userWorkspaceService = null;
+        UserWorkspaceServiceImplComponent s = (UserWorkspaceServiceImplComponent) Framework.getRuntime().getComponent(
+                NAME);
+        s.userWorkspaceService = null;
     }
 
 }
