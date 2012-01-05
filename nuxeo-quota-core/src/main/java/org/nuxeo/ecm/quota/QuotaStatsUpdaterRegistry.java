@@ -26,8 +26,8 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for {@link QuotaStatsUpdater}s, handling merge of registered
- * {@link QuotaStatsUpdaterDescriptor} elements.
+ * Registry for {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s, handling merge of registered
+ * {@link org.nuxeo.ecm.quota.QuotaStatsUpdaterDescriptor} elements.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5

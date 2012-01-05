@@ -26,7 +26,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Default implementation of {@link QuotaStatsService}.
+ * Default implementation of {@link org.nuxeo.ecm.quota.QuotaStatsService}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5

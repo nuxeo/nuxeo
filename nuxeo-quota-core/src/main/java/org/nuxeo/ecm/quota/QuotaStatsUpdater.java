@@ -17,28 +17,35 @@
 
 package org.nuxeo.ecm.quota;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
- * Service used to compute quota and statistics on documents.
+ * Interface to be implemented by {@code QuotaStatsUpdater}s registered to the
+ * {@link org.nuxeo.ecm.quota.QuotaStatsService}.
+ * <p>
+ * They use an unrestricted {@link CoreSession} to do the update.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public interface QuotaStatsService {
+public interface QuotaStatsUpdater {
 
     /**
      * Update the statistics for the given {@code docCtx} and {@code eventName}.
-     * <p>
-     * Call all the registered {@link QuotaStatsUpdater}s.
+     *
+     * @param session an unrestricted {@link CoreSession} to be used
      */
-    void updateStatistics(DocumentEventContext docCtx, String eventName);
+    void updateStatistics(CoreSession session, DocumentEventContext docCtx,
+                          String eventName) throws ClientException;
 
     /**
-     * Compute the initial statistics for the given @{code repositoryName}.
-     * <p>
-     * Call all the registered {@link QuotaStatsUpdater}s.
+     * Compute the initial statistics on the whole repository for this
+     * {@code QuotaStatsUpdater}.
+     *
+     * @param session an unrestricted {@link CoreSession} to be used
      */
-    void computeInitialStatistics(String repositoryName);
+    void computeInitialStatistics(CoreSession session) throws ClientException;
 
 }

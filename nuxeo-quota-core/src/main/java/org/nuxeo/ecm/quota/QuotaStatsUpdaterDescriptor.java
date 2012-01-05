@@ -21,7 +21,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor object for registering {@link QuotaStatsUpdater}s.
+ * Descriptor object for registering {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5

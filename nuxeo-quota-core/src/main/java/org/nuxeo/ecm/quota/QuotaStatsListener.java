@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Listener handling default events to update statistics through the
- * {@link QuotaStatsService}.
+ * {@link org.nuxeo.ecm.quota.QuotaStatsService}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
