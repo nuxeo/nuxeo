@@ -169,8 +169,8 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
         try {
             configureXMLUnit();
             Diff diff = new Diff(leftXML, rightXML);
-            configureDiff(diff);
             detailedDiff = new DetailedDiff(diff);
+            configureDiff(detailedDiff);
         } catch (Exception e) {
             throw new ClientException(
                     "Error while trying to make a detailed diff between two XML strings.",
@@ -197,8 +197,13 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     protected void configureDiff(Diff diff) {
 
         // XXX ATA: contribute this configuration to the service
-        diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
         diff.overrideDifferenceListener(new IgnoreStructuralDifferenceListener());
+        // In our case ElementNameAndAttributeQualifier is not really required
+        // because
+        // we already manage the different schema case in the
+        // IgnoreStructuralDifferenceListener
+        diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
+
     }
 
     /**
@@ -219,7 +224,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
         List<Difference> differences = detailedDiff.getAllDifferences();
         LOGGER.debug(String.format("Found %d differences.", differences.size()));
 
-        Integer fieldDifferenceCount = 0;
+        int fieldDifferenceCount = 0;
         for (Difference difference : differences) {
 
             // Control node <=> left doc node
@@ -229,10 +234,17 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
             if (controlNodeDetail != null && testNodeDetail != null) {
 
-                FieldDiffHelper.computeFieldDiff(docDiff, controlNodeDetail,
-                        testNodeDetail, fieldDifferenceCount, difference);
+                boolean fieldDiffFound = FieldDiffHelper.computeFieldDiff(
+                        docDiff, controlNodeDetail, testNodeDetail,
+                        fieldDifferenceCount, difference);
+                if (fieldDiffFound) {
+                    fieldDifferenceCount++;
+                }
             }
         }
+        LOGGER.info(String.format("Found %d field differences.",
+                fieldDifferenceCount));
+
         return docDiff;
     }
 

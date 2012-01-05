@@ -78,12 +78,12 @@ public final class FieldDiffHelper {
      * 
      * <list>
      *   <complexItem>
-     *      <complexString>joe</complexString>
-     *      <complexBoolean>true</complexBoolean>
+     *     <complexString>joe</complexString>
+     *     <complexBoolean>true</complexBoolean>
      *   </complexItem>
      *   <complexItem>
-     *      <complexString>jack</complexString>
-     *      <complexBoolean>false</complexBoolean>
+     *     <complexString>jack</complexString>
+     *     <complexBoolean>false</complexBoolean>
      *   </complexItem>
      * </list>
      * </pre>
@@ -101,8 +101,8 @@ public final class FieldDiffHelper {
      * [----- control ------]   [----- test ------]
      * 
      * <field>                  <field>
-     * <item>red</item>         <item>red</item>
-     * <item>green</item>     </field>
+     *   <item>red</item>         <item>red</item>
+     *   <item>green</item>     </field>
      * </field>
      * 
      * </pre>
@@ -115,11 +115,12 @@ public final class FieldDiffHelper {
      * @param testNodeDetail the test node detail
      * @param fieldDifferenceCount the field difference count
      * @param difference the difference
+     * @return true if a field diff has been found
      * @throws ClientException the client exception
      */
-    public static void computeFieldDiff(DocumentDiff docDiff,
+    public static boolean computeFieldDiff(DocumentDiff docDiff,
             NodeDetail controlNodeDetail, NodeDetail testNodeDetail,
-            Integer fieldDifferenceCount, Difference difference)
+            int fieldDifferenceCount, Difference difference)
             throws ClientException {
 
         // Use control node or if null test node to detect schema and
@@ -229,19 +230,21 @@ public final class FieldDiffHelper {
                 // Reverse property hierarchy
                 Collections.reverse(propertyHierarchy);
 
-                // Increment field differences count and pretty
-                // log field difference
-                fieldDifferenceCount++;
+                // Pretty log field difference
                 LOGGER.info(String.format(
                         "Found field difference #%d on [%s]/[%s] with hierarchy %s: [%s (%s)] {%s --> %s}",
-                        fieldDifferenceCount, schema, field, propertyHierarchy,
-                        difference.getDescription(), difference.getId(),
-                        controlNodeDetail.getValue(), testNodeDetail.getValue()));
+                        fieldDifferenceCount + 1, schema, field,
+                        propertyHierarchy, difference.getDescription(),
+                        difference.getId(), controlNodeDetail.getValue(),
+                        testNodeDetail.getValue()));
 
                 // Compute field diff
                 computeFieldDiff(docDiff, schema, field, propertyHierarchy,
                         difference.getId(), controlNodeDetail, testNodeDetail,
                         isChildNodeNotFoundOnTestSide);
+                // Return true since a field diff has been found
+                return true;
+
             } else {// Non-field difference
                 LOGGER.debug(String.format(
                         "Found non-field difference: [%s (%s)] {%s --> %s}",
@@ -249,6 +252,7 @@ public final class FieldDiffHelper {
                         controlNodeDetail.getValue(), testNodeDetail.getValue()));
             }
         }
+        return false;
     }
 
     /**
