@@ -4,11 +4,20 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
   
+  <style type="text/css">
+    .fieldLabelColumn {width: 20%; font-weight: bold;}
+    .fieldDiffColumn {width: 40%; padding: 0.4em 0.5em;}
+    .textDiff {padding: 0.1em 0.4em;}
+    .emptyTextDiff {display: block; height: 16px; width: 60px;}
+    .leftDiff {background-color:#FFDDDD;}
+    .rightDiff {background-color:#DDFFDD;}
+</style>
+  
   <nxu:set var="docDiff" value="#{documentDiffActions.documentDiff}" cache="true">
   
     <ui:repeat value="#{docDiff.schemaNames}" var="schemaName">
       <nxu:set var="schemaDiff" value="#{docDiff.getSchemaDiff(schemaName)}" cache="false">
-        
+
         <div class="foldableBox">
           <h3 class="folded">
             <a href="#nologo" onclick="return toggleBox(this)">
@@ -17,13 +26,64 @@
             <span class="breaker"></span>
           </h3>
           <div class="boxBody">
-            <nxu:dataTable id="schemaDiffTable_#{schemaName}" value="#{schemaDiff.fieldNames}" var="fieldName"
-              rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
-              <nxu:column>
+            <nxu:dataTable id="schemaDiffTable_#{schemaName}" styleClass="dataOutput"
+              value="#{schemaDiff.fieldNames}" var="fieldName">
+              <nxu:column styleClass="fieldLabelColumn">
                 <h:outputText value="#{messages[fieldName]}"/>
               </nxu:column>
-              <nxu:column>
-                #{schemaDiff.getFieldDiff(fieldName)}
+              <nxu:column styleClass="fieldDiffColumn">
+                <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">                  
+                  
+                  <!-- Simple property -->
+                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'simple'}">
+                    <span class="#{fieldDiff.leftValue == null ? 'emptyTextDiff' : 'textDiff'} leftDiff">
+                      <h:outputText value="#{fieldDiff.leftValue}"/>
+                    </span>
+                  </f:subview>
+                  
+                  <!-- List property -->
+                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'list'}">
+                    <nxu:dataTable
+                      value="#{fieldDiff.diffList}" var="listItem">
+                      
+                      <!-- Simple list item -->
+                      <nxu:column rendered="#{listItem.propertyType.name() == 'simple'}">
+                        <span class="#{listItem.leftValue == null ? 'emptyTextDiff' : 'textDiff'} leftDiff">
+                          <h:outputText value="#{listItem.leftValue}"/>
+                        </span>  
+                      </nxu:column>
+                      
+                    </nxu:dataTable>
+                  </f:subview>
+                  
+                </nxu:set>
+              </nxu:column>
+              <nxu:column styleClass="fieldDiffColumn">
+                <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">                  
+                  
+                  <!-- Simple property -->
+                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'simple'}">
+                    <span class="#{fieldDiff.rightValue == null ? 'emptyTextDiff' : 'textDiff'} rightDiff">
+                      <h:outputText value="#{fieldDiff.rightValue}"/>
+                    </span>
+                  </f:subview>
+                  
+                  <!-- List property -->
+                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'list'}">
+                    <nxu:dataTable
+                      value="#{fieldDiff.diffList}" var="listItem">
+                      
+                      <!-- Simple list item -->
+                      <nxu:column rendered="#{listItem.propertyType.name() == 'simple'}">
+                        <span class="#{listItem.rightValue == null ? 'emptyTextDiff' : 'textDiff'} leftDiff">
+                          <h:outputText value="#{listItem.rightValue}"/>
+                        </span>  
+                      </nxu:column>
+                      
+                    </nxu:dataTable>
+                  </f:subview>
+                  
+                </nxu:set>
               </nxu:column>
             </nxu:dataTable>
           </div>
