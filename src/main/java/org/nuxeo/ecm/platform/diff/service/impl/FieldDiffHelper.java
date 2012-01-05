@@ -705,8 +705,10 @@ public final class FieldDiffHelper {
 
         PropertyType nodePropertyType = getPropertyType(node, null);
 
-        // Manage the specific case of a list child node
-        if (firstChildNode != null) {
+        // Manage the specific case of a list of list, ie.
+        // a simple node with a list child node.
+        if (PropertyType.simple.equals(nodePropertyType)
+                && firstChildNode != null) {
             PropertyType firstChildNodePropertyType = getPropertyType(
                     firstChildNode, null);
 

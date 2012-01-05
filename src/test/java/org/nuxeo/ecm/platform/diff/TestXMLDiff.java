@@ -435,6 +435,35 @@ public class TestXMLDiff extends DiffTestCase {
         expectedFieldDiff.addDiff(expectedComplexPropDiff2);
         checkListFieldDiff(propertyDiff, expectedFieldDiff);
 
+        // Complex list with a nested list item
+        leftXML = "<dc:listOfList>"
+                + "<complexItem><listItem><item>Monday</item><item>Tuesday</item></listItem><stringItem>bob</stringItem></complexItem>"
+                + "</dc:listOfList>";
+        rightXML = "<dc:listOfList>"
+                + "<complexItem><listItem><item>Monday</item><item>Tuesday</item></listItem><stringItem>joe</stringItem></complexItem>"
+                + "<complexItem><listItem><item>Wednesday</item><item>Thursday</item></listItem><stringItem>jack</stringItem></complexItem>"
+                + "</dc:listOfList>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "listOfList");
+
+        expectedFieldDiff = new ListPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
+                "bob", "joe"));
+        expectedComplexPropDiff.putDiff("listItem", null);
+        expectedComplexPropDiff2 = new ComplexPropertyDiff();
+        expectedComplexPropDiff2.putDiff("stringItem", new SimplePropertyDiff(
+                null, "jack"));
+        ListPropertyDiff expectedNestedListPropDiff = new ListPropertyDiff();
+        expectedNestedListPropDiff.addDiff(new SimplePropertyDiff(null,
+                "Wednesday"));
+        expectedNestedListPropDiff.addDiff(new SimplePropertyDiff(null,
+                "Thursday"));
+        expectedComplexPropDiff2.putDiff("listItem", expectedNestedListPropDiff);
+        expectedFieldDiff.addDiff(expectedComplexPropDiff);
+        expectedFieldDiff.addDiff(expectedComplexPropDiff2);
+        checkListFieldDiff(propertyDiff, expectedFieldDiff);
+
         // List of list
         leftXML = "<dc:listOfList>"
                 + "<item><listItem><subListItem>Monday</subListItem><subListItem>Tuesday</subListItem></listItem></item>"
@@ -453,7 +482,7 @@ public class TestXMLDiff extends DiffTestCase {
         expectedFieldDiff.addDiff(expectedListPropDiff);
         checkListFieldDiff(propertyDiff, expectedFieldDiff);
 
-        // // List of list (nested child not found)
+        // List of list (nested child not found)
         leftXML = "<dc:listOfList>"
                 + "<item><listItem><subListItem>Monday</subListItem><subListItem>Tuesday</subListItem></listItem></item>"
                 + "</dc:listOfList>";
