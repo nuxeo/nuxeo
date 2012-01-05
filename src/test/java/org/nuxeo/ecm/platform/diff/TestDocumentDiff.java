@@ -83,7 +83,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 4, docDiff.getSchemaCount());
+        assertEquals("Wrong schema count.", 5, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check system elements
@@ -188,8 +188,7 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff();
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff(
-                "stringItem",null);
+        item1ExpectedComplexFieldDiff.putDiff("stringItem", null);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(String.valueOf(Boolean.TRUE),
@@ -216,6 +215,11 @@ public class TestDocumentDiff extends DiffTestCase {
         checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
                 expectedListFieldDiff);
 
+        // ---------------------------
+        // Check listoflists chema
+        // ---------------------------
+        // TODO
+
     }
 
     /**
@@ -238,7 +242,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 4, docDiff.getSchemaCount());
+        assertEquals("Wrong schema count.", 5, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check system elements
@@ -343,8 +347,7 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff();
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff(
-                "stringItem",null);
+        item1ExpectedComplexFieldDiff.putDiff("stringItem", null);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(String.valueOf(Boolean.FALSE),
@@ -371,6 +374,11 @@ public class TestDocumentDiff extends DiffTestCase {
         // TODO: fix!
         // checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
         // expectedListFieldDiff);
+
+        // ---------------------------
+        // Check listoflists chema
+        // ---------------------------
+        // TODO
 
     }
 

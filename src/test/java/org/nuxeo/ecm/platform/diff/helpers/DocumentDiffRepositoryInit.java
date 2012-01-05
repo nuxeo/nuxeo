@@ -107,6 +107,31 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("ct:complexList",
                 (Serializable) complexListPropValue);
 
+        // -----------------------
+        // listoflists
+        // -----------------------
+        List<Map<String, Serializable>> listOfListPropValue = new ArrayList<Map<String, Serializable>>();
+
+        Map<String, Serializable> complexItem1 = new HashMap<String, Serializable>();
+        complexItem1.put("stringItem", "first item");
+        List<String> item1SubList = new ArrayList<String>();
+        item1SubList.add("Monday");
+        item1SubList.add("Tuesday");
+        complexItem1.put("stringListItem", (Serializable) item1SubList);
+        // TODO: uncomment
+        //listOfListPropValue.add(complexItem1);
+
+        Map<String, Serializable> complexItem2 = new HashMap<String, Serializable>();
+        complexItem2.put("stringItem", "second item");
+        List<String> item2SubList = new ArrayList<String>();
+        item2SubList.add("Wednesday");
+        item2SubList.add("Thursday");
+        complexItem2.put("stringListItem", (Serializable) item2SubList);
+        listOfListPropValue.add(complexItem2);
+        
+        doc.setPropertyValue("lol:listOfLists",
+                (Serializable) listOfListPropValue);
+
         return session.createDocument(doc);
     }
 
@@ -173,6 +198,39 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
         doc.setPropertyValue("ct:complexList",
                 (Serializable) complexListPropValue);
+        
+        // -----------------------
+        // listoflists
+        // -----------------------
+        List<Map<String, Serializable>> listOfListPropValue = new ArrayList<Map<String, Serializable>>();
+
+        Map<String, Serializable> complexItem1 = new HashMap<String, Serializable>();
+        complexItem1.put("stringItem", "first item");
+        List<String> item1SubList = new ArrayList<String>();
+        item1SubList.add("Monday");
+        item1SubList.add("Tuesday");
+        complexItem1.put("stringListItem", (Serializable) item1SubList);
+        listOfListPropValue.add(complexItem1);
+
+        Map<String, Serializable> complexItem2 = new HashMap<String, Serializable>();
+        complexItem2.put("stringItem", "second item is different");
+        List<String> item2SubList = new ArrayList<String>();
+        item2SubList.add("Wednesday");
+        item2SubList.add("Friday");
+        item2SubList.add("Saturday");
+        complexItem2.put("stringListItem", (Serializable) item2SubList);
+        listOfListPropValue.add(complexItem2);
+        
+        Map<String, Serializable> complexItem3 = new HashMap<String, Serializable>();
+        complexItem3.put("stringItem", "third item");
+        List<String> item3SubList = new ArrayList<String>();
+        item2SubList.add("July");
+        item2SubList.add("August");
+        complexItem3.put("stringListItem", (Serializable) item3SubList);
+        listOfListPropValue.add(complexItem3);
+
+        doc.setPropertyValue("lol:listOfLists",
+                (Serializable) listOfListPropValue);
 
         return session.createDocument(doc);
     }
