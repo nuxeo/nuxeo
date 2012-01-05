@@ -224,8 +224,6 @@ public class ContentViewImpl implements ContentView {
                 } else if (newParams[i] != null
                         && !newParams[i].equals(oldParams[i])) {
                     return true;
-                } else {
-                    return false;
                 }
             }
             return false;

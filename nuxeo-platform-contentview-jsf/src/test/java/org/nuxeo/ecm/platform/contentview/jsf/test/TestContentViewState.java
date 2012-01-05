@@ -121,7 +121,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         Object[] queryParams = state.getQueryParameters();
         assertNotNull(queryParams);
-        assertEquals(1, queryParams.length);
+        assertEquals(2, queryParams.length);
         assertEquals(currentDocument.getId(), queryParams[0]);
         assertNull(state.getResultColumns());
 

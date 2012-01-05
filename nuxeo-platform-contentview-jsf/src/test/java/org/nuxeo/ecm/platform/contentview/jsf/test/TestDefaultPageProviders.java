@@ -51,6 +51,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     DocumentModel searchDocument;
 
+    private int dummyParam = 0;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -79,6 +81,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                 }
                 if ("#{searchDocument}".equals(expression)) {
                     return searchDocument;
+                }
+                if ("#{dummy.param}".equals(expression)) {
+                    return ++dummyParam;
                 }
                 if ("#{currentDocument.id}".equals(expression)) {
                     return rootDoc.getId();
@@ -125,7 +130,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         String parentIdParam = session.getRootDocument().getId();
         assertEquals(parentIdParam, contentView.getCacheKey());
 
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam, dummyParam);
         checkCoreQuery(parentIdParam, pp);
     }
 
@@ -137,7 +142,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         String parentIdParam = session.getRootDocument().getId();
         assertEquals(parentIdParam, contentView.getCacheKey());
 
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam, dummyParam);
         checkCoreQuery(parentIdParam, pp);
     }
 
@@ -159,8 +164,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                         "SELECT * FROM Document WHERE ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
-                        parentIdParam),
+                                + " AND ecm:currentLifeCycleState != 'deleted'" 
+                                + " AND ecm:parentId != %d"
+                                + " ORDER BY dc:title",
+                        parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -183,8 +190,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                         "SELECT * FROM Document WHERE ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
-                        parentIdParam),
+                                + " AND ecm:currentLifeCycleState != 'deleted'"
+                                + " AND ecm:parentId != %d"
+                                + " ORDER BY dc:title",
+                        parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -225,6 +234,12 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
         checkCoreQueryWithXMLParameter(parentIdParam, pp);
+
+        // Test that a new page provider is returned when one of the parameter changes.
+        // In this case, it's dummy.param that always changes.
+        PageProvider<DocumentModel> pp2 = (PageProvider<DocumentModel>) contentView.getPageProvider();
+        assertTrue(!pp2.equals(pp));
+        assertTrue(!pp2.getParameters()[1].equals(pp.getParameters()[1]));
     }
 
     @SuppressWarnings("unchecked")
@@ -254,8 +269,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                         "SELECT * FROM Document WHERE ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
-                        parentIdParam),
+                                + " AND ecm:currentLifeCycleState != 'deleted'"
+                                + " AND ecm:parentId != %d"
+                                + " ORDER BY dc:title",
+                        parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -278,8 +295,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                         "SELECT * FROM Document WHERE ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
-                        parentIdParam),
+                                + " AND ecm:currentLifeCycleState != 'deleted'"
+                                + " AND ecm:parentId != %d"
+                                + " ORDER BY dc:title",
+                        parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());

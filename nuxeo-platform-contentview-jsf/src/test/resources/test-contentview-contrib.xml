@@ -15,11 +15,12 @@
         <pattern>
           SELECT * FROM Document WHERE ecm:parentId = ? AND
           ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted'
+          AND ecm:currentLifeCycleState != 'deleted' AND ecm:parentId != ?
         </pattern>
         <sort column="dc:title" ascending="true" />
         <pageSize>2</pageSize>
         <parameter>#{currentDocument.id}</parameter>
+        <parameter>#{dummy.param}</parameter>
       </coreQueryPageProvider>
 
       <cacheKey>#{currentDocument.id}</cacheKey>
@@ -93,6 +94,7 @@
         <property name="coreSession">#{documentManager}</property>
         <property name="checkQueryCache">true</property>
         <parameter>#{currentDocument.id}</parameter>
+        <parameter>#{dummy.param}</parameter>
       </pageProvider>
 
       <cacheKey>#{currentDocument.id}</cacheKey>
@@ -159,7 +161,7 @@
         SELECT * FROM Document WHERE ecm:parentId = ? AND
         ecm:isCheckedInVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:currentLifeCycleState != 'deleted' AND ecm:parentId != ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
