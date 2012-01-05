@@ -244,6 +244,7 @@ class Release(object):
         """ Check the release is feasible"""
         # TODO
         # tag and release branch do not already exist
+        # all POMs have a namespace
         #  ...
 
 
