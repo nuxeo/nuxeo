@@ -1,0 +1,26 @@
+<component name="org.nuxeo.ecm.platform.diff.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="CURRENT_SELECTION_DIFF" link="#{documentDiffActions.diffCurrentSelection}"
+      label="command.clipboard.diff" order="100">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter-id>canDiffCurrentSelection</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="canDiffCurrentSelection">
+      <rule grant="true">
+        <condition>#{documentDiffActions.canDiffCurrentSelection}
+        </condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

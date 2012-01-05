@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.diff.model;
 import java.io.Serializable;
 
 /**
- * XXX ATA: maybe this interface is useless
  * <p>
  * Representation of a property (or field) diff.
  * 

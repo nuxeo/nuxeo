@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.diff.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +40,13 @@ public interface SchemaDiff extends Serializable {
      * @return the field count
      */
     int getFieldCount();
+
+    /**
+     * Gets the field names.
+     * 
+     * @return the field names
+     */
+    List<String> getFieldNames();
 
     /**
      * Gets the field diff.

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.diff.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +40,13 @@ public interface DocumentDiff extends Serializable {
      * @return the schema count
      */
     int getSchemaCount();
+
+    /**
+     * Gets the schema names.
+     * 
+     * @return the schema names
+     */
+    List<String> getSchemaNames();
 
     /**
      * Gets the schema diff.

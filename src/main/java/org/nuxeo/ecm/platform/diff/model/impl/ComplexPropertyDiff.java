@@ -65,6 +65,15 @@ public class ComplexPropertyDiff implements PropertyDiff {
         return diffMap.put(item, diff);
     }
 
+    /**
+     * Put all.
+     * 
+     * @param otherDiff the other diff
+     */
+    public void putAll(ComplexPropertyDiff otherDiff) {
+        diffMap.putAll(otherDiff.getDiffMap());
+    }
+
     public Map<String, PropertyDiff> getDiffMap() {
         return diffMap;
     }

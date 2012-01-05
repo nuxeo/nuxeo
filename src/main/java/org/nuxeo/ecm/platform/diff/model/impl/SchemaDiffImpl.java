@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
@@ -52,6 +54,10 @@ public class SchemaDiffImpl implements SchemaDiff {
 
     public int getFieldCount() {
         return schemaDiff.size();
+    }
+
+    public List<String> getFieldNames() {
+        return new ArrayList<String>(schemaDiff.keySet());
     }
 
     public PropertyDiff getFieldDiff(String field) {

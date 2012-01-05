@@ -1,0 +1,44 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  
+  <nxu:set var="docDiff" value="#{documentDiffActions.documentDiff}" cache="true">
+  
+    <ui:repeat value="#{docDiff.schemaNames}" var="schemaName">
+      <nxu:set var="schemaDiff" value="#{docDiff.getSchemaDiff(schemaName)}" cache="false">
+        
+        <div class="foldableBox">
+          <h3 class="folded">
+            <a href="#nologo" onclick="return toggleBox(this)">
+              <h:outputText value="#{messages[schemaName]}" />
+            </a>
+            <span class="breaker"></span>
+          </h3>
+          <div class="boxBody">
+            <nxu:dataTable id="schemaDiffTable_#{schemaName}" value="#{schemaDiff.fieldNames}" var="fieldName"
+              rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
+              <nxu:column>
+                <h:outputText value="#{messages[fieldName]}"/>
+              </nxu:column>
+              <nxu:column>
+                #{schemaDiff.getFieldDiff(fieldName)}
+              </nxu:column>
+            </nxu:dataTable>
+          </div>
+        </div>
+        
+      </nxu:set>
+    </ui:repeat>
+    
+  </nxu:set>
+  <div>
+    <h:form>
+      <h:commandButton value="#{messages['document.diff.refresh']}"
+        action="#{documentDiffActions.diffCurrentSelection()}"
+        styleClass="button" />
+    </h:form>
+  </div>
+  
+</div>

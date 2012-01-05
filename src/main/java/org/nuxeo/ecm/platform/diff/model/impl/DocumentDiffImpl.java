@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
@@ -38,7 +40,7 @@ public class DocumentDiffImpl implements DocumentDiff {
      * fields of the schema.
      */
     private Map<String, SchemaDiff> docDiff;
-    
+
     /**
      * Instantiates a new document diff impl.
      */
@@ -52,6 +54,10 @@ public class DocumentDiffImpl implements DocumentDiff {
 
     public int getSchemaCount() {
         return docDiff.size();
+    }
+
+    public List<String> getSchemaNames() {
+        return new ArrayList<String>(docDiff.keySet());
     }
 
     public SchemaDiff getSchemaDiff(String schema) {
