@@ -143,7 +143,7 @@ class Release(object):
                     if elem is not None and elem.text == old_version:
                         elem.text = new_version
                     # Properties like nuxeo.*.version
-                    prop_pattern = re.compile("{" + namespaces.get("pom") + "}nuxeo\..*\.version")
+                    prop_pattern = re.compile("{" + namespaces.get("pom") + "}nuxeo\..*version")
                     properties = tree.getroot().find("pom:properties", namespaces)
                     if properties is not None:
                         for property in properties.getchildren():
