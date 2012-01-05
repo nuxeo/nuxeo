@@ -215,7 +215,7 @@ class Release(object):
 
         if self.maintenance is None:
             # Delete maintenance branches
-            self.repo.system_recurse("git branch -D" % self.tag)
+            self.repo.system_recurse("git branch -D %s" % self.tag)
 
         # Build, test and package
         self.repo.system_recurse("git checkout release-%s" % self.tag)
@@ -230,12 +230,15 @@ class Release(object):
     def perform(self):
         """ Perform the release: push source, deploy artifacts and upload
         packages"""
+        cwd = os.getcwd()
+        os.chdir(self.repo.basedir)
         self.repo.clone(self.branch)
         self.repo.system_recurse("git push --all")
         self.repo.system_recurse("git push --tags")
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         system("mvn %s clean deploy -Dmaven.test.skip=true \
                 -Prelease,addons,distrib,all-distributions,-qa" % mvn_opts)
+        os.chdir(cwd)
 
     def check(self):
         """ Check the release is feasible"""
