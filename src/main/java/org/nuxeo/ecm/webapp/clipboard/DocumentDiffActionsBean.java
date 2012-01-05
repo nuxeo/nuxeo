@@ -72,26 +72,43 @@ public class DocumentDiffActionsBean implements Serializable {
     }
 
     /**
-     * Makes a diff of the selection.
+     * Makes a diff of the current selection.
      * 
      * @return the view id
      * @throws ClientException the client exception
      */
     public String diffCurrentSelection() throws ClientException {
 
-        List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> currentSelectionWorkingList = getCurrentSelectionWorkingList();
 
-        if (currentSelectionWorkingList == null
-                || currentSelectionWorkingList.size() != 2) {
-            throw new ClientException(
-                    "Cannot make a diff of the current selection: need to have exactly 2 documents in the working list");
-        }
-
-        setDocumentDiff(getDocumentDiffService().diff(documentManager,
-                currentSelectionWorkingList.get(0),
-                currentSelectionWorkingList.get(1)));
+        DocumentDiff documentDiff = getDocumentDiffService().diff(
+                documentManager, currentSelectionWorkingList.get(0),
+                currentSelectionWorkingList.get(1));
+        setDocumentDiff(documentDiff);
 
         return DOC_DIFF_VIEW;
+
+    }
+
+    /**
+     * Refreshes the diff of the current selection.
+     * 
+     * @throws ClientException the client exception
+     */
+    public void refreshCurrentSelectionDiff() throws ClientException {
+
+        // Get docs from current selection list
+        List<DocumentModel> currentSelectionWorkingList = getCurrentSelectionWorkingList();
+        DocumentModel leftDoc = currentSelectionWorkingList.get(0);
+        DocumentModel rightDoc = currentSelectionWorkingList.get(1);
+
+        // Fetch docs from repository
+        leftDoc = documentManager.getDocument(leftDoc.getRef());
+        rightDoc = documentManager.getDocument(rightDoc.getRef());
+
+        DocumentDiff documentDiff = getDocumentDiffService().diff(
+                documentManager, leftDoc, rightDoc);
+        setDocumentDiff(documentDiff);
 
     }
 
@@ -101,6 +118,25 @@ public class DocumentDiffActionsBean implements Serializable {
 
     public void setDocumentDiff(DocumentDiff docDiff) {
         this.documentDiff = docDiff;
+    }
+
+    /**
+     * Gets the current selection working list.
+     * 
+     * @return the current selection working list
+     * @throws ClientException the client exception
+     */
+    protected final List<DocumentModel> getCurrentSelectionWorkingList()
+            throws ClientException {
+
+        List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+
+        if (currentSelectionWorkingList == null
+                || currentSelectionWorkingList.size() != 2) {
+            throw new ClientException(
+                    "Cannot make a diff of the current selection: need to have exactly 2 documents in the working list");
+        }
+        return currentSelectionWorkingList;
     }
 
     /**
