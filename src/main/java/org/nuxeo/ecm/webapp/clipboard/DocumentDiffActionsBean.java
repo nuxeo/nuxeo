@@ -29,8 +29,10 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -49,6 +51,9 @@ public class DocumentDiffActionsBean implements Serializable {
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
+
+    @In(create = true, required = false)
+    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -109,6 +114,37 @@ public class DocumentDiffActionsBean implements Serializable {
         DocumentDiff documentDiff = getDocumentDiffService().diff(
                 documentManager, leftDoc, rightDoc);
         setDocumentDiff(documentDiff);
+
+    }
+
+    /**
+     * Makes a diff of selected version with the live doc.
+     * 
+     * @param version the version
+     * @return the string
+     * @throws ClientException the client exception
+     */
+    public String diffCurrentVersion(VersionModel selectedVersion)
+            throws ClientException {
+
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            throw new ClientException(
+                    "Cannot make a diff between selected version and current document since current document is null.");
+        }
+
+        DocumentModel docVersion = documentManager.getDocumentWithVersion(
+                currentDocument.getRef(), selectedVersion);
+        if (docVersion == null) {
+            throw new ClientException(
+                    "Cannot make a diff between selected version and current document since selected version document is null.");
+        }
+
+        DocumentDiff documentDiff = getDocumentDiffService().diff(
+                documentManager, currentDocument, docVersion);
+        setDocumentDiff(documentDiff);
+
+        return DOC_DIFF_VIEW;
 
     }
 

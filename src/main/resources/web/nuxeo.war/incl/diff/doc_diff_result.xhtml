@@ -130,6 +130,7 @@
     <h:form>
       <h:commandButton value="#{messages['document.diff.refresh']}"
         action="#{documentDiffActions.refreshCurrentSelectionDiff()}"
+        rendered="#{documentDiffActions.getCanDiffCurrentSelection()}"
         styleClass="button" />
     </h:form>
   </div>
