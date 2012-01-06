@@ -17,4 +17,5 @@ target
 *.iws
 .DS_Store
 bin
+*.pyc
 
