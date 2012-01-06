@@ -1,0 +1,46 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+   <h:panelGroup rendered="#{nxd:hasPermission(currentDocument, 'ReadVersion') and
+          currentDocument.versionable and
+       !(currentDocument.version or currentDocument.proxy)}">
+
+    <h:form rendered="${not empty versionList}">
+      <h:dataTable var="versionItem" value="#{versionList}"
+        class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
+        
+        <h:column>
+          <f:facet name="header" />
+          <h:selectBooleanCheckbox id="check_#{versionItem.id}">
+            
+          </h:selectBooleanCheckbox>
+        </h:column>
+        
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.version']}" />
+          </f:facet>
+          <h:outputText value="#{versionItem.description}" />
+        </h:column>
+  
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.action']}" />
+          </f:facet>
+  
+        <ui:insert name="document_versions_buttons" />
+  
+        </h:column>
+      </h:dataTable>
+      <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
+      </a4j:outputPanel>
+    </h:form>
+
+    <p><h:outputText rendered="${empty versionList}"
+      value="#{messages['label.noversion']}"/></p>
+   </h:panelGroup>
+
+</div>
