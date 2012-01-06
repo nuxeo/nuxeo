@@ -2950,7 +2950,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- required by shindig gadgets at runtime (internal API uses)-->
+      <!-- required by shindig gadgets at runtime (internal API uses) -->
       <dependency>
         <groupId>com.google.code.guice</groupId>
         <artifactId>guice-internal</artifactId>
@@ -3649,7 +3649,9 @@
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
                 <treeLogger>true</treeLogger>
-                <logLevel>TRACE</logLevel>
+                <logLevel>WARN</logLevel>
+                <!-- useful for debug -->
+                <!-- <style>PRETTY</style> -->
               </configuration>
             </execution>
           </executions>
