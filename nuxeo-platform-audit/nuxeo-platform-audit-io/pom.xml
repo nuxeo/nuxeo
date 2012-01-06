@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-platform-audit-io</artifactId>
   <name>Nuxeo Platform Audit IO Fragment</name>
-  <description />
+  <description></description>
 
   <dependencies>
     <dependency>

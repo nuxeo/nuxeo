@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-platform-io-api</artifactId>
   <name>Nuxeo Platform IO API Fragment</name>
-  <description />
+  <description></description>
 
   <dependencies>
     <dependency>
