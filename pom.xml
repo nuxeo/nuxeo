@@ -65,6 +65,7 @@
     <module>nuxeo-cmf</module>
     <module>nuxeo-poll</module>
     <module>nuxeo-rss-reader</module>
+    <module>nuxeo-flavors</module>
   </modules>
 
   <dependencyManagement>
@@ -703,6 +704,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-poll-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <!-- Flavors -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-flavors-unicolor</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
