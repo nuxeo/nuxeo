@@ -201,7 +201,7 @@ class Release(object):
         self.repo.system_recurse("git commit -m'Release %s' -a" % self.tag)
         self.repo.system_recurse("git tag release-%s" % self.tag)
 
-        ## TODO Optionally merge maintenance branch on master
+        ## TODO NXP-8569 Optionally merge maintenance branch on source
 
         if self.maintenance is not None:
             # Maintenance branches are kept, so update their versions
@@ -221,10 +221,8 @@ class Release(object):
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         system("mvn %s clean install -Dmaven.test.skip=true \
                 -Prelease,addons,distrib,all-distributions,-qa" % mvn_opts)
-        # TODO packaging
-        # TODO package sources
-
-        # TODO Synchronize repositories between slaves
+        # TODO NXP-8570 packaging
+        # TODO NXP-8571 package sources
         os.chdir(cwd)
 
     def perform(self):
@@ -242,10 +240,8 @@ class Release(object):
 
     def check(self):
         """ Check the release is feasible"""
-        # TODO
-        # tag and release branch do not already exist
-        # all POMs have a namespace
-        #  ...
+        # TODO NXP-8573 tag and release branch do not already exist
+        # TODO NXP-8573 all POMs have a namespace
 
 
 def main():
@@ -287,7 +283,7 @@ def main():
                       help="Maven options (default: '%default')", default='')
     parser.add_option('-i', '--interactive', action="store_true",
                       dest='interactive', default=False,
-                      help="""Not implemented. Interactive mode.""")
+                      help="""Not implemented (TODO NXP-8573). Interactive mode.""")
     (options, args) = parser.parse_args()
     if len(args) > 0:
         command = args[0]
