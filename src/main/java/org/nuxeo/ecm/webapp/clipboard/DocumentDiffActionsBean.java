@@ -23,6 +23,8 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import java.io.Serializable;
 import java.util.List;
 
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -58,7 +60,9 @@ public class DocumentDiffActionsBean implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    protected DocumentDiff documentDiff;
+    protected DocumentModel leftDoc;
+
+    protected DocumentModel rightDoc;
 
     /**
      * Checks if the diff action is available for the current document selection
@@ -77,54 +81,30 @@ public class DocumentDiffActionsBean implements Serializable {
     }
 
     /**
-     * Makes a diff of the current selection.
+     * Prepares a diff of the current selection.
      * 
      * @return the view id
      * @throws ClientException the client exception
      */
-    public String diffCurrentSelection() throws ClientException {
+    public String prepareCurrentSelectionDiff() throws ClientException {
 
         List<DocumentModel> currentSelectionWorkingList = getCurrentSelectionWorkingList();
 
-        DocumentDiff documentDiff = getDocumentDiffService().diff(
-                documentManager, currentSelectionWorkingList.get(0),
-                currentSelectionWorkingList.get(1));
-        setDocumentDiff(documentDiff);
+        leftDoc = currentSelectionWorkingList.get(0);
+        rightDoc = currentSelectionWorkingList.get(1);
 
         return DOC_DIFF_VIEW;
 
     }
 
     /**
-     * Refreshes the diff of the current selection.
-     * 
-     * @throws ClientException the client exception
-     */
-    public void refreshCurrentSelectionDiff() throws ClientException {
-
-        // Get docs from current selection list
-        List<DocumentModel> currentSelectionWorkingList = getCurrentSelectionWorkingList();
-        DocumentModel leftDoc = currentSelectionWorkingList.get(0);
-        DocumentModel rightDoc = currentSelectionWorkingList.get(1);
-
-        // Fetch docs from repository
-        leftDoc = documentManager.getDocument(leftDoc.getRef());
-        rightDoc = documentManager.getDocument(rightDoc.getRef());
-
-        DocumentDiff documentDiff = getDocumentDiffService().diff(
-                documentManager, leftDoc, rightDoc);
-        setDocumentDiff(documentDiff);
-
-    }
-
-    /**
-     * Makes a diff of selected version with the live doc.
+     * Prepares a diff of the selected version with the live doc.
      * 
      * @param version the version
      * @return the string
      * @throws ClientException the client exception
      */
-    public String diffCurrentVersion(VersionModel selectedVersion)
+    public String prepareCurrentVersionDiff(VersionModel selectedVersion)
             throws ClientException {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -140,20 +120,41 @@ public class DocumentDiffActionsBean implements Serializable {
                     "Cannot make a diff between selected version and current document since selected version document is null.");
         }
 
-        DocumentDiff documentDiff = getDocumentDiffService().diff(
-                documentManager, currentDocument, docVersion);
-        setDocumentDiff(documentDiff);
+        leftDoc = currentDocument;
+        rightDoc = docVersion;
 
         return DOC_DIFF_VIEW;
 
     }
 
-    public DocumentDiff getDocumentDiff() {
-        return documentDiff;
+    /**
+     * Prepares the refresh of the diff between leftDoc and rightDoc.
+     * 
+     * @throws ClientException the client exception
+     */
+    public void prepareDiffRefresh() throws ClientException {
+
+        // Fetch docs from repository
+        leftDoc = documentManager.getDocument(leftDoc.getRef());
+        rightDoc = documentManager.getDocument(rightDoc.getRef());
+
     }
 
-    public void setDocumentDiff(DocumentDiff docDiff) {
-        this.documentDiff = docDiff;
+    /**
+     * Gets the document diff.
+     * 
+     * @return the document diff between leftDoc and rightDoc if leftDoc and
+     *         rightDoc aren't null, else null
+     * @throws ClientException the client exception
+     */
+    @Factory(value = "documentDiff", scope = ScopeType.PAGE)
+    public DocumentDiff getDocumentDiff() throws ClientException {
+
+        if (leftDoc == null || rightDoc == null) {
+            return null;
+        }
+        return getDocumentDiffService().diff(documentManager, leftDoc, rightDoc);
+
     }
 
     /**
@@ -198,4 +199,19 @@ public class DocumentDiffActionsBean implements Serializable {
 
     }
 
+    public DocumentModel getLeftDoc() {
+        return leftDoc;
+    }
+
+    public void setLeftDoc(DocumentModel leftDoc) {
+        this.leftDoc = leftDoc;
+    }
+
+    public DocumentModel getRightDoc() {
+        return rightDoc;
+    }
+
+    public void setRightDoc(DocumentModel rightDoc) {
+        this.rightDoc = rightDoc;
+    }
 }

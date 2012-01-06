@@ -2,7 +2,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
   
   <style type="text/css">
     .diffTable {width: 100%; border-collapse: collapse;}
@@ -14,12 +15,46 @@
     .rightDiff {background-color:#DDFFDD;}
     .complexDiffTable th, .complexDiffTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
     .complexDiffTable th {background-color:  #EEEFF0; text-align: center; font-weight: bold;}
+    .italic {font-style: italic;}
   </style>
   
-  <nxu:set var="docDiff" value="#{documentDiffActions.documentDiff}" cache="true">
+  <c:if test="#{empty documentDiff}">
+    <h2><h:outputText value="#{messages['document.diff.noDiffAvailable']}"/></h2>
+  </c:if>
+  <c:if test="#{!empty documentDiff}">
   
-    <ui:repeat value="#{docDiff.schemaNames}" var="schemaName">
-      <nxu:set var="schemaDiff" value="#{docDiff.getSchemaDiff(schemaName)}" cache="false">
+    <table class="diffTable">
+      <tr>
+        <td class="fieldLabelColumn"></td>
+        <td class="fieldDiffColumn">
+          <h2>
+            <nxd:restDocumentLink document="#{documentDiffActions.leftDoc}">
+              <span id="title_#{documentDiffActions.leftDoc.ref}" title="#{documentDiffActions.leftDoc.description}">
+                #{nxd:titleOrId(documentDiffActions.leftDoc)}
+              </span>
+            </nxd:restDocumentLink>
+          </h2>
+        </td>
+        <td class="fieldDiffColumn">
+          <h2>
+            <nxd:restDocumentLink document="#{documentDiffActions.rightDoc}">
+              <span id="title_#{documentDiffActions.rightDoc.ref}" title="#{documentDiffActions.rightDoc.description}">
+                #{nxd:titleOrId(documentDiffActions.rightDoc)}
+              </span>
+            </nxd:restDocumentLink>
+            <c:if test="#{documentDiffActions.rightDoc.version}">
+              <span class="italic">
+                (<h:outputText value="#{messages['label.version']}" />
+                <h:outputText value=" #{documentManager.getVersionLabel(documentDiffActions.rightDoc)}" />)
+              </span>
+            </c:if>
+          </h2>
+        </td>
+      </tr>
+    </table>
+    
+    <ui:repeat value="#{documentDiff.schemaNames}" var="schemaName">
+      <nxu:set var="schemaDiff" value="#{documentDiff.getSchemaDiff(schemaName)}" cache="false">
 
         <div class="foldableBox">
           <h3 class="folded">
@@ -125,14 +160,14 @@
       </nxu:set>
     </ui:repeat>
     
-  </nxu:set>
-  <div>
-    <h:form>
-      <h:commandButton value="#{messages['document.diff.refresh']}"
-        action="#{documentDiffActions.refreshCurrentSelectionDiff()}"
-        rendered="#{documentDiffActions.getCanDiffCurrentSelection()}"
-        styleClass="button" />
-    </h:form>
-  </div>
+    <div>
+      <h:form>
+        <h:commandButton value="#{messages['document.diff.refresh']}"
+          action="#{documentDiffActions.prepareDiffRefresh()}"
+          styleClass="button" />
+      </h:form>
+    </div>
+    
+  </c:if>
   
 </div>
