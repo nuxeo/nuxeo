@@ -23,7 +23,8 @@ gitf() {
   for dir in . nuxeo-*; do
     if [ -d "$dir"/.git ]; then
       echo "[$dir]"
-      (cd "$dir" ; git "$@"; echo )
+      (cd "$dir" ; git "$@")
+      echo
     fi
   done
 }
@@ -33,7 +34,8 @@ gitfa() {
    for dir in $ADDONS; do
      if [ -d "$dir"/.git ]; then
        echo "[$dir]"
-       (cd "$dir" ; git "$@"; echo )
+       (cd "$dir" ; git "$@")
+       echo
      fi
    done
 }
