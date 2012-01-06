@@ -19,7 +19,7 @@
       enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
       <parameters>
-        <parameter name="ForcePromptURL_CMISAtomPub">json/cmis</parameter>
+        <parameter name="ForcePromptURL_CMISJSON">json/cmis</parameter>
       </parameters>
     </authenticationPlugin>
   </extension>
