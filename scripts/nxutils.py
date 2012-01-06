@@ -157,14 +157,18 @@ def log(message, out=sys.stdout):
     out.flush()
 
 
-def system(cmd, failonerror=True):
+def system(cmd, failonerror=True, delay_stdout=True):
     log("$> " + cmd)
     args = shlex.split(cmd)
-    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    out, err = p.communicate()
-    sys.stdout.write(out)
-    sys.stdout.flush()
+    if delay_stdout:
+        p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        out, err = p.communicate()
+        sys.stdout.write(out)
+        sys.stdout.flush()
+    else:
+        p = subprocess.Popen(args)
+        p.wait()
     retcode = p.returncode
     if retcode != 0:
         log("[ERROR] Command returned non-zero exit code: %s" % cmd, sys.stderr)
