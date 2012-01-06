@@ -801,7 +801,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 return null;
             } else {
                 DocumentRef parentRef = doc.getParentRef();
-                if (parentRef instanceof IdRef) {
+                if (parentRef == null) {
+                    return null; // unfiled document
+                } else if (parentRef instanceof IdRef) {
                     return ((IdRef) parentRef).value;
                 } else {
                     try {

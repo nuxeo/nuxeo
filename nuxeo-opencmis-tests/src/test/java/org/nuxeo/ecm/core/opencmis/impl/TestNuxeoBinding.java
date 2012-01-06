@@ -456,6 +456,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("/", getString(root, PropertyIds.PATH));
 
         // root parent
+        assertNull(getString(root, PropertyIds.PARENT_ID));
         ObjectData parent = navService.getFolderParent(repositoryId,
                 rootFolderId, null, null);
         assertNull(parent);
@@ -2654,6 +2655,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Properties properties = factory.createPropertiesData(props);
         String relid = objService.createRelationship(repositoryId, properties,
                 null, null, null, null);
+
+        // must be superuser...
+        // ObjectData rel = getObject(relid);
+        // assertEquals("rel", getValue(rel, PropertyIds.NAME));
+        // assertNull(getValue(rel, NuxeoTypeHelper.NX_PARENT_ID));
 
         // objects have relationship info
         ObjectData od1 = getObject(id1);
