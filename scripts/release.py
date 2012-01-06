@@ -160,30 +160,8 @@ class Release(object):
                     with open(os.path.join(root, name), "wb") as f:
                         f.write(content)
 
-    def test(self, root, name):
-        tree = etree.parse(os.path.join(root, name))
-        # Parent POM version
-        parent = tree.getroot().find("pom:parent", namespaces)
-        if parent is not None:
-            elem = parent.find("pom:version", namespaces)
-            if elem is not None and elem.text == self.snapshot:
-                elem.text = self.tag
-        # POM version
-        elem = tree.getroot().find("version")
-        if elem is not None and elem.text == self.snapshot:
-            elem.text = self.tag
-        # Properties
-        prop_pattern = re.compile("{" + namespaces.get("pom") + "}nuxeo\..*version")
-        properties = tree.getroot().find("pom:properties", namespaces)
-        if properties is not None:
-            for property in properties.getchildren():
-                log(property)
-                if (not isinstance(property, etree._Comment)
-                    and prop_pattern.match(property.tag)
-                    and property.text == self.snapshot):
-                    property.text = self.tag
-        log(os.path.join(root, name))
-        tree.write_c14n(os.path.join(root, name))
+    def test(self):
+        system("mvn validate", delay_stdout=False)
 
     def prepare(self):
         """ Prepare the release: build, change versions, tag and package source and
@@ -305,8 +283,8 @@ def main():
             release.prepare()
         elif command == "perform":
             release.perform()
-        #elif command == "test":
-        #release.test("/tmp/nuxeo", "pom.xml")
+        elif command == "test":
+            release.test()
         else:
             log("[ERROR] Unknown command! Available commands: 'prepare', 'perform'",
                 sys.stderr)
