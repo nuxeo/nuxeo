@@ -18,10 +18,10 @@
     .italic {font-style: italic;}
   </style>
   
-  <c:if test="#{empty documentDiff}">
+  <c:if test="#{documentDiff.schemaCount == 0}">
     <h2><h:outputText value="#{messages['document.diff.noDiffAvailable']}"/></h2>
   </c:if>
-  <c:if test="#{!empty documentDiff}">
+  <c:if test="#{documentDiff.schemaCount > 0}">
   
     <table class="diffTable">
       <tr>
@@ -29,7 +29,7 @@
         <td class="fieldDiffColumn">
           <h2>
             <nxd:restDocumentLink document="#{documentDiffActions.leftDoc}">
-              <span id="title_#{documentDiffActions.leftDoc.ref}" title="#{documentDiffActions.leftDoc.description}">
+              <span id="title_#{documentDiffActions.leftDoc.ref}" title="#{documentDiffActions.leftDoc.dc.description}">
                 #{nxd:titleOrId(documentDiffActions.leftDoc)}
               </span>
             </nxd:restDocumentLink>
@@ -38,7 +38,7 @@
         <td class="fieldDiffColumn">
           <h2>
             <nxd:restDocumentLink document="#{documentDiffActions.rightDoc}">
-              <span id="title_#{documentDiffActions.rightDoc.ref}" title="#{documentDiffActions.rightDoc.description}">
+              <span id="title_#{documentDiffActions.rightDoc.ref}" title="#{documentDiffActions.rightDoc.dc.description}">
                 #{nxd:titleOrId(documentDiffActions.rightDoc)}
               </span>
             </nxd:restDocumentLink>

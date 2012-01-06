@@ -19,11 +19,11 @@
 package org.nuxeo.ecm.webapp.clipboard;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.PAGE;
 
 import java.io.Serializable;
 import java.util.List;
 
-import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
+import org.nuxeo.ecm.platform.diff.model.impl.DocumentDiffImpl;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -147,11 +148,11 @@ public class DocumentDiffActionsBean implements Serializable {
      *         rightDoc aren't null, else null
      * @throws ClientException the client exception
      */
-    @Factory(value = "documentDiff", scope = ScopeType.PAGE)
+    @Factory(value = "documentDiff", scope = PAGE)
     public DocumentDiff getDocumentDiff() throws ClientException {
 
         if (leftDoc == null || rightDoc == null) {
-            return null;
+            return new DocumentDiffImpl();
         }
         return getDocumentDiffService().diff(documentManager, leftDoc, rightDoc);
 
