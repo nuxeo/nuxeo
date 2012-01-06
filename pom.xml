@@ -51,6 +51,7 @@
     <nuxeo.dam.version>5.6-SNAPSHOT</nuxeo.dam.version>
     <nuxeo.cmf.version>5.6-SNAPSHOT</nuxeo.cmf.version>
     <nuxeo.poll.version>5.6-SNAPSHOT</nuxeo.poll.version>
+    <nuxeo.flavors.version>5.6-SNAPSHOT</nuxeo.flavors.version>
   </properties>
 
   <modules>
@@ -91,6 +92,7 @@
     <module>nuxeo-cmf</module>
     <module>nuxeo-poll</module>
     <module>nuxeo-rss-reader</module>
+    <module>nuxeo-flavors</module>
   </modules>
 
   <dependencyManagement>
@@ -731,6 +733,13 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-poll-web</artifactId>
         <version>${nuxeo.poll.version}</version>
+      </dependency>
+
+      <!-- Flavors -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-flavors-unicolor</artifactId>
+        <version>${nuxeo.flavors.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
