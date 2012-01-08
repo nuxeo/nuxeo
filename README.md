@@ -5,7 +5,6 @@ The comparison takes into account all the metadatas shared by the documents, whi
 The result of the comparison only shows the metadatas that have been updated, or added / deleted in the case of multivalued metadatas.
 The comparison does not take into account blob-type metadatas.
 
-For now, we only contributed a unit test of the XMLUnit features.
 
 ## Building and deploying
 
