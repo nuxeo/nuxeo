@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.quota;
 
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -34,6 +38,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class QuotaStatsServiceImpl extends DefaultComponent implements
         QuotaStatsService {
 
+    private static final Log log = LogFactory.getLog(QuotaStatsServiceImpl.class);
+
     public static final String QUOTA_STATS_UPDATERS_EP = "quotaStatsUpdaters";
 
     private QuotaStatsUpdaterRegistry quotaStatsUpdaterRegistry;
@@ -46,17 +52,16 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     @Override
     public void updateStatistics(final DocumentEventContext docCtx,
             final String eventName) {
+        List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
+
+        Thread runner = new Thread(new UpdateStatisticsTask(quotaStatsUpdaters,
+                docCtx, eventName));
+        runner.setDaemon(true);
+        runner.start();
         try {
-            new UnrestrictedSessionRunner(docCtx.getRepositoryName()) {
-                @Override
-                public void run() throws ClientException {
-                    for (QuotaStatsUpdater updater : quotaStatsUpdaterRegistry.getQuotaStatsUpdaters()) {
-                        updater.updateStatistics(session, docCtx, eventName);
-                    }
-                }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+            runner.join(2000);
+        } catch (InterruptedException e) {
+            log.error("Exit before the end of processing", e);
         }
     }
 
@@ -91,6 +96,40 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             throws Exception {
         if (QUOTA_STATS_UPDATERS_EP.equals(extensionPoint)) {
             quotaStatsUpdaterRegistry.removeContribution((QuotaStatsUpdaterDescriptor) contribution);
+        }
+    }
+
+    private static class UpdateStatisticsTask implements Runnable {
+
+        private static final Log log = LogFactory.getLog(UpdateStatisticsTask.class);
+
+        private final List<QuotaStatsUpdater> quotaStatsUpdaters;
+
+        private final DocumentEventContext docCtx;
+
+        private final String eventName;
+
+        private UpdateStatisticsTask(
+                List<QuotaStatsUpdater> quotaStatsUpdaters,
+                DocumentEventContext docCtx, String eventName) {
+            this.quotaStatsUpdaters = quotaStatsUpdaters;
+            this.docCtx = docCtx;
+            this.eventName = eventName;
+        }
+
+        @Override
+        public void run() {
+            for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
+                Thread runner = new Thread(new UpdaterTask(updater, docCtx,
+                        eventName));
+                runner.setDaemon(true);
+                runner.start();
+                try {
+                    runner.join();
+                } catch (InterruptedException e) {
+                    log.error("Exit before the end of processing", e);
+                }
+            }
         }
     }
 
