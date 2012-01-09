@@ -93,6 +93,8 @@ public class DocumentDiffActionsBean implements Serializable {
 
         leftDoc = currentSelectionWorkingList.get(0);
         rightDoc = currentSelectionWorkingList.get(1);
+        
+        refresh();
 
         return DOC_DIFF_VIEW;
 
@@ -129,11 +131,11 @@ public class DocumentDiffActionsBean implements Serializable {
     }
 
     /**
-     * Prepares the refresh of the diff between leftDoc and rightDoc.
+     * Refreshes the diff between leftDoc and rightDoc.
      * 
      * @throws ClientException the client exception
      */
-    public void prepareDiffRefresh() throws ClientException {
+    public void refresh() throws ClientException {
 
         // Fetch docs from repository
         leftDoc = documentManager.getDocument(leftDoc.getRef());
