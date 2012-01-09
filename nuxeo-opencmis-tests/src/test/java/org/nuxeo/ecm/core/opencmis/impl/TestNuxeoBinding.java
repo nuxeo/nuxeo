@@ -165,7 +165,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     protected Properties createBaseDocumentProperties(String name, String typeId) {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
-        props.add(factory.createPropertyIdData(PropertyIds.NAME, name));
+        props.add(factory.createPropertyStringData(PropertyIds.NAME, name));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
                 typeId));
         return factory.createPropertiesData(props);
@@ -549,7 +549,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     protected String createDocumentMyDocType() {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
-        props.add(factory.createPropertyIdData(PropertyIds.NAME, COMPLEX_TITLE));
+        props.add(factory.createPropertyStringData(PropertyIds.NAME,
+                COMPLEX_TITLE));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
                 "MyDocType"));
         props.add(factory.createPropertyStringData("my:string", "abc"));
@@ -625,6 +626,27 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("doc1.txt", cs.getFileName());
         assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
+    }
+
+    @Test
+    public void testCreateDocumentImplicitType() throws Exception {
+        BindingsObjectFactory factory = binding.getObjectFactory();
+        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+        props.add(factory.createPropertyStringData(PropertyIds.NAME, "doc.txt"));
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
+                "cmis:document"));
+        props.add(factory.createPropertyStringData("dc:description", "my doc"));
+        Properties properties = factory.createPropertiesData(props);
+
+        String id = objService.createDocument(repositoryId, properties,
+                rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
+                null, null);
+        ObjectData data = getObject(id);
+        // check that the filename was enough to detect that we need a more
+        // specific type than File
+        assertEquals("Note", getValue(data, PropertyIds.OBJECT_TYPE_ID));
+        // other props were set
+        assertEquals("my doc", getValue(data, "dc:description"));
     }
 
     @Test
@@ -2144,8 +2166,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " WHERE cmis:name = 'testfile1_Title'";
 
         // search all versions
-        res = discService.query(repositoryId, statement, Boolean.TRUE, null, null,
-                null, null, null, null);
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
+                null, null, null, null, null);
         assertEquals(3, res.getNumItems().intValue());
 
         // do not search all versions (only latest)

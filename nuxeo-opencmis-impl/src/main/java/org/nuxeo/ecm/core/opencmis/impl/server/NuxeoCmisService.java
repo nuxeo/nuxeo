@@ -98,6 +98,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -112,6 +113,8 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -123,6 +126,10 @@ import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -344,6 +351,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         return !documentFilter.accept(doc);
     }
 
+    /** Creates bare unsaved document model. */
     protected DocumentModel createDocumentModel(ObjectId folder,
             TypeDefinition type) {
         DocumentModel doc;
@@ -375,6 +383,47 @@ public class NuxeoCmisService extends AbstractCmisService {
         return doc;
     }
 
+    /** Creates and save document model. */
+    protected DocumentModel createDocumentModel(ObjectId folder,
+            ContentStream contentStream, String name) {
+        FileManager fileManager = Framework.getLocalService(FileManager.class);
+        MimetypeRegistryService mtr = (MimetypeRegistryService) Framework.getLocalService(MimetypeRegistry.class);
+        if (fileManager == null || mtr == null || name == null
+                || folder == null) {
+            return null;
+        }
+
+        DocumentModel parent;
+        try {
+            parent = coreSession.getDocument(new IdRef(folder.getId()));
+        } catch (ClientException e) {
+            throw new CmisRuntimeException("Cannot create object", e);
+        }
+        String path = parent.getPathAsString();
+
+        Blob blob;
+        if (contentStream == null) {
+            String mimeType;
+            try {
+                mimeType = mtr.getMimetypeFromFilename(name);
+            } catch (MimetypeNotFoundException e) {
+                mimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
+            }
+            blob = new ByteArrayBlob(new byte[0], mimeType, null, name, null);
+        } else {
+            blob = new InputStreamBlob(contentStream.getStream(),
+                    contentStream.getMimeType(), null,
+                    contentStream.getFileName(), null);
+        }
+
+        try {
+            return fileManager.createDocumentFromBlob(coreSession, blob, path,
+                    false, name);
+        } catch (Exception e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
     // create and save session
     protected NuxeoObjectData createObject(String repositoryId,
             Properties properties, ObjectId folder, BaseTypeId baseType,
@@ -400,7 +449,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         if (typeId == null) {
             switch (baseType) {
             case CMIS_DOCUMENT:
-                typeId = "File"; // TODO constant
+                typeId = BaseTypeId.CMIS_DOCUMENT.value();
                 break;
             case CMIS_FOLDER:
                 typeId = BaseTypeId.CMIS_FOLDER.value();
@@ -422,40 +471,59 @@ public class NuxeoCmisService extends AbstractCmisService {
         if (type.isCreatable() == Boolean.FALSE) {
             throw new CmisInvalidArgumentException("Not creatable: " + typeId);
         }
-        DocumentModel doc = createDocumentModel(folder, type);
+
+        // name from properties
+        PropertyData<?> npd = properties.getProperties().get(PropertyIds.NAME);
+        String name = npd == null ? null : (String) npd.getFirstValue();
+        if (StringUtils.isBlank(name)) {
+            name = null;
+        }
+
+        // content stream filename default
+        if (contentStream != null
+                && StringUtils.isBlank(contentStream.getFileName())
+                && name != null) {
+            // infer filename from name property
+            contentStream = new ContentStreamImpl(name,
+                    contentStream.getBigLength(), contentStream.getMimeType(),
+                    contentStream.getStream());
+        }
+
+        DocumentModel doc = null;
+        if (BaseTypeId.CMIS_DOCUMENT.value().equals(typeId)) {
+            doc = createDocumentModel(folder, contentStream, name);
+        }
+        boolean created = doc != null;
+        if (!created) {
+            doc = createDocumentModel(folder, type);
+        }
+
         NuxeoObjectData data = new NuxeoObjectData(this, doc);
         updateProperties(data, null, properties, true);
-        try {
-            if (contentStream != null) {
-                if (contentStream.getFileName() == null) {
-                    // infer filename from properties
-                    PropertyData<?> pd = properties.getProperties().get(
-                            PropertyIds.NAME);
-                    if (pd != null) {
-                        String filename = (String) pd.getFirstValue();
-                        contentStream = new ContentStreamImpl(filename,
-                                contentStream.getBigLength(),
-                                contentStream.getMimeType(),
-                                contentStream.getStream());
-                    }
-                }
-                try {
-                    NuxeoPropertyData.setContentStream(doc, contentStream, true);
-                } catch (CmisContentAlreadyExistsException e) {
-                    // cannot happen, overwrite = true
-                }
+        if (!created && contentStream != null) {
+            try {
+                NuxeoPropertyData.setContentStream(doc, contentStream, true);
+            } catch (CmisContentAlreadyExistsException e) {
+                // cannot happen, overwrite = true
+            } catch (IOException e) {
+                throw new CmisRuntimeException(e.toString(), e);
             }
-            // set path segment from title
-            PathSegmentService pss = Framework.getService(PathSegmentService.class);
-            String pathSegment = pss.generatePathSegment(doc);
-            Path path = doc.getPath();
-            doc.setPathInfo(path == null ? null
-                    : path.removeLastSegments(1).toString(), pathSegment);
-            data.doc = coreSession.createDocument(doc);
+        }
+        try {
+            if (!created) {
+                // set path segment from properties (name/title)
+                PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+                String pathSegment = pss.generatePathSegment(doc);
+                Path path = doc.getPath();
+                doc.setPathInfo(path == null ? null
+                        : path.removeLastSegments(1).toString(), pathSegment);
+                doc = coreSession.createDocument(doc);
+            } else {
+                doc = coreSession.saveDocument(doc);
+            }
+            data.doc = doc;
             coreSession.save();
-        } catch (IOException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new CmisRuntimeException("Cannot create", e);
         }
         collectObjectInfo(repositoryId, data);
