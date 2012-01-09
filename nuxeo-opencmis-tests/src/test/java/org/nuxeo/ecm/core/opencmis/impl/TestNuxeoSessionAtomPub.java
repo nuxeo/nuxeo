@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import java.util.EventListener;
 import java.util.Map;
 
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
@@ -35,6 +36,11 @@ public class TestNuxeoSessionAtomPub extends NuxeoSessionClientServerTestCase {
     @Override
     protected Servlet getServlet() {
         return new CmisAtomPubServlet();
+    }
+
+    @Override
+    protected Filter getFilter() {
+        return new TrustingNuxeoAuthFilter();
     }
 
     @Override

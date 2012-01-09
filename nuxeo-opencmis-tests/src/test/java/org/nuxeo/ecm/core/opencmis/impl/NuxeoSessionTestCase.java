@@ -66,7 +66,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     public static final String NUXEO_ROOT_NAME = ""; // NuxeoPropertyDataName;
 
-    public static final String USERNAME = "test";
+    public static final String USERNAME = "Administrator";
 
     public static final String PASSWORD = "test";
 
@@ -359,8 +359,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         cs = file.getContentStream();
         assertNotNull(cs);
         // AtomPub lowercases charset -> TODO proper mime type comparison
-        assertEquals("text/plain; charset=UTF-8".toLowerCase(),
-                cs.getMimeType().toLowerCase());
+        String mimeType = cs.getMimeType().toLowerCase().replace(" ", "");
+        assertEquals("text/plain;charset=utf-8", mimeType);
         if (!isAtomPub) {
             // TODO fix AtomPub case where the filename is null
             assertEquals("foo.txt", cs.getFileName());

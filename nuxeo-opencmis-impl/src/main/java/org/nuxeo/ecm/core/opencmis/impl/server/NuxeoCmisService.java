@@ -376,8 +376,9 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     // create and save session
-    protected NuxeoObjectData createObject(Properties properties,
-            ObjectId folder, BaseTypeId baseType, ContentStream contentStream) {
+    protected NuxeoObjectData createObject(String repositoryId,
+            Properties properties, ObjectId folder, BaseTypeId baseType,
+            ContentStream contentStream) {
         String typeId;
         Map<String, PropertyData<?>> p;
         PropertyData<?> d;
@@ -457,6 +458,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         } catch (Exception e) {
             throw new CmisRuntimeException("Cannot create", e);
         }
+        collectObjectInfo(repositoryId, data);
         return data;
     }
 
@@ -574,8 +576,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             VersioningState versioningState, List<String> policies,
             ExtensionsData extension) {
         // TODO policies
-        NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
-                folderId), null, contentStream);
+        NuxeoObjectData object = createObject(repositoryId, properties,
+                new ObjectIdImpl(folderId), null, contentStream);
         return setInitialVersioningState(object, versioningState);
     }
 
@@ -585,8 +587,9 @@ public class NuxeoCmisService extends AbstractCmisService {
             VersioningState versioningState, List<String> policies,
             Acl addAces, Acl removeAces, ExtensionsData extension) {
         // TODO policies, addAces, removeAces
-        NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
-                folderId), BaseTypeId.CMIS_DOCUMENT, contentStream);
+        NuxeoObjectData object = createObject(repositoryId, properties,
+                new ObjectIdImpl(folderId), BaseTypeId.CMIS_DOCUMENT,
+                contentStream);
         return setInitialVersioningState(object, versioningState);
     }
 
@@ -595,8 +598,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             String folderId, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
         // TODO policies, addAces, removeAces
-        NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
-                folderId), BaseTypeId.CMIS_FOLDER, null);
+        NuxeoObjectData object = createObject(repositoryId, properties,
+                new ObjectIdImpl(folderId), BaseTypeId.CMIS_FOLDER, null);
         return object.getId();
     }
 
@@ -611,7 +614,7 @@ public class NuxeoCmisService extends AbstractCmisService {
     public String createRelationship(String repositoryId,
             Properties properties, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
-        NuxeoObjectData object = createObject(properties, null,
+        NuxeoObjectData object = createObject(repositoryId, properties, null,
                 BaseTypeId.CMIS_RELATIONSHIP, null);
         return object.getId();
     }
@@ -1585,6 +1588,9 @@ public class NuxeoCmisService extends AbstractCmisService {
         res.setObjects(batch.getList());
         res.setNumItems(batch.getNumItems());
         res.setHasMoreItems(batch.getHasMoreItems());
+        for (ObjectData data : res.getObjects()) {
+            collectObjectInfo(repositoryId, data);
+        }
         return res;
     }
 
@@ -1802,8 +1808,8 @@ public class NuxeoCmisService extends AbstractCmisService {
                     : doc;
             if (pwc != null && pwc.isCheckedOut()) {
                 NuxeoObjectData od = new NuxeoObjectData(this, pwc, filter,
-                        includeAllowableActions, IncludeRelationships.NONE, null,
-                        Boolean.FALSE, Boolean.FALSE, extension);
+                        includeAllowableActions, IncludeRelationships.NONE,
+                        null, Boolean.FALSE, Boolean.FALSE, extension);
                 list.add(od);
             }
             // CoreSession returns them in creation order,

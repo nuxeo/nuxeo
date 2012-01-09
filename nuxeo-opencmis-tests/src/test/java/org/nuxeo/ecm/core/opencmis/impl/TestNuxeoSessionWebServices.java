@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -28,6 +29,7 @@ import javax.xml.ws.WebServiceException;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
+import org.nuxeo.ecm.core.opencmis.bindings.LoginProvider;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 
 import com.sun.xml.ws.api.server.Container;
@@ -60,6 +62,20 @@ public class TestNuxeoSessionWebServices extends
     }
 
     @Override
+    protected void setUpServer() throws Exception {
+        // disable SOAP login checks
+        System.setProperty(LoginProvider.class.getName(),
+                TrustingLoginProvider.class.getName());
+        super.setUpServer();
+    }
+
+    @Override
+    protected void tearDownServer() throws Exception {
+        super.tearDownServer();
+        System.clearProperty(LoginProvider.class.getName());
+    }
+
+    @Override
     protected void addParams(Map<String, String> params) {
         String uri = serverURI.toString();
         uri += "services/"; // from sun-jaxws.xml
@@ -88,6 +104,11 @@ public class TestNuxeoSessionWebServices extends
     @Override
     protected Servlet getServlet() {
         return new WSServlet();
+    }
+
+    @Override
+    protected Filter getFilter() {
+        return null;
     }
 
     @Override

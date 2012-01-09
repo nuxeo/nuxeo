@@ -9,11 +9,12 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.opencmis.bindings;
+package org.nuxeo.ecm.core.opencmis.impl;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.opencmis.bindings.LoginProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**

@@ -36,9 +36,6 @@ public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
 
     public static final String NUXEO_LOGIN_CONTEXT = "nuxeo.opencmis.LoginContext";
 
-    /** Framework property redefining the login provider class. */
-    public static final String LOGIN_PROVIDER_PROP = LoginProvider.class.getName();
-
     private static final Log log = LogFactory.getLog(NuxeoCmisAuthHandler.class);
 
     protected LoginProvider loginProvider;
@@ -82,7 +79,7 @@ public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
     protected LoginProvider getLoginProvider() {
         if (loginProvider == null) {
             loginProvider = this;
-            String className = Framework.getProperty(LOGIN_PROVIDER_PROP);
+            String className = Framework.getProperty(LoginProvider.class.getName());
             if (className != null) {
                 try {
                     Object instance = Class.forName(className).newInstance();
