@@ -3650,6 +3650,7 @@
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
                 <treeLogger>true</treeLogger>
                 <logLevel>WARN</logLevel>
+                <draftCompile>true</draftCompile>
                 <!-- useful for debug -->
                 <!-- <style>PRETTY</style> -->
               </configuration>
@@ -4004,6 +4005,20 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>gwt-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+                <configuration>
+                  <draftCompile>false</draftCompile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -4020,6 +4035,20 @@
                 <goals>
                   <goal>jar</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>gwt-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+               <configuration>
+                  <draftCompile>false</draftCompile>
+                </configuration>
               </execution>
             </executions>
           </plugin>
