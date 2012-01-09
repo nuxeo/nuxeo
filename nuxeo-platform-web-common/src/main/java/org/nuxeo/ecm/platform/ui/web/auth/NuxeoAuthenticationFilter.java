@@ -73,7 +73,7 @@ import org.nuxeo.runtime.api.Framework;
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
  * Also handles logout and identity switch.
- * 
+ *
  * @author Thierry Delprat
  * @author Bogdan Stefanescu
  * @author Anahide Tchertchian
@@ -698,15 +698,31 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
         }
 
+        String localeStr = httpRequest.getParameter(NXAuthConstants.LANGUAGE_PARAMETER);
+
         String requestedUrl = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
         if (requestedUrl != null && !"".equals(requestedUrl)) {
             try {
-                return URLDecoder.decode(requestedUrl, "UTF-8");
+                return addLanguageToUrl(
+                        URLDecoder.decode(requestedUrl, "UTF-8"), localeStr);
             } catch (UnsupportedEncodingException e) {
                 log.error("Unable to get the requestedUrl parameter" + e);
             }
         }
-        return requestedPage;
+        return addLanguageToUrl(requestedPage, localeStr);
+    }
+
+    protected static String addLanguageToUrl(String url, String locale) {
+        if (url == null || "".equals(url) || url.contains("language=")) {
+            // language already set
+            return url;
+        }
+        if (url.contains("?")) {
+            url += "&";
+        } else {
+            url += "?";
+        }
+        return url + "language=" + locale;
     }
 
     protected boolean isStartPageValid(String startPage) {
@@ -968,7 +984,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     /**
      * Does a forced login as the given user. Bypasses all authentication
      * checks.
-     * 
+     *
      * @param username the user name
      * @return the login context, which MUST be used for logout in a
      *         {@code finally} block

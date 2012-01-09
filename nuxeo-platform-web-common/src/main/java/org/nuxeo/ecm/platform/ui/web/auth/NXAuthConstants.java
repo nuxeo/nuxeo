@@ -66,6 +66,8 @@ public final class NXAuthConstants {
 
     public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
 
+    public static final String LANGUAGE_PARAMETER = "language";
+
     // Constant utility class.
     private NXAuthConstants() {
     }
