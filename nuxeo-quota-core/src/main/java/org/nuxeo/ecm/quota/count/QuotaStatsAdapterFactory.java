@@ -23,7 +23,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- * Factory creating {@link org.nuxeo.ecm.quota.count.QuotaStatsNonFolderishCountAdapter} for
+ * Factory creating
+ * {@link org.nuxeo.ecm.quota.count.QuotaStatsNonFolderishCountAdapter} for
  * {@code Folderish} documents.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

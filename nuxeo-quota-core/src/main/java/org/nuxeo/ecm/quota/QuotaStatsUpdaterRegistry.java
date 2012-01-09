@@ -26,8 +26,9 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s, handling merge of registered
- * {@link org.nuxeo.ecm.quota.QuotaStatsUpdaterDescriptor} elements.
+ * Registry for {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s, handling merge
+ * of registered {@link org.nuxeo.ecm.quota.QuotaStatsUpdaterDescriptor}
+ * elements.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -56,8 +57,11 @@ public class QuotaStatsUpdaterRegistry extends
             QuotaStatsUpdaterDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
             try {
-                quotaStatsUpdaters.put(id,
-                        contrib.getQuotaStatsUpdaterClass().newInstance());
+                QuotaStatsUpdater updater = contrib.getQuotaStatsUpdaterClass().newInstance();
+                updater.setName(contrib.getName());
+                updater.setLabel(contrib.getLabel());
+                updater.setDescriptionLabel(contrib.getDescriptionLabel());
+                quotaStatsUpdaters.put(id, updater);
             } catch (Exception e) {
                 throw new ClientRuntimeException(e);
             }
@@ -83,6 +87,8 @@ public class QuotaStatsUpdaterRegistry extends
             QuotaStatsUpdaterDescriptor dst) {
         dst.setQuotaStatsUpdaterClass(src.getQuotaStatsUpdaterClass());
         dst.setEnabled(src.isEnabled());
+        dst.setLabel(src.getLabel());
+        dst.setDescriptionLabel(src.getDescriptionLabel());
     }
 
 }

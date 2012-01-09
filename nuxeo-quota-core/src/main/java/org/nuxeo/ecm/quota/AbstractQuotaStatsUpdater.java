@@ -35,11 +35,49 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Abstract class implementing {@code QuotaStatsUpdater} to handle common cases.
+ * <p>
+ * Provides abstract methods to override for common events.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
 public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
+
+    protected String name;
+
+    protected String label;
+
+    protected String descriptionLabel;
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
+    public void setDescriptionLabel(String descriptionLabel) {
+        this.descriptionLabel = descriptionLabel;
+    }
+
+    @Override
+    public String getDescriptionLabel() {
+        return descriptionLabel;
+    }
 
     @Override
     public void updateStatistics(CoreSession session,

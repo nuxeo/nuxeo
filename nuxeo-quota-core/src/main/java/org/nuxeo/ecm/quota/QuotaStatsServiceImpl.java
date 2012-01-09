@@ -18,16 +18,22 @@
 package org.nuxeo.ecm.quota;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.google.common.collect.MapMaker;
 
 /**
  * Default implementation of {@link org.nuxeo.ecm.quota.QuotaStatsService}.
@@ -40,13 +46,35 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(QuotaStatsServiceImpl.class);
 
+    public static final String STATUS_INITIAL_COMPUTATION_QUEUED = "status.quota.initialComputationQueued";
+
+    public static final String STATUS_INITIAL_COMPUTATION_PENDING = "status.quota.initialComputationInProgress";
+
     public static final String QUOTA_STATS_UPDATERS_EP = "quotaStatsUpdaters";
 
     private QuotaStatsUpdaterRegistry quotaStatsUpdaterRegistry;
 
+    private BlockingQueue<Runnable> updaterTaskQueue;
+
+    private ThreadPoolExecutor updaterExecutor;
+
+    private final Map<String, String> states = new MapMaker().concurrencyLevel(
+            10).expiration(1, TimeUnit.DAYS).makeMap();
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         quotaStatsUpdaterRegistry = new QuotaStatsUpdaterRegistry();
+
+        AsyncEventExecutor.NamedThreadFactory serializationThreadFactory = new AsyncEventExecutor.NamedThreadFactory(
+                "Nuxeo Async Statistics Computation");
+        updaterTaskQueue = new LinkedBlockingQueue<Runnable>();
+        updaterExecutor = new ThreadPoolExecutor(1, 1, 5, TimeUnit.MINUTES,
+                updaterTaskQueue, serializationThreadFactory);
+    }
+
+    @Override
+    public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
+        return quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
     }
 
     @Override
@@ -66,19 +94,36 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void computeInitialStatistics(String repositoryName) {
-        try {
-            new UnrestrictedSessionRunner(repositoryName) {
-                @Override
-                public void run() throws ClientException {
-                    for (QuotaStatsUpdater updater : quotaStatsUpdaterRegistry.getQuotaStatsUpdaters()) {
-                        updater.computeInitialStatistics(session);
-                    }
-                }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+    public void computeInitialStatistics(String updaterName, CoreSession session) {
+        if (states.containsKey(updaterName)) {
+            states.put(updaterName, STATUS_INITIAL_COMPUTATION_PENDING);
         }
+
+        QuotaStatsUpdater updater = quotaStatsUpdaterRegistry.getQuotaStatsUpdater(updaterName);
+        if (updater != null) {
+            updater.computeInitialStatistics(session);
+        }
+    }
+
+    @Override
+    public void launchInitialStatisticsComputation(String updaterName,
+            String repositoryName) {
+        InitialStatisticsComputationTask task = new InitialStatisticsComputationTask(
+                updaterName, repositoryName);
+        if (!updaterTaskQueue.contains(task)) {
+            states.put(updaterName, STATUS_INITIAL_COMPUTATION_QUEUED);
+            updaterExecutor.execute(task);
+        }
+    }
+
+    @Override
+    public String getProgressStatus(String updaterName) {
+        return states.get(updaterName);
+    }
+
+    @Override
+    public void clearProgressStatus(String updaterName) {
+        states.remove(updaterName);
     }
 
     @Override

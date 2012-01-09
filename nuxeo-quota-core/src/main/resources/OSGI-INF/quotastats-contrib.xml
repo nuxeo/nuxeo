@@ -11,7 +11,10 @@
 
   <extension target="org.nuxeo.ecm.quota.QuotaStatsService" point="quotaStatsUpdaters">
 
-    <quotaStatsUpdater class="org.nuxeo.ecm.quota.count.DocumentsCountUpdater"/>
+    <quotaStatsUpdater name="documentsCountUpdater"
+      class="org.nuxeo.ecm.quota.count.DocumentsCountUpdater"
+      label="label.quota.documentsCountUpdater"
+      descriptionLabel="label.quota.documentsCountUpdater.description"/>
 
   </extension>
 

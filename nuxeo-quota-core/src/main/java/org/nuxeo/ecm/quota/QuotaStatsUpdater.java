@@ -38,7 +38,7 @@ public interface QuotaStatsUpdater {
      * @param session an unrestricted {@link CoreSession} to be used
      */
     void updateStatistics(CoreSession session, DocumentEventContext docCtx,
-                          String eventName) throws ClientException;
+            String eventName) throws ClientException;
 
     /**
      * Compute the initial statistics on the whole repository for this
@@ -46,6 +46,18 @@ public interface QuotaStatsUpdater {
      *
      * @param session an unrestricted {@link CoreSession} to be used
      */
-    void computeInitialStatistics(CoreSession session) throws ClientException;
+    void computeInitialStatistics(CoreSession session);
+
+    public void setName(String name);
+
+    public String getName();
+
+    public void setLabel(String label);
+
+    public String getLabel();
+
+    public void setDescriptionLabel(String descriptionLabel);
+
+    public String getDescriptionLabel();
 
 }

@@ -4,16 +4,10 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
 
     <action id="QuotaStatistics"
-      link="view_rss_feed_specific_admin-fragment.xhtml"
+      link="/incl/quota/adminQuotaStats.xhtml"
       label="adm.quota.statistics"
       order="45">
       <category>NUXEO_ADMIN</category>
-      <filter-id>only_for_manager</filter-id>
-    </action>
-
-    <action id="DocumentsCountStatistics" link="/incl/quota/adminDocumentsCount.xhtml"
-      label="tab.quota.documents.count" order="10">
-      <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 

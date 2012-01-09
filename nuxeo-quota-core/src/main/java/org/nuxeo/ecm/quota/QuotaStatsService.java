@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.quota;
 
+import java.util.List;
+
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
@@ -27,6 +30,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public interface QuotaStatsService {
 
+    List<QuotaStatsUpdater> getQuotaStatsUpdaters();
+
     /**
      * Update the statistics for the given {@code docCtx} and {@code eventName}.
      * <p>
@@ -35,10 +40,25 @@ public interface QuotaStatsService {
     void updateStatistics(DocumentEventContext docCtx, String eventName);
 
     /**
-     * Compute the initial statistics for the given @{code repositoryName}.
-     * <p>
-     * Call all the registered {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
+     * Compute the initial statistics for the given @{code updaterName}.
      */
-    void computeInitialStatistics(String repositoryName);
+    void computeInitialStatistics(String updaterName, CoreSession session);
+
+    /**
+     * Launch an asynchronously initial computation for the given
+     * {@code updaterName} on {@code repositoryName}.
+     */
+    void launchInitialStatisticsComputation(String updaterName,
+            String repositoryName);
+
+    /**
+     * Returns the progress status of {@code updaterName}.
+     */
+    String getProgressStatus(String updaterName);
+
+    /**
+     * Clears the progress status of {@code updaterName}.
+     */
+    void clearProgressStatus(String updaterName);
 
 }

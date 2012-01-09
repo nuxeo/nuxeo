@@ -20,41 +20,42 @@ package org.nuxeo.ecm.quota;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Task updating statistics for a defined {@link QuotaStatsUpdater}.
+ * Task doing an initial statistics computation for a defined
+ * {@link QuotaStatsUpdater}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class UpdaterTask implements Runnable {
+public class InitialStatisticsComputationTask implements Runnable {
 
-    private static final Log log = LogFactory.getLog(UpdaterTask.class);
+    private static final Log log = LogFactory.getLog(InitialStatisticsComputationTask.class);
 
-    private final QuotaStatsUpdater updater;
+    private final String updaterName;
 
-    private final DocumentEventContext docCtx;
+    private final String repositoryName;
 
-    private final String eventName;
-
-    public UpdaterTask(QuotaStatsUpdater updater, DocumentEventContext docCtx,
-            String eventName) {
-        this.updater = updater;
-        this.docCtx = docCtx;
-        this.eventName = eventName;
+    public InitialStatisticsComputationTask(String updaterName,
+            String repositoryName) {
+        this.updaterName = updaterName;
+        this.repositoryName = repositoryName;
     }
 
     @Override
     public void run() {
+        final QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
         TransactionHelper.startTransaction();
         try {
-            new UnrestrictedSessionRunner(docCtx.getRepositoryName()) {
+            new UnrestrictedSessionRunner(repositoryName) {
                 @Override
                 public void run() throws ClientException {
-                    updater.updateStatistics(session, docCtx, eventName);
+                    quotaStatsService.computeInitialStatistics(updaterName,
+                            session);
                 }
             }.runUnrestricted();
         } catch (ClientException e) {
@@ -62,7 +63,17 @@ public class UpdaterTask implements Runnable {
             log.error(e, e);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
+            quotaStatsService.clearProgressStatus(updaterName);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof InitialStatisticsComputationTask) {
+            InitialStatisticsComputationTask otherTask = (InitialStatisticsComputationTask) o;
+            return updaterName.equals(otherTask.updaterName);
+        }
+        return false;
     }
 
 }

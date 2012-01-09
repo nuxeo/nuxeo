@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -280,7 +281,12 @@ public class TestDocumentsCountUpdater {
         }
         session.save();
 
-        quotaStatsService.computeInitialStatistics(session.getRepositoryName());
+        String updaterName = "documentsCountUpdater";
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
+        while (quotaStatsService.getProgressStatus(updaterName) != null) {
+            // wait for the computation to complete
+            Thread.sleep(2000);
+        }
 
         session.save();
         testDocumentsCount();

@@ -21,7 +21,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor object for registering {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
+ * Descriptor object for registering
+ * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -37,6 +38,12 @@ public class QuotaStatsUpdaterDescriptor {
 
     @XNode("@class")
     protected Class<? extends QuotaStatsUpdater> quotaStatsUpdaterClass;
+
+    @XNode("@label")
+    protected String label;
+
+    @XNode("@descriptionLabel")
+    protected String descriptionLabel;
 
     public String getName() {
         return name;
@@ -63,12 +70,30 @@ public class QuotaStatsUpdaterDescriptor {
         this.quotaStatsUpdaterClass = quotaStatsUpdaterClass;
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getDescriptionLabel() {
+        return descriptionLabel;
+    }
+
+    public void setDescriptionLabel(String descriptionLabel) {
+        this.descriptionLabel = descriptionLabel;
+    }
+
     @Override
     public QuotaStatsUpdaterDescriptor clone() {
         QuotaStatsUpdaterDescriptor clone = new QuotaStatsUpdaterDescriptor();
         clone.setName(getName());
         clone.setEnabled(isEnabled());
         clone.setQuotaStatsUpdaterClass(getQuotaStatsUpdaterClass());
+        clone.setLabel(getLabel());
+        clone.setDescriptionLabel(getDescriptionLabel());
         return clone;
     }
 

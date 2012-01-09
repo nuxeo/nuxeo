@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -153,12 +154,15 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    public void computeInitialStatistics(CoreSession session)
-            throws ClientException {
-        Map<String, String> folders = getFolders(session);
-        Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(
-                session, folders);
-        saveDocumentsCount(session, documentsCountByFolder);
+    public void computeInitialStatistics(CoreSession session) {
+        try {
+            Map<String, String> folders = getFolders(session);
+            Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(
+                    session, folders);
+            saveDocumentsCount(session, documentsCountByFolder);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     protected Map<String, String> getFolders(CoreSession session)
@@ -166,13 +170,19 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         IterableQueryResult res = session.queryAndFetch(
                 "SELECT ecm:uuid, ecm:parentId FROM Document WHERE ecm:mixinType = 'Folderish'",
                 "NXQL");
-        Map<String, String> folders = new HashMap<String, String>();
+        try {
+            Map<String, String> folders = new HashMap<String, String>();
 
-        for (Map<String, Serializable> r : res) {
-            folders.put((String) r.get("ecm:uuid"),
-                    (String) r.get("ecm:parentId"));
+            for (Map<String, Serializable> r : res) {
+                folders.put((String) r.get("ecm:uuid"),
+                        (String) r.get("ecm:parentId"));
+            }
+            return folders;
+        } finally {
+            if (res != null) {
+                res.close();
+            }
         }
-        return folders;
     }
 
     protected Map<String, Count> computeDocumentsCountByFolder(
@@ -180,25 +190,31 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
             throws ClientException {
         IterableQueryResult res = session.queryAndFetch(
                 "SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL");
-        Map<String, Count> foldersCount = new HashMap<String, Count>();
-        for (Map<String, Serializable> r : res) {
-            String uuid = (String) r.get("ecm:uuid");
-            if (folders.containsKey(uuid)) {
-                // a folder
-                continue;
-            }
+        try {
+            Map<String, Count> foldersCount = new HashMap<String, Count>();
+            for (Map<String, Serializable> r : res) {
+                String uuid = (String) r.get("ecm:uuid");
+                if (folders.containsKey(uuid)) {
+                    // a folder
+                    continue;
+                }
 
-            String folderId = (String) r.get("ecm:parentId");
-            if (!foldersCount.containsKey(folderId)) {
-                foldersCount.put(folderId, new Count());
-            }
-            Count count = foldersCount.get(folderId);
-            count.childrenCount++;
-            count.descendantsCount++;
+                String folderId = (String) r.get("ecm:parentId");
+                if (!foldersCount.containsKey(folderId)) {
+                    foldersCount.put(folderId, new Count());
+                }
+                Count count = foldersCount.get(folderId);
+                count.childrenCount++;
+                count.descendantsCount++;
 
-            updateParentsDocumentsCount(folders, foldersCount, folderId);
+                updateParentsDocumentsCount(folders, foldersCount, folderId);
+            }
+            return foldersCount;
+        } finally {
+            if (res != null) {
+                res.close();
+            }
         }
-        return foldersCount;
     }
 
     protected void updateParentsDocumentsCount(Map<String, String> folders,

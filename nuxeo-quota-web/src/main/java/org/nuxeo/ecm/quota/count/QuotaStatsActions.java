@@ -18,36 +18,54 @@
 package org.nuxeo.ecm.quota.count;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.*;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
+import java.util.List;
 
-import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.quota.QuotaStatsService;
+import org.nuxeo.ecm.quota.QuotaStatsUpdater;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-@Name("documentsCountActions")
+@Name("quotaStatsActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class DocumentsCountActions implements Serializable {
+public class QuotaStatsActions implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
     @In(create = true)
     protected transient CoreSession documentManager;
 
-    public void computeInitialDocumentsCountStatistics() {
+    public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-        quotaStatsService.computeInitialStatistics(documentManager.getRepositoryName());
+        return quotaStatsService.getQuotaStatsUpdaters();
+    }
+
+    public void launchInitialComputation(String updaterName) {
+        launchInitialComputation(updaterName,
+                documentManager.getRepositoryName());
+    }
+
+    public void launchInitialComputation(String updaterName,
+            String repositoryName) {
+        QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        quotaStatsService.launchInitialStatisticsComputation(updaterName,
+                repositoryName);
+    }
+
+    public String getStatus(String updaterName) {
+        QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        return quotaStatsService.getProgressStatus(updaterName);
     }
 
 }
