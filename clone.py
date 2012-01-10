@@ -38,34 +38,35 @@ import time
 
 
 def main():
-    usage = "usage: %prog [options] version"
-    parser = optparse.OptionParser(
-        usage=usage,
-        description='Clone or update Nuxeo source code from Git repositories.')
-    parser.add_option(
-        '-r', action="store", type="string", dest='remote_alias',
-        default='origin',
-        help='The Git alias of remote URL (default: %default)')
-    parser.add_option(
-        "-a", "--all", action="store_true", dest="with_optionals",
-        default=False, help="Include 'optional' addons (default: %default)")
-
-    (options, args) = parser.parse_args()
-    if len(args) == 0:
-        version = get_current_version()
-    elif len(args) == 1:
-        version = args[0]
-    else:
-        log("[ERROR] Version must be a single argument", sys.stderr)
-        sys.exit(1)
-
-    repo = Repository(os.getcwd(), options.remote_alias)
     try:
+        usage = "usage: %prog [options] version"
+        parser = optparse.OptionParser(
+            usage=usage,
+            description='Clone or update Nuxeo source code from Git repositories.')
+        parser.add_option(
+            '-r', action="store", type="string", dest='remote_alias',
+            default='origin',
+            help='The Git alias of remote URL (default: %default)')
+        parser.add_option(
+            "-a", "--all", action="store_true", dest="with_optionals",
+            default=False, help="Include 'optional' addons (default: %default)")
+
+        (options, args) = parser.parse_args()
+        if len(args) == 0:
+            version = get_current_version()
+        elif len(args) == 1:
+            version = args[0]
+        else:
+            raise ExitException(1, "Version must be a single argument")
+        repo = Repository(os.getcwd(), options.remote_alias)
         repo.clone(version, options.with_optionals)
     except ExitException, e:
+        if e.message is not None:
+            log("[ERROR] %s" % e.message, sys.stderr)
         sys.exit (e.return_code)
     finally:
-        repo.cleanup()
+        if "repo" in locals():
+            repo.cleanup()
 
 if __name__ == '__main__':
     main()

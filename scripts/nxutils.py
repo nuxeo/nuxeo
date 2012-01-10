@@ -28,8 +28,9 @@ import time
 
 
 class ExitException(Exception):
-    def __init__(self, return_code):
+    def __init__(self, return_code, message=None):
         self.return_code = return_code
+        self.message = message
 
 
 class Repository(object):
@@ -130,7 +131,7 @@ class Repository(object):
             if retcode != 0:
                 system("git stash")
                 system("git rebase %s/%s" % (self.alias, version))
-                system("git stash pop")
+                system("git stash pop -q")
         log("")
 
     def clone(self, version, with_optionals=False):
@@ -175,9 +176,9 @@ def system(cmd, failonerror=True, delay_stdout=True):
         p.wait()
     retcode = p.returncode
     if retcode != 0:
-        log("[ERROR] Command returned non-zero exit code: %s" % cmd, sys.stderr)
         if failonerror:
-            raise ExitException(retcode)
+            raise ExitException(retcode,
+                                "Command returned non-zero exit code: %s" % cmd)
     return retcode
 
 
@@ -234,8 +235,7 @@ def get_current_version():
 def assert_git_config():
     t = check_output(["git", "config", "--get", "color.branch"])
     if "always" in t:
-        log("[ERROR] The git color mode should be auto not always, try:", sys.stderr)
-        log(" git config --global color.branch auto", sys.stderr)
-        log(" git config --global color.status auto", sys.stderr)
-        raise ExitException(1)
+        raise ExitException(1, "The git color mode should be auto not always, try:" +
+                            "\n git config --global color.branch auto" +
+                            "\n git config --global color.status auto")
 
