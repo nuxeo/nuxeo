@@ -296,20 +296,34 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         if (blobHolder == null) {
             throw new CmisContentAlreadyExistsException();
         }
-        if (!overwrite) {
-            Blob blob;
-            try {
-                blob = blobHolder.getBlob();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
-            if (blob != null) {
-                throw new CmisContentAlreadyExistsException();
-            }
+        Blob oldBlob;
+        try {
+            oldBlob = blobHolder.getBlob();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
         }
-        Blob blob = contentStream == null ? null : new InputStreamBlob(
-                contentStream.getStream(), contentStream.getMimeType(), null,
-                contentStream.getFileName(), null);
+        if (!overwrite && oldBlob != null) {
+            throw new CmisContentAlreadyExistsException();
+        }
+        Blob blob;
+        if (contentStream == null) {
+            blob = null;
+        } else {
+            // default filename if none provided
+            String filename = contentStream.getFileName();
+            if (filename == null && oldBlob != null) {
+                filename = oldBlob.getFilename();
+            }
+            if (filename == null) {
+                try {
+                    filename = doc.getTitle();
+                } catch (ClientException e) {
+                    filename = doc.getName();
+                }
+            }
+            blob = new InputStreamBlob(contentStream.getStream(),
+                    contentStream.getMimeType(), null, filename, null);
+        }
         try {
             blobHolder.setBlob(blob);
         } catch (ClientException e) {
@@ -653,8 +667,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             NuxeoPropertyDataBase<String> implements PropertyString {
 
         protected NuxeoPropertyDataContentStreamDigest(
-                PropertyDefinition<String> propertyDefinition,
-                DocumentModel doc) {
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
             super(propertyDefinition, doc);
         }
 
