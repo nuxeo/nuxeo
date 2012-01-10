@@ -126,7 +126,11 @@ class Repository(object):
             # reuse local branch
             system("git checkout %s" % version)
             log("Updating branch")
-            system("git rebase %s/%s" % (self.alias, version))
+            retcode = system("git rebase %s/%s" % (self.alias, version), False)
+            if retcode != 0:
+                system("git stash")
+                system("git rebase %s/%s" % (self.alias, version))
+                system("git stash pop")
         log("")
 
     def clone(self, version, with_optionals=False):
