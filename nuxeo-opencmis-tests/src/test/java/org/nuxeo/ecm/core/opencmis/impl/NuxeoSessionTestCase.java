@@ -273,6 +273,31 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
     }
 
+    public void testCreateDocumentThenSetContentStream() throws Exception {
+        Folder root = session.getRootFolder();
+        OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
+        VersioningState versioningState = null;
+        List<Policy> policies = null;
+        List<Ace> addAces = null;
+        List<Ace> removeAces = null;
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
+        properties.put(PropertyIds.NAME, "myfile");
+        Document doc = root.createDocument(properties, null, versioningState,
+                policies, addAces, removeAces, context);
+        ContentStream cs = new ContentStreamImpl(null, "text/plain",
+                Helper.FILE1_CONTENT);
+        doc.setContentStream(cs, true);
+        cs = doc.getContentStream();
+        assertNotNull(cs);
+        assertEquals("text/plain", cs.getMimeType());
+        assertEquals("myfile", cs.getFileName());
+        if (!isAtomPub) {
+            assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
+        }
+        assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
+    }
+
     public void testCreateRelationship() throws Exception {
         String id1 = session.getObjectByPath("/testfolder1/testfile1").getId();
         String id2 = session.getObjectByPath("/testfolder1/testfile2").getId();
