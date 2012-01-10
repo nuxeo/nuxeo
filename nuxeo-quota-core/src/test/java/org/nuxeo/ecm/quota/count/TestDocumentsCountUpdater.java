@@ -50,7 +50,7 @@ import com.google.inject.Inject;
  * @since 5.5
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.quota.core")
 public class TestDocumentsCountUpdater {
