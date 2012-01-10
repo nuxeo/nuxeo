@@ -209,7 +209,11 @@ class Release(object):
         """ Perform the release: push source, deploy artifacts and upload
         packages"""
         self.repo.clone(self.branch)
-        self.repo.system_recurse("git push --all")
+        self.repo.system_recurse("git push %s %s" % (self.repo.alias,
+                                                     self.branch))
+        if self.maintenance is not None:
+            self.repo.system_recurse("git push %s %s" % (self.repo.alias,
+                                                         self.tag))
         self.repo.system_recurse("git push --tags")
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         system("mvn %s clean deploy -Dmaven.test.skip=true \
