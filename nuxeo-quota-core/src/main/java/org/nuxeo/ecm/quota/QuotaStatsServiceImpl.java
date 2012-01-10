@@ -97,7 +97,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             final String eventName) {
         List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
 
-        Thread runner = new Thread(new UpdateStatisticsTask(quotaStatsUpdaters,
+        Thread runner = new Thread(new UpdateStatisticsRunner(quotaStatsUpdaters,
                 docCtx, eventName));
         runner.setDaemon(true);
         runner.start();
@@ -159,9 +159,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         }
     }
 
-    private static class UpdateStatisticsTask implements Runnable {
+    private static class UpdateStatisticsRunner implements Runnable {
 
-        private static final Log log = LogFactory.getLog(UpdateStatisticsTask.class);
+        private static final Log log = LogFactory.getLog(UpdateStatisticsRunner.class);
 
         private final List<QuotaStatsUpdater> quotaStatsUpdaters;
 
@@ -169,7 +169,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
         private final String eventName;
 
-        private UpdateStatisticsTask(
+        private UpdateStatisticsRunner(
                 List<QuotaStatsUpdater> quotaStatsUpdaters,
                 DocumentEventContext docCtx, String eventName) {
             this.quotaStatsUpdaters = quotaStatsUpdaters;
