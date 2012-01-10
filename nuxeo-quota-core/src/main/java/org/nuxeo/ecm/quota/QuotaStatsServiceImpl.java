@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -52,6 +53,10 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     public static final String QUOTA_STATS_UPDATERS_EP = "quotaStatsUpdaters";
 
+    public static final String DEFAULT_TIMEOUT = "2";
+
+    private static Integer timeout;
+
     private QuotaStatsUpdaterRegistry quotaStatsUpdaterRegistry;
 
     private BlockingQueue<Runnable> updaterTaskQueue;
@@ -60,6 +65,16 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     private final Map<String, String> states = new MapMaker().concurrencyLevel(
             10).expiration(1, TimeUnit.DAYS).makeMap();
+
+    private static int getUpdatersRunnerTimeOutInS() {
+        if (timeout == null) {
+            String strTimeout = Framework.getProperty(
+                    "org.nuxeo.ecm.quota.updaters.runner.timeout",
+                    DEFAULT_TIMEOUT);
+            timeout = Integer.parseInt(strTimeout);
+        }
+        return timeout;
+    }
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -87,7 +102,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         runner.setDaemon(true);
         runner.start();
         try {
-            runner.join(2000);
+            runner.join(getUpdatersRunnerTimeOutInS() * 1000);
         } catch (InterruptedException e) {
             log.error("Exit before the end of processing", e);
         }
