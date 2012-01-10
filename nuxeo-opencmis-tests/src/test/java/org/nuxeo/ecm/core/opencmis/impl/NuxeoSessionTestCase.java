@@ -31,6 +31,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
+import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
@@ -451,39 +452,43 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         List<Rendition> renditions = ob.getRenditions();
 
         assertEquals(1, renditions.size());
-        Rendition ren = renditions.get(0);
-        assertEquals("cmis:thumbnail", ren.getKind());
-        assertEquals("nx:icon", ren.getStreamId()); // nuxeo
-        assertEquals("image/png", ren.getMimeType());
-        assertEquals("text.png", ren.getTitle());
-        assertEquals(394, ren.getBigLength().longValue());
-        assertEquals(394, ren.getLength());
-        // get rendition stream
-        ContentStream cs = ren.getContentStream();
-        assertEquals("image/png", cs.getMimeType());
-        assertEquals("text.png", cs.getFileName());
-        assertEquals(394, cs.getBigLength().longValue());
+        check(renditions.get(0), true);
 
         // get renditions directly with object
 
         session.clear();
-        OperationContextImpl oc = new OperationContextImpl();
+        OperationContext oc = session.createOperationContext();
         oc.setRenditionFilterString("*");
         ob = session.getObject(session.createObjectId(ob.getId()), oc);
         renditions = ob.getRenditions();
         assertEquals(1, renditions.size());
-        ren = renditions.get(0);
+        check(renditions.get(0), true);
+
+        // get renditions with query
+
+        String q = "SELECT cmis:objectId FROM cmis:document WHERE cmis:name = 'testfile1_Title'";
+        ItemIterable<QueryResult> results = session.query(q, true, oc);
+        assertEquals(1, results.getTotalNumItems());
+        renditions = results.iterator().next().getRenditions();
+        assertEquals(1, renditions.size());
+        check(renditions.get(0), false);
+        // no rendition stream, Chemistry deficiency (QueryResultImpl
+        // constructor call to of.convertRendition with null)
+    }
+
+    protected void check(Rendition ren, boolean checkStream) {
         assertEquals("cmis:thumbnail", ren.getKind());
         assertEquals("nx:icon", ren.getStreamId()); // nuxeo
         assertEquals("image/png", ren.getMimeType());
         assertEquals("text.png", ren.getTitle());
-        assertEquals(394, ren.getBigLength().longValue());
         assertEquals(394, ren.getLength());
-        // get rendition stream
-        cs = ren.getContentStream();
-        assertEquals("image/png", cs.getMimeType());
-        assertEquals("text.png", cs.getFileName());
-        assertEquals(394, cs.getBigLength().longValue());
+        if (checkStream) {
+            // get rendition stream
+            ContentStream cs = ren.getContentStream();
+            assertEquals("image/png", cs.getMimeType());
+            assertEquals("text.png", cs.getFileName());
+            assertEquals(394, cs.getLength());
+        }
     }
 
     public void testDeletedInTrash() throws Exception {

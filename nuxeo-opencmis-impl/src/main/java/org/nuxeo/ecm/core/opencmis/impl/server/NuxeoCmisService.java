@@ -1268,7 +1268,14 @@ public class NuxeoCmisService extends AbstractCmisService {
                     }
                 }
                 if (renditionFilter != null && renditionFilter.length() > 0) {
-                    // od.setRenditions(renditions);
+                    String id = od.getId();
+                    if (id != null) {
+                        DocumentModel doc = getDocumentModel(id);
+                        // TODO parse rendition filter; for now returns them all
+                        List<RenditionData> renditions = NuxeoObjectData.getRenditions(
+                                doc, null, null, callContext);
+                        od.setRenditions(renditions);
+                    }
                 }
 
                 list.add(od);
