@@ -6,22 +6,31 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="#{widget.id}">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
-  <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
-    <nxl:subWidget>
-      <nxl:widget widget="#{widget}" value="#{field}" />
-      <h:outputText value=", " rendered="#{widgetIndex != numberOfSubWidgets - 1}" />
-    </nxl:subWidget>
+  <nxu:set var="numberOfSubWidgets" value="#{fn:length(widget.subWidgets)}" cache="true">
+    <nxu:inputList value="#{field}" model="model"
+      rendered="#{not empty field}">
+      <nxl:subWidget>
+        <nxl:widget widget="#{widget}" value="#{model.rowData}" />
+        <h:outputText value=", "
+          rendered="#{model.rowIndex != (model.rowCount-1) or widgetIndex != (numberOfSubWidgets-1)}" />
+      </nxl:subWidget>
+    </nxu:inputList>
   </nxu:set>
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>
-    <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
-      <nxl:subWidget>
-        <nxl:widget widget="#{widget}" value="#{field}" />
-        <h:outputText value=", " rendered="#{widgetIndex != numberOfSubWidgets - 1}" />
-      </nxl:subWidget>
+    <nxu:set var="numberOfSubWidgets" value="#{fn:length(widget.subWidgets)}" cache="true">
+      <nxu:inputList value="#{field}" model="model"
+        rendered="#{not empty field}">
+        <nxl:subWidget>
+          <nxl:widget widget="#{widget}" value="#{model.rowData}" />
+          <h:outputText value=", "
+            rendered="#{model.rowIndex != (model.rowCount-1) or widgetIndex != (numberOfSubWidgets-1)}" />
+        </nxl:subWidget>
+      </nxu:inputList>
     </nxu:set>
   </nxp:html>
 </c:if>
