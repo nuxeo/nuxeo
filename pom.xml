@@ -3649,7 +3649,7 @@
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
                 <treeLogger>true</treeLogger>
-                <logLevel>WARN</logLevel>
+                <logLevel>TRACE</logLevel>
                 <draftCompile>true</draftCompile>
                 <!-- useful for debug -->
                 <!-- <style>PRETTY</style> -->
