@@ -317,8 +317,10 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Thread.sleep(1000); // otherwise sometimes fails to set up again
         setUpCmisSession();
 
-        ItemIterable<Relationship> rels = session.getRelationships(session.createObjectId(id1), false,
-                RelationshipDirection.SOURCE, null, new OperationContextImpl());
+        ItemIterable<Relationship> rels = session.getRelationships(
+                session.createObjectId(id1), false,
+                RelationshipDirection.SOURCE, null,
+                session.createOperationContext());
         assertEquals(1, rels.getTotalNumItems());
         for (Relationship r : rels) {
             assertEquals(relid.getId(), r.getId());
@@ -444,6 +446,15 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 Action.CAN_GET_ALL_VERSIONS, //
                 Action.CAN_CANCEL_CHECK_OUT, //
                 Action.CAN_CHECK_IN);
+        assertEquals(expected, aa.getAllowableActions());
+
+        String q = "SELECT cmis:objectId FROM cmis:document WHERE cmis:name = 'testfile1_Title'";
+        OperationContext oc = session.createOperationContext();
+        oc.setIncludeAllowableActions(true);
+        ItemIterable<QueryResult> results = session.query(q, true, oc);
+        assertEquals(1, results.getTotalNumItems());
+        aa = results.iterator().next().getAllowableActions();
+        assertNotNull(aa);
         assertEquals(expected, aa.getAllowableActions());
     }
 

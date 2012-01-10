@@ -34,6 +34,7 @@ import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
+import org.apache.chemistry.opencmis.client.runtime.QueryResultImpl;
 import org.apache.chemistry.opencmis.client.runtime.QueryStatementImpl;
 import org.apache.chemistry.opencmis.client.runtime.util.AbstractPageFetcher;
 import org.apache.chemistry.opencmis.client.runtime.util.CollectionIterable;
@@ -202,8 +203,7 @@ public class NuxeoSession implements Session {
 
     @Override
     public OperationContext createOperationContext() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new OperationContextImpl();
     }
 
     @Override
@@ -409,10 +409,31 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ItemIterable<QueryResult> query(String statement,
-            boolean searchAllVersions, OperationContext context) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public ItemIterable<QueryResult> query(final String statement,
+            final boolean searchAllVersions, final OperationContext context) {
+        AbstractPageFetcher<QueryResult> pageFetcher = new AbstractPageFetcher<QueryResult>(
+                context.getMaxItemsPerPage()) {
+            @Override
+            protected Page<QueryResult> fetchPage(long skipCount) {
+                ObjectList results = service.query(repositoryId, statement,
+                        Boolean.valueOf(searchAllVersions),
+                        Boolean.valueOf(context.isIncludeAllowableActions()),
+                        context.getIncludeRelationships(),
+                        context.getRenditionFilterString(),
+                        BigInteger.valueOf(this.maxNumItems),
+                        BigInteger.valueOf(skipCount), null);
+                // convert objects
+                List<QueryResult> page = new ArrayList<QueryResult>();
+                if (results.getObjects() != null) {
+                    for (ObjectData data : results.getObjects()) {
+                        page.add(new QueryResultImpl(NuxeoSession.this, data));
+                    }
+                }
+                return new Page<QueryResult>(page, results.getNumItems(),
+                        results.hasMoreItems());
+            }
+        };
+        return new CollectionIterable<QueryResult>(pageFetcher);
     }
 
     public ItemIterable<CmisObject> queryObjects(String typeId, String where,

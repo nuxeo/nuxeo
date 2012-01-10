@@ -33,6 +33,7 @@ import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.runtime.PropertyImpl;
+import org.apache.chemistry.opencmis.client.runtime.RenditionImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.DocumentTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.FolderTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.PolicyTypeImpl;
@@ -256,7 +257,10 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public List<PropertyData<?>> convertQueryProperties(Properties properties) {
-        throw new UnsupportedOperationException();
+        if (properties == null || properties.getProperties() == null) {
+            return null;
+        }
+        return new ArrayList<PropertyData<?>>(properties.getPropertyList());
     }
 
     @Override
@@ -266,7 +270,19 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public Rendition convertRendition(String objectId, RenditionData rendition) {
-        throw new UnsupportedOperationException();
+        if (rendition == null) {
+            return null;
+        }
+        BigInteger rl = rendition.getBigLength();
+        BigInteger rh = rendition.getBigHeight();
+        BigInteger rw = rendition.getBigWidth();
+        long length = rl == null ? -1 : rl.longValue();
+        int height = rh == null ? -1 : rh.intValue();
+        int width = rw == null ? -1 : rw.intValue();
+        return new RenditionImpl(session, objectId, rendition.getStreamId(),
+                rendition.getRenditionDocumentId(), rendition.getKind(),
+                length, rendition.getMimeType(), rendition.getTitle(), height,
+                width);
     }
 
     @Override

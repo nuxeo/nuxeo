@@ -1253,24 +1253,27 @@ public class NuxeoCmisService extends AbstractCmisService {
                 ObjectDataImpl od = makeObjectData(map, typeInfo);
 
                 // optional stuff
-                if (Boolean.TRUE.equals(includeAllowableActions)) {
-                    // od.setAllowableActions(allowableActions);
-                }
-                if (includeRelationships != null
-                        && includeRelationships != IncludeRelationships.NONE) {
-                    // TODO get relationships using a JOIN
-                    // added to the original query
-                    String id = od.getId();
-                    if (id != null) { // null if JOIN in original query
+                String id = od.getId();
+                if (id != null) { // null if JOIN in original query
+                    DocumentModel doc = null;
+                    if (Boolean.TRUE.equals(includeAllowableActions)) {
+                        doc = getDocumentModel(id);
+                        AllowableActions allowableActions = NuxeoObjectData.getAllowableActions(
+                                doc, false);
+                        od.setAllowableActions(allowableActions);
+                    }
+                    if (includeRelationships != null
+                            && includeRelationships != IncludeRelationships.NONE) {
+                        // TODO get relationships using a JOIN
+                        // added to the original query
                         List<ObjectData> relationships = NuxeoObjectData.getRelationships(
                                 id, includeRelationships, coreSession, this);
                         od.setRelationships(relationships);
                     }
-                }
-                if (renditionFilter != null && renditionFilter.length() > 0) {
-                    String id = od.getId();
-                    if (id != null) {
-                        DocumentModel doc = getDocumentModel(id);
+                    if (renditionFilter != null && renditionFilter.length() > 0) {
+                        if (doc == null) {
+                            doc = getDocumentModel(id);
+                        }
                         // TODO parse rendition filter; for now returns them all
                         List<RenditionData> renditions = NuxeoObjectData.getRenditions(
                                 doc, null, null, callContext);
