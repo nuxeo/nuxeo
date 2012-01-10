@@ -79,7 +79,7 @@ public class DublinCoreListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
 
         if (doc.isVersion()) {
-            log.debug("No DublinCore update on versions execpt for the issued date");
+            log.debug("No DublinCore update on versions except for the issued date");
             return;
         }
 
