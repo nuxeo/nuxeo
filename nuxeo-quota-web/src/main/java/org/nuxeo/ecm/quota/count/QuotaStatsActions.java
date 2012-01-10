@@ -17,7 +17,7 @@
 
 package org.nuxeo.ecm.quota.count;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.STATELESS;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.5
  */
 @Name("quotaStatsActions")
-@Scope(CONVERSATION)
+@Scope(STATELESS)
 @Install(precedence = FRAMEWORK)
 public class QuotaStatsActions implements Serializable {
 
