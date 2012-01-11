@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting the non folderish
@@ -45,6 +46,8 @@ import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
  * @since 5.5
  */
 public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
+
+    public static final int BATCH_SIZE = 50;
 
     @Override
     protected void processDocumentCreated(CoreSession session, DocumentModel doc)
@@ -232,6 +235,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
 
     protected void saveDocumentsCount(CoreSession session,
             Map<String, Count> foldersCount) throws ClientException {
+        long docsCount = 0;
         for (Map.Entry<String, Count> entry : foldersCount.entrySet()) {
             DocumentModel folder = session.getDocument(new IdRef(entry.getKey()));
             if (folder.getPath().isRoot()) {
@@ -239,6 +243,15 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
                 continue;
             }
             saveDocumentsCount(session, folder, entry.getValue());
+            docsCount++;
+
+            if (docsCount % BATCH_SIZE == 0) {
+                session.save();
+                if (TransactionHelper.isTransactionActive()) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                    TransactionHelper.startTransaction();
+                }
+            }
         }
         session.save();
     }
