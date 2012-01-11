@@ -175,7 +175,9 @@ public class TestFileManagerService {
         assertNotNull(doc.getProperty("file", "content"));
     }
 
-    protected static final String NOTE_HTML_CONTENT = "<html>\n<body>\n  <p>Hello from HTML document</p>\n</body>\n</html>";
+    protected static final String SEPARATOR = System.getProperty("line.separator");
+    protected static final String NOTE_HTML_CONTENT = "<html>" + SEPARATOR + "<body>" + SEPARATOR +
+            "  <p>Hello from HTML document</p>" + SEPARATOR + "</body>" + SEPARATOR + "</html>";
 
     @Test
     public void testCreateNote() throws Exception {
