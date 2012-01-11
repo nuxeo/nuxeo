@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.quota.count;
 
 import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_FACET;
@@ -27,12 +28,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -46,6 +50,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.5
  */
 public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
+
+    private static final Log log = LogFactory.getLog(DocumentsCountUpdater.class);
 
     public static final int BATCH_SIZE = 50;
 
@@ -237,20 +243,31 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
             Map<String, Count> foldersCount) throws ClientException {
         long docsCount = 0;
         for (Map.Entry<String, Count> entry : foldersCount.entrySet()) {
-            DocumentModel folder = session.getDocument(new IdRef(entry.getKey()));
-            if (folder.getPath().isRoot()) {
-                // Root document
+            String folderId = entry.getKey();
+            if (folderId == null) {
                 continue;
             }
-            saveDocumentsCount(session, folder, entry.getValue());
-            docsCount++;
 
-            if (docsCount % BATCH_SIZE == 0) {
-                session.save();
-                if (TransactionHelper.isTransactionActive()) {
-                    TransactionHelper.commitOrRollbackTransaction();
-                    TransactionHelper.startTransaction();
+            try {
+                DocumentModel folder = session.getDocument(new IdRef(folderId));
+                if (folder.getPath().isRoot()) {
+                    // Root document
+                    continue;
                 }
+
+                saveDocumentsCount(session, folder, entry.getValue());
+                docsCount++;
+
+                if (docsCount % BATCH_SIZE == 0) {
+                    session.save();
+                    if (TransactionHelper.isTransactionActive()) {
+                        TransactionHelper.commitOrRollbackTransaction();
+                        TransactionHelper.startTransaction();
+                    }
+                }
+            } catch (ClientException e) {
+                log.warn(e);
+                log.debug(e, e);
             }
         }
         session.save();
@@ -267,6 +284,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         folder.setPropertyValue(
                 DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
                 count.descendantsCount);
+        // do not send notifications
+        folder.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
         session.saveDocument(folder);
     }
 
