@@ -97,7 +97,6 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
-import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.NXSchema;
@@ -204,54 +203,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         // retrieve their session on the server side
         CoreInstance.getInstance().registerSession(sessionId, this);
 
-        // <------------ begin repository initialization
-        // we need to initialize the repository if this is the first time it is
-        // accessed in this JVM session.
-        // For this we get the session and test if the
-        // "REPOSITORY_FIRST_ACCESS" is set after the session is created. We
-        // need to synchronize the call to be sure we initialize it only once.
-        synchronized (AbstractSession.class) {
-            Session session = getSession(); // force the creation of the
-            // underlying session
-            if (sessionContext.remove("REPOSITORY_FIRST_ACCESS") != null) {
-                // this is the first time we access the repository in this JVM
-                // notify the InitializationHandler if any.
-                RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
-                if (handler != null) {
-                    // change principal to give all rights
-                    Principal ctxPrincipal = (Principal) sessionContext.get("principal");
-                    try {
-                        // change current principal to give all right to the
-                        // handler
-                        // FIXME: this should be fixed by using
-                        // SystemPrincipal => we must synchronize this with
-                        // SecurityService check
-                        sessionContext.put("principal", new SimplePrincipal(
-                                SYSTEM_USERNAME));
-                        try {
-                            handler.initializeRepository(this);
-                            session.save();
-                        } catch (ClientException e) {
-                            // shouldn't remove the root? ... to restart with
-                            // an empty repository
-                            log.error(
-                                    "Failed to initialize repository content",
-                                    e);
-                        } catch (DocumentException e) {
-                            log.error("Unable to save session after repository init : "
-                                    + e.getMessage());
-                        }
-                    } finally {
-                        sessionContext.remove("principal");
-                        if (ctxPrincipal != null) { // restore principal
-                            sessionContext.put("principal",
-                                    (Serializable) ctxPrincipal);
-                        }
-                    }
-                }
-            }
-        }
-        // <------------- end repository initialization
+        getSession();
 
         return sessionId;
     }
