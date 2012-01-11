@@ -119,7 +119,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         item1SubList.add("Tuesday");
         complexItem1.put("stringListItem", (Serializable) item1SubList);
         // TODO: uncomment
-        //listOfListPropValue.add(complexItem1);
+        // listOfListPropValue.add(complexItem1);
 
         Map<String, Serializable> complexItem2 = new HashMap<String, Serializable>();
         complexItem2.put("stringItem", "second item");
@@ -128,7 +128,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         item2SubList.add("Thursday");
         complexItem2.put("stringListItem", (Serializable) item2SubList);
         listOfListPropValue.add(complexItem2);
-        
+
         doc.setPropertyValue("lol:listOfLists",
                 (Serializable) listOfListPropValue);
 
@@ -198,7 +198,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
         doc.setPropertyValue("ct:complexList",
                 (Serializable) complexListPropValue);
-        
+
         // -----------------------
         // listoflists
         // -----------------------
@@ -220,7 +220,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         item2SubList.add("Saturday");
         complexItem2.put("stringListItem", (Serializable) item2SubList);
         listOfListPropValue.add(complexItem2);
-        
+
         Map<String, Serializable> complexItem3 = new HashMap<String, Serializable>();
         complexItem3.put("stringItem", "third item");
         List<String> item3SubList = new ArrayList<String>();

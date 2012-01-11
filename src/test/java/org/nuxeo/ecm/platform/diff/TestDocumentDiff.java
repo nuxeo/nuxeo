@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.diff.helpers.DiffTestCase;
 import org.nuxeo.ecm.platform.diff.helpers.DocumentDiffRepositoryInit;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
+import org.nuxeo.ecm.platform.diff.model.PropertyType;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
@@ -91,11 +92,11 @@ public class TestDocumentDiff extends DiffTestCase {
         SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 2);
 
         // type
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"), "SampleType",
-                "OtherSampleType");
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
+                PropertyType.STRING, "SampleType", "OtherSampleType");
         // path
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"), "leftDoc",
-                "rightDoc");
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
+                PropertyType.STRING, "leftDoc", "rightDoc");
 
         // ---------------------------
         // Check dublincore schema
@@ -104,31 +105,35 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // title => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"),
-                "My first sample", "My second sample");
+                PropertyType.STRING, "My first sample", "My second sample");
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"),
-                "description", null);
+                PropertyType.STRING, "description", null);
         // created => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                "2011-12-29T11:24:25Z", "2011-12-30T12:05:02Z");
+                PropertyType.DATE, "2011-12-29T11:24:25Z",
+                "2011-12-30T12:05:02Z");
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                "2011-12-29T11:24:25Z", "2011-12-30T12:05:02Z");
+                PropertyType.DATE, "2011-12-29T11:24:25Z",
+                "2011-12-30T12:05:02Z");
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
         // contributors => different (update) / same / different (add)
-        ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff();
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff("Administrator",
-                "anotherAdministrator"));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "jack"));
+        ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff(
+                PropertyType.SCALAR_LIST);
+        expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(
+                PropertyType.STRING, "Administrator", "anotherAdministrator"));
+        expectedListFieldDiff.putDiff(2, new SimplePropertyDiff(
+                PropertyType.STRING, null, "jack"));
         checkListFieldDiff(schemaDiff.getFieldDiff("contributors"),
                 expectedListFieldDiff);
         // subjects => same / different (remove)
-        expectedListFieldDiff = new ListPropertyDiff();
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff("Architecture",
-                null));
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
+        expectedListFieldDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, "Architecture", null));
         checkListFieldDiff(schemaDiff.getFieldDiff("subjects"),
                 expectedListFieldDiff);
 
@@ -139,12 +144,13 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // string => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("string"),
-                "a string property", "a different string property");
+                PropertyType.STRING, "a string property",
+                "a different string property");
         // textarea => same
         checkIdenticalField(schemaDiff.getFieldDiff("textarea"));
         // boolean => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("boolean"),
-                String.valueOf(Boolean.TRUE), null);
+                PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE), null);
         // integer => same
         checkIdenticalField(schemaDiff.getFieldDiff("integer"));
         // date => same
@@ -152,14 +158,19 @@ public class TestDocumentDiff extends DiffTestCase {
         // htmlText => different
         checkSimpleFieldDiff(
                 schemaDiff.getFieldDiff("htmlText"),
+                PropertyType.STRING,
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
         // multivalued => different (remove) * 4
-        expectedListFieldDiff = new ListPropertyDiff();
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff("monday", null));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff("tuesday", null));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff("wednesday", null));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff("thursday", null));
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
+        expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(
+                PropertyType.STRING, "monday", null));
+        expectedListFieldDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, "tuesday", null));
+        expectedListFieldDiff.putDiff(2, new SimplePropertyDiff(
+                PropertyType.STRING, "wednesday", null));
+        expectedListFieldDiff.putDiff(3, new SimplePropertyDiff(
+                PropertyType.STRING, "thursday", null));
         checkListFieldDiff(schemaDiff.getFieldDiff("multivalued"),
                 expectedListFieldDiff);
 
@@ -171,13 +182,15 @@ public class TestDocumentDiff extends DiffTestCase {
         // complex => same / different (update) / different (remove) / different
         // (add)
         ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
-        expectedComplexFieldDiff.putDiff("stringItem", null);
-        expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
-                String.valueOf(Boolean.TRUE), String.valueOf(Boolean.FALSE)));
+        expectedComplexFieldDiff.putDiff(
+                "booleanItem",
+                new SimplePropertyDiff(PropertyType.BOOLEAN,
+                        String.valueOf(Boolean.TRUE),
+                        String.valueOf(Boolean.FALSE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
-                "10", null));
+                PropertyType.LONG, "10", null));
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(
-                null, "2011-12-29T23:00:00Z"));
+                PropertyType.DATE, null, "2011-12-29T23:00:00Z"));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"),
                 expectedComplexFieldDiff);
 
@@ -185,38 +198,41 @@ public class TestDocumentDiff extends DiffTestCase {
         // item1: same / different (update) / different (remove) / different
         // (add)
         // item2: add
-        expectedListFieldDiff = new ListPropertyDiff();
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("stringItem", null);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
-                new SimplePropertyDiff(String.valueOf(Boolean.TRUE),
+                new SimplePropertyDiff(PropertyType.BOOLEAN,
+                        String.valueOf(Boolean.TRUE),
                         String.valueOf(Boolean.FALSE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem",
-                new SimplePropertyDiff("12", null));
+                new SimplePropertyDiff(PropertyType.LONG, "12", null));
         item1ExpectedComplexFieldDiff.putDiff("dateItem",
-                new SimplePropertyDiff(null, "2011-12-30T23:00:00Z"));
+                new SimplePropertyDiff(PropertyType.DATE, null,
+                        "2011-12-30T23:00:00Z"));
 
         ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, null,
+                        "second element of a complex list"));
         item2ExpectedComplexFieldDiff.putDiff(
-                "stringItem",
-                new SimplePropertyDiff(null, "second element of a complex list"));
-        item2ExpectedComplexFieldDiff.putDiff("booleanItem",
-                new SimplePropertyDiff(null, String.valueOf(Boolean.FALSE)));
+                "booleanItem",
+                new SimplePropertyDiff(PropertyType.BOOLEAN, null,
+                        String.valueOf(Boolean.FALSE)));
         item2ExpectedComplexFieldDiff.putDiff("integerItem",
-                new SimplePropertyDiff(null, "20"));
+                new SimplePropertyDiff(PropertyType.LONG, null, "20"));
         item2ExpectedComplexFieldDiff.putDiff("dateItem",
-                new SimplePropertyDiff(null, ""));
+                new SimplePropertyDiff(PropertyType.DATE, null, ""));
 
-        expectedListFieldDiff.addDiff(item1ExpectedComplexFieldDiff);
-        expectedListFieldDiff.addDiff(item2ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(0, item1ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(1, item2ExpectedComplexFieldDiff);
 
         checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
                 expectedListFieldDiff);
 
         // ---------------------------
-        // Check listoflists chema
+        // Check listoflists schema
         // ---------------------------
         // TODO
 
@@ -251,10 +267,10 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // type
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
-                "OtherSampleType", "SampleType");
+                PropertyType.STRING, "OtherSampleType", "SampleType");
         // path
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"), "rightDoc",
-                "leftDoc");
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
+                PropertyType.STRING, "rightDoc", "leftDoc");
 
         // ---------------------------
         // Check dublincore schema
@@ -263,31 +279,35 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // title => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"),
-                "My second sample", "My first sample");
+                PropertyType.STRING, "My second sample", "My first sample");
         // description => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), null,
-                "description");
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"),
+                PropertyType.STRING, null, "description");
         // created => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                "2011-12-30T12:05:02Z", "2011-12-29T11:24:25Z");
+                PropertyType.DATE, "2011-12-30T12:05:02Z",
+                "2011-12-29T11:24:25Z");
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                "2011-12-30T12:05:02Z", "2011-12-29T11:24:25Z");
+                PropertyType.DATE, "2011-12-30T12:05:02Z",
+                "2011-12-29T11:24:25Z");
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
         // contributors => different (update) / same / different (add)
-        ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff();
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff(
-                "anotherAdministrator", "Administrator"));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff("jack", null));
+        ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff(
+                PropertyType.SCALAR_LIST);
+        expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(
+                PropertyType.STRING, "anotherAdministrator", "Administrator"));
+        expectedListFieldDiff.putDiff(2, new SimplePropertyDiff(
+                PropertyType.STRING, "jack", null));
         checkListFieldDiff(schemaDiff.getFieldDiff("contributors"),
                 expectedListFieldDiff);
         // subjects => same / different (remove)
-        expectedListFieldDiff = new ListPropertyDiff();
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null,
-                "Architecture"));
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
+        expectedListFieldDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, null, "Architecture"));
         checkListFieldDiff(schemaDiff.getFieldDiff("subjects"),
                 expectedListFieldDiff);
 
@@ -298,12 +318,13 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // string => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("string"),
-                "a different string property", "a string property");
+                PropertyType.STRING, "a different string property",
+                "a string property");
         // textarea => same
         checkIdenticalField(schemaDiff.getFieldDiff("textarea"));
         // boolean => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("boolean"), null,
-                String.valueOf(Boolean.TRUE));
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("boolean"),
+                PropertyType.BOOLEAN, null, String.valueOf(Boolean.TRUE));
         // integer => same
         checkIdenticalField(schemaDiff.getFieldDiff("integer"));
         // date => same
@@ -311,14 +332,19 @@ public class TestDocumentDiff extends DiffTestCase {
         // htmlText => different
         checkSimpleFieldDiff(
                 schemaDiff.getFieldDiff("htmlText"),
+                PropertyType.STRING,
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
         // multivalued => different (remove) * 4
-        expectedListFieldDiff = new ListPropertyDiff();
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "monday"));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "tuesday"));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "wednesday"));
-        expectedListFieldDiff.addDiff(new SimplePropertyDiff(null, "thursday"));
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
+        expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(
+                PropertyType.STRING, null, "monday"));
+        expectedListFieldDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, null, "tuesday"));
+        expectedListFieldDiff.putDiff(2, new SimplePropertyDiff(
+                PropertyType.STRING, null, "wednesday"));
+        expectedListFieldDiff.putDiff(3, new SimplePropertyDiff(
+                PropertyType.STRING, null, "thursday"));
         checkListFieldDiff(schemaDiff.getFieldDiff("multivalued"),
                 expectedListFieldDiff);
 
@@ -330,13 +356,15 @@ public class TestDocumentDiff extends DiffTestCase {
         // complex => same / different (update) / different (remove) / different
         // (add)
         ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
-        expectedComplexFieldDiff.putDiff("stringItem", null);
-        expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
-                String.valueOf(Boolean.FALSE), String.valueOf(Boolean.TRUE)));
+        expectedComplexFieldDiff.putDiff(
+                "booleanItem",
+                new SimplePropertyDiff(PropertyType.BOOLEAN,
+                        String.valueOf(Boolean.FALSE),
+                        String.valueOf(Boolean.TRUE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
-                null, "10"));
+                PropertyType.LONG, null, "10"));
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(
-                "2011-12-29T23:00:00Z", null));
+                PropertyType.DATE, "2011-12-29T23:00:00Z", null));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"),
                 expectedComplexFieldDiff);
 
@@ -344,39 +372,42 @@ public class TestDocumentDiff extends DiffTestCase {
         // item1: same / different (update) / different (remove) / different
         // (add)
         // item2: add
-        expectedListFieldDiff = new ListPropertyDiff();
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("stringItem", null);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
-                new SimplePropertyDiff(String.valueOf(Boolean.FALSE),
+                new SimplePropertyDiff(PropertyType.BOOLEAN,
+                        String.valueOf(Boolean.FALSE),
                         String.valueOf(Boolean.TRUE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem",
-                new SimplePropertyDiff(null, "12"));
+                new SimplePropertyDiff(PropertyType.LONG, null, "12"));
         item1ExpectedComplexFieldDiff.putDiff("dateItem",
-                new SimplePropertyDiff("2011-12-30T23:00:00Z", null));
+                new SimplePropertyDiff(PropertyType.DATE,
+                        "2011-12-30T23:00:00Z", null));
 
         ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING,
+                        "second element of a complex list", null));
         item2ExpectedComplexFieldDiff.putDiff(
-                "stringItem",
-                new SimplePropertyDiff("second element of a complex list", null));
-        item2ExpectedComplexFieldDiff.putDiff("booleanItem",
-                new SimplePropertyDiff(String.valueOf(Boolean.FALSE), null));
+                "booleanItem",
+                new SimplePropertyDiff(PropertyType.BOOLEAN,
+                        String.valueOf(Boolean.FALSE), null));
         item2ExpectedComplexFieldDiff.putDiff("integerItem",
-                new SimplePropertyDiff("20", null));
+                new SimplePropertyDiff(PropertyType.LONG, "20", null));
         item2ExpectedComplexFieldDiff.putDiff("dateItem",
-                new SimplePropertyDiff("", null));
+                new SimplePropertyDiff(PropertyType.DATE, "", null));
 
-        expectedListFieldDiff.addDiff(item1ExpectedComplexFieldDiff);
-        expectedListFieldDiff.addDiff(item2ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(0, item1ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(1, item2ExpectedComplexFieldDiff);
 
         // TODO: fix!
         // checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
         // expectedListFieldDiff);
 
         // ---------------------------
-        // Check listoflists chema
+        // Check listoflists schema
         // ---------------------------
         // TODO
 

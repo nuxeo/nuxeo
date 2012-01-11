@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
-import org.nuxeo.ecm.core.io.impl.plugins.SingleDocumentReader;
+import org.nuxeo.ecm.core.io.impl.plugins.TypedSingleDocumentReader;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
 import org.nuxeo.ecm.platform.xmlexport.DocumentXMLExporter;
 import org.xml.sax.InputSource;
@@ -74,7 +74,8 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         DocumentWriter documentWriter = new XMLDocumentWriter(outputStream);
-        DocumentReader documentReader = new SingleDocumentReader(session, doc);
+        DocumentReader documentReader = new TypedSingleDocumentReader(session,
+                doc);
 
         DocumentPipe pipe = new DocumentPipeImpl();
         pipe.setReader(documentReader);
