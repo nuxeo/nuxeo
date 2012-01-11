@@ -148,7 +148,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         String res = getRenderedCssFileContent("*");
         String expected = getTestFileContent("css_no_flavor_rendering.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         Flavor flavor = service.getFlavor("*");
         assertNull(flavor);
@@ -159,7 +159,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         res = getRenderedCssFileContent("default");
         expected = getTestFileContent("css_default_rendering.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         flavor = service.getFlavor("default");
         assertEquals("default", flavor.getName());
@@ -181,7 +181,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         flavor = service.getFlavor("dark");
         assertEquals("dark", flavor.getName());
@@ -199,7 +199,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         res = getRenderedCssFileContent("subDark");
         expected = getTestFileContent("css_sub_dark_rendering.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         flavor = service.getFlavor("subDark");
         assertEquals("subDark", flavor.getName());
@@ -236,19 +236,19 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         String res = getRenderedCssFileContent("*");
         String expected = getTestFileContent("css_no_flavor_rendering2.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         res = getRenderedCssFileContent("default");
         expected = getTestFileContent("css_default_rendering2.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering2.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         res = getRenderedCssFileContent("subDark");
         expected = getTestFileContent("css_sub_dark_rendering2.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         ResourceManager rm = Manager.getResourceManager();
         List<String> resources = rm.getGlobalResourcesFor(THEME_DEFAULT_URL);
@@ -307,7 +307,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         String res = getRenderedCssFileContent("*");
         String expected = getTestFileContent("css_no_flavor_rendering3.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         Flavor flavor = service.getFlavor("*");
         assertNull(flavor);
@@ -317,7 +317,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         res = getRenderedCssFileContent("default");
         expected = getTestFileContent("css_default_rendering3.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         flavor = service.getFlavor("default");
         assertEquals("default", flavor.getName());
@@ -332,7 +332,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         res = getRenderedCssFileContent("dark");
         expected = getTestFileContent("css_dark_rendering3.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         flavor = service.getFlavor("dark");
         assertEquals("dark", flavor.getName());
@@ -350,7 +350,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         // no change wrt to dark as the same property is overriden with same
         // value
         expected = getTestFileContent("css_dark_rendering3.txt").trim();
-        assertEquals(expected, res);
+        assertEquals(expected.replace("\r\n", "\n"), res);
 
         flavor = service.getFlavor("subDark");
         assertEquals("subDark", flavor.getName());

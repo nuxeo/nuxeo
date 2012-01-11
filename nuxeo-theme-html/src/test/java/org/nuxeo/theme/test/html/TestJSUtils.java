@@ -35,7 +35,7 @@ public class TestJSUtils extends NXRuntimeTestCase {
     public void testCompressSource() throws ThemeException, IOException {
         String expected = Utils.readResourceAsString("test1-expected.js");
         String actual = JSUtils.compressSource(Utils.readResourceAsString("test1.js"));
-        assertEquals(expected, actual);
+        assertEquals(expected.replace("\r\n", "\n"), actual);
     }
 
 }
