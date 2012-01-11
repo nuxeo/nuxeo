@@ -69,6 +69,9 @@
         profile is activated) -->
     </profile>
     <profile>
+      <id>nightly</id>
+    </profile>
+    <profile>
       <id>release</id>
       <build>
         <plugins>
