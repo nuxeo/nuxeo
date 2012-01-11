@@ -515,23 +515,24 @@ public final class FieldDiffHelper {
             childNode = controlNodeDetail.getNode();
         }
 
-        if (childNode != null) {
+        if (childNode == null) {
+            throw new ClientException("Child node should never be null.");
+        }
 
-            String propertyType = fieldDiff.getPropertyType();
-            if (PropertyType.isSimpleType(propertyType)) {
-                // Should never happen as then it would be marked as a
-                // HAS_CHILD_NODES difference.
-                throw new ClientException(
-                        "A CHILD_NODE_NOT_FOUND difference should never be found within a simple type.");
-            } else if (PropertyType.isListType(propertyType)) {
-                PropertyDiff childNodeDiff = getChildNodePropertyDiff(
-                        childNode, isTestNodeNotFound);
-                ((ListPropertyDiff) fieldDiff).putDiff(
-                        getNodePosition(childNode), childNodeDiff);
-            } else { // Complex type
-                throw new ClientException(
-                        "A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
-            }
+        String propertyType = fieldDiff.getPropertyType();
+        if (PropertyType.isSimpleType(propertyType)) {
+            // Should never happen as then it would be marked as a
+            // HAS_CHILD_NODES difference.
+            throw new ClientException(
+                    "A CHILD_NODE_NOT_FOUND difference should never be found within a simple type.");
+        } else if (PropertyType.isListType(propertyType)) {
+            PropertyDiff childNodeDiff = getChildNodePropertyDiff(childNode,
+                    isTestNodeNotFound);
+            ((ListPropertyDiff) fieldDiff).putDiff(getNodePosition(childNode),
+                    childNodeDiff);
+        } else { // Complex type
+            throw new ClientException(
+                    "A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
         }
     }
 
@@ -547,22 +548,27 @@ public final class FieldDiffHelper {
             NodeDetail controlNodeDetail, NodeDetail testNodeDetail)
             throws ClientException {
 
-        Node nodeWithChilds;
+        Node nodeWithChildren;
         boolean hasControlNodeChildNodes = Boolean.valueOf(controlNodeDetail.getValue());
         if (hasControlNodeChildNodes) {
-            nodeWithChilds = controlNodeDetail.getNode();
+            nodeWithChildren = controlNodeDetail.getNode();
         } else {
-            nodeWithChilds = testNodeDetail.getNode();
+            nodeWithChildren = testNodeDetail.getNode();
         }
 
-        if (nodeWithChilds != null) {
+        if (nodeWithChildren == null) {
+            throw new ClientException(
+                    "Node with children should never be null.");
+        }
+        
+        if (nodeWithChildren != null) {
 
             String propertyType = fieldDiff.getPropertyType();
             if (PropertyType.isSimpleType(propertyType)) {
                 setSimplePropertyDiff((SimplePropertyDiff) fieldDiff,
-                        nodeWithChilds, hasControlNodeChildNodes);
+                        nodeWithChildren, hasControlNodeChildNodes);
             } else if (PropertyType.isListType(propertyType)) {
-                NodeList childNodes = nodeWithChilds.getChildNodes();
+                NodeList childNodes = nodeWithChildren.getChildNodes();
                 for (int i = 0; i < childNodes.getLength(); i++) {
                     ((ListPropertyDiff) fieldDiff).putDiff(
                             i,
@@ -571,12 +577,12 @@ public final class FieldDiffHelper {
                 }
             } else { // Complex type
                 PropertyDiff childNodeDiff = getChildNodePropertyDiff(
-                        nodeWithChilds, hasControlNodeChildNodes);
-                if (PropertyType.isComplexType(getPropertyType(nodeWithChilds))) {
+                        nodeWithChildren, hasControlNodeChildNodes);
+                if (PropertyType.isComplexType(getPropertyType(nodeWithChildren))) {
                     ((ComplexPropertyDiff) fieldDiff).putAllDiff((ComplexPropertyDiff) childNodeDiff);
                 } else {
                     ((ComplexPropertyDiff) fieldDiff).putDiff(
-                            nodeWithChilds.getNodeName(), childNodeDiff);
+                            nodeWithChildren.getNodeName(), childNodeDiff);
                 }
             }
         }
