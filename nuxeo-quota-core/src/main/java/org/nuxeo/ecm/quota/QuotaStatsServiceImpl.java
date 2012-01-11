@@ -26,13 +26,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.collect.MapMaker;
 
@@ -97,8 +100,8 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             final String eventName) {
         List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
 
-        Thread runner = new Thread(new UpdateStatisticsRunner(quotaStatsUpdaters,
-                docCtx, eventName));
+        Thread runner = new Thread(new UpdateStatisticsRunner(
+                quotaStatsUpdaters, docCtx, eventName));
         runner.setDaemon(true);
         runner.start();
         try {
@@ -179,15 +182,20 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
         @Override
         public void run() {
-            for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
-                Thread runner = new Thread(new UpdaterTask(updater, docCtx,
-                        eventName));
-                runner.setDaemon(true);
-                runner.start();
+            for (final QuotaStatsUpdater updater : quotaStatsUpdaters) {
+                TransactionHelper.startTransaction();
                 try {
-                    runner.join();
-                } catch (InterruptedException e) {
-                    log.error("Exit before the end of processing", e);
+                    new UnrestrictedSessionRunner(docCtx.getRepositoryName()) {
+                        @Override
+                        public void run() throws ClientException {
+                            updater.updateStatistics(session, docCtx, eventName);
+                        }
+                    }.runUnrestricted();
+                } catch (ClientException e) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                    log.error(e, e);
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         }
