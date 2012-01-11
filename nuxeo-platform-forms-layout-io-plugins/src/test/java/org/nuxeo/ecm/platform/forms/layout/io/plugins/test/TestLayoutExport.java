@@ -132,7 +132,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
         String expectedString = FileUtils.read(expected);
         String writtenString = FileUtils.read(written);
-        assertEquals(expectedString, writtenString);
+        assertEquals(expectedString.replace("\r\n", "\n"), writtenString);
     }
 
 }
