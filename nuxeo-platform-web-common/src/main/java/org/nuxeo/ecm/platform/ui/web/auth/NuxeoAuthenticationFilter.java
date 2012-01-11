@@ -697,13 +697,24 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
         }
 
+        String localeStr = httpRequest.getParameter(NXAuthConstants.LANGUAGE_PARAMETER);
+
         String requestedUrl = httpRequest.getParameter(REQUESTED_URL);
         if (requestedUrl != null && !"".equals(requestedUrl)) {
             try {
-                return URLDecoder.decode(requestedUrl, "UTF-8");
+                requestedPage = URLDecoder.decode(requestedUrl, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 log.error("Unable to get the requestedUrl parameter" + e);
             }
+        }
+        if (requestedPage != null && !"".equals(requestedPage)
+                && localeStr != null) {
+            Map<String, String> params = new HashMap<String, String>();
+            if (!URIUtils.getRequestParameters(requestedPage).containsKey(
+                    NXAuthConstants.LANGUAGE_PARAMETER)) {
+                params.put(NXAuthConstants.LANGUAGE_PARAMETER, localeStr);
+            }
+            return URIUtils.addParametersToURIQuery(requestedPage, params);
         }
         return requestedPage;
     }
