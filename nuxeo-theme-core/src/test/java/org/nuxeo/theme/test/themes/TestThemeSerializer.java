@@ -158,7 +158,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         themeDef.setSrc("test-default.xml");
         themeDef.setLastLoaded(new Date());
         Manager.getTypeRegistry().register(themeDef);
-        assertEquals(Utils.readResourceAsString("themeSerializerOutput.xml"),
+        assertEquals(Utils.readResourceAsString("themeSerializerOutput.xml").replace("\r\n", "\n"),
                 new ThemeSerializer().serializeToXml("test-default.xml", 4));
     }
 
