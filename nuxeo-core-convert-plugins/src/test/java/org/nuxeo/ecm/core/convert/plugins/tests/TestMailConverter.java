@@ -114,7 +114,7 @@ public class TestMailConverter extends BaseConverterTest {
             expected = getTestBlob(
                     "test-docs/email/text_and_html_with_attachments.txt").getString();
         }
-        assertEquals(expected.replace("\r\n","\n").trim(), actual.trim());
+        assertTrue(FileUtils.areFilesContentEquals(expected.trim(), actual.trim()));
     }
 
     public void testOnlyHtmlEmailTransformation() throws Exception {
@@ -141,7 +141,7 @@ public class TestMailConverter extends BaseConverterTest {
         } else {
             expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
         }
-        assertEquals(expected.getString().replace("\r\n","\n").trim(), result.getString().trim());
+        assertTrue(FileUtils.areFilesContentEquals(expected.getString().trim(), result.getString().trim()));
     }
 
 }
