@@ -29,11 +29,11 @@ import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
  */
 public class SingleDocumentReader extends DocumentModelReader {
 
-    private DocumentModel doc;
+    protected DocumentModel doc;
 
-    private boolean enableRepeatedReads = false;
+    protected boolean enableRepeatedReads = false;
 
-    private boolean readDone = false;
+    protected boolean readDone = false;
 
     public SingleDocumentReader(CoreSession session, DocumentModel root) {
         super(session);

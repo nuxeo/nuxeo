@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -57,7 +58,7 @@ import org.nuxeo.runtime.api.Framework;
  * A representation for an exported document.
  * <p>
  * It contains all the information needed to restore document data and state.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @SuppressWarnings("unchecked")
@@ -67,22 +68,22 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
     private static final Random random = new Random();
 
-    private DocumentLocation srcLocation;
+    protected DocumentLocation srcLocation;
 
     // document unique ID
-    private String id;
+    protected String id;
 
     // document path
-    private Path path;
+    protected Path path;
 
     // the main document
-    private Document document;
+    protected Document document;
 
     // the external blobs if any
-    private final Map<String, Blob> blobs = new HashMap<String, Blob>(4);
+    protected final Map<String, Blob> blobs = new HashMap<String, Blob>(4);
 
     // the optional attached documents
-    private final Map<String, Document> documents = new HashMap<String, Document>(
+    protected final Map<String, Document> documents = new HashMap<String, Document>(
             4);
 
     public ExportedDocumentImpl() {
@@ -265,6 +266,10 @@ public class ExportedDocumentImpl implements ExportedDocument {
                     ExportConstants.SCHEMA_TAG).addAttribute("name", schemaName);
             Schema schema = schemaManager.getSchema(schemaName);
             Namespace targetNs = schema.getNamespace();
+            // If namespace prefix is empty, use schema name
+            if (StringUtils.isEmpty(targetNs.prefix)) {
+                targetNs = new Namespace(targetNs.uri, schema.getName());
+            }
             schemaElement.addNamespace(targetNs.prefix, targetNs.uri);
             DataModel dataModel = doc.getDataModel(schemaName);
             for (Field field : schema.getFields()) {
@@ -274,8 +279,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    private void readProperty(Element parent, Namespace targetNs, Field field,
-            Object value, boolean inlineBlobs) throws IOException {
+    protected void readProperty(Element parent, Namespace targetNs,
+            Field field, Object value, boolean inlineBlobs) throws IOException {
         Type type = field.getType();
         QName name = QName.get(field.getName().getLocalName(), targetNs.prefix,
                 targetNs.uri);
@@ -308,8 +313,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    private void readBlob(Element element, ComplexType ctype, Blob blob,
-            boolean inlineBlobs) throws IOException {
+    protected final void readBlob(Element element, ComplexType ctype,
+            Blob blob, boolean inlineBlobs) throws IOException {
         String blobPath = Integer.toHexString(random.nextInt()) + ".blob";
         element.addElement(ExportConstants.BLOB_ENCODING).addText(
                 blob.getEncoding() != null ? blob.getEncoding() : "");
@@ -327,8 +332,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    private void readComplex(Element element, ComplexType ctype, Map map,
-            boolean inlineBlobs) throws IOException {
+    protected final void readComplex(Element element, ComplexType ctype,
+            Map map, boolean inlineBlobs) throws IOException {
         Iterator<Map.Entry> it = map.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = it.next();
@@ -338,7 +343,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    private void readList(Element element, ListType ltype, List list,
+    protected final void readList(Element element, ListType ltype, List list,
             boolean inlineBlobs) throws IOException {
         Field field = ltype.getField();
         for (Object obj : list) {
