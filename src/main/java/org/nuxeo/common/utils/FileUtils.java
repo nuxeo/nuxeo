@@ -609,4 +609,28 @@ public final class FileUtils {
         return lines;
     }
 
+    /**
+     * Compares two files content as String even if their EOL are differents
+     *
+     * @param expected a file content with Windows or Unix like EOL
+     * @param source another file content with Windows or Unix like EOL
+     * @return the result of equals after replacing their EOL
+     */
+    public static boolean areFilesContentEquals(String expected, String source) {
+        if (expected == source) {
+            return true;
+        }
+
+        if (expected == null || source == null) {
+            return false;
+        }
+
+        if (expected.length() != source.length()) {
+            // Prevent from comparing files with Windows EOL
+            return expected.replace("\r\n", "\n").equals(source.replace("\r\n", "\n"));
+        } else {
+            return expected.equals(source);
+        }
+    }
+
 }

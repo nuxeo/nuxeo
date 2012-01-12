@@ -126,6 +126,22 @@ public class TestFileUtils extends TestCase {
         assertEquals("a", FileUtils.getFileNameNoExt(path));
     }
 
+    public void testFileContentEquals() {
+        assertTrue(FileUtils.areFilesContentEquals(null, null));
+
+        String fileContent1 = "Hello\nWorld";
+        String fileContent1b = "Hello\nWorld";
+        String fileContent2 = "Hello\r\nWorld";
+        String fileContent3 = "Hello \nWorld";
+
+        assertTrue(FileUtils.areFilesContentEquals(fileContent1, fileContent2));
+        assertTrue(FileUtils.areFilesContentEquals(fileContent2, fileContent1));
+        assertTrue(FileUtils.areFilesContentEquals(fileContent1, fileContent1b));
+
+        assertFalse(FileUtils.areFilesContentEquals(fileContent1, null));
+        assertFalse(FileUtils.areFilesContentEquals(fileContent2, fileContent3));
+    }
+
     public static boolean isWindows() {
         String os = System.getProperty("os.name").toLowerCase();
         return (os.indexOf("win") >= 0);
