@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.io.impl.TypedExportedDocumentImpl;
 
 /**
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
- * 
+ * @since 5.6
  */
 public class TypedSingleDocumentReader extends SingleDocumentReader {
 

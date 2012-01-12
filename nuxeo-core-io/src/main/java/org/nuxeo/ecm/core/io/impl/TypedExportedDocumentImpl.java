@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  * A representation for an exported document aware of property types.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
 
