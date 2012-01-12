@@ -135,32 +135,36 @@ class Repository(object):
             system(command)
         os.chdir(cwd)
 
-    def archive(self, archive, version=self.get_current_version(),
-                with_optionals=False):
+    def archive(self, archive, version=None, with_optionals=False):
         """Archive the sources of current and sub-repositories.
 
         'archive': full path of archive to generate.
+        'version': version to archive, defaults to current version.
         If 'with_optionals', also recurse on "optional" addons."""
+        if version is None:
+            version = self.get_current_version()
         archive_dir = os.path.join(os.path.dirname(archive), "sources")
         cwd = os.getcwd()
         os.chdir(self.basedir)
         if os.path.isdir(archive_dir):
             shutil.rmtree(archive_dir)
         os.mkdir(archive_dir)
-        system("git archive %s|(cd %s && tar xf -)||exit 1"
-               % (version, archive_dir))
+        p = system("git archive %s" % version, run=False)
+        system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.modules:
             self.eval_modules()
         for module in self.modules:
             os.chdir(os.path.join(self.basedir, module))
-            system("git archive --prefix=%s/ %s|(cd %s && tar xf -)||exit 1"
-                   % (module, version, archive_dir))
+            p = system("git archive --prefix=%s/ %s" % (module, version),
+                       run=False)
+            system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.addons:
             self.eval_addons(with_optionals)
         for addon in self.addons:
             os.chdir(os.path.join(self.basedir, "addons", addon))
-            system("git archive --prefix=%s/ %s|(cd %s && tar xf -)||exit 1"
-                   % (addon, version, os.path.join(archive_dir, "addons")))
+            p = system("git archive --prefix=addons/%s/ %s" % (addon, version),
+                     run=False)
+            system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         make_zip(archive, archive_dir)
         shutil.rmtree(archive_dir)
         os.chdir(cwd)
@@ -215,7 +219,7 @@ class Repository(object):
                                                         "module")
         os.chdir(cwd)
 
-    def get_current_version():
+    def get_current_version(self):
         """Return branch or tag version of current Git workspace."""
         t = check_output(["git", "describe", "--all"]).split("/")
         return t[1]
@@ -226,23 +230,30 @@ def log(message, out=sys.stdout):
     out.flush()
 
 
-def system(cmd, failonerror=True, delay_stdout=True):
+def system(cmd, failonerror=True, delay_stdout=True, run=True,
+           stdin=subprocess.PIPE, stdout=subprocess.PIPE):
     """Shell execution.
 
     'cmd': the command to execute.
     If 'failonerror', command execution failure raises an ExitException.
-    If 'delay_stdout', output is flushed at the end of command execution."""
+    If 'delay_stdout', output is flushed at the end of command execution.
+    If not 'run', the process is not executed but returned.
+    'stdin', 'stdout' are only used if 'delay_stdout' is True."""
     log("$> " + cmd)
     args = shlex.split(cmd)
     if delay_stdout:
-        p = subprocess.Popen(args, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        out, err = p.communicate()
-        sys.stdout.write(out)
-        sys.stdout.flush()
+        p = subprocess.Popen(args, stdin=stdin, stdout=stdout,
+                             stderr=subprocess.STDOUT)
+        if run:
+            out, err = p.communicate()
+            sys.stdout.write(out)
+            sys.stdout.flush()
     else:
         p = subprocess.Popen(args)
-        p.wait()
+        if run:
+            p.wait()
+    if not run:
+        return p
     retcode = p.returncode
     if retcode != 0:
         if failonerror:
@@ -314,20 +325,21 @@ def assert_git_config():
                             "\n git config --global color.status auto")
 
 
-def make_zip(archive, root_dir=None, base_dir=os.curdir, mode="w"):
-    """Create a zip file from all the files under 'root_dir'/'base_dir'.
+def make_zip(archive, rootdir=None, basedir=None, mode="w"):
+    """Create a zip file from all the files under 'rootdir'/'basedir'.
 
-    If 'root_dir' is not specified, it uses the current directory.
-    If 'base_dir' is not specified, it uses the current directory constant '.'.
+    If 'rootdir' is not specified, it uses the current directory.
+    If 'basedir' is not specified, it uses the current directory constant '.'.
     The 'mode' must be 'w' (write) or 'a' (append)."""
     cwd = os.getcwd()
-    if root_dir is not None:
-        os.chdir(root_dir)
-
+    if rootdir is not None:
+        os.chdir(rootdir)
     try:
-        log("Creating %s with %s ...", archive, base_dir)
+        if basedir is None:
+            basedir = os.curdir
+        log("Creating %s with %s ..." % (archive, basedir))
         zip = ZipFile(archive, mode, compression=ZIP_DEFLATED)
-        for dirpath, dirnames, filenames in os.walk(base_dir):
+        for dirpath, dirnames, filenames in os.walk(basedir):
             for name in filenames:
                 path = os.path.normpath(os.path.join(dirpath, name))
                 if os.path.isfile(path):
@@ -335,14 +347,17 @@ def make_zip(archive, root_dir=None, base_dir=os.curdir, mode="w"):
                     log("Adding %s" % path)
         zip.close()
     finally:
-        if root_dir is not None:
+        if rootdir is not None:
             os.chdir(cwd)
 
 
-def extract_zip(archive, outdir=os.curdir):
+def extract_zip(archive, outdir=None):
     """Extract a zip file.
 
-    Extracts all the files to the 'outdir' directory."""
+    Extracts all the files to the 'outdir' directory (defaults to current dir)
+    """
     zip = ZipFile(archive, "r")
+    if outdir is None:
+        outdir = os.getcwd()
     zip.extractall(outdir)
     zip.close()

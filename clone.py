@@ -22,7 +22,6 @@ from scripts.nxutils import ExitException
 from scripts.nxutils import Repository
 from scripts.nxutils import assert_git_config
 from scripts.nxutils import check_output
-from scripts.nxutils import get_current_version
 from scripts.nxutils import log
 from scripts.nxutils import long_path_workaround_cleanup
 from scripts.nxutils import long_path_workaround_init

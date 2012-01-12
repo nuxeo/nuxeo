@@ -54,18 +54,16 @@
 ## Next version:         5.5.0-HF01-SNAPSHOT
 ## No maintenance branch
 ##
-from archive_util import make_archive
 from datetime import datetime
 from lxml import etree
 from nxutils import ExitException
 from nxutils import Repository
 from nxutils import assert_git_config
 from nxutils import check_output
-from nxutils import get_current_version
+from nxutils import extract_zip
 from nxutils import log
+from nxutils import make_zip
 from nxutils import system
-from zipfile import ZIP_DEFLATED
-from zipfile import ZipFile
 import fnmatch
 import hashlib
 import optparse
@@ -81,35 +79,87 @@ import time
 import urllib
 
 
+PKG_RENAMINGS = {
+    # JBoss packages
+    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
+    "nuxeo-distribution-jboss-%s-nuxeo-cap.zip": "nuxeo-cap-%s-jboss",
+    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
+    "nuxeo-distribution-jboss-%s-nuxeo-cap-ear.zip": "nuxeo-cap-%s-jboss-ear",
+    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
+    "nuxeo-distribution-jboss-%s-nuxeo-dm.zip": "nuxeo-dm-%s-jboss",
+    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
+    "nuxeo-distribution-jboss-%s-nuxeo-dm-ear.zip": "nuxeo-dm-%s-jboss-ear",
+    # Tomcat packages
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
+    "nuxeo-distribution-tomcat-%s-coreserver.zip":
+    "nuxeo-coreserver-%s-tomcat",
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
+    "nuxeo-distribution-tomcat-%s-nuxeo-cap.zip": "nuxeo-cap-%s-tomcat"
+}
+
+PKG_RENAMINGS_OPTIONALS = {
+    # Tomcat packages
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
+    "nuxeo-distribution-tomcat-%s-coreserver-sdk.zip":
+    "nuxeo-coreserver-%s-tomcat-sdk",
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
+    "nuxeo-distribution-tomcat-%s-nuxeo-cap-sdk.zip":
+    "nuxeo-cap-%s-tomcat-sdk"
+}
+
+MP_RENAMINGS = {
+    "nuxeo-distribution/nuxeo-marketplace-cmf/target/"
+    "nuxeo-marketplace-cmf-%s.zip": "nuxeo-cmf-%s.zip",
+    "nuxeo-distribution/nuxeo-marketplace-content-browser/target/"
+    "nuxeo-marketplace-content-browser-%s.zip": "nuxeo-content-browser-%s.zip",
+    "nuxeo-distribution/nuxeo-marketplace-content-browser/target/"
+    "nuxeo-marketplace-content-browser-%s-cmf.zip":
+    "nuxeo-content-browser-cmf-%s.zip",
+    "nuxeo-distribution/nuxeo-marketplace-dam/target/"
+    "nuxeo-marketplace-dam-%s.zip": "nuxeo-dam-%s.zip",
+    "nuxeo-distribution/nuxeo-marketplace-dm/target/"
+    "nuxeo-marketplace-dm-%s.zip": "nuxeo-dm-%s.zip",
+    "nuxeo-distribution/nuxeo-marketplace-social-collaboration/target/"
+    "nuxeo-marketplace-social-collaboration-%s.zip": "nuxeo-sc-%s.zip"
+}
+
+
 class Release(object):
+    """Nuxeo release manager.
+
+    See 'self.perpare()', 'self.perform()'."""
     def __init__(self, repo, branch, tag, next_snapshot, maintenance,
                  is_final=False):
         self.repo = repo
         self.branch = branch
-        self.tag = tag
-        self.next_snapshot = next_snapshot
         self.maintenance = maintenance
         self.is_final = is_final
         # Evaluate default values, if not provided
         self.snapshot = self.get_current_snapshot()
-        if tag is None:
-            self.tag = self.get_tag()
-        if next_snapshot is None:
-            self.next_snapshot = self.get_next_snapshot()
+        self.tag = self.get_tag(tag)
+        self.next_snapshot = self.get_next_snapshot(next_snapshot)
 
     def get_current_snapshot(self):
+        """Get current version from root POM."""
         tree = etree.parse(os.path.join(self.repo.basedir, "pom.xml"))
         version_elem = tree.getroot().find("pom:version", namespaces)
         return version_elem.text
 
-    def get_tag(self):
+    def get_tag(self, tag=None):
+        """Return calculated tag. Requires 'self.snapshot' being set."""
+        if tag is not None:
+            return tag
         if self.is_final:
             return self.snapshot.partition("-SNAPSHOT")[0]
         else:
             date = datetime.now().strftime("%Y%m%d_%H%M")
             return self.snapshot.replace("-SNAPSHOT", "-I" + date)
 
-    def get_next_snapshot(self):
+    def get_next_snapshot(self, next_snapshot=None):
+        """Return calculated next snapshot. Requires 'self.snapshot' being set.
+        """
+        if next_snapshot is not None:
+            return next_snapshot
         if self.is_final:
             snapshot_split = re.match("(^.*)(\d+)(-SNAPSHOT$)", self.snapshot)
             return (snapshot_split.group(1)
@@ -119,6 +169,7 @@ class Release(object):
             return self.snapshot
 
     def log_summary(self):
+        """Log summary of configuration for current release."""
         log("Releasing from branch:".ljust(25) + self.branch)
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + self.tag)
@@ -130,6 +181,7 @@ class Release(object):
         log("")
 
     def update_versions(self, old_version, new_version):
+        """Update all occurrences of 'old_version' with 'new_version'."""
         log("Replacing occurrences of %s with %s" % (old_version, new_version))
         pattern = re.compile("^.*\\.(xml|properties|txt|defaults|sh|html)$")
         for root, dirs, files in os.walk(os.getcwd(), True, None, True):
@@ -150,8 +202,10 @@ class Release(object):
                     if elem is not None and elem.text == old_version:
                         elem.text = new_version
                     # Properties like nuxeo.*.version
-                    prop_pattern = re.compile("{" + namespaces.get("pom") + "}nuxeo\..*version")
-                    properties = tree.getroot().find("pom:properties", namespaces)
+                    prop_pattern = re.compile("{" + namespaces.get("pom") +
+                                              "}nuxeo\..*version")
+                    properties = tree.getroot().find("pom:properties",
+                                                     namespaces)
                     if properties is not None:
                         for property in properties.getchildren():
                             if (not isinstance(property, etree._Comment)
@@ -168,48 +222,31 @@ class Release(object):
                         f.write(content)
 
     def test(self):
+        """For current script development purpose."""
         self.tag = "5.6-SNAPSHOT"
-        self.package_all()
+        self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
+                                                   os.pardir, "archives"))
+        self.package_sources()
 
     def package_all(self):
-        """Repackage files to be uploaded"""
+        """Repackage files to be uploaded."""
         self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
                                                    os.pardir, "archives"))
         if not os.path.isdir(self.archive_dir):
             os.mkdir(self.archive_dir)
         self.tmpdir = tempfile.mkdtemp()
-        # JBoss packages
-        self.package("nuxeo-distribution/nuxeo-distribution-jboss/target/" +
-                     "nuxeo-distribution-jboss-%s-nuxeo-cap.zip" % self.tag,
-                     "nuxeo-cap-%s-jboss" % self.tag)
-        self.package("nuxeo-distribution/nuxeo-distribution-jboss/target/" +
-                     "nuxeo-distribution-jboss-%s-nuxeo-cap-ear.zip" % self.tag,
-                     "nuxeo-cap-%s-jboss-ear" % self.tag)
-        self.package("nuxeo-distribution/nuxeo-distribution-jboss/target/" +
-                     "nuxeo-distribution-jboss-%s-nuxeo-dm.zip" % self.tag,
-                     "nuxeo-dm-%s-jboss" % self.tag)
-        self.package("nuxeo-distribution/nuxeo-distribution-jboss/target/" +
-                     "nuxeo-distribution-jboss-%s-nuxeo-dm-ear.zip" % self.tag,
-                     "nuxeo-dm-%s-jboss-ear" % self.tag)
-        # Tomcat packages
-        self.package("nuxeo-distribution/nuxeo-distribution-tomcat/target/" +
-                     "nuxeo-distribution-tomcat-%s-coreserver.zip" % self.tag,
-                     "nuxeo-coreserver-%s-tomcat" % self.tag)
-        self.package("nuxeo-distribution/nuxeo-distribution-tomcat/target/" +
-                     "nuxeo-distribution-tomcat-%s-coreserver-sdk.zip" % self.tag,
-                     "nuxeo-coreserver-%s-tomcat-sdk" % self.tag, False)
-        self.package("nuxeo-distribution/nuxeo-distribution-tomcat/target/" +
-                     "nuxeo-distribution-tomcat-%s-nuxeo-cap.zip" % self.tag,
-                     "nuxeo-cap-%s-tomcat" % self.tag)
-        self.package("nuxeo-distribution/nuxeo-distribution-tomcat/target/" +
-                     "nuxeo-distribution-tomcat-%s-nuxeo-cap-sdk.zip" % self.tag,
-                     "nuxeo-cap-%s-tomcat-sdk" % self.tag, False)
-        # Online/light Tomcat package
+
+        # Tomcat and JBoss packages
+        for old, new in PKG_RENAMINGS.items():
+            self.package(old % self.tag, new % self.tag)
+        # Tomcat SDK packages
+        for old, new in PKG_RENAMINGS_OPTIONALS.items():
+            self.package(old % self.tag, new % self.tag, False)
+
+        # Online (aka light) Tomcat package
         offline_name = "nuxeo-cap-%s-tomcat" % self.tag
-        offline_zip = ZipFile(os.path.join(self.archive_dir,
-                                           offline_name + ".zip"), "r")
-        offline_zip.extractall(self.tmpdir)
-        offline_zip.close()
+        extract_zip(os.path.join(self.archive_dir, offline_name + ".zip"),
+                    self.tmpdir)
         online_name = "nuxeo-cap-%s-tomcat-online" % self.tag
         # Keep packages.xml file
         os.rename(os.path.join(self.tmpdir, offline_name,
@@ -220,32 +257,18 @@ class Release(object):
                                    "setupWizardDownloads"))
         os.rename(os.path.join(self.tmpdir, offline_name),
                   os.path.join(self.tmpdir, online_name))
-        shutil.make_archive(os.path.join(self.archive_dir, online_name), "zip",
-                            os.path.join(self.tmpdir, online_name), online_name)
+        make_zip(os.path.join(self.archive_dir, online_name + ".zip"),
+                            os.path.join(self.tmpdir, online_name),
+                            online_name)
+
         # Marketplace packages
         archive_mp_dir = os.path.join(self.archive_dir, "mp")
         if not os.path.isdir(archive_mp_dir):
             os.mkdir(archive_mp_dir)
-        os.rename("nuxeo-distribution/nuxeo-marketplace-cmf/target/" +
-                  "nuxeo-marketplace-cmf-%s.zip" % self.tag,
-                  os.path.join(archive_mp_dir, "nuxeo-cmf-%s.zip" % self.tag))
-        os.rename("nuxeo-distribution/nuxeo-marketplace-content-browser/target/" +
-                  "nuxeo-marketplace-content-browser-%s.zip" % self.tag,
-                  os.path.join(archive_mp_dir,
-                               "nuxeo-content-browser-%s.zip" % self.tag))
-        os.rename("nuxeo-distribution/nuxeo-marketplace-content-browser/target/" +
-                  "nuxeo-marketplace-content-browser-%s-cmf.zip" % self.tag,
-                  os.path.join(archive_mp_dir,
-                               "nuxeo-content-browser-cmf-%s.zip" % self.tag))
-        os.rename("nuxeo-distribution/nuxeo-marketplace-dam/target/" +
-                  "nuxeo-marketplace-dam-%s.zip" % self.tag,
-                  os.path.join(archive_mp_dir, "nuxeo-dam-%s.zip" % self.tag))
-        os.rename("nuxeo-distribution/nuxeo-marketplace-dm/target/" +
-                  "nuxeo-marketplace-dm-%s.zip" % self.tag,
-                  os.path.join(archive_mp_dir, "nuxeo-dm-%s.zip" % self.tag))
-        os.rename("nuxeo-distribution/nuxeo-marketplace-social-collaboration/target/" +
-                  "nuxeo-marketplace-social-collaboration-%s.zip" % self.tag,
-                  os.path.join(archive_mp_dir, "nuxeo-sc-%s.zip" % self.tag))
+        # Copy and rename MP to archive directory
+        for old, new in MP_RENAMINGS.items():
+            shutil.copy2(old % self.tag,
+                         os.path.join(archive_mp_dir, new % self.tag))
         log("Checking packages integrity...")
         for package in os.listdir(archive_mp_dir):
             m = hashlib.md5()
@@ -268,6 +291,7 @@ class Release(object):
                 log("[ERROR] %s MD5 did not match packages.xml information"
                     % package, sys.stderr)
         log("Done.")
+        self.package_sources()
         shutil.rmtree(self.tmpdir)
 
     def package(self, old_archive, new_name, failonerror=True):
@@ -275,7 +299,8 @@ class Release(object):
             - have a parent directory with the same name as the archive name
             - set executable bit on scripts in bin/
             - activate the setup wizard
-        """
+
+        If 'failonerror', raise an ExitException in case of missing file."""
         if not os.path.isfile(old_archive):
             if failonerror:
                 raise ExitException(1, "Could not find %s" % old_archive)
@@ -283,9 +308,7 @@ class Release(object):
                 log("[WARN] Could not find %s" % old_archive, sys.stderr)
                 return
         new_archive = os.path.join(self.archive_dir, new_name + ".zip")
-        oldzip = ZipFile(old_archive, "r")
-        oldzip.extractall(os.path.join(self.tmpdir, new_name))
-        oldzip.close()
+        extract_zip(old_archive, os.path.join(self.tmpdir, new_name))
         log("Packaging %s ..." % new_archive)
         cwd = os.getcwd()
         os.chdir(os.path.join(self.tmpdir, new_name))
@@ -304,14 +327,19 @@ class Release(object):
             os.chmod(os.path.join(new_name, "bin", filename), 0744)
         with open(os.path.join(new_name, "bin", "nuxeo.conf"), "a") as f:
             f.write("nuxeo.wizard.done=false\n")
-        make_archive(os.path.join(self.archive_dir, new_name), "zip",
+        make_zip(os.path.join(self.archive_dir, new_name + ".zip"),
                             os.getcwd(), new_name)
         os.chdir(cwd)
+        # Cleanup temporary directory
         shutil.rmtree(os.path.join(self.tmpdir, new_name))
 
+    def package_sources(self):
+        sources_archive_name = "nuxeo-%s-sources.zip" % self.tag
+        self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
+
     def prepare(self):
-        """ Prepare the release: build, change versions, tag and package source and
-        distributions"""
+        """ Prepare the release: build, change versions, tag and package source
+        and distributions."""
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch)
@@ -330,12 +358,14 @@ class Release(object):
         if self.maintenance is not None:
             # Maintenance branches are kept, so update their versions
             self.update_versions(self.tag, self.maintenance)
-            self.repo.system_recurse("git commit -m'Post release %s' -a" % self.tag)
+            self.repo.system_recurse("git commit -m'Post release %s' -a" %
+                                     self.tag)
 
         # Update released branches
         self.repo.system_recurse("git checkout %s" % self.branch)
         self.update_versions(self.snapshot, self.next_snapshot)
-        self.repo.system_recurse("git commit -m'Post release %s' -a" % self.tag)
+        self.repo.system_recurse("git commit -m'Post release %s' -a" %
+                                 self.tag)
 
         if self.maintenance is None:
             # Delete maintenance branches
@@ -351,7 +381,7 @@ class Release(object):
 
     def perform(self):
         """ Perform the release: push source, deploy artifacts and upload
-        packages"""
+        packages."""
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch)
@@ -381,44 +411,53 @@ def main():
 
     try:
         if not os.path.isdir(".git"):
-            raise ExitException(1, "That script must be ran from root of a Git repository")
+            raise ExitException(1, "That script must be ran from root of a Git"
+                                + " repository")
         usage = "usage: %prog [options] <command=prepare|perform>"
-        parser = optparse.OptionParser(usage=usage, description="""Release Nuxeo from
-        a given branch, tag the release, then set the next SNAPSHOT version.
-        If a maintenance version was provided, then a maintenance branch is kept, else
-        it is deleted after release.""")
-        parser.add_option('-r', action="store", type="string", dest='remote_alias',
+        parser = optparse.OptionParser(usage=usage,
+                                       description="""Release Nuxeo from
+a given branch, tag the release, then set the next SNAPSHOT version.  If a
+maintenance version was provided, then a maintenance branch is kept, else it is
+deleted after release.""")
+        parser.add_option('-r', action="store", type="string",
+                          dest='remote_alias',
                           default='origin',
-                          help='the Git alias of remote URL (default: %default)')
-        parser.add_option('-f', '--final', action="store_true", dest='is_final',
-                          default=False,
+                          help="""the Git alias of remote URL
+                          (default: %default)""")
+        parser.add_option('-f', '--final', action="store_true",
+                          dest='is_final', default=False,
                           help='is it a final release? (default: %default)')
         parser.add_option("-b", "--branch", action="store", type="string",
                           help='branch to release (default: current branch)',
                           dest="branch", default=None)
         parser.add_option("-t", "--tag", action="store", type="string",
-                          help="""if final option is True, then the default tag is the
-        current version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is replaced with
-        a date (aka 'date-based release')""", dest="tag", default=None)
+                          dest="tag", default=None,
+                          help="""if final option is True, then the default tag
+is the current version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is
+replaced with a date (aka 'date-based release')""")
         parser.add_option("-n", "--next", action="store", type="string",
-                          help="""next snapshot. If final option is True, then the
-        next snapshot is the current one increased, else it is equal to the current""",
-                          dest="next_snapshot", default=None)
-        parser.add_option('-m', '--maintenance', action="store", dest='maintenance',
-                          help="""maintenance version (by default, the maintenance
-                          branch is deleted after release)""", default=None)
+                          dest="next_snapshot", default=None,
+                          help="""next snapshot. If final option is True, then
+the next snapshot is the current one increased, else it is equal to the current
+""")
+        parser.add_option('-m', '--maintenance', action="store",
+                          dest='maintenance', default=None,
+                          help="""maintenance version (by default, the
+maintenance branch is deleted after release)""")
         parser.add_option('--mvn_opts', action="store", dest='mvn_opts',
-                          help="Maven options (default: '%default')", default='')
+                          default='',
+                          help="Maven options (default: '%default')")
         parser.add_option('-i', '--interactive', action="store_true",
                           dest='interactive', default=False,
-                          help="""Not implemented (TODO NXP-8573). Interactive mode.""")
+                          help="""Not implemented (TODO NXP-8573). Interactive
+mode.""")
         (options, args) = parser.parse_args()
         if len(args) > 0:
             command = args[0]
         mvn_opts = options.mvn_opts
-        if options.branch is None:
-            options.branch = get_current_version()
         repo = Repository(os.getcwd(), options.remote_alias)
+        if options.branch is None:
+            options.branch = repo.get_current_version()
         system("git fetch %s" % (options.remote_alias))
         repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
@@ -426,7 +465,7 @@ def main():
                           options.is_final)
         release.log_summary()
         if "command" not in locals():
-            raise ExitException(1, "Missing command. See usage for commands list.")
+            raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "prepare":
             release.prepare()
         elif command == "perform":
@@ -434,11 +473,11 @@ def main():
         elif command == "test":
             release.test()
         else:
-            raise ExitException(1, "Unknown command! See usage for commands list.")
+            raise ExitException(1, "Unknown command! See usage with '-h'.")
     except ExitException, e:
         if e.message is not None:
             log("[ERROR] %s" % e.message, sys.stderr)
-        sys.exit (e.return_code)
+        sys.exit(e.return_code)
     finally:
         if "repo" in locals():
             repo.cleanup()
