@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
@@ -158,8 +159,8 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         themeDef.setSrc("test-default.xml");
         themeDef.setLastLoaded(new Date());
         Manager.getTypeRegistry().register(themeDef);
-        assertEquals(Utils.readResourceAsString("themeSerializerOutput.xml").replace("\r\n", "\n"),
-                new ThemeSerializer().serializeToXml("test-default.xml", 4));
+        assertTrue(FileUtils.areFilesContentEquals(Utils.readResourceAsString("themeSerializerOutput.xml"),
+                new ThemeSerializer().serializeToXml("test-default.xml", 4)));
     }
 
 }

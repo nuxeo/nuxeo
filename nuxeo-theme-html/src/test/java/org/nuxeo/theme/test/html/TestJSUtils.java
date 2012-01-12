@@ -16,6 +16,7 @@ package org.nuxeo.theme.test.html;
 
 import java.io.IOException;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.html.JSUtils;
@@ -35,7 +36,7 @@ public class TestJSUtils extends NXRuntimeTestCase {
     public void testCompressSource() throws ThemeException, IOException {
         String expected = Utils.readResourceAsString("test1-expected.js");
         String actual = JSUtils.compressSource(Utils.readResourceAsString("test1.js"));
-        assertEquals(expected.replace("\r\n", "\n"), actual);
+        assertTrue(FileUtils.areFilesContentEquals(expected, actual));
     }
 
 }
