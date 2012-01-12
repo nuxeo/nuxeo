@@ -43,6 +43,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -139,7 +140,18 @@ public class NuxeoRequestControllerFilter implements Filter {
                 log.debug(doFormatLogMessage(httpRequest,
                         "Existing NuxeoRequestController filter: nothing to be done"));
             }
-            chain.doFilter(request, response);
+
+            try {
+                chain.doFilter(request, response);
+            } catch (ServletException e) {
+                Throwable unwrappedError = ExceptionHelper.unwrapException(e);
+                if (ExceptionHelper.isClientAbortError(unwrappedError)) {
+                    log.warn("Client disconnected : "
+                            + unwrappedError.getMessage());
+                } else {
+                    throw e;
+                }
+            }
             return;
         }
 
@@ -258,8 +270,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         HttpSession session = request.getSession(false);
         if (session == null) {
             if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(
-                        request,
+                log.debug(doFormatLogMessage(request,
                         "No more HttpSession: can not unlock !, HttpSession must have been invalidated"));
             }
             return false;
@@ -274,8 +285,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         } else {
             try {
                 lock.unlock();
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 log.debug("Unlock failed on request " + request.getRequestURI());
                 return false;
             }
