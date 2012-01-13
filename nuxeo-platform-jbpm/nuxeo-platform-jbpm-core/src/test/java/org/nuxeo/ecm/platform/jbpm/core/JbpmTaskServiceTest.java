@@ -264,11 +264,12 @@ public class JbpmTaskServiceTest extends SQLRepositoryTestCase {
                 (NuxeoPrincipal) null, null);
         Collections.sort(tasks, new Comparator<TaskInstance>() {
 
-            //Arbitrary invert sort tasks through pooled actor id to ensure to have EVERYTIME the same order
-            //it looks that sorting with createDate field is not Windows proof.
+            // Arbitrary invert sort tasks through pooled actor id to ensure to
+            // have EVERYTIME the same order
+            // it looks that sorting with createDate field is not Windows proof.
             public int compare(TaskInstance o1, TaskInstance o2) {
-                String actor1 = ((PooledActor)o1.getPooledActors().toArray()[0]).getActorId();
-                String actor2 = ((PooledActor)o2.getPooledActors().toArray()[0]).getActorId();
+                String actor1 = ((PooledActor) o1.getPooledActors().toArray()[0]).getActorId();
+                String actor2 = ((PooledActor) o2.getPooledActors().toArray()[0]).getActorId();
 
                 return actor1.compareTo(actor2) * -1;
             }
