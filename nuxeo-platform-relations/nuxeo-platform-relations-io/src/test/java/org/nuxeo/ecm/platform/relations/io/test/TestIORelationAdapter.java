@@ -101,6 +101,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.event");
         // fake repo setup
         deployContrib("org.nuxeo.ecm.relations.io.tests",
                 "RepositoryManager.xml");
