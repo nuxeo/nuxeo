@@ -50,15 +50,13 @@ for more information if needed.
 
 #### Launch the build
 
-    mvn install -Dmaven.test.skip=true
-    cd addons ; mvn install -Dmaven.test.skip=true
-    cd ../nuxeo-distribution ; mvn clean install -Pnuxeo-dm,tomcat
+    mvn install -DskipTests=true -Paddons,distrib
 
-You will get your tomcat-based build in the `nuxeo-distribution/nuxeo-distribution-tomcat/target directory`.
+You will get your tomcat-based build in the `nuxeo-distribution/nuxeo-distribution-tomcat/target` directory.
 
 #### Run the tests
 
-If you want to run the Selenium test suite, you can run:
+(see http://doc.nuxeo.com/display/CORG)
 
 ### Packaging Nuxeo EP from sources
 
