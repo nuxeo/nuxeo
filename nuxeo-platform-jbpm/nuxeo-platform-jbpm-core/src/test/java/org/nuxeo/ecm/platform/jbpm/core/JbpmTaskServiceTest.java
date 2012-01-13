@@ -271,7 +271,7 @@ public class JbpmTaskServiceTest extends SQLRepositoryTestCase {
                 String actor1 = ((PooledActor) o1.getPooledActors().toArray()[0]).getActorId();
                 String actor2 = ((PooledActor) o2.getPooledActors().toArray()[0]).getActorId();
 
-                return actor1.compareTo(actor2) * -1;
+                return actor2.compareTo(actor1);
             }
 
         });
