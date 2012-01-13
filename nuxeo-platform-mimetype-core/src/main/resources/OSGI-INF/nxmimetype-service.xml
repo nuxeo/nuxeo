@@ -1068,6 +1068,41 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="video/x-ms-wmv" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-ms-wmv</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>wmv</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="video/x-ms-wm" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-ms-wm</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>wm</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="video/x-ms-wvx" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-ms-wvx</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>wvx</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="video/x-ms-wmx" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-ms-wmx</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>wmx</extension>
+      </extensions>
+    </mimetype>
 
     <mimetype normalized="application/java-archive" binary="true"
       iconPath="java.png">
