@@ -240,8 +240,7 @@ public class JbpmAutomationTest {
 
         List<String> pooledActorIds = getPooledActorIds(task1);
         assertEquals(1, pooledActorIds.size());
-        assertEquals(NuxeoPrincipal.PREFIX
-                + SecurityConstants.ADMINISTRATOR, pooledActorIds.get(0));
+        assertEquals(NuxeoPrincipal.PREFIX + "myuser", pooledActorIds.get(0));
 
         List<Comment> comments = task1.getComments();
         assertEquals(0, comments.size());
@@ -285,7 +284,7 @@ public class JbpmAutomationTest {
 
         pooledActorIds = getPooledActorIds(task2);
         assertEquals(1, pooledActorIds.size());
-        assertEquals(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS,
+        assertEquals(NuxeoPrincipal.PREFIX + SecurityConstants.ADMINISTRATOR,
                 pooledActorIds.get(0));
 
         comments = task2.getComments();
@@ -317,7 +316,7 @@ public class JbpmAutomationTest {
 
         pooledActorIds = getPooledActorIds(task3);
         assertEquals(1, pooledActorIds.size());
-        assertEquals(NuxeoPrincipal.PREFIX + "myuser",
+        assertEquals(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS,
                 pooledActorIds.get(0));
 
         comments = task3.getComments();
@@ -410,7 +409,10 @@ public class JbpmAutomationTest {
     class TaskInstanceComparator implements Comparator<TaskInstance> {
         @Override
         public int compare(TaskInstance o1, TaskInstance o2) {
-            return o1.getCreate().compareTo(o2.getCreate());
+            String actor1 = ((PooledActor) o1.getPooledActors().toArray()[0]).getActorId();
+            String actor2 = ((PooledActor) o2.getPooledActors().toArray()[0]).getActorId();
+
+            return actor2.compareTo(actor1);
         }
     }
 
