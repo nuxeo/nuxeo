@@ -280,7 +280,7 @@ public final class ThemeManager implements Registrable {
             throw new ThemeException("Could not get file path for theme: "
                     + name);
         }
-        final String src = String.format("file://%s", path);
+        final String src = String.format("file:/%s", path);
         themeDescriptor.setSrc(src);
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         typeRegistry.register(themeDescriptor);
