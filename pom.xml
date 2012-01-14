@@ -1339,7 +1339,7 @@
       <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-ftest</artifactId>
-        <version>1.7</version>
+        <version>1.7.1-SNAPSHOT</version>
         <type>zip</type>
       </dependency>
       <dependency>
