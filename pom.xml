@@ -53,6 +53,7 @@
     <nuxeo.poll.version>5.6-SNAPSHOT</nuxeo.poll.version>
     <nuxeo.flavors.version>5.6-SNAPSHOT</nuxeo.flavors.version>
     <nuxeo.quota.version>5.6-SNAPSHOT</nuxeo.quota.version>
+    <nuxeo.web.mobile.version>5.6-SNAPSHOT</nuxeo.web.mobile.version>
   </properties>
 
   <modules>
@@ -95,6 +96,7 @@
     <module>nuxeo-rss-reader</module>
     <module>nuxeo-flavors</module>
     <module>nuxeo-quota</module>
+    <module>nuxeo-web-mobile</module>
   </modules>
 
   <dependencyManagement>
@@ -755,6 +757,14 @@
         <artifactId>nuxeo-quota-web</artifactId>
         <version>${nuxeo.flavors.version}</version>
       </dependency>
+      
+      <!-- We Mobile -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.mobile</groupId>
+        <artifactId>nuxeo-web-mobile</artifactId>
+        <version>${nuxeo.web.mobile.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
