@@ -26,6 +26,7 @@
       <or>
         <isset property="maven.profile.release" />
         <isset property="maven.profile.sdk" />
+        <isset property="maven.profile.nightly" />
       </or>
     </condition>
 
