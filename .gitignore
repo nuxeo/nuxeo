@@ -40,3 +40,4 @@ target
 *.gpd.*
 *cpJar*
 dependency-tree.log
+chromedriver.log

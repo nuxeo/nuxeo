@@ -43,8 +43,11 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.internal.WrapsElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Clock;
@@ -69,46 +72,63 @@ public abstract class AbstractTest {
 
     private static final int AJAX_TIMEOUT_SECONDS = 10;
 
-    protected static FirefoxDriver driver;
+    protected static RemoteWebDriver driver;
 
     protected static File tmp_firebug_xpi;
 
     @BeforeClass
     public static void initDriver() throws Exception {
-        FirefoxProfile profile = new FirefoxProfile();
+        String browser = System.getProperty("browser", "firefox");
+        // Use the same strings as command-line Selenium
+        if (browser.equals("chrome") || browser.equals("firefox")) {
+            initFirefoxDriver();
+        } else if (browser.equals("googlechrome")) {
+            initChromeDriver();
+        } else {
+            throw new RuntimeException("Browser not supported: " + browser);
+        }
+    }
 
+    protected static void initFirefoxDriver() throws Exception {
+        FirefoxProfile profile = new FirefoxProfile();
         // Disable native events (makes things break on Windows)
         profile.setEnableNativeEvents(false);
-
         // Set English as default language
         profile.setPreference("general.useragent.locale", "en");
         profile.setPreference("intl.accept_languages", "en");
-
         // flag UserAgent as Selenium tester: this is used in Nuxeo
         // general.useragent.extra has been removed in newer firefox versions
         // so we need to override the whole string
         profile.setPreference("general.useragent.override",
                 "Mozilla/5.0 Nuxeo-Selenium-Tester");
-
         addFireBug(profile);
-
         driver = new FirefoxDriver(profile);
     }
 
+    protected static void initChromeDriver() throws Exception {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("user-agent=\"Mozilla/5.0 Nuxeo-Selenium-Tester\"");
+        driver = new ChromeDriver(options);
+    }
 
     @AfterClass
     public static void quitDriver() throws InterruptedException {
         // Temporary code to take snapshots of the last page
         // TODO: snapshots only test on failure, prefix using the test name
-        Thread.sleep(250);
-        driver.getScreenshotAs(new ScreenShotFileOutput("screenshot1-lastpage"));
-        Thread.sleep(250);
-        driver.getScreenshotAs(new ScreenShotFileOutput("screenshot2-lastpage"));
+        if (driver instanceof FirefoxDriver) {
+            Thread.sleep(250);
+            ((FirefoxDriver)driver).getScreenshotAs(new ScreenShotFileOutput("screenshot1-lastpage"));
+            Thread.sleep(250);
+            ((FirefoxDriver)driver).getScreenshotAs(new ScreenShotFileOutput("screenshot2-lastpage"));
+        } else {
+            // Not implemented for other drivers
+        }
 
         if (driver != null) {
             driver.close();
             driver = null;
         }
+
         removeFireBug();
     }
 
