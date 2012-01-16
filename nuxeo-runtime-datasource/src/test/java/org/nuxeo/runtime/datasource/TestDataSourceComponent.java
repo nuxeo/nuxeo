@@ -24,11 +24,12 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerConfiguration;
+import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -42,8 +43,8 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
-        NamingContextFactory.setAsInitial();
         super.setUp();
+        NuxeoContainer.installNaming();
         File dir = new File(DIRECTORY);
         FileUtils.deleteTree(dir);
         dir.mkdirs();
@@ -55,7 +56,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-       NamingContextFactory.revertSetAsInitial();
+        NuxeoContainer.uninstallNaming();
     }
 
     public void testJNDIName() throws Exception {
@@ -82,14 +83,9 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     }
 
     public void testNonXA() throws Exception {
-        NuxeoContainer.install();
-        try {
-            deployContrib("org.nuxeo.runtime.datasource.tests",
-                    "OSGI-INF/datasource-contrib.xml");
-            checkDataSourceOk();
-        } finally {
-            NuxeoContainer.uninstall();
-        }
+        deployContrib("org.nuxeo.runtime.datasource.tests",
+                "OSGI-INF/datasource-contrib.xml");
+        checkDataSourceOk();
     }
 
     public void testXANoTM() throws Exception {
@@ -107,18 +103,15 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     }
 
     public void testXA() throws Exception {
-        NuxeoContainer.install();
+        NuxeoContainer.install(new TransactionManagerConfiguration(),
+                new ConnectionManagerConfiguration());
+        deployContrib("org.nuxeo.runtime.datasource.tests",
+                "OSGI-INF/xadatasource-contrib.xml");
+        TransactionHelper.startTransaction();
         try {
-            deployContrib("org.nuxeo.runtime.datasource.tests",
-                    "OSGI-INF/xadatasource-contrib.xml");
-            TransactionHelper.startTransaction();
-            try {
-                checkDataSourceOk();
-            } finally {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
+            checkDataSourceOk();
         } finally {
-            NuxeoContainer.uninstall();
+            TransactionHelper.commitOrRollbackTransaction();
         }
     }
 

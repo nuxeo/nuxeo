@@ -25,9 +25,6 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.jndi.InitialContextAccessor;
-import org.nuxeo.common.jndi.NamingContextFactory;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -44,31 +41,6 @@ public class DataSourceComponent extends DefaultComponent {
     public static final String DATASOURCES_XP = "datasources";
 
     public static final String ENV_CTX_NAME = "java:comp/env";
-
-    protected boolean isNamingOwner;
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-
-        Context ctx = InitialContextAccessor.getInitialContext();
-        if (ctx != null) {
-            if (InitialContextAccessor.isWritable(ctx)) {
-                return;
-            }
-            NamingContextFactory.setDelegateContext(ctx);
-            NamingContextFactory.setDelegateEnvironment(ctx.getEnvironment());
-        }
-        NamingContextFactory.setAsInitial();
-        isNamingOwner = true;
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        if (isNamingOwner) {
-            NamingContextFactory.revertSetAsInitial();
-            isNamingOwner = false;
-        }
-    }
 
     @Override
     public void registerContribution(Object contrib, String extensionPoint,

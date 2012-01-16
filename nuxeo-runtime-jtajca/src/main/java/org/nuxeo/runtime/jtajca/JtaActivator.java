@@ -32,6 +32,7 @@ public class JtaActivator extends DefaultComponent {
 
     public static final String AUTO_ACTIVATION = "NuxeoContainer.autoactivation";
 
+    protected boolean isOwner = false;
     @Override
     public void activate(ComponentContext context) throws Exception {
         final String property = Framework.getProperty(AUTO_ACTIVATION);
@@ -39,11 +40,12 @@ public class JtaActivator extends DefaultComponent {
             return;
         }
         NuxeoContainer.install();
+        isOwner = true;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        if (NuxeoContainer.isInstalled()) {
+        if (isOwner) {
             NuxeoContainer.uninstall();
         }
     }

@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.jndi.InitialContextAccessor;
 
 /**
  * Helper class to look up {@link DataSource}s without having to deal with
@@ -49,7 +48,7 @@ public class DataSourceHelper {
     public static void autodetectPrefix() {
         Context ctx = InitialContextAccessor.getInitialContext();
         String name = ctx == null ? null : ctx.getClass().getName();
-        if ("org.nuxeo.common.jndi.NamingContext".equals(name)) { // Nuxeo-Embedded
+        if ("org.nuxeo.runtime.jtajca.NamingContext".equals(name)) { // Nuxeo-Embedded
             prefix = DEFAULT_PREFIX;
         } else if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
             prefix = "java:";

@@ -23,7 +23,6 @@ Import-Package: javax.annotation,
  org.apache.geronimo.connector.outbound.connectiontracking,
  org.apache.geronimo.transaction,
  org.apache.geronimo.transaction.manager,
- org.nuxeo.common.jndi,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.transaction,
  org.osgi.framework
