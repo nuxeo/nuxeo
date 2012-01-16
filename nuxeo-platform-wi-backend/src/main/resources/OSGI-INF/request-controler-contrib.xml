@@ -10,9 +10,6 @@
     <filterConfig name="WSSFilterRessources" transactional="fasle" synchonize="false" grant="false">
       <pattern>/nuxeo/_vti_bin/resources/.*</pattern>
     </filterConfig>
-    <filterConfig name="WebDAV" transactional="false" synchonize="false">
-      <pattern>${org.nuxeo.ecm.contextPath}/sites/dav.*</pattern>
-    </filterConfig>
 
   </extension>
 
