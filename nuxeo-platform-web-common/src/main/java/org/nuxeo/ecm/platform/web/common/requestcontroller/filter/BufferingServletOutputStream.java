@@ -37,6 +37,8 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
  * A {@link ServletOutputStream} that buffers everything until
  * {@link #stopBuffering()} is called.
  * <p>
+ * There may only be one such instance per thread.
+ * <p>
  * Buffering is done first in memory, then on disk if the size exceeds a limit.
  */
 public class BufferingServletOutputStream extends ServletOutputStream {
@@ -51,6 +53,8 @@ public class BufferingServletOutputStream extends ServletOutputStream {
 
     /** Used for 0-length writes. */
     private final static OutputStream EMPTY = new ByteArrayOutputStream(0);
+
+    protected static ThreadLocal<BufferingServletOutputStream> threadLocal = new ThreadLocal<BufferingServletOutputStream>();
 
     /** Have we stopped buffering to pass writes directly to the output stream. */
     protected boolean streaming;
@@ -80,6 +84,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
      */
     public BufferingServletOutputStream(OutputStream outputStream) {
         this.outputStream = outputStream;
+        threadLocal.set(this);
     }
 
     public PrintWriter getWriter() {
@@ -183,6 +188,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
      * now on don't buffer anymore.
      */
     public void stopBuffering() throws IOException {
+        threadLocal.remove();
         if (streaming) {
             return;
         }
@@ -264,6 +270,18 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     public static void stopBuffering(OutputStream out) throws IOException {
         if (out instanceof BufferingServletOutputStream) {
             ((BufferingServletOutputStream) out).stopBuffering();
+        }
+    }
+
+    /**
+     * Stop buffering the {@link OutputStream} for this thread (if it was).
+     *
+     * @since 5.5 (HF01)
+     */
+    public static void stopBufferingThread() throws IOException {
+        BufferingServletOutputStream out = threadLocal.get();
+        if (out != null) {
+            out.stopBuffering();
         }
     }
 
