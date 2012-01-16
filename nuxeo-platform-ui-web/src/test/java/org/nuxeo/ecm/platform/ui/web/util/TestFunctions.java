@@ -100,4 +100,10 @@ public class TestFunctions extends TestCase {
         // Some bad values
         assertEquals(5 * 1024 * 1024, Functions.getFileSize("128h"));
     }
+
+    public void testFileSize() {
+        assertEquals("3 GB",
+                Functions.printFormatedFileSize("3145728000", "SI", true));
+    }
+
 }
