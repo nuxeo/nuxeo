@@ -12,6 +12,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import javax.naming.NamingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,6 +48,10 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         NuxeoContainer.install(tmconfig, cmconfig);
     }
 
+    @Override
+    public void tearDown() throws NamingException {
+        NuxeoContainer.uninstall();
+    }
     public void testOpenAllConnections() throws Exception {
         if (!hasPoolingConfig()) {
             return;

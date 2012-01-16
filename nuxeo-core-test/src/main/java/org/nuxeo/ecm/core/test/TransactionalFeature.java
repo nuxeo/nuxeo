@@ -11,14 +11,11 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NoInitialContextException;
+import java.util.Properties;
 
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.jndi.NamingContextFactory;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.jtajca.JtaActivator;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -30,6 +27,8 @@ public class TransactionalFeature extends SimpleFeature {
 
     protected TransactionalConfig config;
 
+    protected String autoactivationValue;
+
     protected boolean txStarted;
 
     @Override
@@ -39,25 +38,23 @@ public class TransactionalFeature extends SimpleFeature {
         if (config == null) {
             config = Defaults.of(TransactionalConfig.class);
         }
+        autoactivationValue = System.getProperty(JtaActivator.AUTO_ACTIVATION);
+        System.setProperty(JtaActivator.AUTO_ACTIVATION, "true");
     }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        Environment.getDefault().setHostApplicationName(
-                Environment.NXSERVER_HOST);
-        try {
-            Context comp = (Context) new InitialContext().lookup("java:comp/");
-            if (comp == null) {
-                NamingContextFactory.setAsInitial();
-            }
-        } catch (NoInitialContextException e) {
-            NamingContextFactory.setAsInitial();
+    public void stop(FeaturesRunner runner) throws Exception {
+        Properties props = System.getProperties();
+        if (autoactivationValue != null) {
+            props.put(JtaActivator.AUTO_ACTIVATION, autoactivationValue);
+        } else {
+            props.remove(JtaActivator.AUTO_ACTIVATION);
         }
-        NuxeoContainer.install();
     }
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
+            Object test) throws Exception {
         if (config.autoStart() == false) {
             return;
         }
@@ -65,7 +62,8 @@ public class TransactionalFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
+            Object test) throws Exception {
         if (txStarted == false) {
             return;
         }
