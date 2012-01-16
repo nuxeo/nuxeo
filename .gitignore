@@ -3,5 +3,6 @@ bin
 .project
 .classpath
 .settings
+build.properties
 TODO.txt
 REFACTOR.txt
