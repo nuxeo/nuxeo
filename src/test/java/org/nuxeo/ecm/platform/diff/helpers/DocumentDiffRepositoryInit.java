@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -68,7 +68,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("dc:modified", "2011-12-29T11:24:25Z");
         doc.setPropertyValue("dc:lastContributor", "Administrator");
         doc.setPropertyValue("dc:contributors", new String[] { "Administrator",
-                "joe" });
+                "joe", null });
         doc.setPropertyValue("dc:subjects", new String[] { "Art",
                 "Architecture" });
 

@@ -202,12 +202,12 @@ public class TestXMLDiff extends DiffTestCase {
         leftXML = "<dc:complexList type=\"complexList\">"
                 + "<complexListItem type=\"complex\"><firstname type=\"string\">Antoine</firstname><lastname type=\"string\">Taillefer</lastname></complexListItem>"
                 + "<complexListItem type=\"complex\"><firstname type=\"string\">John</firstname><lastname type=\"string\">Doe</lastname></complexListItem>"
-                + "<complexListItem type=\"complex\"><firstname type=\"string\">Jimmy</firstname><lastname type=\"string\">Page</lastname></complexListItem>"
+                + "<complexListItem type=\"complex\"><firstname type=\"string\">Jimmy</firstname><lastname type=\"string\">Doe</lastname></complexListItem>"
                 + "<complexListItem type=\"complex\"><firstname type=\"string\">Jack</firstname><lastname type=\"string\">Nicholson</lastname></complexListItem>"
                 + "</dc:complexList>";
         rightXML = "<dc:complexList type=\"complexList\">"
                 + "<complexListItem type=\"complex\"><firstname type=\"string\">Antoine</firstname><lastname type=\"string\">Taillefer</lastname></complexListItem>"
-                + "<complexListItem type=\"complex\"><firstname type=\"string\">Bob</firstname><lastname type=\"string\">Plant</lastname></complexListItem>"
+                + "<complexListItem type=\"complex\"><firstname type=\"string\">Bob</firstname><lastname type=\"string\">Doe</lastname></complexListItem>"
                 + "</dc:complexList>";
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
@@ -216,13 +216,11 @@ public class TestXMLDiff extends DiffTestCase {
         expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "John", "Bob"));
-        expectedComplexPropDiff.putDiff("lastname", new SimplePropertyDiff(
-                PropertyType.STRING, "Doe", "Plant"));
         ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff();
         expectedComplexPropDiff2.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Jimmy", null));
         expectedComplexPropDiff2.putDiff("lastname", new SimplePropertyDiff(
-                PropertyType.STRING, "Page", null));
+                PropertyType.STRING, "Doe", null));
         ComplexPropertyDiff expectedComplexPropDiff3 = new ComplexPropertyDiff();
         expectedComplexPropDiff3.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Jack", null));
@@ -483,29 +481,27 @@ public class TestXMLDiff extends DiffTestCase {
                 PropertyType.STRING, null, "jack"));
         checkListFieldDiff(propertyDiff, expectedFieldDiff);
 
-        // List (item with no child nodes on the right side) => should never
-        // happen
+        // List (item with no child nodes on the right side)
         leftXML = "<dc:contributors type=\"scalarList\"><item type=\"string\">joe</item><item type=\"string\">jack</item></dc:contributors>";
         rightXML = "<dc:contributors type=\"scalarList\"><item type=\"string\">joe</item><item type=\"string\"/></dc:contributors>";
 
-        try {
-            propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "contributors");
-            fail("A HAS_CHILD_NODES difference should never be found on a list item.");
-        } catch (ClientException ce) {
-            LOGGER.info("Exception catched as expected: " + ce.getMessage());
-        }
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "contributors");
 
-        // List (item with no child nodes on the left side) => should never
-        // happen
+        expectedFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
+        expectedFieldDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, "jack", null));
+        checkListFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // List (item with no child nodes on the left side)
         leftXML = "<dc:contributors type=\"scalarList\"><item type=\"string\">joe</item><item type=\"string\"/></dc:contributors>";
         rightXML = "<dc:contributors type=\"scalarList\"><item type=\"string\">joe</item><item type=\"string\">jack</item></dc:contributors>";
 
-        try {
-            propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "contributors");
-            fail("A HAS_CHILD_NODES difference should never be found on a list item.");
-        } catch (ClientException ce) {
-            LOGGER.info("Exception catched as expected: " + ce.getMessage());
-        }
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "contributors");
+
+        expectedFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
+        expectedFieldDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, null, "jack"));
+        checkListFieldDiff(propertyDiff, expectedFieldDiff);
 
         // Complex list (empty list on the right side)
         leftXML = "<dc:complexList type=\"complexList\">"
@@ -624,7 +620,7 @@ public class TestXMLDiff extends DiffTestCase {
     @Test
     public void testHasChildNodesComplexPropertyDiff() throws ClientException {
 
-        // Simple complex type => should never happen
+        // Simple complex type
         String leftXML = "<dc:complexType type=\"complex\"><stringItem type=\"string\">joe</stringItem><booleanItem type=\"boolean\">true</booleanItem></dc:complexType>";
         String rightXML = "<dc:complexType type=\"complex\"/>";
 

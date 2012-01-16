@@ -22,12 +22,14 @@ import org.custommonkey.xmlunit.AbstractNodeTester;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.ElementNameAndTextQualifier;
 import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.NodeTest;
 import org.custommonkey.xmlunit.NodeTestException;
 import org.custommonkey.xmlunit.XMLTestCase;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.examples.CountingNodeTester;
 import org.dom4j.Node;
 import org.w3c.dom.Element;
@@ -143,6 +145,7 @@ public class TestXMLUnit extends XMLTestCase {
                 "//planet[@supportsLife='yes']", mySolarSystemXML);
     }
 
+    // we
     /**
      * Test x path values.
      * 
@@ -215,6 +218,37 @@ public class TestXMLUnit extends XMLTestCase {
 
         public void noMoreNodes(NodeTest nodeTest) throws NodeTestException {
         }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testCompareUnmatchedNodes() throws Exception {
+        String myControlXML = "<document><item>First item</item>"
+                + "<item>Second item</item></document>";
+        String myTestXML = "<document><item>First item</item></document>";
+        assertXMLNotEqual("Test XML has a missing child node", myControlXML,
+                myTestXML);
+
+        // Compare unmatched nodes
+        DetailedDiff myDiff = new DetailedDiff(
+                new Diff(myControlXML, myTestXML));
+        List<Difference> allDifferences = myDiff.getAllDifferences();
+        assertEquals("There should be 3 differences", 3, allDifferences.size());
+
+        // Don't compare unmatched nodes
+        XMLUnit.setCompareUnmatched(false);
+        myDiff = new DetailedDiff(new Diff(myControlXML, myTestXML));
+        allDifferences = myDiff.getAllDifferences();
+        assertEquals("There should be 2 differences", 2, allDifferences.size());
+
+        Difference firstDiff = allDifferences.get(0);
+        assertEquals(
+                "First difference should be of type CHILD_NODELIST_LENGTH",
+                DifferenceConstants.CHILD_NODELIST_LENGTH_ID, firstDiff.getId());
+        Difference secondDiff = allDifferences.get(1);
+        assertEquals(
+                "Second difference should be of type CHILD_NODE_NOT_FOUND",
+                DifferenceConstants.CHILD_NODE_NOT_FOUND_ID, secondDiff.getId());
 
     }
 

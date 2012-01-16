@@ -63,6 +63,15 @@ public class ListPropertyDiff extends PropertyDiff {
     }
 
     /**
+     * Put all diff.
+     * 
+     * @param otherDiff the other diff
+     */
+    public void putAllDiff(ListPropertyDiff otherDiff) {
+        diffMap.putAll(otherDiff.getDiffMap());
+    }
+
+    /**
      * Size.
      * 
      * @return the int

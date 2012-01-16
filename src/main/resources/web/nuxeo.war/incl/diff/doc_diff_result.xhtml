@@ -73,14 +73,14 @@
                 <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">                  
                   
                   <!-- Simple property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'simple'}">
+                  <f:subview rendered="#{fieldDiff.simpleType}">
                     <ui:include src="/incl/diff/simple_property_diff_left_value.xhtml">
                       <ui:param name="simplePropertyDiff" value="#{fieldDiff}"/>
                     </ui:include>
                   </f:subview>
                   
                   <!-- Complex property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'complex'}">
+                  <f:subview rendered="#{fieldDiff.complexType}">
                     <ui:include src="/incl/diff/complex_property_diff.xhtml">
                       <ui:param name="complexPropertyDiff" value="#{fieldDiff}"/>
                       <ui:param name="side" value="left"/>
@@ -88,7 +88,7 @@
                   </f:subview>
                   
                   <!-- Simple list property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'list' and fieldDiff.simpleListProperty}">
+                  <f:subview rendered="#{fieldDiff.propertyType == 'scalarList'}">
                     <nxu:dataTable
                       value="#{fieldDiff.diffList}" var="listItem">
                       
@@ -102,7 +102,7 @@
                   </f:subview>
                   
                   <!-- Complex list property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'list' and fieldDiff.complexListProperty}">
+                  <f:subview rendered="#{fieldDiff.propertyType == 'complexlist'}">
                     <ui:include src="/incl/diff/complex_list_property_diff.xhtml">
                       <ui:param name="complexListPropertyDiff" value="#{fieldDiff}"/>
                       <ui:param name="side" value="left"/>
@@ -115,14 +115,14 @@
                 <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">                  
                   
                   <!-- Simple property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'simple'}">
+                  <f:subview rendered="#{fieldDiff.simpleType}">
                     <ui:include src="/incl/diff/simple_property_diff_right_value.xhtml">
                       <ui:param name="simplePropertyDiff" value="#{fieldDiff}"/>
                     </ui:include>
                   </f:subview>
                   
                   <!-- Complex property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'complex'}">
+                  <f:subview rendered="#{fieldDiff.complexType}">
                     <ui:include src="/incl/diff/complex_property_diff.xhtml">
                       <ui:param name="complexPropertyDiff" value="#{fieldDiff}"/>
                       <ui:param name="side" value="right"/>
@@ -130,11 +130,11 @@
                   </f:subview>
                   
                   <!-- Simple list property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'list' and fieldDiff.simpleListProperty}">
+                  <f:subview rendered="#{fieldDiff.propertyType = 'scalarList'}">
                     <nxu:dataTable
                       value="#{fieldDiff.diffList}" var="listItem">
                       
-                      <nxu:column rendered="#{listItem.propertyType.name() == 'simple'}">
+                      <nxu:column}">
                         <ui:include src="/incl/diff/simple_property_diff_right_value.xhtml">
                           <ui:param name="simplePropertyDiff" value="#{listItem}"/>
                         </ui:include>
@@ -144,7 +144,7 @@
                   </f:subview>
                   
                   <!-- Complex list property -->
-                  <f:subview rendered="#{fieldDiff.propertyType.name() == 'list' and fieldDiff.complexListProperty}">
+                  <f:subview rendered="#{fieldDiff.propertyType = 'complexList'}">
                     <ui:include src="/incl/diff/complex_list_property_diff.xhtml">
                       <ui:param name="complexListPropertyDiff" value="#{fieldDiff}"/>
                       <ui:param name="side" value="right"/>

@@ -40,6 +40,7 @@ import org.w3c.dom.NodeList;
  */
 public class TestFieldDiffHelper extends DiffTestCase {
 
+    // TODO: do we need to test schema nodes?
     /**
      * Tests {@link FieldDiffHelper#getPropertyType(org.w3c.dom.Node)}.
      * 

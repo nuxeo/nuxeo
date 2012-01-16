@@ -295,7 +295,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 "2011-12-29T11:24:25Z");
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
-        // contributors => different (update) / same / different (add)
+        // contributors => different (update) / same / different (remove)
         ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff(
                 PropertyType.SCALAR_LIST);
         expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(
@@ -304,7 +304,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 PropertyType.STRING, "jack", null));
         checkListFieldDiff(schemaDiff.getFieldDiff("contributors"),
                 expectedListFieldDiff);
-        // subjects => same / different (remove)
+        // subjects => same / different (add)
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
         expectedListFieldDiff.putDiff(1, new SimplePropertyDiff(
                 PropertyType.STRING, null, "Architecture"));
@@ -335,7 +335,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 PropertyType.STRING,
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
-        // multivalued => different (remove) * 4
+        // multivalued => different (add) * 4
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
         expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(
                 PropertyType.STRING, null, "monday"));
@@ -353,8 +353,8 @@ public class TestDocumentDiff extends DiffTestCase {
         // ---------------------------
         schemaDiff = checkSchemaDiff(docDiff, "complextypes", 2);
 
-        // complex => same / different (update) / different (remove) / different
-        // (add)
+        // complex => same / different (update) / different (add) / different
+        // (remove)
         ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
         expectedComplexFieldDiff.putDiff(
                 "booleanItem",
@@ -369,9 +369,9 @@ public class TestDocumentDiff extends DiffTestCase {
                 expectedComplexFieldDiff);
 
         // complexList =>
-        // item1: same / different (update) / different (remove) / different
-        // (add)
-        // item2: add
+        // item1: same / different (update) / different (add) / different
+        // (remove)
+        // item2: remove
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
@@ -403,8 +403,8 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff.putDiff(1, item2ExpectedComplexFieldDiff);
 
         // TODO: fix!
-        // checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
-        // expectedListFieldDiff);
+        checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
+                expectedListFieldDiff);
 
         // ---------------------------
         // Check listoflists schema

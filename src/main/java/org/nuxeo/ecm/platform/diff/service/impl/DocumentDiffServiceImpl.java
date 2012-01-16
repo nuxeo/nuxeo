@@ -187,6 +187,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
         // XXX ATA: contribute this configuration to the service
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
+        XMLUnit.setCompareUnmatched(false);
     }
 
     /**
@@ -199,8 +200,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
         // XXX ATA: contribute this configuration to the service
         diff.overrideDifferenceListener(new IgnoreStructuralDifferenceListener());
         // In our case ElementNameAndAttributeQualifier is not really required
-        // because
-        // we already manage the different schema case in the
+        // because we already manage the different schema case in the
         // IgnoreStructuralDifferenceListener
         diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
 

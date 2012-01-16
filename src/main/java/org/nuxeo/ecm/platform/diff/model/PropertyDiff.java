@@ -30,6 +30,33 @@ public class PropertyDiff implements Serializable {
 
     protected String propertyType;
 
+    /**
+     * Checks if is simple type.
+     * 
+     * @return true, if is simple type
+     */
+    public boolean isSimpleType() {
+        return PropertyType.isSimpleType(propertyType);
+    }
+
+    /**
+     * Checks if is list type.
+     * 
+     * @return true, if is list type
+     */
+    public boolean isListType() {
+        return PropertyType.isListType(propertyType);
+    }
+
+    /**
+     * Checks if is complex type.
+     * 
+     * @return true, if is complex type
+     */
+    public boolean isComplexType() {
+        return PropertyType.isComplexType(propertyType);
+    }
+
     public String getPropertyType() {
         return propertyType;
     }

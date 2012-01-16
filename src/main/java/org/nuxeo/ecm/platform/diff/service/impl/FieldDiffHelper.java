@@ -560,30 +560,28 @@ public final class FieldDiffHelper {
             throw new ClientException(
                     "Node with children should never be null.");
         }
-        
-        if (nodeWithChildren != null) {
 
-            String propertyType = fieldDiff.getPropertyType();
-            if (PropertyType.isSimpleType(propertyType)) {
-                setSimplePropertyDiff((SimplePropertyDiff) fieldDiff,
-                        nodeWithChildren, hasControlNodeChildNodes);
-            } else if (PropertyType.isListType(propertyType)) {
-                NodeList childNodes = nodeWithChildren.getChildNodes();
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    ((ListPropertyDiff) fieldDiff).putDiff(
-                            i,
-                            getChildNodePropertyDiff(childNodes.item(i),
-                                    hasControlNodeChildNodes));
-                }
-            } else { // Complex type
-                PropertyDiff childNodeDiff = getChildNodePropertyDiff(
-                        nodeWithChildren, hasControlNodeChildNodes);
-                if (PropertyType.isComplexType(getPropertyType(nodeWithChildren))) {
-                    ((ComplexPropertyDiff) fieldDiff).putAllDiff((ComplexPropertyDiff) childNodeDiff);
-                } else {
-                    ((ComplexPropertyDiff) fieldDiff).putDiff(
-                            nodeWithChildren.getNodeName(), childNodeDiff);
-                }
+        String propertyType = fieldDiff.getPropertyType();
+        if (PropertyType.isSimpleType(propertyType)) {
+            setSimplePropertyDiff((SimplePropertyDiff) fieldDiff,
+                    nodeWithChildren, hasControlNodeChildNodes);
+        } else if (PropertyType.isListType(propertyType)) {
+            PropertyDiff childNodeDiff = getChildNodePropertyDiff(
+                    nodeWithChildren, hasControlNodeChildNodes);
+            if (PropertyType.isListType(getPropertyType(nodeWithChildren))) {
+                ((ListPropertyDiff) fieldDiff).putAllDiff((ListPropertyDiff) childNodeDiff);
+            } else {
+                ((ListPropertyDiff) fieldDiff).putDiff(
+                        getNodePosition(nodeWithChildren), childNodeDiff);
+            }
+        } else { // Complex type
+            PropertyDiff childNodeDiff = getChildNodePropertyDiff(
+                    nodeWithChildren, hasControlNodeChildNodes);
+            if (PropertyType.isComplexType(getPropertyType(nodeWithChildren))) {
+                ((ComplexPropertyDiff) fieldDiff).putAllDiff((ComplexPropertyDiff) childNodeDiff);
+            } else {
+                ((ComplexPropertyDiff) fieldDiff).putDiff(
+                        nodeWithChildren.getNodeName(), childNodeDiff);
             }
         }
     }
@@ -600,43 +598,7 @@ public final class FieldDiffHelper {
 
         PropertyDiff propertyDiff;
 
-        // Get first child node
-        Node firstChildNode = node.getFirstChild();
-
-        // Check empty list item
-        boolean isEmptyListItem = false;
-        Node parentNode = node.getParentNode();
-        if (parentNode != null) {
-            String parentNodeType = getPropertyType(parentNode);
-            if (PropertyType.isListType(parentNodeType)) {
-                isEmptyListItem = true;
-            } else if (PropertyType.isSimpleType(parentNodeType)) {
-                parentNode = parentNode.getParentNode();
-                if (parentNode != null
-                        && PropertyType.isListType(getPropertyType(parentNode))) {
-                    isEmptyListItem = true;
-                }
-            }
-        }
-        isEmptyListItem = isEmptyListItem && firstChildNode == null;
-        if (isEmptyListItem) {
-            throw new ClientException(
-                    "Found an empty list item (<item/>), this should never happen.");
-        }
-
         String nodePropertyType = getPropertyType(node);
-
-        // Manage the specific case of a list of list, ie.
-        // a simple node with a list child node.
-        if (PropertyType.isSimpleType(nodePropertyType)
-                && firstChildNode != null) {
-            String firstChildNodePropertyType = getPropertyType(firstChildNode);
-
-            if (PropertyType.isListType(firstChildNodePropertyType)) {
-                nodePropertyType = getPropertyType(firstChildNode);
-                node = firstChildNode;
-            }
-        }
 
         if (PropertyType.isSimpleType(nodePropertyType)) {
             propertyDiff = new SimplePropertyDiff(nodePropertyType);
