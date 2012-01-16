@@ -325,7 +325,7 @@ public final class Functions {
     /**
      * Return, from the id, the id its-self if neither last name nor name are
      * found or the full name plus the email if this one exists
-     * 
+     *
      * @param id id of the user
      * @param first first name of the user
      * @param last last name of the user
@@ -344,7 +344,7 @@ public final class Functions {
         }
         return userDisplayedName + " " + email;
     }
-    
+
     /**
      * Choose between label or name the best string to display a group
      *
@@ -421,8 +421,8 @@ public final class Functions {
 
     public static String printFormatedFileSize(String sizeS, String format,
             Boolean isShort) {
-        Integer size = (sizeS == null || "".equals(sizeS)) ? 0
-                : Integer.parseInt(sizeS);
+        long size = (sizeS == null || "".equals(sizeS)) ? 0
+                : Long.parseLong(sizeS);
         BytePrefix prefix = Enum.valueOf(BytePrefix.class, format);
         int base = prefix.getBase();
         String[] suffix = isShort ? prefix.getShortSuffixes()
