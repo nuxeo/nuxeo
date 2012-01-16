@@ -23,7 +23,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.hsqldb.jdbc.jdbcDataSource;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  *
@@ -57,14 +57,13 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
+        NuxeoContainer.installNaming();
 
         jdbcDataSource ds = new jdbcDataSource();
         ds.setDatabase("jdbc:hsqldb:mem:jena");
         ds.setUser("sa");
         ds.setPassword("");
-        Context context = new InitialContext();
-        context.rebind("java:comp/env/jdbc/nxrelations-default-jena", ds);
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -91,7 +90,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         closeSession();
-        NamingContextFactory.revertSetAsInitial();
+        NuxeoContainer.uninstall();
         super.tearDown();
     }
 

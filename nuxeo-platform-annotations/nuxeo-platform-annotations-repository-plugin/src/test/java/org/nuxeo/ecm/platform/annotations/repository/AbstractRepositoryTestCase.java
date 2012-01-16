@@ -32,7 +32,6 @@ import javax.naming.NameAlreadyBoundException;
 
 import org.h2.util.IOUtils;
 import org.hsqldb.jdbc.jdbcDataSource;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author Alexandre Russel
@@ -63,7 +63,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
+        NuxeoContainer.installNaming();
 
         jdbcDataSource ds = new jdbcDataSource();
         ds.setDatabase("jdbc:hsqldb:mem:jena");
@@ -117,7 +117,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         closeSession();
-        NamingContextFactory.revertSetAsInitial();
+        NuxeoContainer.uninstall();
         super.tearDown();
     }
 

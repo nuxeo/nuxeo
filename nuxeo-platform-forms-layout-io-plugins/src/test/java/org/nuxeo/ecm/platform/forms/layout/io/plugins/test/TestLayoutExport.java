@@ -30,7 +30,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.hsqldb.jdbcDriver;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -82,8 +82,6 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     }
 
     public static void setUpContextFactory() throws NamingException {
-        NamingContextFactory.setAsInitial();
-        Context context = new InitialContext();
         DataSource datasourceAutocommit = new SimpleDataSource(
                 "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
             @Override
@@ -93,7 +91,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
                 return con;
             }
         };
-        context.bind("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
+        NuxeoContainer.installNaming();
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
     }
 
     public void testLayoutDefinitionExport() throws Exception {

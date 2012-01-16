@@ -97,7 +97,6 @@ import com.google.inject.Inject;
 @Features(RestFeature.class)
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup=Granularity.METHOD)
-@TransactionalConfig(autoStart=false)
 public class RestTest {
 
     @Inject

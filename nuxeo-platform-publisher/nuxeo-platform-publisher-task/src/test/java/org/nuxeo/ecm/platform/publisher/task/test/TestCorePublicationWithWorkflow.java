@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.publisher.task.test;
 import java.util.HashMap;
 import java.util.List;
 
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -92,7 +92,6 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     @Override
     public void tearDown() throws Exception {
         closeSession();
-        NamingContextFactory.revertSetAsInitial();
         super.tearDown();
     }
 

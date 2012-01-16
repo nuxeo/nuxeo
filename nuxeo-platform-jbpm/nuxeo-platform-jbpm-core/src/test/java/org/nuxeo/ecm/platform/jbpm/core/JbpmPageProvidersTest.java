@@ -65,6 +65,7 @@ public class JbpmPageProvidersTest extends SQLRepositoryTestCase {
         JbpmServiceImpl.contexts.set(null);
         super.setUp();
 
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");

@@ -22,11 +22,11 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.hsqldb.jdbc.jdbcDataSource;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
@@ -54,14 +55,13 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
+        NuxeoContainer.installNaming();
 
         jdbcDataSource ds = new jdbcDataSource();
         ds.setDatabase("jdbc:hsqldb:mem:jena");
         ds.setUser("sa");
         ds.setPassword("");
-        Context context = new InitialContext();
-        context.bind("java:comp/env/jdbc/nxrelations-default-jena", ds);
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -84,7 +84,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
     @Override
     public void tearDown() throws Exception {
-        NamingContextFactory.revertSetAsInitial();
+        NuxeoContainer.uninstall();
         super.tearDown();
     }
 
