@@ -1,7 +1,6 @@
 Export-Package: org.nuxeo.common,
  org.nuxeo.common.collections,
  org.nuxeo.common.debug,
- org.nuxeo.common.jndi,
  org.nuxeo.common.logging,
  org.nuxeo.common.persistence,
  org.nuxeo.common.server,
