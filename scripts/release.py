@@ -132,41 +132,47 @@ class Release(object):
                  is_final=False):
         self.repo = repo
         self.branch = branch
-        self.maintenance = maintenance
         self.is_final = is_final
         # Evaluate default values, if not provided
-        self.snapshot = self.get_current_snapshot()
-        self.tag = self.get_tag(tag)
-        self.next_snapshot = self.get_next_snapshot(next_snapshot)
+        self.set_maintenance(maintenance)
+        self.set_snapshot()
+        self.set_tag(tag)
+        self.set_next_snapshot(next_snapshot)
 
-    def get_current_snapshot(self):
-        """Get current version from root POM."""
+    def set_maintenance(self, maintenance="auto"):
+        if maintenance == "auto":
+            self.maintenance = None
+        else:
+            self.maintenance = maintenance
+
+    def set_snapshot(self):
+        """Set current version from root POM."""
         tree = etree.parse(os.path.join(self.repo.basedir, "pom.xml"))
         version_elem = tree.getroot().find("pom:version", namespaces)
-        return version_elem.text
+        self.snapshot = version_elem.text
 
-    def get_tag(self, tag=None):
+    def set_tag(self, tag="auto"):
         """Return calculated tag. Requires 'self.snapshot' being set."""
-        if tag is not None:
-            return tag
-        if self.is_final:
-            return self.snapshot.partition("-SNAPSHOT")[0]
+        if tag != "auto":
+            self.tag = tag
+        elif self.is_final:
+            self.tag = self.snapshot.partition("-SNAPSHOT")[0]
         else:
             date = datetime.now().strftime("%Y%m%d_%H%M")
-            return self.snapshot.replace("-SNAPSHOT", "-I" + date)
+            self.tag = self.snapshot.replace("-SNAPSHOT", "-I" + date)
 
-    def get_next_snapshot(self, next_snapshot=None):
+    def set_next_snapshot(self, next_snapshot="auto"):
         """Return calculated next snapshot. Requires 'self.snapshot' being set.
         """
-        if next_snapshot is not None:
-            return next_snapshot
-        if self.is_final:
+        if next_snapshot != "auto":
+            self.next_snapshot = next_snapshot
+        elif self.is_final:
             snapshot_split = re.match("(^.*)(\d+)(-SNAPSHOT$)", self.snapshot)
-            return (snapshot_split.group(1)
+            self.next_snapshot = (snapshot_split.group(1)
                     + str(int(snapshot_split.group(2)) + 1)  # increment minor
                     + snapshot_split.group(3))
         else:
-            return self.snapshot
+            self.next_snapshot = self.snapshot
 
     def log_summary(self):
         """Log summary of configuration for current release."""
@@ -429,19 +435,19 @@ deleted after release.""")
                           help='is it a final release? (default: %default)')
         parser.add_option("-b", "--branch", action="store", type="string",
                           help='branch to release (default: current branch)',
-                          dest="branch", default=None)
+                          dest="branch", default="auto")
         parser.add_option("-t", "--tag", action="store", type="string",
-                          dest="tag", default=None,
+                          dest="tag", default="auto",
                           help="""if final option is True, then the default tag
 is the current version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is
 replaced with a date (aka 'date-based release')""")
         parser.add_option("-n", "--next", action="store", type="string",
-                          dest="next_snapshot", default=None,
+                          dest="next_snapshot", default="auto",
                           help="""next snapshot. If final option is True, then
 the next snapshot is the current one increased, else it is equal to the current
 """)
         parser.add_option('-m', '--maintenance', action="store",
-                          dest='maintenance', default=None,
+                          dest='maintenance', default="auto",
                           help="""maintenance version (by default, the
 maintenance branch is deleted after release)""")
         parser.add_option('--mvn_opts', action="store", dest='mvn_opts',
@@ -456,7 +462,7 @@ mode.""")
             command = args[0]
         mvn_opts = options.mvn_opts
         repo = Repository(os.getcwd(), options.remote_alias)
-        if options.branch is None:
+        if options.branch == "auto":
             options.branch = repo.get_current_version()
         system("git fetch %s" % (options.remote_alias))
         repo.git_update(options.branch)
