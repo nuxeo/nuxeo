@@ -234,7 +234,42 @@ public class TestDocumentDiff extends DiffTestCase {
         // ---------------------------
         // Check listoflists schema
         // ---------------------------
-        // TODO
+        schemaDiff = checkSchemaDiff(docDiff, "listoflists", 1);
+
+        // listOfLists =>
+        // item1: same
+        // item2: different
+        // item3: add
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
+
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item1ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, "second item",
+                        "second item is different"));
+        ListPropertyDiff expectedNestedListDiff = new ListPropertyDiff(
+                PropertyType.SCALAR_LIST);
+        expectedNestedListDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, "Thursday", "Friday"));
+        expectedNestedListDiff.putDiff(2, new SimplePropertyDiff(
+                PropertyType.STRING, null, "Saturday"));
+        expectedNestedListDiff.putDiff(3, new SimplePropertyDiff(
+                PropertyType.STRING, null, "July"));
+        expectedNestedListDiff.putDiff(4, new SimplePropertyDiff(
+                PropertyType.STRING, null, "August"));
+        item1ExpectedComplexFieldDiff.putDiff("stringListItem",
+                expectedNestedListDiff);
+
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, null, "third item"));
+        item2ExpectedComplexFieldDiff.putDiff("stringListItem",
+                new ListPropertyDiff(PropertyType.SCALAR_LIST));
+
+        expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
+
+        checkListFieldDiff(schemaDiff.getFieldDiff("listOfLists"),
+                expectedListFieldDiff);
 
     }
 
@@ -408,7 +443,42 @@ public class TestDocumentDiff extends DiffTestCase {
         // ---------------------------
         // Check listoflists schema
         // ---------------------------
-        // TODO
+        schemaDiff = checkSchemaDiff(docDiff, "listoflists", 1);
+
+        // listOfLists =>
+        // item1: same
+        // item2: different
+        // item3: add
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
+
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item1ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING,
+                        "second item is different", "second item"));
+        ListPropertyDiff expectedNestedListDiff = new ListPropertyDiff(
+                PropertyType.SCALAR_LIST);
+        expectedNestedListDiff.putDiff(1, new SimplePropertyDiff(
+                PropertyType.STRING, "Friday", "Thursday"));
+        expectedNestedListDiff.putDiff(2, new SimplePropertyDiff(
+                PropertyType.STRING, "Saturday", null));
+        expectedNestedListDiff.putDiff(3, new SimplePropertyDiff(
+                PropertyType.STRING, "July", null));
+        expectedNestedListDiff.putDiff(4, new SimplePropertyDiff(
+                PropertyType.STRING, "August", null));
+        item1ExpectedComplexFieldDiff.putDiff("stringListItem",
+                expectedNestedListDiff);
+
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, "third item", null));
+        item2ExpectedComplexFieldDiff.putDiff("stringListItem",
+                new ListPropertyDiff(PropertyType.SCALAR_LIST));
+
+        expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
+
+        checkListFieldDiff(schemaDiff.getFieldDiff("listOfLists"),
+                expectedListFieldDiff);
 
     }
 
