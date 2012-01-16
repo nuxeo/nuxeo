@@ -67,19 +67,13 @@ public class UnknownResource extends AbstractResource {
 
         ensureParentExists();
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
-        // note that content.getLentgh from an input stream source always return -1
-        if (request.getContentLength() > 0) {
-            String contentType = request.getContentType();
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
-            content.setMimeType(contentType);
-            content.setFilename(name);
-            backend.createFile(parentPath, name, content);
-        } else {
-            backend.createFile(parentPath, name);
+        String contentType = request.getContentType();
+        if (contentType == null) {
+            contentType = "application/octet-stream";
         }
-
+        content.setMimeType(contentType);
+        content.setFilename(name);
+        backend.createFile(parentPath, name, content);
         backend.saveChanges();
         return Response.created(new URI(request.getRequestURI())).build();
     }
