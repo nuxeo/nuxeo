@@ -31,6 +31,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -46,6 +47,7 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         try {
+            BufferingServletOutputStream.stopBufferingThread();
             t.transferTo(entityStream);
             entityStream.flush();
         } catch (Throwable e) {
