@@ -45,7 +45,7 @@
   <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
     point="directories">
 
-    <directory name="userDirectory">
+    <directory name="userLdapDirectory">
       <server>default</server>
       <schema>user</schema>
       <idField>username</idField>
@@ -107,7 +107,7 @@
 
       <references>
 
-        <inverseReference field="groups" directory="groupDirectory"
+        <inverseReference field="groups" directory="groupLdapDirectory"
           dualReferenceField="members" />
 
       </references>

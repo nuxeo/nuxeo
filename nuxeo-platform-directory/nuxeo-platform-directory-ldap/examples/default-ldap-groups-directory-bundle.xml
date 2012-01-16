@@ -11,9 +11,9 @@
   <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
     point="directories">
 
-    <directory name="groupDirectory">
+    <directory name="groupLdapDirectory">
 
-      <!-- Reuse the default server configuration defined for userDirectory -->
+      <!-- Reuse the default server configuration defined for userLdapDirectory -->
       <server>default</server>
 
       <schema>group</schema>
@@ -62,15 +62,15 @@
           existence in the target directory.
         -->
 
-        <ldapReference field="members" directory="userDirectory"
+        <ldapReference field="members" directory="userLdapDirectory"
           forceDnConsistencyCheck="false" staticAttributeId="uniqueMember"
           dynamicAttributeId="memberURL" />
 
-        <ldapReference field="subGroups" directory="groupDirectory"
+        <ldapReference field="subGroups" directory="groupLdapDirectory"
           forceDnConsistencyCheck="false" staticAttributeId="uniqueMember"
           dynamicAttributeId="memberURL" />
 
-        <inverseReference field="parentGroups" directory="groupDirectory"
+        <inverseReference field="parentGroups" directory="groupLdapDirectory"
           dualReferenceField="subGroups" />
 
         <!-- LDAP tree reference resolves children following the ldap tree
