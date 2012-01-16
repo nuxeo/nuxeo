@@ -164,7 +164,7 @@ public class CommentManagerImpl implements CommentManager {
             if (commentDocModel == null) {
                 // XXX AT: maybe user cannot see the comment
                 log.warn("Could not adapt comment relation subject to a document "
-                        + "model; check the service relation adapters configuration");
+                        + "model; check the service relation adapters configur  ation");
                 continue;
             }
             commentList.add(commentDocModel);
@@ -321,27 +321,15 @@ public class CommentManagerImpl implements CommentManager {
 
         DocumentModel parent = mySession.getDocument(new PathRef(domainPath));
         for (String name : pathList) {
-            boolean found = false;
             String pathStr = parent.getPathAsString();
-            if (name.equals(COMMENTS_DIRECTORY)) {
-                List<DocumentModel> children = mySession.getChildren(
-                        new PathRef(pathStr), "HiddenFolder");
-                for (DocumentModel documentModel : children) {
-                    if (documentModel.getTitle().equals(COMMENTS_DIRECTORY)) {
-                        found = true;
-                        parent = documentModel;
-                        break;
-                    }
+
+            PathRef ref = new PathRef(pathStr, name);
+            if (mySession.exists(ref)) {
+                parent = mySession.getDocument(ref);
+                if (!parent.isFolder()) {
+                    throw new ClientException(parent.getPathAsString() + " is not folderish");
                 }
             } else {
-                DocumentRef ref = new PathRef(pathStr, name);
-                if (mySession.exists(ref)) {
-                    parent = mySession.getDocument(ref);
-                    found = true;
-                }
-
-            }
-            if (!found) {
                 DocumentModel dm = mySession.createDocumentModel(pathStr, name,
                         "HiddenFolder");
                 dm.setProperty("dublincore", "title", name);
