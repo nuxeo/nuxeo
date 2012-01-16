@@ -21,6 +21,7 @@
     <module>nuxeo-sample-project</module>
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-indexing-gateway</module>
+    <module>nuxeo-platform-intuition</module>
   </modules>
 
 </project>
