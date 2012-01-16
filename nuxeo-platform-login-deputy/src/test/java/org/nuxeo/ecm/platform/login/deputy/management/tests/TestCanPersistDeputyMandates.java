@@ -43,8 +43,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class, TransactionalFeature.class})
-@Deploy( { 
-	"org.nuxeo.runtime.datasource",
+@Deploy( {
 	"org.nuxeo.ecm.directory",
 	"org.nuxeo.ecm.directory.sql",
 	"org.nuxeo.ecm.directory.types.contrib",
@@ -117,16 +116,16 @@ public class TestCanPersistDeputyMandates {
 
     @Test public void testRollback() throws Exception {
         initStorage();
-        
+
         dm.addMandate(dm.newMandate("adm", "titi"));
-        
-        List<String> alternate = dm.getPossiblesAlternateLogins("titi");  
+
+        List<String> alternate = dm.getPossiblesAlternateLogins("titi");
         assertThat(alternate, hasItems("adm")); // deputy is stored
-     
+
         TransactionHelper.lookupUserTransaction().rollback();
-        
-        List<String> alternateAfterRollback = dm.getAvalaibleDeputyIds("titi");   
+
+        List<String> alternateAfterRollback = dm.getAvalaibleDeputyIds("titi");
         assertThat(alternateAfterRollback, not(hasItems("adm"))); // deputy is not stored
     }
-    
+
 }
