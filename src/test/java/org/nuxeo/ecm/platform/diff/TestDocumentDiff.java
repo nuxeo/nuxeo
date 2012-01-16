@@ -93,10 +93,10 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // type
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
-                PropertyType.STRING, "SampleType", "OtherSampleType");
+                PropertyType.UNDEFINED, "SampleType", "OtherSampleType");
         // path
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
-                PropertyType.STRING, "leftDoc", "rightDoc");
+                PropertyType.UNDEFINED, "leftDoc", "rightDoc");
 
         // ---------------------------
         // Check dublincore schema
@@ -267,10 +267,10 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // type
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
-                PropertyType.STRING, "OtherSampleType", "SampleType");
+                PropertyType.UNDEFINED, "OtherSampleType", "SampleType");
         // path
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
-                PropertyType.STRING, "rightDoc", "leftDoc");
+                PropertyType.UNDEFINED, "rightDoc", "leftDoc");
 
         // ---------------------------
         // Check dublincore schema

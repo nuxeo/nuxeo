@@ -189,7 +189,7 @@ public final class FieldDiffHelper {
                 Collections.reverse(propertyHierarchy);
 
                 // Pretty log field difference
-                LOGGER.info(String.format(
+                LOGGER.debug(String.format(
                         "Found field difference #%d on [%s]/[%s] with hierarchy %s: [%s (%s)] {%s --> %s}",
                         fieldDifferenceCount + 1, schema, field,
                         propertyHierarchy, difference.getDescription(),
@@ -221,7 +221,7 @@ public final class FieldDiffHelper {
     public static String getPropertyType(Node node) {
 
         // Default: string type
-        String propertyType = PropertyType.STRING;
+        String propertyType = PropertyType.UNDEFINED;
 
         NamedNodeMap nodeAttr = node.getAttributes();
         if (nodeAttr != null) {

@@ -40,7 +40,6 @@ import org.w3c.dom.NodeList;
  */
 public class TestFieldDiffHelper extends DiffTestCase {
 
-    // TODO: do we need to test schema nodes?
     /**
      * Tests {@link FieldDiffHelper#getPropertyType(org.w3c.dom.Node)}.
      * 
@@ -51,49 +50,21 @@ public class TestFieldDiffHelper extends DiffTestCase {
 
         // Simple type
         String xml = "<title type=\"string\">joe</title>";
-        Node node = getNode(xml, "/title/text()");
+        Node node = getNode(xml, "/title");
         String propertyDiffType = FieldDiffHelper.getPropertyType(node);
         assertEquals(PropertyType.STRING, propertyDiffType);
 
         // Simple type "schema" with a nested simple type
         xml = "<schema><title type=\"string\">joe</title></schema>";
-        // node = getNode(xml, "/schema");
-        // propertyDiffType = FieldDiffHelper.getPropertyType(node);
-        // assertEquals(PropertyType.STRING, propertyDiffType);
-
         node = getNode(xml, "/schema/title");
         propertyDiffType = FieldDiffHelper.getPropertyType(node);
         assertEquals(PropertyType.STRING, propertyDiffType);
 
         // Simple type "schema" with a nested list that has no item
         xml = "<schema><list type=\"scalarList\"/></schema>";
-        // node = getNode(xml, "/schema");
-        // propertyDiffType = FieldDiffHelper.getPropertyType(node);
-        // assertEquals(PropertyType.simple, propertyDiffType);
-
         node = getNode(xml, "/schema/list");
         propertyDiffType = FieldDiffHelper.getPropertyType(node);
         assertEquals(PropertyType.SCALAR_LIST, propertyDiffType);
-
-        // Simple type "schema" with a nested list that has only one item
-        // xml = "<schema><list><item>joe</item></list></schema>";
-        // node = getNode(xml, "/schema");
-        // propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
-        // assertEquals(PropertyType.simple, propertyDiffType);
-        //
-        // // Simple type "schema" with a nested list that has two items
-        // xml =
-        // "<schema><list><item>joe</item><item>jack</item></list></schema>";
-        // node = getNode(xml, "/schema");
-        // propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
-        // assertEquals(PropertyType.simple, propertyDiffType);
-        //
-        // // Simple type "schema" with a nested complex type
-        // xml =
-        // "<schema><complex><stringItem>joe</stringItem><booleanItem>true</booleanItem></complex></schema>";
-        // node = getNode(xml, "/schema");
-        // propertyDiffType = FieldDiffHelper.getPropertyType(node, null);
-        // assertEquals(PropertyType.simple, propertyDiffType);
 
         // List type with no item
         xml = "<contributors type=\"scalarList\"/>";
@@ -184,7 +155,6 @@ public class TestFieldDiffHelper extends DiffTestCase {
         node = getNode(xml, "/complex/complexItem/integerItem");
         propertyDiffType = FieldDiffHelper.getPropertyType(node);
         assertEquals(PropertyType.INTEGER, propertyDiffType);
-
     }
 
     /**

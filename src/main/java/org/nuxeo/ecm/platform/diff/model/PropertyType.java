@@ -24,6 +24,8 @@ package org.nuxeo.ecm.platform.diff.model;
  */
 public final class PropertyType {
 
+    public static final String UNDEFINED = "undefined";
+
     public static final String STRING = "string";
 
     public static final String BOOLEAN = "boolean";

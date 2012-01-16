@@ -118,8 +118,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         item1SubList.add("Monday");
         item1SubList.add("Tuesday");
         complexItem1.put("stringListItem", (Serializable) item1SubList);
-        // TODO: uncomment
-        // listOfListPropValue.add(complexItem1);
+        listOfListPropValue.add(complexItem1);
 
         Map<String, Serializable> complexItem2 = new HashMap<String, Serializable>();
         complexItem2.put("stringItem", "second item");

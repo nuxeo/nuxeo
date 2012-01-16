@@ -16,11 +16,14 @@
  */
 package org.nuxeo.ecm.platform.diff;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.DifferenceListener;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -34,7 +37,6 @@ import org.nuxeo.ecm.platform.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
-import org.nuxeo.ecm.platform.diff.service.impl.IgnoreStructuralDifferenceListener;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -57,37 +59,67 @@ public class TestXMLDiff extends DiffTestCase {
     protected DocumentDiffService docDiffService;
 
     /**
-     * Tests the IgnoreStructuralDifferenceListener.
+     * Tests the diff configuration from the DocDiffService.
      * 
      * @throws Exception the exception
      */
-    // @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     @Test
-    public void testIgnoreStructuralDifferenceListener() throws Exception {
+    public void testDiffConfiguration() throws Exception {
 
         String myControlXML = "<document>"
                 + "<schema name=\"dublincore\"><title>joe</title></schema>"
                 + "<schema name=\"uid\"><minor_version>0</minor_version><major_version>0</major_version></schema>"
                 + "<schema name=\"note\"><note>myNote</note></schema>"
-                + "</document>";
+                + "<schema name=\"common\"><size>30</size></schema>"
+                + "<schema name=\"emptySchema\"/>" + "</document>";
         String myTestXML = "<document>"
+                + "<schema name=\"common\"><size>30</size></schema>"
                 + "<schema name=\"dublincore\"><title>jack</title></schema>"
+                + "<schema name=\"note\"><note/></schema>"
+                + "<schema name=\"uid\"><minor_version>0</minor_version></schema>"
                 + "<schema name=\"file\"><content/><filename>test_file.doc</filename></schema>"
                 + "</document>";
 
-        Diff myDiff = new Diff(myControlXML, myTestXML);
-        assertFalse("Test XML matches control XML", myDiff.identical());
-        assertFalse("Test XML matches control XML", myDiff.similar());
+        // Configure XMLUnit
+        docDiffService.configureXMLUnit();
 
-        myDiff = new Diff(myControlXML, myTestXML);
-        DetailedDiff detailedDiff = new DetailedDiff(myDiff);
-        DifferenceListener myDifferenceListener = new IgnoreStructuralDifferenceListener();
-        detailedDiff.overrideDifferenceListener(myDifferenceListener);
+        // Build diff
+        Diff diff = new Diff(myControlXML, myTestXML);
 
-        // TODO: fix!
-        // Maybe use a RecursiveElementAndNameQualifier?
-        // List<Difference> differences = detailedDiff.getAllDifferences();
-        // assertEquals("Wrong difference count", 1, differences.size());
+        // Check diff
+        assertFalse("Test XML and control XML should not be identical",
+                diff.identical());
+        assertFalse("Test XML and control XML should not be similar",
+                diff.similar());
+
+        // Configure diff
+        docDiffService.configureDiff(diff);
+
+        // Build detailed diff
+        DetailedDiff detailedDiff = new DetailedDiff(diff);
+
+        // Check detailed diff
+        List<Difference> differences = detailedDiff.getAllDifferences();
+        assertEquals("Wrong difference count", 3, differences.size());
+
+        // Check 1st diff: TEXT_VALUE
+        // joe --> jack
+        Difference diff1 = differences.get(0);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.TEXT_VALUE_ID, diff1.getId());
+
+        // Check 2nd diff: CHILD_NODE_NOT_FOUND
+        // <major_version> -->
+        Difference diff2 = differences.get(1);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.CHILD_NODE_NOT_FOUND_ID, diff2.getId());
+
+        // Check 3d diff: HAS_CHILD_NODES
+        // <note>myNote</note> --> <note/>
+        Difference diff3 = differences.get(2);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.HAS_CHILD_NODES_ID, diff3.getId());
     }
 
     /**
@@ -423,7 +455,7 @@ public class TestXMLDiff extends DiffTestCase {
             getPropertyDiff(leftXML, rightXML, 1, "complexType");
             fail("A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
         } catch (ClientException ce) {
-            LOGGER.info("Exception catched as expected: " + ce.getMessage());
+            LOGGER.debug("Exception catched as expected: " + ce.getMessage());
         }
 
     }
