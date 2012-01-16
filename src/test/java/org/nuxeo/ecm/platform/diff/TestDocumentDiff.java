@@ -402,7 +402,6 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff.putDiff(0, item1ExpectedComplexFieldDiff);
         expectedListFieldDiff.putDiff(1, item2ExpectedComplexFieldDiff);
 
-        // TODO: fix!
         checkListFieldDiff(schemaDiff.getFieldDiff("complexList"),
                 expectedListFieldDiff);
 
