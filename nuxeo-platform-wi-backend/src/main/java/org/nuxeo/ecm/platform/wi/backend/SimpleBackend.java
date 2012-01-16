@@ -207,9 +207,8 @@ public class SimpleBackend extends AbstractCoreBackend {
                 // look for a child
                 DocumentModel parentDocument = resolveParent(parentLocation.toString());
                 if (parentDocument == null) {
-                    log.warn("Unable to find parent for item " + location);
-                    throw new ClientRuntimeException("Unable to find parent for item "
-                            + location);
+                    // parent doesn't exist, no use looking for a child
+                    return null;
                 }
                 List<DocumentModel> children = getChildren(parentDocument.getRef());
                 for (DocumentModel child : children) {
