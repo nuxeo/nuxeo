@@ -44,6 +44,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class, TransactionalFeature.class})
 @Deploy( {
+    "org.nuxeo.runtime.datasource",
 	"org.nuxeo.ecm.directory",
 	"org.nuxeo.ecm.directory.sql",
 	"org.nuxeo.ecm.directory.types.contrib",
