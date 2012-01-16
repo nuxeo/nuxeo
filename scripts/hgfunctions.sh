@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Convenient functions for use on Nuxeo projects version controlled under Mercurial 
+# Convenient functions for use on Nuxeo projects version controlled under Mercurial
 #
 # (C) Copyright 2009-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
 #
@@ -24,9 +24,23 @@ hgf() {
   for dir in . nuxeo-*; do
     if [ -d "$dir"/.hg ]; then
       echo "[$dir]"
-      hg -R "$dir" "$@"; echo
+      (cd "$dir" && hg "$@")
+      echo
     fi
   done
+}
+
+hgfa() {
+   echo .
+   hg "$@" ; echo
+   ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1)
+   for dir in $ADDONS; do
+     if [ -d "$dir"/.hg ]; then
+       echo "[$dir]"
+       (cd "$dir" ; hg "$@")
+       echo
+     fi
+   done
 }
 
 _hgx_dir() {
