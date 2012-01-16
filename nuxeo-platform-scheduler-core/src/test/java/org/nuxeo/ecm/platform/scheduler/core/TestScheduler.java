@@ -23,10 +23,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry;
 import org.nuxeo.ecm.platform.scheduler.core.service.ScheduleImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NamingContextFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -37,9 +37,7 @@ public class TestScheduler extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
-        NuxeoContainer.install();
-
+        NuxeoContainer.installNaming();
         // scheduler service
         deployContrib("org.nuxeo.ecm.platform.scheduler.core",
                 "OSGI-INF/nxscheduler-service.xml");
@@ -60,7 +58,7 @@ public class TestScheduler extends NXRuntimeTestCase {
     public void tearDown() throws Exception {
         undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler-service.xml");
-        NamingContextFactory.revertSetAsInitial();
+        NuxeoContainer.uninstall();
         super.tearDown();
     }
 

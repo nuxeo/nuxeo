@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.platform.uidgen;
 
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * Simple test Case for DocUIDGeneratorListener
@@ -34,7 +34,7 @@ public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
+        NuxeoContainer.installNaming();
         openRepository();
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.uidgen.core");

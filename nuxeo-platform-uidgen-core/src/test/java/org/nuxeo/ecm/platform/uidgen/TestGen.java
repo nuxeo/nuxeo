@@ -24,7 +24,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -42,6 +41,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestGen extends NXRuntimeTestCase {
@@ -49,7 +49,7 @@ public class TestGen extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
+        NuxeoContainer.installNaming();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
         deployBundle("org.nuxeo.ecm.core.event");

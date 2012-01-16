@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -40,6 +39,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.uidgen.service.ServiceHelper;
 import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestUIDGeneratorService extends NXRuntimeTestCase {
@@ -51,7 +51,7 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
+        NuxeoContainer.installNaming();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
