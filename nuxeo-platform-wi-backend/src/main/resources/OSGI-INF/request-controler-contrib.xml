@@ -4,10 +4,10 @@
   <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
       point="filterConfig">
 
-    <filterConfig name="WSSFilter" transactional="false" synchonize="false">
+    <filterConfig name="WSSFilter" transactional="true" synchonize="false">
       <pattern>/nuxeo/_vti_bin/.*</pattern>
     </filterConfig>
-    <filterConfig name="WSSFilterRessources" transactional="fasle" synchonize="false" grant="false">
+    <filterConfig name="WSSFilterResources" transactional="false" synchonize="false" grant="false">
       <pattern>/nuxeo/_vti_bin/resources/.*</pattern>
     </filterConfig>
 
