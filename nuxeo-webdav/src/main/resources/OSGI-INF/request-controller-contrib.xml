@@ -5,7 +5,7 @@
     point="filterConfig">
 
     <filterConfig name="WebDAV" transactional="true" synchonize="false">
-      <pattern>${org.nuxeo.ecm.contextPath}/sites/dav.*</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/site/dav.*</pattern>
     </filterConfig>
 
   </extension>
