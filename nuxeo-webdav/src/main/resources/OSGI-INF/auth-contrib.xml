@@ -21,18 +21,16 @@ Setup a Basic Auth plugin for /dav paths that will always send 401 on authentica
   <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="specificChains">
-
     <specificAuthenticationChain name="WebDAV">
         <urlPatterns>
-            <url>(.*)/dav.*</url>
+            <url>(.*)/site/dav.*</url>
         </urlPatterns>
-
         <replacementChain>
+            <plugin>DIGEST_AUTH</plugin>
             <plugin>WEBDAV_BASIC_AUTH</plugin>
             <plugin>ANONYMOUS_AUTH</plugin>
         </replacementChain>
     </specificAuthenticationChain>
-
   </extension>
 
 </component>
