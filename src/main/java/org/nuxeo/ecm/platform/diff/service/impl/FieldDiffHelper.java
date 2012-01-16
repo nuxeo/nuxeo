@@ -91,25 +91,7 @@ public final class FieldDiffHelper {
      * </pre>
      * 
      * </li>
-     * <li>
-     * isChildNodeNotFoundOnTestSide: boolean to check if we are in a
-     * "CHILD_NODE_NOT_FOUND on the test side" case, which, I don't really
-     * understand why, is marked as a TEXT_VALUE difference...
      * 
-     * For example in this case we will have a TEXT_VALUE difference
-     * {green/red}.
-     * 
-     * <pre>
-     * [----- control ------]   [----- test ------]
-     * 
-     * <field>                  <field>
-     *   <item>red</item>         <item>red</item>
-     *   <item>green</item>     </field>
-     * </field>
-     * 
-     * </pre>
-     * 
-     * </li>
      * </ul>
      * 
      * @param docDiff the doc diff
@@ -128,27 +110,19 @@ public final class FieldDiffHelper {
         // Use control node or if null test node to detect schema and
         // field elements
         Node currentNode = controlNodeDetail.getNode();
-        Node otherCurrentNode = null;
         if (currentNode == null) {
             currentNode = testNodeDetail.getNode();
-        } else {
-            otherCurrentNode = testNodeDetail.getNode();
         }
         if (currentNode != null) {
 
             String field = null;
             String currentNodeName = currentNode.getNodeName();
             List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
-            boolean isChildNodeNotFoundOnTestSide = false;
 
             // Detect a schema element,
             // for instance: <schema name="dublincore" xmlns:dc="...">,
             // or the <system> element.
             Node parentNode = currentNode.getParentNode();
-            Node otherParentNode = null;
-            if (otherCurrentNode != null) {
-                otherParentNode = otherCurrentNode.getParentNode();
-            }
             while (parentNode != null
                     && !SCHEMA_ELEMENT.equals(currentNodeName)
                     && !SYSTEM_ELEMENT.equals(currentNodeName)) {
@@ -160,14 +134,6 @@ public final class FieldDiffHelper {
                 // Fill in property hierarchy
                 if (PropertyType.isListType(parentPropertyType)) {
                     int currentNodePosition = getNodePosition(currentNode);
-
-                    if (otherCurrentNode != null) {
-                        int otherCurrentNodePosition = getNodePosition(otherCurrentNode);
-                        if (otherCurrentNodePosition < currentNodePosition) {
-                            isChildNodeNotFoundOnTestSide = true;
-                        }
-                    }
-
                     propertyHierarchy.add(new PropertyHierarchyNode(
                             parentPropertyType,
                             String.valueOf(currentNodePosition)));
@@ -199,11 +165,6 @@ public final class FieldDiffHelper {
                 currentNode = parentNode;
                 currentNodeName = currentNode.getNodeName();
                 parentNode = parentNode.getParentNode();
-
-                if (otherParentNode != null) {
-                    otherCurrentNode = otherParentNode;
-                    otherParentNode = otherParentNode.getParentNode();
-                }
             }
 
             // If we found a schema or system element (ie. we did not
@@ -237,8 +198,7 @@ public final class FieldDiffHelper {
 
                 // Compute field diff
                 computeFieldDiff(docDiff, schema, field, propertyHierarchy,
-                        difference.getId(), controlNodeDetail, testNodeDetail,
-                        isChildNodeNotFoundOnTestSide);
+                        difference.getId(), controlNodeDetail, testNodeDetail);
                 // Return true since a field diff has been found
                 return true;
 
@@ -375,8 +335,7 @@ public final class FieldDiffHelper {
     private static void computeFieldDiff(DocumentDiff docDiff, String schema,
             String field, List<PropertyHierarchyNode> propertyHierarchy,
             int differenceId, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail, boolean isChildNodeNotFoundOnTestSide)
-            throws ClientException {
+            NodeDetail testNodeDetail) throws ClientException {
 
         if (propertyHierarchy.isEmpty()) {
             throw new ClientException("Empty property hierarchy.");
@@ -410,7 +369,7 @@ public final class FieldDiffHelper {
         switch (differenceId) {
         default:// In most cases: TEXT_VALUE_ID
             computeTextValueDiff(endPropertyDiff, controlNodeDetail,
-                    testNodeDetail, isChildNodeNotFoundOnTestSide);
+                    testNodeDetail);
             break;
         case DifferenceConstants.CHILD_NODE_NOT_FOUND_ID:
             computeChildNodeNotFoundDiff(endPropertyDiff, controlNodeDetail,
@@ -448,19 +407,14 @@ public final class FieldDiffHelper {
      * @param fieldDiff the field diff
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
-     * @param isChildNodeNotFoundOnTestSide the is child node not found on test
-     *            side
      * @throws ClientException the client exception
      */
     private static void computeTextValueDiff(PropertyDiff fieldDiff,
-            NodeDetail controlNodeDetail, NodeDetail testNodeDetail,
-            boolean isChildNodeNotFoundOnTestSide) throws ClientException {
+            NodeDetail controlNodeDetail, NodeDetail testNodeDetail)
+            throws ClientException {
 
         String leftValue = controlNodeDetail.getValue();
         String rightValue = testNodeDetail.getValue();
-        if (isChildNodeNotFoundOnTestSide) {
-            rightValue = null;
-        }
 
         Node controlNode = controlNodeDetail.getNode();
         if (controlNode == null) {
@@ -508,10 +462,7 @@ public final class FieldDiffHelper {
         boolean isTestNodeNotFound = "null".equals(testNodeDetail.getValue());
         if (!isTestNodeNotFound) {
             childNode = testNodeDetail.getNode();
-        }
-        // Should never happen as then it would be marked as a
-        // TEXT_VALUE difference.
-        else {
+        } else {
             childNode = controlNodeDetail.getNode();
         }
 
