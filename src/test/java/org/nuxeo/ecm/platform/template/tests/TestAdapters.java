@@ -22,9 +22,9 @@ public class TestAdapters extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
 
-        deployContrib("org.nuxeo.ecm.platform.template.managaner","OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.template.managaner","OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.template.managaner","OSGI-INF/adapter-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.template.manager","OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.template.manager","OSGI-INF/life-cycle-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.template.manager","OSGI-INF/adapter-contrib.xml");
         openSession();
     }
 

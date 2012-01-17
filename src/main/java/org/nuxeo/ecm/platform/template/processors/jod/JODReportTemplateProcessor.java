@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.platform.template.processors.fm;
+package org.nuxeo.ecm.platform.template.processors.jod;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,8 +45,11 @@ import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
+import org.nuxeo.ecm.platform.template.odt.OOoArchiveModifier;
 import org.nuxeo.ecm.platform.template.processors.AbstractTemplateProcessor;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
+import org.nuxeo.ecm.platform.template.processors.fm.IncludeManager;
 
 /**
  * {@link TemplateProcessor} for ODT based templates.

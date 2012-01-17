@@ -66,7 +66,7 @@ public class TemplateInitListener implements EventListener {
                 List<TemplateInput> params = templateDoc.getParams();
                 if (params==null || params.size()==0) {
                     try {
-                        templateDoc.initParamsFromFile(false);
+                        templateDoc.initTemplate(false);
                     } catch (Exception e) {
                         log.error("Error during parameter automatic initialization", e);
                     }

@@ -37,13 +37,15 @@ import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
  */
 public interface TemplateSourceDocument {
 
+    public static final String INIT_DONE_FLAG = "TEMPLATE_INIT_DONE";
+
     public String getParamsAsString() throws PropertyException, ClientException;
 
     public List<TemplateInput> addInput(TemplateInput input) throws Exception;
 
     public String getTemplateType();
 
-    public void initParamsFromFile(boolean save) throws Exception;
+    public void initTemplate(boolean save) throws Exception;
 
     public Blob getTemplateBlob() throws PropertyException, ClientException;
 

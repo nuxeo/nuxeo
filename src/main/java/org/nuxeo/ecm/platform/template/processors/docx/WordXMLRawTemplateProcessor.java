@@ -44,19 +44,23 @@ import org.nuxeo.ecm.platform.template.processors.AbstractTemplateProcessor;
 import org.nuxeo.ecm.platform.template.processors.BidirectionalTemplateProcessor;
 
 /**
- * WordXML implementation of the {@link BidirectionalTemplateProcessor}.
- * (Legacy code for now)
+ * WordXML implementation of the {@link BidirectionalTemplateProcessor}. Uses
+ * Raw XML parsing : legacy code for now.
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  *
  */
-public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implements BidirectionalTemplateProcessor {
+public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
+        implements BidirectionalTemplateProcessor {
 
-    public static SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+    public static SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(
+            "yyyy-MM-dd'T'hh:mm:ss'Z'");
 
     public static final String TEMPLATE_TYPE = "wordXMLTemplate";
 
-    @SuppressWarnings("unchecked")
-    public Blob renderTemplate(TemplateBasedDocument templateDocument) throws Exception {
+    @SuppressWarnings("rawtypes")
+    public Blob renderTemplate(TemplateBasedDocument templateDocument)
+            throws Exception {
 
         File workingDir = getWorkingDir();
 
@@ -68,7 +72,8 @@ public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implemen
 
         ZipUtils.unzip(sourceZipFile, workingDir);
 
-        File xmlCustomFile = new File(workingDir.getAbsolutePath() + "/docProps/custom.xml");
+        File xmlCustomFile = new File(workingDir.getAbsolutePath()
+                + "/docProps/custom.xml");
 
         String xmlContent = FileUtils.readFile(xmlCustomFile);
 
@@ -77,31 +82,34 @@ public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implemen
         List nodes = xmlDoc.getRootElement().elements();
 
         for (Object node : nodes) {
-            DefaultElement  elem = (DefaultElement ) node;
+            DefaultElement elem = (DefaultElement) node;
             if ("property".equals(elem.getName())) {
                 String name = elem.attributeValue("name");
                 TemplateInput param = getParamByName(name, params);
-                DefaultElement  valueElem = (DefaultElement) elem.elements().get(0);
-                String strValue="";
+                DefaultElement valueElem = (DefaultElement) elem.elements().get(
+                        0);
+                String strValue = "";
                 if (param.isSourceValue()) {
-                    Property property = templateDocument.getAdaptedDoc().getProperty(param.getSource());
-                    if (property!=null) {
-                        Serializable value = templateDocument.getAdaptedDoc().getPropertyValue(param.getSource());
-                        if (value!=null) {
+                    Property property = templateDocument.getAdaptedDoc().getProperty(
+                            param.getSource());
+                    if (property != null) {
+                        Serializable value = templateDocument.getAdaptedDoc().getPropertyValue(
+                                param.getSource());
+                        if (value != null) {
                             if (value instanceof Date) {
-                                strValue =wordXMLDateFormat.format((Date)value);
+                                strValue = wordXMLDateFormat.format((Date) value);
                             } else {
                                 strValue = value.toString();
                             }
                         }
                     }
                 } else {
-                    if( InputType.StringValue.equals(param.getType())) {
+                    if (InputType.StringValue.equals(param.getType())) {
                         strValue = param.getStringValue();
-                    } else if( InputType.BooleanValue.equals(param.getType())) {
+                    } else if (InputType.BooleanValue.equals(param.getType())) {
                         strValue = param.getBooleanValue().toString();
-                    } else if( InputType.DateValue.equals(param.getType())) {
-                        strValue =wordXMLDateFormat.format(param.getDateValue());
+                    } else if (InputType.DateValue.equals(param.getType())) {
+                        strValue = wordXMLDateFormat.format(param.getDateValue());
                     }
                 }
                 valueElem.setText(strValue);
@@ -129,9 +137,9 @@ public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implemen
         return newBlob;
     }
 
-
-    @SuppressWarnings("unchecked")
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
+    @SuppressWarnings("rawtypes")
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
+            throws Exception {
         List<TemplateInput> params = new ArrayList<TemplateInput>();
 
         String xmlContent = readPropertyFile(blob.getStream());
@@ -141,18 +149,19 @@ public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implemen
         List nodes = xmlDoc.getRootElement().elements();
 
         for (Object node : nodes) {
-            DefaultElement  elem = (DefaultElement ) node;
+            DefaultElement elem = (DefaultElement) node;
             if ("property".equals(elem.getName())) {
                 String name = elem.attributeValue("name");
-                DefaultElement  valueElem = (DefaultElement) elem.elements().get(0);
+                DefaultElement valueElem = (DefaultElement) elem.elements().get(
+                        0);
                 String wordType = valueElem.getName();
-                InputType nxType=InputType.StringValue;
+                InputType nxType = InputType.StringValue;
                 if (wordType.contains("lpwstr")) {
-                    nxType=InputType.StringValue;
-                }else if (wordType.contains("filetime")) {
-                    nxType=InputType.DateValue;
-                }else if (wordType.contains("bool")) {
-                    nxType=InputType.BooleanValue;
+                    nxType = InputType.StringValue;
+                } else if (wordType.contains("filetime")) {
+                    nxType = InputType.DateValue;
+                } else if (wordType.contains("bool")) {
+                    nxType = InputType.BooleanValue;
                 }
 
                 TemplateInput input = new TemplateInput(name);
@@ -163,8 +172,9 @@ public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implemen
         return params;
     }
 
-    protected TemplateInput getParamByName(String name, List<TemplateInput> params) {
-        for (TemplateInput param: params) {
+    protected TemplateInput getParamByName(String name,
+            List<TemplateInput> params) {
+        for (TemplateInput param : params) {
             if (param.getName().equals(name)) {
                 return param;
             }
@@ -173,34 +183,35 @@ public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implemen
     }
 
     public String readPropertyFile(InputStream in) throws Exception {
-           ZipInputStream zIn = new ZipInputStream(in);
-           ZipEntry zipEntry = zIn.getNextEntry();
-           String xmlContent=null;
-           while (zipEntry!=null) {
-               if (zipEntry.getName().equals("docProps/custom.xml")) {
-                   StringBuilder sb = new StringBuilder();
-                   byte[] buffer = new byte[BUFFER_SIZE];
-                   int read;
-                   while ((read = zIn.read(buffer)) != -1) {
-                           sb.append(new String(buffer, 0, read));
-                   }
-                   xmlContent = sb.toString();
-                   break;
-               }
-               zipEntry = zIn.getNextEntry();
-           }
-           zIn.close();
-           return xmlContent;
+        ZipInputStream zIn = new ZipInputStream(in);
+        ZipEntry zipEntry = zIn.getNextEntry();
+        String xmlContent = null;
+        while (zipEntry != null) {
+            if (zipEntry.getName().equals("docProps/custom.xml")) {
+                StringBuilder sb = new StringBuilder();
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int read;
+                while ((read = zIn.read(buffer)) != -1) {
+                    sb.append(new String(buffer, 0, read));
+                }
+                xmlContent = sb.toString();
+                break;
+            }
+            zipEntry = zIn.getNextEntry();
+        }
+        zIn.close();
+        return xmlContent;
     }
 
-    @SuppressWarnings("unchecked")
-    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument) throws Exception {
+    @SuppressWarnings("rawtypes")
+    public DocumentModel updateDocumentFromBlob(
+            TemplateBasedDocument templateDocument) throws Exception {
 
         Blob blob = templateDocument.getTemplateBlob();
 
         String xmlContent = readPropertyFile(blob.getStream());
 
-        if (xmlContent==null) {
+        if (xmlContent == null) {
             return templateDocument.getAdaptedDoc();
         }
 
@@ -212,28 +223,32 @@ public class WordXMLTemplateProcessor extends AbstractTemplateProcessor implemen
         List<TemplateInput> params = templateDocument.getParams();
 
         for (Object node : nodes) {
-            DefaultElement  elem = (DefaultElement ) node;
+            DefaultElement elem = (DefaultElement) node;
             if ("property".equals(elem.getName())) {
                 String name = elem.attributeValue("name");
                 TemplateInput param = getParamByName(name, params);
-                DefaultElement  valueElem = (DefaultElement) elem.elements().get(0);
+                DefaultElement valueElem = (DefaultElement) elem.elements().get(
+                        0);
                 String xmlValue = valueElem.getTextTrim();
                 if (param.isSourceValue()) {
                     // XXX this needs to be rewritten
 
-                    if( String.class.getSimpleName().equals(param.getType())) {
+                    if (String.class.getSimpleName().equals(param.getType())) {
                         adaptedDoc.setPropertyValue(param.getSource(), xmlValue);
-                    } else if( InputType.BooleanValue.equals(param.getType())) {
-                        adaptedDoc.setPropertyValue(param.getSource(), new Boolean(xmlValue));
-                    } else if( Date.class.getSimpleName().equals(param.getType())) {
-                        adaptedDoc.setPropertyValue(param.getSource(), wordXMLDateFormat.parse(xmlValue));
+                    } else if (InputType.BooleanValue.equals(param.getType())) {
+                        adaptedDoc.setPropertyValue(param.getSource(),
+                                new Boolean(xmlValue));
+                    } else if (Date.class.getSimpleName().equals(
+                            param.getType())) {
+                        adaptedDoc.setPropertyValue(param.getSource(),
+                                wordXMLDateFormat.parse(xmlValue));
                     }
                 } else {
-                    if( InputType.StringValue.equals(param.getType())) {
+                    if (InputType.StringValue.equals(param.getType())) {
                         param.setStringValue(xmlValue);
-                    } else if( InputType.BooleanValue.equals(param.getType())) {
+                    } else if (InputType.BooleanValue.equals(param.getType())) {
                         param.setBooleanValue(new Boolean(xmlValue));
-                    } else if( InputType.DateValue.equals(param.getType())) {
+                    } else if (InputType.DateValue.equals(param.getType())) {
                         param.setDateValue(wordXMLDateFormat.parse(xmlValue));
                     }
                 }

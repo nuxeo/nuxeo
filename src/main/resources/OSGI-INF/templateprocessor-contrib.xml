@@ -1,0 +1,39 @@
+<component
+  name="org.nuxeo.ecm.platform.template.service.defaultContrib">
+
+  <extension target="org.nuxeo.ecm.platform.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>Contribute legacy raw XML processor for docx : the only advantage of this implementation is that it supports bi-directional mapping</documentation>
+
+    <templateProcessor name="rawWordXML" label="Raw Word XML" default="false" class="org.nuxeo.ecm.platform.template.processors.docx.WordXMLRawTemplateProcessor">
+      <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</supportedMimeType>
+      <supportedExtension>docx</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>JOD Report based template processor</documentation>
+
+    <templateProcessor name="JODReportProcessor" label="JOD processor" default="false" class="org.nuxeo.ecm.platform.template.processors.jod.JODReportTemplateProcessor">
+      <supportedMimeType>application/vnd.oasis.opendocument.text</supportedMimeType>
+      <supportedExtension>odt</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>JOD Report based template processor</documentation>
+
+    <templateProcessor name="XDocReportProcessor" label="XDocReport processor" default="true" class="org.nuxeo.ecm.platform.template.processors.xdocreport.XDocReportProcessor">
+      <supportedMimeType>application/vnd.oasis.opendocument.text</supportedMimeType>
+      <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</supportedMimeType>
+      <supportedExtension>odt</supportedExtension>
+      <supportedExtension>docx</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+ </component>

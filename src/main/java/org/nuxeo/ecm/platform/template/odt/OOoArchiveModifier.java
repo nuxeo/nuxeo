@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.platform.template.processors.fm;
+package org.nuxeo.ecm.platform.template.odt;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,6 +32,7 @@ import java.util.zip.ZipOutputStream;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.template.processors.fm.IncludeManager;
 
 /**
  *

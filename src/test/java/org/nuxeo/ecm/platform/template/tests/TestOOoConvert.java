@@ -3,7 +3,6 @@ package org.nuxeo.ecm.platform.template.tests;
 import java.io.File;
 
 import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.runtime.api.Framework;

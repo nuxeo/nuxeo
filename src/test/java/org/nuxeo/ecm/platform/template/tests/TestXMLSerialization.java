@@ -10,8 +10,6 @@ import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.XMLSerializer;
 
-import com.ibm.icu.util.Calendar;
-
 public class TestXMLSerialization extends TestCase {
 
     public void testXMLSerialization() throws Exception  {

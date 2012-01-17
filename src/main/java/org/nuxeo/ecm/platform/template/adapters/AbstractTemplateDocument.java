@@ -35,10 +35,9 @@ import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.XMLSerializer;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.ecm.platform.template.processors.ProcessorFactory;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
-import org.nuxeo.ecm.platform.template.processors.docx.WordXMLTemplateProcessor;
-import org.nuxeo.ecm.platform.template.processors.fm.JODReportTemplateProcessor;
+import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for shared code bewteen the {@link TemplateBasedDocument} and the
@@ -110,21 +109,8 @@ public abstract class AbstractTemplateDocument implements Serializable {
     public abstract String getTemplateType();
 
     protected TemplateProcessor getTemplateProcessor() {
-        return ProcessorFactory.getProcessor(getTemplateType());
-    }
-
-    protected String getTemplateType(Blob blob) {
-        String fName = blob.getFilename();
-        if (fName != null) {
-            if (fName.endsWith(".docx") || fName.endsWith(".doc")) {
-                return WordXMLTemplateProcessor.TEMPLATE_TYPE;
-            }
-            if (fName.endsWith(".odt")) {
-                return JODReportTemplateProcessor.TEMPLATE_TYPE;
-            }
-        }
-        log.error("Unable to find template type");
-        return null;
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        return tps.getProcessor(getTemplateType());
     }
 
     public boolean hasEditableParams() throws ClientException {

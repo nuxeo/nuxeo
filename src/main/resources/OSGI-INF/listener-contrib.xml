@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.platform.TemplateSources.listener">
-<!--
+
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
     <listener name="documenttemplate-init" async="false"
@@ -8,5 +8,4 @@
       class="org.nuxeo.ecm.platform.template.listeners.TemplateInitListener">
     </listener>
   </extension>
-  -->
 </component>

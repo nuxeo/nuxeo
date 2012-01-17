@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.platform.template.processors.fm;
+package org.nuxeo.ecm.platform.template.fm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.platform.template.TemplateInput;
+import org.nuxeo.ecm.platform.template.processors.jod.JODReportTemplateProcessor;
 
 /**
  * Helper class used to extract variable names from a FreeMarker template. This

@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.processors.BidirectionalTemplateProcessor;
-import org.nuxeo.ecm.platform.template.processors.ProcessorFactory;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
 
 /**
@@ -103,14 +102,6 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         if (source != null) {
             return source.getTemplateType();
         }
-
-        try {
-            Blob tmplBlob = getTemplateBlob();
-            return getTemplateType(tmplBlob);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return null;
     }
 
@@ -122,6 +113,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         }
 
         // copy Blob template
+        // XXX Why ???
         Blob blob = tmpl.getTemplateBlob();
         setBlob(blob);
 
@@ -146,13 +138,19 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
     }
 
     public Blob updateBlobFromParams(boolean save) throws Exception {
-        Blob blob = ProcessorFactory.getProcessor(getTemplateType()).renderTemplate(
-                this);
-        setBlob(blob);
-        if (save) {
-            adaptedDoc = getSession().saveDocument(adaptedDoc);
+        TemplateProcessor processor = getTemplateProcessor();
+        if (processor != null) {
+            Blob blob = processor.renderTemplate(this);
+            setBlob(blob);
+            if (save) {
+                adaptedDoc = getSession().saveDocument(adaptedDoc);
+            }
+            return blob;
+        } else {
+            throw new ClientException(
+                    "No template processor found for template type="
+                            + getTemplateType());
         }
-        return blob;
     }
 
     public boolean isBidirectional() {

@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
+import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of {@link TemplateSourceDocument}. It mainly expect
@@ -89,17 +91,23 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
 
-    public void initParamsFromFile(boolean save) throws Exception {
-        Blob blob = getTemplateBlob();
-        String templateType = getTemplateType(blob);
-        if (templateType != null) {
-            getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP, templateType);
-        }
-        TemplateProcessor processor = getTemplateProcessor();
-        if (processor != null) {
-            List<TemplateInput> params = processor.getInitialParametersDefinition(blob);
-            saveParams(params, save);
-
+    public void initTemplate(boolean save) throws Exception {
+        // avoid duplicated init
+        if (getAdaptedDoc().getContextData(TemplateSourceDocument.INIT_DONE_FLAG)==null) {
+            Blob blob = getTemplateBlob();
+            if (blob!=null) {
+                TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+                String templateType = tps.findProcessorName(blob);
+                if (templateType != null) {
+                    getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP, templateType);
+                }
+                TemplateProcessor processor = getTemplateProcessor();
+                if (processor != null) {
+                    List<TemplateInput> params = processor.getInitialParametersDefinition(blob);
+                    saveParams(params, save);
+                }
+                getAdaptedDoc().getContextData().put(TemplateSourceDocument.INIT_DONE_FLAG, true);
+            }
         }
     }
 

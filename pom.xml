@@ -8,6 +8,10 @@
     <version>5.5</version>
   </parent>
 
+  <properties>
+    <xdocreport.version>0.9.5-SNAPSHOT</xdocreport.version>
+  </properties>
+
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nuxeo.features</groupId>
@@ -22,6 +26,26 @@
          <version>2.4.0</version>
       </dependency>
         <dependency>
+            <groupId>org.nuxeo.common</groupId>           
+            <artifactId>nuxeo-common</artifactId>
+            <exclusions>
+             <exclusion>
+               <groupId>xerces</groupId>
+               <artifactId>xercesImpl</artifactId>
+             </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.nuxeo.runtime</groupId>           
+            <artifactId>nuxeo-runtime</artifactId>
+            <exclusions>
+             <exclusion>
+               <groupId>xerces</groupId>
+               <artifactId>xercesImpl</artifactId>
+             </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.nuxeo.ecm.core</groupId>           
             <artifactId>nuxeo-core-api</artifactId>
         </dependency>
@@ -34,26 +58,51 @@
             <artifactId>nuxeo-core-convert</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.nuxeo.ecm.platform</groupId>
-            <artifactId>nuxeo-platform-filemanager-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.nuxeo.ecm.platform</groupId>
-            <artifactId>nuxeo-platform-filemanager-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.nuxeo.ecm.platform</groupId>
-            <artifactId>nuxeo-platform-rendering</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.nuxeo.ecm.core</groupId>
             <artifactId>nuxeo-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+           <groupId>org.nuxeo.ecm.platform</groupId>
+           <artifactId>nuxeo-platform-rendering</artifactId>
+        </dependency>
+	<!-- docx report -->
+        <dependency>
+           <groupId>fr.opensagres.xdocreport</groupId>
+           <artifactId>fr.opensagres.xdocreport.converter</artifactId>
+           <version>${xdocreport.version}</version>
+        </dependency>        
+        <dependency>
+           <groupId>fr.opensagres.xdocreport</groupId>
+           <artifactId>fr.opensagres.xdocreport.core</artifactId>
+           <version>${xdocreport.version}</version>
+        </dependency>        
+        <dependency>
+           <groupId>fr.opensagres.xdocreport</groupId>
+           <artifactId>fr.opensagres.xdocreport.document</artifactId>
+           <version>${xdocreport.version}</version>
+        </dependency>        
+        <dependency>
+           <groupId>fr.opensagres.xdocreport</groupId>
+           <artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
+           <version>${xdocreport.version}</version>
+        </dependency>        
+        <dependency>
+           <groupId>fr.opensagres.xdocreport</groupId>
+           <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
+           <version>${xdocreport.version}</version>
+        </dependency>        
+        <dependency>
+           <groupId>fr.opensagres.xdocreport</groupId>
+           <artifactId>fr.opensagres.xdocreport.template</artifactId>
+           <version>${xdocreport.version}</version>
+        </dependency>        
+        <dependency>
+           <groupId>fr.opensagres.xdocreport</groupId>
+           <artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
+           <version>${xdocreport.version}</version>
+        </dependency>        
+	<!-- end docx report -->
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
@@ -62,18 +111,6 @@
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-types-api</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.nuxeo.ecm.platform</groupId>
-            <artifactId>nuxeo-platform-mimetype-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.nuxeo.ecm.platform</groupId>
-            <artifactId>nuxeo-platform-mimetype-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-       -->
         <dependency>
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-types-core</artifactId>
@@ -83,6 +120,17 @@
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-convert</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nuxeo.ecm.core</groupId>
+            <artifactId>nuxeo-core-convert-plugins</artifactId>
+            <scope>test</scope>
+            <exclusions>
+             <exclusion>
+               <groupId>xerces</groupId>
+               <artifactId>xercesImpl</artifactId>
+             </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.nuxeo.ecm.platform</groupId>
@@ -99,6 +147,16 @@
         <dependency>
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-webapp-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nuxeo.theme</groupId>
+            <artifactId>nuxeo-theme-core</artifactId>
+            <exclusions>
+             <exclusion>
+               <groupId>xerces</groupId>
+               <artifactId>xercesImpl</artifactId>
+             </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.nuxeo.ecm.core</groupId>
@@ -121,9 +179,11 @@
             <groupId>org.nuxeo.ecm.platform</groupId>
             <artifactId>nuxeo-platform-webapp-base</artifactId>
         </dependency>
-         <dependency>
+<!--         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
-        </dependency>
+        </dependency>-->
+
+
     </dependencies>
 </project>

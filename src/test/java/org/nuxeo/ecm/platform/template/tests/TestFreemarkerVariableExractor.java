@@ -4,7 +4,11 @@ import java.io.File;
 import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.platform.template.processors.fm.FreeMarkerVariableExtractor;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.template.TemplateInput;
+import org.nuxeo.ecm.platform.template.XMLSerializer;
+import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
+import org.nuxeo.ecm.platform.template.processors.xdocreport.XDocReportProcessor;
 
 import junit.framework.TestCase;
 
@@ -47,5 +51,96 @@ public class TestFreemarkerVariableExractor extends TestCase {
         assertFalse(vars.contains("doc['dc:subjects']"));
 
     }
+
+    public void testDocXParamExtraction() throws Exception {
+        XDocReportProcessor processor = new XDocReportProcessor();
+        File file = FileUtils.getResourceFileFromContext("data/testDoc.docx");
+
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(
+                file));
+
+        // String[] expectedVars = new String[]{"StringVar","DateVar",
+        // "Description","picture", "BooleanVar"};
+        String[] expectedVars = new String[] { "StringVar", "DateVar",
+                "Description", "BooleanVar" };
+
+        assertEquals(expectedVars.length, inputs.size());
+        for (String expected : expectedVars) {
+            boolean found = false;
+            for (TemplateInput input : inputs) {
+                if (expected.equals(input.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+        }
+
+        String xmlParams = XMLSerializer.serialize(inputs);
+
+        for (TemplateInput input : inputs) {
+            assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
+        }
+
+        List<TemplateInput> inputs2 = XMLSerializer.readFromXml(xmlParams);
+
+        assertEquals(inputs.size(), inputs2.size());
+        for (TemplateInput input : inputs) {
+            boolean found = false;
+            for (TemplateInput input2 : inputs2) {
+                if (input2.getName().equals(input.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+        }
+    }
+
+    public void testODTParamExtraction() throws Exception {
+        XDocReportProcessor processor = new XDocReportProcessor();
+        File file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
+
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(
+                file));
+
+        // String[] expectedVars = new String[]{"StringVar","DateVar",
+        // "Description","picture", "BooleanVar"};
+        String[] expectedVars = new String[] { "StringVar", "DateVar",
+                "Description", "BooleanVar" };
+
+        assertEquals(expectedVars.length, inputs.size());
+        for (String expected : expectedVars) {
+            boolean found = false;
+            for (TemplateInput input : inputs) {
+                if (expected.equals(input.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+        }
+
+        String xmlParams = XMLSerializer.serialize(inputs);
+
+        for (TemplateInput input : inputs) {
+            assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
+        }
+
+        List<TemplateInput> inputs2 = XMLSerializer.readFromXml(xmlParams);
+
+        assertEquals(inputs.size(), inputs2.size());
+        for (TemplateInput input : inputs) {
+            boolean found = false;
+            for (TemplateInput input2 : inputs2) {
+                if (input2.getName().equals(input.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+        }
+    }
+
 
 }

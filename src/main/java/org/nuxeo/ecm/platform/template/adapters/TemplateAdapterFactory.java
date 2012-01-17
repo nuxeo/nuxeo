@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocumentAda
  */
 public class TemplateAdapterFactory implements DocumentAdapterFactory {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Object getAdapter(DocumentModel doc, Class adapterClass) {
 
         if (adapterClass.getSimpleName().equals(

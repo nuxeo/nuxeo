@@ -13,11 +13,10 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.ecm.platform.template.processors.BidirectionalTemplateProcessor;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
-import org.nuxeo.ecm.platform.template.processors.docx.WordXMLTemplateProcessor;
+import org.nuxeo.ecm.platform.template.processors.docx.WordXMLRawTemplateProcessor;
 
-public class TestWordXMLProcessing extends SQLRepositoryTestCase {
+public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
@@ -27,11 +26,11 @@ public class TestWordXMLProcessing extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
 
-        deployContrib("org.nuxeo.ecm.platform.template.managaner",
+        deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.template.managaner",
+        deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.template.managaner",
+        deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/adapter-contrib.xml");
         openSession();
     }
@@ -82,13 +81,13 @@ public class TestWordXMLProcessing extends SQLRepositoryTestCase {
 
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();
-
+        assertNotNull(testDoc);
         List<TemplateInput> params = getTestParams();
 
         testDoc = adapter.saveParams(params, true);
         session.save();
 
-        WordXMLTemplateProcessor processor = new WordXMLTemplateProcessor();
+        WordXMLRawTemplateProcessor processor = new WordXMLRawTemplateProcessor();
 
         Blob newBlob = processor.renderTemplate(adapter);
 
@@ -133,7 +132,7 @@ public class TestWordXMLProcessing extends SQLRepositoryTestCase {
         fileBlob.setFilename("sample templatet.docx");
 
 
-        TemplateProcessor processor = new WordXMLTemplateProcessor();
+        TemplateProcessor processor = new WordXMLRawTemplateProcessor();
 
         List<TemplateInput> params = processor.getInitialParametersDefinition(fileBlob);
 

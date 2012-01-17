@@ -74,7 +74,7 @@ public class TemplatesActionsBean implements Serializable {
         TemplateSourceDocument sourceTemplate =changeableDocument.getAdapter(TemplateSourceDocument.class);
         if (sourceTemplate!=null && sourceTemplate.getTemplateBlob()!=null){
             try {
-                sourceTemplate.initParamsFromFile(false);
+                sourceTemplate.initTemplate(false);
                 if (sourceTemplate.hasEditableParams()) {
                     templateInputs = sourceTemplate.getParams();
                     return "editTemplateRelatedData";
