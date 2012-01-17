@@ -96,6 +96,7 @@ h3.summaryTitle {
   margin: 0 1em 0 1em;
   padding: 1em }
 .rightsAddManager .labelColumn { width: 80px }
+.UserSuggestionInput table td { vertical-align: top }
 
 .userAndGroupSearch { margin: 0 }
 .userAndGroupFilter { margin: 1.3em 0 0 }
