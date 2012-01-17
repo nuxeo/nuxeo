@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.management.events.EventStatsHolder;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
@@ -1590,12 +1591,14 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
+        deployBundle("org.nuxeo.ecm.core.management");
 
-        log.warn("Before testFulltextBlob");
+        EventStatsHolder.setCollectAsyncHandlersExecTime(true);
+        assertTrue(EventStatsHolder.getAsyncHandlersExecTime().isEmpty());
 
-        try {
         createDocs();
         sleepForFulltext();
+        assertTrue(EventStatsHolder.getAsyncHandlersCallStats().containsKey("sql-storage-binary-text"));
         String query;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
@@ -1617,9 +1620,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.saveDocument(file1);
         session.save();
         sleepForFulltext();
-        } finally {
-            log.warn("After testFulltextBlob");
-        }
+
     }
 
     public void testFullTextCopy() throws Exception {

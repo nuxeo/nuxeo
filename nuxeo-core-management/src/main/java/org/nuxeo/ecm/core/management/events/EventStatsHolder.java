@@ -13,6 +13,7 @@
  */
 package org.nuxeo.ecm.core.management.events;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +44,11 @@ public class EventStatsHolder {
     public static void setCollectAsyncHandlersExecTime(
             boolean collectAsyncHandlersExecTime) {
         EventStatsHolder.collectAsyncHandlersExecTime = collectAsyncHandlersExecTime;
+        if (collectAsyncHandlersExecTime == true) {
+            synchronized(aSyncStats) {
+                EventStatsHolder.aSyncStats.clear();
+            }
+        }
     }
 
     public static boolean isCollectSyncHandlersExecTime() {
@@ -52,6 +58,11 @@ public class EventStatsHolder {
     public static void setCollectSyncHandlersExecTime(
             boolean collectSyncHandlersExecTime) {
         EventStatsHolder.collectSyncHandlersExecTime = collectSyncHandlersExecTime;
+        if (collectSyncHandlersExecTime == true) {
+            synchronized(EventStatsHolder.syncStats) {
+                EventStatsHolder.syncStats.clear();
+            }
+        }
     }
 
     public static void logAsyncExec(EventListenerDescriptor desc, long delta) {
@@ -97,8 +108,22 @@ public class EventStatsHolder {
         return getStringSummary(aSyncStats);
     }
 
+    /**
+     * @since 5.6
+     */
+    public static Map<String,CallStat> getAsyncHandlersCallStats() {
+        return Collections.unmodifiableMap(aSyncStats);
+    }
+
     public static String getSyncHandlersExecTime() {
         return getStringSummary(syncStats);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public static Map<String,CallStat> getSyncHandlersCallStats() {
+        return Collections.unmodifiableMap(syncStats);
     }
 
     protected static String getStringSummary(Map<String, CallStat> stats) {
