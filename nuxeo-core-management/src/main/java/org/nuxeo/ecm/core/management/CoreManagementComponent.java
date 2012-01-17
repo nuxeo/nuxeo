@@ -15,6 +15,7 @@ import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
+import org.nuxeo.ecm.core.management.events.EventStatsHolder;
 import org.nuxeo.ecm.core.management.events.EventStatsImpl;
 import org.nuxeo.ecm.core.management.probes.ProbeDescriptor;
 import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
@@ -116,6 +117,7 @@ public class CoreManagementComponent extends DefaultComponent {
     public void activate(ComponentContext context) throws Exception {
         defaultComponent = this;
         storageManager.install();
+        EventStatsHolder.clearStats();
     }
 
     @Override
@@ -123,6 +125,7 @@ public class CoreManagementComponent extends DefaultComponent {
         defaultComponent = null;
         storageManager.uninstall();
         getLocalManager().onNuxeoServerShutdown();
+        EventStatsHolder.clearStats();
     }
 
     public void onNuxeoServerStartup() {

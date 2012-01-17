@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.naming.NamingException;
+import javax.transaction.TransactionManager;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -50,6 +53,7 @@ import org.nuxeo.ecm.core.management.events.EventStatsHolder;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author Dragos Mihalache
@@ -1593,6 +1597,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployBundle("org.nuxeo.ecm.core.management");
 
+        assertNoTxMgr();
+
         EventStatsHolder.setCollectAsyncHandlersExecTime(true);
         assertTrue(EventStatsHolder.getAsyncHandlersExecTime().isEmpty());
 
@@ -1621,6 +1627,16 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.save();
         sleepForFulltext();
 
+    }
+
+    private void assertNoTxMgr() {
+        TransactionManager mgr = null;
+        try {
+            mgr = TransactionHelper.lookupTransactionManager();
+        } catch (NamingException e) {
+            ;
+        }
+        assertNull(mgr);
     }
 
     public void testFullTextCopy() throws Exception {

@@ -44,12 +44,8 @@ public class EventStatsHolder {
     public static void setCollectAsyncHandlersExecTime(
             boolean collectAsyncHandlersExecTime) {
         EventStatsHolder.collectAsyncHandlersExecTime = collectAsyncHandlersExecTime;
-        if (collectAsyncHandlersExecTime == true) {
-            synchronized(aSyncStats) {
-                EventStatsHolder.aSyncStats.clear();
-            }
-        }
     }
+
 
     public static boolean isCollectSyncHandlersExecTime() {
         return collectSyncHandlersExecTime;
@@ -58,10 +54,14 @@ public class EventStatsHolder {
     public static void setCollectSyncHandlersExecTime(
             boolean collectSyncHandlersExecTime) {
         EventStatsHolder.collectSyncHandlersExecTime = collectSyncHandlersExecTime;
-        if (collectSyncHandlersExecTime == true) {
-            synchronized(EventStatsHolder.syncStats) {
-                EventStatsHolder.syncStats.clear();
-            }
+    }
+
+    /**
+     * @since 5.6
+     */
+    public static void clearStats() {
+        synchronized(aSyncStats) {
+            EventStatsHolder.aSyncStats.clear();
         }
     }
 
