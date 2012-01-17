@@ -128,22 +128,16 @@ class Release(object):
     """Nuxeo release manager.
 
     See 'self.perpare()', 'self.perform()'."""
-    def __init__(self, repo, branch, tag, next_snapshot, maintenance,
+    def __init__(self, repo, branch, tag, next_snapshot, maintenance="auto",
                  is_final=False):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
+        self.maintenance = maintenance
         # Evaluate default values, if not provided
-        self.set_maintenance(maintenance)
         self.set_snapshot()
         self.set_tag(tag)
         self.set_next_snapshot(next_snapshot)
-
-    def set_maintenance(self, maintenance="auto"):
-        if maintenance == "auto":
-            self.maintenance = None
-        else:
-            self.maintenance = maintenance
 
     def set_snapshot(self):
         """Set current version from root POM."""
@@ -174,22 +168,25 @@ class Release(object):
         else:
             self.next_snapshot = self.snapshot
 
-    def log_summary(self):
+    def log_summary(self, store_params=True):
         """Log summary of configuration for current release."""
         log("Releasing from branch:".ljust(25) + self.branch)
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
-        if self.maintenance is None:
+        if self.maintenance == "auto":
             log("No maintenance branch".ljust(25))
         else:
             log("Maintenance version:".ljust(25) + self.maintenance)
+        if store_params:
+            release_log = os.path.abspath(os.path.join(self.repo.basedir, os.pardir,
+                                                   "release.log"))
+            with open(release_log, "wb") as f:
+                f.write("BRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\nMAINTENANCE=%s" %
+                        (self.branch, self.tag, self.next_snapshot,
+                         self.maintenance))
+            log("Parameters stored in %s" % release_log)
         log("")
-        with open(os.path.abspath(os.path.join(self.repo.basedir, os.pardir,
-                                               "release.log")), "wb") as f:
-            f.write("BRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\nMAINTENANCE=%s" %
-                    (self.branch, self.tag, self.next_snapshot,
-                     self.maintenance))
 
     def update_versions(self, old_version, new_version):
         """Update all occurrences of 'old_version' with 'new_version'."""
@@ -366,7 +363,7 @@ class Release(object):
 
         ## TODO NXP-8569 Optionally merge maintenance branch on source
 
-        if self.maintenance is not None:
+        if self.maintenance != "auto":
             # Maintenance branches are kept, so update their versions
             self.update_versions(self.tag, self.maintenance)
             self.repo.system_recurse("git commit -m'Post release %s' -a" %
@@ -378,7 +375,7 @@ class Release(object):
         self.repo.system_recurse("git commit -m'Post release %s' -a" %
                                  self.tag)
 
-        if self.maintenance is None:
+        if self.maintenance == "auto":
             # Delete maintenance branches
             self.repo.system_recurse("git branch -D %s" % self.tag)
 
@@ -398,7 +395,7 @@ class Release(object):
         self.repo.clone(self.branch)
         self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                      self.branch))
-        if self.maintenance is not None:
+        if self.maintenance != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                          self.tag))
         self.repo.system_recurse("git push --tags")
@@ -423,7 +420,13 @@ def main():
         if not os.path.isdir(".git"):
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
-        usage = "usage: %prog [options] <command=prepare|perform>"
+        usage = ("usage: %prog [options] <command>\n\nCommands:\n"
+                 "  prepare: Prepare the release (build, change versions, tag "
+                 "and package source and distributions). The release "
+                 "parameters are stored in a release.log file.\n"
+                 "  perform: Perform the release (push sources, deploy "
+                 "artifacts and upload packages). If no parameter is given, "
+                 "they are read from the release.log file.")
         parser = optparse.OptionParser(usage=usage,
                                        description="""Release Nuxeo from
 a given branch, tag the release, then set the next SNAPSHOT version.  If a
@@ -462,6 +465,18 @@ mode.""")
         if len(args) > 0:
             command = args[0]
         repo = Repository(os.getcwd(), options.remote_alias)
+        release_log = os.path.abspath(os.path.join(os.getcwd(), os.pardir,
+                                               "release.log"))
+        if ("command" in locals() and command == "perform"
+            and os.path.isfile(release_log)
+            and options == parser.get_default_values()):
+            log("Reading parameters from %s ..." % release_log)
+            with open(release_log, "rb") as f:
+                options.branch = f.readline().split("=")[1].strip()
+                options.tag = f.readline().split("=")[1].strip()
+                options.next_snapshot = f.readline().split("=")[1].strip()
+                options.maintenance = f.readline().split("=")[1].strip()
+
         if options.branch == "auto":
             options.branch = repo.get_current_version()
         system("git fetch %s" % (options.remote_alias))
@@ -469,7 +484,7 @@ mode.""")
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance,
                           options.is_final)
-        release.log_summary()
+        release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "prepare":
