@@ -78,11 +78,6 @@ public class TestAdapters extends SQLRepositoryTestCase {
          testDoc = adapter.setTemplate(templateAdapter.getAdaptedDoc(), true);
          testDoc = adapter.initializeFromTemplate(true);
 
-         // check blob copy
-         Blob copiedBlob = (Blob) testDoc.getPropertyValue("file:content");
-         assertNotNull(copiedBlob);
-         assertEquals("hello.docx", copiedBlob.getFilename());
-
          // check fields
          List<TemplateInput> copiedParams = adapter.getParams();
          assertNotNull(copiedParams);

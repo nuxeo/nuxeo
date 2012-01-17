@@ -45,6 +45,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public static final String TEMPLATE_TYPE_PROP = "tmpl:templateType";
 
+    public static final String TEMPLATE_APPLICABLE_TYPES_PROP = "tmpl:applicableTypes";
+
     public static final String TEMPLATE_OVERRIDE_PROP = "tmpl:allowOverride";
 
     public static final String TEMPLATE_FACET = "Template";
@@ -122,6 +124,21 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         } catch (Exception e) {
             log.error("Unable to read template allow override ", e);
             return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getApplicableTypes() {
+        try {
+            List<String> applicableTypes = (List<String>) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_APPLICABLE_TYPES_PROP);
+            if (applicableTypes == null) {
+                applicableTypes = new ArrayList<String>();
+            }
+            return applicableTypes;
+        } catch (Exception e) {
+            log.error("Error while reading applicable types");
+            return new ArrayList<String>();
         }
     }
 }

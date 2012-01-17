@@ -24,7 +24,7 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
         testDoc = adapter.saveParams(params, true);
         session.save();
 
-        Blob newBlob = adapter.updateBlobFromParams(true);
+        Blob newBlob = adapter.renderAndStoreAsAttachment(true);
 
         System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 

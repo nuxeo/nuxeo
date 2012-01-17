@@ -3,7 +3,7 @@
 
 This Nuxeo Platform plugin provides a way to associate a Nuxeo Document with a Template.
 
-The Template is a WordXML or OpenOffice document (stored also in a Nuxeo Document).
+The Template is a Word XML or OpenOffice document (stored also in a Nuxeo Document).
 
 The Template is used to render the Document.
 
@@ -28,29 +28,15 @@ You first need to deploy the plugin inside your Nuxeo server.
 
 	cp target/nuxeo-platform-rendering-templates-X.Y.Z.jar into nxserver/bindles
 
-You also need to copy the 2 additional libs (there is no Marketplace package for now)
+You also need to copy the additional libs (there is no Marketplace package for now)
 
-	nxserver/lib/jodreports-2.4.0.jar ( http://jodreports.sourceforge.net/ )
-        nxserver/lib/xom-1.2.7.jar ( http://www.cafeconleche.org/XOM/xom-1.2.7.jar)
+        cp target/libs/*  nxserver/lib/
 
 # Templating format
 
-For now you have to look in src/test/resources/data to find some sample ODT and docX files using in Unit Testing ...
+The main templating engine is now <A href="http://code.google.com/p/xdocreport/">XDocReport</A> using Freemarker engine.
 
 # TODO 
 
- - Make a set of nice template samples
-
- - Add Document Composition (i.e. support rendering a Note via a template that provides cover page and Index)
-
- - Bind audit inside Rendering context
-
- - Add UI to add a template to any Document Type in Nuxeo
-
- - Plug converters to choose the output format independently from the template format
-
- - Plug other existing rendering systems in Nuxeo (Like the DocumentRendering in Seam / JSF) ?
-
- - Look at http://code.google.com/p/xdocreport/        
-        
+ See the <A href="https://jira.nuxeo.com/browse/NXP-8201">Jira tickets</A>
 	

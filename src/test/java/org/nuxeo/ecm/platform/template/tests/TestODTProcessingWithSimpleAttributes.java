@@ -17,7 +17,7 @@ public class TestODTProcessingWithSimpleAttributes extends
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        Blob newBlob = adapter.updateBlobFromParams(true);
+        Blob newBlob = adapter.renderAndStoreAsAttachment(true);
 
         System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 

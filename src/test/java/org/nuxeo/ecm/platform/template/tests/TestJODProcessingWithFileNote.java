@@ -122,7 +122,7 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
 
         // render
         testDoc = templateBased.initializeFromTemplate(true);
-        templateBased.updateBlobFromParams(true);
+        templateBased.renderAndStoreAsAttachment(true);
 
         // check result
         Blob blob = (Blob)testDoc.getPropertyValue("file:content");

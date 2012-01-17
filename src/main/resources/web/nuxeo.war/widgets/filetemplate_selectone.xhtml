@@ -16,7 +16,7 @@
       required="#{widget.properties['required']}"
       id="#{widget.id}">
       <f:selectItem id="none" itemLabel="None" itemValue="none" />
-      <nxu:selectItems var="doc" value="#{templateActions.availableTemplates}"
+      <nxu:selectItems var="doc" value="#{templateActions.getAvailableTemplates(layoutValue.type)}"
         itemValue="#{doc.id}"
         itemLabel="#{doc.title}" />
     </h:selectOneMenu>

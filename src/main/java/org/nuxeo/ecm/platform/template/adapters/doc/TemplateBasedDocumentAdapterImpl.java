@@ -97,7 +97,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         try {
             source = getSourceTemplate();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unable to find source template");
+            return null;
         }
         if (source != null) {
             return source.getTemplateType();
@@ -109,13 +110,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
 
         TemplateSourceDocument tmpl = getSourceTemplate();
         if (tmpl == null) {
-            return adaptedDoc;
+            throw new ClientException("No associated template");
         }
-
-        // copy Blob template
-        // XXX Why ???
-        Blob blob = tmpl.getTemplateBlob();
-        setBlob(blob);
 
         // copy Params but set as readonly all params set in template
         List<TemplateInput> params = tmpl.getParams();
@@ -137,20 +133,25 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         adaptedDoc.getAdapter(BlobHolder.class).setBlob(blob);
     }
 
-    public Blob updateBlobFromParams(boolean save) throws Exception {
+    public Blob renderWithTemplate() throws Exception {
         TemplateProcessor processor = getTemplateProcessor();
         if (processor != null) {
             Blob blob = processor.renderTemplate(this);
-            setBlob(blob);
-            if (save) {
-                adaptedDoc = getSession().saveDocument(adaptedDoc);
-            }
             return blob;
         } else {
             throw new ClientException(
                     "No template processor found for template type="
                             + getTemplateType());
         }
+    }
+
+    public Blob renderAndStoreAsAttachment(boolean save) throws Exception {
+        Blob blob = renderWithTemplate();
+        setBlob(blob);
+        if (save) {
+            adaptedDoc = getSession().saveDocument(adaptedDoc);
+        }
+        return blob;
     }
 
     public boolean isBidirectional() {

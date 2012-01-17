@@ -48,9 +48,11 @@ public interface TemplateBasedDocument {
 
     public DocumentModel initializeFromTemplate(boolean save) throws Exception;
 
-    public Blob updateBlobFromParams(boolean save) throws Exception;
+    public Blob renderAndStoreAsAttachment(boolean save) throws Exception;
 
     public boolean isBidirectional();
+
+    public Blob renderWithTemplate() throws Exception;
 
     public DocumentModel updateDocumentModelFromBlob(boolean save)
             throws Exception;

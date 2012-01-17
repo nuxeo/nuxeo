@@ -36,9 +36,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam bean used as UI Controler
@@ -123,7 +125,7 @@ public class TemplatesActionsBean implements Serializable {
         TemplateBasedDocument templateBasedDocument = changeableDocument.getAdapter(TemplateBasedDocument.class);
         if (templateBasedDocument!=null) {
             templateBasedDocument.saveParams(templateInputs, false);
-            templateBasedDocument.updateBlobFromParams(false);
+            templateBasedDocument.renderAndStoreAsAttachment(false);
         }
         TemplateSourceDocument source = changeableDocument.getAdapter(TemplateSourceDocument.class);
         if (source!=null) {
@@ -142,9 +144,9 @@ public class TemplatesActionsBean implements Serializable {
         templateEditableInputs=null;
     }
 
-    public List<DocumentModel> getAvailableTemplates() throws ClientException {
-        StringBuffer sb = new StringBuffer("select * from TemplateSource");
-        return documentManager.query(sb.toString());
+    public List<DocumentModel> getAvailableTemplates(String targetType) throws ClientException {
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        return tps.getAvailableTemplateDocs(documentManager, targetType);
     }
 
     public List<TemplateInput> getTemplateEditableInputs() throws Exception {
@@ -226,7 +228,7 @@ public class TemplatesActionsBean implements Serializable {
         if (doc==null) {
             return null;
         }
-        doc.updateBlobFromParams(true);
+        doc.renderAndStoreAsAttachment(true);
         documentManager.save();
         return navigationContext.navigateToDocument(doc.getAdaptedDoc());
     }
@@ -243,10 +245,7 @@ public class TemplatesActionsBean implements Serializable {
             currentDocument = doc.updateDocumentModelFromBlob(true);
             documentManager.save();
         }
-
         return navigationContext.navigateToDocument(currentDocument);
     }
-
-
 
 }

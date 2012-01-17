@@ -62,4 +62,6 @@ public interface TemplateSourceDocument {
     public boolean allowInstanceOverride();
 
     public boolean hasEditableParams() throws ClientException;
+
+    public List<String> getApplicableTypes();
 }
