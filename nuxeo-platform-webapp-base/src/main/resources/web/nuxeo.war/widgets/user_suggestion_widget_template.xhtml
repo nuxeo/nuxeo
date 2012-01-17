@@ -161,7 +161,7 @@
             <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model"
               required="#{widget.required}">
               <h:panelGroup id="#{widget.id}_listItem">
-                <h:panelGrid columns="2">
+                <h:panelGrid columns="2" columnClasses="iconColumn, ">
                   <a4j:commandLink immediate="true"
                     actionListener="#{editableListBean.performAction}"
                     id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
