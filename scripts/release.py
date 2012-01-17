@@ -232,14 +232,15 @@ class Release(object):
         self.tag = "5.6-SNAPSHOT"
         self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
                                                    os.pardir, "archives"))
-        self.package_sources()
+        self.package_all()
 
     def package_all(self):
         """Repackage files to be uploaded."""
         self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
                                                    os.pardir, "archives"))
-        if not os.path.isdir(self.archive_dir):
-            os.mkdir(self.archive_dir)
+        if os.path.isdir(self.archive_dir):
+            shutil.rmtree(self.archive_dir)
+        os.mkdir(self.archive_dir)
         self.tmpdir = tempfile.mkdtemp()
 
         # Tomcat and JBoss packages
