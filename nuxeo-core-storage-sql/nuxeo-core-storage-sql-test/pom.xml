@@ -195,6 +195,7 @@
         <configuration>
           <excludes>
             <exclude>**/TestSQLBackendNet.java</exclude>
+            <exclude>**/*$*.java</exclude>
           </excludes>
         </configuration>
       </plugin>
