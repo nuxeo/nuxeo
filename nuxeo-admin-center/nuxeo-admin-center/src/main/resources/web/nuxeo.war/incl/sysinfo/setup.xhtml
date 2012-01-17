@@ -290,6 +290,16 @@
                     <td id="mail.from" ><h:inputText class="dataInputText" size="50"
                         value="#{setupParams['mail.from']}" /></td>
                   </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.smtp.usetls']}" /></td>
+                    <td id="mail.smtp.usetls" ><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.smtp.usetls']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.user']}" /></td>
+                    <td id="mail.user" ><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.user']}" /></td>
+                  </tr>
                 </table>
               </td>
             </tr>

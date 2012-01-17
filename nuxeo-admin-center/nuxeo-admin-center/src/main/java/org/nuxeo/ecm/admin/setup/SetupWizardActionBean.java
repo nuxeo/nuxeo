@@ -69,8 +69,9 @@ public class SetupWizardActionBean implements Serializable {
             "mail.transport.protocol", "mail.pop3.host", "mail.debug",
             "mail.smtp.host", "mail.smtp.port", "mail.smtp.auth",
             "mail.smtp.username", "mail.smtp.password", "mail.from",
-            "nuxeo.http.proxy.host", "nuxeo.http.proxy.port",
-            "nuxeo.http.proxy.login", "nuxeo.http.proxy.password" };
+            "mail.user", "mail.smtp.usetls", "nuxeo.http.proxy.host",
+            "nuxeo.http.proxy.port", "nuxeo.http.proxy.login",
+            "nuxeo.http.proxy.password" };
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
