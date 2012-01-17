@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of the event service.
  */
-public class EventServiceImpl implements EventService, EventServiceAdmin{
+public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     public static final VMID VMID = new VMID();
 
@@ -55,8 +55,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     };
 
     private static class CompositeEventBundle {
-
-        static final long serialVersionUID = 1L;
 
         boolean transacted;
 
@@ -146,8 +144,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
             log.debug("Unregistered event listener: " + listener.getName());
         } catch (Exception e) {
             log.error(
-                    "Failed to unregister event listener: " + listener.getName(),
-                    e);
+                    "Failed to unregister event listener: "
+                            + listener.getName(), e);
         }
     }
 
@@ -176,9 +174,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
                 EventBundleImpl b = new EventBundleImpl();
                 b.push(shallowEvent);
                 fireEventBundle(b);
-            }
-            else {
-                CompositeEventBundle b =  compositeBundle.get();
+            } else {
+                CompositeEventBundle b = compositeBundle.get();
                 b.push(shallowEvent);
                 // check for commit events to flush the event bundle
                 if (!b.transacted && event.isCommitEvent()) {
@@ -194,7 +191,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
                     long t0 = System.currentTimeMillis();
                     desc.asEventListener().handleEvent(event);
                     if (stats != null) {
-                        stats.logSyncExec(desc, System.currentTimeMillis()-t0);
+                        stats.logSyncExec(desc, System.currentTimeMillis() - t0);
                     }
                 } catch (Throwable t) {
                     log.error("Error during sync listener execution", t);
@@ -240,15 +237,14 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         // run sync listeners
         if (blockSyncPostCommitProcessing) {
             log.debug("Dropping PostCommit handler execution");
-        }
-        else if (comesFromJMS) {
+        } else if (comesFromJMS) {
             // when called from JMS we must skip sync listeners
             // - postComit listeners should be on the core
             // - there is no transaction started by JMS listener
             log.debug("Deactivating sync post-commit listener since we are called from JMS");
         } else {
             List<EventListenerDescriptor> syncPCDescs = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
-            if (syncPCDescs!=null && !syncPCDescs.isEmpty()) {
+            if (syncPCDescs != null && !syncPCDescs.isEmpty()) {
                 PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(
                         syncPCDescs, event);
                 syncRunner.run();
@@ -264,7 +260,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
         } else {
-            asyncExec.run(listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors(), event);
+            asyncExec.run(
+                    listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors(),
+                    event);
         }
     }
 
@@ -280,7 +278,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     @Override
     public List<EventListener> getEventListeners() {
-         return listenerDescriptors.getInLineListeners();
+        return listenerDescriptors.getInLineListeners();
     }
 
     @Override
@@ -387,7 +385,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     }
 
     @Override
-    public void setBlockSyncPostCommitHandlers(boolean blockSyncPostComitHandlers) {
+    public void setBlockSyncPostCommitHandlers(
+            boolean blockSyncPostComitHandlers) {
         blockSyncPostCommitProcessing = blockSyncPostComitHandlers;
     }
 
@@ -414,18 +413,18 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     protected void handleTxStarted() {
         compositeBundle.get().transacted = true;
         for (Object listener : txListeners.getListeners()) {
-            ((EventTransactionListener)listener).transactionStarted();
+            ((EventTransactionListener) listener).transactionStarted();
         }
     }
 
     protected void handleTxRollbacked() {
         compositeBundle.remove();
         for (Object listener : txListeners.getListeners()) {
-            ((EventTransactionListener)listener).transactionRollbacked();
+            ((EventTransactionListener) listener).transactionRollbacked();
         }
     }
 
-    protected void handleTxCommited()  {
+    protected void handleTxCommited() {
         CompositeEventBundle b = compositeBundle.get();
         try {
             // notify post commit event listeners
