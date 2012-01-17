@@ -232,7 +232,6 @@ class Release(object):
         self.tag = "5.6-SNAPSHOT"
         self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
                                                    os.pardir, "archives"))
-        self.package_all()
 
     def package_all(self):
         """Repackage files to be uploaded."""
@@ -380,8 +379,8 @@ class Release(object):
 
         # Build, test and package
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        system("mvn %s clean install -Dmaven.test.skip=true \
-                -Prelease,addons,distrib,all-distributions,-qa" % mvn_opts)
+        system("mvn clean install -Dmaven.test.skip=true"
+               " -Prelease,addons,distrib,all-distributions,-qa")
         self.package_all()
         # TODO NXP-8571 package sources
         os.chdir(cwd)
@@ -399,8 +398,8 @@ class Release(object):
                                                          self.tag))
         self.repo.system_recurse("git push --tags")
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        system("mvn %s clean deploy -Dmaven.test.skip=true \
-                -Prelease,addons,distrib,all-distributions,-qa" % mvn_opts)
+        system("mvn clean deploy -Dmaven.test.skip=true"
+               " -Prelease,addons,distrib,all-distributions,-qa")
         os.chdir(cwd)
 
     def check(self):
@@ -410,7 +409,6 @@ class Release(object):
 
 
 def main():
-    global mvn_opts
     global namespaces
     assert_git_config()
     namespaces = {"pom": "http://maven.apache.org/POM/4.0.0"}
@@ -451,9 +449,6 @@ the next snapshot is the current one increased, else it is equal to the current
                           dest='maintenance', default="auto",
                           help="""maintenance version (by default, the
 maintenance branch is deleted after release)""")
-        parser.add_option('--mvn_opts', action="store", dest='mvn_opts',
-                          default='',
-                          help="Maven options (default: '%default')")
         parser.add_option('-i', '--interactive', action="store_true",
                           dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive
@@ -461,7 +456,6 @@ mode.""")
         (options, args) = parser.parse_args()
         if len(args) > 0:
             command = args[0]
-        mvn_opts = options.mvn_opts
         repo = Repository(os.getcwd(), options.remote_alias)
         if options.branch == "auto":
             options.branch = repo.get_current_version()
