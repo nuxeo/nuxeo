@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.template.adapters.source;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -127,13 +128,13 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getApplicableTypes() {
         try {
-            List<String> applicableTypes = (List<String>) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_APPLICABLE_TYPES_PROP);
-            if (applicableTypes == null) {
-                applicableTypes = new ArrayList<String>();
+            String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
+                    TemplateSourceDocumentAdapterImpl.TEMPLATE_APPLICABLE_TYPES_PROP);
+            List<String> applicableTypes = new ArrayList<String>();
+            if (applicableTypesArray != null) {
+                applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
             }
             return applicableTypes;
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.platform.template.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -159,11 +160,11 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             // post filter
             List<DocumentModel> filtredResult = new ArrayList<DocumentModel>();
             for (DocumentModel template : templates) {
-                @SuppressWarnings("unchecked")
-                List<String> applicableTypes = (List<String>) template.getPropertyValue(
+                String[] applicableTypesArray = (String[]) template.getPropertyValue(
                         TemplateSourceDocumentAdapterImpl.TEMPLATE_APPLICABLE_TYPES_PROP);
-                if (applicableTypes == null) {
-                    applicableTypes = new ArrayList<String>();
+                List<String> applicableTypes = new ArrayList<String>();
+                if (applicableTypesArray != null) {
+                    applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
                 }
                 if (applicableTypes.size()==0 || applicableTypes.contains(targetType)) {
                     filtredResult.add(template);
