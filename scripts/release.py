@@ -185,6 +185,11 @@ class Release(object):
         else:
             log("Maintenance version:".ljust(25) + self.maintenance)
         log("")
+        with open(os.path.abspath(os.path.join(self.repo.basedir, os.pardir,
+                                               "release.log")), "wb") as f:
+            f.write("BRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\nMAINTENANCE=%s" %
+                    (self.branch, self.tag, self.next_snapshot,
+                     self.maintenance))
 
     def update_versions(self, old_version, new_version):
         """Update all occurrences of 'old_version' with 'new_version'."""
