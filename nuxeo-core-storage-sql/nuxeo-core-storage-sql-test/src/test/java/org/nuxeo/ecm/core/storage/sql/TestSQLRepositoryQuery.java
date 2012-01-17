@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,6 +56,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Benjamin Jalon
  */
 public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
+
+    private static final Log log = LogFactory.getLog(SQLRepositoryTestCase.class);
 
     @Override
     public void setUp() throws Exception {
@@ -1587,6 +1591,9 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
 
+        log.warn("Before testFulltextBlob");
+
+        try {
         createDocs();
         sleepForFulltext();
         String query;
@@ -1610,6 +1617,9 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.saveDocument(file1);
         session.save();
         sleepForFulltext();
+        } finally {
+            log.warn("After testFulltextBlob");
+        }
     }
 
     public void testFullTextCopy() throws Exception {
