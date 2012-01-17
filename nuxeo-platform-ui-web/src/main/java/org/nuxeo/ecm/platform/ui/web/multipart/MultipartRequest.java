@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
 
 /**
  * Request wrapper for supporting multipart requests, used for file uploading.
- * 
+ *
  * @author Shane Bryzak
  */
 public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
@@ -68,9 +68,9 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
 
     private String encoding;
 
-    private Integer contentLength = 0;
+    private long contentLength = 0;
 
-    private int bytesRead = 0;
+    private long bytesRead = 0;
 
     // we shouldn't allow to stop until request reaches PhaseListener because
     // of portlets
@@ -102,7 +102,7 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
         this.createTempFiles = createTempFiles;
 
         String contentLength = request.getHeader("Content-Length");
-        this.contentLength = Integer.parseInt(contentLength);
+        this.contentLength = Long.parseLong(contentLength);
         if (contentLength != null && maxRequestSize > 0
                 && this.contentLength > maxRequestSize) {
             // TODO : we should make decision if can generate exception in this
@@ -468,7 +468,7 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
     }
 
     public Integer getSize() {
-        return contentLength;
+        return contentLength > Integer.MAX_VALUE ? -1 : (int) contentLength;
     }
 
     @Override
@@ -603,8 +603,7 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
     }
 
     public boolean isDone() {
-        return !(this.shouldStop && (this.canceled || this.contentLength != null
-                && this.contentLength.intValue() != this.bytesRead));
+        return !(this.shouldStop && (this.canceled || this.contentLength != this.bytesRead));
     }
 
     @Override
