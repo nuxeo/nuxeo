@@ -39,11 +39,11 @@ public class StringBlob extends DefaultBlob implements Serializable {
     protected final String content;
 
     public StringBlob(String content) {
-        this(content, null, null);
+        this(content, null, "UTF-8");
     }
 
-    public StringBlob(String content, String ctype) {
-        this(content, ctype, null);
+    public StringBlob(String content, String mimeType) {
+        this(content, mimeType, "UTF-8");
     }
 
     public StringBlob(String content, String mimeType, String encoding) {

@@ -239,7 +239,7 @@ public class TestBlob extends NXRuntimeTestCase {
         Blob blob = new StringBlob(s);
 
         assertNull(blob.getMimeType());
-        assertNull(blob.getEncoding());
+        assertEquals("UTF-8", blob.getEncoding());
         assertEquals(1000000, blob.getLength());
 
         assertTrue(blob.isPersistent());

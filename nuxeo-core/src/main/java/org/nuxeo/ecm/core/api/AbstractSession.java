@@ -1596,7 +1596,7 @@ public abstract class AbstractSession implements CoreSession,
                 working = null;
             }
             if (working != null) {
-                return hasPermission(working, REMOVE);
+                return hasPermission(working, WRITE_VERSION);
             } else {
                 // no working document, only admins can remove
                 return false;
@@ -1993,7 +1993,6 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
 
             DocumentModel docModel = readModel(doc, null);

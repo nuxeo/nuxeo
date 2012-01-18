@@ -63,7 +63,13 @@ public class Html2TextConverter implements Converter {
 
             SAXResult result = new SAXResult(new DefaultHandler());
 
-            SAXSource source = new SAXSource(parser, new InputSource(stream));
+            InputSource inputSource = new InputSource(stream);
+            String encoding = blobHolder.getBlob().getEncoding();
+            if (encoding != null) {
+                inputSource.setEncoding(encoding);
+            }
+
+            SAXSource source = new SAXSource(parser, inputSource);
             transformer.transform(source, result);
 
             //HtmlHandler html2text = new HtmlHandler();
