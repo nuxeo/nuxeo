@@ -59,6 +59,12 @@
       <artifactId>jruby-engine</artifactId>
     </dependency>
 
+    <dependency>
+      <!-- needed by JRuby -->
+      <groupId>backport-util-concurrent</groupId>
+      <artifactId>backport-util-concurrent</artifactId>
+    </dependency>
+
     <!-- Should use version 3.0 -->
     <dependency>
       <groupId>asm</groupId>
