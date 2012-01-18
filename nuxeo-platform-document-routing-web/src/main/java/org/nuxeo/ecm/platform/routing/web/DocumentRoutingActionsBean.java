@@ -16,7 +16,6 @@
  *
  * $Id$
  */
-
 package org.nuxeo.ecm.platform.routing.web;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
@@ -60,11 +59,12 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -157,7 +157,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
     }
 
-    @Observer(value = { EventNames.DOCUMENT_CHANGED })
+    @Observer(value = { EventNames.DOCUMENT_CHANGED,
+            EventNames.DOCUMENT_SELECTION_CHANGED })
     public void resetRelatedRouteDocumentId() {
         relatedRouteModelDocumentId = null;
     }
@@ -169,6 +170,8 @@ public class DocumentRoutingActionsBean implements Serializable {
                 currentRoute.getAttachedDocuments(), documentManager);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
+        webActions.resetTabList();
         return null;
     }
 
@@ -352,6 +355,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         route.setAttachedDocuments(documentIds);
         getDocumentRoutingService().createNewInstance(route,
                 route.getAttachedDocuments(), documentManager);
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
+        webActions.resetTabList();
         return null;
     }
 

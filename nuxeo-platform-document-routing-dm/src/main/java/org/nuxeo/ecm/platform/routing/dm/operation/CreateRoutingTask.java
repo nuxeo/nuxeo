@@ -82,8 +82,7 @@ public class CreateRoutingTask {
     protected String rejectOperationChain;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel createTask(DocumentModel document)
-            throws Exception {
+    public DocumentModel createTask(DocumentModel document) throws Exception {
         Principal pal = coreSession.getPrincipal();
         if (!(pal instanceof NuxeoPrincipal)) {
             throw new OperationException(
@@ -127,9 +126,8 @@ public class CreateRoutingTask {
         }
         List<Task> tasks = routingTaskService.createRoutingTask(coreSession,
                 (NuxeoPrincipal) pal, document, taskStep.getName(), actors,
-                taskStep.createOneTaskPerActors(), taskStep.getDirective(),
-                taskStep.getComment(), taskStep.getDueDate(), taskVariables,
-                null);
+                false, taskStep.getDirective(), taskStep.getComment(),
+                taskStep.getDueDate(), taskVariables, null);
         DocumentModelList docList = new DocumentModelListImpl(tasks.size());
         for (Task task : tasks) {
             docList.add(task.getDocument());

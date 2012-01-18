@@ -74,11 +74,6 @@ public class TaskStepImpl implements TaskStep {
         return getPropertyValue(RoutingTaskConstants.TASK_STEP_AUTOMATIC_VALIDATION_PROPERTY_NAME);
     }
 
-    @Override
-    public Boolean createOneTaskPerActors() throws ClientException {
-        return getPropertyValue(RoutingTaskConstants.TASK_STEP_CREATE_ONE_TASK_PER_ACTOR_PROPERTY_NAME);
-    }
-
     @SuppressWarnings("unchecked")
     protected <T> T getPropertyValue(String propertyName) {
         try {

@@ -31,9 +31,10 @@ import org.nuxeo.ecm.platform.task.TaskService;
  */
 public interface RoutingTaskService extends TaskService {
 
-    List<Task> createRoutingTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document, String taskName,
+    List<Task> createRoutingTask(CoreSession coreSession,
+            NuxeoPrincipal principal, DocumentModel document, String taskName,
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)
-            throws ClientException;}
+            throws ClientException;
+}

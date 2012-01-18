@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.dm.api;
 
-
-
 public class RoutingTaskConstants {
 
     public static final String ROUTING_TASK_FACET_NAME = "RoutingTask";
@@ -25,8 +23,6 @@ public class RoutingTaskConstants {
     public static final String TASK_STEP_FACET_NAME = "TaskStep";
 
     public static final String TASK_STEP_ACTORS_PROPERTY_NAME = "tkst:actors";
-
-    public static final String TASK_STEP_CREATE_ONE_TASK_PER_ACTOR_PROPERTY_NAME = "tkst:createOneTaskPerActors";
 
     public static final String TASK_STEP_DUE_DATE_PROPERTY_NAME = "tkst:dueDate";
 

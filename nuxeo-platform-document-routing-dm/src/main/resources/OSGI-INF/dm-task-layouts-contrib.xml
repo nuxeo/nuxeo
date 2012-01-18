@@ -17,13 +17,7 @@
           <widget>actors</widget>
         </row>
         <row>
-          <widget>createOneTaskPerActors</widget>
-        </row>
-        <row>
-          <widget>directive</widget>
-        </row>
-        <row>
-          <widget>comment</widget>
+          <widget>directive_task</widget>
         </row>
         <row>
           <widget>dueDate</widget>
@@ -40,53 +34,44 @@
           <label mode="any"></label>
         </labels>
         <properties mode="any">
-          <property name="template">
+         <property name="template">
             /widgets/user_suggestion_widget_template.xhtml
           </property>
+          <property name="required">true</property>
         </properties>
       </widget>
-      <widget name="directive" type="text">
-        <translated>true</translated>
-        <fields>
-          <field>tkst:directive</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="comment" type="textarea">
-        <translated>true</translated>
-        <fields>
-          <field>tkst:comment</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="dueDate" type="datetime">
-        <translated>true</translated>
-        <fields>
-          <field>tkst:dueDate</field>
-        </fields>
-        <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateAndTimeFormater()}
-          </property>
-        </properties>
-        <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateAndTimeFormater()}
-          </property>
-        </properties>
+      <widget name="directive_task" type="template">
+      <fields>
+        <field>tkst:directive</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.directive</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/directive_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+    <widget name="dueDate" type="template">
+      <fields>
+        <field>tkst:dueDate</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.duedate</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/duedate_widget_template.xhtml
+        </property>
+      </properties>
       </widget>
       <widget name="automaticValidation" type="checkbox">
         <translated>true</translated>
         <fields>
           <field>tkst:automaticValidation</field>
-        </fields>
-      </widget>
-      <widget name="createOneTaskPerActors" type="checkbox">
-        <translated>true</translated>
-        <fields>
-          <field>tkst:createOneTaskPerActors</field>
         </fields>
       </widget>
     </layout>

@@ -1,23 +1,17 @@
-<?xml version="1.0"?>
-<xs:schema xmlns:nxst="http://www.nuxeo.org/ecm/schemas/task_step/"
- xmlns:xs="http://www.w3.org/2001/XMLSchema" 
- targetNamespace="http://www.nuxeo.org/ecm/schemas/task_step/">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:nxst="http://www.nuxeo.org/ecm/schemas/task_step/" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.nuxeo.org/ecm/schemas/task_step/">
 
-  <xs:element name="actors" type="nxst:stringList" />
-  <xs:element name="createOneTaskPerActors" type="xs:boolean"
-    default="false" />
-  <xs:element name="dueDate" type="xs:date" />
-  <xs:element name="automaticValidation" type="xs:boolean"
-    default="false" />
+  <xs:element name="actors" type="nxst:stringList"/>
+  <xs:element name="dueDate" type="xs:date"/>
+  <xs:element default="false" name="automaticValidation" type="xs:boolean"/>
 
-  <xs:element name="directive" type="xs:string" />
-  <xs:element name="comment" type="xs:string" />
+  <xs:element name="directive" type="xs:string"/>
+  <xs:element name="comment" type="xs:string"/>
 
   <xs:complexType name="stringList">
     <xs:sequence>
-      <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
   
 </xs:schema>
-
