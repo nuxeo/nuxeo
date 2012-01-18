@@ -191,13 +191,17 @@ class Repository(object):
                 system("git stash pop -q")
         log("")
 
-    def clone(self, version, with_optionals=False):
+    def clone(self, version=None, with_optionals=False):
         """Clone or update whole Nuxeo repository.
 
-        'version': the version to checkout.
+        'version': the version to checkout; defaults to current version.
         If 'with_optionals', also clone/update "optional" addons."""
+        cwd = os.getcwd()
+        os.chdir(self.basedir)
         log("Cloning/updating parent pom")
         system("git fetch %s" % (self.alias))
+        if version is None:
+            version = self.get_current_version()
         self.git_update(version)
 
         # Main modules
@@ -206,7 +210,6 @@ class Repository(object):
             self.git_pull(module, version)
 
         # Addons
-        cwd = os.getcwd()
         os.chdir(os.path.join(self.basedir, "addons"))
         self.eval_addons(with_optionals)
         if not self.is_online:
@@ -223,6 +226,24 @@ class Repository(object):
         """Return branch or tag version of current Git workspace."""
         t = check_output(["git", "describe", "--all"]).split("/")
         return t[1]
+
+    def mvn(self, commands, skip_tests=False, profiles=None):
+        """Run Maven commands (install, package, deploy, ...) on the whole
+        sources (including addons and all distributions) with the given
+        parameters.
+
+        'commands': the commands to run.
+        'skip_tests': whether to skip or not the tests.
+        'profiles': comma-separated additional Maven profiles to use."""
+        skip_tests_param = ""
+        if skip_tests:
+            skip_tests_param = "-Dmaven.test.skip=true"
+        profiles_param = ""
+        if profiles is not None:
+            profiles_param = "-P%s" % profiles
+        system("mvn %s %s -Paddons,distrib,all-distributions %s" %
+               (commands, skip_tests_param, profiles_param),
+               delay_stdout=False)
 
 
 def log(message, out=sys.stdout):
@@ -272,11 +293,11 @@ def system_with_retries(cmd, failonerror=True):
     retries = 0
     while True:
         retries += 1
-        retcode = system(cmd, False)
+        retcode = system(cmd, failonerror=False)
         if retcode == 0:
             return 0
         elif retries > 10:
-            return system(cmd, failonerror)
+            return system(cmd, failonerror=failonerror)
         else:
             log("Error executing %s - retrying in 10 seconds..." % cmd,
                 sys.stderr)
@@ -303,7 +324,7 @@ def long_path_workaround_cleanup(driveletter, basedir):
     """Windows only. Cleanup the directory mapping if any."""
     if driveletter != None:
         os.chdir(basedir)
-        system("SUBST %s: /D" % (driveletter,), False)
+        system("SUBST %s: /D" % (driveletter,), failonerror=False)
 
 
 def check_output(cmd):

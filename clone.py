@@ -52,11 +52,12 @@ def main():
         (options, args) = parser.parse_args()
         repo = Repository(os.getcwd(), options.remote_alias)
         if len(args) == 0:
-            version = repo.get_current_version()
+            version = None
         elif len(args) == 1:
             version = args[0]
         else:
-            raise ExitException(1, "Version must be a single argument")
+            raise ExitException(1, "'version' must be a single argument. "
+                                "See usage with '-h'.")
         repo.clone(version, options.with_optionals)
     except ExitException, e:
         if e.message is not None:
