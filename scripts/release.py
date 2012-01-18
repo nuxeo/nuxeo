@@ -182,9 +182,10 @@ class Release(object):
             release_log = os.path.abspath(os.path.join(self.repo.basedir, os.pardir,
                                                    "release.log"))
             with open(release_log, "wb") as f:
-                f.write("BRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\nMAINTENANCE=%s" %
-                        (self.branch, self.tag, self.next_snapshot,
-                         self.maintenance))
+                f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
+                        "MAINTENANCE=%s\nFINAL=%s" %
+                        (self.repo.alias, self.branch, self.tag,
+                         self.next_snapshot, self.maintenance, self.is_final))
             log("Parameters stored in %s" % release_log)
         log("")
 
@@ -464,7 +465,6 @@ mode.""")
         (options, args) = parser.parse_args()
         if len(args) > 0:
             command = args[0]
-        repo = Repository(os.getcwd(), options.remote_alias)
         release_log = os.path.abspath(os.path.join(os.getcwd(), os.pardir,
                                                "release.log"))
         if ("command" in locals() and command == "perform"
@@ -472,11 +472,14 @@ mode.""")
             and options == parser.get_default_values()):
             log("Reading parameters from %s ..." % release_log)
             with open(release_log, "rb") as f:
+                options.remote_alias = f.readline().split("=")[1].strip()
                 options.branch = f.readline().split("=")[1].strip()
                 options.tag = f.readline().split("=")[1].strip()
                 options.next_snapshot = f.readline().split("=")[1].strip()
                 options.maintenance = f.readline().split("=")[1].strip()
+                options.is_final = f.readline().split("=")[1].strip() == "True"
 
+        repo = Repository(os.getcwd(), options.remote_alias)
         if options.branch == "auto":
             options.branch = repo.get_current_version()
         system("git fetch %s" % (options.remote_alias))
@@ -490,7 +493,7 @@ mode.""")
         elif command == "prepare":
             release.prepare()
         elif command == "perform":
-            release.perform()
+            print release.perform()
         elif command == "test":
             release.test()
         else:
