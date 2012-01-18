@@ -108,7 +108,8 @@ public class TestReRegister extends RepositoryTestCase {
         assertTrue(ti.isTypeRegistered(ctype));
     }
 
-    public void testModify() throws Exception {
+    // disabled as this changes the schema fields live
+    public void XXXtestModify() throws Exception {
         root = session.getRootDocument();
         root.addChild("theDocToTest", "File");
 
