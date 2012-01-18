@@ -137,13 +137,11 @@ class Dav(FunkLoadTestCase):
             auth = resp.headers.get('WWW-Authenticate')
             # print auth
             self.assert_("Digest realm" in auth, "%s: %s" % (ua, auth))
+        # unknown UA also requires authentication
         self.setUserAgent("FunkLoad")
         resp = self.propfind(dav_url,
                              description="test non DAV ua",
-                             ok_codes=[200, 302])
-        self.assert_('login.jsp' in self.getLastUrl(),
-                     "Expecting redirection to login form " +
-                     self.getLastUrl())
+                             ok_codes=[401,])
 
     def testLocks(self):
         self.initWorkspace()
