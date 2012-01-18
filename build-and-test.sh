@@ -13,15 +13,15 @@ check_ports_and_kill_ghost_process || exit 1
 mvn -f nuxeo-platform-document-routing-distribution/pom.xml clean package || exit 1
 
 # start JBoss
-chmod +x nuxeo-platform-document-routing-distribution/target/stage/nuxeo-dm-server/bin/nuxeoctl || exit 1
-nuxeo-platform-document-routing-distribution/target/stage/nuxeo-dm-server/bin/nuxeoctl start || exit 1
+chmod +x nuxeo-platform-document-routing-distribution/target/stage/nuxeo-cap-server/bin/nuxeoctl || exit 1
+nuxeo-platform-document-routing-distribution/target/stage/nuxeo-cap-server/bin/nuxeoctl start || exit 1
 
 # Run selenium tests
 HIDE_FF=true nuxeo-platform-document-routing-distribution/ftest/selenium/run.sh
 ret1=$?
 
 # Strop JBoss
-nuxeo-platform-document-routing-distribution/target/stage/nuxeo-dm-server/bin/nuxeoctl stop || exit 1
+nuxeo-platform-document-routing-distribution/target/stage/nuxeo-cap-server/bin/nuxeoctl stop || exit 1
 
 # Exit if some tests failed
 [ $ret1 -eq 0 ] || exit 9

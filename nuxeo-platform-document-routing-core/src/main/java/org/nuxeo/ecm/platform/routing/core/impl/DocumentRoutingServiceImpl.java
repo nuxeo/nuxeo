@@ -28,11 +28,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
@@ -457,8 +457,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 instanceModel);
         String newName = persister.getNewModelName(instanceModel);
         try {
-            DocumentModel newmodel = session.copy(instanceModel.getRef(),
-                    parent.getRef(), newName);
+            DocumentModel newmodel = persister.saveDocumentRouteInstanceAsNewModel(
+                    instanceModel, parent, newName, session);
             DocumentRoute newRoute = newmodel.getAdapter(DocumentRoute.class);
             if (!newRoute.isDraft()) {
                 newRoute.followTransition(
