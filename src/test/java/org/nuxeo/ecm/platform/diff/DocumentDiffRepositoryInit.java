@@ -14,7 +14,7 @@
  * Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.ecm.platform.diff.helpers;
+package org.nuxeo.ecm.platform.diff;
 
 import java.io.Serializable;
 import java.util.ArrayList;

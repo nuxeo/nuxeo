@@ -14,7 +14,7 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.platform.diff.helpers;
+package org.nuxeo.ecm.platform.diff;
 
 import junit.framework.TestCase;
 

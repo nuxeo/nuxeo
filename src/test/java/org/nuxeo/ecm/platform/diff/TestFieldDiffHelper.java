@@ -22,7 +22,6 @@ import java.util.List;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.diff.helpers.DiffTestCase;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyType;
 import org.nuxeo.ecm.platform.diff.model.impl.ComplexPropertyDiff;

@@ -31,8 +31,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.diff.helpers.DiffTestCase;
-import org.nuxeo.ecm.platform.diff.helpers.DocumentDiffRepositoryInit;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyType;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;

@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.diff.helpers.DiffTestCase;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyType;
@@ -455,7 +454,7 @@ public class TestXMLDiff extends DiffTestCase {
             getPropertyDiff(leftXML, rightXML, 1, "complexType");
             fail("A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
         } catch (ClientException ce) {
-            LOGGER.debug("Exception catched as expected: " + ce.getMessage());
+            LOGGER.debug("Exception thrown as expected: " + ce.getMessage());
         }
 
     }
