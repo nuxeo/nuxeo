@@ -10,6 +10,7 @@
 <%
 String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
 String context = request.getContextPath();
 Locale locale = request.getLocale();
 String language = locale == null ? "en" : locale.getLanguage();
@@ -406,7 +407,7 @@ function focusOn(eltId) {
         </form>
       </td>
       <td class="news_container" align="right" valign="center">
-        <% if (!request.getHeader("User-Agent").contains("Nuxeo-Selenium-Tester")) { %>
+        <% if (testerName != "Nuxeo-Selenium-Tester") { %>
           <iframe class="block_container" style="visibility:hidden"
             onload="javascript:this.style.visibility='visible';"
             src="https://www.nuxeo.com/embedded/dm-login"></iframe>
