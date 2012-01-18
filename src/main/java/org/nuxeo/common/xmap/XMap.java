@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -87,21 +87,41 @@ import org.w3c.dom.Node;
 @SuppressWarnings({"SuppressionAnnotation"})
 public class XMap {
 
+    private static final DocumentBuilderFactory initFactory() {
+        Thread t = Thread.currentThread();
+        ClassLoader cl = t.getContextClassLoader();
+        t.setContextClassLoader(XMap.class.getClassLoader());
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            return factory;
+        } finally {
+            t.setContextClassLoader(cl);
+        }
+    }
+
+    public static DocumentBuilderFactory getFactory() {
+        return factory;
+    }
+
+    private static DocumentBuilderFactory factory = initFactory();
+
     // top level objects
     private final Map<String, XAnnotatedObject> roots;
 
     // the scanned objects
-    private final Map<Class, XAnnotatedObject> objects;
+    private final Map<Class<?>, XAnnotatedObject> objects;
 
-    private final Map<Class, XValueFactory> factories;
+    private final Map<Class<?>, XValueFactory> factories;
+
 
     /**
      * Creates a new XMap object.
      */
     public XMap() {
-        objects = new Hashtable<Class, XAnnotatedObject>();
+        objects = new Hashtable<Class<?>, XAnnotatedObject>();
         roots = new Hashtable<String, XAnnotatedObject>();
-        factories = new Hashtable<Class, XValueFactory>(XValueFactory.defaultFactories);
+        factories = new Hashtable<Class<?>, XValueFactory>(XValueFactory.defaultFactories);
     }
 
     /**
@@ -112,7 +132,7 @@ public class XMap {
      * @param type the object type
      * @return the value factory if any, null otherwise
      */
-    public XValueFactory getValueFactory(Class type) {
+    public XValueFactory getValueFactory(Class<?> type) {
         return factories.get(type);
     }
 
@@ -124,7 +144,7 @@ public class XMap {
      * @param type the object type
      * @param factory the value factory to use for the given type
      */
-    public void setValueFactory(Class type, XValueFactory factory) {
+    public void setValueFactory(Class<?> type, XValueFactory factory) {
         factories.put(type, factory);
     }
 
@@ -159,7 +179,7 @@ public class XMap {
      * @param klass the object class
      * @return the mapping description
      */
-    public XAnnotatedObject register(Class klass) {
+    public XAnnotatedObject register(Class<?> klass) {
         XAnnotatedObject xao = objects.get(klass);
         if (xao == null) { // avoid scanning twice
             XObject xob = checkObjectAnnotation(klass);
@@ -189,7 +209,7 @@ public class XMap {
         Method[] methods = xob.klass.getDeclaredMethods();
         for (Method method : methods) {
             // we accept only methods with one parameter
-            Class[] paramTypes = method.getParameterTypes();
+            Class<?>[] paramTypes = method.getParameterTypes();
             if (paramTypes.length != 1) {
                 continue;
             }
@@ -242,8 +262,7 @@ public class XMap {
      */
     public Object load(Context ctx, InputStream in) throws Exception {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
+            DocumentBuilderFactory factory = getFactory();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
             return load(ctx, document.getDocumentElement());
@@ -314,8 +333,7 @@ public class XMap {
      */
     public Object[] loadAll(Context ctx, InputStream in) throws Exception {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
+            DocumentBuilderFactory factory = getFactory();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
             return loadAll(ctx, document.getDocumentElement());
@@ -478,7 +496,7 @@ public class XMap {
         return createMember(annotation, setter);
     }
 
-    public final XAnnotatedMember createMethodMember(Method method, Annotation annotation, Class klass) {
+    public final XAnnotatedMember createMethodMember(Method method, Annotation annotation, Class<?> klass) {
         XAccessor setter = new XMethodAccessor(method, klass);
         return createMember(annotation, setter);
     }
@@ -486,7 +504,7 @@ public class XMap {
 
     // methods to serialize the map
     public String toXML(Object object) throws ParserConfigurationException, IOException{
-        DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbfac = getFactory();
         DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
         Document doc = docBuilder.newDocument();
         // create root element

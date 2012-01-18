@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -44,7 +44,7 @@ public abstract class XValueFactory {
 
     private static final Log log = LogFactory.getLog(XValueFactory.class);
 
-    static final Map<Class, XValueFactory> defaultFactories = new Hashtable<Class, XValueFactory>();
+    static final Map<Class<?>, XValueFactory> defaultFactories = new Hashtable<Class<?>, XValueFactory>();
 
 
     public abstract Object deserialize(Context context, String value);
