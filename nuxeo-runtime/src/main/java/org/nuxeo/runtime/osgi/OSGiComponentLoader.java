@@ -46,7 +46,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
         BundleContext ctx = runtime.getBundleContext();
         ctx.addBundleListener(this);
         Bundle[] bundles = ctx.getBundles();
-        int mask = Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE;
+        int mask = Bundle.STARTING | Bundle.ACTIVE;
         for (Bundle bundle : bundles) {
             String name = bundle.getSymbolicName();
             runtime.bundles.put(name, bundle);
@@ -68,7 +68,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                     bundleDebug("Install bundle: %s has no components", name);
                 }
             } else {
-                bundleDebug("Install bundle: %s is not RESOLVED, STARTING "
+                bundleDebug("Install bundle: %s is not STARTING "
                         + "or ACTIVE, so no context was created", name);
             }
         }
@@ -94,27 +94,29 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             case BundleEvent.UNINSTALLED:
                 runtime.bundles.remove(bundle.getSymbolicName());
                 break;
-            case BundleEvent.RESOLVED:
+            case BundleEvent.STARTING:
+            case BundleEvent.LAZY_ACTIVATION:
                 if (componentsList != null) {
                     bundleDebug(
-                            "Bundle changed: %s RESOLVED with components: " +
+                            "Bundle changed: %s STARTING with components: " +
                                     componentsList, name);
                     runtime.createContext(bundle);
                 } else {
                     bundleDebug(
-                            "Bundle changed: %s RESOLVED with no components",
+                            "Bundle changed: %s STARTING with no components",
                             name);
                 }
                 break;
+            case BundleEvent.STOPPED:
             case BundleEvent.UNRESOLVED:
                 if (componentsList != null) {
                     bundleDebug(
-                            "Bundle changed: %s UNRESOLVED with components: " +
+                            "Bundle changed: %s STOPPING with components: " +
                                     componentsList, name);
                     runtime.destroyContext(bundle);
                 } else {
                     bundleDebug(
-                            "Bundle changed: %s UNRESOLVED with no components",
+                            "Bundle changed: %s STOPPING with no components",
                             name);
                 }
                 break;
