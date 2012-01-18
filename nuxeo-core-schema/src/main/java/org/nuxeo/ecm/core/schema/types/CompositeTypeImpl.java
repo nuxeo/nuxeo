@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,9 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.schema.types;
@@ -25,17 +24,25 @@ import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeRef;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * A Composite Type resolves fields for several schemas.
  */
 public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType {
 
-    private static final long serialVersionUID = -6935764237520164300L;
+    private static final long serialVersionUID = 1L;
 
+    /** The schemas (refs) for this composite type. */
     protected final Map<String, TypeRef<Schema>> schemas = new HashMap<String, TypeRef<Schema>>();
 
-    protected transient Map<String, Schema> prefix2schemas;
+    /** The precomputed schema names. */
+    protected String[] schemaNames = new String[0];
 
+    /** Does some stuff need to be recomputed lazily. */
+    protected volatile boolean dirty;
+
+    /** The lazily precomputed map of prefix to schema. */
+    protected volatile Map<String, Schema> prefix2schemas = Collections.emptyMap();
+
+    // also fieldsByName
 
     public CompositeTypeImpl(CompositeType superType, String schema, String name,
             String[] schemas) {
@@ -66,30 +73,67 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
     @Override
     public final void addSchema(String schema) {
         schemas.put(schema, new TypeRef<Schema>(SchemaNames.SCHEMAS, schema));
+        updated();
     }
 
     @Override
     public final void addSchema(Schema schema) {
         schemas.put(schema.getName(), schema.getRef());
+        updated();
+    }
+
+    /** Update non-lazy stuff. The rest will be done by checkDirty. */
+    protected void updated() {
+        schemaNames = schemas.keySet().toArray(new String[schemas.size()]);
+        dirty = true;
+    }
+
+    protected void checkDirty() {
+        // double-checked locking works because fields are volatile
+        if (!dirty) {
+            return;
+        }
+        synchronized(this) {
+            if (!dirty) {
+                return;
+            }
+            recompute();
+            dirty = false;
+        }
+    }
+
+    /** Do not call this directly, go through checkDirty. */
+    protected void recompute() {
+        Map<String,Schema> prefix2schema = new HashMap<String, Schema>();
+        Map<String,Field> name2field = new HashMap<String, Field>();
+        List<Field> fields = new ArrayList<Field>();
+        for (TypeRef<Schema> ref : schemas.values()) {
+            Schema schema = ref.get();
+            if (schema == null) {
+                continue;
+            }
+            prefix2schema.put(schema.getNamespace().prefix, schema);
+            for (Field field : schema.getFields()) {
+                QName name = field.getName();
+                name2field.put(name.getLocalName(), field);
+                name2field.put(name.getPrefixedName(), field);
+                fields.add(field);
+            }
+        }
+        prefix2schemas = prefix2schema;
+        fieldsByName = name2field;
+        fieldsCollection = Collections.unmodifiableCollection(fields);
     }
 
     @Override
     public final Schema getSchema(String name) {
-        TypeRef<Schema> proxy = schemas.get(name);
-        if (proxy != null) {
-            return proxy.get();
-        }
-        return null;
+        TypeRef<Schema> ref = schemas.get(name);
+        return ref == null ? null : ref.get();
     }
 
     @Override
     public final Schema getSchemaByPrefix(String prefix) {
-        if (prefix2schemas == null) {
-            prefix2schemas = new HashMap<String, Schema>();
-            for (Schema schema : getSchemas()) {
-                prefix2schemas.put(schema.getNamespace().prefix, schema);
-            }
-        }
+        checkDirty();
         return prefix2schemas.get(prefix);
     }
 
@@ -100,16 +144,16 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
 
     @Override
     public final String[] getSchemaNames() {
-        return schemas.keySet().toArray(new String[schemas.size()]);
+        return schemaNames.clone();
     }
 
     @Override
     public final Collection<Schema> getSchemas() {
-        List<Schema> schemas = new ArrayList<Schema>();
-        for (TypeRef<Schema> proxy : this.schemas.values()) {
-            schemas.add(proxy.get());
+        List<Schema> list = new ArrayList<Schema>(schemas.size());
+        for (TypeRef<Schema> ref : schemas.values()) {
+            list.add(ref.get());
         }
-        return Collections.unmodifiableCollection(schemas);
+        return Collections.unmodifiableCollection(list);
     }
 
     @Override
@@ -120,62 +164,26 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
 
     @Override
     public final Field getField(String name) {
-        Field field = fieldsCache.get(name);
-        if (field == null) {
-            for (TypeRef<Schema> schema : schemas.values()) {
-                field = schema.get().getField(name);
-                if (field != null) {
-                    fieldsCache.put(name, field);
-                    break;
-                }
-            }
-        }
-        return field;
+        checkDirty();
+        return fieldsByName.get(name);
     }
 
     @Override
     public final Field getField(QName name) {
-        String pname = name.prefixedName;
-        Field field = fieldsCache.get(pname);
-        if (field == null) {
-            String prefix = name.prefix;
-            if (prefix.length() > 0) {
-                Schema schema = getSchemaByPrefix(prefix);
-                if (schema != null) {
-                    field = schema.getField(name);
-                    if (field != null) {
-                        fieldsCache.put(pname, field);
-                    }
-                }
-            } else { // try each schema until a field with that local name is
-                        // found
-                for (TypeRef<Schema> schema : schemas.values()) {
-                    field = schema.get().getField(name.localName);
-                    if (field != null) {
-                        fieldsCache.put(pname, field);
-                        break;
-                    }
-                }
-            }
-        }
-        return field;
+        checkDirty();
+        return fieldsByName.get(name.getPrefixedName());
     }
 
     @Override
     public final boolean hasField(QName name) {
-        if (fieldsCache.containsKey(name.prefixedName)) {
-            return true;
-        }
-        return getField(name) != null;
+        checkDirty();
+        return fieldsByName.containsKey(name.getPrefixedName());
     }
 
     @Override
     public final Collection<Field> getFields() {
-        List<Field> fields = new ArrayList<Field>();
-        for (TypeRef<Schema> schema : schemas.values()) {
-            fields.addAll(schema.get().getFields());
-        }
-        return fields;
+        checkDirty();
+        return fieldsCollection;
     }
 
     @Override
