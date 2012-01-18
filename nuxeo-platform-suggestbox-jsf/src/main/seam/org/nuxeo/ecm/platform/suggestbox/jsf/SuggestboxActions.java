@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.suggestbox.jsf;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,8 +46,6 @@ import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalid
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 import org.nuxeo.runtime.api.Framework;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Back seam component for the top right search box using the suggestion service

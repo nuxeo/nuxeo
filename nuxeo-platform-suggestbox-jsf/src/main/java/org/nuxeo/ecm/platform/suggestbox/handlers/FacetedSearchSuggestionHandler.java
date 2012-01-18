@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 
 package org.nuxeo.ecm.platform.suggestbox.handlers;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import org.jboss.seam.Component;
@@ -20,8 +21,6 @@ import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
 import org.nuxeo.ecm.platform.suggestbox.service.SearchDocumentsSuggestion;
 import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Handle SearchDocumentsSuggestion using the faceted search JSF UI.
@@ -39,7 +38,7 @@ public class FacetedSearchSuggestionHandler {
                             + " got '%s'", input));
         }
         SearchDocumentsSuggestion suggestion = (SearchDocumentsSuggestion) input;
-        
+
         MultiNavTreeManager multiNavTreeManager = (MultiNavTreeManager) Component.getInstance(MultiNavTreeManager.class);
         FacetedSearchActions facetedSearchActions = (FacetedSearchActions) Component.getInstance(FacetedSearchActions.class);
         ContentViewActions contentViewActions = (ContentViewActions) Component.getInstance(ContentViewActions.class);
