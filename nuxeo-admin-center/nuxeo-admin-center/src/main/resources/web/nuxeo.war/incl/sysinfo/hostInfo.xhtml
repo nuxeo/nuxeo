@@ -6,14 +6,14 @@
   class="hostInfos">
 
 <script>
-  var nbActiveSessions=#{nbActiveUserHttpSessions};
-
   function confirmRestart() {
+    var nbActiveSessions = #{nbActiveUserHttpSessions};
+    var testerName = '#{frameworkPropertyActions.getProperty("org.nuxeo.ecm.tester.name")}';
     var restartMessage = '<h:outputText value="#{messages['label.restart.confirm']}" />';
     if (nbActiveSessions > 1) {
       restartMessage = restartMessage + "\n( " + (nbActiveSessions-1) + " " + "<h:outputText value="#{messages['label.restart.connectedusers']}" />" + ' )';
     }
-    if (frameworkPropertyActions.getProperty("org.nuxeo.ecm.tester.name") == "Nuxeo-Selenium-Tester") {
+    if (testerName == "Nuxeo-Selenium-Tester") {
       // webdriver sometimes has problems giving focus to alerts
       return true;
     }
