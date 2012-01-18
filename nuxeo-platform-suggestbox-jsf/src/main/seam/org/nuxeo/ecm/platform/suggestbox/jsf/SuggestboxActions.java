@@ -125,7 +125,6 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
      * in the first position and more generic (traditional free-text search for
      * documents) last.
      */
-    @SuppressWarnings("unchecked")
     public List<Suggestion> getSuggestions(Object input) {
         if (cachedSuggestions.hasExpired(input, locale)) {
             SuggestionService service = Framework.getLocalService(SuggestionService.class);
