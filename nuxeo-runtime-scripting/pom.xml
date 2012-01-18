@@ -59,11 +59,6 @@
       <artifactId>jruby-engine</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>backport-util-concurrent</groupId>
-      <artifactId>backport-util-concurrent</artifactId>
-    </dependency>
-
     <!-- Should use version 3.0 -->
     <dependency>
       <groupId>asm</groupId>
