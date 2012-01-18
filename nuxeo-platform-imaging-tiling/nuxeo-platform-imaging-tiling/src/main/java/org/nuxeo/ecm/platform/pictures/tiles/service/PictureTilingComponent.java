@@ -276,7 +276,7 @@ public class PictureTilingComponent extends DefaultComponent implements
                     String msg = String.format(
                             "Unable to transfer blob to file at '%s', "
                                     + "working directory path: '%s'",
-                            inputFilePath);
+                            inputFilePath, wdirPath);
                     log.error(msg, e);
                     throw new ClientException(msg, e);
                 }
