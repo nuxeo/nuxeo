@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,9 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.schema.types;
@@ -25,8 +24,7 @@ import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.TypeRef;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * A Complex Type holds several fields.
  */
 public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
@@ -36,13 +34,16 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     public static final int F_UNSTRUCT_TRUE = 2;
 
-    private static final long serialVersionUID = 294207320373332155L;
+    private static final long serialVersionUID = 1L;
 
-    // fields map by their qname
+    /** The fields held by this complex type. */
     protected final Map<QName, Field> fields = new HashMap<QName, Field>();
 
-    // the cache used to lookup fields by string keys
-    protected final Map<String, Field> fieldsCache = new HashMap<String, Field>();
+    /** The map of name or prefixed name to field. */
+    protected volatile Map<String, Field> fieldsByName = new HashMap<String, Field>();
+
+    /** The collection of fields, unmodifiable. */
+    protected Collection<Field> fieldsCollection = Collections.emptySet();
 
     protected final Namespace ns;
 
@@ -53,13 +54,20 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         super(superType, schema, name);
         ComplexType stype = (ComplexType) getSuperType();
         if (stype != null) {
-            Collection<Field> fields = stype.getFields();
-            for (Field field : fields) {
-                this.fields.put(field.getName(), field);
+            for (Field field : stype.getFields()) {
+                addField(field);
             }
         }
         unstructured = struct;
         this.ns = ns;
+    }
+
+    protected void addField(Field field) {
+        QName name = field.getName();
+        fields.put(name, field);
+        fieldsByName.put(name.getLocalName(), field);
+        fieldsByName.put(name.getPrefixedName(), field);
+        fieldsCollection = Collections.unmodifiableCollection(fields.values());
     }
 
     public ComplexTypeImpl(ComplexType superType, String schema, String name) {
@@ -98,15 +106,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     @Override
     public Field getField(String name) {
-        Field field = fieldsCache.get(name);
-        if (field == null) {
-            QName qname = QName.valueOf(name, ns.prefix);
-            field = getField(qname);
-            if (field != null) {
-                fieldsCache.put(name, field);
-            }
-        }
-        return field;
+        return fieldsByName.get(name);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     @Override
     public Collection<Field> getFields() {
-        return Collections.unmodifiableCollection(fields.values());
+        return fieldsCollection;
     }
 
     @Override
@@ -146,16 +146,13 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
             String defaultValue, int flags) {
         FieldImpl field = new FieldImpl(name, getRef(), type, defaultValue,
                 flags);
-        fields.put(name, field);
+        addField(field);
         return field;
     }
 
     @Override
     public boolean hasField(String name) {
-        if (fieldsCache.containsKey(name)) {
-            return true;
-        }
-        return null != getField(name);
+        return fieldsByName.containsKey(name);
     }
 
     @Override
