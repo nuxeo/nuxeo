@@ -45,8 +45,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that expose the PictureTilingService interface.
- * Also exposes the configuration Extension Point
+ * Runtime component that expose the PictureTilingService interface. Also
+ * exposes the configuration Extension Point
  *
  * @author tiry
  */
@@ -124,7 +124,8 @@ public class PictureTilingComponent extends DefaultComponent implements
         // FIXME: condition always true. What was intended?
         if (workingDirPath == null || "".equals(workingDirPath)) {
             workingDirPath = getEnvValue("WorkingDirPath",
-                    System.getProperty("java.io.tmpdir") + "/nuxeo-tiling-cache");
+                    System.getProperty("java.io.tmpdir")
+                            + "/nuxeo-tiling-cache");
             File workingDir = new File(workingDirPath);
             if (!workingDir.exists()) {
                 workingDir.mkdir();
@@ -272,9 +273,12 @@ public class PictureTilingComponent extends DefaultComponent implements
                         transferBlob(blob, inputFile);
                     }
                 } catch (Exception e) {
-                    log.error("Unable to transfer blob", e);
-                    throw new ClientException(
-                            "Unable to transfer blob to temp file", e);
+                    String msg = String.format(
+                            "Unable to transfer blob to file at '%s', "
+                                    + "working directory path: '%s'",
+                            inputFilePath);
+                    log.error(msg, e);
+                    throw new ClientException(msg, e);
                 }
                 inputFile = new File(inputFilePath);
             } else {
@@ -301,7 +305,8 @@ public class PictureTilingComponent extends DefaultComponent implements
         }
 
         // compute output dir
-        String outDirPath = cacheInfo.getTilingDir(tileWidth, tileHeight, maxTiles);
+        String outDirPath = cacheInfo.getTilingDir(tileWidth, tileHeight,
+                maxTiles);
 
         // try to see if a shrinked image can be used
         ImageInfo bestImageInfo = cacheInfo.getBestSourceImage(tileWidth,
