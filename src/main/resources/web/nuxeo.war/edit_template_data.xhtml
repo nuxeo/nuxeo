@@ -18,10 +18,10 @@
             <h3>
                 <h:outputText value="#{messages['title.create.document']} #{messages[changeableDocument.type]}" />
             </h3>
-            <h:form enctype="multipart/form-data" id="document_create">
+            <h:form enctype="multipart/form-data" id="params_edit">
 
                 <nxu:repeat var="param" value="#{templateActions.templateInputs}">
-                    <ui:include src="/incl/template_edit_oneparam.xhtml" />
+                    <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
                 </nxu:repeat>
 
                 <p class="buttonsGadget">

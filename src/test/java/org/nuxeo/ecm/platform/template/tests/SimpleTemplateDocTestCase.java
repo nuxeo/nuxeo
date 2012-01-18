@@ -99,7 +99,7 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         TemplateInput input1 = new TemplateInput("StringVar", "John Smith");
         TemplateInput input2 = new TemplateInput("DateVar", new Date());
         TemplateInput input3 = new TemplateInput("Description");
-        input3.setType(InputType.StringValue);
+        input3.setType(InputType.PictureProperty);
         input3.setSource("dc:description");
         TemplateInput input4 = new TemplateInput("BooleanVar", new Boolean(
                 false));

@@ -87,9 +87,6 @@ public class TemplateInput implements Serializable {
 
     public void setSource(String source) {
         this.source = source;
-        if (!isSourceValue()) {
-            type = InputType.DocumentProperty;
-        }
     }
 
     public String getDesciption() {
@@ -102,7 +99,7 @@ public class TemplateInput implements Serializable {
 
     @Override
     public String toString() {
-        String str = name + ":" + type + ":";
+        String str = name + " (" + type + ") : '";
         if (InputType.StringValue.equals(type) && stringValue != null) {
             str = str + stringValue;
         } else if (InputType.DateValue.equals(type) && dateValue != null) {
@@ -112,7 +109,7 @@ public class TemplateInput implements Serializable {
         } else {
             str = str + source;
         }
-        return str;
+        return str + "'";
     }
 
     public String getName() {

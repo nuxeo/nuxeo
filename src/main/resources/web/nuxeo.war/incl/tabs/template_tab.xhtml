@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+    <c:if test="#{currentDocument.type == 'TemplateSource'}">
+    <h3>
+       <h:outputText value="Template config" />
+    </h3>
+    <nxl:layout name="templateOptions" mode="view" value="#{currentDocument}" />
+    </c:if>
+
+    <h3>
+       <h:outputText value="Edit template parameters" />
+    </h3>
+    <ui:include src="/incl/tabs/templates/params_editor.xhtml" />
+
+        <c:if test="#{templateActions.canRenderTemplate()}">
+            <h:form enctype="multipart/form-data" id="applyTemplate">
+                <p class="buttonsGadget">
+                    <h:commandButton type="submit" class="button" value="Apply to file"
+                        action="#{templateActions.updateBlob}" id="button_applyFile" />
+                    <c:if test="#{templateActions.canReverseTemplate()}">
+                      <h:commandButton type="submit" class="button" value="Read from file (update Document)"
+                        action="#{templateActions.updateDocumentFromBlob}" id="button_readFile" />
+                    </c:if>
+                </p>
+            </h:form>
+        </c:if>
+
+</div>

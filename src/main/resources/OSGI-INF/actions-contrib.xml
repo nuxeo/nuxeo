@@ -19,7 +19,7 @@
       <filter-id>is_creating_template_instance</filter-id>
     </action>
 
-    <action id="TAB_TEMPLATE_PARAMS" link="/incl/tabs/template_edit_params.xhtml"
+    <action id="TAB_TEMPLATE_PARAMS" link="/incl/tabs/template_tab.xhtml"
       enabled="true" label="Template parameters" order="55">
       <category>VIEW_ACTION_LIST</category>
       <filter id="view_template_params">

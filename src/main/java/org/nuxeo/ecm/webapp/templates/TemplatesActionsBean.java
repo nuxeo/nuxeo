@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webapp.templates;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -33,10 +35,13 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
+import org.nuxeo.ecm.platform.types.Type;
+import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -64,6 +69,9 @@ public class TemplatesActionsBean implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected transient TypeManager typeManager;
 
     protected List<TemplateInput> templateInputs;
 
@@ -135,7 +143,6 @@ public class TemplatesActionsBean implements Serializable {
         return documentActions.saveDocument(changeableDocument);
     }
 
-
     @Observer( value= { EventNames.LOCATION_SELECTION_CHANGED,
             EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create=false)
     @BypassInterceptors
@@ -202,9 +209,29 @@ public class TemplatesActionsBean implements Serializable {
 
     public boolean canRenderTemplate() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        // check that templating is supported
         TemplateBasedDocument template = currentDocument.getAdapter(TemplateBasedDocument.class);
-        return template!=null?true:false;
+        if (template==null) {
+            return false;
+        }
+        // check that we can store the result : XXX do better
+        BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
+        if (bh==null) {
+            return false;
+        }
+        return true;
     }
+
+    public boolean canReverseTemplate() {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        // check that templating is supported
+        TemplateBasedDocument template = currentDocument.getAdapter(TemplateBasedDocument.class);
+        if (template==null) {
+            return false;
+        }
+        return template.isBidirectional();
+    }
+
 
     public String addTemplateInput() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -246,6 +273,25 @@ public class TemplatesActionsBean implements Serializable {
             documentManager.save();
         }
         return navigationContext.navigateToDocument(currentDocument);
+    }
+
+    public Collection<Type> getAllTypes() {
+        return typeManager.getTypes();
+    }
+
+    public Collection<Type> getForcableTypes() {
+
+        Collection<Type> types = typeManager.getTypes();
+
+        Iterator<Type> it = types.iterator();
+        while (it.hasNext()) {
+            Type type = it.next();
+            if (type.getId().equals("TemplateBasedFile")) {
+                it.remove();
+                break;
+            }
+        }
+        return types;
     }
 
 }

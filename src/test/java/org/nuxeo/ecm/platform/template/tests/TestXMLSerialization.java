@@ -28,6 +28,7 @@ public class TestXMLSerialization extends TestCase {
          params.add(input3);
 
          TemplateInput input4 = new TemplateInput("field4");
+         input4.setType(InputType.DocumentProperty);
          input4.setSource("dc:description");
          params.add(input4);
 

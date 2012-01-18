@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <div xmlns="http://www.w3.org/1999/xhtml"
     xmlns:nxthemes="http://nuxeo.org/nxthemes"
     xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -9,10 +7,6 @@
     xmlns:nxu="http://nuxeo.org/nxweb/util"
     xmlns:c="http://java.sun.com/jstl/core">
 
-        <div>
-            <h3>
-                <h:outputText value="Edit template parameters" />
-            </h3>
             <h:form enctype="multipart/form-data" id="params_edit">
 
                 <nxu:repeat var="param" value="#{templateActions.templateEditableInputs}">
@@ -26,7 +20,6 @@
                         action="#{navigationContext.goBack()}" immediate="true" />
                 </p>
             </h:form>
-        </div>
 
         <c:if test="#{templateActions.canAddTemplateInputs()}">
             <h:form enctype="multipart/form-data" id="addTemplateField">
@@ -51,17 +44,4 @@
                 </p>
             </h:form>
         </c:if>
-
-        <c:if test="#{templateActions.canRenderTemplate()}">
-            <h:form enctype="multipart/form-data" id="applyTemplate">
-
-                <p class="buttonsGadget">
-                    <h:commandButton type="submit" class="button" value="Apply to file"
-                        action="#{templateActions.updateBlob}" id="button_applyFile" />
-                    <h:commandButton type="submit" class="button" value="Read from file (update Document)"
-                        action="#{templateActions.updateDocumentFromBlob}" id="button_readFile" />
-                </p>
-            </h:form>
-        </c:if>
-
 </div>

@@ -10,8 +10,10 @@
   </xs:simpleType>
 
   <xs:element name="applicableTypes" type="nxs:typesList"/>
+  <xs:element name="forcedTypes" type="nxs:typesList"/>
 
   <xs:element name="templateType" type="xs:string"/>
+
   <xs:element name="templateData" type="xs:string"/>
 
   <xs:element name="allowOverride" type="xs:boolean"/>

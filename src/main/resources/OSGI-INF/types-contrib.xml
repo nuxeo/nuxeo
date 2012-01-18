@@ -21,11 +21,11 @@
       <layouts mode="view">
         <layout>heading</layout>
         <layout>templateOptions</layout>
-        <layout>template</layout>
+        <layout>templateParams</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>template</layout>
+        <layout>templateOptions</layout>
         <layout>file</layout>
       </layouts>
     </type>
@@ -51,46 +51,15 @@
       </layouts>
     </type>
 
-<!--
-    <type id="TemplateBasedNote">
-      <label>Template based Note</label>
-      <icon>/icons/note.gif</icon>
-      <bigIcon>/icons/note_100.png</bigIcon>
-      <category>Templates</category>
-      <description>Note.description</description>
-      <default-view>view_documents</default-view>
-      <layouts mode="any">
-        <layout>heading</layout>
-        <layout>note</layout>
-        <layout>templateChooser</layout>
-      </layouts>
-      <layouts mode="summary">
-        <layout>note_summary_layout</layout>
-      </layouts>
-      <layouts mode="edit">
-        <layout>heading</layout>
-        <layout>note</layout>
-        <layout>dublincore</layout>
-      </layouts>
-      <layouts mode="view">
-        <layout>note</layout>
-        <layout>file</layout>
-        <layout>templateChooser</layout>
-      </layouts>
-    </type>
--->
-
      <type id="Folder" coretype="Folder">
       <subtypes>
         <type>TemplateBasedFile</type>
-        <type>TemplateBasedNote</type>
         <type>TemplateSource</type>
       </subtypes>
     </type>
     <type id="Workspace" coretype="Workspace">
       <subtypes>
         <type>TemplateBasedFile</type>
-        <type>TemplateBasedNote</type>
         <type>TemplateSource</type>
       </subtypes>
     </type>
