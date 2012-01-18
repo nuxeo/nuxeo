@@ -26,13 +26,12 @@ import java.net.ProxySelector;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class SimpleProxySelector extends ProxySelector {
 
@@ -54,7 +53,6 @@ public class SimpleProxySelector extends ProxySelector {
 
     List<String> excludedHosts = new ArrayList<String>();
 
-    @SuppressWarnings("unchecked")
     public SimpleProxySelector() {
         String excludedHostsProperty = Framework.getProperty(SHINDIG_PROXY_EXCLUDE);
         if (excludedHostsProperty != null) {
