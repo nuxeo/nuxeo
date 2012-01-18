@@ -43,12 +43,12 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Clock;
 import org.openqa.selenium.support.ui.SystemClock;
@@ -96,18 +96,12 @@ public abstract class AbstractTest {
         // Set English as default language
         profile.setPreference("general.useragent.locale", "en");
         profile.setPreference("intl.accept_languages", "en");
-        // flag UserAgent as Selenium tester: this is used in Nuxeo
-        // general.useragent.extra has been removed in newer firefox versions
-        // so we need to override the whole string
-        profile.setPreference("general.useragent.override",
-                "Mozilla/5.0 Nuxeo-Selenium-Tester");
         addFireBug(profile);
         driver = new FirefoxDriver(profile);
     }
 
     protected static void initChromeDriver() throws Exception {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("user-agent=\"Mozilla/5.0 Nuxeo-Selenium-Tester\"");
         driver = new ChromeDriver(options);
     }
 

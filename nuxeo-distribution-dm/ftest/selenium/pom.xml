@@ -1,6 +1,4 @@
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -21,37 +19,14 @@
     It also provide a plugin for running regular Surefire tests.
   </description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-server-standalone</artifactId>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
-      <plugin>
-        <!-- DEPRECATED, remove when run.sh is no more used. -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <configuration>
-          <artifactItems>
-            <artifactItem>
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>selenium-server-standalone</artifactId>
-              <overWrite>true</overWrite>
-              <outputDirectory>.</outputDirectory>
-              <destFileName>selenium-server.jar</destFileName>
-            </artifactItem>
-          </artifactItems>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <executions>
-         <execution>
-          <id>start-nuxeo</id>
+          <execution>
+            <id>start-nuxeo</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>build</goal>
@@ -75,8 +50,8 @@
               <target>run-selenium-tests</target>
             </configuration>
           </execution>
-         <execution>
-          <id>stop-nuxeo</id>
+          <execution>
+            <id>stop-nuxeo</id>
             <phase>post-integration-test</phase>
             <goals>
               <goal>build</goal>
