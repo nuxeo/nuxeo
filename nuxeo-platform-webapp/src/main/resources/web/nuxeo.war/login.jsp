@@ -407,7 +407,7 @@ function focusOn(eltId) {
         </form>
       </td>
       <td class="news_container" align="right" valign="center">
-        <% if (!testerName.equals("Nuxeo-Selenium-Tester")) { %>
+        <% if (!"Nuxeo-Selenium-Tester".equals(testerName)) { %>
           <iframe class="block_container" style="visibility:hidden"
             onload="javascript:this.style.visibility='visible';"
             src="https://www.nuxeo.com/embedded/dm-login"></iframe>
