@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.AbstractTemplateDocument;
+import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
 import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.runtime.api.Framework;
@@ -46,7 +47,11 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public static final String TEMPLATE_TYPE_PROP = "tmpl:templateType";
 
+    public static final String TEMPLATE_TYPE_AUTO = "auto";
+
     public static final String TEMPLATE_APPLICABLE_TYPES_PROP = "tmpl:applicableTypes";
+
+    public static final String TEMPLATE_FORCED_TYPES_PROP = "tmpl:forcedTypes";
 
     public static final String TEMPLATE_OVERRIDE_PROP = "tmpl:allowOverride";
 
@@ -87,7 +92,11 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public String getTemplateType() {
         try {
-            return (String) getAdaptedDoc().getPropertyValue(TEMPLATE_TYPE_PROP);
+            String ttype = (String) getAdaptedDoc().getPropertyValue(TEMPLATE_TYPE_PROP);
+            if (TEMPLATE_TYPE_AUTO.equals(ttype)) {
+                return null;
+            }
+            return ttype;
         } catch (Exception e) {
             log.error("Unable to read template type ", e);
             return null;
@@ -95,8 +104,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     }
 
     public void initTemplate(boolean save) throws Exception {
-        // avoid duplicated init
-        if (getAdaptedDoc().getContextData(TemplateSourceDocument.INIT_DONE_FLAG)==null) {
+        // avoid duplicate init
+        if (getAdaptedDoc().getContextData(TemplateSourceDocument.INIT_DONE_FLAG)==null && getTemplateType()==null) {
             Blob blob = getTemplateBlob();
             if (blob!=null) {
                 TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
@@ -136,10 +145,35 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             if (applicableTypesArray != null) {
                 applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
             }
+            if (applicableTypes.size()>0 && applicableTypes.get(0).equals("all")) {
+                applicableTypes.remove(0);
+            }
             return applicableTypes;
         } catch (Exception e) {
             log.error("Error while reading applicable types");
             return new ArrayList<String>();
         }
+    }
+
+    public List<String> getForcedTypes() {
+        try {
+            String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
+                    TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP);
+            List<String> applicableTypes = new ArrayList<String>();
+            if (applicableTypesArray != null) {
+                applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
+            }
+            if (applicableTypes.size()>0 && applicableTypes.get(0).equals("none")) {
+                applicableTypes.remove(0);
+            }
+            return applicableTypes;
+        } catch (Exception e) {
+            log.error("Error while reading applicable types");
+            return new ArrayList<String>();
+        }
+    }
+
+    public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException {
+        return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(adaptedDoc);
     }
 }

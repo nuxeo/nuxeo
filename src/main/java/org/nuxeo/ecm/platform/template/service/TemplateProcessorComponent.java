@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.template.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -12,6 +13,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocumentAdapterImpl;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
@@ -160,14 +163,12 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             // post filter
             List<DocumentModel> filtredResult = new ArrayList<DocumentModel>();
             for (DocumentModel template : templates) {
-                String[] applicableTypesArray = (String[]) template.getPropertyValue(
-                        TemplateSourceDocumentAdapterImpl.TEMPLATE_APPLICABLE_TYPES_PROP);
-                List<String> applicableTypes = new ArrayList<String>();
-                if (applicableTypesArray != null) {
-                    applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
-                }
-                if (applicableTypes.size()==0 || applicableTypes.contains(targetType)) {
-                    filtredResult.add(template);
+                TemplateSourceDocument srcTmpl = template.getAdapter(TemplateSourceDocument.class);
+                if (srcTmpl!=null) {
+                    List<String> applicableTypes = srcTmpl.getApplicableTypes();
+                    if (applicableTypes.size()==0 || applicableTypes.contains(targetType)) {
+                        filtredResult.add(template);
+                    }
                 }
             }
             return filtredResult;
@@ -189,4 +190,28 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return result;
     }
 
+    @Override
+    public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(
+            DocumentModel source) throws ClientException {
+
+        StringBuffer sb = new StringBuffer("select * from Document where ");
+        sb.append(TemplateBasedDocumentAdapterImpl.TEMPLATE_ID_PROP);
+        sb.append(" = '");
+        sb.append(source.getId());
+        sb.append("'");
+        DocumentModelList docs = source.getCoreSession().query(sb.toString());
+
+        List<TemplateBasedDocument> result = new ArrayList<TemplateBasedDocument>();
+        for (DocumentModel doc : docs) {
+            TemplateBasedDocument templateBasedDocument = doc.getAdapter(TemplateBasedDocument.class);
+            if (templateBasedDocument!=null) {
+                result.add(templateBasedDocument);
+            }
+        }
+        return result;
+    }
+
+    public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
+        return processorRegistry.getRegistredProcessors();
+    }
 }

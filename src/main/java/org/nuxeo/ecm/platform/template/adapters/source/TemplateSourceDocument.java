@@ -64,4 +64,9 @@ public interface TemplateSourceDocument {
     public boolean hasEditableParams() throws ClientException;
 
     public List<String> getApplicableTypes();
+
+    public List<String> getForcedTypes();
+
+    public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException;
+
 }

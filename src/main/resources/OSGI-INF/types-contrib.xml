@@ -22,6 +22,7 @@
         <layout>heading</layout>
         <layout>templateOptions</layout>
         <layout>templateParams</layout>
+        <layout>linkedTemplateBasedDocs</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>

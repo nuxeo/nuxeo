@@ -10,14 +10,18 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
-<h3><h:outputText value="#{param.name}" /> :</h3>
 
 <h:panelGroup id="param_#{param.name}">
-<table border="0">
 
+<table border="0">
 <tr>
-<td> Parameter Type</td>
+<td class="labelColumn"><h:outputText value="#{param.name}" /> : </td>
 <td>
+<c:if test="#{param.readOnly}">
+  ( <h:outputText value="#{param.typeAsString}"/> )
+</c:if>
+<c:if test="#{!param.readOnly}">
+ Parameter Type :
     <h:selectOneMenu  value="#{param.typeAsString}">
         <f:selectItem itemLabel="String value" itemValue="String"/>
         <f:selectItem itemLabel="Boolean value" itemValue="Boolean"/>
@@ -27,16 +31,17 @@
         <f:selectItem itemLabel="Include" itemValue="include"/>
         <a4j:support event="onchange" reRender="params_edit" />
     </h:selectOneMenu>
+</c:if>
 </td>
-
-  <c:set var="widgetMode" value="edit"/>
-  <c:if test="#{param.readOnly}">
-     <c:set var="widgetMode" value="view"/>
-  </c:if>
+<td></td>
+<c:set var="widgetMode" value="edit"/>
+<c:if test="#{param.readOnly}">
+  <c:set var="widgetMode" value="view"/>
+</c:if>
 
   <c:if test="#{param.simpleValue}">
 
-      <td><b>Value :</b></td>
+      <td class="labelColumn"> Value :</td>
       <td><c:if test="#{param.typeAsString=='String'}">
         <nxl:widgetType name="textarea" value="#{param.stringValue}"
           mode="#{widgetMode}" />
@@ -50,7 +55,7 @@
   </c:if>
 
   <c:if test="#{param.sourceValue}">
-      <td><b>source XPath for value :</b></td>
+      <td class="labelColumn"> Source XPath for value :</td>
       <td>
         <nxl:widgetType name="text" value="#{param.source}" mode="#{widgetMode}" />
       </td>
@@ -58,7 +63,6 @@
 </tr>
 </table>
 </h:panelGroup>
-<br/>
 
 
 </div>

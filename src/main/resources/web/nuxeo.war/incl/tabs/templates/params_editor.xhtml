@@ -8,17 +8,18 @@
     xmlns:c="http://java.sun.com/jstl/core">
 
             <h:form enctype="multipart/form-data" id="params_edit">
-
                 <nxu:repeat var="param" value="#{templateActions.templateEditableInputs}">
                     <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
                 </nxu:repeat>
 
-                <p class="buttonsGadget">
+                <c:if test="#{templateActions.canUpdateTemplateInputs()}">
+                  <p class="buttonsGadget">
                     <h:commandButton type="submit" class="button" value="#{messages['command.save']}"
-                        action="#{templateActions.saveTemplateInputs}" id="button_save" />
+                        action="#{templateActions.saveTemplateInputs}" id="button_save"/>
                     <h:commandButton class="button" value="#{messages['command.cancel']}"
-                        action="#{navigationContext.goBack()}" immediate="true" />
-                </p>
+                        action="#{navigationContext.goBack()}" immediate="true"/>
+                  </p>
+                </c:if>
             </h:form>
 
         <c:if test="#{templateActions.canAddTemplateInputs()}">

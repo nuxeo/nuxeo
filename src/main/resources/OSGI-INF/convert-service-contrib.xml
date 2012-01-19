@@ -46,14 +46,6 @@
     </parameters>
    </converter>
 
-   <converter name="md2odt">
-      <conversionSteps>
-        <subconverter>md2html</subconverter>
-        <subconverter>any2odt</subconverter>
-      </conversionSteps>
-   </converter>
-
-
    <converter name="any2odt" class="org.nuxeo.ecm.platform.template.processors.convert.AnyToODTConverter">
 
       <destinationMimeType>application/vnd.oasis.opendocument.text</destinationMimeType>
@@ -86,6 +78,12 @@
       <sourceMimeType>application/wordperfect</sourceMimeType>
    </converter>
 
+   <converter name="md2odt">
+      <conversionSteps>
+        <subconverter>md2html</subconverter>
+        <subconverter>any2odt</subconverter>
+      </conversionSteps>
+   </converter>
 
   </extension>
 

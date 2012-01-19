@@ -35,10 +35,12 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.service.TemplateProcessorDescriptor;
 import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -143,7 +145,7 @@ public class TemplatesActionsBean implements Serializable {
         return documentActions.saveDocument(changeableDocument);
     }
 
-    @Observer( value= { EventNames.LOCATION_SELECTION_CHANGED,
+    @Observer( value= { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create=false)
     @BypassInterceptors
     public void reset() {
@@ -205,6 +207,37 @@ public class TemplatesActionsBean implements Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         return template!=null?true:false;
+    }
+
+    public boolean canUpdateTemplateInputs() throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
+        if (template!=null) {
+            return true;
+        }
+        TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
+        if (templateBased!=null) {
+            return templateBased.hasEditableParams() && documentManager.hasPermission(currentDocument.getRef(), "Write");
+        }
+        return false;
+    }
+
+    public boolean canResetParameters() throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
+        if (templateBased!=null) {
+            return true;
+        }
+        return false;
+    }
+
+    public void resetParameters() throws Exception {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
+        if (templateBased!=null) {
+            templateBased.initializeFromTemplate(true);
+            templateEditableInputs=null;
+        }
     }
 
     public boolean canRenderTemplate() {
@@ -294,4 +327,23 @@ public class TemplatesActionsBean implements Serializable {
         return types;
     }
 
+    public DocumentModel resolveTemplateById(String uuid) {
+        try {
+            return documentManager.getDocument(new IdRef(uuid));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public TemplateSourceDocument getCurrentDocumentAsTemplateSourceDocument() {
+        return navigationContext.getCurrentDocument().getAdapter(TemplateSourceDocument.class);
+    }
+
+    public TemplateBasedDocument getCurrentDocumentATemplateBasedDocument() {
+        return navigationContext.getCurrentDocument().getAdapter(TemplateBasedDocument.class);
+    }
+
+    public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
+        return Framework.getLocalService(TemplateProcessorService.class).getRegistredTemplateProcessors();
+    }
 }

@@ -25,8 +25,17 @@
       <filter id="view_template_params">
         <rule grant="true">
           <permission>Write</permission>
-          <facet>TemplateBased</facet>
           <facet>Template</facet>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_TEMPLATEBASED_PARAMS" link="/incl/tabs/templatebased_tab.xhtml"
+      enabled="true" label="Associated Template" order="55">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="view_templatebased_params">
+        <rule grant="true">
+          <facet>TemplateBased</facet>
         </rule>
       </filter>
     </action>
