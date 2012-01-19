@@ -417,7 +417,9 @@ function focusOn(eltId) {
     <tr class="footer">
       <td align="center" valign="bottom">
       <div class="loginLegal">
-        <fmt:message bundle="${messages}" key="label.login.copyright" />
+        <fmt:message bundle="${messages}" key="label.login.copyright">
+          <fmt:param value="2012" />
+        </fmt:message>
       </div>
       </td>
       <td align="right" class="version" valign="bottom">

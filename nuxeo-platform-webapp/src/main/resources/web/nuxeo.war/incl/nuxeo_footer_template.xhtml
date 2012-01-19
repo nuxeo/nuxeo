@@ -48,7 +48,9 @@
     </div>
 
     <div class="copyrights">
-      <h:outputText value="#{messages['label.login.copyright']}" />
+      <h:outputFormat value="#{messages['label.login.copyright']}">
+        <f:param value="2012" />
+      </h:outputFormat>
     </div>
     <div class="clear"></div>
   </div>
