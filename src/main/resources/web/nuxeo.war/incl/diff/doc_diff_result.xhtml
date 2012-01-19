@@ -7,10 +7,14 @@
   
   <style type="text/css">
     .diffTable {width: 100%; border-collapse: collapse;}
+    .diffHeader.diffTable {margin-bottom: 10px;}
+    .diffHeader.diffTable td {/*border-left: 1px solid #EEEFF0; padding-left: 10px;*/}
+    .diffHeader.diffTable h2, .diffHeader.diffTable a, .diffHeader.diffTable a:hover {color: #000000;}
     .fieldLabelColumn {width: 20%; font-weight: bold;}
     .fieldDiffColumn {width: 40%; padding: 0.4em 0.3em;}
     div.textDiff {padding: 0 0.4em; float: left;}
-    div .emptyTextDiff {height: 1.5em; width: 60px; margin-bottom: 0.1em;}
+    div .emptyTextDiff {height: 1.3em; width: 60px;}
+    div.textDiff, div .emptyTextDiff {margin-bottom: 0.1em;}
     .leftDiff .textDiff, .leftDiff .emptyTextDiff {background-color:#FFDDDD;}
     .rightDiff .textDiff, .rightDiff .emptyTextDiff {background-color:#DDFFDD;}
     .complexDiffTable th, .complexDiffTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
@@ -18,17 +22,23 @@
     .italic {font-style: italic;}
   </style>
   
-  <c:if test="#{documentDiff.schemaCount == 0}">
-    <h2><h:outputText value="#{messages['document.diff.noDiffAvailable']}"/></h2>
+  <c:if test="#{!documentDiffActions.documentDiffAvailable}">
+    <h2>
+      <h:outputText value="#{messages['document.diff.noDiffAvailable']}"/>
+    </h2>
   </c:if>
-  <c:if test="#{documentDiff.schemaCount > 0}">
+  <c:if test="#{documentDiffActions.documentDiffAvailable}">
   
   <nxu:set var="leftDoc" value="#{documentDiffActions.leftDoc}" cache="true">
   <nxu:set var="rightDoc" value="#{documentDiffActions.rightDoc}" cache="true">
   
-    <table class="diffTable">
+    <table class="diffHeader diffTable">
       <tr>
-        <td class="fieldLabelColumn"></td>
+        <td class="fieldLabelColumn">
+          <h2>
+            <h:outputText value="#{messages['document.diff.title']}" />
+          </h2>
+        </td>
         <td class="fieldDiffColumn">
           <h2>
             <nxd:restDocumentLink document="#{leftDoc}">
@@ -56,134 +66,142 @@
       </tr>
     </table>
     
-    <ui:repeat value="#{documentDiff.schemaNames}" var="schemaName">
-      <nxu:set var="schemaDiff" value="#{documentDiff.getSchemaDiff(schemaName)}" cache="false">
-
-        <div class="foldableBox">
-          <h3 class="unfolded">
-            <a href="#nologo" onclick="return toggleBox(this)">
-              <h:outputText value="#{messages[schemaName]}" />
-            </a>
-            <span class="breaker"></span>
-          </h3>
-          <div class="boxBody">
-            <nxu:dataTable id="schemaDiffTable_#{schemaName}" styleClass="diffTable"
-              value="#{schemaDiff.fieldNames}" var="fieldName">
-              <nxu:column styleClass="fieldLabelColumn">
-                <h:outputText value="#{messages[fieldName]}"/>
-              </nxu:column>
-              <nxu:column styleClass="fieldDiffColumn leftDiff">
-                <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">
-                  
-                  <!-- Simple property -->
-                  <f:subview rendered="#{fieldDiff.simpleType}">
-                    <ui:include src="/incl/diff/simple_property_diff.xhtml">
-                      <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getSimplePropertyValue(leftDoc, schemaName, fieldName)}"/>
-                      <ui:param name="propertyDiff" value="#{fieldDiff}"/>
-                    </ui:include>
-                  </f:subview>
-                
-                  <!-- Complex property -->
-                  <f:subview rendered="#{fieldDiff.complexType}">
-                    <ui:include src="/incl/diff/complex_property_diff.xhtml">
-                      <ui:param name="doc" value="#{leftDoc}"/>
-                      <ui:param name="schema" value="#{schemaName}"/>
-                      <ui:param name="field" value="#{fieldName}"/>
-                      <ui:param name="propertyDiff" value="#{fieldDiff}"/>
-                    </ui:include>
-                  </f:subview>
-                  
-                  <!-- Simple list property -->
-                  <f:subview rendered="#{fieldDiff.scalarListType}">
-                    <nxu:dataTable
-                      value="#{propertyDiffDisplayHelper.getListItemIndexes(fieldDiff)}" var="listItemIndex">
-                      
-                      <nxu:column>
-                        <ui:include src="/incl/diff/simple_property_diff.xhtml">
-                          <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getListItemValue(leftDoc, schemaName, fieldName, listItemIndex)}"/>
-                          <ui:param name="propertyDiff" value="#{fieldDiff.diffMap[listItemIndex]}"/>
-                        </ui:include>
-                      </nxu:column>
-                      
-                    </nxu:dataTable>
-                  </f:subview>
-                  
-                  <!-- Complex list property -->
-                  <f:subview rendered="#{fieldDiff.complexListType}">
-                    <ui:include src="/incl/diff/complex_list_property_diff.xhtml">
-                      <ui:param name="doc" value="#{leftDoc}"/>
-                      <ui:param name="schema" value="#{schemaName}"/>
-                      <ui:param name="field" value="#{fieldName}"/>
-                      <ui:param name="propertyDiff" value="#{fieldDiff}"/>
-                    </ui:include>
-                  </f:subview>
+    <c:if test="#{documentDiff.docDiffEmpty}">
+      <h3>
+        <h:outputText value="#{messages['document.diff.emptyDiff']}"/>
+      </h3>
+    </c:if>
+    
+    <c:if test="#{!documentDiff.docDiffEmpty}">
+      <ui:repeat value="#{documentDiff.schemaNames}" var="schemaName">
+        <nxu:set var="schemaDiff" value="#{documentDiff.getSchemaDiff(schemaName)}" cache="false">
+  
+          <div class="foldableBox">
+            <h3 class="unfolded">
+              <a href="#nologo" onclick="return toggleBox(this)">
+                <h:outputText value="#{messages[schemaName]}" />
+              </a>
+              <span class="breaker"></span>
+            </h3>
+            <div class="boxBody">
+              <nxu:dataTable id="schemaDiffTable_#{schemaName}" styleClass="diffTable"
+                value="#{schemaDiff.fieldNames}" var="fieldName">
+                <nxu:column styleClass="fieldLabelColumn">
+                  <h:outputText value="#{messages[fieldName]}"/>
+                </nxu:column>
+                <nxu:column styleClass="fieldDiffColumn leftDiff">
+                  <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">
                     
-                </nxu:set>
-              </nxu:column>
-              <nxu:column styleClass="fieldDiffColumn rightDiff">
-                <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">
-                  
-                  <!-- Simple property -->
-                  <f:subview rendered="#{fieldDiff.simpleType}">
-                    <div class="rightDiff">
+                    <!-- Simple property -->
+                    <f:subview rendered="#{fieldDiff.simpleType}">
                       <ui:include src="/incl/diff/simple_property_diff.xhtml">
-                        <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getSimplePropertyValue(rightDoc, schemaName, fieldName)}"/>
+                        <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getSimplePropertyValue(leftDoc, schemaName, fieldName)}"/>
                         <ui:param name="propertyDiff" value="#{fieldDiff}"/>
                       </ui:include>
-                    </div>
-                  </f:subview>
+                    </f:subview>
                   
-                  <!-- Complex property -->
-                  <f:subview rendered="#{fieldDiff.complexType}">
-                   <ui:include src="/incl/diff/complex_property_diff.xhtml">
-                      <ui:param name="doc" value="#{rightDoc}"/>
-                      <ui:param name="schema" value="#{schemaName}"/>
-                      <ui:param name="field" value="#{fieldName}"/>
-                      <ui:param name="propertyDiff" value="#{fieldDiff}"/>
-                    </ui:include>
-                  </f:subview>
-                  
-                  <!-- Simple list property -->
-                  <f:subview rendered="#{fieldDiff.scalarListType}">
-                    <nxu:dataTable
-                      value="#{propertyDiffDisplayHelper.getListItemIndexes(fieldDiff)}" var="listItemIndex">
+                    <!-- Complex property -->
+                    <f:subview rendered="#{fieldDiff.complexType}">
+                      <ui:include src="/incl/diff/complex_property_diff.xhtml">
+                        <ui:param name="doc" value="#{leftDoc}"/>
+                        <ui:param name="schema" value="#{schemaName}"/>
+                        <ui:param name="field" value="#{fieldName}"/>
+                        <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                      </ui:include>
+                    </f:subview>
+                    
+                    <!-- Simple list property -->
+                    <f:subview rendered="#{fieldDiff.scalarListType}">
+                      <nxu:dataTable
+                        value="#{propertyDiffDisplayHelper.getListItemIndexes(fieldDiff)}" var="listItemIndex">
+                        
+                        <nxu:column>
+                          <ui:include src="/incl/diff/simple_property_diff.xhtml">
+                            <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getListItemValue(leftDoc, schemaName, fieldName, listItemIndex)}"/>
+                            <ui:param name="propertyDiff" value="#{fieldDiff.diffMap[listItemIndex]}"/>
+                          </ui:include>
+                        </nxu:column>
+                        
+                      </nxu:dataTable>
+                    </f:subview>
+                    
+                    <!-- Complex list property -->
+                    <f:subview rendered="#{fieldDiff.complexListType}">
+                      <ui:include src="/incl/diff/complex_list_property_diff.xhtml">
+                        <ui:param name="doc" value="#{leftDoc}"/>
+                        <ui:param name="schema" value="#{schemaName}"/>
+                        <ui:param name="field" value="#{fieldName}"/>
+                        <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                      </ui:include>
+                    </f:subview>
                       
-                      <nxu:column>
+                  </nxu:set>
+                </nxu:column>
+                <nxu:column styleClass="fieldDiffColumn rightDiff">
+                  <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">
+                    
+                    <!-- Simple property -->
+                    <f:subview rendered="#{fieldDiff.simpleType}">
+                      <div class="rightDiff">
                         <ui:include src="/incl/diff/simple_property_diff.xhtml">
-                          <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getListItemValue(rightDoc, schemaName, fieldName, listItemIndex)}"/>
-                          <ui:param name="propertyDiff" value="#{fieldDiff.diffMap[listItemIndex]}"/>
+                          <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getSimplePropertyValue(rightDoc, schemaName, fieldName)}"/>
+                          <ui:param name="propertyDiff" value="#{fieldDiff}"/>
                         </ui:include>
-                      </nxu:column>
-                      
-                    </nxu:dataTable>
-                  </f:subview>
-                  
-                  <!-- Complex list property -->
-                  <f:subview rendered="#{fieldDiff.complexListType}">
-                    <ui:include src="/incl/diff/complex_list_property_diff.xhtml">
-                      <ui:param name="doc" value="#{rightDoc}"/>
-                      <ui:param name="schema" value="#{schemaName}"/>
-                      <ui:param name="field" value="#{fieldName}"/>
-                      <ui:param name="propertyDiff" value="#{fieldDiff}"/>
-                    </ui:include>
-                  </f:subview>
-                  
-                </nxu:set>
-              </nxu:column>
-            </nxu:dataTable>
+                      </div>
+                    </f:subview>
+                    
+                    <!-- Complex property -->
+                    <f:subview rendered="#{fieldDiff.complexType}">
+                     <ui:include src="/incl/diff/complex_property_diff.xhtml">
+                        <ui:param name="doc" value="#{rightDoc}"/>
+                        <ui:param name="schema" value="#{schemaName}"/>
+                        <ui:param name="field" value="#{fieldName}"/>
+                        <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                      </ui:include>
+                    </f:subview>
+                    
+                    <!-- Simple list property -->
+                    <f:subview rendered="#{fieldDiff.scalarListType}">
+                      <nxu:dataTable
+                        value="#{propertyDiffDisplayHelper.getListItemIndexes(fieldDiff)}" var="listItemIndex">
+                        
+                        <nxu:column>
+                          <ui:include src="/incl/diff/simple_property_diff.xhtml">
+                            <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getListItemValue(rightDoc, schemaName, fieldName, listItemIndex)}"/>
+                            <ui:param name="propertyDiff" value="#{fieldDiff.diffMap[listItemIndex]}"/>
+                          </ui:include>
+                        </nxu:column>
+                        
+                      </nxu:dataTable>
+                    </f:subview>
+                    
+                    <!-- Complex list property -->
+                    <f:subview rendered="#{fieldDiff.complexListType}">
+                      <ui:include src="/incl/diff/complex_list_property_diff.xhtml">
+                        <ui:param name="doc" value="#{rightDoc}"/>
+                        <ui:param name="schema" value="#{schemaName}"/>
+                        <ui:param name="field" value="#{fieldName}"/>
+                        <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                      </ui:include>
+                    </f:subview>
+                    
+                  </nxu:set>
+                </nxu:column>
+              </nxu:dataTable>
+            </div>
           </div>
-        </div>
-        
-      </nxu:set>
-    </ui:repeat>
-  
-    <div>
-      <h:form>
-        <h:commandButton value="#{messages['document.diff.refresh']}"
-          action="#{documentDiffActions.refresh()}"
-          styleClass="button" />
-      </h:form>
-    </div>
+          
+        </nxu:set>
+      </ui:repeat>
+    
+      <div>
+        <h:form>
+          <h:commandButton value="#{messages['document.diff.refresh']}"
+            action="#{documentDiffActions.refresh()}"
+            styleClass="button" />
+        </h:form>
+      </div>    
+    </c:if>
     
   </nxu:set>
   </nxu:set>

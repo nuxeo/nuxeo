@@ -42,6 +42,13 @@ public interface DocumentDiff extends Serializable {
     int getSchemaCount();
 
     /**
+     * Checks if the doc diff is empty.
+     * 
+     * @return true, if is empty
+     */
+    boolean isDocDiffEmpty();
+
+    /**
      * Gets the schema names as a list.
      * 
      * @return the schema names

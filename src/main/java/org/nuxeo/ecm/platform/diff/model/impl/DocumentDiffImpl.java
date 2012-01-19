@@ -56,6 +56,10 @@ public class DocumentDiffImpl implements DocumentDiff {
         return docDiff.size();
     }
 
+    public boolean isDocDiffEmpty() {
+        return getSchemaCount() == 0;
+    }
+
     public List<String> getSchemaNames() {
         return new ArrayList<String>(docDiff.keySet());
     }

@@ -144,6 +144,15 @@ public class DocumentDiffActionsBean implements Serializable {
     }
 
     /**
+     * Checks if document diff is available.
+     * 
+     * @return true, if is document diff available
+     */
+    public boolean isDocumentDiffAvailable() {
+        return leftDoc != null && rightDoc != null;
+    }
+
+    /**
      * Gets the document diff.
      * 
      * @return the document diff between leftDoc and rightDoc if leftDoc and
