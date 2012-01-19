@@ -1,11 +1,11 @@
 <f:subview xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:c="http://java.sun.com/jstl/core"
-     xmlns:ui="http://java.sun.com/jsf/facelets"
-     xmlns:f="http://java.sun.com/jsf/core">
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:insert name="prefooter">
   <c:if test="#{connectUpdateStatusInfo.bannerPath!=null}">
-     <ui:include src="#{connectUpdateStatusInfo.bannerPath}"/>
+    <ui:include src="#{connectUpdateStatusInfo.bannerPath}" />
   </c:if>
 </ui:insert>
 
@@ -69,4 +69,5 @@
 </c:if>
 
 </ui:insert>
+
 </f:subview>
