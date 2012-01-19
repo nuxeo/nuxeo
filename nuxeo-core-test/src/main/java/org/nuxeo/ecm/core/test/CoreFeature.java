@@ -101,6 +101,7 @@ public class CoreFeature extends SimpleFeature {
         if (repository.getGranularity() != Granularity.METHOD) {
             cleanupSession(runner);
         }
+        waitForAsyncCompletion();
         repository.shutdown();
 
         final CoreInstance core = CoreInstance.getInstance();
@@ -126,9 +127,12 @@ public class CoreFeature extends SimpleFeature {
         }
     }
 
+    protected void waitForAsyncCompletion() {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    }
+
     protected void cleanupSession(FeaturesRunner runner) {
-        CoreSession session = runner.getInjector().getInstance(
-                CoreSession.class);
+        CoreSession session  = repository.getSession();
         try {
             // wait for any async thread to finish (e.g. fulltext indexing) as
             // apparently concurrent fulltext indexing of document that has
@@ -136,27 +140,25 @@ public class CoreFeature extends SimpleFeature {
             // been deleted can trigger the core (SessionImpl) to try to
             // re-create the row either in the hierarchy or in the fulltext
             // tables and violate integrity constraints of the database
-            Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+            waitForAsyncCompletion();
             session.removeChildren(new PathRef("/"));
             session.save();
             // wait for async events potentially triggered by the repo clean up
             // it-self before moving on to executing the next test if any
-            Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+            waitForAsyncCompletion();
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
         }
     }
 
     protected void initializeSession(FeaturesRunner runner) {
-        CoreSession session = runner.getInjector().getInstance(
-                CoreSession.class);
-
+        CoreSession session  = repository.getSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {
                 factory.populate(session);
                 session.save();
-                Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+                waitForAsyncCompletion();
             } catch (ClientException e) {
                 log.error(e.toString(), e);
             }
