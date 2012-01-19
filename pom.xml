@@ -47,7 +47,7 @@
     <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-categorization</module>
     <module>nuxeo-platform-user-registration</module>
-    <module>nuxeo-web-embedded</module>
+    <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-opensocial</module>
     <module>nuxeo-user-center</module>
