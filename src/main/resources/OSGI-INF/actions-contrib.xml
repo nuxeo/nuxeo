@@ -40,6 +40,11 @@
       </filter>
     </action>
 
+    <action id="renderTemplate" link="#{templateActions.render}" order="40" label="label.render"
+      icon="/icons/doctemplate.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

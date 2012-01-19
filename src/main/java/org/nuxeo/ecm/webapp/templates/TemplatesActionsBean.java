@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
@@ -32,6 +34,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,6 +48,7 @@ import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -346,4 +350,20 @@ public class TemplatesActionsBean implements Serializable {
     public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
         return Framework.getLocalService(TemplateProcessorService.class).getRegistredTemplateProcessors();
     }
+
+
+    public String render() throws Exception {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        TemplateBasedDocument doc = currentDocument.getAdapter(TemplateBasedDocument.class);
+        if (doc==null) {
+            return null;
+        }
+
+        // XXX handle rendering error
+        Blob rendition = doc.renderWithTemplate();
+        String filename =rendition.getFilename();
+        FacesContext context = FacesContext.getCurrentInstance();
+        return ComponentUtils.download(context, rendition, filename);
+    }
+
 }
