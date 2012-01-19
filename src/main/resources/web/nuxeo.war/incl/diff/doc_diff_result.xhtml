@@ -12,11 +12,11 @@
     .diffHeader.diffTable h2, .diffHeader.diffTable a, .diffHeader.diffTable a:hover {color: #000000;}
     .fieldLabelColumn {width: 20%; font-weight: bold;}
     .fieldDiffColumn {width: 40%; padding: 0.4em 0.3em;}
-    div.textDiff {padding: 0 0.4em; float: left;}
-    div .emptyTextDiff {height: 1.3em; width: 60px;}
-    div.textDiff, div .emptyTextDiff {margin-bottom: 0.1em;}
-    .leftDiff .textDiff, .leftDiff .emptyTextDiff {background-color:#FFDDDD;}
-    .rightDiff .textDiff, .rightDiff .emptyTextDiff {background-color:#DDFFDD;}
+    div.textDiff {float: left;}
+    div .emptyTextDiff {width: 60px;}    
+    div.textDiff, div .emptyTextDiff {margin-bottom: 0.1em; padding: 0 0.4em;}
+    .textDiff.leftDiff, .emptyTextDiff.leftDiff {background-color:#FFDDDD;}
+    .textDiff.rightDiff, .emptyTextDiff.rightDiff {background-color:#DDFFDD;}
     .complexDiffTable th, .complexDiffTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
     .complexDiffTable th {background-color:  #EEEFF0; text-align: center; font-weight: bold;}
     .italic {font-style: italic;}
@@ -89,7 +89,7 @@
                 <nxu:column styleClass="fieldLabelColumn">
                   <h:outputText value="#{messages[fieldName]}"/>
                 </nxu:column>
-                <nxu:column styleClass="fieldDiffColumn leftDiff">
+                <nxu:column styleClass="fieldDiffColumn">
                   <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">
                     
                     <!-- Simple property -->
@@ -97,6 +97,7 @@
                       <ui:include src="/incl/diff/simple_property_diff.xhtml">
                         <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getSimplePropertyValue(leftDoc, schemaName, fieldName)}"/>
                         <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                        <ui:param name="side" value="left" />
                       </ui:include>
                     </f:subview>
                   
@@ -107,6 +108,7 @@
                         <ui:param name="schema" value="#{schemaName}"/>
                         <ui:param name="field" value="#{fieldName}"/>
                         <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                        <ui:param name="side" value="left" />
                       </ui:include>
                     </f:subview>
                     
@@ -119,6 +121,7 @@
                           <ui:include src="/incl/diff/simple_property_diff.xhtml">
                             <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getListItemValue(leftDoc, schemaName, fieldName, listItemIndex)}"/>
                             <ui:param name="propertyDiff" value="#{fieldDiff.diffMap[listItemIndex]}"/>
+                            <ui:param name="side" value="left" />
                           </ui:include>
                         </nxu:column>
                         
@@ -132,12 +135,13 @@
                         <ui:param name="schema" value="#{schemaName}"/>
                         <ui:param name="field" value="#{fieldName}"/>
                         <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                        <ui:param name="side" value="left" />
                       </ui:include>
                     </f:subview>
                       
                   </nxu:set>
                 </nxu:column>
-                <nxu:column styleClass="fieldDiffColumn rightDiff">
+                <nxu:column styleClass="fieldDiffColumn">
                   <nxu:set var="fieldDiff" value="#{schemaDiff.getFieldDiff(fieldName)}">
                     
                     <!-- Simple property -->
@@ -146,6 +150,7 @@
                         <ui:include src="/incl/diff/simple_property_diff.xhtml">
                           <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getSimplePropertyValue(rightDoc, schemaName, fieldName)}"/>
                           <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                          <ui:param name="side" value="right" />
                         </ui:include>
                       </div>
                     </f:subview>
@@ -157,6 +162,7 @@
                         <ui:param name="schema" value="#{schemaName}"/>
                         <ui:param name="field" value="#{fieldName}"/>
                         <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                        <ui:param name="side" value="right" />
                       </ui:include>
                     </f:subview>
                     
@@ -169,6 +175,7 @@
                           <ui:include src="/incl/diff/simple_property_diff.xhtml">
                             <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getListItemValue(rightDoc, schemaName, fieldName, listItemIndex)}"/>
                             <ui:param name="propertyDiff" value="#{fieldDiff.diffMap[listItemIndex]}"/>
+                            <ui:param name="side" value="right" />
                           </ui:include>
                         </nxu:column>
                         
@@ -182,6 +189,7 @@
                         <ui:param name="schema" value="#{schemaName}"/>
                         <ui:param name="field" value="#{fieldName}"/>
                         <ui:param name="propertyDiff" value="#{fieldDiff}"/>
+                        <ui:param name="side" value="right" />
                       </ui:include>
                     </f:subview>
                     

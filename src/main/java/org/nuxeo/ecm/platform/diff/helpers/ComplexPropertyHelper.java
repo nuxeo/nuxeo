@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -150,7 +151,12 @@ public final class ComplexPropertyHelper {
                     fieldName, doc.getTitle()));
         }
 
-        return complexProp.get(complexItemName);
+        Serializable complexItemValue = complexProp.get(complexItemName);
+
+        if (complexItemValue == null) {
+            return StringUtils.EMPTY;
+        }
+        return complexItemValue;
     }
 
     /**
@@ -200,9 +206,9 @@ public final class ComplexPropertyHelper {
         }
 
         if (prop instanceof List<?>) {
-            return ((List<String>) prop).get(itemIndex);
+            return ((List<Serializable>) prop).get(itemIndex);
         } else {
-            return ((String[]) prop)[itemIndex];
+            return ((Serializable[]) prop)[itemIndex];
         }
     }
 
@@ -289,8 +295,12 @@ public final class ComplexPropertyHelper {
                     schemaName, fieldName, itemIndex, doc.getTitle()));
         }
 
-        return ((Map<String, Serializable>) listItem).get(complexItemName);
+        Serializable complexListItemValue = ((Map<String, Serializable>) listItem).get(complexItemName);
 
+        if (complexListItemValue == null) {
+            return StringUtils.EMPTY;
+        }
+        return complexListItemValue;
     }
 
     /**

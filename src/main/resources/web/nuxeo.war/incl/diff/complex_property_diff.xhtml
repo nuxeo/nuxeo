@@ -22,6 +22,7 @@
               <ui:include src="/incl/diff/simple_property_diff.xhtml">
                 <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getComplexItemValue(doc, schema, field, complexItemName)}"/>
                 <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[complexItemName]}"/>
+                <ui:param name="side" value="#{side}" />
               </ui:include>
             </td>
           </ui:repeat>

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.jboss.seam.annotations.Create;
@@ -32,7 +33,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.diff.diff_match_patch;
 import org.nuxeo.ecm.platform.diff.helpers.ComplexPropertyHelper;
-import org.nuxeo.ecm.platform.diff.model.PropertyType;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -90,6 +90,7 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
 
         return ComplexPropertyHelper.getListItemValue(doc, schemaName,
                 fieldName, itemIndex);
+
     }
 
     public List<String> getComplexListItemNames(String schemaName,
@@ -134,27 +135,20 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
 
         String propertyDisplay;
 
-        // TODO: propertyDiff should never be null, see the 'files' schema case.
-        String propertyType;
-        if (propertyDiff == null) {
-            propertyType = PropertyType.STRING;
-        } else {
-            propertyType = propertyDiff.getPropertyType();
-        }
-
         // Boolean
-        if (PropertyType.BOOLEAN.equals(propertyType)) {
+        if (propertyValue instanceof Boolean) {
             propertyDisplay = resourcesAccessor.getMessages().get(
                     "property.boolean." + propertyValue);
         }
         // Date
-        else if (PropertyType.DATE.equals(propertyType)) {
+        else if (propertyValue instanceof Date) {
             DateFormat sdf = new SimpleDateFormat("dd MMMM yyyy - hh:mm");
-            if (propertyValue instanceof Calendar) {
-                propertyDisplay = sdf.format(((Calendar) propertyValue).getTime());
-            } else { // Date
-                propertyDisplay = sdf.format(propertyValue);
-            }
+            propertyDisplay = sdf.format(propertyValue);
+        }
+        // Calendar
+        else if (propertyValue instanceof Calendar) {
+            DateFormat sdf = new SimpleDateFormat("dd MMMM yyyy - hh:mm");
+            propertyDisplay = sdf.format(((Calendar) propertyValue).getTime());
         }
         // Default: we consider property value is a String.
         // Works fine for PropertyType.STRING, PropertyType.INTEGER,

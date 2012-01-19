@@ -24,6 +24,7 @@
                     <ui:include src="/incl/diff/simple_property_diff.xhtml">
                       <ui:param name="propertyValue" value="#{complexItemValue}"/>
                       <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[listItemIndex].diffMap[complexItemName]}"/>
+                      <ui:param name="side" value="#{side}" />
                     </ui:include>
                   </f:subview>
                   <f:subview rendered="#{propertyDiffDisplayHelper.isComplexProperty(complexItemValue)}">
@@ -32,6 +33,7 @@
                       <ui:param name="schema" value="#{schema}"/>
                       <ui:param name="field" value="#{field}"/>
                       <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[listItemIndex].diffMap[complexItemName]}"/>
+                      <ui:param name="side" value="#{side}" />
                     </ui:include>
                   </f:subview>
                   <f:subview rendered="#{propertyDiffDisplayHelper.isListProperty(complexItemValue)}">

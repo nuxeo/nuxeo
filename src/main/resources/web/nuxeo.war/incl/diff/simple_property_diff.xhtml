@@ -1,14 +1,21 @@
 <f:subview xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <f:subview rendered="#{empty propertyValue}">
-    <div class="emptyTextDiff"></div>
-  </f:subview>
-  <f:subview rendered="#{!empty propertyValue}">
-    <div class="textDiff">
-      <h:outputText escape="false"
-        value="#{propertyDiffDisplayHelper.getPropertyDisplay(propertyValue, propertyDiff)}"/>
-    </div>
-  </f:subview>
+  <nxu:set var="textDiffClass" value="#{propertyDiff != null ? nxu:concat(side,'Diff') : ''}">
+    <f:subview rendered="#{empty propertyValue}">
+      <div class="emptyTextDiff #{textDiffClass}">
+        <h:outputText value="N/A" rendered="#{propertyValue == null}" />
+        <h:outputText value="&amp;nbsp;" escape="false" rendered="#{propertyValue != null}" />
+      </div>
+    </f:subview>
+    <f:subview rendered="#{!empty propertyValue}">
+      <div class="textDiff #{textDiffClass}">
+        <h:outputText escape="false"
+          value="#{propertyDiffDisplayHelper.getPropertyDisplay(propertyValue, propertyDiff)}"/>
+      </div>
+    </f:subview>
+  </nxu:set>
 
 </f:subview>
