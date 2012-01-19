@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -84,6 +85,8 @@ public class TemplatesActionsBean implements Serializable {
     protected List<TemplateInput> templateEditableInputs;
 
     protected TemplateInput newInput;
+
+    protected String templateIdToAssociate;
 
     public String createTemplate() throws Exception {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
@@ -364,6 +367,28 @@ public class TemplatesActionsBean implements Serializable {
         String filename =rendition.getFilename();
         FacesContext context = FacesContext.getCurrentInstance();
         return ComponentUtils.download(context, rendition, filename);
+    }
+
+    public String associateDocumentToTemplate() throws ClientException {
+        if (templateIdToAssociate==null) {
+            return null;
+        }
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(templateIdToAssociate));
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        currentDocument = tps.makeTemplateBasedDocument(currentDocument, sourceTemplate, true);
+        navigationContext.invalidateCurrentDocument();
+        EventManager.raiseEventsOnDocumentChange(currentDocument);
+        templateIdToAssociate = null;
+        return navigationContext.navigateToDocument(currentDocument, "after-edit");
+    }
+
+    public String getTemplateIdToAssociate() {
+        return templateIdToAssociate;
+    }
+
+    public void setTemplateIdToAssociate(String templateIdToAssociate) {
+        this.templateIdToAssociate = templateIdToAssociate;
     }
 
 }

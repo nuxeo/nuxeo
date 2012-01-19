@@ -43,6 +43,22 @@
     <action id="renderTemplate" link="#{templateActions.render}" order="40" label="label.render"
       icon="/icons/doctemplate.png">
       <category>DOCUMENT_UPPER_ACTION</category>
+      <filter id="canRenderTemplate">
+        <rule grant="true">
+          <facet>TemplateBased</facet>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="associateTemplate" link="associateTemplate" order="40" label="label.template.associate"
+      icon="/icons/doctemplate.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter id="canAssociateTemplate">
+        <rule grant="false">
+          <facet>TemplateBased</facet>
+          <facet>Folderish</facet>
+        </rule>
+      </filter>
     </action>
 
   </extension>

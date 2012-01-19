@@ -33,4 +33,6 @@ public interface TemplateProcessorService {
     Map<String, String> getTypeMapping();
 
     void registerTypeMapping(DocumentModel doc) throws ClientException;
+
+    DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc, boolean save) throws ClientException;
 }

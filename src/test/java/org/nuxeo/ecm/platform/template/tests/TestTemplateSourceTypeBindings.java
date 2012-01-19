@@ -144,6 +144,29 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
     }
 
 
+    public void testManualTemplateBinding() throws Exception {
+
+        // create a template and no mapping
+        TemplateSourceDocument t1 = createTemplateDoc("t1");
+        session.save();
+
+        // now create a simple Note
+        DocumentModel root = session.getRootDocument();
+        DocumentModel simpleNote = session.createDocumentModel(
+                root.getPathAsString(), "myTestFile", "Note");
+        simpleNote = session.createDocument(simpleNote);
+
+        // verify that not template is associated
+        assertNull(simpleNote.getAdapter(TemplateBasedDocument.class));
+
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        simpleNote = tps.makeTemplateBasedDocument(simpleNote, t1.getAdaptedDoc(), true);
+
+        // verify that template has been associated
+        assertNotNull(simpleNote.getAdapter(TemplateBasedDocument.class));
+
+    }
+
     @Override
     public void tearDown() {
         closeSession();

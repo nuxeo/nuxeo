@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.runtime.api.Framework;
@@ -92,11 +91,7 @@ public class TemplateInitListener implements EventListener {
                             // check if source template is visible
                             if (docCtx.getCoreSession().exists(templateRef)) {
                                 DocumentModel sourceTemplateDoc =docCtx.getCoreSession().getDocument(templateRef);
-                                // add the facet
-                                targetDoc.addFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
-                                tmplBased = targetDoc.getAdapter(TemplateBasedDocument.class);
-                                // bind the template
-                                tmplBased.setTemplate(sourceTemplateDoc, false);
+                                tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
                             }
                         }
                     }

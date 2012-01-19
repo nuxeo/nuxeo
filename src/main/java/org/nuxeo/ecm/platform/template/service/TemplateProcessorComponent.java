@@ -259,4 +259,12 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             }
         }
     }
+
+
+    public DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc, boolean save) throws ClientException {
+        targetDoc.addFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
+        TemplateBasedDocument tmplBased = targetDoc.getAdapter(TemplateBasedDocument.class);
+        // bind the template
+        return tmplBased.setTemplate(sourceTemplateDoc, save);
+    }
 }
