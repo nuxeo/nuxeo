@@ -11,7 +11,9 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
   <facet name="Template" />
-  <facet name="TemplateBased" schema="templatesupport"/>
+  <facet name="TemplateBased">
+    <schema name="templatesupport"/>
+  </facet>
 
   <doctype name="TemplateSource" extends="File">
     <schema name="documenttemplate"/>
@@ -19,13 +21,6 @@
   </doctype>
 
   <doctype name="TemplateBasedFile" extends="File">
-    <schema name="templatesupport"/>
-    <facet name="TemplateBased" />
-  </doctype>
-
-  <doctype name="TemplateBasedNote" extends="Note">
-    <schema name="file"/>
-    <schema name="templatesupport"/>
     <facet name="TemplateBased" />
   </doctype>
 

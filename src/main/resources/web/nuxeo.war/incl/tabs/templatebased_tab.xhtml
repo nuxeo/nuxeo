@@ -7,7 +7,21 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:nxl="http://nuxeo.org/nxforms/layout"
     xmlns:nxu="http://nuxeo.org/nxweb/util"
-    xmlns:c="http://java.sun.com/jstl/core">
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+    <h3>
+       <h:outputText value="Associated Template" />
+    </h3>
+   <c:set var="templateDoc" value="#{templateActions.resolveTemplateById(currentDocument.templatesupport.templateId)}" />
+    <c:if test="#{templateDoc!=null}">
+      <nxd:restDocumentLink document="#{templateDoc}">
+        #{nxd:titleOrId(templateDoc)}
+      </nxd:restDocumentLink>
+    </c:if>
+    <c:if test="#{templateDoc==null}">
+    Broken Template : <h:outputText value="#{currentDocument.templatesupport.templateId}"/>
+    </c:if>
 
     <h3>
        <h:outputText value="Template parameters" />

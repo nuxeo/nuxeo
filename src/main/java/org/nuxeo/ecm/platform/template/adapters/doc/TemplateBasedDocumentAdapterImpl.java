@@ -62,15 +62,19 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
     }
 
     public DocumentModel setTemplate(DocumentModel template, boolean save)
-            throws PropertyException, ClientException {
-
+            throws ClientException {
         String tid = template.getId();
-        adaptedDoc.setPropertyValue(TEMPLATE_ID_PROP, tid);
-
-        if (save) {
-            adaptedDoc = getSession().saveDocument(adaptedDoc);
+        if (!tid.equals((String)adaptedDoc.getPropertyValue(TEMPLATE_ID_PROP))) {
+            adaptedDoc.setPropertyValue(TEMPLATE_ID_PROP, tid);
+            try {
+                initializeFromTemplate(false);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+            if (save) {
+                adaptedDoc = getSession().saveDocument(adaptedDoc);
+            }
         }
-
         return adaptedDoc;
     }
 
