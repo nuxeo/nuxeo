@@ -64,7 +64,6 @@ import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
-import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -77,6 +76,7 @@ import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 
 /**
  * Actions for current document route
@@ -212,6 +212,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         route.cancel(documentManager);
         // force computing of tabs
         webActions.resetTabList();
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_CANCELED);
         Contexts.removeFromAllContexts("relatedRoutes");
         documentManager.save();
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());

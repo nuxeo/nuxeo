@@ -13,5 +13,4 @@
       <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-  
 </xs:schema>

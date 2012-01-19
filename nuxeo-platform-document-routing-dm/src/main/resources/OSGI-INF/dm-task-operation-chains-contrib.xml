@@ -19,6 +19,11 @@
     <chain id="setTaskDone">
       <operation id="Document.Routing.Task.Done" />
     </chain>
+  
+   <chain id="undoRunningTask">
+     <operation id="Workflow.RemoveRoutingTask" />
+     <operation id="Document.Routing.BackToReady" />
+   </chain>
+  
   </extension>
-
 </component>

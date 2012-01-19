@@ -33,11 +33,14 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
+import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.dm.adapter.TaskStep;
@@ -55,7 +58,8 @@ import org.nuxeo.ecm.platform.task.TaskEventNames;
         + "In <b>accept operation chain</b> and <b>reject operation chain</b> fields, "
         + "you can put the operation chain ID of your choice among the one you contributed. "
         + "Those operations will be executed when the user validates the task, "
-        + "depending on  whether he accepts or rejects the task. ")
+        + "depending on  whether he accepts or rejects the task. "
+        + "Extra (String) properties can be set on the taskVariables from the input document or from the step.")
 public class CreateRoutingTask {
 
     public static final String ID = "Workflow.CreateRoutingTask";
@@ -65,6 +69,10 @@ public class CreateRoutingTask {
     public enum OperationTaskVariableName {
         acceptOperationChain, rejectOperationChain, createdFromCreateTaskOperation, taskDocuments
     }
+
+    public static final String STEP_PREFIX = "StepTask:";
+
+    public static final String DOCUMENT_PREFIX = "Document:";
 
     @Context
     protected OperationContext ctx;
@@ -80,6 +88,9 @@ public class CreateRoutingTask {
 
     @Param(name = "reject operation chain", required = false, order = 5)
     protected String rejectOperationChain;
+
+    @Param(name = "mappingProperties", required = false)
+    protected Properties mappingProperties;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel createTask(DocumentModel document) throws Exception {
@@ -124,6 +135,10 @@ public class CreateRoutingTask {
         if (routingTaskService == null) {
             throw new OperationException("Service routingTaskService not found");
         }
+        if (mappingProperties != null) {
+            mapProperties(coreSession, taskVariables, stepDocument, document,
+                    mappingProperties);
+        }
         List<Task> tasks = routingTaskService.createRoutingTask(coreSession,
                 (NuxeoPrincipal) pal, document, taskStep.getName(), actors,
                 false, taskStep.getDirective(), taskStep.getComment(),
@@ -132,8 +147,34 @@ public class CreateRoutingTask {
         for (Task task : tasks) {
             docList.add(task.getDocument());
         }
+
         ctx.put(OperationTaskVariableName.taskDocuments.name(), docList);
         return document;
     }
 
+    protected void mapProperties(CoreSession session,
+            Map<String, String> taskVariables, DocumentModel stepDoc,
+            DocumentModel inputDoc, Properties mappingProperties)
+            throws ClientException {
+        for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
+            String getter = prop.getKey();
+            String setter = prop.getValue();
+            DocumentModel setterDoc = null;
+            if (setter.startsWith(DOCUMENT_PREFIX)) {
+                setterDoc = inputDoc;
+                setter = setter.substring(DOCUMENT_PREFIX.length());
+            } else if (setter.startsWith(STEP_PREFIX)) {
+                setterDoc = stepDoc;
+                setter = setter.substring(STEP_PREFIX.length());
+            }
+            try {
+                taskVariables.put(getter,
+                        (String) setterDoc.getPropertyValue(setter));
+            } catch (PropertyException e) {
+                log.error(
+                        "Could not map property on the task document in the taskVariables ",
+                        e);
+            }
+        }
+    }
 }
