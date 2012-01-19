@@ -14,7 +14,7 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.webapp.diff;
+package org.nuxeo.ecm.webapp.diff.helpers;
 
 import static org.jboss.seam.ScopeType.APPLICATION;
 
