@@ -1,0 +1,14 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  @#{propertyDiff.propertyType}@
+  <f:subview rendered="#{empty propertyValue}">
+    <span class="emptyTextDiff"></span>
+  </f:subview>
+  <f:subview rendered="#{!empty propertyValue}">
+    <span class="textDiff">
+      <h:outputText value="#{propertyValue}"/>
+    </span>
+  </f:subview>
+
+</f:subview>

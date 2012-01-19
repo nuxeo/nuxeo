@@ -1,19 +1,14 @@
 <f:subview xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
-  
-  <!-- If want to not display the table in case of an empty diff on the 'side' side -->
-  <ui:remove>
-  <f:subview rendered="#{complexPropertyDiff.isEmpty(side == 'left')}">
-    <span class="emptyTextDiff leftDiff"></span>
-  </f:subview>
-  </ui:remove>
-  <f:subview rendered="#{true}">
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <nxu:set var="complexItemNames" value="#{documentDiffActions.getComplexItemNames(schema, field)}">
     <table class="complexDiffTable">
       <thead>
         <tr>
-          <ui:repeat value="#{complexPropertyDiff.complexItemNames}" var="complexItemName">
+          <ui:repeat value="#{complexItemNames}" var="complexItemName">
             <th>
               <h:outputText value="#{complexItemName}"/>
             </th>
@@ -22,24 +17,16 @@
       </thead>
       <tboby>
         <tr>
-          <ui:repeat value="#{complexPropertyDiff.complexItemValues}" var="complexItemValue">
+          <ui:repeat value="#{complexItemNames}" var="complexItemName">
             <td>
-              <f:subview rendered="#{complexItemValue.propertyType.name() == 'simple'}">
-                <ui:include src="/incl/diff/simple_property_diff_#{side}_value.xhtml">
-                  <ui:param name="simplePropertyDiff" value="#{complexItemValue}"/>
-                </ui:include>
-              </f:subview>
-              <f:subview rendered="#{complexItemValue.propertyType.name() == 'complex'}">
-                /!\ A complex type nested in a complex type is not taken into account yet.
-              </f:subview>
-              <f:subview rendered="#{complexItemValue.propertyType.name() == 'list'}">
-                /!\ A list type nested in a complex type is not taken into account yet.
-              </f:subview>
+              <ui:include src="/incl/diff/simple_property_diff.xhtml">
+                <ui:param name="propertyValue" value="#{documentDiffActions.getComplexItemValue(doc, schema, field, complexItemName)}"/>
+                <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[complexItemName]}"/>
+              </ui:include>
             </td>
           </ui:repeat>
         </tr>
       </tboby>
     </table>
-  </f:subview>
-  
+  </nxu:set>
 </f:subview>

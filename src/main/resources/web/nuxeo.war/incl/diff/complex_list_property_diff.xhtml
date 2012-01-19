@@ -1,41 +1,49 @@
 <f:subview xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
   
-  <table class="complexDiffTable">
-    <thead>
-      <tr>
-        <ui:repeat value="#{complexListPropertyDiff.getDiff(0).complexItemNames}" var="complexItemName">
-          <th>
-            <h:outputText value="#{complexItemName}"/>
-          </th>
-        </ui:repeat>
-      </tr>
-    </thead>
-    <tbody>
-      <ui:repeat value="#{complexListPropertyDiff.diffList}" var="listItem">
+  <nxu:set var="complexItemNames" value="#{documentDiffActions.getComplexListItemNames(schema, field)}">
+    <table class="complexDiffTable">
+      <thead>
         <tr>
-          <ui:repeat value="#{listItem.complexItemValues}" var="complexItemValue">
-            <td>
-              <f:subview rendered="#{complexItemValue.propertyType.name() == 'simple'}">
-                <ui:include src="/incl/diff/simple_property_diff_#{side}_value.xhtml">
-                  <ui:param name="simplePropertyDiff" value="#{complexItemValue}"/>
-                </ui:include>
-              </f:subview>
-              <f:subview rendered="#{complexItemValue.propertyType.name() == 'complex'}">
-                <ui:include src="/incl/diff/complex_property_diff.xhtml">
-                  <ui:param name="complexPropertyDiff" value="#{complexItemValue}"/>
-                  <ui:param name="side" value="#{side}"/>
-                </ui:include>
-              </f:subview>
-              <f:subview rendered="#{complexItemValue.propertyType.name() == 'list'}">
-                /!\ A list type nested in a complex list type is not taken into account yet.
-              </f:subview>
-            </td>
+          <ui:repeat value="#{complexItemNames}" var="complexItemName">
+            <th>
+              <h:outputText value="#{complexItemName}"/>
+            </th>
           </ui:repeat>
         </tr>
-      </ui:repeat>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <ui:repeat value="#{documentDiffActions.getListItemIndexes(propertyDiff)}" var="listItemIndex">
+          <tr>
+            <ui:repeat value="#{complexItemNames}" var="complexItemName">
+              <nxu:set var="complexItemValue" value="#{documentDiffActions.getComplexListItemValue(doc, schema, field, listItemIndex, complexItemName)}">
+                <td>
+                  <f:subview rendered="#{documentDiffActions.isSimpleProperty(complexItemValue)}">
+                    <ui:include src="/incl/diff/simple_property_diff.xhtml">
+                      <ui:param name="propertyValue" value="#{complexItemValue}"/>
+                      <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[listItemIndex].diffMap[complexItemName]}"/>
+                    </ui:include>
+                  </f:subview>
+                  <f:subview rendered="#{documentDiffActions.isComplexProperty(complexItemValue)}">
+                    <ui:include src="/incl/diff/complex_property_diff.xhtml">
+                      <ui:param name="doc" value="#{doc}"/>
+                      <ui:param name="schema" value="#{schema}"/>
+                      <ui:param name="field" value="#{field}"/>
+                      <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[listItemIndex].diffMap[complexItemName]}"/>
+                    </ui:include>
+                  </f:subview>
+                  <f:subview rendered="#{documentDiffActions.isListProperty(complexItemValue)}">
+                    /!\ A list type nested in a complex list type is not taken into account yet.
+                  </f:subview>
+                </td>
+              </nxu:set>
+            </ui:repeat>
+          </tr>
+        </ui:repeat>
+      </tbody>
+    </table>
+  </nxu:set>
 
 </f:subview>
