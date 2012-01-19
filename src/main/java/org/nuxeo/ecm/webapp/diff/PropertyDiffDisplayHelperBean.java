@@ -125,7 +125,13 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
 
         String propertyDisplay;
 
-        String propertyType = propertyDiff.getPropertyType();
+        // TODO: propertyDiff should never be null, see the 'files' schema case.
+        String propertyType;
+        if (propertyDiff == null) {
+            propertyType = PropertyType.STRING;
+        } else {
+            propertyType = propertyDiff.getPropertyType();
+        }
 
         // Boolean
         if (PropertyType.BOOLEAN.equals(propertyType)) {
