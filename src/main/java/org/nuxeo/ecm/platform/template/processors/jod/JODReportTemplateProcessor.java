@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.fm.FMContextBuilder;
 import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.ecm.platform.template.odt.OOoArchiveModifier;
 import org.nuxeo.ecm.platform.template.processors.AbstractTemplateProcessor;
@@ -63,8 +64,6 @@ import org.nuxeo.ecm.platform.template.processors.fm.IncludeManager;
 public class JODReportTemplateProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
 
     public static final String TEMPLATE_TYPE = "JODTemplate";
-
-    public static final String[] RESERVED_VAR_NAMES = {"doc", "document", "auditEntries", "user"};
 
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob)
@@ -171,9 +170,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
 
         // add default context vars
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        context.put("doc", nuxeoWrapper.wrap(doc));
-        context.put("document", nuxeoWrapper.wrap(doc));
-        //context.put("auditEntries", XXX );
+        context.putAll(FMContextBuilder.build(doc));
 
         File workingDir = getWorkingDir();
         File generated = new File(workingDir, "JODReportresult");

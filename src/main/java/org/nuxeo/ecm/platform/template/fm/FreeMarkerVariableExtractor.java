@@ -24,7 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.platform.template.TemplateInput;
-import org.nuxeo.ecm.platform.template.processors.jod.JODReportTemplateProcessor;
 
 /**
  * Helper class used to extract variable names from a FreeMarker template. This
@@ -124,7 +123,7 @@ public class FreeMarkerVariableExtractor {
         }
 
         // remove reserved variables that don't need specific bindings
-        for (String bVar : JODReportTemplateProcessor.RESERVED_VAR_NAMES) {
+        for (String bVar : FMContextBuilder.RESERVED_VAR_NAMES) {
             variables.remove(bVar);
         }
 

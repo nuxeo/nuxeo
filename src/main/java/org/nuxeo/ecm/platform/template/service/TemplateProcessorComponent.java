@@ -196,7 +196,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(
             DocumentModel source) throws ClientException {
 
-        StringBuffer sb = new StringBuffer("select * from Document where ");
+        StringBuffer sb = new StringBuffer("select * from Document where ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND ");
         sb.append(TemplateBasedDocumentAdapterImpl.TEMPLATE_ID_PROP);
         sb.append(" = '");
         sb.append(source.getId());

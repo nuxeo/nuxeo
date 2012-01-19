@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +24,7 @@ import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.fm.FMContextBuilder;
 import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.ecm.platform.template.processors.AbstractTemplateProcessor;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
@@ -194,9 +196,10 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
         // add default context vars
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        context.put("doc", nuxeoWrapper.wrap(doc));
-        context.put("document", nuxeoWrapper.wrap(doc));
-        // context.put("auditEntries", XXX );
+        Map<String, Object> ctx = FMContextBuilder.build(doc);
+        for (String key : ctx.keySet()) {
+            context.put(key, ctx.get(key));
+        }
 
         File workingDir = getWorkingDir();
         File generated = new File(workingDir, "XDOCReportresult-"
