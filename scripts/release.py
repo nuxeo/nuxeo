@@ -503,7 +503,7 @@ mode.""")
         elif command == "prepare":
             release.prepare()
         elif command == "perform":
-            print release.perform()
+            release.perform()
         elif command == "package":
             repo.clone()
             repo.mvn("clean package", skip_tests=True, profiles="qa")
