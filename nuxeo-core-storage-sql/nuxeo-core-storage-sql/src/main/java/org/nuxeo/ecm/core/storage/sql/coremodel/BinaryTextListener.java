@@ -143,7 +143,7 @@ public class BinaryTextListener implements PostCommitEventListener {
                         fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
                         fulltextInfo.indexesAllBinary.contains(indexName));
                 List<Blob> blobs = extractor.getBlobs(indexedDoc);
-                String text = blobsToText(blobs);
+                String text = blobsToText(blobs, (String) id);
                 String impactedQuery =
                     String.format("SELECT * from Document where ecm:fulltextJobId = '%s'",
                             indexedDoc.getId());
@@ -181,7 +181,7 @@ public class BinaryTextListener implements PostCommitEventListener {
         return (ModelFulltext) eventContext.getArguments()[1];
     }
 
-    protected String blobsToText(List<Blob> blobs) {
+    protected String blobsToText(List<Blob> blobs, String docId) {
         List<String> strings = new LinkedList<String>();
         for (Blob blob : blobs) {
             try {
@@ -202,7 +202,10 @@ public class BinaryTextListener implements PostCommitEventListener {
                 }
                 strings.add(string);
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
+                String msg = "Could not extract fulltext of file '"
+                        + blob.getFilename() + "' for document: " + docId;
+                log.warn(msg);
+                log.debug(msg, e);
                 continue;
             }
         }
