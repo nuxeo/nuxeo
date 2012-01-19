@@ -22,12 +22,14 @@ import org.custommonkey.xmlunit.AbstractNodeTester;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.ElementNameAndTextQualifier;
 import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.NodeTest;
 import org.custommonkey.xmlunit.NodeTestException;
 import org.custommonkey.xmlunit.XMLTestCase;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.examples.CountingNodeTester;
 import org.dom4j.Node;
 import org.w3c.dom.Element;
@@ -143,6 +145,7 @@ public class TestXMLUnit extends XMLTestCase {
                 "//planet[@supportsLife='yes']", mySolarSystemXML);
     }
 
+    // we
     /**
      * Test x path values.
      * 
@@ -215,6 +218,59 @@ public class TestXMLUnit extends XMLTestCase {
 
         public void noMoreNodes(NodeTest nodeTest) throws NodeTestException {
         }
+
+    }
+
+    /**
+     * Test unmatched nodes comparison.
+     * 
+     * @throws Exception the exception
+     */
+    @SuppressWarnings("unchecked")
+    public void testCompareUnmatchedNodes() throws Exception {
+        String myControlXML = "<document><item>First item</item>"
+                + "<item>Second item</item></document>";
+        String myTestXML = "<document><item>First item</item></document>";
+        assertXMLNotEqual("Test XML has a missing child node", myControlXML,
+                myTestXML);
+
+        // ---------------------------
+        // Compare unmatched nodes
+        // ---------------------------
+        DetailedDiff myDiff = new DetailedDiff(
+                new Diff(myControlXML, myTestXML));
+        List<Difference> allDifferences = myDiff.getAllDifferences();
+        assertEquals("Wrong number of differences", 3, allDifferences.size());
+
+        Difference diff1 = allDifferences.get(0);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.CHILD_NODELIST_LENGTH_ID, diff1.getId());
+
+        // "CHILD_NODE_NOT_FOUND on the test side" strange behavior
+        // => considered as a TEXT_VALUE difference
+        Difference diff2 = allDifferences.get(1);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.TEXT_VALUE_ID, diff2.getId());
+
+        Difference diff3 = allDifferences.get(2);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.CHILD_NODELIST_SEQUENCE_ID, diff3.getId());
+
+        // ---------------------------
+        // Don't compare unmatched nodes
+        // ---------------------------
+        XMLUnit.setCompareUnmatched(false);
+        myDiff = new DetailedDiff(new Diff(myControlXML, myTestXML));
+        allDifferences = myDiff.getAllDifferences();
+        assertEquals("Wrong number of differences", 2, allDifferences.size());
+
+        diff1 = allDifferences.get(0);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.CHILD_NODELIST_LENGTH_ID, diff1.getId());
+
+        diff2 = allDifferences.get(1);
+        assertEquals("Wrong difference type",
+                DifferenceConstants.CHILD_NODE_NOT_FOUND_ID, diff2.getId());
 
     }
 

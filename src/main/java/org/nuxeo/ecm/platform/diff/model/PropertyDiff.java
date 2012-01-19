@@ -24,39 +24,76 @@ import java.io.Serializable;
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public abstract class PropertyDiff implements Serializable {
+public class PropertyDiff implements Serializable {
 
     private static final long serialVersionUID = -8458912212588012911L;
 
-    /**
-     * Gets the property type.
-     * 
-     * @return the property type
-     */
-    public abstract PropertyType getPropertyType();
+    protected String propertyType;
 
     /**
-     * Checks if is left side empty.
+     * Checks if is simple type.
      * 
-     * @return true, if is left side empty
+     * @return true, if is simple type
      */
-    public abstract boolean isLeftSideEmpty();
-
-    /**
-     * Checks if is right side empty.
-     * 
-     * @return true, if is right side empty
-     */
-    public abstract boolean isRightSideEmpty();
-
-    /**
-     * Checks if is empty.
-     * 
-     * @param leftSide the left side
-     * @return true, if is empty
-     */
-    public boolean isEmpty(boolean leftSide) {
-        return leftSide ? isLeftSideEmpty() : isRightSideEmpty();
+    public boolean isSimpleType() {
+        return PropertyType.isSimpleType(propertyType);
     }
 
+    /**
+     * Checks if is list type.
+     * 
+     * @return true, if is list type
+     */
+    public boolean isListType() {
+        return PropertyType.isListType(propertyType);
+    }
+
+    /**
+     * Checks if is scalar list type.
+     * 
+     * @return true, if is scalar list type
+     */
+    public boolean isScalarListType() {
+        return PropertyType.isScalarListType(propertyType);
+    }
+
+    /**
+     * Checks if is complex list type.
+     * 
+     * @return true, if is complex list type
+     */
+    public boolean isComplexListType() {
+        return PropertyType.isComplexListType(propertyType);
+    }
+
+    /**
+     * Checks if is complex type.
+     * 
+     * @return true, if is complex type
+     */
+    public boolean isComplexType() {
+        return PropertyType.isComplexType(propertyType);
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+
+        if (this == other) {
+            return true;
+        }
+        if (other == null || !(other instanceof PropertyDiff)) {
+            return false;
+        }
+        String otherPropertyType = ((PropertyDiff) other).getPropertyType();
+        return (propertyType == null && otherPropertyType == null)
+                || (propertyType != null && otherPropertyType != null && propertyType.equals(otherPropertyType));
+    }
 }

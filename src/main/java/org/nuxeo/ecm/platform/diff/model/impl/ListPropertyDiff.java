@@ -16,11 +16,10 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
-import org.nuxeo.ecm.platform.diff.model.PropertyType;
 
 /**
  * Implementation of PropertyDiff for a list property.
@@ -31,55 +30,15 @@ public class ListPropertyDiff extends PropertyDiff {
 
     private static final long serialVersionUID = -1100714461537900354L;
 
-    private List<PropertyDiff> diffList;
+    private Map<Integer, PropertyDiff> diffMap;
 
     /**
      * Instantiates a new list property diff.
      */
-    public ListPropertyDiff() {
-        diffList = new ArrayList<PropertyDiff>();
-    }
+    public ListPropertyDiff(String propertyType) {
 
-    public PropertyType getPropertyType() {
-        return PropertyType.list;
-    }
-
-    /**
-     * Checks if is a simple list property.
-     * 
-     * @return true, if is simple list property
-     */
-    public boolean isSimpleListProperty() {
-        return !diffList.isEmpty()
-                && PropertyType.simple.equals(diffList.get(0).getPropertyType());
-    }
-
-    /**
-     * Checks if is a complex list property.
-     * 
-     * @return true, if is complex list property
-     */
-    public boolean isComplexListProperty() {
-        return !diffList.isEmpty()
-                && PropertyType.complex.equals(diffList.get(0).getPropertyType());
-    }
-
-    public boolean isLeftSideEmpty() {
-        for (PropertyDiff listItemDiff : diffList) {
-            if (!listItemDiff.isLeftSideEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean isRightSideEmpty() {
-        for (PropertyDiff listItemDiff : diffList) {
-            if (!listItemDiff.isRightSideEmpty()) {
-                return false;
-            }
-        }
-        return true;
+        this.propertyType = propertyType;
+        this.diffMap = new HashMap<Integer, PropertyDiff>();
     }
 
     /**
@@ -89,26 +48,27 @@ public class ListPropertyDiff extends PropertyDiff {
      * @return the diff
      */
     public PropertyDiff getDiff(int index) {
-        return diffList.get(index);
+        return diffMap.get(index);
     }
 
     /**
-     * Adds the diff.
-     * 
-     * @param diff the diff
-     */
-    public void addDiff(PropertyDiff diff) {
-        diffList.add(diff);
-    }
-
-    /**
-     * Adds the diff.
+     * Puts the diff.
      * 
      * @param index the index
      * @param diff the diff
+     * @return the property diff
      */
-    public void addDiff(int index, PropertyDiff diff) {
-        diffList.add(index, diff);
+    public PropertyDiff putDiff(int index, PropertyDiff diff) {
+        return diffMap.put(index, diff);
+    }
+
+    /**
+     * Put all diff.
+     * 
+     * @param otherDiff the other diff
+     */
+    public void putAllDiff(ListPropertyDiff otherDiff) {
+        diffMap.putAll(otherDiff.getDiffMap());
     }
 
     /**
@@ -117,35 +77,34 @@ public class ListPropertyDiff extends PropertyDiff {
      * @return the int
      */
     public int size() {
-        return diffList.size();
+        return diffMap.size();
     }
 
-    public List<PropertyDiff> getDiffList() {
-        return diffList;
-    }
-
-    public void setDiffList(List<PropertyDiff> diffList) {
-        this.diffList = diffList;
+    public Map<Integer, PropertyDiff> getDiffMap() {
+        return diffMap;
     }
 
     @Override
     public boolean equals(Object other) {
 
+        if (!super.equals(other)) {
+            return false;
+        }
         if (this == other) {
             return true;
         }
         if (other == null || !(other instanceof ListPropertyDiff)) {
             return false;
         }
-        List<PropertyDiff> otherDiffList = ((ListPropertyDiff) other).getDiffList();
-        return (diffList == null && otherDiffList == null)
-                || (diffList != null && otherDiffList != null && diffList.equals(otherDiffList));
+        Map<Integer, PropertyDiff> otherDiffMap = ((ListPropertyDiff) other).getDiffMap();
+        return (diffMap == null && otherDiffMap == null)
+                || (diffMap != null && otherDiffMap != null && diffMap.equals(otherDiffMap));
 
     }
 
     @Override
     public String toString() {
 
-        return diffList.toString();
+        return diffMap.toString();
     }
 }

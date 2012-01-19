@@ -22,7 +22,6 @@ import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.NodeDetail;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -33,6 +32,7 @@ import org.w3c.dom.Node;
  * <li>DOCTYPE related</li>
  * <li>Namespace URI</li>
  * <li>Attribute value</li>
+ * <li>Attribute name not found</li>
  * <li>Element tag name</li>
  * <li>Child node list sequence</li>
  * <li>Child node list length</li>
@@ -44,8 +44,11 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
 
     private static final String SCHEMA_ELEMENT = "schema";
 
-    private static final String NAME_ATTRIBUTE = "name";
-
+    // TODO: Be able to contribute this configuration to the
+    // DocumentDiffService.
+    /**
+     * Difference types to be ignored.
+     */
     private static final int[] IGNORE = new int[] {
             DifferenceConstants.HAS_DOCTYPE_DECLARATION_ID,
             DifferenceConstants.DOCTYPE_NAME_ID,
@@ -62,49 +65,40 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
         Arrays.sort(IGNORE);
     }
 
+    /**
+     * Here want to:
+     * <ul>
+     * <li>Take into account all difference types to be ignored.</li>
+     * <li>Not consider an unbalanced schema, ie. a schema that exists for a
+     * document but not for the other one, as a difference.</li>
+     * </ul>
+     */
     public int differenceFound(Difference difference) {
 
-        // Check if the difference concerns the same schemas by going up to the
-        // schema node.
-        boolean sameSchemas = true;
+        boolean unBalancedSchema = false;
 
         NodeDetail controlNodeDetail = difference.getControlNodeDetail();
         NodeDetail testNodeDetail = difference.getTestNodeDetail();
 
-        Node controlNode = controlNodeDetail.getNode();
-        Node testNode = testNodeDetail.getNode();
+        if (controlNodeDetail != null && testNodeDetail != null) {
 
-        while (controlNode != null
-                && !SCHEMA_ELEMENT.equals(controlNode.getNodeName())) {
-            controlNode = controlNode.getParentNode();
-        }
-        while (testNode != null
-                && !SCHEMA_ELEMENT.equals(testNode.getNodeName())) {
-            testNode = testNode.getParentNode();
-        }
-        if (controlNode != null && testNode != null) {
-            sameSchemas = false;
-            String controlNodeSchema = null;
-            String testNodeSchema = null;
-            NamedNodeMap controlNodeAttr = controlNode.getAttributes();
-            NamedNodeMap testNodeAttr = testNode.getAttributes();
-            if (controlNodeAttr != null) {
-                Node controlNodeNameAttr = controlNodeAttr.getNamedItem(NAME_ATTRIBUTE);
-                if (controlNodeNameAttr != null) {
-                    controlNodeSchema = controlNodeNameAttr.getNodeValue();
-                }
+            Node controlNode = controlNodeDetail.getNode();
+            Node testNode = testNodeDetail.getNode();
+
+            if (controlNode != null
+                    && SCHEMA_ELEMENT.equals(controlNode.getNodeName())
+                    && testNode == null) {
+                unBalancedSchema = true;
             }
-            if (testNodeAttr != null) {
-                Node testNodeNameAttr = testNodeAttr.getNamedItem(NAME_ATTRIBUTE);
-                if (testNodeNameAttr != null) {
-                    testNodeSchema = testNodeNameAttr.getNodeValue();
-                }
+
+            if (!unBalancedSchema && testNode != null
+                    && SCHEMA_ELEMENT.equals(testNode.getNodeName())
+                    && controlNode == null) {
+                unBalancedSchema = true;
             }
-            sameSchemas = (controlNodeSchema == null && testNodeSchema == null)
-                    || (controlNodeSchema != null && testNodeSchema != null && testNodeSchema.equals(controlNodeSchema));
         }
 
-        return (Arrays.binarySearch(IGNORE, difference.getId()) >= 0 || !sameSchemas) ? RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL
+        return (Arrays.binarySearch(IGNORE, difference.getId()) >= 0 || unBalancedSchema) ? RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL
                 : RETURN_ACCEPT_DIFFERENCE;
     }
 

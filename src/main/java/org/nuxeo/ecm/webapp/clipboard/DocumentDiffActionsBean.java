@@ -93,7 +93,7 @@ public class DocumentDiffActionsBean implements Serializable {
 
         leftDoc = currentSelectionWorkingList.get(0);
         rightDoc = currentSelectionWorkingList.get(1);
-        
+
         refresh();
 
         return DOC_DIFF_VIEW;
@@ -217,4 +217,5 @@ public class DocumentDiffActionsBean implements Serializable {
     public void setRightDoc(DocumentModel rightDoc) {
         this.rightDoc = rightDoc;
     }
+
 }

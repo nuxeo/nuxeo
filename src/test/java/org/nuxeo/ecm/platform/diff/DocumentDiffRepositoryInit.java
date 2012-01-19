@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,7 @@
  * Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.ecm.platform.diff.helpers;
+package org.nuxeo.ecm.platform.diff;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("dc:modified", "2011-12-29T11:24:25Z");
         doc.setPropertyValue("dc:lastContributor", "Administrator");
         doc.setPropertyValue("dc:contributors", new String[] { "Administrator",
-                "joe" });
+                "joe", null });
         doc.setPropertyValue("dc:subjects", new String[] { "Art",
                 "Architecture" });
 
@@ -118,8 +118,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         item1SubList.add("Monday");
         item1SubList.add("Tuesday");
         complexItem1.put("stringListItem", (Serializable) item1SubList);
-        // TODO: uncomment
-        //listOfListPropValue.add(complexItem1);
+        listOfListPropValue.add(complexItem1);
 
         Map<String, Serializable> complexItem2 = new HashMap<String, Serializable>();
         complexItem2.put("stringItem", "second item");
@@ -128,7 +127,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         item2SubList.add("Thursday");
         complexItem2.put("stringListItem", (Serializable) item2SubList);
         listOfListPropValue.add(complexItem2);
-        
+
         doc.setPropertyValue("lol:listOfLists",
                 (Serializable) listOfListPropValue);
 
@@ -198,7 +197,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
         doc.setPropertyValue("ct:complexList",
                 (Serializable) complexListPropValue);
-        
+
         // -----------------------
         // listoflists
         // -----------------------
@@ -220,7 +219,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         item2SubList.add("Saturday");
         complexItem2.put("stringListItem", (Serializable) item2SubList);
         listOfListPropValue.add(complexItem2);
-        
+
         Map<String, Serializable> complexItem3 = new HashMap<String, Serializable>();
         complexItem3.put("stringItem", "third item");
         List<String> item3SubList = new ArrayList<String>();

@@ -16,9 +16,7 @@
  */
 package org.nuxeo.ecm.platform.diff.model.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
@@ -39,11 +37,9 @@ public class ComplexPropertyDiff extends PropertyDiff {
      * Instantiates a new complex property diff.
      */
     public ComplexPropertyDiff() {
-        diffMap = new HashMap<String, PropertyDiff>();
-    }
 
-    public PropertyType getPropertyType() {
-        return PropertyType.complex;
+        this.propertyType = PropertyType.COMPLEX;
+        diffMap = new HashMap<String, PropertyDiff>();
     }
 
     /**
@@ -68,61 +64,24 @@ public class ComplexPropertyDiff extends PropertyDiff {
     }
 
     /**
-     * Put all.
+     * Put all diff.
      * 
      * @param otherDiff the other diff
      */
-    public void putAll(ComplexPropertyDiff otherDiff) {
+    public void putAllDiff(ComplexPropertyDiff otherDiff) {
         diffMap.putAll(otherDiff.getDiffMap());
-    }
-
-    /**
-     * Gets the complex item names as a list.
-     * 
-     * @return the complex item names
-     */
-    public List<String> getComplexItemNames() {
-        return new ArrayList<String>(diffMap.keySet());
-    }
-
-    /**
-     * Gets the complex item values as a list.
-     * 
-     * @return the complex item values
-     */
-    public List<PropertyDiff> getComplexItemValues() {
-        return new ArrayList<PropertyDiff>(diffMap.values());
-    }
-
-    public boolean isLeftSideEmpty() {
-        for (PropertyDiff complexItemDiff : diffMap.values()) {
-            if (!complexItemDiff.isLeftSideEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean isRightSideEmpty() {
-        for (PropertyDiff complexItemDiff : diffMap.values()) {
-            if (!complexItemDiff.isRightSideEmpty()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public Map<String, PropertyDiff> getDiffMap() {
         return diffMap;
     }
 
-    public void setDiffMap(Map<String, PropertyDiff> diffMap) {
-        this.diffMap = diffMap;
-    }
-
     @Override
     public boolean equals(Object other) {
 
+        if (!super.equals(other)) {
+            return false;
+        }
         if (this == other) {
             return true;
         }

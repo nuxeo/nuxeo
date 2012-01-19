@@ -53,6 +53,8 @@ public final class FieldDiffHelper {
 
     private static final String NAME_ATTRIBUTE = "name";
 
+    private static final String TYPE_ATTRIBUTE = "type";
+
     /**
      * Computes a field diff.
      * <p>
@@ -89,31 +91,13 @@ public final class FieldDiffHelper {
      * </pre>
      * 
      * </li>
-     * <li>
-     * isChildNodeNotFoundOnTestSide: boolean to check if we are in a
-     * "CHILD_NODE_NOT_FOUND on the test side" case, which, I don't really
-     * understand why, is marked as a TEXT_VALUE difference...
      * 
-     * For example in this case we will have a TEXT_VALUE difference
-     * {green/red}.
-     * 
-     * <pre>
-     * [----- control ------]   [----- test ------]
-     * 
-     * <field>                  <field>
-     *   <item>red</item>         <item>red</item>
-     *   <item>green</item>     </field>
-     * </field>
-     * 
-     * </pre>
-     * 
-     * </li>
      * </ul>
      * 
      * @param docDiff the doc diff
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
-     * @param fieldDifferenceCount the field difference count
+     * @param fieldDifferenceCount the field difference countadd
      * @param difference the difference
      * @return true if a field diff has been found
      * @throws ClientException the client exception
@@ -126,55 +110,34 @@ public final class FieldDiffHelper {
         // Use control node or if null test node to detect schema and
         // field elements
         Node currentNode = controlNodeDetail.getNode();
-        Node otherCurrentNode = null;
         if (currentNode == null) {
             currentNode = testNodeDetail.getNode();
-        } else {
-            otherCurrentNode = testNodeDetail.getNode();
         }
         if (currentNode != null) {
 
             String field = null;
             String currentNodeName = currentNode.getNodeName();
             List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
-            boolean isChildNodeNotFoundOnTestSide = false;
 
             // Detect a schema element,
             // for instance: <schema name="dublincore" xmlns:dc="...">,
             // or the <system> element.
             Node parentNode = currentNode.getParentNode();
-            Node otherParentNode = null;
-            if (otherCurrentNode != null) {
-                otherParentNode = otherCurrentNode.getParentNode();
-            }
             while (parentNode != null
                     && !SCHEMA_ELEMENT.equals(currentNodeName)
                     && !SYSTEM_ELEMENT.equals(currentNodeName)) {
 
                 // Get property type
-                PropertyType propertyType = getPropertyType(currentNode,
-                        otherCurrentNode);
-                PropertyType parentPropertyType = getPropertyType(parentNode,
-                        otherParentNode);
+                String propertyType = getPropertyType(currentNode);
+                String parentPropertyType = getPropertyType(parentNode);
 
                 // Fill in property hierarchy
-                if (PropertyType.list.equals(parentPropertyType)) {
+                if (PropertyType.isListType(parentPropertyType)) {
                     int currentNodePosition = getNodePosition(currentNode);
-
-                    if (otherCurrentNode != null) {
-                        int otherCurrentNodePosition = getNodePosition(otherCurrentNode);
-                        if (otherCurrentNodePosition < currentNodePosition) {
-                            if (PropertyType.complex.equals(propertyType)) {
-                                currentNodePosition--;
-                            }
-                            isChildNodeNotFoundOnTestSide = true;
-                        }
-                    }
-
                     propertyHierarchy.add(new PropertyHierarchyNode(
                             parentPropertyType,
                             String.valueOf(currentNodePosition)));
-                } else if (PropertyType.complex.equals(parentPropertyType)) {
+                } else if (PropertyType.isComplexType(parentPropertyType)) {
                     propertyHierarchy.add(new PropertyHierarchyNode(
                             parentPropertyType, currentNodeName));
                 }
@@ -185,14 +148,14 @@ public final class FieldDiffHelper {
                 if (SCHEMA_ELEMENT.equals(parentNode.getNodeName())
                         || SYSTEM_ELEMENT.equals(parentNode.getNodeName())) {
                     field = currentNode.getLocalName();
-                    if (PropertyType.simple.equals(propertyType)) {
+                    if (PropertyType.isSimpleType(propertyType)) {
                         propertyHierarchy.add(new PropertyHierarchyNode(
                                 propertyType, null));
-                    } else if (PropertyType.list.equals(propertyType)
+                    } else if (PropertyType.isListType(propertyType)
                             && propertyHierarchy.isEmpty()) {
                         propertyHierarchy.add(new PropertyHierarchyNode(
                                 propertyType, null));
-                    } else if (PropertyType.complex.equals(propertyType)
+                    } else if (PropertyType.isComplexType(propertyType)
                             && propertyHierarchy.isEmpty()) {
                         propertyHierarchy.add(new PropertyHierarchyNode(
                                 propertyType, null));
@@ -202,11 +165,6 @@ public final class FieldDiffHelper {
                 currentNode = parentNode;
                 currentNodeName = currentNode.getNodeName();
                 parentNode = parentNode.getParentNode();
-
-                if (otherParentNode != null) {
-                    otherCurrentNode = otherParentNode;
-                    otherParentNode = otherParentNode.getParentNode();
-                }
             }
 
             // If we found a schema or system element (ie. we did not
@@ -231,7 +189,7 @@ public final class FieldDiffHelper {
                 Collections.reverse(propertyHierarchy);
 
                 // Pretty log field difference
-                LOGGER.info(String.format(
+                LOGGER.debug(String.format(
                         "Found field difference #%d on [%s]/[%s] with hierarchy %s: [%s (%s)] {%s --> %s}",
                         fieldDifferenceCount + 1, schema, field,
                         propertyHierarchy, difference.getDescription(),
@@ -240,8 +198,7 @@ public final class FieldDiffHelper {
 
                 // Compute field diff
                 computeFieldDiff(docDiff, schema, field, propertyHierarchy,
-                        difference.getId(), controlNodeDetail, testNodeDetail,
-                        isChildNodeNotFoundOnTestSide);
+                        difference.getId(), controlNodeDetail, testNodeDetail);
                 // Return true since a field diff has been found
                 return true;
 
@@ -261,60 +218,16 @@ public final class FieldDiffHelper {
      * @param node the node
      * @return the property diff type
      */
-    public static PropertyType getPropertyType(Node node, Node testNode) {
+    public static String getPropertyType(Node node) {
 
-        // Default: simple type
-        PropertyType propertyType = PropertyType.simple;
+        // Default: string type
+        String propertyType = PropertyType.UNDEFINED;
 
-        // Particular case of system and schema elements
-        if (SYSTEM_ELEMENT.equals(node.getNodeName())
-                || SCHEMA_ELEMENT.equals(node.getNodeName())) {
-            return propertyType;
-        }
-
-        NodeList childNodes = node.getChildNodes();
-        int childNodesLength = childNodes.getLength();
-
-        if (testNode != null) {
-            NodeList testChildNodes = testNode.getChildNodes();
-            int testChildNodesLength = testChildNodes.getLength();
-            if (childNodesLength == 0 && testChildNodesLength > 0) {
-                childNodes = testChildNodes;
-                childNodesLength = testChildNodesLength;
-            }
-        }
-
-        // Only one child node
-        if (childNodesLength == 1) {
-            Node childNode = childNodes.item(0);
-            // If the only child node is an element node, but not a list
-            // element
-            // => list type with one item (could also be a complex type with
-            // one
-            // item but we have to chose and this makes less sense)
-            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-                if (!(PropertyType.list.equals(getPropertyType(childNode, null)))) {
-                    propertyType = PropertyType.list;
-                }
-            }
-            // Else the first child node is a text node or a list or complex
-            // element => keep simple type
-        }
-
-        // At least 2 child nodes => list or complex type
-        if (childNodesLength > 1) {
-
-            // Default: list type
-            propertyType = PropertyType.list;
-
-            for (int i = 1; i < childNodes.getLength(); i++) {
-                String firstChildNodeName = childNodes.item(0).getNodeName();
-                if (!firstChildNodeName.equals(childNodes.item(i).getNodeName())) {
-
-                    // All child nodes don't have the same name => complex type
-                    propertyType = PropertyType.complex;
-                    break;
-                }
+        NamedNodeMap nodeAttr = node.getAttributes();
+        if (nodeAttr != null) {
+            Node type = nodeAttr.getNamedItem(TYPE_ATTRIBUTE);
+            if (type != null) {
+                propertyType = type.getNodeValue();
             }
         }
 
@@ -357,10 +270,10 @@ public final class FieldDiffHelper {
 
         // Get first property hierarchy node
         PropertyHierarchyNode propertyHierarchyNode = propertyHierarchy.get(0);
-        PropertyType firstPropertyType = propertyHierarchyNode.getNodeType();
+        String firstPropertyType = propertyHierarchyNode.getNodeType();
         String firstPropertyValue = propertyHierarchyNode.getNodeValue();
 
-        if (PropertyType.simple.equals(firstPropertyType)
+        if (PropertyType.isSimpleType(firstPropertyType)
                 && propertyHierarchy.size() > 1) {
             throw new ClientException(String.format(
                     "Inconsistant property hierarchy %s.", propertyHierarchy));
@@ -368,39 +281,29 @@ public final class FieldDiffHelper {
 
         // Go through the property hierarchy
         PropertyDiff propertyDiff = firstPropertyDiff;
-        PropertyType propertyType = firstPropertyType;
+        String propertyType = firstPropertyType;
         String propertyValue = firstPropertyValue;
         for (int i = 1; i < propertyHierarchy.size(); i++) {
 
             PropertyDiff childPropertyDiff = null;
             PropertyHierarchyNode childPropertyHierarchyNode = propertyHierarchy.get(i);
-            PropertyType childPropertyType = childPropertyHierarchyNode.getNodeType();
+            String childPropertyType = childPropertyHierarchyNode.getNodeType();
             String childPropertyValue = childPropertyHierarchyNode.getNodeValue();
 
-            switch (propertyType) {
-            default: // simple type
+            // Simple type
+            if (PropertyType.isSimpleType(propertyType)) {
                 // Nothing to do here (should never happen)
-                break;
-            case list:
+            } else if (PropertyType.isListType(propertyType)) {
                 int propertyIndex = Integer.parseInt(propertyValue);
-                int listPropertyDiffSize = ((ListPropertyDiff) propertyDiff).size();
-                // Check that index is not greater than list size
-                if (propertyIndex > listPropertyDiffSize) {
-                    throw new ClientException(
-                            "First property hierarchy node should not have an index > than the property diff list size.");
-                }
-                // Get list diff if index within list size, otherwise initialize
-                // it
-                if (propertyIndex < listPropertyDiffSize) {
-                    childPropertyDiff = ((ListPropertyDiff) propertyDiff).getDiff(propertyIndex);
-                } else {
+                // Get list diff, if null create a new one
+                childPropertyDiff = ((ListPropertyDiff) propertyDiff).getDiff(propertyIndex);
+                if (childPropertyDiff == null) {
                     childPropertyDiff = newPropertyDiff(childPropertyType);
-                    ((ListPropertyDiff) propertyDiff).addDiff(propertyIndex,
+                    ((ListPropertyDiff) propertyDiff).putDiff(propertyIndex,
                             childPropertyDiff);
                 }
                 propertyDiff = childPropertyDiff;
-                break;
-            case complex:
+            } else { // Complex type
                 // Get complex diff, initialize it if null
                 childPropertyDiff = ((ComplexPropertyDiff) propertyDiff).getDiff(propertyValue);
                 if (childPropertyDiff == null) {
@@ -409,7 +312,6 @@ public final class FieldDiffHelper {
                             childPropertyDiff);
                 }
                 propertyDiff = childPropertyDiff;
-                break;
             }
 
             propertyType = childPropertyType;
@@ -433,8 +335,7 @@ public final class FieldDiffHelper {
     private static void computeFieldDiff(DocumentDiff docDiff, String schema,
             String field, List<PropertyHierarchyNode> propertyHierarchy,
             int differenceId, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail, boolean isChildNodeNotFoundOnTestSide)
-            throws ClientException {
+            NodeDetail testNodeDetail) throws ClientException {
 
         if (propertyHierarchy.isEmpty()) {
             throw new ClientException("Empty property hierarchy.");
@@ -442,7 +343,7 @@ public final class FieldDiffHelper {
 
         // Get first property hierarchy node
         PropertyHierarchyNode propertyHierarchyNode = propertyHierarchy.get(0);
-        PropertyType firstPropertyType = propertyHierarchyNode.getNodeType();
+        String firstPropertyType = propertyHierarchyNode.getNodeType();
 
         // Get schema diff, initialize it if null
         SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
@@ -459,7 +360,7 @@ public final class FieldDiffHelper {
         PropertyDiff endPropertyDiff = fieldDiff;
         // Apply property hierarchy to diff if first property type in hierarchy
         // is list or complex
-        if (!(PropertyType.simple.equals(firstPropertyType))) {
+        if (!(PropertyType.isSimpleType(firstPropertyType))) {
             endPropertyDiff = applyPropertyHierarchyToDiff(fieldDiff,
                     propertyHierarchy);
         }
@@ -468,8 +369,7 @@ public final class FieldDiffHelper {
         switch (differenceId) {
         default:// In most cases: TEXT_VALUE_ID
             computeTextValueDiff(endPropertyDiff, controlNodeDetail,
-                    testNodeDetail, propertyHierarchy,
-                    isChildNodeNotFoundOnTestSide);
+                    testNodeDetail);
             break;
         case DifferenceConstants.CHILD_NODE_NOT_FOUND_ID:
             computeChildNodeNotFoundDiff(endPropertyDiff, controlNodeDetail,
@@ -490,14 +390,13 @@ public final class FieldDiffHelper {
      * @param propertyType the property type
      * @return the property diff
      */
-    private static PropertyDiff newPropertyDiff(PropertyType propertyType) {
+    private static PropertyDiff newPropertyDiff(String propertyType) {
 
-        switch (propertyType) {
-        default: // simple type
-            return new SimplePropertyDiff();
-        case list:
-            return new ListPropertyDiff();
-        case complex:
+        if (PropertyType.isSimpleType(propertyType)) {
+            return new SimplePropertyDiff(propertyType);
+        } else if (PropertyType.isListType(propertyType)) {
+            return new ListPropertyDiff(propertyType);
+        } else { // Complex type
             return new ComplexPropertyDiff();
         }
     }
@@ -508,43 +407,43 @@ public final class FieldDiffHelper {
      * @param fieldDiff the field diff
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
-     * @param propertyHierarchy the property hierarchy
+     * @throws ClientException the client exception
      */
     private static void computeTextValueDiff(PropertyDiff fieldDiff,
-            NodeDetail controlNodeDetail, NodeDetail testNodeDetail,
-            List<PropertyHierarchyNode> propertyHierarchy,
-            boolean isChildNodeNotFoundOnTestSide) {
+            NodeDetail controlNodeDetail, NodeDetail testNodeDetail)
+            throws ClientException {
 
         String leftValue = controlNodeDetail.getValue();
         String rightValue = testNodeDetail.getValue();
-        if (isChildNodeNotFoundOnTestSide) {
-            rightValue = null;
+
+        Node controlNode = controlNodeDetail.getNode();
+        if (controlNode == null) {
+            throw new ClientException("Control node should never be null.");
         }
 
-        switch (fieldDiff.getPropertyType()) {
-        default: // simple type
+        Node controlParentNode = controlNode.getParentNode();
+        if (controlParentNode == null) {
+            throw new ClientException(
+                    "Control parent node should never be null.");
+        }
+
+        String controlParentNodePropertyType = getPropertyType(controlParentNode);
+        String fieldDiffPropertyType = fieldDiff.getPropertyType();
+        if (PropertyType.isSimpleType(fieldDiffPropertyType)) {
             ((SimplePropertyDiff) fieldDiff).setLeftValue(leftValue);
             ((SimplePropertyDiff) fieldDiff).setRightValue(rightValue);
-            break;
-        case list:
-            ((ListPropertyDiff) fieldDiff).addDiff(new SimplePropertyDiff(
-                    leftValue, rightValue));
-            break;
-        case complex:
-            Node controlNode = controlNodeDetail.getNode();
-            if (controlNode != null) {
-                Node controlParentNode = controlNode.getParentNode();
-                if (controlParentNode != null) {
-                    ((ComplexPropertyDiff) fieldDiff).putDiff(
-                            controlParentNode.getNodeName(),
-                            new SimplePropertyDiff(leftValue, rightValue));
-
-                    // Put all complex items into to fieldDiff
-                    putComplexItemsIntoFieldDiff(fieldDiff, controlParentNode);
-                }
-            }
-            break;
+        } else if (PropertyType.isListType(fieldDiffPropertyType)) {
+            ((ListPropertyDiff) fieldDiff).putDiff(
+                    getNodePosition(controlParentNode), new SimplePropertyDiff(
+                            controlParentNodePropertyType, leftValue,
+                            rightValue));
+        } else { // Complex type
+            ((ComplexPropertyDiff) fieldDiff).putDiff(
+                    controlParentNode.getNodeName(), new SimplePropertyDiff(
+                            controlParentNodePropertyType, leftValue,
+                            rightValue));
         }
+
     }
 
     /**
@@ -563,31 +462,28 @@ public final class FieldDiffHelper {
         boolean isTestNodeNotFound = "null".equals(testNodeDetail.getValue());
         if (!isTestNodeNotFound) {
             childNode = testNodeDetail.getNode();
-        }
-        // Should never happen as then it would be marked as a
-        // TEXT_VALUE difference.
-        else {
+        } else {
             childNode = controlNodeDetail.getNode();
         }
 
-        if (childNode != null) {
+        if (childNode == null) {
+            throw new ClientException("Child node should never be null.");
+        }
 
-            switch (fieldDiff.getPropertyType()) {
-            default: // simple type
-                // Should never happen as then it would be marked as a
-                // HAS_CHILD_NODES difference.
-                throw new ClientException(
-                        "A CHILD_NODE_NOT_FOUND difference should never be found within a simple type.");
-            case list:
-                PropertyDiff childNodeDiff = getChildNodePropertyDiff(
-                        childNode, isTestNodeNotFound);
-                ((ListPropertyDiff) fieldDiff).addDiff(childNodeDiff);
-                break;
-            case complex:
-                throw new ClientException(
-                        "A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
-
-            }
+        String propertyType = fieldDiff.getPropertyType();
+        if (PropertyType.isSimpleType(propertyType)) {
+            // Should never happen as then it would be marked as a
+            // HAS_CHILD_NODES difference.
+            throw new ClientException(
+                    "A CHILD_NODE_NOT_FOUND difference should never be found within a simple type.");
+        } else if (PropertyType.isListType(propertyType)) {
+            PropertyDiff childNodeDiff = getChildNodePropertyDiff(childNode,
+                    isTestNodeNotFound);
+            ((ListPropertyDiff) fieldDiff).putDiff(getNodePosition(childNode),
+                    childNodeDiff);
+        } else { // Complex type
+            throw new ClientException(
+                    "A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
         }
     }
 
@@ -603,65 +499,40 @@ public final class FieldDiffHelper {
             NodeDetail controlNodeDetail, NodeDetail testNodeDetail)
             throws ClientException {
 
-        Node nodeWithChilds;
+        Node nodeWithChildren;
         boolean hasControlNodeChildNodes = Boolean.valueOf(controlNodeDetail.getValue());
         if (hasControlNodeChildNodes) {
-            nodeWithChilds = controlNodeDetail.getNode();
+            nodeWithChildren = controlNodeDetail.getNode();
         } else {
-            nodeWithChilds = testNodeDetail.getNode();
+            nodeWithChildren = testNodeDetail.getNode();
         }
 
-        if (nodeWithChilds != null) {
-            switch (fieldDiff.getPropertyType()) {
-            default: // simple type
-                setSimplePropertyDiff((SimplePropertyDiff) fieldDiff,
-                        nodeWithChilds, hasControlNodeChildNodes);
-                break;
-            case list:
-                NodeList childNodes = nodeWithChilds.getChildNodes();
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    ((ListPropertyDiff) fieldDiff).addDiff(getChildNodePropertyDiff(
-                            childNodes.item(i), hasControlNodeChildNodes));
-                }
-                break;
-            case complex:
-                PropertyDiff childNodeDiff = getChildNodePropertyDiff(
-                        nodeWithChilds, hasControlNodeChildNodes);
-                if (PropertyType.complex.equals(getPropertyType(nodeWithChilds,
-                        null))) {
-                    ((ComplexPropertyDiff) fieldDiff).putAll((ComplexPropertyDiff) childNodeDiff);
-                } else {
-                    ((ComplexPropertyDiff) fieldDiff).putDiff(
-                            nodeWithChilds.getNodeName(), childNodeDiff);
-                    // Put all complex items into to fieldDiff
-                    putComplexItemsIntoFieldDiff(fieldDiff, nodeWithChilds);
-                }
-                break;
+        if (nodeWithChildren == null) {
+            throw new ClientException(
+                    "Node with children should never be null.");
+        }
+
+        String propertyType = fieldDiff.getPropertyType();
+        if (PropertyType.isSimpleType(propertyType)) {
+            setSimplePropertyDiff((SimplePropertyDiff) fieldDiff,
+                    nodeWithChildren, hasControlNodeChildNodes);
+        } else if (PropertyType.isListType(propertyType)) {
+            PropertyDiff childNodeDiff = getChildNodePropertyDiff(
+                    nodeWithChildren, hasControlNodeChildNodes);
+            if (PropertyType.isListType(getPropertyType(nodeWithChildren))) {
+                ((ListPropertyDiff) fieldDiff).putAllDiff((ListPropertyDiff) childNodeDiff);
+            } else {
+                ((ListPropertyDiff) fieldDiff).putDiff(
+                        getNodePosition(nodeWithChildren), childNodeDiff);
             }
-        }
-    }
-
-    /**
-     * Put complex items into field diff.
-     * 
-     * @param fieldDiff the field diff
-     * @param controlParentNode the control parent node
-     */
-    private static void putComplexItemsIntoFieldDiff(PropertyDiff fieldDiff,
-            Node controlParentNode) {
-
-        Node controlParentParentNode = controlParentNode.getParentNode();
-        if (controlParentParentNode != null) {
-            NodeList complexItemNodes = controlParentParentNode.getChildNodes();
-            for (int i = 0; i < complexItemNodes.getLength(); i++) {
-                Node complexItemNode = complexItemNodes.item(i);
-                String complexItemNodeName = complexItemNode.getNodeName();
-                if (((ComplexPropertyDiff) fieldDiff).getDiff(complexItemNodeName) == null
-                        && !controlParentNode.getNodeName().equals(
-                                complexItemNodeName)) {
-                    ((ComplexPropertyDiff) fieldDiff).putDiff(
-                            complexItemNodeName, null);
-                }
+        } else { // Complex type
+            PropertyDiff childNodeDiff = getChildNodePropertyDiff(
+                    nodeWithChildren, hasControlNodeChildNodes);
+            if (PropertyType.isComplexType(getPropertyType(nodeWithChildren))) {
+                ((ComplexPropertyDiff) fieldDiff).putAllDiff((ComplexPropertyDiff) childNodeDiff);
+            } else {
+                ((ComplexPropertyDiff) fieldDiff).putDiff(
+                        nodeWithChildren.getNodeName(), childNodeDiff);
             }
         }
     }
@@ -678,63 +549,24 @@ public final class FieldDiffHelper {
 
         PropertyDiff propertyDiff;
 
-        // Get first child node
-        Node firstChildNode = node.getFirstChild();
+        String nodePropertyType = getPropertyType(node);
 
-        // Check empty list item
-        boolean isEmptyListItem = false;
-        Node parentNode = node.getParentNode();
-        if (parentNode != null) {
-            PropertyType parentNodeType = getPropertyType(parentNode, null);
-            if (PropertyType.list.equals(parentNodeType)) {
-                isEmptyListItem = true;
-            } else if (PropertyType.simple.equals(parentNodeType)) {
-                parentNode = parentNode.getParentNode();
-                if (parentNode != null
-                        && PropertyType.list.equals(getPropertyType(parentNode,
-                                null))) {
-                    isEmptyListItem = true;
-                }
-            }
-        }
-        isEmptyListItem = isEmptyListItem && firstChildNode == null;
-        if (isEmptyListItem) {
-            throw new ClientException(
-                    "Found an empty list item (<item/>), this should never happen.");
-        }
-
-        PropertyType nodePropertyType = getPropertyType(node, null);
-
-        // Manage the specific case of a list of list, ie.
-        // a simple node with a list child node.
-        if (PropertyType.simple.equals(nodePropertyType)
-                && firstChildNode != null) {
-            PropertyType firstChildNodePropertyType = getPropertyType(
-                    firstChildNode, null);
-
-            if (PropertyType.list.equals(firstChildNodePropertyType)) {
-                nodePropertyType = getPropertyType(firstChildNode, null);
-                node = firstChildNode;
-            }
-        }
-
-        switch (nodePropertyType) {
-        default: // simple type
-            propertyDiff = new SimplePropertyDiff();
+        if (PropertyType.isSimpleType(nodePropertyType)) {
+            propertyDiff = new SimplePropertyDiff(nodePropertyType);
             setSimplePropertyDiff((SimplePropertyDiff) propertyDiff, node,
                     hasControlNodeChildNodes);
-            break;
-        case list:
-            propertyDiff = new ListPropertyDiff();
+        } else if (PropertyType.isListType(nodePropertyType)) {
+            propertyDiff = new ListPropertyDiff(nodePropertyType);
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
-                ((ListPropertyDiff) propertyDiff).addDiff(getChildNodePropertyDiff(
-                        childNodes.item(i), hasControlNodeChildNodes));
+                ((ListPropertyDiff) propertyDiff).putDiff(
+                        i,
+                        getChildNodePropertyDiff(childNodes.item(i),
+                                hasControlNodeChildNodes));
             }
-            break;
-        case complex:
+        } else { // Complex type
             propertyDiff = new ComplexPropertyDiff();
-            childNodes = node.getChildNodes();
+            NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node childNode = childNodes.item(i);
                 ((ComplexPropertyDiff) propertyDiff).putDiff(
@@ -742,7 +574,6 @@ public final class FieldDiffHelper {
                         getChildNodePropertyDiff(childNode,
                                 hasControlNodeChildNodes));
             }
-            break;
         }
         return propertyDiff;
     }

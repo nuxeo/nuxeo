@@ -18,8 +18,6 @@ package org.nuxeo.ecm.platform.diff.model.impl;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.platform.diff.model.PropertyType;
-
 /**
  * Property hierarchy node.
  * 
@@ -29,7 +27,7 @@ public class PropertyHierarchyNode implements Serializable {
 
     private static final long serialVersionUID = -5497891597767526856L;
 
-    private PropertyType nodeType;
+    private String nodeType;
 
     private String nodeValue;
 
@@ -39,16 +37,16 @@ public class PropertyHierarchyNode implements Serializable {
      * @param nodeType the node type
      * @param nodeValue the node value
      */
-    public PropertyHierarchyNode(PropertyType nodeType, String nodeValue) {
+    public PropertyHierarchyNode(String nodeType, String nodeValue) {
         this.nodeType = nodeType;
         this.nodeValue = nodeValue;
     }
 
-    public PropertyType getNodeType() {
+    public String getNodeType() {
         return nodeType;
     }
 
-    public void setNodeType(PropertyType nodeType) {
+    public void setNodeType(String nodeType) {
         this.nodeType = nodeType;
     }
 
@@ -64,7 +62,7 @@ public class PropertyHierarchyNode implements Serializable {
     public String toString() {
 
         StringBuilder sb = new StringBuilder("{");
-        sb.append(nodeType.name());
+        sb.append(nodeType);
         sb.append(",");
         sb.append(nodeValue);
         sb.append("}");

@@ -108,6 +108,28 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public void configureXMLUnit() {
+
+        // XXX ATA: Be able to contribute this configuration to the service.
+        XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
+        XMLUnit.setCompareUnmatched(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void configureDiff(Diff diff) {
+
+        // XXX ATA: Be able to contribute this configuration to the service.
+        diff.overrideDifferenceListener(new IgnoreStructuralDifferenceListener());
+        diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
+
+    }
+
+    /**
      * Exports leftDoc and rightDoc to XML.
      * 
      * @param session the session
@@ -142,9 +164,13 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
         DetailedDiff detailedDiff;
         try {
+            // Configure XMLUnit
             configureXMLUnit();
+            // Build diff
             Diff diff = new Diff(leftDocXMLInputSource, rightDocXMLInputSource);
+            // Configure diff
             configureDiff(diff);
+            // Build detailed diff
             detailedDiff = new DetailedDiff(diff);
         } catch (Exception e) {
             throw new ClientException(
@@ -167,43 +193,20 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
         DetailedDiff detailedDiff;
         try {
+            // Configure XMLUnit
             configureXMLUnit();
+            // Build diff
             Diff diff = new Diff(leftXML, rightXML);
+            // Configure diff
+            configureDiff(diff);
+            // Build detailed diff
             detailedDiff = new DetailedDiff(diff);
-            configureDiff(detailedDiff);
         } catch (Exception e) {
             throw new ClientException(
                     "Error while trying to make a detailed diff between two XML strings.",
                     e);
         }
         return detailedDiff;
-    }
-
-    /**
-     * Configures XMLUnit.
-     */
-    protected void configureXMLUnit() {
-
-        // XXX ATA: contribute this configuration to the service
-        XMLUnit.setIgnoreWhitespace(true);
-        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
-    }
-
-    /**
-     * Configures the diff.
-     * 
-     * @param diff the diff
-     */
-    protected void configureDiff(Diff diff) {
-
-        // XXX ATA: contribute this configuration to the service
-        diff.overrideDifferenceListener(new IgnoreStructuralDifferenceListener());
-        // In our case ElementNameAndAttributeQualifier is not really required
-        // because
-        // we already manage the different schema case in the
-        // IgnoreStructuralDifferenceListener
-        diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
-
     }
 
     /**
@@ -242,7 +245,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
                 }
             }
         }
-        LOGGER.info(String.format("Found %d field differences.",
+        LOGGER.debug(String.format("Found %d field differences.",
                 fieldDifferenceCount));
 
         return docDiff;

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.diff.service;
 
 import java.io.Serializable;
 
+import org.custommonkey.xmlunit.Diff;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,5 +63,17 @@ public interface DocumentDiffService extends Serializable {
      * @throws ClientException the client exception
      */
     DocumentXMLExporter getDocumentXMLExporter() throws ClientException;
+
+    /**
+     * Configures XMLUnit.
+     */
+    void configureXMLUnit();
+
+    /**
+     * Configures the diff.
+     * 
+     * @param diff the diff
+     */
+    void configureDiff(Diff diff);
 
 }

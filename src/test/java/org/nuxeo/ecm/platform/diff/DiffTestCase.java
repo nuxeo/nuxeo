@@ -14,12 +14,13 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.platform.diff.helpers;
+package org.nuxeo.ecm.platform.diff;
 
 import junit.framework.TestCase;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.nuxeo.ecm.platform.diff.model.DifferenceType;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.SchemaDiff;
@@ -83,25 +84,49 @@ public class DiffTestCase extends TestCase {
      * Checks a simple field diff.
      * 
      * @param fieldDiff the field diff
+     * @param expectedPropertyType the expected property type
+     * @param expectedDifferenceType the expected difference type
      * @param expectedLeftValue the expected left value
      * @param expectedRightValue the expected right value
      * @return the property diff
      */
     protected final SimplePropertyDiff checkSimpleFieldDiff(
-            PropertyDiff fieldDiff, String expectedLeftValue,
+            PropertyDiff fieldDiff, String expectedPropertyType,
+            DifferenceType expectedDifferenceType, String expectedLeftValue,
             String expectedRightValue) {
 
         assertNotNull("Field diff should not be null", fieldDiff);
         assertTrue("Wrong PropertyDiff implementation",
                 fieldDiff instanceof SimplePropertyDiff);
 
+        assertEquals("Wrong property type", expectedPropertyType,
+                fieldDiff.getPropertyType());
         SimplePropertyDiff simpleFieldDiff = (SimplePropertyDiff) fieldDiff;
+        assertEquals("Wrong difference type", expectedDifferenceType,
+                simpleFieldDiff.getDifferenceType());
         assertEquals("Wrong left value", expectedLeftValue,
                 simpleFieldDiff.getLeftValue());
         assertEquals("Wrong right value", expectedRightValue,
                 simpleFieldDiff.getRightValue());
 
         return simpleFieldDiff;
+    }
+
+    /**
+     * Check simple field diff.
+     * 
+     * @param fieldDiff the field diff
+     * @param expectedPropertyType the expected property type
+     * @param expectedLeftValue the expected left value
+     * @param expectedRightValue the expected right value
+     * @return the simple property diff
+     */
+    protected final SimplePropertyDiff checkSimpleFieldDiff(
+            PropertyDiff fieldDiff, String expectedPropertyType,
+            String expectedLeftValue, String expectedRightValue) {
+
+        return checkSimpleFieldDiff(fieldDiff, expectedPropertyType,
+                DifferenceType.different, expectedLeftValue, expectedRightValue);
     }
 
     /**
