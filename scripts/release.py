@@ -232,12 +232,13 @@ class Release(object):
 
     def test(self):
         """For current script development purpose."""
-        self.tag = "5.6-SNAPSHOT"
-        self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
-                                                   os.pardir, "archives"))
+        self.package_all(self.snapshot)
 
-    def package_all(self):
-        """Repackage files to be uploaded."""
+    def package_all(self, version=None):
+        """Repackage files to be uploaded.
+
+        'version': version to package; defaults to the current tag (without the
+        'release-' prefix."""
         self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
                                                    os.pardir, "archives"))
         if os.path.isdir(self.archive_dir):
@@ -245,18 +246,21 @@ class Release(object):
         os.mkdir(self.archive_dir)
         self.tmpdir = tempfile.mkdtemp()
 
+        if version is None:
+            version = self.tag
+
         # Tomcat and JBoss packages
         for old, new in PKG_RENAMINGS.items():
-            self.package(old % self.tag, new % self.tag)
+            self.package(old % version, new % version)
         # Tomcat SDK packages
         for old, new in PKG_RENAMINGS_OPTIONALS.items():
-            self.package(old % self.tag, new % self.tag, False)
+            self.package(old % version, new % version, False)
 
         # Online (aka light) Tomcat package
-        offline_name = "nuxeo-cap-%s-tomcat" % self.tag
+        offline_name = "nuxeo-cap-%s-tomcat" % version
         extract_zip(os.path.join(self.archive_dir, offline_name + ".zip"),
                     self.tmpdir)
-        online_name = "nuxeo-cap-%s-tomcat-online" % self.tag
+        online_name = "nuxeo-cap-%s-tomcat-online" % version
         # Keep packages.xml file
         os.rename(os.path.join(self.tmpdir, offline_name,
                                    "setupWizardDownloads", "packages.xml"),
@@ -276,8 +280,8 @@ class Release(object):
             os.mkdir(archive_mp_dir)
         # Copy and rename MP to archive directory
         for old, new in MP_RENAMINGS.items():
-            shutil.copy2(old % self.tag,
-                         os.path.join(archive_mp_dir, new % self.tag))
+            shutil.copy2(old % version,
+                         os.path.join(archive_mp_dir, new % version))
         log("Checking packages integrity...")
         for package in os.listdir(archive_mp_dir):
             m = hashlib.md5()
@@ -300,7 +304,7 @@ class Release(object):
                 log("[ERROR] %s MD5 did not match packages.xml information"
                     % package, sys.stderr)
         log("Done.")
-        self.package_sources()
+        self.package_sources(version)
         shutil.rmtree(self.tmpdir)
 
     def package(self, old_archive, new_name, failonerror=True):
@@ -342,8 +346,8 @@ class Release(object):
         # Cleanup temporary directory
         shutil.rmtree(os.path.join(self.tmpdir, new_name))
 
-    def package_sources(self):
-        sources_archive_name = "nuxeo-%s-sources.zip" % self.tag
+    def package_sources(self, version):
+        sources_archive_name = "nuxeo-%s-sources.zip" % version
         self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
 
     def prepare(self):
@@ -380,10 +384,10 @@ class Release(object):
             # Delete maintenance branches
             self.repo.system_recurse("git branch -D %s" % self.tag)
 
-        # Build, test and package
+        # Build and package
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        system("mvn clean install -Dmaven.test.skip=true"
-               " -Prelease,addons,distrib,all-distributions,-qa")
+        self.repo.mvn("clean install", skip_tests=True,
+                        profiles="release,-qa")
         self.package_all()
         # TODO NXP-8571 package sources
         os.chdir(cwd)
@@ -401,8 +405,8 @@ class Release(object):
                                                          self.tag))
         self.repo.system_recurse("git push --tags")
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        system("mvn clean deploy -Dmaven.test.skip=true"
-               " -Prelease,addons,distrib,all-distributions,-qa")
+        self.repo.mvn("clean deploy", skip_tests=True,
+                        profiles="release,-qa")
         os.chdir(cwd)
 
     def check(self):
@@ -427,7 +431,9 @@ def main():
                  "parameters are stored in a release.log file.\n"
                  "  perform: Perform the release (push sources, deploy "
                  "artifacts and upload packages). If no parameter is given, "
-                 "they are read from the release.log file.")
+                 "they are read from the release.log file.\n"
+                 "  package: Package distributions and source code in the "
+                 "archives directory.")
         parser = optparse.OptionParser(usage=usage,
                                        description="""Release Nuxeo from
 a given branch, tag the release, then set the next SNAPSHOT version.  If a
@@ -463,8 +469,12 @@ maintenance branch is deleted after release)""")
                           help="""Not implemented (TODO NXP-8573). Interactive
 mode.""")
         (options, args) = parser.parse_args()
-        if len(args) > 0:
+        if len(args) == 1:
             command = args[0]
+        elif len(args) > 1:
+            raise ExitException(1, "'command' must be a single argument. "
+                                "See usage with '-h'.")
+
         release_log = os.path.abspath(os.path.join(os.getcwd(), os.pardir,
                                                "release.log"))
         if ("command" in locals() and command == "perform"
@@ -493,7 +503,11 @@ mode.""")
         elif command == "prepare":
             release.prepare()
         elif command == "perform":
-            print release.perform()
+            release.perform()
+        elif command == "package":
+            repo.clone()
+            repo.mvn("clean package", skip_tests=True, profiles="qa")
+            release.package_all(release.snapshot)
         elif command == "test":
             release.test()
         else:
