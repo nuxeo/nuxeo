@@ -4,7 +4,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <nxu:set var="complexItemNames" value="#{documentDiffActions.getComplexItemNames(schema, field)}">
+  <nxu:set var="complexItemNames" value="#{propertyDiffDisplayHelper.getComplexItemNames(schema, field)}">
     <table class="complexDiffTable">
       <thead>
         <tr>
@@ -20,7 +20,7 @@
           <ui:repeat value="#{complexItemNames}" var="complexItemName">
             <td>
               <ui:include src="/incl/diff/simple_property_diff.xhtml">
-                <ui:param name="propertyValue" value="#{documentDiffActions.getComplexItemValue(doc, schema, field, complexItemName)}"/>
+                <ui:param name="propertyValue" value="#{propertyDiffDisplayHelper.getComplexItemValue(doc, schema, field, complexItemName)}"/>
                 <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[complexItemName]}"/>
               </ui:include>
             </td>

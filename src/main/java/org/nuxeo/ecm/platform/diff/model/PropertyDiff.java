@@ -49,6 +49,24 @@ public class PropertyDiff implements Serializable {
     }
 
     /**
+     * Checks if is scalar list type.
+     * 
+     * @return true, if is scalar list type
+     */
+    public boolean isScalarListType() {
+        return PropertyType.isScalarListType(propertyType);
+    }
+
+    /**
+     * Checks if is complex list type.
+     * 
+     * @return true, if is complex list type
+     */
+    public boolean isComplexListType() {
+        return PropertyType.isComplexListType(propertyType);
+    }
+
+    /**
      * Checks if is complex type.
      * 
      * @return true, if is complex type

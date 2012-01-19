@@ -21,8 +21,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -55,10 +53,35 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 @Deploy({ "org.nuxeo.platform.diff.test" })
 public class TestComplexPropertyHelper extends TestCase {
 
-    private static final Log LOGGER = LogFactory.getLog(TestComplexPropertyHelper.class);
-
     @Inject
     protected CoreSession session;
+
+    @Test
+    public void testGetSimplePropertyValue() throws Exception {
+
+        DocumentModel doc = session.getDocument(new PathRef(
+                DocumentDiffRepositoryInit.LEFT_DOC_PATH));
+
+        Serializable value = ComplexPropertyHelper.getSimplePropertyValue(doc,
+                "system", "type");
+        assertEquals("SampleType", value);
+
+        value = ComplexPropertyHelper.getSimplePropertyValue(doc, "system",
+                "path");
+        assertEquals("/leftDoc", value);
+
+        value = ComplexPropertyHelper.getSimplePropertyValue(doc, "system",
+                "lifecycle-state");
+        assertEquals("undefined", value);
+
+        value = ComplexPropertyHelper.getSimplePropertyValue(doc, "dublincore",
+                "title");
+        assertEquals("My first sample", value);
+
+        value = ComplexPropertyHelper.getSimplePropertyValue(doc,
+                "simpletypes", "integer");
+        assertEquals(10L, value);
+    }
 
     @Test
     public void testGetComplexItemNames() throws Exception {
@@ -176,13 +199,9 @@ public class TestComplexPropertyHelper extends TestCase {
                 "complextypes", "complexList", 0, "dateItem");
         assertNull(value);
 
-        try {
-            value = ComplexPropertyHelper.getComplexListItemValue(doc,
-                    "complextypes", "complexList", 1, "stringItem");
-            fail("Exception should have been thrown here.");
-        } catch (ClientException ce) {
-            LOGGER.debug("Exception thrown as expected: " + ce.getMessage());
-        }
+        value = ComplexPropertyHelper.getComplexListItemValue(doc,
+                "complextypes", "complexList", 1, "stringItem");
+        assertNull(value);
     }
 
     @Test

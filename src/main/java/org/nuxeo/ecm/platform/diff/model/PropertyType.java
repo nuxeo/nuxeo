@@ -78,6 +78,28 @@ public final class PropertyType {
     }
 
     /**
+     * Checks if is scalar list type.
+     * 
+     * @param propertyType the property type
+     * @return true, if is scalar list type
+     */
+    public static boolean isScalarListType(String propertyType) {
+
+        return SCALAR_LIST.equals(propertyType);
+    }
+
+    /**
+     * Checks if is complex list type.
+     * 
+     * @param propertyType the property type
+     * @return true, if is complex list type
+     */
+    public static boolean isComplexListType(String propertyType) {
+
+        return COMPLEX_LIST.equals(propertyType);
+    }
+
+    /**
      * Checks if is complex type.
      * 
      * @param propertyType the property type

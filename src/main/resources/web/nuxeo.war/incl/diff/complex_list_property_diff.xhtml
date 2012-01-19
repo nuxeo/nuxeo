@@ -2,8 +2,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-  
-  <nxu:set var="complexItemNames" value="#{documentDiffActions.getComplexListItemNames(schema, field)}">
+
+  <nxu:set var="complexItemNames" value="#{propertyDiffDisplayHelper.getComplexListItemNames(schema, field)}">
     <table class="complexDiffTable">
       <thead>
         <tr>
@@ -15,18 +15,18 @@
         </tr>
       </thead>
       <tbody>
-        <ui:repeat value="#{documentDiffActions.getListItemIndexes(propertyDiff)}" var="listItemIndex">
+        <ui:repeat value="#{propertyDiffDisplayHelper.getListItemIndexes(propertyDiff)}" var="listItemIndex">
           <tr>
             <ui:repeat value="#{complexItemNames}" var="complexItemName">
-              <nxu:set var="complexItemValue" value="#{documentDiffActions.getComplexListItemValue(doc, schema, field, listItemIndex, complexItemName)}">
+              <nxu:set var="complexItemValue" value="#{propertyDiffDisplayHelper.getComplexListItemValue(doc, schema, field, listItemIndex, complexItemName)}">
                 <td>
-                  <f:subview rendered="#{documentDiffActions.isSimpleProperty(complexItemValue)}">
+                  <f:subview rendered="#{propertyDiffDisplayHelper.isSimpleProperty(complexItemValue)}">
                     <ui:include src="/incl/diff/simple_property_diff.xhtml">
                       <ui:param name="propertyValue" value="#{complexItemValue}"/>
                       <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[listItemIndex].diffMap[complexItemName]}"/>
                     </ui:include>
                   </f:subview>
-                  <f:subview rendered="#{documentDiffActions.isComplexProperty(complexItemValue)}">
+                  <f:subview rendered="#{propertyDiffDisplayHelper.isComplexProperty(complexItemValue)}">
                     <ui:include src="/incl/diff/complex_property_diff.xhtml">
                       <ui:param name="doc" value="#{doc}"/>
                       <ui:param name="schema" value="#{schema}"/>
@@ -34,7 +34,7 @@
                       <ui:param name="propertyDiff" value="#{propertyDiff.diffMap[listItemIndex].diffMap[complexItemName]}"/>
                     </ui:include>
                   </f:subview>
-                  <f:subview rendered="#{documentDiffActions.isListProperty(complexItemValue)}">
+                  <f:subview rendered="#{propertyDiffDisplayHelper.isListProperty(complexItemValue)}">
                     /!\ A list type nested in a complex list type is not taken into account yet.
                   </f:subview>
                 </td>

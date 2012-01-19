@@ -42,6 +42,45 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class ComplexPropertyHelper {
 
+    private static final String SYSTEM_ELEMENT = "system";
+
+    private static final String TYPE_ELEMENT = "type";
+
+    private static final String PATH_ELEMENT = "path";
+
+    private static final String LIFECYCLE_STATE_ELEMENT = "lifecycle-state";
+
+    /**
+     * Gets the simple property value.
+     * 
+     * @param doc the doc
+     * @param schemaName the schema name
+     * @param fieldName the field name
+     * @return the simple property value
+     * @throws ClientException the client exception
+     */
+    public static Serializable getSimplePropertyValue(DocumentModel doc,
+            String schemaName, String fieldName) throws ClientException {
+
+        Serializable propertyValue = null;
+
+        if (SYSTEM_ELEMENT.equals(schemaName)) {
+            if (TYPE_ELEMENT.equals(fieldName)) {
+                propertyValue = doc.getType();
+            } else if (PATH_ELEMENT.equals(fieldName)) {
+                propertyValue = doc.getPathAsString();
+            } else if (LIFECYCLE_STATE_ELEMENT.equals(fieldName)) {
+                propertyValue = doc.getCurrentLifeCycleState();
+            }
+        } else {
+            propertyValue = (Serializable) doc.getProperty(schemaName,
+                    fieldName);
+        }
+
+        return propertyValue;
+
+    }
+
     /**
      * Gets the complex item names.
      * 

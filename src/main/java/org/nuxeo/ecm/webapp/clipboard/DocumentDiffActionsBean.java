@@ -32,10 +32,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.platform.diff.helpers.ComplexPropertyHelper;
 import org.nuxeo.ecm.platform.diff.model.DocumentDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.DocumentDiffImpl;
-import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -160,63 +158,6 @@ public class DocumentDiffActionsBean implements Serializable {
         }
         return getDocumentDiffService().diff(documentManager, leftDoc, rightDoc);
 
-    }
-
-    public List<String> getComplexItemNames(String schemaName, String fieldName)
-            throws Exception {
-
-        return ComplexPropertyHelper.getComplexItemNames(schemaName, fieldName);
-    }
-
-    public Serializable getComplexItemValue(DocumentModel doc,
-            String schemaName, String fieldName, String complexItemName)
-            throws ClientException {
-
-        return ComplexPropertyHelper.getComplexItemValue(doc, schemaName,
-                fieldName, complexItemName);
-    }
-
-    public List<Integer> getListItemIndexes(ListPropertyDiff listPropertyDiff)
-            throws ClientException {
-
-        return ComplexPropertyHelper.getListItemIndexes(listPropertyDiff);
-    }
-
-    public Serializable getListItemValue(DocumentModel doc, String schemaName,
-            String fieldName, int itemIndex) throws ClientException {
-
-        return ComplexPropertyHelper.getListItemValue(doc, schemaName,
-                fieldName, itemIndex);
-    }
-
-    public List<String> getComplexListItemNames(String schemaName,
-            String fieldName) throws Exception {
-
-        return ComplexPropertyHelper.getComplexListItemNames(schemaName,
-                fieldName);
-    }
-
-    public Serializable getComplexListItemValue(DocumentModel doc,
-            String schemaName, String fieldName, int itemIndex,
-            String complexItemName) throws ClientException {
-
-        return ComplexPropertyHelper.getComplexListItemValue(doc, schemaName,
-                fieldName, itemIndex, complexItemName);
-    }
-
-    public boolean isSimpleProperty(Serializable prop) {
-
-        return ComplexPropertyHelper.isSimpleProperty(prop);
-    }
-
-    public boolean isComplexProperty(Serializable prop) {
-
-        return ComplexPropertyHelper.isComplexProperty(prop);
-    }
-
-    public boolean isListProperty(Serializable prop) {
-
-        return ComplexPropertyHelper.isListProperty(prop);
     }
 
     /**
