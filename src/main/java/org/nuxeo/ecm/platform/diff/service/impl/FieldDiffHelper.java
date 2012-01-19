@@ -397,7 +397,7 @@ public final class FieldDiffHelper {
         } else if (PropertyType.isListType(propertyType)) {
             return new ListPropertyDiff(propertyType);
         } else { // Complex type
-            return new ComplexPropertyDiff();
+            return new ComplexPropertyDiff(propertyType);
         }
     }
 
@@ -565,7 +565,7 @@ public final class FieldDiffHelper {
                                 hasControlNodeChildNodes));
             }
         } else { // Complex type
-            propertyDiff = new ComplexPropertyDiff();
+            propertyDiff = new ComplexPropertyDiff(nodePropertyType);
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node childNode = childNodes.item(i);

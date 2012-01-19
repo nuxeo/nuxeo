@@ -75,6 +75,15 @@ public class PropertyDiff implements Serializable {
         return PropertyType.isComplexType(propertyType);
     }
 
+    /**
+     * Checks if is content type.
+     * 
+     * @return true, if is content type
+     */
+    public boolean isContentType() {
+        return PropertyType.isContentType(propertyType);
+    }
+
     public String getPropertyType() {
         return propertyType;
     }

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
-import org.nuxeo.ecm.platform.diff.model.PropertyType;
 
 /**
  * Implementation of PropertyDiff for a complex property.
@@ -36,9 +35,9 @@ public class ComplexPropertyDiff extends PropertyDiff {
     /**
      * Instantiates a new complex property diff.
      */
-    public ComplexPropertyDiff() {
+    public ComplexPropertyDiff(String propertyType) {
 
-        this.propertyType = PropertyType.COMPLEX;
+        this.propertyType = propertyType;
         diffMap = new HashMap<String, PropertyDiff>();
     }
 

@@ -31,10 +31,12 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.diff.diff_match_patch;
 import org.nuxeo.ecm.platform.diff.helpers.ComplexPropertyHelper;
+import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
-import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -118,6 +120,11 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         return ComplexPropertyHelper.isComplexProperty(prop);
     }
 
+    public boolean isContentProperty(Serializable prop) {
+
+        return ComplexPropertyHelper.isContentProperty(prop);
+    }
+
     public boolean isListProperty(Serializable prop) {
 
         return ComplexPropertyHelper.isListProperty(prop);
@@ -131,7 +138,7 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
      * @return the property display
      */
     public String getPropertyDisplay(Serializable propertyValue,
-            SimplePropertyDiff propertyDiff) {
+            PropertyDiff propertyDiff) {
 
         String propertyDisplay;
 
@@ -149,6 +156,18 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         else if (propertyValue instanceof Calendar) {
             DateFormat sdf = new SimpleDateFormat("dd MMMM yyyy - hh:mm");
             propertyDisplay = sdf.format(((Calendar) propertyValue).getTime());
+        }
+        // SQLBlob
+        else if (propertyValue instanceof SQLBlob) {
+            Binary binary = ((SQLBlob) propertyValue).getBinary();
+            if (binary == null) {
+                propertyDisplay = "Null binary";
+            } else {
+                propertyDisplay = "Digest: " + binary.getDigest();
+            }
+        } // Binary
+        else if (propertyValue instanceof Binary) {
+            propertyDisplay = "Digest: " + ((Binary) propertyValue).getDigest();
         }
         // Default: we consider property value is a String.
         // Works fine for PropertyType.STRING, PropertyType.INTEGER,

@@ -179,7 +179,8 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // complex => same / different (update) / different (remove) / different
         // (add)
-        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -198,7 +199,8 @@ public class TestDocumentDiff extends DiffTestCase {
         // item2: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -210,7 +212,8 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.DATE, null,
                         "2011-12-30T23:00:00Z"));
 
-        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, null,
                         "second element of a complex list"));
@@ -240,7 +243,8 @@ public class TestDocumentDiff extends DiffTestCase {
         // item3: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item1ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, "second item",
                         "second item is different"));
@@ -257,7 +261,8 @@ public class TestDocumentDiff extends DiffTestCase {
         item1ExpectedComplexFieldDiff.putDiff("stringListItem",
                 expectedNestedListDiff);
 
-        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, null, "third item"));
         item2ExpectedComplexFieldDiff.putDiff("stringListItem",
@@ -388,7 +393,8 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // complex => same / different (update) / different (add) / different
         // (remove)
-        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -407,7 +413,8 @@ public class TestDocumentDiff extends DiffTestCase {
         // item2: remove
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -419,7 +426,8 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.DATE,
                         "2011-12-30T23:00:00Z", null));
 
-        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING,
                         "second element of a complex list", null));
@@ -449,7 +457,8 @@ public class TestDocumentDiff extends DiffTestCase {
         // item3: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item1ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING,
                         "second item is different", "second item"));
@@ -466,7 +475,8 @@ public class TestDocumentDiff extends DiffTestCase {
         item1ExpectedComplexFieldDiff.putDiff("stringListItem",
                 expectedNestedListDiff);
 
-        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, "third item", null));
         item2ExpectedComplexFieldDiff.putDiff("stringListItem",

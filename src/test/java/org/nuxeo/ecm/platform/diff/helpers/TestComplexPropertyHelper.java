@@ -119,7 +119,7 @@ public class TestComplexPropertyHelper extends TestCase {
 
         value = ComplexPropertyHelper.getComplexItemValue(doc, "complextypes",
                 "complex", "dateItem");
-        assertNull(value);
+        assertEquals("", value);
     }
 
     @Test
@@ -197,7 +197,7 @@ public class TestComplexPropertyHelper extends TestCase {
 
         value = ComplexPropertyHelper.getComplexListItemValue(doc,
                 "complextypes", "complexList", 0, "dateItem");
-        assertNull(value);
+        assertEquals("", value);
 
         value = ComplexPropertyHelper.getComplexListItemValue(doc,
                 "complextypes", "complexList", 1, "stringItem");

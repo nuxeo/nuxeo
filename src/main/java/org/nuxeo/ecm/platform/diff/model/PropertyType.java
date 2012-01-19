@@ -107,7 +107,18 @@ public final class PropertyType {
      */
     public static boolean isComplexType(String propertyType) {
 
-        return COMPLEX.equals(propertyType);
+        return COMPLEX.equals(propertyType) || CONTENT.equals(propertyType);
+    }
+
+    /**
+     * Checks if is content type.
+     * 
+     * @param propertyType the property type
+     * @return true, if is content type
+     */
+    public static boolean isContentType(String propertyType) {
+
+        return CONTENT.equals(propertyType);
     }
 
 }

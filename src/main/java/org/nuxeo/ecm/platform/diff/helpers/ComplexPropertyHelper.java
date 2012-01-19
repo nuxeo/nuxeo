@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.runtime.api.Framework;
 
@@ -142,8 +143,7 @@ public final class ComplexPropertyHelper {
             String schemaName, String fieldName, String complexItemName)
             throws ClientException {
 
-        Map<String, Serializable> complexProp = getComplexProperty(doc,
-                schemaName, fieldName);
+        Object complexProp = getComplexProperty(doc, schemaName, fieldName);
 
         if (complexProp == null) {
             throw new ClientException(String.format(
@@ -151,12 +151,7 @@ public final class ComplexPropertyHelper {
                     fieldName, doc.getTitle()));
         }
 
-        Serializable complexItemValue = complexProp.get(complexItemName);
-
-        if (complexItemValue == null) {
-            return StringUtils.EMPTY;
-        }
-        return complexItemValue;
+        return getComplexOrContentItemValue(complexProp, complexItemName);
     }
 
     /**
@@ -277,7 +272,6 @@ public final class ComplexPropertyHelper {
      * @return the complex list item values
      * @throws ClientException the client exception
      */
-    @SuppressWarnings("unchecked")
     public static Serializable getComplexListItemValue(DocumentModel doc,
             String schemaName, String fieldName, int itemIndex,
             String complexItemName) throws ClientException {
@@ -289,47 +283,14 @@ public final class ComplexPropertyHelper {
             return null;
         }
 
-        if (!(listItem instanceof Map<?, ?>)) {
-            throw new ClientException(String.format(
-                    "Property %s:%s[%d] on doc '%s' is not a complex type.",
-                    schemaName, fieldName, itemIndex, doc.getTitle()));
+        if (!(listItem instanceof Map<?, ?> || listItem instanceof SQLBlob)) {
+            throw new ClientException(
+                    String.format(
+                            "Property %s:%s[%d] on doc '%s' is not a complex type nor a SQLBlob.",
+                            schemaName, fieldName, itemIndex, doc.getTitle()));
         }
 
-        Serializable complexListItemValue = ((Map<String, Serializable>) listItem).get(complexItemName);
-
-        if (complexListItemValue == null) {
-            return StringUtils.EMPTY;
-        }
-        return complexListItemValue;
-    }
-
-    /**
-     * Gets the complex property.
-     * 
-     * @param doc the doc
-     * @param schemaName the schema name
-     * @param fieldName the field name
-     * @return the complex property
-     * @throws ClientException the client exception
-     */
-    @SuppressWarnings("unchecked")
-    private static Map<String, Serializable> getComplexProperty(
-            DocumentModel doc, String schemaName, String fieldName)
-            throws ClientException {
-
-        Object prop = doc.getProperty(schemaName, fieldName);
-        if (prop == null) {
-            return null;
-        }
-
-        if (!(prop instanceof Map<?, ?>)) {
-            throw new ClientException(String.format(
-                    "Field [%s:%s] is not a complex type.", schemaName,
-                    fieldName));
-        }
-
-        return ((Map<String, Serializable>) prop);
-
+        return getComplexOrContentItemValue(listItem, complexItemName);
     }
 
     /**
@@ -353,6 +314,16 @@ public final class ComplexPropertyHelper {
     }
 
     /**
+     * Checks if is content property.
+     * 
+     * @param prop the prop
+     * @return true, if is content property
+     */
+    public static boolean isContentProperty(Object prop) {
+        return prop instanceof SQLBlob;
+    }
+
+    /**
      * Checks if is list property.
      * 
      * @param prop the prop
@@ -360,5 +331,78 @@ public final class ComplexPropertyHelper {
      */
     public static boolean isListProperty(Object prop) {
         return prop instanceof List<?> || prop instanceof Object[];
+    }
+
+    /**
+     * Gets the complex property.
+     * 
+     * @param doc the doc
+     * @param schemaName the schema name
+     * @param fieldName the field name
+     * @return the complex property
+     * @throws ClientException the client exception
+     */
+    private static Object getComplexProperty(DocumentModel doc,
+            String schemaName, String fieldName) throws ClientException {
+
+        Object prop = doc.getProperty(schemaName, fieldName);
+        if (prop == null) {
+            return null;
+        }
+
+        if (!(prop instanceof Map<?, ?> || prop instanceof SQLBlob)) {
+            throw new ClientException(
+                    String.format(
+                            "Field [%s:%s] on doc '%s' is not a complex type nor a SQLBlob.",
+                            schemaName, fieldName, doc.getTitle()));
+        }
+
+        return prop;
+
+    }
+
+    /**
+     * Gets the complex or content item value.
+     * 
+     * @param prop the prop
+     * @param itemName the item name
+     * @return the complex or content item value
+     * @throws ClientException the client exception
+     */
+    @SuppressWarnings("unchecked")
+    private static Serializable getComplexOrContentItemValue(Object prop,
+            String itemName) throws ClientException {
+
+        Serializable value;
+
+        if (prop instanceof Map<?, ?>) {
+            value = ((Map<String, Serializable>) prop).get(itemName);
+        } else { // complexType instanceof SQLBlob
+            SQLBlob blobProp = ((SQLBlob) prop);
+            if ("name".equals(itemName)) {
+                value = blobProp.getFilename();
+            } else if ("length".equals(itemName)) {
+                value = blobProp.getLength();
+            } else if ("data".equals(itemName)) {
+                value = blobProp.getBinary();
+            } else if ("encoding".equals(itemName)) {
+                value = blobProp.getEncoding();
+            } else if ("digest".equals(itemName)) {
+                value = blobProp.getDigest();
+            } else if ("mime-type".equals(itemName)) {
+                value = blobProp.getMimeType();
+            } else {
+                throw new ClientException(
+                        String.format(
+                                "Property [%s] is of type [content] => it has no sub item named [%s].",
+                                prop, itemName));
+            }
+        }
+
+        if (value == null) {
+            return StringUtils.EMPTY;
+        }
+
+        return value;
     }
 }

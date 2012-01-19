@@ -220,7 +220,8 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Antoine", "John"));
         expectedComplexPropDiff.putDiff("age", new SimplePropertyDiff(
@@ -244,15 +245,17 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "John", "Bob"));
-        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexPropDiff2.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Jimmy", null));
         expectedComplexPropDiff2.putDiff("lastname", new SimplePropertyDiff(
                 PropertyType.STRING, "Doe", null));
-        ComplexPropertyDiff expectedComplexPropDiff3 = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexPropDiff3 = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexPropDiff3.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Jack", null));
         expectedComplexPropDiff3.putDiff("lastname", new SimplePropertyDiff(
@@ -273,7 +276,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         ListPropertyDiff expectedListPropDiff = new ListPropertyDiff(
                 PropertyType.SCALAR_LIST);
         expectedListPropDiff.putDiff(0, new SimplePropertyDiff(
@@ -282,6 +285,33 @@ public class TestXMLDiff extends DiffTestCase {
                 PropertyType.STRING, "john", null));
         expectedComplexPropDiff.putDiff("listItem", expectedListPropDiff);
         expectedFieldDiff.putDiff(0, expectedComplexPropDiff);
+
+        // Complex list with a nested complex item
+        leftXML = "<dc:files type=\"complexList\">"
+                + "<item type=\"complex\"><filename type=\"string\">toto.txt</filename>"
+                + "<file type=\"content\"><name type=\"string\">toto.txt</name><data type=\"binary\">ba85946f.blob</data></file>"
+                + "</item></dc:files>";
+        rightXML = "<dc:files type=\"complexList\">"
+                + "<item type=\"complex\"><filename type=\"string\">otherFile.pdf</filename>"
+                + "<file type=\"content\"><name type=\"string\">otherFile.pdf</name><data type=\"binary\">fg10980f.blob</data></file>"
+                + "</item></dc:files>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "files");
+
+        expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff.putDiff("filename", new SimplePropertyDiff(
+                PropertyType.STRING, "toto.txt", "otherFile.pdf"));
+        ComplexPropertyDiff filePropDiff = new ComplexPropertyDiff(
+                PropertyType.CONTENT);
+        filePropDiff.putDiff("name", new SimplePropertyDiff(
+                PropertyType.STRING, "toto.txt", "otherFile.pdf"));
+        filePropDiff.putDiff("data", new SimplePropertyDiff(
+                PropertyType.BINARY, "ba85946f.blob", "fg10980f.blob"));
+        expectedComplexPropDiff.putDiff("file", filePropDiff);
+        expectedFieldDiff.putDiff(0, expectedComplexPropDiff);
+
+        checkListFieldDiff(propertyDiff, expectedFieldDiff);
     }
 
     /**
@@ -299,7 +329,8 @@ public class TestXMLDiff extends DiffTestCase {
         PropertyDiff propertyDiff = getPropertyDiff(leftXML, rightXML, 1,
                 "complex");
 
-        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
@@ -315,7 +346,7 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complex");
 
-        expectedFieldDiff = new ComplexPropertyDiff();
+        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         ListPropertyDiff expectedListPropDiff = new ListPropertyDiff(
                 PropertyType.SCALAR_LIST);
         expectedListPropDiff.putDiff(0, new SimplePropertyDiff(
@@ -338,8 +369,9 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complex");
 
-        expectedFieldDiff = new ComplexPropertyDiff();
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -387,12 +419,14 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, null, "John"));
         expectedComplexPropDiff.putDiff("lastname", new SimplePropertyDiff(
                 PropertyType.STRING, null, "Doe"));
-        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexPropDiff2.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, null, "Jack"));
         expectedComplexPropDiff2.putDiff("lastname", new SimplePropertyDiff(
@@ -419,10 +453,10 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "listOfList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "bob", "joe"));
-        expectedComplexPropDiff2 = new ComplexPropertyDiff();
+        expectedComplexPropDiff2 = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff2.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, null, "jack"));
         ListPropertyDiff expectedNestedListPropDiff = new ListPropertyDiff(
@@ -543,7 +577,8 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", null));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -560,7 +595,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, null, "joe"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -579,7 +614,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -598,7 +633,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -616,7 +651,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", null));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -634,7 +669,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, null, "joe"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -658,7 +693,8 @@ public class TestXMLDiff extends DiffTestCase {
         PropertyDiff propertyDiff = getPropertyDiff(leftXML, rightXML, 1,
                 "complexType");
 
-        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
         expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", null));
         expectedFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
@@ -671,7 +707,7 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexType");
 
-        expectedFieldDiff = new ComplexPropertyDiff();
+        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         expectedFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
                 PropertyType.BOOLEAN, "true", null));
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
@@ -686,7 +722,7 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexType");
 
-        expectedFieldDiff = new ComplexPropertyDiff();
+        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
         ListPropertyDiff expectedListPropertyDiff = new ListPropertyDiff(
                 PropertyType.SCALAR_LIST);
         expectedListPropertyDiff.putDiff(0, new SimplePropertyDiff(

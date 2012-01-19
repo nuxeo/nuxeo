@@ -6,7 +6,7 @@
   <nxu:set var="textDiffClass" value="#{propertyDiff != null ? nxu:concat(side,'Diff') : ''}">
     <f:subview rendered="#{empty propertyValue}">
       <div class="emptyTextDiff #{textDiffClass}">
-        <h:outputText value="N/A" rendered="#{propertyValue == null}" />
+        <h:outputText value="#{messages['property.null']}" rendered="#{propertyValue == null}" />
         <h:outputText value="&amp;nbsp;" escape="false" rendered="#{propertyValue != null}" />
       </div>
     </f:subview>
