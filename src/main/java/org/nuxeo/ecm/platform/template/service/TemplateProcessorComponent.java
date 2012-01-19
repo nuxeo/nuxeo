@@ -1,9 +1,10 @@
 package org.nuxeo.ecm.platform.template.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +17,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocumentAdapterImpl;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -32,6 +32,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     protected List<TemplateProcessorDescriptor> templateProcessors = new ArrayList<TemplateProcessorDescriptor>();
 
     protected TemplateProcessorRegistry processorRegistry;
+
+    protected ConcurrentHashMap<String, String> type2Template = null;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -213,5 +215,48 @@ public class TemplateProcessorComponent extends DefaultComponent implements
 
     public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
         return processorRegistry.getRegistredProcessors();
+    }
+
+    public Map<String, String> getTypeMapping() {
+        if (type2Template==null) {
+            synchronized (this) {
+                if (type2Template==null) {
+                    type2Template = new ConcurrentHashMap<String, String>();
+                    TemplateMappingFetcher fetcher = new TemplateMappingFetcher();
+                    try {
+                        fetcher.runUnrestricted();
+                    } catch (ClientException e) {
+                        log.error("Unable to fetch templates 2 types mapping", e);
+                    }
+                    type2Template.putAll(fetcher.getMapping());
+                }
+            }
+        }
+        return type2Template;
+    }
+
+    public void registerTypeMapping(DocumentModel doc) throws ClientException {
+        TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
+        if (tmpl!=null) {
+            Map<String, String> mapping = getTypeMapping();
+            // unbind previous mapping
+            List<String> boundTypes = new ArrayList<String>();
+            for (String type : mapping.keySet()) {
+                if (doc.getId().equals(mapping.get(type))) {
+                    boundTypes.add(type);
+                }
+            }
+            for (String type : boundTypes) {
+                mapping.remove(type);
+            }
+            // rebind types (with override)
+            for (String type : tmpl.getForcedTypes()) {
+                String uidToClean = mapping.get(type);
+                if (uidToClean!=null) {
+                    new TemplateMappingRemover(doc.getCoreSession(), uidToClean, type).runUnrestricted();
+                }
+                mapping.put(type, doc.getId());
+            }
+        }
     }
 }

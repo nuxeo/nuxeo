@@ -69,4 +69,7 @@ public interface TemplateSourceDocument {
 
     public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException;
 
+    public void removeForcedType(String type, boolean save) throws ClientException;
+
+    public void setForcedTypes(String [] forcedTypes, boolean save) throws ClientException;
 }

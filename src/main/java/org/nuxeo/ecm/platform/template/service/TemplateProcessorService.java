@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.template.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -28,4 +29,8 @@ public interface TemplateProcessorService {
             String targetType) throws ClientException;
 
     List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) throws ClientException;
+
+    Map<String, String> getTypeMapping();
+
+    void registerTypeMapping(DocumentModel doc) throws ClientException;
 }

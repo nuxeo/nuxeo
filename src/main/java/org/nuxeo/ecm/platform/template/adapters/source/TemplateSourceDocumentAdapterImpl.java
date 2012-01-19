@@ -173,6 +173,27 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
 
+    public void removeForcedType(String type, boolean save) throws ClientException {
+        List<String> types = getForcedTypes();
+        if (types.contains(type)) {
+            types.remove(type);
+            String[] typesArray = types.toArray(new String[types.size()]);
+            getAdaptedDoc().setPropertyValue(
+                    TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP, typesArray);
+            if (save) {
+                adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(getAdaptedDoc());
+            }
+        }
+    }
+
+    public void setForcedTypes(String [] forcedTypes, boolean save) throws ClientException {
+        getAdaptedDoc().setPropertyValue(
+                TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP, forcedTypes);
+        if (save) {
+            adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(getAdaptedDoc());
+        }
+    }
+
     public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException {
         return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(adaptedDoc);
     }
