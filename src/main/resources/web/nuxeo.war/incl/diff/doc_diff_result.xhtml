@@ -41,16 +41,16 @@
         </td>
         <td class="fieldDiffColumn">
           <h2>
-            <nxd:restDocumentLink document="#{leftDoc}">
+            [<nxd:restDocumentLink document="#{leftDoc}">
               <span id="title_#{leftDoc.ref}" title="#{leftDoc.dc.description}">
                 #{nxd:titleOrId(leftDoc)}
               </span>
-            </nxd:restDocumentLink>
+            </nxd:restDocumentLink>]
           </h2>
         </td>
         <td class="fieldDiffColumn">
           <h2>
-            <nxd:restDocumentLink document="#{rightDoc}">
+            [<nxd:restDocumentLink document="#{rightDoc}">
               <span id="title_#{rightDoc.ref}" title="#{rightDoc.dc.description}">
                 #{nxd:titleOrId(rightDoc)}
               </span>
@@ -60,7 +60,7 @@
                 (<h:outputText value="#{messages['label.version']}" />
                 <h:outputText value=" #{documentManager.getVersionLabel(rightDoc)}" />)
               </span>
-            </c:if>
+            </c:if>]
           </h2>
         </td>
       </tr>
