@@ -782,6 +782,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
+        if (sqlInfo.dialect.needsPrepareUserReadAcls()) {
+            prepareUserReadAcls(queryFilter);
+        }
         QueryMaker queryMaker = findQueryMaker(queryType);
         if (queryMaker == null) {
             throw new StorageException("No QueryMaker accepts query: "
