@@ -7,4 +7,5 @@ Bundle-Vendor: Nuxeo Platform Diff
 Bundle-Version: 5.5
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.platform.diff.test;singleton:=true
-Nuxeo-Component: OSGI-INF/test-types-contrib.xml
+Nuxeo-Component: OSGI-INF/test-types-contrib.xml,
+ OSGI-INF/test-document-diff-display-contrib.xml

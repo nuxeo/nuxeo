@@ -1,0 +1,16 @@
+<component
+  name="org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService.contrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService"
+    point="complexItemsDisplay">
+
+    <complexItems property="complextypes:complex">
+      <item>integerItem</item>
+      <item>dateItem</item>
+      <item>stringItem</item>
+    </complexItems>
+
+  </extension>
+
+</component>

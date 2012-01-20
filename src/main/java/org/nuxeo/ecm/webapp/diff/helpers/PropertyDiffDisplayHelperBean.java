@@ -37,7 +37,9 @@ import org.nuxeo.ecm.platform.diff.diff_match_patch;
 import org.nuxeo.ecm.platform.diff.helpers.ComplexPropertyHelper;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
+import org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helps handling property diff display.
@@ -70,7 +72,14 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
     public List<String> getComplexItemNames(String schemaName, String fieldName)
             throws Exception {
 
-        return ComplexPropertyHelper.getComplexItemNames(schemaName, fieldName);
+        List<String> complexItemNames = ComplexPropertyHelper.getComplexItemNames(
+                schemaName, fieldName);
+
+        getDocumentDiffDisplayService().applyComplexItemsOrder(schemaName,
+                fieldName, complexItemNames);
+
+        return complexItemNames;
+
     }
 
     public Serializable getComplexItemValue(DocumentModel doc,
@@ -98,8 +107,13 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
     public List<String> getComplexListItemNames(String schemaName,
             String fieldName) throws Exception {
 
-        return ComplexPropertyHelper.getComplexListItemNames(schemaName,
-                fieldName);
+        List<String> complexListItemNames = ComplexPropertyHelper.getComplexListItemNames(
+                schemaName, fieldName);
+
+        getDocumentDiffDisplayService().applyComplexItemsOrder(schemaName,
+                fieldName, complexListItemNames);
+
+        return complexListItemNames;
     }
 
     public Serializable getComplexListItemValue(DocumentModel doc,
@@ -189,5 +203,28 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         // TODO: Directory!
 
         return propertyDisplay;
+    }
+
+    /**
+     * Gets the document diff display service.
+     * 
+     * @return the document diff display service
+     * @throws ClientException the client exception
+     */
+    protected final DocumentDiffDisplayService getDocumentDiffDisplayService()
+            throws ClientException {
+
+        DocumentDiffDisplayService docDiffDisplayService;
+
+        try {
+            docDiffDisplayService = Framework.getService(DocumentDiffDisplayService.class);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
+        if (docDiffDisplayService == null) {
+            throw new ClientException(
+                    "DocumentDiffDisplayService service is null.");
+        }
+        return docDiffDisplayService;
     }
 }

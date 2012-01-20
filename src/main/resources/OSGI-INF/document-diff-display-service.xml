@@ -1,0 +1,34 @@
+<component
+  name="org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService">
+
+  <documentation>
+    This service provides an extension point to manage
+    complex items order in a document diff display.
+
+    @author
+    Antoine
+    Taillefer
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.diff.service.impl.DocumentDiffDisplayServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService" />
+  </service>
+
+  <extension-point name="complexItemsDisplay">
+    <documentation>
+      <code>
+        <complexItems property="complextypes:complex">
+          <item name="stringItem" />
+          <item name="booleanItem" />
+          <item name="integerItem" />
+        </complexItems>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.diff.service.ComplexItemsDescriptor" />
+  </extension-point>
+
+</component>
