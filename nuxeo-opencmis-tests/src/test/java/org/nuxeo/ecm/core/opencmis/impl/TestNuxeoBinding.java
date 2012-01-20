@@ -1883,6 +1883,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         objService.updateProperties(repositoryId, objectIdHolder, null,
                 properties, null);
 
+        sleepForFulltext();
+
         ObjectList res;
         String statement;
 
@@ -1899,18 +1901,21 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("new title1",
                 getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        // specific query for title index (the description token do not match)
-        statement = "SELECT cmis:name FROM File"
-                + " WHERE CONTAINS('nx:title:description1')";
-        res = query(statement);
-        assertEquals(0, res.getNumItems().intValue());
+        if (supportsMultipleFulltextIndexes()) {
+            // specific query for title index (the description token do not
+            // match)
+            statement = "SELECT cmis:name FROM File"
+                    + " WHERE CONTAINS('nx:title:description1')";
+            res = query(statement);
+            assertEquals(0, res.getNumItems().intValue());
 
-        statement = "SELECT cmis:name FROM File"
-                + " WHERE CONTAINS('nx:title:title1')";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+            statement = "SELECT cmis:name FROM File"
+                    + " WHERE CONTAINS('nx:title:title1')";
+            res = query(statement);
+            assertEquals(1, res.getNumItems().intValue());
+            assertEquals("new title1",
+                    getString(res.getObjects().get(0), PropertyIds.NAME));
+        }
 
         // specific query for invalid index name should not break (but log a
         // warning instead and fallback to the default index)
@@ -1940,6 +1945,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         objService.updateProperties(repositoryId, objectIdHolder, null,
                 properties, null);
 
+        sleepForFulltext();
+
         ObjectList res;
         String statement;
 
@@ -1964,6 +1971,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryScore() throws Exception {
+        sleepForFulltext();
+
         ObjectList res;
         String statement;
         ObjectData data;

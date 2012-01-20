@@ -113,6 +113,14 @@ public class NuxeoBindingTestCase {
         binding = new NuxeoBinding(service);
     }
 
+    public boolean supportsMultipleFulltextIndexes() {
+        return nuxeotc.database.supportsMultipleFulltextIndexes();
+    }
+
+    public void sleepForFulltext() {
+        nuxeotc.database.sleepForFulltext();
+    }
+
     public void tearDown() throws Exception {
         if (nuxeotc != null) {
             nuxeotc.closeSession();
