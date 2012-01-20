@@ -252,6 +252,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
+        database.sleepForFulltext();
         openSession();
 
         results = session.query(

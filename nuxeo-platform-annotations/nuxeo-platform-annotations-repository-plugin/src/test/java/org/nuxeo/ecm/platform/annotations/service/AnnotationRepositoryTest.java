@@ -73,6 +73,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
+        database.sleepForFulltext();
         openSession();
 
         // the text 'zombie' is not found in the document
@@ -94,6 +95,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
+        database.sleepForFulltext();
         openSession();
 
         // the body of the text is annotated on the document
@@ -115,6 +117,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
+        database.sleepForFulltext();
         openSession();
 
         // we  find no documents: this is
