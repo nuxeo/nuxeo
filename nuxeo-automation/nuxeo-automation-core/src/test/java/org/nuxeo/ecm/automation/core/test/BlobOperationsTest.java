@@ -18,6 +18,7 @@ import static org.junit.Assert.assertSame;
 import java.io.File;
 import java.io.Serializable;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +46,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -89,6 +92,11 @@ public class BlobOperationsTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+    }
+
+    @After
+    public void clearRepo() throws Exception {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
     // ------ Tests comes here --------
