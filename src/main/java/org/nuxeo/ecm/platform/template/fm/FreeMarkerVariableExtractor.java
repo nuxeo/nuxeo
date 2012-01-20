@@ -44,7 +44,7 @@ public class FreeMarkerVariableExtractor {
 
     protected final static Pattern[] directiveMatchers = new Pattern[] {
             Pattern.compile("\\[\\#if\\s([^\\]]*)\\]"),
-            Pattern.compile("\\[\\#list\\s(.+)\\sas\\s(.+)\\]") };
+            Pattern.compile("\\[\\#list\\s(.+)\\sas\\s([^\\]]*)\\]") };
 
     protected final static Pattern[] assignMatchers = new Pattern[] { Pattern.compile("\\[\\#assign\\s(.+)=.*\\]") };
 

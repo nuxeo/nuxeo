@@ -28,7 +28,6 @@ public class TestFreemarkerVariableExractor extends TestCase {
         assertTrue(vars.contains("objectVar"));
         assertTrue(vars.contains("dateVar"));
 
-
         assertTrue(vars.contains("condVar1"));
         assertTrue(vars.contains("condVar2"));
         assertTrue(vars.contains("condVar3"));
@@ -43,7 +42,7 @@ public class TestFreemarkerVariableExractor extends TestCase {
         assertFalse(vars.contains("doc"));
         assertFalse(vars.contains("document"));
         assertFalse(vars.contains("auditEntries"));
-
+        assertFalse(vars.contains("auditEntry"));
         assertFalse(vars.contains("subject"));
 
 
