@@ -465,7 +465,8 @@ public class DialectSQLServer extends Dialect {
         // java.sql.SQLException: Invalid state, the Connection object is
         // closed.
         String message = t.getMessage();
-        if (message.contains("the Connection object is closed")) {
+        if (message != null
+                && message.contains("the Connection object is closed")) {
             return true;
         }
         return false;
