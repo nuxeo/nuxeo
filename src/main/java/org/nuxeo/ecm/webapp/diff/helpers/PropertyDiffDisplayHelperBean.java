@@ -53,14 +53,6 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    // TODO: use matcher
-    // protected diff_match_patch dmp;
-
-    // @Create
-    // public void init() {
-    // dmp = new diff_match_patch();
-    // }
-
     public static Serializable getSimplePropertyValue(DocumentModel doc,
             String schemaName, String fieldName) throws ClientException {
 
@@ -187,17 +179,6 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         // PropertyType.LONG, PropertyType.DOUBLE.
         else {
             propertyDisplay = propertyValue.toString();
-            // String leftValue = propertyDiff.getLeftValue();
-            // String rightValue = propertyDiff.getRightValue();
-            // if (leftValue == null) {
-            // leftValue = "";
-            // }
-            // if (rightValue == null) {
-            // rightValue = "";
-            // }
-            // LinkedList<Diff> diffs = dmp.diff_main(leftValue, rightValue);
-            // propertyDisplay = dmp.diff_prettyHtml(diffs);
-
         }
         // TODO: Directory!
 
