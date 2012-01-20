@@ -456,6 +456,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryWithSearchDocument() throws Exception {
+        if (!database.supportsMultipleFulltextIndexes()) {
+            return;
+        }
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
 
@@ -468,6 +471,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryWithSearchDocumentReference() throws Exception {
+        if (!database.supportsMultipleFulltextIndexes()) {
+            return;
+        }
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF");
         assertNotNull(contentView);
 
