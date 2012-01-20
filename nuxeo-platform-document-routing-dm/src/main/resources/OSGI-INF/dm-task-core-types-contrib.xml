@@ -8,6 +8,7 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
     <schema name="task_step" src="schemas/task_step.xsd"  prefix="tkst" />
+    <schema name="conditional_task_step" src="schemas/conditional_task_step.xsd"  prefix="ctkst" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -25,12 +26,26 @@
       <facet name="Commentable" />
     </doctype>
 
+   <doctype name="FollowLifeCycleTransitionTask" extends="SimpleTask">
+   </doctype>
+
+    <doctype name="PublishTask" extends="SimpleTask">
+    </doctype>
+    
+    <doctype name="ConditionalTask" extends="SimpleTask">
+      <schema name="conditional_task_step" />
+    </doctype>
+
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="types">
     <types>
       <type name="SimpleTask">documentRouteElement</type>
+      <type name="FollowLifeCycleTransitionTask">documentRouteElement</type>
+      <type name="PublishTask">documentRouteElement</type>
+      <type name="ConditionalTask">documentRouteElement</type>
     </types>
   </extension>
 

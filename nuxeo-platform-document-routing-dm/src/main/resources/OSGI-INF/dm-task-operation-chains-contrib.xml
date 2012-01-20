@@ -15,6 +15,42 @@
         </param>
       </operation>
     </chain>
+    
+    <chain id="followLifeCycleTransitionTask">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateRoutingTask">
+        <param type="string" name="accept operation chain">
+          followLifeCycleTransition
+        </param>
+        <param type="string" name="reject operation chain">
+          setTaskDone
+        </param>
+      </operation>
+    </chain>
+    
+     <chain id="publishTask">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateRoutingTask">
+        <param type="string" name="accept operation chain">
+          publishDocument
+        </param>
+        <param type="string" name="reject operation chain">
+          setTaskDone
+        </param>
+      </operation>
+    </chain>
+    
+     <chain id="conditionalTask">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateRoutingTask">
+        <param type="string" name="accept operation chain">
+          evaluateCondition
+        </param>
+        <param type="string" name="reject operation chain">
+          setTaskDone
+        </param>
+      </operation>
+    </chain>
 
     <chain id="setTaskDone">
       <operation id="Document.Routing.Task.Done" />
@@ -24,6 +60,39 @@
      <operation id="Workflow.RemoveRoutingTask" />
      <operation id="Document.Routing.BackToReady" />
    </chain>
+  
+    <chain id="followLifeCycleTransition">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Routing.SetRunningStepFromTask"/>
+      <operation id="Document.SetLifeCycle">
+        <param type="string" name="value">expr:Context["document.routing.step"].getDocument().getPropertyValue("tkst:directive")</param>
+      </operation>
+
+      <operation id="Document.Routing.Resume.Step"/>
+    </chain>
+    
+    <chain id="publishDocument">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Routing.SetRunningStepFromTask"/>
+      <operation id="Document.Publish">
+      	<param type="string" name="target">expr:Context["document.routing.step"].getDocument().getPropertyValue("tkst:directive")</param>
+      </operation>
+      <operation id="Document.Routing.Resume.Step"/>
+    </chain>
+    
+     <chain id="evaluateCondition">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Routing.SetRunningStepFromTask"/>
+      <operation id="Document.Routing.EvaluateCondition">
+      	<param type="string" name="subject">expr:Context["document.routing.step"].getDocument().getPropertyValue("ctkst:subject")</param>
+      	<param type="string" name="operator">expr:Context["document.routing.step"].getDocument().getPropertyValue("ctkst:operator")</param>
+      	<param type="string" name="value">expr:Context["document.routing.step"].getDocument().getPropertyValue("ctkst:value")</param>
+      </operation>
+      <operation id="Update.NextStep.ConditionalFolder" >
+      	<param type="string" name="nextStepPos">expr:Context['nextStepPos']</param>
+      </operation>
+      <operation id="Document.Routing.Resume.Step"/>
+    </chain>
   
   </extension>
 </component>

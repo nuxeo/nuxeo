@@ -1,0 +1,24 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{widget.mode != 'edit'}">
+    <h:outputText value="#{messages[field]}" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneMenu value="#{field}" id="#{widget.id}">
+      <f:selectItem itemValue="equal"
+        itemLabel="=" />
+      <f:selectItem itemValue="greater"
+        itemLabel="&gt;" />
+      <f:selectItem itemValue="not_equal"
+        itemLabel="!=" />
+      <f:selectItem itemValue="smaller"
+        itemLabel="&lt;" />
+     
+    </h:selectOneMenu>
+    <h:message for="#{widget.id}" class="errorMessage" />
+  </c:if>
+
+</div>

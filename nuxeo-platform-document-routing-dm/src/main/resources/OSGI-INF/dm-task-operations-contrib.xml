@@ -8,6 +8,10 @@
       class="org.nuxeo.ecm.platform.routing.dm.operation.SetTaskDone" />
     <operation
       class="org.nuxeo.ecm.platform.routing.dm.operation.RemoveRoutingTask" /> 
+    <operation
+      class="org.nuxeo.ecm.platform.routing.dm.operation.SetCurrentRunningStepFromTask" />
+    <operation
+      class="org.nuxeo.ecm.platform.routing.dm.operation.EvaluateCondition" />     
   </extension>
 
 </component>
