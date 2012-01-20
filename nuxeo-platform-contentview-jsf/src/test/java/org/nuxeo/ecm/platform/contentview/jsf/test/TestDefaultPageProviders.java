@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.el.ELException;
 import javax.faces.context.FacesContext;
@@ -51,7 +52,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     DocumentModel searchDocument;
 
-    private int dummyParam = 0;
+    private String dummyParam = UUID.randomUUID().toString();
 
     @Override
     public void setUp() throws Exception {
@@ -83,7 +84,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                     return searchDocument;
                 }
                 if ("#{dummy.param}".equals(expression)) {
-                    return ++dummyParam;
+                    dummyParam = UUID.randomUUID().toString();
+                    return dummyParam;
                 }
                 if ("#{currentDocument.id}".equals(expression)) {
                     return rootDoc.getId();
@@ -164,8 +166,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                         "SELECT * FROM Document WHERE ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted'" 
-                                + " AND ecm:parentId != %d"
+                                + " AND ecm:currentLifeCycleState != 'deleted'"
+                                + " AND ecm:parentId != '%s'"
                                 + " ORDER BY dc:title",
                         parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -191,7 +193,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
                                 + " AND ecm:currentLifeCycleState != 'deleted'"
-                                + " AND ecm:parentId != %d"
+                                + " AND ecm:parentId != '%s'"
                                 + " ORDER BY dc:title",
                         parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -270,7 +272,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
                                 + " AND ecm:currentLifeCycleState != 'deleted'"
-                                + " AND ecm:parentId != %d"
+                                + " AND ecm:parentId != '%s'"
                                 + " ORDER BY dc:title",
                         parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -296,7 +298,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
                                 + " AND ecm:currentLifeCycleState != 'deleted'"
-                                + " AND ecm:parentId != %d"
+                                + " AND ecm:parentId != '%s'"
                                 + " ORDER BY dc:title",
                         parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
