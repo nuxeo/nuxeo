@@ -1,6 +1,4 @@
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -26,9 +24,9 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-         <executions>
-           <execution>
-          <id>start-nuxeo</id>
+        <executions>
+          <execution>
+            <id>start-nuxeo</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>build</goal>
@@ -56,8 +54,8 @@
               <testFailureIgnore>true</testFailureIgnore>
             </configuration>
           </execution>
-           <execution>
-          <id>stop-nuxeo</id>
+          <execution>
+            <id>stop-nuxeo</id>
             <phase>post-integration-test</phase>
             <goals>
               <goal>build</goal>
@@ -66,7 +64,6 @@
               <buildFile>${basedir}/itests.xml</buildFile>
               <targets>
                 <target>stop</target>
-                <target>cleanup-environment</target>
               </targets>
             </configuration>
           </execution>

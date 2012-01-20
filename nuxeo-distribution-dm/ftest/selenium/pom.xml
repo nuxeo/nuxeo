@@ -60,7 +60,6 @@
               <buildFile>${basedir}/itests.xml</buildFile>
               <targets>
                 <target>stop</target>
-                <target>cleanup-environment</target>
               </targets>
             </configuration>
           </execution>

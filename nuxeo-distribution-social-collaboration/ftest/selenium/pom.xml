@@ -1,6 +1,4 @@
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -16,21 +14,14 @@
   <description>Nuxeo Social Collaboration Functional Tests</description>
   <packaging>pom</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-server-standalone</artifactId>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <executions>
-         <execution>
-          <id>start-nuxeo</id>
+          <execution>
+            <id>start-nuxeo</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>build</goal>
@@ -55,8 +46,8 @@
               <target>run-selenium-tests</target>
             </configuration>
           </execution>
-         <execution>
-          <id>stop-nuxeo</id>
+          <execution>
+            <id>stop-nuxeo</id>
             <phase>post-integration-test</phase>
             <goals>
               <goal>build</goal>
@@ -65,7 +56,6 @@
               <buildFile>${basedir}/itests.xml</buildFile>
               <targets>
                 <target>stop</target>
-                <target>cleanup-environment</target>
               </targets>
             </configuration>
           </execution>
