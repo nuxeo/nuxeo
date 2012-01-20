@@ -23,8 +23,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -32,9 +34,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.platform.diff.differs.diff_match_patch;
+import org.nuxeo.ecm.platform.diff.differs.diff_match_patch.Diff;
 import org.nuxeo.ecm.platform.diff.helpers.ComplexPropertyHelper;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
+import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -52,6 +57,13 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
 
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
+
+    protected diff_match_patch dmp;
+
+    @Create
+    public void init() {
+        dmp = new diff_match_patch();
+    }
 
     public static Serializable getSimplePropertyValue(DocumentModel doc,
             String schemaName, String fieldName) throws ClientException {
@@ -156,6 +168,24 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         else if (propertyValue instanceof Date) {
             DateFormat sdf = new SimpleDateFormat("dd MMMM yyyy - hh:mm");
             propertyDisplay = sdf.format(propertyValue);
+            
+            if (propertyDiff != null) {
+                String leftValue = ((SimplePropertyDiff) propertyDiff).getLeftValue();
+                String rightValue = ((SimplePropertyDiff) propertyDiff).getRightValue();
+                if (leftValue == null) {
+                    leftValue = "";
+                } else {
+                    leftValue = sdf.format(leftValue);
+                }
+                if (rightValue == null) {
+                    rightValue = "";
+                } else {
+                    rightValue = sdf.format(rightValue);
+                }
+                
+                LinkedList<Diff> diffs = dmp.diff_main(leftValue, rightValue);
+                propertyDisplay = dmp.diff_prettyHtml(diffs);
+            }
         }
         // Calendar
         else if (propertyValue instanceof Calendar) {
@@ -178,7 +208,21 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         // Works fine for PropertyType.STRING, PropertyType.INTEGER,
         // PropertyType.LONG, PropertyType.DOUBLE.
         else {
+            // TODO: no cast of propertyDiff
             propertyDisplay = propertyValue.toString();
+            if (propertyDiff != null) {
+                String leftValue = ((SimplePropertyDiff) propertyDiff).getLeftValue();
+                String rightValue = ((SimplePropertyDiff) propertyDiff).getRightValue();
+                if (leftValue == null) {
+                    leftValue = "";
+                }
+                if (rightValue == null) {
+                    rightValue = "";
+                }
+                LinkedList<Diff> diffs = dmp.diff_main(leftValue, rightValue);
+                propertyDisplay = dmp.diff_prettyHtml(diffs);
+            }
+
         }
         // TODO: Directory!
 
