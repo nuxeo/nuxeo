@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.jbpm.core.hibernatequeries;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +45,9 @@ public class HibernateQueriesTest extends TestCase {
 
     private static final String _1 = "1";
 
-    private static final String GET_TI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc.name();
+    private static final String GET_TI_1 = JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc_byTaskMgmt.name();
+
+    private static final String GET_TI_2 = JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc_byTask.name();
 
     private static final String DOC_ID = JbpmService.VariableName.documentId.name();
 
@@ -148,26 +151,38 @@ public class HibernateQueriesTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testGetTaskInstancesForDoc() {
         ProcessDefinition pd = new ProcessDefinition();
+        session.save(pd);
         ProcessInstance pi = new ProcessInstance(pd);
         pi.setRootToken(new Token(pi));
+        session.save(pi);
         ContextInstance ci = pi.getContextInstance();
         ci.setVariable(DOC_ID, _1);
         ci.setVariable(REP_ID, DEMO);
+        session.save(ci);
         TaskMgmtInstance tmi = pi.getTaskMgmtInstance();
         TaskInstance ti1 = tmi.createTaskInstance();
-        ti1.setCreate(new Date());
-        TaskInstance ti = new TaskInstance();
-        ti.setVariable(DOC_ID, _1);
-        ti.setVariable(REP_ID, DEMO);
-        session.save(ci);
-        session.save(pd);
-        session.save(ti);
-        session.save(pi);
-        session.save(ti1);
         session.save(tmi);
+        ti1.setCreate(new Date());
+        session.save(ti1);
         session.flush();
-        List<TaskInstance> list = session.getNamedQuery(GET_TI).setParameter(
-                "docId", _1).setParameter("repoId", DEMO).list();
+
+        List<TaskInstance> list = new ArrayList<TaskInstance>();
+
+        list.addAll(session.getNamedQuery(GET_TI_1).setParameter(
+                "docId", _1).setParameter("repoId", DEMO).list());
+        assertTrue(list.contains(ti1));
+
+        TaskInstance ti2 = new TaskInstance();
+        ti2.setVariable(DOC_ID, _1);
+        ti2.setVariable(REP_ID, DEMO);
+        session.save(ti2);
+        session.flush();
+
+
+        list.addAll(session.getNamedQuery(GET_TI_2).setParameter(
+                "docId", _1).setParameter("repoId", DEMO).list());
+        assertTrue(list.contains(ti2));
+
         assertEquals(2, list.size());
     }
 
