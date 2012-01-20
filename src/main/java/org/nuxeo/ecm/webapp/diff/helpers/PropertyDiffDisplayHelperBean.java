@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -33,7 +32,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
-import org.nuxeo.ecm.platform.diff.diff_match_patch;
 import org.nuxeo.ecm.platform.diff.helpers.ComplexPropertyHelper;
 import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
 import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
@@ -55,12 +53,13 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    protected diff_match_patch dmp;
+    // TODO: use matcher
+    // protected diff_match_patch dmp;
 
-    @Create
-    public void init() {
-        dmp = new diff_match_patch();
-    }
+    // @Create
+    // public void init() {
+    // dmp = new diff_match_patch();
+    // }
 
     public static Serializable getSimplePropertyValue(DocumentModel doc,
             String schemaName, String fieldName) throws ClientException {
