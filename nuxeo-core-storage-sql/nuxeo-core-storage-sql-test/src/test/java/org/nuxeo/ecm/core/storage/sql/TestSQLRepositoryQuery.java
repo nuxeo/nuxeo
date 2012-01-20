@@ -905,6 +905,32 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(3, dml.size());
     }
 
+    // same with queryAndFetch
+    public void testQueryWithSecurity2() throws Exception {
+        createDocs();
+        DocumentModel root = session.getRootDocument();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("bob", "Browse", false));
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        session.save();
+        closeSession();
+        session = openSessionAs("bob");
+
+        IterableQueryResult res = session.queryAndFetch(
+                "SELECT * FROM Document", "NXQL");
+        assertEquals(3, res.size());
+        res.close();
+    }
+
     public void testQueryWithSecurityAndFulltext() throws Exception {
         createDocs();
         closeSession();
