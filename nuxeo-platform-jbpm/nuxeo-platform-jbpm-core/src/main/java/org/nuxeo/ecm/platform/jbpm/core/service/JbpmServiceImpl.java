@@ -68,8 +68,6 @@ public class JbpmServiceImpl implements JbpmService {
 
     private static final Log log = LogFactory.getLog(JbpmServiceImpl.class);
 
-    private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null and ti.isSuspended = false";
-
     protected Map<String, List<String>> typeFilters;
 
     private EventProducer eventProducer;
@@ -454,8 +452,15 @@ public class JbpmServiceImpl implements JbpmService {
                             user, null, context);
                     tisSet.addAll(tis);
                 } else {
-                    List<TaskInstance> tis = context.getSession().createQuery(
-                            FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL).list();
+                    List<TaskInstance> tis = new ArrayList<TaskInstance>();
+                    tis.addAll(context.getSession().getNamedQuery(
+                            JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc_byTaskMgmt.name()).setParameter(
+                            "docId", dm.getId()).setParameter("repoId",
+                            dm.getRepositoryName()).list());
+                    tis.addAll(context.getSession().getNamedQuery(
+                            JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc_byTask.name()).setParameter(
+                            "docId", dm.getId()).setParameter("repoId",
+                            dm.getRepositoryName()).list());
                     // sort to ensure deterministic order
                     Collections.sort(tis, new TaskCreateDateComparator());
                     tisSet.addAll(tis);

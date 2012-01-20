@@ -29,21 +29,37 @@
       and si.token.processInstance.isSuspended != true
     ]]>
   </query>
-
-  <query name="NuxeoHibernateQueries_getTaskInstancesForDoc">
-    <![CDATA[
-      select t
-      from org.jbpm.context.exe.variableinstance.StringInstance si1, 
-           org.jbpm.context.exe.variableinstance.StringInstance si2,
-           org.jbpm.taskmgmt.exe.TaskInstance t
-      where (si1.id member of t.variableInstances
-        or si1.token.id = t.token.id)
-      and si1.name = 'documentId'
-      and si2.name = 'documentRepositoryName'
-      and si1.value = :docId
-      and si2.value = :repoId
-      and t.end is null
-      and t.isSuspended != true
+  
+  <query name="NuxeoHibernateQueries_getTaskInstancesForDoc_byTaskMgmt">
+      <![CDATA[
+      select task
+      from            
+           org.jbpm.taskmgmt.exe.TaskInstance as task
+             inner join task.taskMgmtInstance as taskMgmt
+             inner join taskMgmt.processInstance,
+           org.jbpm.context.exe.variableinstance.StringInstance as vdoc
+             inner join vdoc.processInstance,
+           org.jbpm.context.exe.variableinstance.StringInstance as vrepo
+             inner join vrepo.processInstance
+     where  
+            task.end is null and task.isSuspended != true and
+            vdoc.name = 'documentId' and vdoc.value = :docId and vdoc.processInstance = taskMgmt.processInstance and
+            vrepo.name = 'documentRepositoryName' and vrepo.value = :repoId and vrepo.processInstance = taskMgmt.processInstance
     ]]>
   </query>
+  
+  <query name="NuxeoHibernateQueries_getTaskInstancesForDoc_byTask">
+      <![CDATA[
+      select task
+      from 
+           org.jbpm.taskmgmt.exe.TaskInstance as task,
+           org.jbpm.context.exe.variableinstance.StringInstance as vdoc,
+           org.jbpm.context.exe.variableinstance.StringInstance as vrepo
+      where 
+            task.end is null and task.isSuspended != true and
+            vdoc.name = 'documentId' and vdoc.value = :docId and vdoc member of task.variableInstances and
+            vrepo.name = 'documentRepositoryName' and vrepo.value = :repoId and vrepo member of task.variableInstances
+    ]]>
+  </query>
+  
 </hibernate-mapping>

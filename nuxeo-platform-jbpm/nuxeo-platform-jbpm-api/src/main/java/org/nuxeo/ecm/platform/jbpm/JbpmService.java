@@ -86,7 +86,7 @@ public interface JbpmService {
      * @author arussel
      */
     enum HibernateQueries {
-        NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc, NuxeoHibernateQueries_getProcessInstancesForInitiator
+        NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc_byTaskMgmt, NuxeoHibernateQueries_getTaskInstancesForDoc_byTask, NuxeoHibernateQueries_getProcessInstancesForInitiator
     }
 
     /**
@@ -205,7 +205,7 @@ public interface JbpmService {
 
     /**
      * Deletes a task instance (attached to a process or not)
-     * 
+     *
      * @param principal the canceller.
      * @Since 5.5
      */
