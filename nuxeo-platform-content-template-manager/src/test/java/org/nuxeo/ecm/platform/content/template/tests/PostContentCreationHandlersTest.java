@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
+import java.util.Collections;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -54,6 +56,12 @@ public class PostContentCreationHandlersTest extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
         DocumentModelList rootChildren = session.getChildren(root.getRef());
         assertEquals(2, rootChildren.size());
+
+        // query result order is not fixed
+        if (!"default-domain".equals(rootChildren.get(0).getName())) {
+            Collections.reverse(rootChildren);
+        }
+        assertEquals("default-domain", rootChildren.get(0).getName());
 
         DocumentModel child = rootChildren.get(1);
         assertNotNull(child);
