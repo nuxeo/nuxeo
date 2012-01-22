@@ -28,7 +28,14 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
-@Operation(id = SetCurrentRunningStepFromTask.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Current Step from Task", description = "Set the current running step as a comntext variable.")
+/***
+ * Set the current running step as <document.routing.step> context variable.
+ * 
+ * @author mcedica
+ * @since 5.6
+ * 
+ */
+@Operation(id = SetCurrentRunningStepFromTask.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Current Step from Task", description = "Set the current running step as <document.routing.step> context variable.")
 public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
     public final static String ID = "Document.Routing.SetRunningStepFromTask";
 

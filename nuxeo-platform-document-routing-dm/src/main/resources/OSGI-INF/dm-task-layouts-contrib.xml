@@ -76,36 +76,6 @@
           <field>tkst:automaticValidation</field>
         </fields>
      </widget>
-     <widget name="directive_conditional_subject" type="text">
-      <fields>
-        <field>ctkst:subject</field>
-      </fields>
-      <labels>
-         <label mode="any">label.review.directive</label>
-      </labels>
-      <translated>true</translated>
-    </widget>
-    <widget name="directive_conditional_operator" type="template">
-      <fields>
-        <field>ctkst:operator</field>
-      </fields>
-      <labels>
-         <label mode="any"></label>
-      </labels>
-      <properties mode="any">
-        <property name="template">
-         /widgets/routing_directive_operator_widget_template.xhtml
-        </property>
-      </properties>
-    </widget>
-    <widget name="directive_conditional_value" type="text">
-      <fields>
-        <field>ctkst:value</field>
-      </fields>
-       <labels>
-         <label mode="any"></label>
-      </labels>
-    </widget>
   </extension>  
   
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -181,11 +151,70 @@
           <widget>directive_conditional_subject</widget>
           <widget>directive_conditional_operator</widget>
           <widget>directive_conditional_value</widget>
+          <widget>operatorValidator</widget>
         </row>
         <row>
           <widget>dueDate</widget>
         </row>
-      </rows>
+       </rows>
+       <widget name="directive_conditional_subject" type="text">
+        <fields>
+          <field>ctkst:subject</field>
+         </fields>
+         <labels>
+          <label mode="any">label.review.directive</label>
+         </labels>
+         <translated>true</translated>
+         <properties widgetMode="edit">
+           <property name="required">true</property>
+           <property name="validator">
+            #{routingTaskActions.validateSubject}
+          </property>
+         </properties>
+        </widget>
+        <widget name="directive_conditional_operator" type="template">
+          <labels>
+          <label mode="any"></label>
+         </labels>
+         <fields>
+          <field>ctkst:operator</field>
+          </fields>
+          <properties mode="any">
+           <property name="template">
+           /widgets/routing_directive_operator_widget_template.xhtml
+          </property>
+         </properties>
+         <properties widgetMode="edit">
+           <property name="required">true</property>
+         </properties>
+       </widget>
+       <widget name="directive_conditional_value" type="text">
+        <labels>
+          <label mode="any"></label>
+         </labels>
+       <fields>
+         <field>ctkst:value</field>
+       </fields>
+       <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+     </widget>
+     <widget name="operatorValidator" type="template">
+       <fields>
+         <field></field>
+       </fields>
+        <labels>
+          <label mode="any"></label>
+         </labels>
+        <properties widgetMode="edit">
+           <property name="validator">
+            #{routingTaskActions.validateValueForOperator}
+          </property>
+          <property name="template">
+            /widgets/operator_value_validation_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
     </layout>
 
   </extension>

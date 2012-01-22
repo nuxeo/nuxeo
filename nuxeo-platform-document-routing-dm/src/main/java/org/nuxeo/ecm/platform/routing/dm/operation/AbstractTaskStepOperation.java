@@ -25,6 +25,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
 
+/**
+ * @since 5.6
+ * 
+ */
 public class AbstractTaskStepOperation {
 
     protected RoutingTask routingTask;
@@ -52,7 +56,8 @@ public class AbstractTaskStepOperation {
         return null;
     }
 
-    public String getRoutingStepDocumentId(OperationContext context) throws ClientException {
+    public String getRoutingStepDocumentId(OperationContext context)
+            throws ClientException {
         if (getRoutingTask(context) != null) {
             String stepDocumentId = routingTask.getVariable(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
             return stepDocumentId;
