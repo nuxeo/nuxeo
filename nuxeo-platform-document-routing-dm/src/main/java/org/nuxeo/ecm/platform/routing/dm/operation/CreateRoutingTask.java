@@ -34,6 +34,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.dm.adapter.TaskStep;
+import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
 import org.nuxeo.ecm.platform.routing.dm.task.RoutingTaskService;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
@@ -161,6 +163,8 @@ public class CreateRoutingTask {
             step.setCanValidateStep(coreSession, actor);
         }
         ctx.put(OperationTaskVariableName.taskDocuments.name(), docList);
+        ctx.put(RoutingTaskConstants.ROUTING_TASK_ACTORS_KEY, new StringList(
+                actors));
         return document;
     }
 

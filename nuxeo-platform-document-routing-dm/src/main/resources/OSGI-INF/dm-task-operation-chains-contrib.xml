@@ -13,7 +13,11 @@
         <param type="string" name="reject operation chain">
           setTaskDone
         </param>
-      </operation>
+       </operation> 
+	   <operation id="Context.RunDocumentOperationInNewTx">
+	     <param type="boolean" name="rollbackGlobalOnError">false</param>
+	     <param type="string" name="id">sendTaskCreatedNotificationMail</param>
+	   </operation>
     </chain>
     
     <chain id="followLifeCycleTransitionTask">
@@ -26,6 +30,10 @@
           setTaskDone
         </param>
       </operation>
+      <operation id="Context.RunDocumentOperationInNewTx">
+	     <param type="boolean" name="rollbackGlobalOnError">false</param>
+	     <param type="string" name="id">sendTaskCreatedNotificationMail</param>
+	   </operation>
     </chain>
     
      <chain id="publishTask">
@@ -38,6 +46,10 @@
           setTaskDone
         </param>
       </operation>
+      <operation id="Context.RunDocumentOperationInNewTx">
+	     <param type="boolean" name="rollbackGlobalOnError">false</param>
+	     <param type="string" name="id">sendTaskCreatedNotificationMail</param>
+	   </operation>
     </chain>
     
      <chain id="conditionalTask">
@@ -50,6 +62,10 @@
           setTaskDone
         </param>
       </operation>
+      <operation id="Context.RunDocumentOperationInNewTx">
+	     <param type="boolean" name="rollbackGlobalOnError">false</param>
+	     <param type="string" name="id">sendTaskCreatedNotificationMail</param>
+	   </operation>
     </chain>
 
     <chain id="setTaskDone">
@@ -94,6 +110,15 @@
       </operation>
       <operation id="Document.Routing.Resume.Step"/>
     </chain>
-  
+    
+    <chain id="sendTaskCreatedNotificationMail">
+      <operation id="Notification.SendMail">
+        <param type="string" name="from">Administrator@nuxeo.com</param>
+        <param type="string" name="message">template:routingTaskAssigned</param>
+        <param type="string" name="subject">expr:Context["document.routing.step"].getDocument().getPropertyValue("dc:title")</param>
+        <param type="stringlist" name="to">expr:Fn.getEmails(Context["document.routing.task.actors"])</param>
+        <param type="boolean" name="HTML">false</param>
+      </operation>
+   </chain>  
   </extension>
 </component>

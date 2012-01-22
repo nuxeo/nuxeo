@@ -34,6 +34,8 @@ public class RoutingTaskConstants {
 
     public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
 
+    public static final String ROUTING_TASK_ACTORS_KEY = "document.routing.task.actors";
+
     public enum EvaluationOperators {
         equal, not_equal, less_than, less_or_equal_than, greater_than, greater_or_equal_than
     }
