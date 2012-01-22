@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class DocumentRouteElementImpl implements DocumentRouteElement,
         DocumentRouteStep {
@@ -277,10 +277,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     protected void setPermissionOnDocument(CoreSession session,
             String userOrGroup, String permission) {
-        ACP acp = new ACPImpl();
-        ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
-        routingACL.add(new ACE(userOrGroup, permission, true));
         try {
+            ACP acp = document.getACP();
+            ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
+            routingACL.add(new ACE(userOrGroup, permission, true));
             document.setACP(acp, true);
             session.saveDocument(document);
         } catch (ClientException e) {
@@ -298,6 +298,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     public void setCanUpdateStep(CoreSession session, String userOrGroup) {
         setPermissionOnDocument(session, userOrGroup,
                 SecurityConstants.WRITE_PROPERTIES);
+    }
+
+    @Override
+    public void setCanReadStep(CoreSession session, String userOrGroup) {
+        setPermissionOnDocument(session, userOrGroup, SecurityConstants.READ);
     }
 
     @Override

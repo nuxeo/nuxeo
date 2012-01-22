@@ -53,7 +53,8 @@
     </chain>
 
     <chain id="setTaskDone">
-      <operation id="Document.Routing.Task.Done" />
+      <operation id="Document.Routing.SetRunningStepFromTask"/>
+      <operation id="Document.Routing.Resume.Step"/>
     </chain>
   
    <chain id="undoRunningTask">

@@ -5,8 +5,6 @@
     <operation
       class="org.nuxeo.ecm.platform.routing.dm.operation.CreateRoutingTask" />
     <operation
-      class="org.nuxeo.ecm.platform.routing.dm.operation.SetTaskDone" />
-    <operation
       class="org.nuxeo.ecm.platform.routing.dm.operation.RemoveRoutingTask" /> 
     <operation
       class="org.nuxeo.ecm.platform.routing.dm.operation.SetCurrentRunningStepFromTask" />

@@ -202,6 +202,11 @@ public interface DocumentRouteElement extends Serializable {
     void setCanUpdateStep(CoreSession session, String userOrGroup);
 
     /**
+     * make this user or group a step reader.
+     */
+    void setCanReadStep(CoreSession session, String userOrGroup);
+
+    /**
      * If this session can delete this step.
      */
     boolean canDeleteStep(CoreSession session);
