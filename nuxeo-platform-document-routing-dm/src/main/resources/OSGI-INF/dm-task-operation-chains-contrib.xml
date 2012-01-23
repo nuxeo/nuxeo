@@ -13,6 +13,9 @@
         <param type="string" name="reject operation chain">
           setTaskDone
         </param>
+        <param name="mappingProperties" type="Properties">
+          <property key="dc:description">StepTask:dc:description</property>
+        </param>
        </operation> 
 	   <operation id="Context.RunDocumentOperationInNewTx">
 	     <param type="boolean" name="rollbackGlobalOnError">false</param>

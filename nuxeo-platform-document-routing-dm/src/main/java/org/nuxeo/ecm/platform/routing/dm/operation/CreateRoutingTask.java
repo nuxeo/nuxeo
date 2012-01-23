@@ -99,6 +99,9 @@ public class CreateRoutingTask {
     @Param(name = "reject operation chain", required = false, order = 5)
     protected String rejectOperationChain;
 
+    @Param(name = "mappingTaskVariables", required = false)
+    protected Properties mappingTaskVariables;
+
     @Param(name = "mappingProperties", required = false)
     protected Properties mappingProperties;
 
@@ -145,9 +148,9 @@ public class CreateRoutingTask {
         if (routingTaskService == null) {
             throw new OperationException("Service routingTaskService not found");
         }
-        if (mappingProperties != null) {
-            mapProperties(coreSession, taskVariables, stepDocument, document,
-                    mappingProperties);
+        if (mappingTaskVariables != null) {
+            mapPropertiesToTaskVariables(taskVariables, stepDocument, document,
+                    mappingTaskVariables);
         }
         // TODO: call method with number of comments after NXP-8068 is merged
         List<Task> tasks = routingTaskService.createRoutingTask(coreSession,
@@ -156,7 +159,9 @@ public class CreateRoutingTask {
                 taskVariables, null);
         DocumentModelList docList = new DocumentModelListImpl(tasks.size());
         for (Task task : tasks) {
-            docList.add(task.getDocument());
+            docList.add(((mappingProperties == null) ? (task.getDocument())
+                    : mapPropertiesToTaskDocument(coreSession, stepDocument,
+                            task.getDocument(), document, mappingProperties)));
         }
 
         for (String actor : actors) {
@@ -169,7 +174,7 @@ public class CreateRoutingTask {
         return document;
     }
 
-    protected void mapProperties(CoreSession session,
+    protected void mapPropertiesToTaskVariables(
             Map<String, String> taskVariables, DocumentModel stepDoc,
             DocumentModel inputDoc, Properties mappingProperties)
             throws ClientException {
@@ -193,5 +198,32 @@ public class CreateRoutingTask {
                         e);
             }
         }
+    }
+
+    DocumentModel mapPropertiesToTaskDocument(CoreSession session,
+            DocumentModel stepDoc, DocumentModel taskDoc,
+            DocumentModel inputDoc, Properties mappingProperties)
+            throws ClientException {
+        for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
+            String getter = prop.getKey();
+            String setter = prop.getValue();
+            DocumentModel setterDoc = null;
+            if (setter.startsWith(DOCUMENT_PREFIX)) {
+                setterDoc = inputDoc;
+                setter = setter.substring(DOCUMENT_PREFIX.length());
+            } else if (setter.startsWith(STEP_PREFIX)) {
+                setterDoc = stepDoc;
+                setter = setter.substring(STEP_PREFIX.length());
+            }
+            try {
+                taskDoc.setPropertyValue(getter,
+                        (String) setterDoc.getPropertyValue(setter));
+            } catch (PropertyException e) {
+                log.error(
+                        "Could not map property on the task document in the taskVariables ",
+                        e);
+            }
+        }
+        return session.saveDocument(taskDoc);
     }
 }
