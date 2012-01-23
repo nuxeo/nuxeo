@@ -56,7 +56,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     public static final String QUOTA_STATS_UPDATERS_EP = "quotaStatsUpdaters";
 
-    public static final String DEFAULT_TIMEOUT = "2";
+    public static final int DEFAULT_TIMEOUT = 2;
 
     private static Integer timeout;
 
@@ -73,8 +73,12 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         if (timeout == null) {
             String strTimeout = Framework.getProperty(
                     "org.nuxeo.ecm.quota.updaters.runner.timeout",
-                    DEFAULT_TIMEOUT);
-            timeout = Integer.parseInt(strTimeout);
+                    String.valueOf(DEFAULT_TIMEOUT));
+            try {
+                timeout = Integer.parseInt(strTimeout);
+            } catch (NumberFormatException e) {
+                timeout = DEFAULT_TIMEOUT;
+            }
         }
         return timeout;
     }

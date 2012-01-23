@@ -24,7 +24,9 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -42,9 +44,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class QuotaStatsListener implements EventListener {
 
-    public static final List<String> EVENTS_TO_HANDLE = Arrays.asList(
-            DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY, DOCUMENT_UPDATED,
-            DOCUMENT_MOVED, ABOUT_TO_REMOVE);
+    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<String>(
+            Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
+                    DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE)));
 
     @Override
     public void handleEvent(Event event) throws ClientException {
