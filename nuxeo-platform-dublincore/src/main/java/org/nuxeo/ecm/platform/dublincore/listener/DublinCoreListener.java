@@ -46,6 +46,8 @@ public class DublinCoreListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(DublinCoreListener.class);
 
+    public static final String DISABLE_DUBLINCORE_LISTENER = "disableDublinCoreListener";
+
     /**
      * Core event notification.
      * <p>
@@ -73,6 +75,12 @@ public class DublinCoreListener implements EventListener {
         DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
         if (service == null) {
             log.error("DublinCoreStorage service not found ... !");
+            return;
+        }
+
+        Boolean block = (Boolean) event.getContext().getProperty(DISABLE_DUBLINCORE_LISTENER);
+        if (block != null && block) {
+            // ignore the event - we are blocked by the caller
             return;
         }
 

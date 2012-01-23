@@ -14,8 +14,11 @@
 
 package org.nuxeo.ecm.platform.dublincore;
 
+import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
+
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -233,6 +236,20 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         DocumentModel version = session.getSourceDocument(proxyDoc.getRef());
         Calendar issued = (Calendar) version.getPropertyValue("dc:issued");
         assertNotNull(issued);
+    }
+
+    public void testDisableListener() throws ClientException {
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "file-007", "File");
+        childFile.setPropertyValue("dc:creator", "Bender");
+        Date now = new Date();
+        childFile.setPropertyValue("dc:created", now);
+        childFile.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
+        DocumentModel childFile2 = session.createDocument(childFile);
+        assertEquals(
+                now,
+                ((Calendar) childFile2.getPropertyValue("dc:created")).getTime());
+        assertEquals("Bender", childFile2.getPropertyValue("dc:creator"));
     }
 
     private static EventProducer getEventProducer() throws ClientException {
