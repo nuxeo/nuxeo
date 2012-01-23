@@ -9,6 +9,12 @@
       priority="120">
       <event>beforeRouteReady</event>
     </listener>
+    
+    <listener name="routingSecurityUpdaterForActors" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.routing.dm.listener.RoutingTaskSecurityUpdaterListener"
+      priority="250">
+      <event>workflowTaskAssigned</event>
+    </listener>
   </extension>
 
 </component>

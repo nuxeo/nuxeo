@@ -164,9 +164,11 @@ public class CreateRoutingTask {
                             task.getDocument(), document, mappingProperties)));
         }
 
+        // all the actors should be able to validate the step creating the task
         for (String actor : actors) {
             step.setCanReadStep(coreSession, actor);
             step.setCanValidateStep(coreSession, actor);
+            step.setCanUpdateStep(coreSession, actor);
         }
         ctx.put(OperationTaskVariableName.taskDocuments.name(), docList);
         ctx.put(RoutingTaskConstants.ROUTING_TASK_ACTORS_KEY, new StringList(
