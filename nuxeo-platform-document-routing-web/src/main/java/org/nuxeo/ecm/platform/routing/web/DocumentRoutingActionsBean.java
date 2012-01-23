@@ -843,4 +843,11 @@ public class DocumentRoutingActionsBean implements Serializable {
                 docWithAttachedRouteId)));
         relatedRoutes = relatedRouteAction.findRelatedRoute();
     }
+
+    @Observer(value = { TaskEventNames.WORKFLOW_ENDED,
+            TaskEventNames.WORKFLOW_TASK_COMPLETED,
+            TaskEventNames.WORKFLOW_CANCELED }, create = false)
+    public void resetCache() {
+        webActions.resetTabList();
+    }
 }
