@@ -72,6 +72,12 @@ public class TesteMailInjection extends
         createMailFolders();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     public void testMailUnicityCheck() throws Exception {
         assertNotNull(session.getDocument(new PathRef("/mailFolder1")));
         assertNotNull(session.getDocument(new PathRef("/mailFolder2")));
