@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import java.util.UUID;
+
 import javax.el.ELException;
 import javax.faces.context.FacesContext;
 
@@ -68,6 +70,10 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
                     String expression, Class expectedType) throws ELException {
                 if ("#{documentManager}".equals(expression)) {
                     return session;
+                }
+                if ("#{dummy.param}".equals(expression)) {
+                    // must be non-empty for Oracle
+                    return UUID.randomUUID().toString();
                 }
                 if ("#{currentDocument.id}".equals(expression)) {
                     return currentDocument.getId();
