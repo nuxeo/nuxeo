@@ -42,9 +42,9 @@ public class RoutingTaskServiceImpl extends TaskServiceImpl implements
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)
             throws ClientException {
-        final List<Task> tasks = super.createTask(coreSession, principal, document, taskName,
-                prefixedActorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+        final List<Task> tasks = super.createTask(coreSession, principal,
+                document, taskName, prefixedActorIds, createOneTaskPerActor,
+                directive, comment, dueDate, taskVariables, parentPath);
         new UnrestrictedSessionRunner(coreSession) {
 
             @Override

@@ -34,7 +34,7 @@ public interface TaskStep {
 
     String getDirective() throws ClientException;
 
-    String getComment() throws ClientException;
+    List<String> getComments() throws ClientException;
 
     Date getDueDate() throws ClientException;
 

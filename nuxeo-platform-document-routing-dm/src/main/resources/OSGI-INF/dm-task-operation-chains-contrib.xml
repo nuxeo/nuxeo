@@ -69,7 +69,9 @@
     </chain>
 
     <chain id="setTaskDone">
-      <operation id="Document.Routing.SetRunningStepFromTask"/>
+      <operation id="Document.Routing.SetRunningStepFromTask">
+         <param type="boolean" name="mappingComments">true</param>
+      </operation>
       <operation id="Document.Routing.Resume.Step"/>
     </chain>
   

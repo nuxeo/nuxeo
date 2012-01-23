@@ -59,9 +59,10 @@ public class TaskStepImpl implements TaskStep {
         return getPropertyValue(RoutingTaskConstants.TASK_STEP_DIRECTIVE_PROPERTY_NAME);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public String getComment() throws ClientException {
-        return getPropertyValue(RoutingTaskConstants.TASK_STEP_COMMENT_PROPERTY_NAME);
+    public List<String> getComments() throws ClientException {
+        return (List<String>) getPropertyValue(RoutingTaskConstants.TASK_STEP_COMMENTS_PROPERTY_NAME);
     }
 
     @Override

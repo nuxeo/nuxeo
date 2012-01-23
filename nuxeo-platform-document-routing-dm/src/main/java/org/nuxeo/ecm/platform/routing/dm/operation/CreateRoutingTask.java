@@ -149,10 +149,11 @@ public class CreateRoutingTask {
             mapProperties(coreSession, taskVariables, stepDocument, document,
                     mappingProperties);
         }
+        // TODO: call method with number of comments after NXP-8068 is merged
         List<Task> tasks = routingTaskService.createRoutingTask(coreSession,
                 (NuxeoPrincipal) pal, document, taskStep.getName(), actors,
-                false, taskStep.getDirective(), taskStep.getComment(),
-                taskStep.getDueDate(), taskVariables, null);
+                false, taskStep.getDirective(), null, taskStep.getDueDate(),
+                taskVariables, null);
         DocumentModelList docList = new DocumentModelListImpl(tasks.size());
         for (Task task : tasks) {
             docList.add(task.getDocument());

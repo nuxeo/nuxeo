@@ -40,12 +40,9 @@ public class AbstractTaskStepOperation {
             DocumentModel taskDoc = (DocumentModel) context.get(OperationTaskVariableName.taskDocument.name());
             if (taskDoc != null) {
                 routingTask = taskDoc.getAdapter(RoutingTask.class);
-                if (routingTask != null) {
-                    return routingTask;
-                }
             }
         }
-        return null;
+        return routingTask;
     }
 
     public DocumentRouteElement getRoutingStep(OperationContext context) {

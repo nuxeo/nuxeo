@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.platform.routing.dm.layouts.webapp">
 
   <require>org.nuxeo.ecm.platform.routing.layouts.webapp</require>
+  <require>com.nuxeo.document.routing.table.widget</require>
 
    <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
      point="widgets">
@@ -76,6 +77,38 @@
           <field>tkst:automaticValidation</field>
         </fields>
      </widget>
+     
+     <!-- overide the default widget to display the number of comments used by default in routing -->
+    <widget name="dr_listing_no_comments" type="list">
+        <labels>
+          <label mode="any">label.content.header.comments</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+         <field>data.document.tkst.comments</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="orderable">false</property>
+          <property name="diff">false</property>
+          <property name="display">table</property>
+          <property name="required">false</property>
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <properties mode="any"/>
+        <subWidgets>
+          <widget name="sub0" type="text">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field></field>
+            </fields>
+            <properties mode="any"/>
+          </widget>
+        </subWidgets>
+      </widget>
+     
   </extension>  
   
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"

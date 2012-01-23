@@ -846,7 +846,8 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @Observer(value = { TaskEventNames.WORKFLOW_ENDED,
             TaskEventNames.WORKFLOW_TASK_COMPLETED,
-            TaskEventNames.WORKFLOW_CANCELED }, create = false)
+            TaskEventNames.WORKFLOW_CANCELED,
+            TaskEventNames.WORKFLOW_TASK_REJECTED }, create = false)
     public void resetCache() {
         webActions.resetTabList();
     }

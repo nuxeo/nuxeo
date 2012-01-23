@@ -6,7 +6,7 @@
   <xs:element default="false" name="automaticValidation" type="xs:boolean"/>
 
   <xs:element name="directive" type="xs:string"/>
-  <xs:element name="comment" type="xs:string"/>
+  <xs:element name="comments" type="nxst:stringList"/>
 
   <xs:complexType name="stringList">
     <xs:sequence>
