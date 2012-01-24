@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.task.core;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -244,20 +243,12 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
         List<Task> tasks = taskService.getTaskInstances(document,
                 (NuxeoPrincipal) null, session);
-        Collections.sort(tasks, new Comparator<Task>() {
-
-            @Override
-            public int compare(Task o1, Task o2) {
-                try {
-                    return o1.getCreated().compareTo(o2.getCreated());
-                } catch (ClientException e) {
-                    throw new RuntimeException();
-                }
-            }
-
-        });
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
+        // order is database-dependent
+        if (tasks.get(0).getActors().get(0).equals(SecurityConstants.MEMBERS)) {
+            Collections.reverse(tasks);
+        }
 
         Task task1 = tasks.get(0);
         assertEquals("Test Task Name", task1.getName());
