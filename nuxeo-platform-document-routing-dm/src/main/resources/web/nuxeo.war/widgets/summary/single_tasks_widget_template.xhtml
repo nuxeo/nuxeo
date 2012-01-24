@@ -24,8 +24,6 @@ DELETE ME; and moved this template in nuxeo-platform-task-web after merging the 
           <th><h:outputText
             value="#{messages['label.workflow.task.Description']}" /></th>
           <th><h:outputText
-            value="#{messages['label.workflow.task.directive']}" /></th>
-          <th><h:outputText
             value="#{messages['label.review.user.comment']}" /></th>
           <th><h:outputText
             value="#{messages['label.workflow.task.startdate']}" /></th>
@@ -48,10 +46,6 @@ DELETE ME; and moved this template in nuxeo-platform-task-web after merging the 
             <td>
                 <h:outputText
                   value="#{dashboardItem.task.getDocument().dc.description}" />
-            </td>
-            <td>
-              <h:outputText
-                  value="#{dashboardItem.i18nDirective}" />
             </td>
             <td>
               <table>

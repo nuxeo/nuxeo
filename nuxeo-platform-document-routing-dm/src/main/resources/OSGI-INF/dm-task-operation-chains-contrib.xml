@@ -15,6 +15,7 @@
         </param>
         <param name="mappingProperties" type="Properties">
           <property key="dc:description">StepTask:dc:description</property>
+          <property key="nt:directive">StepTask:dc:description</property>
         </param>
        </operation> 
 	   <operation id="Context.RunDocumentOperationInNewTx">
