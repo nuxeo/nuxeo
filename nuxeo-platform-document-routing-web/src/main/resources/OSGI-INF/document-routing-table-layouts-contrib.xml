@@ -39,6 +39,12 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
+          <widget>dr_listing_document_route_element_actors</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
           <widget>dr_listing_route_element_state</widget>
         </column>
         <column>
