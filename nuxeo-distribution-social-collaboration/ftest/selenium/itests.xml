@@ -17,11 +17,18 @@
 
   <target name="run-selenium-tests" depends="run-selenium" />
   <target name="add-smtp-conf">
-    <echo file="${out.dir}/tomcat/bin/nuxeo.conf" append="true">
-      mail.smtp.host=merguez.in.nuxeo.com
-      mail.smtp.port=2500
-      mail.from=sc@test.com
-    </echo>
+    <antcall target="set-conf">
+      <param name="name" value="mail.smtp.host" />
+      <param name="value" value="merguez.in.nuxeo.com" />
+    </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="mail.smtp.port" />
+      <param name="value" value="2500" />
+    </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="mail.from" />
+      <param name="value" value="sc@test.com" />
+    </antcall>
   </target>
 
 </project>
