@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.picture.convert.test;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
@@ -103,6 +105,32 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
             assertNotNull(adaptedChild);
             assertNotNull(adaptedChild.getView("Thumbnail"));
             assertNotNull(multiview.getView("Thumbnail"));
+        }
+    }
+
+    public void testBlobReadOnlyOnce() throws Exception {
+        DocumentModel doc = coreSession.createDocumentModel("/", "pic",
+                "Picture");
+        doc = coreSession.createDocument(doc);
+
+        PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
+        assertNotNull(adapter);
+
+        String filename = ImagingRessourcesHelper.TEST_IMAGE_FILENAMES.get(0);
+        String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
+
+        FileInputStream in = new FileInputStream(
+                ImagingRessourcesHelper.getFileFromPath(path));
+        try {
+            // blob that can be read only once, like HttpServletRequest streams
+            Blob blob = new InputStreamBlob(in);
+            adapter.createPicture(blob, "foo.png", "sample", null);
+            doc = coreSession.saveDocument(doc);
+            MultiviewPicture pic = doc.getAdapter(MultiviewPicture.class);
+            assertNotNull(pic);
+            assertNotNull(pic.getView("Thumbnail"));
+        } finally {
+            in.close();
         }
     }
 
