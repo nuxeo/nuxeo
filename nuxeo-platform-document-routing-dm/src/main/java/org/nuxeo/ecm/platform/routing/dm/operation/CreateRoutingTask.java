@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.routing.dm.operation;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,9 @@ public class CreateRoutingTask {
 
     @Context
     protected CoreSession coreSession;
+
+    @Context
+    UserManager userManager;
 
     @Context
     protected RoutingTaskService routingTaskService;
@@ -171,8 +175,9 @@ public class CreateRoutingTask {
             step.setCanUpdateStep(coreSession, actor);
         }
         ctx.put(OperationTaskVariableName.taskDocuments.name(), docList);
+
         ctx.put(RoutingTaskConstants.ROUTING_TASK_ACTORS_KEY, new StringList(
-                actors));
+                getAllActors(actors)));
         return document;
     }
 
@@ -228,4 +233,25 @@ public class CreateRoutingTask {
         }
         return session.saveDocument(taskDoc);
     }
+
+    protected List<String> getAllActors(List<String> actors)
+            throws ClientException {
+        List<String> allActors = new ArrayList<String>();
+        for (String actor : actors) {
+            if (userManager.getGroup(actor) != null) {
+                List<String> allSimpleUsers = userManager.getUsersInGroupAndSubGroups(actor);
+                for (String string : allSimpleUsers) {
+                    if (!allActors.contains(string)) {
+                        allActors.add(string);
+                    }
+                }
+                continue;
+            }
+            if (!allActors.contains(actor)) {
+                allActors.add(actor);
+            }
+        }
+        return allActors;
+    }
+
 }
