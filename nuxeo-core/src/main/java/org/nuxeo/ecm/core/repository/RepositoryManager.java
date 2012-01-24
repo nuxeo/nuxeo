@@ -25,7 +25,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.model.Repository;
 
 /**
@@ -181,27 +180,6 @@ public class RepositoryManager {
         }
     }
 
-    public static class RepositoryInitializer extends UnrestrictedSessionRunner {
-        public RepositoryInitializer(String name) {
-            super(name);
-        }
-
-        @Override
-        public void run() throws ClientException {
-            RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
-            if (handler == null) {
-                return;
-            }
-            try {
-                handler.initializeRepository(session);
-            } catch (ClientException e) {
-                // shouldn't remove the root? ... to restart with
-                // an empty repository
-                log.error("Failed to initialize repository content", e);
-            }
-        }
-    }
-
     public static final class Ref {
         private int refcnt;
 
@@ -217,7 +195,6 @@ public class RepositoryManager {
             if (repository == null) {
                 refcnt = 0;
                 repository = descriptor.create();
-                new RepositoryInitializer(descriptor.getName()).runUnrestricted();
             }
             refcnt++;
             return repository;
