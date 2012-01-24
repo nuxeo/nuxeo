@@ -96,7 +96,6 @@
     <module>nuxeo-rss-reader</module>
     <module>nuxeo-flavors</module>
     <module>nuxeo-quota</module>
-    <module>nuxeo-web-mobile</module>
   </modules>
 
   <dependencyManagement>
