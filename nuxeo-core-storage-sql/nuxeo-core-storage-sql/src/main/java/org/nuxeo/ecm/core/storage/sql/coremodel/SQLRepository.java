@@ -19,10 +19,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
+import org.nuxeo.ecm.core.repository.RepositoryInitializer;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -53,7 +55,7 @@ public class SQLRepository implements Repository {
 
     private final String name;
 
-    private boolean initialized;
+    private volatile boolean inUse;
 
     public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
         schemaManager = Framework.getService(SchemaManager.class);
@@ -89,6 +91,7 @@ public class SQLRepository implements Repository {
         return name;
     }
 
+
     /*
      * Called by LocalSession.createSession
      */
@@ -96,13 +99,13 @@ public class SQLRepository implements Repository {
     public Session getSession(Map<String, Serializable> context)
             throws DocumentException {
         synchronized (this) {
-            if (!initialized) {
-                initialized = true;
-                if (context != null) {
-                    // Allow AbstractSession (our caller) to send an
-                    // initialization event.
-                    context.put("REPOSITORY_FIRST_ACCESS", Boolean.TRUE);
+            if (!inUse) {
+                try {
+                    RepositoryInitializer.initialize(name);
+                } catch (ClientException e) {
+                   throw new DocumentException("Cannot initialize repository content of " + name, e);
                 }
+                inUse = true;
             }
         }
         org.nuxeo.ecm.core.storage.sql.Session session;
