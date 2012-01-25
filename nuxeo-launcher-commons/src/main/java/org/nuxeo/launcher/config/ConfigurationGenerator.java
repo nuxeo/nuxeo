@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher.config;
@@ -529,9 +528,11 @@ public class ConfigurationGenerator {
                 writeConfiguration(loadConfiguration());
             }
         } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file", e);
+            throw new ConfigurationException("Missing file: " + e.getMessage(),
+                    e);
         } catch (IOException e) {
-            throw new ConfigurationException("Configuration failure", e);
+            throw new ConfigurationException("Configuration failure: "
+                    + e.getMessage(), e);
         }
     }
 
