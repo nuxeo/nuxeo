@@ -82,8 +82,9 @@ public class DocumentPageProviderOperation {
 
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 
-        List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
+            sortInfos = new ArrayList<SortInfo>();
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains(":")) {
