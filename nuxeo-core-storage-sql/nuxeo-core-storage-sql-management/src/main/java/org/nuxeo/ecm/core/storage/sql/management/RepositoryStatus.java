@@ -42,7 +42,14 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     protected List<RepositoryManagement> getRepositories() throws NamingException {
         List<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
-        InitialContext context = new InitialContext();
+        InitialContext context;
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(RepositoryStatus.class.getClassLoader());
+        try {
+            context = new InitialContext();
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
+        }
         // we search both JBoss-like and Glassfish-like prefixes
         // @see NXCore#getRepository
         for (String prefix : new String[] { "java:NXRepository", "NXRepository" }) {
