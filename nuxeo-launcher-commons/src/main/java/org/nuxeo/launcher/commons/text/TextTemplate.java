@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,7 +15,6 @@
  *     Nuxeo - initial API and implementation
  *     bstefanescu, jcarsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher.commons.text;
@@ -163,6 +162,9 @@ public class TextTemplate {
             if (out.isDirectory()) {
                 out = new File(out, in.getName());
             }
+            if (!out.getParentFile().exists()) {
+                out.getParentFile().mkdirs();
+            }
 
             boolean processText = false;
             if (!extensionsContainsDot) {
@@ -183,15 +185,18 @@ public class TextTemplate {
             }
 
             FileInputStream is = null;
-            FileOutputStream os = new FileOutputStream(out);
+            FileOutputStream os = null;
             try {
+                os = new FileOutputStream(out);
                 is = new FileInputStream(in);
                 process(is, os, processText);
             } finally {
                 if (is != null) {
                     is.close();
                 }
-                os.close();
+                if (os != null) {
+                    os.close();
+                }
             }
         } else if (in.isDirectory()) {
             if (!out.exists()) {
