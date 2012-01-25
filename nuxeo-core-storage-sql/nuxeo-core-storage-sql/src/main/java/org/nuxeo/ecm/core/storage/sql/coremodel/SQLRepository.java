@@ -36,8 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  * datasource.
  * <p>
  * (When repositories are looked up through JNDI, the class
- *  org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl is used
- * instead of this one.) [suppressed link for solving cycle dependencies in eclipse]
+ * org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl is used instead of
+ * this one.) [suppressed link for solving cycle dependencies in eclipse]
  * <p>
  * This class is constructed by {@link SQLRepositoryFactory}.
  *
@@ -56,6 +56,8 @@ public class SQLRepository implements Repository {
     private final String name;
 
     private volatile boolean inUse;
+
+    private boolean initHandlerEntered; // protect from self recursion
 
     public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
         schemaManager = Framework.getService(SchemaManager.class);
@@ -91,7 +93,6 @@ public class SQLRepository implements Repository {
         return name;
     }
 
-
     /*
      * Called by LocalSession.createSession
      */
@@ -100,12 +101,17 @@ public class SQLRepository implements Repository {
             throws DocumentException {
         synchronized (this) {
             if (!inUse) {
-                try {
-                    RepositoryInitializer.initialize(name);
-                } catch (ClientException e) {
-                   throw new DocumentException("Cannot initialize repository content of " + name, e);
+                if (!initHandlerEntered) {
+                    initHandlerEntered = true;
+                    try {
+                        RepositoryInitializer.initialize(name);
+                    } catch (ClientException e) {
+                        throw new DocumentException(
+                                "Cannot initialize repository content of "
+                                        + name, e);
+                    }
+                    inUse = true;
                 }
-                inUse = true;
             }
         }
         org.nuxeo.ecm.core.storage.sql.Session session;
