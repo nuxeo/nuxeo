@@ -316,4 +316,60 @@ public class TestPageProvider extends TestCase {
         assertEquals(0, provider.getCurrentPageIndex());
     }
 
+    public void testMinMaxPageSize() {
+        // only set page size => should fallback on default max page size
+        assertEquals(20, getMinMaxPageSize(Long.valueOf(20), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(200), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(500), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(null, null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(0), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(-1), null));
+        // set max page size to 200
+        assertEquals(20, getMinMaxPageSize(Long.valueOf(20), Long.valueOf(200)));
+        assertEquals(200,
+                getMinMaxPageSize(Long.valueOf(200), Long.valueOf(200)));
+        assertEquals(200,
+                getMinMaxPageSize(Long.valueOf(500), Long.valueOf(200)));
+        assertEquals(200, getMinMaxPageSize(null, Long.valueOf(200)));
+        assertEquals(200, getMinMaxPageSize(Long.valueOf(0), Long.valueOf(200)));
+        assertEquals(200,
+                getMinMaxPageSize(Long.valueOf(-1), Long.valueOf(200)));
+        // set max page size to 0 (unlimited)
+        assertEquals(20, getMinMaxPageSize(Long.valueOf(20), Long.valueOf(0)));
+        assertEquals(200, getMinMaxPageSize(Long.valueOf(200), Long.valueOf(0)));
+        assertEquals(500, getMinMaxPageSize(Long.valueOf(500), Long.valueOf(0)));
+        assertEquals(0, getMinMaxPageSize(null, Long.valueOf(0)));
+        assertEquals(0, getMinMaxPageSize(Long.valueOf(0), Long.valueOf(0)));
+        assertEquals(0, getMinMaxPageSize(Long.valueOf(-1), Long.valueOf(0)));
+        // extreme case that should never happen (set max page size to negative
+        // number)
+        assertEquals(20, getMinMaxPageSize(Long.valueOf(20), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(200), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(500), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(null, Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(0), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
+                getMinMaxPageSize(Long.valueOf(-1), Long.valueOf(-1)));
+    }
+
+    protected long getMinMaxPageSize(Long pageSize, Long maxPageSize) {
+        MockPageProvider pp = new MockPageProvider();
+        if (pageSize != null) {
+            pp.setPageSize(pageSize.longValue());
+        }
+        if (maxPageSize != null) {
+            pp.setMaxPageSize(maxPageSize.longValue());
+        }
+        return pp.getMinMaxPageSize();
+    }
+
 }

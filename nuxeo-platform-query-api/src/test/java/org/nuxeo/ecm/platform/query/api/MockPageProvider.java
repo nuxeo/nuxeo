@@ -35,6 +35,12 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
 
     protected final boolean knowsResultsCount;
 
+    public MockPageProvider() {
+        super();
+        givenResultsCount = 0;
+        knowsResultsCount = false;
+    }
+
     public MockPageProvider(long pageSize, long resultsCount,
             boolean knowsResultsCount) {
         setPageSize(pageSize);
