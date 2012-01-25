@@ -2871,18 +2871,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @SuppressWarnings("boxing")
-    public void testQueryComplexProperties() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
-        Session session = repository.getConnection();
+    protected List<Serializable> makeComplexDoc(Session session)
+            throws StorageException {
         Node root = session.getRootNode();
 
         Node doc = session.addChildNode(root, "doc", null, "TestDoc", false);
         Serializable docId = doc.getId();
-        List<Serializable> oneDoc = Arrays.asList(docId);
+
         // tst:title = 'hello world'
         doc.setSimpleProperty("tst:title", "hello world");
         // tst:subjects = ['foo', 'bar', 'moo']
@@ -2926,19 +2921,28 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         session.save();
 
+        return Arrays.asList(docId);
+    }
+
+    protected static String FROM_WHERE = " FROM TestDoc WHERE ecm:isProxy = 0 AND ";
+
+    protected static String SELECT_WHERE = "SELECT *" + FROM_WHERE;
+
+    protected static String SELECT_TITLE_WHERE = "SELECT tst:title"
+            + FROM_WHERE;
+
+    public void testQueryComplexMakeDoc() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+
         String clause;
         PartialList<Serializable> res;
         IterableQueryResult it;
-        Set<String> set;
-        List<String> list;
-
-        String FROM_WHERE = " FROM TestDoc WHERE ecm:isProxy = 0 AND ";
-        String SELECT_WHERE = "SELECT *" + FROM_WHERE;
-        String SELECT_TITLE_WHERE = "SELECT tst:title" + FROM_WHERE;
-
-        /*
-         * non-complex queries
-         */
 
         clause = "tst:title = 'hello world'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
@@ -2957,10 +2961,20 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, it.size());
         assertEquals("hello world", it.iterator().next().get("tst:title"));
         it.close();
+    }
 
-        /*
-         * complex WHERE clauses
-         */
+    public void testQueryComplexWhere() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+
+        String clause;
+        PartialList<Serializable> res;
+        IterableQueryResult it;
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -3081,10 +3095,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 + " AND tst:friends/item[*1]/lastname = 'Smith'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
         assertEquals(oneDoc, res.list);
+    }
 
-        /*
-         * return complex prop with no complex WHERE clause
-         */
+    public void testQueryComplexReturned() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+
+        String clause;
+        PartialList<Serializable> res;
+        IterableQueryResult it;
+        Set<String> set;
 
         // SELECT p.lastname
         // FROM hierarchy h
@@ -3126,9 +3151,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(new HashSet<String>(Arrays.asList("Lennon", "Smith")), ln);
         it.close();
 
-        /*
-         * list elements
-         */
+    }
+
+    public void testQueryComplexListElement() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+
+        String clause;
+        PartialList<Serializable> res;
+        IterableQueryResult it;
+        Set<String> set;
 
         // hierarchy h
         // JOIN tst_subjects s ON h.id = s.id // not LEFT JOIN
@@ -3199,10 +3236,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(new HashSet<String>(Arrays.asList("foo", "bar", "moo")),
                 set);
         it.close();
+    }
 
-        /*
-         * ORDER BY
-         */
+    public void testQueryComplexOrderBy() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+
+        String clause;
+        PartialList<Serializable> res;
+        IterableQueryResult it;
+        List<String> list;
 
         clause = "tst:title LIKE '%' ORDER BY tst:owner/firstname";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
