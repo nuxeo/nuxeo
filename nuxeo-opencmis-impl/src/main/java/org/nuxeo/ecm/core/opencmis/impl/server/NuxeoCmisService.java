@@ -114,7 +114,6 @@ import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -411,9 +410,11 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
             blob = new ByteArrayBlob(new byte[0], mimeType, null, name, null);
         } else {
-            blob = new InputStreamBlob(contentStream.getStream(),
-                    contentStream.getMimeType(), null,
-                    contentStream.getFileName(), null);
+            try {
+                blob = NuxeoPropertyData.getPersistentBlob(contentStream, null);
+            } catch (IOException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
         }
 
         try {

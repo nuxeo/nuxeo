@@ -10,7 +10,11 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -42,8 +46,10 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -51,12 +57,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Nuxeo implementation of an object's property, backed by a property of a
@@ -321,14 +328,35 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                     filename = doc.getName();
                 }
             }
-            blob = new InputStreamBlob(contentStream.getStream(),
-                    contentStream.getMimeType(), null, filename, null);
+            blob = getPersistentBlob(contentStream, filename);
         }
         try {
             blobHolder.setBlob(blob);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+    }
+
+    /** Returns a Blob whose stream can be used several times. */
+    public static Blob getPersistentBlob(ContentStream contentStream,
+            String filename) throws IOException {
+        if (filename == null) {
+            filename = contentStream.getFileName();
+        }
+        InputStream in = contentStream.getStream();
+        OutputStream out = null;
+        File file;
+        try {
+            file = File.createTempFile("NuxeoCMIS-", null);
+            out = new FileOutputStream(file);
+            IOUtils.copy(in, out);
+            Framework.trackFile(file, in);
+        } finally {
+            FileUtils.close(in);
+            FileUtils.close(out);
+        }
+        return new FileBlob(file, contentStream.getMimeType(), null, filename,
+                null);
     }
 
     /**
