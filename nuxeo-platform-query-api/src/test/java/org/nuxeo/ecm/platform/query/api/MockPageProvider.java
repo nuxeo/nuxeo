@@ -33,6 +33,11 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
 
     protected long givenResultsCount;
 
+    public MockPageProvider() {
+        super();
+        givenResultsCount = 0;
+    }
+
     public MockPageProvider(long pageSize, long resultsCount) {
         this.pageSize = pageSize;
         givenResultsCount = resultsCount;
