@@ -81,6 +81,8 @@ public class ConnectionFactoryImpl implements Repository,
 
     private volatile boolean inUse;
 
+    private boolean initHandlerEntered; // protect form self recursion
+
     private boolean servicesInitialized;
 
     public ConnectionFactoryImpl(
@@ -221,13 +223,16 @@ public class ConnectionFactoryImpl implements Repository,
         } else {
             synchronized (this) {
                 if (!inUse) {
-                    try {
-                        RepositoryInitializer.initialize(this.name);
-                    } catch (ClientException e) {
-                        throw new DocumentException(
-                                "Cannot initialize content of " + name);
+                    if (!initHandlerEntered) {
+                        initHandlerEntered = true;
+                        try {
+                            RepositoryInitializer.initialize(this.name);
+                        } catch (ClientException e) {
+                            throw new DocumentException(
+                                    "Cannot initialize content of " + name);
+                        }
+                        inUse = true;
                     }
-                    inUse = true;
                 }
             }
             NuxeoPrincipal principal = (NuxeoPrincipal) context.get("principal");
@@ -345,7 +350,7 @@ public class ConnectionFactoryImpl implements Repository,
 
     @Override
     public Collection<MapperClientInfo> getClientInfos() {
-       return managedConnectionFactory.getClientInfos();
+        return managedConnectionFactory.getClientInfos();
     }
 
     @Override
