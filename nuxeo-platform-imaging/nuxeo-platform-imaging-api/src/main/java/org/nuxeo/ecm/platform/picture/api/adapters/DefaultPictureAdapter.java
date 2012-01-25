@@ -53,7 +53,6 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     public boolean createPicture(Blob blob, String filename, String title,
             ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException {
-        fileContent = blob;
         if (blob == null) {
             clearViews();
             return true;
@@ -70,6 +69,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(),
                     blob.getFilename(), blob.getDigest());
         }
+        fileContent = blob;
 
         type = blob.getMimeType();
         if (type == null) {
