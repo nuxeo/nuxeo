@@ -44,7 +44,10 @@ class Repository(object):
     def __init__(self, basedir, alias):
         assert_git_config()
         self.driveletter = long_path_workaround_init()
-        self.basedir = basedir
+        if self.driveletter != None:
+            self.basedir = self.driveletter + ":\\"
+        else:
+            self.basedir = basedir
         self.alias = alias
         # find the remote URL
         remote_lines = check_output(["git", "remote", "-v"]).split("\n")
@@ -312,7 +315,8 @@ def long_path_workaround_init():
     """Windows only. Try to map the current directory to an unused drive letter
     to shorten path names."""
     if platform.system() != "Windows":
-        return
+        return None
+    driveletter = None
     for letter in "GHIJKLMNOPQRSTUVWXYZ":
         if not os.path.isdir("%s:\\" % (letter,)):
             driveletter = letter
