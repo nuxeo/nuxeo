@@ -69,8 +69,8 @@ class Repository(object):
         """Set the list of Nuxeo addons in 'self.modules'."""
         os.chdir(self.basedir)
         self.modules = []
-        log("Using maven introspection of the pom.xml files"
-            " to find the list of sub-repositories")
+        log("Using Maven introspection of the POM file"
+            " to find the list of modules...")
         for line in os.popen("mvn -N help:effective-pom"):
             line = line.strip()
             m = re.match("<module>(.*?)</module>", line)
@@ -84,8 +84,8 @@ class Repository(object):
         If 'with_optionals', add "optional" addons to the list."""
         os.chdir(os.path.join(self.basedir, "addons"))
         self.addons = []
-        log("Using maven introspection of the pom.xml files"
-            " to find the list of addons")
+        log("Using Maven introspection of the POM files"
+            " to find the list of addons...")
         all_lines = os.popen("mvn -N help:effective-pom").readlines()
         if with_optionals:
             all_lines += os.popen("mvn -N help:effective-pom " +
@@ -104,12 +104,11 @@ class Repository(object):
         'version': the version to checkout."""
         repo_url = self.url_pattern.replace("module", module)
         cwd = os.getcwd()
+        log("[%s]" % module)
         if os.path.isdir(module):
-            log("Updating " + module + "...")
             os.chdir(module)
             system("git fetch %s" % (self.alias))
         else:
-            log("Cloning " + module + "...")
             system("git clone %s" % (repo_url))
             os.chdir(module)
         self.git_update(version)
@@ -122,16 +121,19 @@ class Repository(object):
         If 'with_optionals', also recurse on "optional" addons."""
         cwd = os.getcwd()
         os.chdir(self.basedir)
+        log("[.]")
         system(command)
         if not self.modules:
             self.eval_modules()
         for module in self.modules:
             os.chdir(os.path.join(self.basedir, module))
+            log("[%s]" % module)
             system(command)
         if not self.addons:
             self.eval_addons(with_optionals)
         for addon in self.addons:
             os.chdir(os.path.join(self.basedir, "addons", addon))
+            log("[%s]" % addon)
             system(command)
         os.chdir(cwd)
 
@@ -149,12 +151,14 @@ class Repository(object):
         if os.path.isdir(archive_dir):
             shutil.rmtree(archive_dir)
         os.mkdir(archive_dir)
+        log("[.]")
         p = system("git archive %s" % version, run=False)
         system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.modules:
             self.eval_modules()
         for module in self.modules:
             os.chdir(os.path.join(self.basedir, module))
+            log("[%s]" % module)
             p = system("git archive --prefix=%s/ %s" % (module, version),
                        run=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
@@ -162,6 +166,7 @@ class Repository(object):
             self.eval_addons(with_optionals)
         for addon in self.addons:
             os.chdir(os.path.join(self.basedir, "addons", addon))
+            log("[%s]" % addon)
             p = system("git archive --prefix=addons/%s/ %s" % (addon, version),
                      run=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
@@ -183,7 +188,6 @@ class Repository(object):
         else:
             # reuse local branch
             system("git checkout %s" % version)
-            log("Updating branch")
             retcode = system("git rebase %s/%s" % (self.alias, version), False)
             if retcode != 0:
                 system("git stash")
@@ -198,7 +202,7 @@ class Repository(object):
         If 'with_optionals', also clone/update "optional" addons."""
         cwd = os.getcwd()
         os.chdir(self.basedir)
-        log("Cloning/updating parent pom")
+        log("[.]")
         system("git fetch %s" % (self.alias))
         if version is None:
             version = self.get_current_version()
