@@ -66,6 +66,8 @@
     <module>nuxeo-rss-reader</module>
     <module>nuxeo-flavors</module>
     <module>nuxeo-quota</module>
+    <module>nuxeo-platform-indexing-gateway</module>
+    <module>nuxeo-exalead-connector</module>
   </modules>
 
   <dependencyManagement>
@@ -721,6 +723,18 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-quota-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <!-- Indexing Gateway -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-indexing-gateway</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <!-- Exalead Connector -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-exalead-connector</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
