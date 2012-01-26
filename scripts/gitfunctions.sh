@@ -2,7 +2,7 @@
 #
 # Convenient functions for use on Nuxeo projects version controlled under Git.
 #
-# (C) Copyright 2009-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+# (C) Copyright 2009-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -23,17 +23,25 @@ gitf() {
   for dir in . nuxeo-*; do
     if [ -d "$dir"/.git ]; then
       echo "[$dir]"
-      (cd "$dir" ; git "$@"; echo )
+      (cd "$dir" ; git "$@")
+      echo
     fi
   done
 }
 
 gitfa() {
-   ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1)
-   for dir in $ADDONS; do
-     if [ -d "$dir"/.git ]; then
-       echo "[$dir]"
-       (cd "$dir" ; git "$@"; echo )
-     fi
-   done
+  if [ -d "addons" ]; then
+    from_root=true
+    gitf "$@"
+    cd addons
+  fi
+  ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1)
+  for dir in . $ADDONS; do
+    if [ -d "$dir"/.git ]; then
+      echo "[$dir]"
+      (cd "$dir" ; git "$@")
+      echo
+    fi
+  done
+  [ -z $from_root ] || cd ..
 }
