@@ -23,6 +23,7 @@
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-platform-intuition</module>
     <module>nuxeo-web-mobile</module>
+    <module>nuxeo-exalead-connector</module>
   </modules>
 
 </project>
