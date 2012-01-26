@@ -107,7 +107,7 @@ public class ActionRegistry implements Serializable {
                 Action action = actions.get(id);
                 if (action != null && action.isEnabled()) {
                     // return only enabled actions
-                    result.add(action);
+                    result.add(getClonedAction(action));
                 }
             }
         }
@@ -116,7 +116,19 @@ public class ActionRegistry implements Serializable {
     }
 
     public synchronized Action getAction(String id) {
-        return actions.get(id);
+        Action action = actions.get(id);
+        return getClonedAction(action);
+    }
+
+    protected Action getClonedAction(Action action) {
+        if (action == null) {
+            return null;
+        }
+        try {
+            return action.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new Error(e); // should never happen
+        }
     }
 
     protected static List<Action> sortActions(Collection<Action> actions) {
