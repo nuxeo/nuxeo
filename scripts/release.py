@@ -260,50 +260,52 @@ class Release(object):
         offline_name = "nuxeo-cap-%s-tomcat" % version
         extract_zip(os.path.join(self.archive_dir, offline_name + ".zip"),
                     self.tmpdir)
-        online_name = "nuxeo-cap-%s-tomcat-online" % version
-        # Keep packages.xml file
-        os.rename(os.path.join(self.tmpdir, offline_name,
-                                   "setupWizardDownloads", "packages.xml"),
-                  os.path.join(self.archive_dir, "packages.xml"))
-        # Remove Marketplace packages
-        shutil.rmtree(os.path.join(self.tmpdir, offline_name,
-                                   "setupWizardDownloads"))
-        os.rename(os.path.join(self.tmpdir, offline_name),
-                  os.path.join(self.tmpdir, online_name))
-        make_zip(os.path.join(self.archive_dir, online_name + ".zip"),
-                            os.path.join(self.tmpdir, online_name),
-                            online_name)
+        # Generate online package if packages.xml exists
+        if os.path.join(self.tmpdir, offline_name,
+                        "setupWizardDownloads", "packages.xml").exists():
+            online_name = "nuxeo-cap-%s-tomcat-online" % version
+            os.rename(os.path.join(self.tmpdir, offline_name,
+                                       "setupWizardDownloads", "packages.xml"),
+                      os.path.join(self.archive_dir, "packages.xml"))
+            # Remove Marketplace packages
+            shutil.rmtree(os.path.join(self.tmpdir, offline_name,
+                                       "setupWizardDownloads"))
+            os.rename(os.path.join(self.tmpdir, offline_name),
+                      os.path.join(self.tmpdir, online_name))
+            make_zip(os.path.join(self.archive_dir, online_name + ".zip"),
+                                os.path.join(self.tmpdir, online_name),
+                                online_name)
 
-        # Marketplace packages
-        archive_mp_dir = os.path.join(self.archive_dir, "mp")
-        if not os.path.isdir(archive_mp_dir):
-            os.mkdir(archive_mp_dir)
-        # Copy and rename MP to archive directory
-        for old, new in MP_RENAMINGS.items():
-            shutil.copy2(old % version,
-                         os.path.join(archive_mp_dir, new % version))
-        log("Checking packages integrity...")
-        for package in os.listdir(archive_mp_dir):
-            m = hashlib.md5()
-            with open(os.path.join(archive_mp_dir, package), "rb") as f:
-                m.update(f.read())
-            package_md5 = m.hexdigest()
-            found_package = False
-            found_package_md5 = False
-            for line in open(os.path.join(self.archive_dir, "packages.xml")):
-                if package in line:
-                    found_package = True
-                if package_md5 in line:
-                    found_package_md5 = True
-                if found_package and found_package_md5:
-                    break
-            if not found_package:
-                log("[ERROR] Could not find %s in packages.xml" % package,
-                sys.stderr)
-            if not found_package_md5:
-                log("[ERROR] %s MD5 did not match packages.xml information"
-                    % package, sys.stderr)
-        log("Done.")
+            # Marketplace packages
+            archive_mp_dir = os.path.join(self.archive_dir, "mp")
+            if not os.path.isdir(archive_mp_dir):
+                os.mkdir(archive_mp_dir)
+            # Copy and rename MP to archive directory
+            for old, new in MP_RENAMINGS.items():
+                shutil.copy2(old % version,
+                             os.path.join(archive_mp_dir, new % version))
+            log("Checking packages integrity...")
+            for package in os.listdir(archive_mp_dir):
+                m = hashlib.md5()
+                with open(os.path.join(archive_mp_dir, package), "rb") as f:
+                    m.update(f.read())
+                package_md5 = m.hexdigest()
+                found_package = False
+                found_package_md5 = False
+                for line in open(os.path.join(self.archive_dir, "packages.xml")):
+                    if package in line:
+                        found_package = True
+                    if package_md5 in line:
+                        found_package_md5 = True
+                    if found_package and found_package_md5:
+                        break
+                if not found_package:
+                    log("[ERROR] Could not find %s in packages.xml" % package,
+                    sys.stderr)
+                if not found_package_md5:
+                    log("[ERROR] %s MD5 did not match packages.xml information"
+                        % package, sys.stderr)
+            log("Done.")
         self.package_sources(version)
         shutil.rmtree(self.tmpdir)
 
