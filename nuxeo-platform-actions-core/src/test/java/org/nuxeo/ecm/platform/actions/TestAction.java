@@ -348,4 +348,21 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("id2", actions.get(1).getId());
     }
 
+    /**
+     * NXP-8739: test that after an action is cloned, availability set on it
+     * does not impact the action used on service
+     *
+     * @since 5.6
+     */
+    public void testActionClone() {
+        Action action1 = as.getAction("viewHiddenInfo");
+        assertTrue(action1.getAvailable());
+        action1.setAvailable(false);
+        assertFalse(action1.getAvailable());
+        Action action2 = as.getAction("viewHiddenInfo");
+        assertTrue(action2.getAvailable());
+        // check first action has not changed
+        assertFalse(action1.getAvailable());
+    }
+
 }
