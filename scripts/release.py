@@ -374,11 +374,12 @@ class Release(object):
             self.repo.system_recurse("git commit -m'Post release %s' -a" %
                                      self.tag)
 
-        # Update released branches
         self.repo.system_recurse("git checkout %s" % self.branch)
-        self.update_versions(self.snapshot, self.next_snapshot)
-        self.repo.system_recurse("git commit -m'Post release %s' -a" %
-                                 self.tag)
+        if self.snapshot != self.next_snapshot:
+            # Update released branches
+            self.update_versions(self.snapshot, self.next_snapshot)
+            self.repo.system_recurse("git commit -m'Post release %s' -a" %
+                                     self.tag)
 
         if self.maintenance == "auto":
             # Delete maintenance branches
