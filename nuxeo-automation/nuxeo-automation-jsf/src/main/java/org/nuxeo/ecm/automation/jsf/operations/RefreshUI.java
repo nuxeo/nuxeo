@@ -54,8 +54,6 @@ public class RefreshUI {
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, dm);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     dm);
-            Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED,
-                    dm);
         }
         if (additionalSeamEvents != null) {
             for (String event : additionalSeamEvents) {
