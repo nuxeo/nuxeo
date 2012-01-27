@@ -899,11 +899,11 @@ DROP PROCEDURE nx_upgrade_versions
 #CATEGORY: addClusterNode
 
 # delete nodes for sessions that don't exist anymore
-# NOTE this needs permissions on SYS.V_$SESSION
-# i.e. GRANT SELECT ON SYS.V_$SESSION TO someuser;
-#      SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'V_$SESSION';
+# NOTE this needs permissions on SYS.GV_$SESSION
+# i.e. GRANT SELECT ON SYS.GV_$SESSION TO someuser;
+#      SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'GV_$SESSION';
 DELETE FROM "CLUSTER_NODES" N WHERE
-  NOT EXISTS(SELECT S.SID FROM V$SESSION S WHERE N.NODEID = S.SID)
+  NOT EXISTS(SELECT S.SID FROM GV$SESSION S WHERE N.NODEID = S.SID)
 
 # Remove orphan invalidations
 DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN
