@@ -145,52 +145,85 @@ install/deploy to m2 repository, then you can use the dedicated profiles.
 
 ## Details about predefined applications
 
-1. Nuxeo CAP
+### Nuxeo Core Server
 
-  Built EAR is in nuxeo-distribution-cap/target/ and its name depends on chosen
-  package: default is nuxeo.ear
+A minimal server EAR. An embedded repository will be started. No other  platform services are available.
 
+This application can be used to debug, test or develop nuxeo components that need a repository connection.
 
-2. Nuxeo Document Management
+Remoting will be also available in the future via Nuxeo Runtime.
 
-  Built EAR is in nuxeo-distribution-dm/target/
+Built EAR is in `nuxeo-distribution-coreserver/target/`.
 
-
-4. Nuxeo Core Server
-
-  A minimal server EAR. An embedded repository will be started. No other
-  platform services are available.
-
-  This application can be used to debug, test or develop nuxeo components that
-  need a repository connection.
-
-  Remoting will be also available in the future via Nuxeo Runtime.
-
-  Built EAR is in nuxeo-distribution-coreserver/target/
+It is available within Tomcat in `nuxeo-distribution-tomcat/target/`.
 
 
-7. Nuxeo Tomcat WebApp
+### Nuxeo CAP
 
-  A Nuxeo Server packaged with Tomcat.
-  This build will generate a zip containing a 'tomcat' directory.
+Basic document management features.
 
-  Nuxeo will be available at htpp://localhost:8080/nuxeo
+Built EAR is in `nuxeo-distribution-cap/target/`.
 
-  Built application is in nuxeo-distribution-tomcat/target/
+This is the default available application in `nuxeo-distribution-tomcat/target/`.
 
+### Nuxeo Document Management
+
+Advanced document management features.
+
+Built EAR is in `nuxeo-distribution-dm/target/`.
+
+It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DM (for users), or by activating the "nuxeo-dm" preset (for developers).
+
+### Nuxeo Digital Assets Management
+
+Multimedia document collection management features.
+
+Based on the addon <https://github.com/nuxeo/nuxeo-dam>.
+
+Built EAR is in `nuxeo-distribution-dam/target/`.
+
+It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DAM (for users), or by activating the "nuxeo-dam" preset (for developers).
+
+### Nuxeo Social Collaboration
+
+Social network features (social workspaces, user relationships, mini-messages, user activity stream, ...).
+
+Based on the addon <https://github.com/nuxeo/nuxeo-social-collaboration>.
+
+Built EAR is in `nuxeo-distribution-social-collaboration/target/`.
+
+It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting SC (for users), or by activating the "nuxeo-sc" preset (for developers).
+
+### Nuxeo Case Management
+
+Case Management features (management of documents composed of items that evolve by being transfered to different persons responsible for their review or approval. A case can be for instance: a loan case composed of the different documents required for loan processing; a mail envelope with one or several documents; a legal case, etc.).
+
+Based on the addon <https://github.com/nuxeo/nuxeo-cmf>.
+
+Built EAR is in `nuxeo-distribution-cmf/target/`.
+
+It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting CMF (for users), or by activating the "nuxeo-cmf" preset (for developers).
+
+
+### Other applications
+
+There are a lot of other useful addons (see <https://github.com/nuxeo/>) and applications available from the [Nuxeo Marketplace](http://marketplace.nuxeo.com/).
+
+Addons are manually built and deployed on the target server.
+
+Marketplace applications are installable from the Admin Center within the Nuxeo server.
 
 ## Custom build
 
-It is of course possible to create custom builds.
+It is of course possible to create custom builds/assemblies.
 
 For historical reasons, there are multiple technologies used for packaging in
-nuxeo-distribution project (maven-assembly-plugin, maven-nuxeo-plugin,
-maven-antrun-extended-plugin, nuxeo-distribution-tools).
+nuxeo-distribution project ([maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/), [maven-nuxeo-plugin](http://hg.nuxeo.org/tools/maven-nuxeo-plugin/), [maven-antrun-extended-plugin](http://java.net/projects/maven-antrun-extended-plugin), [nuxeo-distribution-tools](http://hg.nuxeo.org/tools/nuxeo-distribution-tools/)).
 
 They are all based on Maven principles with the objectives to avoid duplication,
 ease maintenance and upgrade, rely on Maven artifacts, be OS independent.
 
-We recommend to use our newest tool "nuxeo-distribution-tools".
+We recommend to use our newest tool [nuxeo-distribution-tools](http://doc.nuxeo.com/x/BIAO).
 
 Execution of the assembly may be done from Maven execution as a Maven plugin,
 from command line or from Ant.
@@ -198,10 +231,11 @@ from command line or from Ant.
 Based on Ant syntax, it provides access to major Maven concepts and Ant flexibility.
 
 Principles of an assembly are generally to:
-    * inherit a Maven dependency tree (list of artifacts to retrieve)
-    * use this dependency tree to dispatch artifacts into directories
-    * download complementary artifacts (default packaging, resources, drivers, ...)
-    * download an empty server (JBoss, Jetty, Tomcat, ...)
-    * assemble all those parts into a runnable product.
 
-See the chosen tool documentation for more details.
+  * inherit a Maven dependency tree (list of artifacts to retrieve)
+  * use this dependency tree to dispatch artifacts into directories
+  * download complementary artifacts (default packaging, resources, drivers, ...)
+  * download an empty server (JBoss, Jetty, Tomcat, ...)
+  * assemble all those parts into a runnable product.
+
+See the chosen tool [documentation](http://doc.nuxeo.com) for more details.
