@@ -143,6 +143,12 @@
       </modules>
     </profile>
     <profile>
+      <id>fltest-dm</id>
+      <modules>
+        <module>nuxeo-distribution-dm/ftest/funkload</module>
+      </modules>
+    </profile>
+    <profile>
       <id>ftest-dam</id>
       <modules>
         <module>nuxeo-distribution-dam/ftest/selenium</module>
