@@ -43,6 +43,33 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
 		deployBundle("org.nuxeo.ecm.platform.login.mod_sso.test");
 		deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mock-usermanager-framework.xml");
+		deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mod_sso-descriptor-bundle.xml");
+	}
+
+	public void testProxyAuthenticationWithoutReplacement() throws Exception {
+
+		ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
+
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("ssoHeaderName", "remote_user");
+		// Redirect requires prefilter configuration, skipping...
+		parameters.put("ssoNeverRedirect", "true");
+		proxyAuth.initPlugin(parameters);
+		
+		String username = "test";
+
+		MockServletContext context = new MockServletContext();
+		MockHttpSession session = new MockHttpSession(context);
+		MockHttpServletRequest httpRequest = new MockHttpServletRequest(session, null, null, null, "GET");
+
+		httpRequest.getHeaders().put("remote_user", new String[] {username});
+
+		HttpServletResponse httpResponse = new MockHttpServletResponse();
+
+		UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(httpRequest, httpResponse);
+		
+		assertNotNull(identity);
+		assertEquals(username, identity.getUserName());
 	}
 
 	public void testProxyAuthenticationWithReplacement() throws Exception {
@@ -51,6 +78,7 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("ssoHeaderName", "remote_user");
+		// Redirect requires prefilter configuration, skipping...
 		parameters.put("ssoNeverRedirect", "true");
 		String regexp = "@EXAMPLE.COM";
 		parameters.put(ProxyAuthenticator.USERNAME_REMOVE_EXPRESSION, regexp);
