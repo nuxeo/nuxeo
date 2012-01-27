@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,11 +51,18 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final String HEADER_NOREDIRECT_KEY = "ssoNeverRedirect";
 
+    public static final String USERNAME_PARSE_EXPRESSION = "usernameParseExpression";
+
     protected String userIdHeaderName = "remote_user";
+    
+    protected String regexp = null;
 
     protected boolean noRedirect;
 
     public static final String HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME = "org.nuxeo.ecm.platform.login.mod_sso.credentialDirectoryField";
+
+	private Pattern usernamePattern;
+
 
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
@@ -69,6 +78,10 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         String userName = httpRequest.getHeader(userIdHeaderName);
         if (userName == null) {
             return null;
+        }
+        if (regexp != null) {
+        	Matcher matcher = usernamePattern.matcher(userName);
+        	userName = matcher.replaceAll("");
         }
 
         String credentialFieldName = Framework.getRuntime().getProperty(
@@ -155,6 +168,10 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         }
         if (parameters.containsKey(HEADER_NOREDIRECT_KEY)) {
             noRedirect = Boolean.parseBoolean(parameters.get(HEADER_NOREDIRECT_KEY));
+        }
+        if (parameters.containsKey(USERNAME_PARSE_EXPRESSION)) {
+        	regexp = parameters.get(USERNAME_PARSE_EXPRESSION);
+        	usernamePattern = Pattern.compile(regexp);
         }
     }
 
