@@ -261,8 +261,8 @@ class Release(object):
         extract_zip(os.path.join(self.archive_dir, offline_name + ".zip"),
                     self.tmpdir)
         # Generate online package if packages.xml exists
-        if os.path.join(self.tmpdir, offline_name,
-                        "setupWizardDownloads", "packages.xml").exists():
+        if os.path.isfile(os.path.join(self.tmpdir, offline_name,
+                        "setupWizardDownloads", "packages.xml")):
             online_name = "nuxeo-cap-%s-tomcat-online" % version
             os.rename(os.path.join(self.tmpdir, offline_name,
                                        "setupWizardDownloads", "packages.xml"),
