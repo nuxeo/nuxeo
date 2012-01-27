@@ -194,6 +194,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
+        eventService.waitForAsyncCompletion();
 
         // test setting and reading a map with an empty list
         closeSession();
