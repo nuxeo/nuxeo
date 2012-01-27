@@ -43,11 +43,8 @@ class Repository(object):
 
     def __init__(self, basedir, alias):
         assert_git_config()
-        self.driveletter = long_path_workaround_init()
-        if self.driveletter != None:
-            self.basedir = self.driveletter + ":\\"
-        else:
-            self.basedir = basedir
+        (self.basedir, self.driveletter,
+         self.oldbasedir) = long_path_workaround_init(basedir)
         self.alias = alias
         # find the remote URL
         remote_lines = check_output(["git", "remote", "-v"]).split("\n")
@@ -65,8 +62,7 @@ class Repository(object):
         self.addons = []
 
     def cleanup(self):
-        if hasattr(self, "driveletter"):
-            long_path_workaround_cleanup(self.driveletter, self.basedir)
+        long_path_workaround_cleanup(self.driveletter, self.oldbasedir)
 
     def eval_modules(self):
         """Set the list of Nuxeo addons in 'self.modules'."""
@@ -311,21 +307,20 @@ def system_with_retries(cmd, failonerror=True):
             time.sleep(10)
 
 
-def long_path_workaround_init():
-    """Windows only. Try to map the current directory to an unused drive letter
+def long_path_workaround_init(basedir):
+    """Windows only. Try to map the 'basedir' to an unused drive letter
     to shorten path names."""
-    if platform.system() != "Windows":
-        return None
+    newdir = basedir
     driveletter = None
-    for letter in "GHIJKLMNOPQRSTUVWXYZ":
-        if not os.path.isdir("%s:\\" % (letter,)):
-            driveletter = letter
-            cwd = os.getcwd()
-            system("SUBST %s: \"%s\"" % (driveletter, cwd))
-            time.sleep(10)
-            os.chdir("%s:\\" % (driveletter,))
-            break
-    return driveletter
+    if platform.system() == "Windows":
+        for letter in "GHIJKLMNOPQRSTUVWXYZ":
+            if not os.path.isdir("%s:\\" % (letter,)):
+                system("SUBST %s: \"%s\"" % (letter, basedir))
+                time.sleep(10)
+                driveletter = letter
+                newdir = driveletter + ":\\"
+                break
+    return newdir, driveletter, basedir
 
 
 def long_path_workaround_cleanup(driveletter, basedir):
