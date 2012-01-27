@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractServiceFactory;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
@@ -55,7 +56,15 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
     public CmisService getService(CallContext context) {
         String repositoryId = context.getRepositoryId();
         NuxeoRepository repository = NuxeoRepositories.getRepository(repositoryId);
+        if (repository == null) {
+            throw new CmisInvalidArgumentException("No such repository: "
+                    + repositoryId);
+        }
         NuxeoCmisService service = new NuxeoCmisService(repository, context);
+        if (service.getCoreSession() == null) {
+            throw new CmisInvalidArgumentException("No such repository: "
+                    + repositoryId);
+        }
 
         // wrap the service to provide default parameter checks
         return new CmisServiceWrapper<NuxeoCmisService>(service,
