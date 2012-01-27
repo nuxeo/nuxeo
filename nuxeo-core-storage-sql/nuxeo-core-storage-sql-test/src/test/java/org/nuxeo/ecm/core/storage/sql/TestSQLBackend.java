@@ -3269,6 +3269,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
         assertEquals(oneDoc, res.list);
 
+        clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
         // no wildcard index so no DISTINCT needed
         clause = "tst:title LIKE '%' ORDER BY tst:friends/0/lastname";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
@@ -3326,6 +3330,24 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(3, it.size());
         it.close();
+    }
+
+    public void testQueryComplexOrderByProxies() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+
+        String clause;
+        PartialList<Serializable> res;
+
+        clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
+        res = session.query("SELECT * FROM TestDoc WHERE " + clause,
+                QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
     }
 
     public void testQueryComplexOr() throws Exception {
