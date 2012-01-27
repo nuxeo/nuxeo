@@ -3875,7 +3875,7 @@
         <plugin>
           <groupId>net.java.maven-incremental-build</groupId>
           <artifactId>incremental-build-plugin</artifactId>
-          <version>1.4</version>
+          <version>1.5</version>
         </plugin>
         <plugin>
           <artifactId>maven-jarsigner-plugin</artifactId>
