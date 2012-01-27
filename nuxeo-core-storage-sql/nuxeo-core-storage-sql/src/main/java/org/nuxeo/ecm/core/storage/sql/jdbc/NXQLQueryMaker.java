@@ -184,6 +184,10 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected final List<String> orderByColumnNames = new LinkedList<String>();
 
+    protected final Map<String, String> aliasesByName = new HashMap<String, String>();
+
+    protected final List<String> aliases = new LinkedList<String>();
+
     protected boolean hasWildcardIndex;
 
     protected boolean orderByHasWildcardIndex;
@@ -258,36 +262,8 @@ public class NXQLQueryMaker implements QueryMaker {
             throw new StorageException(e.getMessage(), e);
         }
 
-        boolean distinct = sqlQuery.select.isDistinct();
-        if (selectStar && hasWildcardIndex) {
-            distinct = true;
-        }
-        if (distinct) {
-            // if DISTINCT, check that the ORDER BY columns are all in the
-            // SELECT list
-            Set<String> set = new HashSet<String>(orderByColumnNames);
-            set.removeAll(whatColumnNames);
-            if (!set.isEmpty()) {
-                if (!selectStar) {
-                    throw new StorageException(
-                            "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: "
-                                    + set);
-                }
-                // for a SELECT *, we can add the needed columns if they
-                // don't involve wildcard index array elements
-                if (orderByHasWildcardIndex) {
-                    throw new StorageException(
-                            "For SELECT * the ORDER BY columns cannot use wildcard indexes");
-                }
-                for (String name : set) {
-                    sqlQuery.select.add(new Reference(name));
-                }
-                // queryAnalyzer.visitSelectClause(sqlQuery.select);
-            }
-        }
-
         /*
-         * Build the FROM / JOIN criteria for each select.
+         * Find whether to check proxies, relations.
          */
 
         if (onlyRelations) {
@@ -305,13 +281,50 @@ public class NXQLQueryMaker implements QueryMaker {
         } else {
             docKinds = new DocKind[] { DocKind.DIRECT, DocKind.PROXY };
         }
+        boolean doUnion = docKinds.length > 1;
 
-        Table hier = database.getTable(model.HIER_TABLE_NAME);
+        /*
+         * DISTINCT check and add additional selected columns for ORDER BY.
+         */
+
+        Set<String> onlyOrderByColumnNames = new HashSet<String>(
+                orderByColumnNames);
+        onlyOrderByColumnNames.removeAll(whatColumnNames);
+        boolean distinct = sqlQuery.select.isDistinct();
+        if (selectStar && hasWildcardIndex) {
+            distinct = true;
+        }
+
+        if (doUnion || distinct) {
+            // if UNION, we need all the ORDER BY columns in the SELECT list
+            // for aliasing
+            if (distinct && !onlyOrderByColumnNames.isEmpty()) {
+                // if DISTINCT, check that the ORDER BY columns are all in the
+                // SELECT list
+                if (!selectStar) {
+                    throw new StorageException(
+                            "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: "
+                                    + onlyOrderByColumnNames);
+                }
+                // for a SELECT *, we can add the needed columns if they
+                // don't involve wildcard index array elements
+                if (orderByHasWildcardIndex) {
+                    throw new StorageException(
+                            "For SELECT * the ORDER BY columns cannot use wildcard indexes");
+                }
+            }
+            for (String name : onlyOrderByColumnNames) {
+                sqlQuery.select.add(new Reference(name));
+            }
+        }
+
+        /*
+         * Build the FROM / JOIN criteria for each select.
+         */
 
         String from;
         List<Column> whatColumns = null;
         List<String> whatKeys = null;
-        boolean doUnion = docKinds.length > 1;
         Select select = null;
         String orderBy = null;
         List<String> statements = new ArrayList<String>(2);
@@ -320,6 +333,7 @@ public class NXQLQueryMaker implements QueryMaker {
         List<Select> withSelects = new LinkedList<Select>();
         List<String> withSelectsStatements = new LinkedList<String>();
         List<Serializable> withParams = new LinkedList<Serializable>();
+        Table hier = database.getTable(model.HIER_TABLE_NAME);
 
         for (DocKind docKind : docKinds) {
 
@@ -347,9 +361,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
                 // proxies
                 Table proxies = database.getTable(model.PROXY_TABLE_NAME);
-                String proxiesid = proxies.getColumn(model.MAIN_KEY).getFullQuotedName();
-                String proxiestargetid = proxies.getColumn(
-                        model.PROXY_TARGET_KEY).getFullQuotedName();
                 // join all that
                 addJoin(Join.INNER, null, proxies, model.MAIN_KEY, hierTable,
                         model.MAIN_KEY, null, -1);
@@ -360,12 +371,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 throw new AssertionError(docKind);
             }
             fixInitialJoins();
-
-            /*
-             * Parse the WHERE clause from the original query, and deduce from
-             * it actual WHERE clauses and potential JOINs. Also checks what
-             * columns we SELECT.
-             */
 
             /*
              * Process WHAT to select.
@@ -381,8 +386,32 @@ public class NXQLQueryMaker implements QueryMaker {
             whatColumns = whereBuilder.whatColumns;
             whatKeys = whereBuilder.whatKeys;
 
+            // alias columns in all cases to simplify logic
+            List<String> whatNames = new ArrayList<String>(1);
+            List<Serializable> whatNamesParams = new ArrayList<Serializable>(1);
+            String mainAlias = hierId;
+            aliasesByName.clear();
+            aliases.clear();
+            for (int i = 0; i < whatColumns.size(); i++) {
+                Column col = whatColumns.get(i);
+                String key = whatKeys.get(i);
+                String alias = dialect.openQuote() + COL_ALIAS_PREFIX
+                        + (i+1) + dialect.closeQuote();
+                aliasesByName.put(key, alias);
+                aliases.add(alias);
+                String whatName = getSelectColName(col);
+                whatName += " AS " + alias;
+                if (col.getTable().getRealTable() == hier
+                        && col.getKey().equals(model.MAIN_KEY)) {
+                    mainAlias = alias;
+                }
+                whatNames.add(whatName);
+            }
+
+            fixWhatColumns(whatColumns);
+
             /*
-             * Process WHERE and ORDER BY.
+             * Process WHERE.
              */
 
             if (queryAnalyzer.wherePredicate != null) {
@@ -394,21 +423,21 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
 
-            // ORDER BY computed just once; may use just aliases
+            /*
+             * Process ORDER BY.
+             */
 
             boolean orderByScoreDesc = sqlQuery.orderBy == null
                     && whereBuilder.ftJoinNumber == 1 && !distinct;
             FulltextMatchInfo ftMatchInfo = whereBuilder.ftMatchInfo;
 
+            // ORDER BY computed just once; may use just aliases
             if (orderBy == null) {
                 if (sqlQuery.orderBy != null) {
                     whereBuilder.aliasOrderByColumns = doUnion;
                     whereBuilder.buf.setLength(0);
-                    // start alias count after selected columns
-                    whereBuilder.nalias = whatColumns.size();
                     sqlQuery.orderBy.accept(whereBuilder);
                     // ends up in WhereBuilder#visitOrderByExpr
-                    // uses nalias in builder
                     orderBy = whereBuilder.buf.toString();
                 } else if (orderByScoreDesc) {
                     // add order by score desc
@@ -416,38 +445,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
 
-            /*
-             * Columns on which to select and do ordering.
-             */
-
-            // alias columns in all cases to simplify logic
-            int nalias = 0;
-            List<String> whatNames = new ArrayList<String>(1);
-            List<Serializable> whatNamesParams = new ArrayList<Serializable>(1);
-            String mainAlias = hierId;
-            for (Column col : whatColumns) {
-                String name = getSelectColName(col);
-                String alias = dialect.openQuote() + COL_ALIAS_PREFIX
-                        + ++nalias + dialect.closeQuote();
-                name += " AS " + alias;
-                if (col.getTable().getRealTable() == hier
-                        && col.getKey().equals(model.MAIN_KEY)) {
-                    mainAlias = alias;
-                }
-                whatNames.add(name);
-            }
-            fixWhatColumns(whatColumns);
-            if (doUnion) {
-                // UNION, so we need all orderable columns aliased as well
-                for (String key : orderByColumnNames) {
-                    Column column = whereBuilder.findColumn(key, false, true);
-                    String name = column.getFullQuotedName();
-                    String alias = dialect.openQuote() + COL_ALIAS_PREFIX
-                            + ++nalias + dialect.closeQuote();
-                    name += " AS " + alias;
-                    whatNames.add(name);
-                }
-            }
             if (orderByScoreDesc) {
                 // add score expression to selected columns
                 String scoreExprSql = ftMatchInfo.scoreExpr + " AS "
@@ -457,6 +454,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     whatNamesParams.add(ftMatchInfo.scoreExprParam);
                 }
             }
+
             String selectWhat = StringUtils.join(whatNames, ", ");
             if (!doUnion && distinct) {
                 selectWhat = "DISTINCT " + selectWhat;
@@ -593,13 +591,7 @@ public class NXQLQueryMaker implements QueryMaker {
         if (doUnion) {
             select = new Select(null);
             // use aliases for column names
-            List<String> whatNames = new ArrayList<String>(whatColumns.size());
-            for (int nalias = 1; nalias <= whatColumns.size(); nalias++) {
-                String name = dialect.openQuote() + COL_ALIAS_PREFIX + nalias
-                        + dialect.closeQuote();
-                whatNames.add(name);
-            }
-            String selectWhat = StringUtils.join(whatNames, ", ");
+            String selectWhat = StringUtils.join(aliases, ", ");
             if (distinct) {
                 selectWhat = "DISTINCT " + selectWhat;
             }
@@ -1109,19 +1101,17 @@ public class NXQLQueryMaker implements QueryMaker {
         // path prefix -> hier table to join,
         protected Map<String, Table> propertyHierTables = new HashMap<String, Table>();
 
-        private final boolean isProxies;
+        protected final boolean isProxies;
 
-        private boolean aliasOrderByColumns;
+        protected boolean aliasOrderByColumns;
 
         // internal fields
 
-        private boolean allowSubSelect;
+        protected boolean allowSubSelect;
 
-        private boolean inSelect;
+        protected boolean inSelect;
 
-        private boolean inOrderBy;
-
-        private int nalias = 0;
+        protected boolean inOrderBy;
 
         protected int ftJoinNumber;
 
@@ -1280,9 +1270,8 @@ public class NXQLQueryMaker implements QueryMaker {
                         String alias = TABLE_HIER_ALIAS + ++hierJoinCount;
                         table = new TableAlias(hier, alias);
                         propertyHierTables.put(contextKey, table);
-                        addJoin(Join.LEFT, alias, table,
-                                model.HIER_PARENT_KEY, contextHier,
-                                model.MAIN_KEY, segment, index);
+                        addJoin(Join.LEFT, alias, table, model.HIER_PARENT_KEY,
+                                contextHier, model.MAIN_KEY, segment, index);
                     }
                     contextHier = table;
                 } else {
@@ -1888,10 +1877,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 // but don't use generated values
                 // make the ORDER BY clause uses the aliases instead
                 buf.setLength(length);
-                buf.append(dialect.openQuote());
-                buf.append(COL_ALIAS_PREFIX);
-                buf.append(++nalias);
-                buf.append(dialect.closeQuote());
+                buf.append(aliasesByName.get(node.reference.name));
             }
             if (node.isDescending) {
                 buf.append(dialect.getDescending());
