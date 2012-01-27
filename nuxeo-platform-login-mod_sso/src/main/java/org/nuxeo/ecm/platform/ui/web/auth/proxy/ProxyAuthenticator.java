@@ -51,7 +51,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final String HEADER_NOREDIRECT_KEY = "ssoNeverRedirect";
 
-    public static final String USERNAME_PARSE_EXPRESSION = "usernameParseExpression";
+    public static final String USERNAME_REMOVE_EXPRESSION = "usernameUnwantedPartExpression";
 
     protected String userIdHeaderName = "remote_user";
     
@@ -61,7 +61,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     public static final String HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME = "org.nuxeo.ecm.platform.login.mod_sso.credentialDirectoryField";
 
-	private Pattern usernamePattern;
+	private Pattern usernamePartRemovalPattern;
 
 
     public List<String> getUnAuthenticatedURLPrefix() {
@@ -79,8 +79,9 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         if (userName == null) {
             return null;
         }
-        if (regexp != null) {
-        	Matcher matcher = usernamePattern.matcher(userName);
+        if (regexp != null && usernamePartRemovalPattern != null) {
+        	Matcher matcher = usernamePartRemovalPattern.matcher(userName);
+        	// Remove all instance of regexp from username string
         	userName = matcher.replaceAll("");
         }
 
@@ -169,9 +170,9 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         if (parameters.containsKey(HEADER_NOREDIRECT_KEY)) {
             noRedirect = Boolean.parseBoolean(parameters.get(HEADER_NOREDIRECT_KEY));
         }
-        if (parameters.containsKey(USERNAME_PARSE_EXPRESSION)) {
-        	regexp = parameters.get(USERNAME_PARSE_EXPRESSION);
-        	usernamePattern = Pattern.compile(regexp);
+        if (parameters.containsKey(USERNAME_REMOVE_EXPRESSION)) {
+        	regexp = parameters.get(USERNAME_REMOVE_EXPRESSION);
+        	usernamePartRemovalPattern = Pattern.compile(regexp);
         }
     }
 

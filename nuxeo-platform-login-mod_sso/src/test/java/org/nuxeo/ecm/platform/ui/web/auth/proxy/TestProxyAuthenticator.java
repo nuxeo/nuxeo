@@ -53,7 +53,7 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
 		parameters.put("ssoHeaderName", "remote_user");
 		parameters.put("ssoNeverRedirect", "true");
 		String regexp = "@EXAMPLE.COM";
-		parameters.put(ProxyAuthenticator.USERNAME_PARSE_EXPRESSION, regexp);
+		parameters.put(ProxyAuthenticator.USERNAME_REMOVE_EXPRESSION, regexp);
 		proxyAuth.initPlugin(parameters);
 		
 		String username = "test";
