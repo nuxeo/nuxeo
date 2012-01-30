@@ -84,7 +84,7 @@ html,body {
 }
 
 .header .facet {
-	background: url("../images/tool-sprites.png") no-repeat scroll 0 0 transparent;
+	background: url("../opensocial/images/tool-sprites.png") no-repeat scroll 0 0 transparent;
 	cursor: pointer;
 	float: right;
 	height: 16px;
