@@ -82,7 +82,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected static final String MISSING_ID_UPPER_CASE = "upper";
 
-    // directory connection parameters
     private static final Log log = LogFactory.getLog(LDAPSession.class);
 
     protected final String schemaName;
@@ -555,8 +554,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
-                        searchBaseDn, filterExpr, StringUtils.join(filterArgs,
-                                ","), scts.getSearchScope(), this));
+                        searchBaseDn, filterExpr,
+                        StringUtils.join(filterArgs, ","),
+                        scts.getSearchScope(), this));
             }
             try {
                 NamingEnumeration<SearchResult> results = dirContext.search(
@@ -797,14 +797,30 @@ public class LDAPSession extends BaseSession implements EntrySource {
     protected DocumentModelList ldapResultsToDocumentModels(
             NamingEnumeration<SearchResult> results, boolean fetchReferences)
             throws DirectoryException, NamingException {
-        DocumentModelList list = new DocumentModelListImpl();
-        while (results.hasMore()) {
-            SearchResult result = results.next();
-            DocumentModel entry = ldapResultToDocumentModel(result, null,
-                    fetchReferences);
-            if (entry != null) {
-                list.add(entry);
+        DocumentModelListImpl list = new DocumentModelListImpl();
+        try {
+            while (results.hasMore()) {
+                SearchResult result = results.next();
+                DocumentModel entry = ldapResultToDocumentModel(result, null,
+                        fetchReferences);
+                if (entry != null) {
+                    list.add(entry);
+                }
             }
+        } catch (SizeLimitExceededException e) {
+            if (list.isEmpty()) {
+                // the server did no send back the truncated results set,
+                // re-throw the exception to that the user interface can display
+                // the error message
+                throw e;
+            }
+            // mark the collect results as a truncated result list
+            log.debug("SizeLimitExceededException caught,"
+                    + " return truncated results. Original message: "
+                    + e.getMessage() + " explanation: " + e.getExplanation());
+            list.setTotalSize(-2);
+        } finally {
+            results.close();
         }
         log.debug("LDAP search returned " + list.size() + " results");
         return list;
@@ -880,8 +896,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         // do not try to fetch the password attribute
                         continue;
                     } else {
-                        fieldMap.put(fieldName, getFieldValue(attribute,
-                                fieldName, entryId, fetchReferences));
+                        fieldMap.put(
+                                fieldName,
+                                getFieldValue(attribute, fieldName, entryId,
+                                        fetchReferences));
                     }
                 }
             }
@@ -892,8 +910,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 idAttribute);
         Object obj = fieldMap.get(fieldId);
         if (obj == null) {
-            fieldMap.put(fieldId, changeEntryIdCase(entryId,
-                    directory.getConfig().missingIdFieldCase));
+            fieldMap.put(
+                    fieldId,
+                    changeEntryIdCase(entryId,
+                            directory.getConfig().missingIdFieldCase));
         } else if (obj instanceof String) {
             fieldMap.put(fieldId, changeEntryIdCase((String) obj, idCase));
         }
@@ -935,7 +955,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         Properties env = (Properties) directory.getContextProperties().clone();
         env.put(Context.SECURITY_PRINCIPAL, dn);
         env.put(Context.SECURITY_CREDENTIALS, password);
-        //disable connection with former password
+        // disable connection with former password
         env.put("com.sun.jndi.ldap.connect.pool", "false");
 
         InitialDirContext authenticationDirContext = null;
@@ -1017,9 +1037,13 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 Attribute attribute = attributes.get("MUST");
                 if (attribute != null) {
                     NamingEnumeration<String> values = (NamingEnumeration<String>) attribute.getAll();
-                    while (values.hasMore()) {
-                        String value = values.next();
-                        mandatoryAttributes.add(value);
+                    try {
+                        while (values.hasMore()) {
+                            String value = values.next();
+                            mandatoryAttributes.add(value);
+                        }
+                    } finally {
+                        values.close();
                     }
                 }
             }

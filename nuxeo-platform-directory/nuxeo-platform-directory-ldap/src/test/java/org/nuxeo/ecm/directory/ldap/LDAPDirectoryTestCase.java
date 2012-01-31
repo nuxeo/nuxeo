@@ -26,10 +26,13 @@ import java.util.List;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.SizeLimitExceededException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -41,6 +44,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  */
 public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
+
+    private static final Log log = LogFactory.getLog(LDAPDirectoryTestCase.class);
 
     protected static final MockLdapServer SERVER = new MockLdapServer();
 
@@ -123,12 +128,12 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         try {
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 DirContext ctx = session.getContext();
-                destroyRecursively("ou=people,dc=example,dc=com", ctx);
-                destroyRecursively("ou=groups,dc=example,dc=com", ctx);
+                destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
+                destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
             } else {
                 DirContext ctx = SERVER.getContext();
-                destroyRecursively("ou=people", ctx);
-                destroyRecursively("ou=groups", ctx);
+                destroyRecursively("ou=people", ctx, -1);
+                destroyRecursively("ou=groups", ctx, -1);
             }
         } finally {
             session.close();
@@ -165,24 +170,38 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         loader.execute();
     }
 
-    protected void destroyRecursively(String dn, DirContext ctx)
+    protected void destroyRecursively(String dn, DirContext ctx, int limit)
             throws NamingException {
+        if (limit == 0) {
+            log.warn("Reach recursion limit, stopping deletion at" + dn);
+            return;
+        }
         SearchControls scts = new SearchControls();
         scts.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         String providerUrl = (String) ctx.getEnvironment().get(
                 Context.PROVIDER_URL);
         NamingEnumeration<SearchResult> children = ctx.search(dn,
                 "(objectClass=*)", scts);
-        while (children.hasMore()) {
-            SearchResult child = children.next();
-            String subDn = child.getName();
-            if (!USE_EXTERNAL_TEST_LDAP_SERVER && subDn.endsWith(providerUrl)) {
-                subDn = subDn.substring(0, subDn.length()
-                        - providerUrl.length() - 1);
-            } else {
-                subDn = subDn + ',' + dn;
+        try {
+            while (children.hasMore()) {
+                SearchResult child = children.next();
+                String subDn = child.getName();
+                if (!USE_EXTERNAL_TEST_LDAP_SERVER
+                        && subDn.endsWith(providerUrl)) {
+                    subDn = subDn.substring(0,
+                            subDn.length() - providerUrl.length() - 1);
+                } else {
+                    subDn = subDn + ',' + dn;
+                }
+                destroyRecursively(subDn, ctx, limit);
             }
-            destroyRecursively(subDn, ctx);
+        } catch (SizeLimitExceededException e) {
+            log.warn("SizeLimitExceededException: trying again on partial results "
+                    + dn);
+            if (limit == -1) {
+                limit = 100;
+            }
+            destroyRecursively(dn, ctx, limit - 1);
         }
         ctx.destroySubcontext(dn);
     }

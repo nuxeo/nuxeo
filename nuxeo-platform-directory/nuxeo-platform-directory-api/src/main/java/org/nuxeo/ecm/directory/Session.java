@@ -65,10 +65,16 @@ public interface Session {
     /**
      * Retrieves all the entries in the directory.
      *
+     * If the remote server issues a size limit exceeded error while sending
+     * partial results up to that limit, the method
+     * {@code DocumentModelList#totalsize} on the returned list will return
+     * -2 as a special marker for truncated results.
+     *
      * @return a collection with all the entries in the directory
      * @throws DirectoryException
      * @throws SizeLimitExceededException if the number of results is larger
-     *             than the limit configured for the directory
+     *             than the limit configured for the directory and the server
+     *             does not send partial results.
      */
     DocumentModelList getEntries() throws ClientException, DirectoryException;
 
@@ -152,12 +158,18 @@ public interface Session {
      * Does not fetch reference fields.
      * </p>
      *
+     * If the remote server issues a size limit exceeded error while sending
+     * partial results up to that limit, the method
+     * {@code DocumentModelList#totalsize} on the returned list will return
+     * -2 as a special marker for truncated results.
+     *
      * @param filter a filter to apply to entries in directory
      * @return a list of document models containing the entries matched by the
      *         query
      * @throws DirectoryException if a communication error occurs
      * @throws SizeLimitExceededException if the number of results is larger
-     *             than the limit configured for the directory
+     *             than the limit configured for the directory and the server
+     *             does not send partial results.
      */
     DocumentModelList query(Map<String, Serializable> filter) throws ClientException,
             DirectoryException;
@@ -169,6 +181,11 @@ public interface Session {
      * Does not fetch reference fields.
      * </p>
      *
+     * If the remote server issues a size limit exceeded error while sending
+     * partial results up to that limit, the method
+     * {@code DocumentModelList#totalsize} on the returned list will return
+     * -2 as a special marker for truncated results.
+     *
      * @param filter a filter to apply to entries in directory
      * @param fulltext a set of field that should be treated as a fulltext
      *            search
@@ -176,7 +193,8 @@ public interface Session {
      *         query
      * @throws DirectoryException if a communication error occurs
      * @throws SizeLimitExceededException if the number of results is larger
-     *             than the limit configured for the directory
+     *             than the limit configured for the directory and the server
+     *             does not send partial results.
      */
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext)
             throws ClientException, DirectoryException;
@@ -189,6 +207,11 @@ public interface Session {
      * Does not fetch reference fields.
      * </p>
      *
+     * If the remote server issues a size limit exceeded error while sending
+     * partial results up to that limit, the method
+     * {@code DocumentModelList#totalsize} on the returned list will return
+     * -2 as a special marker for truncated results.
+     *
      * @param filter a filter to apply to entries in directory
      * @param orderBy a LinkedHashMap with the 'order by' criterias.The key of
      *            an entry of this map represents the column name and the value
@@ -200,7 +223,8 @@ public interface Session {
      *         query
      * @throws DirectoryException if a communication error occurs
      * @throws SizeLimitExceededException if the number of results is larger
-     *             than the limit configured for the directory
+     *             than the limit configured for the directory and the server
+     *             does not send partial results.
      */
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
             Map<String, String> orderBy) throws ClientException,
