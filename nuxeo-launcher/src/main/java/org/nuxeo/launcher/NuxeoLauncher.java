@@ -631,22 +631,23 @@ public abstract class NuxeoLauncher {
         boolean commandSucceeded = false;
         if (doStart(logProcessOutput)) {
             addShutdownHook();
-            if (!configurationGenerator.isWizardRequired()
-                    && !waitForEffectiveStart()) {
+            try {
+                if (configurationGenerator.isWizardRequired()
+                        || waitForEffectiveStart()) {
+                    commandSucceeded = true;
+                }
                 removeShutdownHook();
-                stop(logProcessOutput);
-            } else {
-                removeShutdownHook();
-                commandSucceeded = true;
+            } catch (InterruptedException e) {
+                // do nothing
             }
         }
         return commandSucceeded;
     }
 
     protected void removeShutdownHook() {
-        log.debug("Remove shutdown hook");
         try {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            log.debug("Removed shutdown hook");
         } catch (IllegalStateException e) {
             // the virtual machine is already in the process of shutting down
         }
@@ -654,8 +655,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * @return true if Nuxeo is ready
+     * @throws InterruptedException
      */
-    protected boolean waitForEffectiveStart() {
+    protected boolean waitForEffectiveStart() throws InterruptedException {
         long startTime = new Date().getTime();
         int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
                 START_MAX_WAIT_PARAM, getDefaultMaxWait()));
@@ -678,20 +680,16 @@ public abstract class NuxeoLauncher {
         } while (!isReady && deltaTime < startMaxWait && isRunning());
         isReady = false;
         // Wait for effective start reported from status servlet
-        try {
-            do {
-                isReady = isStarted();
-                if (!isReady) {
-                    if (!quiet) {
-                        System.out.print(".");
-                    }
-                    Thread.sleep(1000);
+        do {
+            isReady = isStarted();
+            if (!isReady) {
+                if (!quiet) {
+                    System.out.print(".");
                 }
-                deltaTime = (new Date().getTime() - startTime) / 1000;
-            } while (!isReady && deltaTime < startMaxWait && isRunning());
-        } catch (InterruptedException e) {
-            log.info("Starting process interrupted.");
-        }
+                Thread.sleep(1000);
+            }
+            deltaTime = (new Date().getTime() - startTime) / 1000;
+        } while (!isReady && deltaTime < startMaxWait && isRunning());
         if (isReady) {
             startSummary.append(newLine + getStartupSummary());
             long duration = (new Date().getTime() - startTime) / 1000;
@@ -1026,7 +1024,9 @@ public abstract class NuxeoLauncher {
 
         public void run() {
             log.debug("Shutting down...");
-            launcher.stop();
+            if (launcher.isRunning()) {
+                launcher.stop();
+            }
             log.debug("Shutdown complete.");
         }
     }
@@ -1048,8 +1048,7 @@ public abstract class NuxeoLauncher {
         long startTime = new Date().getTime();
         long deltaTime;
         try {
-            if (!(processManager instanceof PureJavaProcessManager)
-                    && getPid() == null) {
+            if (!isRunning()) {
                 log.warn("Server is not running.");
                 return;
             }
