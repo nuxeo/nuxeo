@@ -50,7 +50,7 @@ public class Log4JHelper {
 
     public static final String CONSOLE_APPENDER_NAME = "CONSOLE";
 
-    protected static final String FULL_PATTERN_LAYOUT = "%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n";
+    protected static final String FULL_PATTERN_LAYOUT = "%d{HH:mm:ss,SSS} %-5p [%l] %m%n";
 
     protected static final String LIGHT_PATTERN_LAYOUT = "%m%n";
 
@@ -111,45 +111,58 @@ public class Log4JHelper {
     }
 
     /**
+     * Set DEBUG level on the given category and the children categories.
+     * Also change the pattern layout of the given appenderName.
+     *
      * @since 5.6
      * @param category Log4J category for which to switch debug log level
      * @param debug set debug log level to true or false
      * @param includeChildren Also set/unset debug mode on children categories
+     * @param appenderName An appender name on which to set a detailed pattern
+     *            layout. Ignored if null.
      */
     public static void setDebug(String category, boolean debug,
-            boolean includeChildren) {
+            boolean includeChildren, String appenderName) {
         for (@SuppressWarnings("unchecked")
         Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
             Logger logger = loggers.nextElement();
             if (logger.getName().equals(category) || includeChildren
                     && logger.getName().startsWith(category)) {
-                Appender consoleAppender = logger.getAppender(CONSOLE_APPENDER_NAME);
                 if (debug) {
                     logger.setLevel(Level.DEBUG);
-                    if (consoleAppender != null) {
-                        consoleAppender.setLayout(new PatternLayout(
-                                FULL_PATTERN_LAYOUT));
-                    }
                     log.info("Log level set to DEBUG for: " + logger.getName());
                 } else {
                     logger.setLevel(Level.INFO);
-                    if (consoleAppender != null) {
-                        consoleAppender.setLayout(new PatternLayout(
-                                LIGHT_PATTERN_LAYOUT));
-                    }
                     log.info("Log level reset to INFO for: " + logger.getName());
                 }
             }
         }
+        if (appenderName == null) {
+            return;
+        }
+        Appender consoleAppender = Logger.getRootLogger().getAppender(
+                appenderName);
+        if (consoleAppender != null) {
+            String patternLayout = debug ? FULL_PATTERN_LAYOUT
+                    : LIGHT_PATTERN_LAYOUT;
+            consoleAppender.setLayout(new PatternLayout(patternLayout));
+            log.info(String.format("Set pattern layout of %s to %s",
+                    appenderName, patternLayout));
+        }
     }
 
     /**
+     * Set DEBUG level on the given category and change pattern layout of
+     * {@link #CONSOLE_APPENDER_NAME} if defined.
+     * Children categories are unchanged.
+     *
      * @since 5.5
      * @param category Log4J category for which to switch debug log level
      * @param debug set debug log level to true or false
+     * @see #setDebug(String, boolean, boolean, String)
      */
     public static void setDebug(String category, boolean debug) {
-        setDebug(category, debug, false);
+        setDebug(category, debug, false, CONSOLE_APPENDER_NAME);
     }
 
     /**
