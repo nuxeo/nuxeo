@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -29,6 +29,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.DefaultRepositorySelector;
@@ -110,27 +111,45 @@ public class Log4JHelper {
     }
 
     /**
+     * @since 5.6
+     * @param category Log4J category for which to switch debug log level
+     * @param debug set debug log level to true or false
+     * @param includeChildren Also set/unset debug mode on children categories
+     */
+    public static void setDebug(String category, boolean debug,
+            boolean includeChildren) {
+        for (@SuppressWarnings("unchecked")
+        Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
+            Logger logger = loggers.nextElement();
+            if (logger.getName().equals(category) || includeChildren
+                    && logger.getName().startsWith(category)) {
+                Appender consoleAppender = logger.getAppender(CONSOLE_APPENDER_NAME);
+                if (debug) {
+                    logger.setLevel(Level.DEBUG);
+                    if (consoleAppender != null) {
+                        consoleAppender.setLayout(new PatternLayout(
+                                FULL_PATTERN_LAYOUT));
+                    }
+                    log.info("Log level set to DEBUG for: " + logger.getName());
+                } else {
+                    logger.setLevel(Level.INFO);
+                    if (consoleAppender != null) {
+                        consoleAppender.setLayout(new PatternLayout(
+                                LIGHT_PATTERN_LAYOUT));
+                    }
+                    log.info("Log level reset to INFO for: " + logger.getName());
+                }
+            }
+        }
+    }
+
+    /**
      * @since 5.5
      * @param category Log4J category for which to switch debug log level
      * @param debug set debug log level to true or false
      */
     public static void setDebug(String category, boolean debug) {
-        Appender consoleAppender = Logger.getLogger(category).getAppender(
-                CONSOLE_APPENDER_NAME);
-        if (debug) {
-            Logger.getLogger(category).setLevel(Level.DEBUG);
-            if (consoleAppender != null) {
-                consoleAppender.setLayout(new PatternLayout(FULL_PATTERN_LAYOUT));
-            }
-            log.info("Log level set to DEBUG for: " + category);
-        } else {
-            if (consoleAppender != null) {
-                consoleAppender.setLayout(new PatternLayout(
-                        LIGHT_PATTERN_LAYOUT));
-            }
-            Logger.getLogger(category).setLevel(Level.INFO);
-            log.info("Log level reset to INFO for: " + category);
-        }
+        setDebug(category, debug, false);
     }
 
     /**
