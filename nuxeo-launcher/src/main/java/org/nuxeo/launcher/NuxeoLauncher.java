@@ -1306,7 +1306,7 @@ public abstract class NuxeoLauncher {
      * @since 5.5
      */
     protected void setDebug(boolean activateDebug) {
-        Log4JHelper.setDebug("org.nuxeo", activateDebug, true);
+        Log4JHelper.setDebug("org.nuxeo", activateDebug, true, "FILE");
     }
 
     /**
