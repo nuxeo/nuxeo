@@ -860,8 +860,11 @@ public class ConfigurationGenerator {
             if (DB_LIST.contains(template)) {
                 dbTemplate = template;
             } else {
-                nodbTemplates += template;
+                nodbTemplates += "," + template;
             }
+        }
+        if (nodbTemplates.startsWith(",")) {
+            nodbTemplates = nodbTemplates.substring(1);
         }
         userConfig.put(PARAM_TEMPLATES_NODB, nodbTemplates);
         userConfig.put(PARAM_TEMPLATE_DBNAME, dbTemplate);

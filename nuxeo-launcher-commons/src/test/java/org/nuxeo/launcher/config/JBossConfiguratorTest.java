@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -66,8 +66,9 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
         configGenerator = new ConfigurationGenerator();
 
         File nuxeoConf = getResourceFile("configurator/nuxeo.conf2");
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
-                nuxeoConf.getPath());
+        FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
+                nuxeoHome, nuxeoConf.getName()).getPath());
         configGenerator2 = new ConfigurationGenerator();
     }
 
@@ -77,7 +78,7 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
         assertTrue(configGenerator.isConfigurable());
         log.debug(configGenerator.getIncludedTemplates());
         Properties config = configGenerator.getUserConfig();
-        assertEquals("default,testinclude",
+        assertEquals("default,common,testinclude",
                 config.getProperty("nuxeo.templates"));
         assertEquals("true", config.getProperty("test.nuxeo.conf"));
         assertEquals("true", config.getProperty("test.nuxeo.defaults"));
@@ -209,9 +210,8 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
         parameters.put(propToSave1, valueToSave1);
         configGenerator.saveFilteredConfiguration(parameters);
 
-        File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
         System.setProperty(ConfigurationGenerator.NUXEO_CONF,
-                nuxeoConf.getPath());
+                configGenerator.getNuxeoConf().getPath());
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         Properties userConfig = configGenerator.getUserConfig();

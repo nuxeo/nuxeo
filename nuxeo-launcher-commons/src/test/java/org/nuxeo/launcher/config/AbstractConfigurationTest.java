@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -47,12 +48,13 @@ public abstract class AbstractConfigurationTest {
 
     @Before
     public void setUp() throws Exception {
-        File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
-                nuxeoConf.getPath());
         nuxeoHome = File.createTempFile("nuxeo", null);
         nuxeoHome.delete();
         nuxeoHome.mkdirs();
+        File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
+        FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
+                nuxeoHome, nuxeoConf.getName()).getPath());
         System.setProperty(ConfigurationGenerator.NUXEO_HOME,
                 nuxeoHome.getPath());
         System.setProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome,
