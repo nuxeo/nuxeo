@@ -34,6 +34,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -2607,8 +2608,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         runParallelLocking(nodeId, repository, repository);
     }
 
-    // TODO disabled as there still are problems in cluster mode
-    // due to invalidations not really being synchronous
     public void testLockingParallelClustered() throws Throwable {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2650,22 +2649,37 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 firstReady, barrier);
         LockingJob r2 = new LockingJob(repository2, "t2-", nodeId, TIME, null,
                 barrier);
-        Thread t1 = new Thread(r1, "t1");
-        Thread t2 = new Thread(r2, "t2");
-        t1.start();
-        firstReady.await();
-        t2.start();
+        Thread t1 = null;
+        Thread t2 = null;
+        try {
+            t1 = new Thread(r1, "t1");
+            t2 = new Thread(r2, "t2");
+            t1.start();
+            if (firstReady.await(60, TimeUnit.SECONDS)) {
+                t2.start();
 
-        t1.join();
-        t2.join();
-        if (r1.throwable != null) {
-            throw r1.throwable;
+                t1.join();
+                t1 = null;
+                t2.join();
+                t2 = null;
+                if (r1.throwable != null) {
+                    throw r1.throwable;
+                }
+                if (r2.throwable != null) {
+                    throw r2.throwable;
+                }
+                int count = r1.count + r2.count;
+                log.warn("Parallel locks per second: " + count);
+            } // else timed out
+        } finally {
+            // error condition recovery
+            if (t1 != null) {
+                t1.interrupt();
+            }
+            if (t2 != null) {
+                t2.interrupt();
+            }
         }
-        if (r2.throwable != null) {
-            throw r2.throwable;
-        }
-        int count = r1.count + r2.count;
-        log.warn("Parallel locks per second: " + count);
     }
 
     protected static class LockingJob implements Runnable {
@@ -2678,9 +2692,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         protected final long waitMillis;
 
-        public final CountDownLatch ready;
+        public CountDownLatch ready;
 
-        public final CyclicBarrier barrier;
+        public CyclicBarrier barrier;
 
         public Throwable throwable;
 
@@ -2704,6 +2718,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
             } catch (Throwable t) {
                 t.printStackTrace();
                 throwable = t;
+            } finally {
+                // error recovery
+                // still count down as main thread is awaiting us
+                if (ready != null) {
+                    ready.countDown();
+                }
+                // break barrier for other thread
+                if (barrier != null) {
+                    barrier.reset(); // break barrier
+                }
             }
         }
 
@@ -2711,8 +2735,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
             Session session = repository.getConnection();
             if (ready != null) {
                 ready.countDown();
+                ready = null;
             }
-            barrier.await();
+            barrier.await(30, TimeUnit.SECONDS); // throws on timeout
+            barrier = null;
             // System.err.println(namePrefix + " starting");
             long start = System.currentTimeMillis();
             do {
