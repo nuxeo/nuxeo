@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -61,10 +61,6 @@ import org.nuxeo.log4j.ThreadedStreamGobbler;
  */
 public abstract class NuxeoLauncher {
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
-
-    public static final long DEFAULT_RETRY_TIMEOUT = 120000L;
-
-    public static final long DEFAULT_RETRY_INTERVAL = 250L;
 
     private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
 
@@ -669,6 +665,7 @@ public abstract class NuxeoLauncher {
         final String newLine = System.getProperty("line.separator");
         boolean isReady = false;
         long deltaTime = 0;
+        // Wait for status servlet ready
         do {
             try {
                 isReady = statusServletClient.init();
@@ -680,13 +677,21 @@ public abstract class NuxeoLauncher {
             deltaTime = (new Date().getTime() - startTime) / 1000;
         } while (!isReady && deltaTime < startMaxWait && isRunning());
         isReady = false;
-        do {
-            isReady = isStarted();
-            if (!quiet) {
-                System.out.print(".");
-            }
-            deltaTime = (new Date().getTime() - startTime) / 1000;
-        } while (!isReady && deltaTime < startMaxWait && isRunning());
+        // Wait for effective start reported from status servlet
+        try {
+            do {
+                isReady = isStarted();
+                if (!isReady) {
+                    if (!quiet) {
+                        System.out.print(".");
+                    }
+                    Thread.sleep(1000);
+                }
+                deltaTime = (new Date().getTime() - startTime) / 1000;
+            } while (!isReady && deltaTime < startMaxWait && isRunning());
+        } catch (InterruptedException e) {
+            log.info("Starting process interrupted.");
+        }
         if (isReady) {
             startSummary.append(newLine + getStartupSummary());
             long duration = (new Date().getTime() - startTime) / 1000;
@@ -894,7 +899,7 @@ public abstract class NuxeoLauncher {
             log.error("Could not start process", e);
         } catch (InterruptedException e) {
             errorValue = 1;
-            log.error("Could not start process", e);
+            log.error("Process interrupted", e);
         } catch (IllegalStateException e) {
             errorValue = 1;
             log.error(
@@ -1049,7 +1054,7 @@ public abstract class NuxeoLauncher {
                 return;
             }
             if (!quiet) {
-                System.out.print("Stopping server...");
+                System.out.print("\nStopping server...");
             }
             int nbTry = 0;
             boolean retry = false;
