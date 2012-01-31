@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -110,13 +110,29 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(configGenerator.init());
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        assertEquals(
+                "Error calculating nodbtemplate",
+                originalTemplates.substring("default".length() + 1),
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_TEMPLATES_NODB));
         configGenerator.addTemplate("newTemplate");
+        assertEquals(
+                "Error calculating nodbtemplate",
+                originalTemplates.substring("default".length() + 1)
+                        + ",newTemplate",
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_TEMPLATES_NODB));
         assertEquals(
                 "newTemplate not added",
                 originalTemplates + ",newTemplate",
                 configGenerator.getUserConfig().getProperty(
                         ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         configGenerator.rmTemplate("newTemplate");
+        assertEquals(
+                "Error calculating nodbtemplate",
+                originalTemplates.substring("default".length() + 1),
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_TEMPLATES_NODB));
         assertEquals(
                 "newTemplate not removed",
                 originalTemplates,
