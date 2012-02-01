@@ -33,11 +33,11 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 /**
  * Stateful Seam component.
  * <ul>
- * <li> manages the navigation context variables
- * <li> outjects them for compatibility
- * <li> provides getters and setters for navigation context variables (ie :
- * hide what Seam scope is used for that)
- * <li> provides basic navigation features by leveraging Core API + Distributed
+ * <li>manages the navigation context variables
+ * <li>outjects them for compatibility
+ * <li>provides getters and setters for navigation context variables (ie : hide
+ * what Seam scope is used for that)
+ * <li>provides basic navigation features by leveraging Core API + Distributed
  * cache + internal cache
  * </ul>
  * This Seam component should ideally serve only DocumentModel, lists of DMs
@@ -65,9 +65,9 @@ public interface NavigationContext {
     /**
      * Current Domain, <strong>if user has read permission on it</strong>. Use
      *
-     * @link{getCurrentDomainPath} if you are in a situation where it is not
-     *                             guaranteed that the user has read permission
-     *                             on the domain.
+     * @link{getCurrentDomainPath if you are in a situation where it is not
+     *                            guaranteed that the user has read permission
+     *                            on the domain.
      * @return the current domain.
      */
     DocumentModel getCurrentDomain();
@@ -75,10 +75,12 @@ public interface NavigationContext {
     /**
      * Finds the path to current domain.
      * <p>
-     * This method tries hard to always returns an answer. If no current domain
-     * has been selected, then it will choose one.
-     *
-     * @return the path
+     * This method tries hard to always returns an answer: the path to current
+     * domain is deduced from the path of current document (assuming that it
+     * would be the first element of this path).
+     * <p>
+     * If current document is null, the same logic is applied to the first
+     * document found amongst all documents user has access to.
      */
     String getCurrentDomainPath() throws ClientException;
 
@@ -186,7 +188,9 @@ public interface NavigationContext {
     String navigateToRef(DocumentRef docRef) throws ClientException;
 
     /**
-     * Updates the context and returns the view for the given document.
+     * Updates the context with given document and returns its default view.
+     * <p>
+     * The default view is configured on the UI document type definition.
      */
     String navigateToDocument(DocumentModel doc) throws ClientException;
 
@@ -206,8 +210,10 @@ public interface NavigationContext {
     /**
      * Initializes the context for the given doc and returns its given view.
      * <p>
-     * If view is not found, use default view. Alias to resolve polymorphism
-     * ambiguity when called from JSF EL.
+     * If view is not found, use default view set on the UI document type. This
+     * is an alias to
+     * <code>navigateToDocument(DocumentModel doc, String viewId)</code>, to
+     * resolve ambiguity when method is invoked by an EL expression.
      *
      * @param doc
      * @param viewId for the document as defined in its type
