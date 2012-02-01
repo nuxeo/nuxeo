@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,10 +58,21 @@ public final class UserSession extends HashMap<String, Object> {
 
     public static UserSession getCurrentSession(HttpServletRequest request) {
         String key = UserSession.class.getName();
-        UserSession us = (UserSession)request.getAttribute(key);
+        HttpSession session = request.getSession(false);
+        UserSession us = null;
+        if (session != null) {
+            us = (UserSession) session.getAttribute(key);
+        }
+        if (us == null) {
+            us = (UserSession) request.getAttribute(key);
+        }
         if (us == null) {
             us = new UserSession(request);
-            request.setAttribute(key, us);
+            if (session != null) {
+                session.setAttribute(key, us);
+            } else {
+                request.setAttribute(key, us);
+            }
         }
         return us;
     }
