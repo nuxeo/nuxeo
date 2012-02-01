@@ -37,11 +37,11 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 
 public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -80,9 +80,11 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
             return null;
         }
         if (regexp != null && usernamePartRemovalPattern != null) {
+        	String tmpUsername = userName;
         	Matcher matcher = usernamePartRemovalPattern.matcher(userName);
         	// Remove all instance of regexp from username string
         	userName = matcher.replaceAll("");
+        	log.debug(String.format("userName changed from '%s' to '%s'", tmpUsername, userName));
         }
 
         String credentialFieldName = Framework.getRuntime().getProperty(
@@ -172,6 +174,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         }
         if (parameters.containsKey(USERNAME_REMOVE_EXPRESSION)) {
         	regexp = parameters.get(USERNAME_REMOVE_EXPRESSION);
+        	log.debug(String.format("Will remove all instances of '%s' from userName string.", regexp));
         	usernamePartRemovalPattern = Pattern.compile(regexp);
         }
     }
