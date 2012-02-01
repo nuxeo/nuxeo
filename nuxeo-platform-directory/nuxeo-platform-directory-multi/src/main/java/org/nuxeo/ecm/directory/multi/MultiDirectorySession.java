@@ -413,8 +413,8 @@ public class MultiDirectorySession extends BaseSession {
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
         init();
-        boolean isReadOnlyEntry = true;
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
+            boolean isReadOnlyEntry = true;
             final Map<String, Object> map = new HashMap<String, Object>();
 
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
@@ -428,6 +428,14 @@ public class MultiDirectorySession extends BaseSession {
                 if (entry != null && !isReadOnlyEntry(entry)) {
                     // set readonly to false if at least one source is writable
                     isReadOnlyEntry = false;
+                }
+                try {
+                    if (entry == null && isOptional && !dirInfo.getSession().isReadOnly()) {
+                        // set readonly to false if null entry is from optional and writable directory
+                        isReadOnlyEntry = false;
+                    }
+                } catch (ClientException ce) {
+                    log.error("Cannot get readonly value from directory " + dirInfo.dirName, ce);
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {

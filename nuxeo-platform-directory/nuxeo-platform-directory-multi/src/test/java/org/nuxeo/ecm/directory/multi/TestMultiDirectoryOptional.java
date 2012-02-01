@@ -331,6 +331,33 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertEquals(1, dir3.getEntries().size());
     }
 
+    public void testReadOnlyEntryFromGetEntry() throws Exception {
+
+        memdir1.setReadOnly(false);
+        memdir2.setReadOnly(true);
+        memdir3.setReadOnly(true);
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+
+        memdir1.setReadOnly(true);
+        memdir2.setReadOnly(true);
+        memdir3.setReadOnly(true);
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+
+        memdir1.setReadOnly(false);
+        memdir2.setReadOnly(false);
+        memdir3.setReadOnly(false);
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+    }
+
     public void testQuery() throws Exception {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         DocumentModelList entries;
