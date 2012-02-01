@@ -446,6 +446,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             oldDesc.showFilterForm = showFilterForm;
         }
 
+        String searchDocument = newDesc.getSearchDocumentBinding();
+        if (searchDocument != null) {
+            oldDesc.searchDocument = searchDocument;
+        }
+
         return oldDesc;
     }
 
