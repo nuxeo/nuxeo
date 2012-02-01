@@ -27,6 +27,7 @@ import javax.security.auth.Subject;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.InvalidTransactionException;
+import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -43,7 +44,6 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSup
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.XATransactions;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
-import org.apache.geronimo.transaction.GeronimoUserTransaction;
 import org.apache.geronimo.transaction.manager.NamedXAResource;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
@@ -70,7 +70,7 @@ public class NuxeoContainer {
 
     private static TransactionManagerWrapper transactionManager;
 
-    private static UserTransaction userTransaction;
+    private static final UserTransaction userTransaction = new UserTransactionImpl();
 
     private static ConnectionManagerWrapper connectionManager;
 
@@ -134,7 +134,6 @@ public class NuxeoContainer {
             // do nothing
         } finally {
             transactionManager = null;
-            userTransaction = null;
             connectionManager = null;
         }
         uninstallNaming();
@@ -205,9 +204,6 @@ public class NuxeoContainer {
      * @return the user transaction
      */
     public static UserTransaction getUserTransaction() throws NamingException {
-        if (transactionManager == null) {
-            initTransactionManager(new TransactionManagerConfiguration());
-        }
         return userTransaction;
     }
 
@@ -234,11 +230,9 @@ public class NuxeoContainer {
             TransactionManagerConfiguration config) throws NamingException {
         TransactionManager tm = createTransactionManager(config);
         transactionManager = new TransactionManagerWrapper(tm);
-        userTransaction = createUserTransaction();
     }
 
-    protected static TransactionManagerWrapper lookupTransactionManager()
-            throws NamingException {
+    protected static TransactionManagerWrapper lookupTransactionManager() {
         TransactionManager tm;
         try {
             tm = TransactionHelper.lookupTransactionManager();
@@ -289,8 +283,67 @@ public class NuxeoContainer {
         }
     }
 
-    protected static UserTransaction createUserTransaction() {
-        return new GeronimoUserTransaction(transactionManager);
+    /**
+     * User transaction that uses this container's transaction manager.
+     *
+     * @since 5.6
+     */
+    public static class UserTransactionImpl implements UserTransaction {
+
+        protected boolean checked;
+
+        protected void check() throws SystemException {
+            if (transactionManager != null) {
+                return;
+            }
+            if (!checked) {
+                checked = true;
+                transactionManager = lookupTransactionManager();
+            }
+            if (transactionManager == null) {
+                throw new SystemException("No active transaction manager");
+            }
+        }
+
+        @Override
+        public int getStatus() throws SystemException {
+            check();
+            return transactionManager.getStatus();
+        }
+
+        @Override
+        public void setRollbackOnly() throws IllegalStateException,
+                SystemException {
+            check();
+            transactionManager.setRollbackOnly();
+        }
+
+        @Override
+        public void setTransactionTimeout(int seconds) throws SystemException {
+            check();
+            transactionManager.setTransactionTimeout(seconds);
+        }
+
+        @Override
+        public void begin() throws NotSupportedException, SystemException {
+            check();
+            transactionManager.begin();
+        }
+
+        @Override
+        public void commit() throws HeuristicMixedException,
+                HeuristicRollbackException, IllegalStateException,
+                RollbackException, SecurityException, SystemException {
+            check();
+            transactionManager.commit();
+        }
+
+        @Override
+        public void rollback() throws IllegalStateException, SecurityException,
+                SystemException {
+            check();
+            transactionManager.rollback();
+        }
     }
 
     /**
