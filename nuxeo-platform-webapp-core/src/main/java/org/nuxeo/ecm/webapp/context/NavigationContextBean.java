@@ -21,7 +21,8 @@ package org.nuxeo.ecm.webapp.context;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;import static org.nuxeo.ecm.webapp.helpers.EventNames.NAVIGATE_TO_DOCUMENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.NAVIGATE_TO_DOCUMENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
     protected List<DocumentModel> currentDocumentParents;
 
-    // document model that is not persisted yet (useful for creation)
+    // document model that is not persisted yet (used for creation)
     private DocumentModel changeableDocument;
 
     private List<PathElement> parents;
@@ -127,7 +128,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
     @Create
     public void init() {
-        log.debug("<init> ");
         parents = null;
     }
 
@@ -136,14 +136,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return currentDocument;
     }
 
-    /**
-     * Implementation details: the path to current domain is deduced from the
-     * path of current document (hardcoded rule that it'd be the first
-     * element).
-     * <p>
-     * If current document is null, then the first document found is used
-     * instead.
-     */
     public String getCurrentDomainPath() throws ClientException {
         if (currentDomain != null) {
             return currentDomain.getPathAsString();
@@ -152,7 +144,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         if (currentDocument != null) {
             path = currentDocument.getPath();
         } else {
-            // Find any document, and use its domain.
+            // Find any document, and lookup its domain.
             DocumentModelList docs = documentManager.query(
                     "SELECT * FROM Document", 1);
             if (docs.size() < 1) {
@@ -302,12 +294,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
 
         if (currentDocument == null) {
-            // setCurrentWorkspace(null);
             try {
                 setCurrentDocument(null);
             } catch (ClientException e) {
-                // TODO: more robust exception handling?
-                log.error(e);
+                log.error(e, e);
             }
         }
 
@@ -318,8 +308,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             try {
                 setCurrentDocument(domainDocModel);
             } catch (ClientException e) {
-                // TODO: more robust exception handling?
-                log.error(e);
+                log.error(e, e);
             }
         }
 
@@ -344,7 +333,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     public void saveCurrentDocument() throws ClientException {
-        if (null == currentDocument) {
+        if (currentDocument == null) {
             // cannot call saveDocument with null arg => nasty stateful bean
             // de-serialization error
             throw new IllegalStateException("null currentDocument");
@@ -547,7 +536,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
                     setCurrentWorkspace(docModel);
                 }
 
-                if (null == docType || hasSuperType(docType, "WorkspaceRoot")
+                if (docType == null || hasSuperType(docType, "WorkspaceRoot")
                         || hasSuperType(docType, "SectionRoot")) {
                     setCurrentContentRoot(docModel);
                 }
@@ -628,9 +617,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         TypesTool typesTool = (TypesTool) Component.getInstance("typesTool");
 
-        // return displayDocument(doc, action.toString());
-        final String logPrefix = "<getActionResult> ";
-
         if (doc == null) {
             return null;
         }
@@ -665,7 +651,9 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             EventManager.raiseEventsOnGoingHome();
             result = "home";
         } else {
-            log.error(logPrefix + "Bad action: " + action);
+            log.error(String.format("Unknown action '%s' for navigation on "
+                    + "document '%s' with title '%s': ", action.name(),
+                    doc.getId(), doc.getTitle()));
             result = null;
         }
         return result;
@@ -682,7 +670,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             setChangeableDocument(null);
             return navigateToDocument(currentDocument);
         } else {
-            // XXX AT: should return to currentServer page if set
             return goHome();
         }
     }
@@ -710,12 +697,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return navigateToDocument(doc, "view");
     }
 
-    /**
-     * Updates context with given document and returns given view.
-     * <p>
-     * The view is supposed to be set on the document type information. If such
-     * a view id is not available for the type, use its default vieW.
-     */
     public String navigateToDocument(DocumentModel doc, String viewId)
             throws ClientException {
         if (doc != null) {
@@ -746,14 +727,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return chosenView;
     }
 
-    /**
-     * Alias to
-     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so
-     * that JSF EL sees no ambiguity)
-     * <p>
-     * The view is supposed to be set on the document type information. If such
-     * a view id is not available for the type, use its default vieW.
-     */
     public String navigateToDocumentWithView(DocumentModel doc, String viewId)
             throws ClientException {
         return navigateToDocument(doc, viewId);
@@ -775,11 +748,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
-    /**
-     * @see NavigationContext#getCurrentDocumentUrl()
-     */
     public String getCurrentDocumentUrl() {
-        if (null == currentDocument) {
+        if (currentDocument == null) {
             log.error("current document is null");
             return null;
         }
@@ -787,11 +757,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
                 currentDocument.getRef());
     }
 
-    /**
-     * @see NavigationContext#getCurrentDocumentFullUrl()
-     */
     public String getCurrentDocumentFullUrl() {
-        if (null == currentDocument) {
+        if (currentDocument == null) {
             log.error("current document is null");
             return null;
         }
@@ -846,7 +813,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         parents = new ArrayList<PathElement>();
 
-        if (null == documentManager) {
+        if (documentManager == null) {
             log.error(logPrefix + "documentManager not initialized");
             return;
         }
@@ -879,19 +846,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return new DocumentPathElement(doc);
     }
 
-    @SuppressWarnings("unused")
-    private void logDocWithTitle(String msg, DocumentModel doc) {
-        if (null != doc) {
-            try {
-                log.debug(msg + " " + doc.getProperty("dublincore", "title"));
-            } catch (ClientException e) {
-                log.debug(msg + ", ERROR: " + e);
-            }
-        } else {
-            log.debug(msg + " NULL DOC");
-        }
-    }
-
     public DocumentModel getCurrentContentRoot() {
         return currentContentRoot;
     }
@@ -912,8 +866,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             try {
                 setCurrentDocument(null);
             } catch (ClientException e) {
-                // TODO: more robust exception handling?
-                log.error(e);
+                log.error(e, e);
             }
             return;
         }
@@ -925,8 +878,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             try {
                 setCurrentDocument(crDocumentModel);
             } catch (ClientException e) {
-                // TODO: more robust exception handling?
-                log.error(e);
+                log.error(e, e);
             }
         }
     }
