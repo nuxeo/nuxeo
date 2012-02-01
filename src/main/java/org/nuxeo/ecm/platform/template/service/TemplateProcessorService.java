@@ -35,4 +35,8 @@ public interface TemplateProcessorService {
     void registerTypeMapping(DocumentModel doc) throws ClientException;
 
     DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc, boolean save) throws ClientException;
+    
+    DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, boolean save) throws ClientException;
+    
+    
 }

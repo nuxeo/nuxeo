@@ -48,6 +48,7 @@ import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -80,6 +81,9 @@ public class TemplatesActionsBean implements Serializable {
     @In(create = true)
     protected transient TypeManager typeManager;
 
+    @In(create = true)
+    protected transient WebActions webActions;
+    
     protected List<TemplateInput> templateInputs;
 
     protected List<TemplateInput> templateEditableInputs;
@@ -246,7 +250,15 @@ public class TemplatesActionsBean implements Serializable {
             templateEditableInputs=null;
         }
     }
-
+    
+    public String detachTemplate() throws Exception {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);        
+        currentDocument = tps.detachTemplateBasedDocument(currentDocument, true); 
+        webActions.resetTabList();
+        return navigationContext.navigateToDocument(currentDocument);
+    }
+    
     public boolean canRenderTemplate() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         // check that templating is supported

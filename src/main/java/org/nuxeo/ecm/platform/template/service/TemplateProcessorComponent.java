@@ -267,4 +267,13 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         // bind the template
         return tmplBased.setTemplate(sourceTemplateDoc, save);
     }
+    
+    public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, boolean save) throws ClientException {
+        targetDoc.removeFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
+        if (save) {
+            targetDoc.getCoreSession().saveDocument(targetDoc);
+        }        
+        return targetDoc;
+    }
+
 }
