@@ -24,7 +24,6 @@ import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 
 /**
  * A {@link RowMapper} maps {@link Row}s to and from the database.
@@ -333,16 +332,6 @@ public interface RowMapper {
      * @return info about the descendants removed (including the root)
      */
     List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException;
-
-    /**
-     *
-     * @return true if cluster mode enabled and connection is established but
-     *         needs to be validated. this occurs after a connection error
-     *
-     * @see JDBCConnection#checkConnectionReset
-     * @since 5.5
-     */
-    boolean isClusterReconnecting();
 
     /**
      * Processes and returns the invalidations queued for processing by the
