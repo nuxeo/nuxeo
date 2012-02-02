@@ -7,15 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mvel2.templates.TemplateRegistry;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.template.ContentInputType;
 import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
 
@@ -30,6 +34,10 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.convert");
+        deployBundle("org.nuxeo.ecm.platform.preview");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/core-types-contrib.xml");
@@ -54,9 +62,9 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
                 .getPathAsString(), "templatedDoc", "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils
-                .getResourceFileFromContext("data/master2.odt");
+                .getResourceFileFromContext("data/Container.odt");
         Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("master.odt");
+        fileBlob.setFilename("Container.odt");
         templateDoc.setProperty("file", "content", fileBlob);
 
         templateDoc = session.createDocument(templateDoc);
@@ -64,10 +72,17 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
 
         // create the note
         testDoc = session.createDocumentModel(root
-                .getPathAsString(), "testDoc", "TemplateBasedNote");
-        testDoc.setProperty("dublincore", "title", "MyTestNote");
-        testDoc.setPropertyValue("note:note", "<h1>Title 1</h1> Some text <br/><h1>Title2 </h1> Some more text<br/>");
-
+                .getPathAsString(), "testDoc", "Note");
+        testDoc.setProperty("dublincore", "title", "MyTestNote2");
+        testDoc.setProperty("dublincore", "description", "Simple note sample");
+        
+        File mdfile = FileUtils
+                .getResourceFileFromContext("data/MDSample.md");
+        Blob mdfileBlob = new FileBlob(mdfile);
+        
+        testDoc.setPropertyValue("note:note", mdfileBlob.getString());
+        testDoc.setPropertyValue("note:mime_type", "text/x-web-markdown");
+        
         File imgFile = FileUtils.getResourceFileFromContext("data/android.jpg");
         Blob imgBlob = new FileBlob(imgFile);
         imgBlob.setFilename("android.jpg");
@@ -89,7 +104,7 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
         // Shut up for now
     }
 
-    public void XXXtestNoteWithMasterTemplateAndPicture() throws Exception {
+    public void testNoteWithMasterTemplate() throws Exception {
 
         setupTestDocs();
 
@@ -103,29 +118,33 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
 
         List<TemplateInput> params = source.getParams();
         System.out.println(params);
-        assertEquals(2, params.size());
+        assertEquals(1, params.size());
         //assertEquals(InputType.PictureProperty, params.get(0).getType());
-        assertEquals(InputType.Include, params.get(1).getType());
+        //assertEquals(InputType.Include, params.get(1).getType());
 
         // Set params value
-        params.get(0).setType(InputType.PictureProperty);
-        params.get(0).setSource("files:files/0/file");
-        params.get(1).setSource("note:note");
-
+        //params.get(0).setType(InputType.PictureProperty);
+        //params.get(0).setSource("files:files/0/file");
+        params.get(0).setType(InputType.Content);
+        params.get(0).setSource(ContentInputType.HtmlPreview.getValue());
+        
         templateDoc = source.saveParams(params, true);
 
+        // associate Note to template
         TemplateBasedDocument templateBased = testDoc.getAdapter(TemplateBasedDocument.class);
+        assertNull(templateBased);
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        assertNotNull(tps);
+        testDoc = tps.makeTemplateBasedDocument(testDoc, templateDoc, true);
+        templateBased = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
-
+        
         // associate to template
-        templateBased.setTemplate(templateDoc, true);
+        //templateBased.setTemplate(templateDoc, true);
 
         // render
         testDoc = templateBased.initializeFromTemplate(true);
-        templateBased.renderAndStoreAsAttachment(true);
-
-        // check result
-        Blob blob = (Blob)testDoc.getPropertyValue("file:content");
+        Blob blob =templateBased.renderWithTemplate();
         assertNotNull(blob);
 
         File testFile = new File ("/tmp/testOOo.odt");

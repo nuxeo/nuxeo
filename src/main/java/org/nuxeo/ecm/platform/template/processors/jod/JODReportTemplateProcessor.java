@@ -50,7 +50,6 @@ import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.ecm.platform.template.odt.OOoArchiveModifier;
 import org.nuxeo.ecm.platform.template.processors.AbstractTemplateProcessor;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
-import org.nuxeo.ecm.platform.template.processors.fm.IncludeManager;
 
 /**
  * {@link TemplateProcessor} for ODT based templates.
@@ -80,7 +79,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
         }
 
         // add includes
-        params.addAll(IncludeManager.getIncludes(xmlContent));
+        //params.addAll(IncludeManager.getIncludes(xmlContent));
 
         return params;
     }
@@ -90,7 +89,6 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
             throws Exception {
 
         OOoArchiveModifier modifier = new OOoArchiveModifier();
-        IncludeManager includeManager = new IncludeManager();
 
         Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob();
         if (templateBasedDocument.getSourceTemplateDoc()!=null) {
@@ -121,21 +119,17 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
                 if (property!=null) {
                     Serializable value = property.getValue();
                     if (value!=null) {
-                        if (param.getType()==InputType.Include) {
-                            includeManager.addInclude(param.getName(), templateBasedDocument.getAdaptedDoc(), param.getSource());
-                        } else {
-                            if (Blob.class.isAssignableFrom(value.getClass())) {
-                                Blob blob = (Blob) value;
-                                if (param.getType()==InputType.PictureProperty) {
-                                    if (blob.getMimeType()==null || "".equals(blob.getMimeType().trim())) {
-                                        blob.setMimeType("image/jpeg");
-                                    }
-                                    context.put(param.getName(), blob);
-                                    blobsToInsert.add((Blob) value);
+                        if (Blob.class.isAssignableFrom(value.getClass())) {
+                            Blob blob = (Blob) value;
+                            if (param.getType()==InputType.PictureProperty) {
+                                if (blob.getMimeType()==null || "".equals(blob.getMimeType().trim())) {
+                                    blob.setMimeType("image/jpeg");
                                 }
-                            } else {
-                                context.put(param.getName(), nuxeoWrapper.wrap(property));
+                                context.put(param.getName(), blob);
+                                blobsToInsert.add((Blob) value);
                             }
+                        } else {
+                            context.put(param.getName(), nuxeoWrapper.wrap(property));
                         }
                     }
                     else {
@@ -178,7 +172,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
 
         template.createDocument(context, new FileOutputStream(generated));
 
-        generated = modifier.updateArchive(workingDir, generated, blobsToInsert, includeManager);
+        generated = modifier.updateArchive(workingDir, generated, blobsToInsert);
 
         Blob newBlob = new FileBlob(generated);
         newBlob.setMimeType("application/vnd.oasis.opendocument.text");

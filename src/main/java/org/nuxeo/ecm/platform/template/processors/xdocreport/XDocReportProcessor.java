@@ -19,7 +19,10 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.platform.preview.adapter.HtmlPreviewer;
+import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
+import org.nuxeo.ecm.platform.template.ContentInputType;
 import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
@@ -28,9 +31,9 @@ import org.nuxeo.ecm.platform.template.fm.FMContextBuilder;
 import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.ecm.platform.template.processors.AbstractTemplateProcessor;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
-import org.nuxeo.ecm.platform.template.processors.fm.IncludeManager;
 import org.nuxeo.runtime.api.Framework;
 
+import fr.opensagres.xdocreport.core.document.SyntaxKind;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.images.IImageProvider;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -97,10 +100,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
             for (String var : vars) {
                 TemplateInput input = new TemplateInput(var);
                 params.add(input);
-            }
-
-            // add includes
-            params.addAll(IncludeManager.getIncludes(xmlContent));
+            }            
         }
         return params;
 
@@ -118,7 +118,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
         // load the template
         IXDocReport report = XDocReportRegistry.getRegistry().loadReport(
-                sourceTemplateBlob.getStream(), TemplateEngineKind.Freemarker);
+                sourceTemplateBlob.getStream(), TemplateEngineKind.Freemarker,false);
 
         // manage parameters
         List<TemplateInput> params = templateBasedDocument.getParams();
@@ -137,6 +137,22 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
         for (TemplateInput param : params) {
             if (param.isSourceValue()) {
+                if (param.getType() == InputType.Content && ContentInputType.HtmlPreview.getValue().equals(param.getSource())) {
+                    HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(HtmlPreviewAdapter.class);
+                    String htmlValue="";
+                    if (preview!=null) {
+                        List<Blob> blobs = preview.getFilePreviewBlobs();
+                        if (blobs.size()>0) {
+                            Blob htmlBlob = preview.getFilePreviewBlobs().get(0);
+                            if (htmlBlob!=null) {
+                                htmlValue = htmlBlob.getString();
+                            }
+                        }
+                    }                    
+                    context.put(param.getName(),htmlValue);
+                    metadata.addFieldAsTextStyling(param.getName(), SyntaxKind.Html);
+                    continue;
+                }
                 Property property = null;
                 try {
                     property = templateBasedDocument.getAdaptedDoc().getProperty(
@@ -147,8 +163,8 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                 if (property != null) {
                     Serializable value = property.getValue();
                     if (value != null) {
-                        if (param.getType() == InputType.Include) {
-                            // XXX TODO
+                        if (param.getType() == InputType.Content) {
+                            
                         } else {
                             if (Blob.class.isAssignableFrom(value.getClass())) {
                                 Blob blob = (Blob) value;

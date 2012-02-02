@@ -32,7 +32,6 @@ import java.util.zip.ZipOutputStream;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.template.processors.fm.IncludeManager;
 
 /**
  *
@@ -43,7 +42,7 @@ import org.nuxeo.ecm.platform.template.processors.fm.IncludeManager;
  */
 public class OOoArchiveModifier {
 
-    public File updateArchive(File workingDir, File oooFile, List<Blob> blobs, IncludeManager includeManager) throws Exception {
+    public File updateArchive(File workingDir, File oooFile, List<Blob> blobs) throws Exception {
         if (blobs==null || blobs.size()==0) {
             return oooFile;
         }
@@ -66,7 +65,6 @@ public class OOoArchiveModifier {
         }
 
         StringBuffer blobsManifest = new StringBuffer();
-        blobs.addAll(includeManager.getBlobs());
         for (Blob blob : blobs) {
             if (blob.getMimeType().startsWith("image")) {
                 FileUtils.copyToFile(blob.getStream(), new File(pictureDirs, blob.getFilename()));
@@ -90,15 +88,6 @@ public class OOoArchiveModifier {
         int idx = xmlManifest.indexOf("</manifest:manifest>");
         xmlManifest = xmlManifest.substring(0,idx) + blobsManifest.toString() + xmlManifest.substring(idx);
         FileUtils.writeFile(xmlManifestFile, xmlManifest.getBytes());
-
-        if (includeManager.getIncludeNames().size()>0) {
-            File xmlContentFile = new File(unzipDir.getPath() + File.separator + "content.xml");
-            String xmlContent = FileUtils.readFile(xmlContentFile);
-            for (String iName : includeManager.getIncludeNames()) {
-                xmlContent = xmlContent.replace("##Include(name=" + iName +")", includeManager.getDirective(iName));
-            }
-            FileUtils.writeFile(xmlContentFile, xmlContent);
-        }
 
         String path = oooFile.getAbsolutePath();
 

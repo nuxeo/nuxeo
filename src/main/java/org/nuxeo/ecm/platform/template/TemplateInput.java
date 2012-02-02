@@ -49,8 +49,8 @@ public class TemplateInput implements Serializable {
 
     protected String desciption;
 
-    protected boolean readOnly;
-
+    protected boolean readOnly;    
+    
     public TemplateInput(String name) {
         this.name = name;
     }
@@ -172,7 +172,7 @@ public class TemplateInput implements Serializable {
 
     public boolean isSourceValue() {
         return (InputType.PictureProperty == type
-                || InputType.DocumentProperty == type || InputType.Include == type);
+                || InputType.DocumentProperty == type || InputType.Content == type);
     }
 
     public boolean isReadOnly() {
@@ -187,4 +187,5 @@ public class TemplateInput implements Serializable {
         return source != null || dateValue != null || booleanValue != null
                 || stringValue != null || (stringValue!=null && !stringValue.isEmpty());
     }
+        
 }

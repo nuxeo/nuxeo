@@ -39,7 +39,7 @@ public class TestXMLSerialization extends TestCase {
 
          TemplateInput input6 = new TemplateInput("field6");
          input6.setSource("note:note");
-         input6.setType(InputType.Include);
+         input6.setType(InputType.Content);
          params.add(input6);
 
 
@@ -74,7 +74,7 @@ public class TestXMLSerialization extends TestCase {
          assertEquals("file:content", params2.get(4).getSource());
 
          assertEquals("field6", params2.get(5).getName());
-         assertEquals(InputType.Include, params2.get(5).getType());
+         assertEquals(InputType.Content, params2.get(5).getType());
          assertEquals("note:note", params2.get(5).getSource());
     }
 

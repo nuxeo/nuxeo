@@ -19,25 +19,20 @@
 package org.nuxeo.ecm.platform.template;
 
 import java.util.EnumSet;
-import java.util.Date;
 
 /**
- * Enum for types of {@link TemplateInput}
+ * Enum for types on Content associated to a {@link TemplateInput}
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-public enum InputType {
+public enum ContentInputType {
 
-    StringValue (String.class.getSimpleName()),
-    BooleanValue (Boolean.class.getSimpleName()),
-    DateValue (Date.class.getSimpleName()),
-    DocumentProperty("source"),
-    PictureProperty("picture"),
-    Content("content");
+    HtmlPreview ("htmlPreview"),
+    RawBlob ("raw");
 
     private final String value;
 
-    InputType(String value) {
+    ContentInputType(String value) {
         this.value = value;
     }
 
@@ -50,9 +45,9 @@ public enum InputType {
         return value;
     }
 
-    public static InputType getByValue(String value){
-        InputType returnValue = null;
-        for (final InputType element : EnumSet.allOf(InputType.class)) {
+    public static ContentInputType getByValue(String value){
+        ContentInputType returnValue = null;
+        for (final ContentInputType element : EnumSet.allOf(ContentInputType.class)) {
             if (element.toString().equals(value)) {
                 returnValue = element;
             }
