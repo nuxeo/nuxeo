@@ -1,5 +1,5 @@
 <component
-  name="org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService">
+  name="org.nuxeo.ecm.diff.service.DocumentDiffDisplayService">
 
   <documentation>
     This service provides an extension point to manage
@@ -11,11 +11,11 @@
   </documentation>
 
   <implementation
-    class="org.nuxeo.ecm.platform.diff.service.impl.DocumentDiffDisplayServiceImpl" />
+    class="org.nuxeo.ecm.diff.service.impl.DocumentDiffDisplayServiceImpl" />
 
   <service>
     <provide
-      interface="org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService" />
+      interface="org.nuxeo.ecm.diff.service.DocumentDiffDisplayService" />
   </service>
 
   <extension-point name="complexItemsDisplay">
@@ -28,7 +28,7 @@
         </complexItems>
       </code>
     </documentation>
-    <object class="org.nuxeo.ecm.platform.diff.service.ComplexItemsDescriptor" />
+    <object class="org.nuxeo.ecm.diff.service.ComplexItemsDescriptor" />
   </extension-point>
 
 </component>

@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.platform.xml.export.service">
+<component name="org.nuxeo.ecm.diff.xmlexport.DocumentXMLExporter">
 
   <documentation>
     This service allows to export a document to XML.
@@ -8,10 +8,10 @@
   </documentation>
 
   <implementation
-    class="org.nuxeo.ecm.platform.xmlexport.impl.DocumentXMLExporterImpl" />
+    class="org.nuxeo.ecm.diff.xmlexport.impl.DocumentXMLExporterImpl" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.xmlexport.DocumentXMLExporter" />
+    <provide interface="org.nuxeo.ecm.diff.xmlexport.DocumentXMLExporter" />
   </service>
 
 </component>

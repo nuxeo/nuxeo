@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.platform.diff.service">
+<component name="org.nuxeo.ecm.diff.service.DocumentDiffService">
 
   <documentation>
     This service allows to make a diff between two
@@ -9,10 +9,10 @@
   </documentation>
 
   <implementation
-    class="org.nuxeo.ecm.platform.diff.service.impl.DocumentDiffServiceImpl" />
+    class="org.nuxeo.ecm.diff.service.impl.DocumentDiffServiceImpl" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.diff.service.DocumentDiffService" />
+    <provide interface="org.nuxeo.ecm.diff.service.DocumentDiffService" />
   </service>
 
 </component>
