@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.platform.diff.actions">
+<component name="org.nuxeo.ecm.diff.actions">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">

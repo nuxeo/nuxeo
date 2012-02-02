@@ -1,4 +1,4 @@
-# Nuxeo Platform Diff
+# Nuxeo Diff
 
 This repo hosts the source code of a plugin for Nuxeo Platform that allows to render a diff between two documents or two versions of a document.
 The comparison takes into account all the metadatas shared by the documents, which means that if a comparison is done between two documents of a different type, only the schemas in common will be "diffed". 
@@ -8,9 +8,9 @@ The comparison does not take into account blob-type metadatas.
 
 ## Building and deploying
 
-Install Nuxeo 5.5 from source and maven 2.2.1+ and run:
+Install Nuxeo 5.6-SNAPSHOT from source and maven 2.2.1+ and run:
 
-    mvn install && cp */target/*-5.5.jar $NUXEO_HOME/nxserver/plugins/
+    mvn install && cp */target/*-5.6-SNAPSHOT.jar $NUXEO_HOME/nxserver/plugins/
 
 and restart Nuxeo.
 

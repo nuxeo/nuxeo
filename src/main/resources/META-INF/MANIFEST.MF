@@ -1,12 +1,12 @@
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-Name: org.nuxeo.platform.diff
+Bundle-Name: org.nuxeo.diff
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Vendor: Nuxeo Platform Diff
-Bundle-Version: 5.5
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.6
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.nuxeo.platform.diff;singleton:=true
+Bundle-SymbolicName: org.nuxeo.diff;singleton:=true
 Nuxeo-Component: OSGI-INF/document-xml-export-service.xml,
  OSGI-INF/document-diff-service.xml,
  OSGI-INF/document-diff-actions-contrib.xml,

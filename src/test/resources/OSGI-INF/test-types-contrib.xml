@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.diff.test.types"
+<component name="org.nuxeo.ecm.diff.test.types"
   version="1.0">
 
   <documentation>
