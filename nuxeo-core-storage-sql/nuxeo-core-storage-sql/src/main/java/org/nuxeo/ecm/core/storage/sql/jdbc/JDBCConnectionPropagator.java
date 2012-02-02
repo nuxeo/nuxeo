@@ -14,6 +14,8 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.storage.StorageException;
+
 /**
  * Knows all the {@link JDBCConnection}s in use by a backend, so that they can
  * notify each other when there's a connection failure.
@@ -21,6 +23,8 @@ import java.util.List;
 public class JDBCConnectionPropagator {
 
     public final List<JDBCConnection> connections; // used synchronized
+
+    public ClusterNodeHandler clusterNodeHandler;
 
     public JDBCConnectionPropagator() {
         connections = new ArrayList<JDBCConnection>();
@@ -30,6 +34,10 @@ public class JDBCConnectionPropagator {
         connections.add(connection);
     }
 
+    public void setClusterNodeHandler(ClusterNodeHandler clusterNodeHandler) {
+        this.clusterNodeHandler = clusterNodeHandler;
+    }
+
     public synchronized void removeConnection(JDBCConnection connection) {
         connections.remove(connection);
     }
@@ -37,13 +45,17 @@ public class JDBCConnectionPropagator {
     /**
      * Notifies all connection that they must check their validity.
      *
-     * @param exclude a connection to exclude, the one from which the request
-     *            originates
+     * @param connection the connection that was reset
      */
-    public synchronized void checkConnectionValid(JDBCConnection exclude) {
+    public synchronized void connectionWasReset(JDBCConnection connection)
+            throws StorageException {
+        if (clusterNodeHandler != null
+                && clusterNodeHandler.getConnection() == connection) {
+            clusterNodeHandler.connectionWasReset();
+        }
         for (JDBCConnection c : connections) {
-            if (c != exclude) {
-                c.checkConnectionValid = true;
+            if (c != connection) {
+                c.connectionWasReset();
             }
         }
     }

@@ -117,14 +117,19 @@ public class PersistenceContext {
 
     protected int clearCaches() {
         mapper.clearCache();
-        hierContext.clearCaches();
         // TODO there should be a synchronization here
         // but this is a rare operation and we don't call
         // it if a transaction is in progress
-        int n = pristine.size();
-        pristine.clear();
+        int n = clearLocalCaches();
         modified.clear(); // not empty when rolling back before save
         createdIds.clear();
+        return n;
+    }
+
+    protected int clearLocalCaches() {
+        hierContext.clearCaches();
+        int n = pristine.size();
+        pristine.clear();
         return n;
     }
 
@@ -339,12 +344,6 @@ public class PersistenceContext {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        if (mapper.isClusterReconnecting()) {
-            mapper.clearCache();
-            ((Mapper) mapper).createClusterNode();
-            return;
-        }
-
         InvalidationsPair invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;
@@ -359,6 +358,9 @@ public class PersistenceContext {
             throws StorageException {
         if (invalidations == null) {
             return;
+        }
+        if (invalidations.all) {
+            clearLocalCaches();
         }
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {

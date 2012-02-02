@@ -197,6 +197,9 @@ public class CachingRowMapper implements RowMapper {
         }
 
         // invalidate our cache
+        if (invalidations.all) {
+            clearCache();
+        }
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 cacheRemove(rowId);
@@ -453,11 +456,6 @@ public class CachingRowMapper implements RowMapper {
             }
         }
         return result;
-    }
-
-    @Override
-    public boolean isClusterReconnecting() {
-        return rowMapper.isClusterReconnecting();
     }
 
 }
