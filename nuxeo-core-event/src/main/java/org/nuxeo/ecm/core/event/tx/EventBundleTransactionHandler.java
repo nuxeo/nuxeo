@@ -22,6 +22,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
@@ -38,9 +40,21 @@ public class EventBundleTransactionHandler {
 
     private static final Log log = LogFactory.getLog(EventBundleTransactionHandler.class);
 
+    protected TransactionManager tm;
+
+    protected Transaction mainTx;
+
     protected UserTransaction tx;
 
     protected boolean disabled;
+
+    public EventBundleTransactionHandler() {
+        try {
+            tm = TransactionHelper.lookupTransactionManager();
+        } catch (NamingException e) {
+            disabled = true;
+        }
+    }
 
     public void beginNewTransaction() {
         beginNewTransaction(null);
@@ -53,6 +67,7 @@ public class EventBundleTransactionHandler {
             throw new UnsupportedOperationException(
                     "There is already an uncommited transaction running");
         }
+        mainTx = suspendMainTx();
         tx = createUT(transactionTimeout);
         if (tx == null) {
             log.debug("No TransactionManager");
@@ -69,9 +84,34 @@ public class EventBundleTransactionHandler {
         }
     }
 
+    protected Transaction suspendMainTx() {
+        if (tm == null) {
+            return null;
+        }
+        try {
+            return tm.suspend();
+        } catch (SystemException e) {
+            throw new Error("Cannob suspend main transaction", e);
+        }
+    }
+
+    protected void resumeMainTx() {
+        if (mainTx == null) {
+            return;
+        }
+        try {
+            tm.resume(mainTx);
+        } catch (Exception e) {
+            throw new Error("Cannot resume main tx", e);
+        } finally {
+            mainTx = null;
+        }
+    }
+
     protected UserTransaction createUT(Integer transactionTimeout) {
         return createUT(transactionTimeout, false);
     }
+
     protected UserTransaction createUT(Integer transactionTimeout, boolean retry) {
         try {
             new InitialContext();
@@ -151,6 +191,7 @@ public class EventBundleTransactionHandler {
         } finally {
             tx = null;
         }
+        resumeMainTx();
     }
 
     public void commitOrRollbackTransaction() {
@@ -179,8 +220,9 @@ public class EventBundleTransactionHandler {
         } finally {
             tx = null;
         }
+        resumeMainTx();
     }
-    
+
     /**
      * @since 5.5
      */

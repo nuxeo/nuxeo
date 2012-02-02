@@ -96,18 +96,30 @@ public class AsyncEventExecutor {
         ShutdownHandler.install(mono_executor);
         mono_executor.shutdown();
 
+        if (timeout <= 0) {
+            return;
+        }
+
         // wait for termination
         long ts = System.currentTimeMillis();
         try {
-            executor.awaitTermination(timeout, TimeUnit.MICROSECONDS);
+            boolean terminated =
+            executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+            if (!terminated) {
+                throw new Error("thread pool executor is not terminated");
+            }
         } catch (InterruptedException e) {
             ;
         }
-        if (timeout - System.currentTimeMillis() + ts < 0) {
+        timeout -= System.currentTimeMillis() - ts;
+        if (timeout <= 0) {
             return; // timeout expired
         }
         try {
-            mono_executor.awaitTermination(timeout, TimeUnit.MICROSECONDS);
+            boolean terminated = mono_executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+            if (!terminated) {
+                throw new Error("mono thread pool executor is not terminated");
+            }
         } catch (InterruptedException e) {
             ;
         }
@@ -122,13 +134,10 @@ public class AsyncEventExecutor {
                 TimeUnit.SECONDS, queue, threadFactory);
         mono_executor = new ThreadPoolExecutor(1, 1, keepAliveTime,
                 TimeUnit.SECONDS, mono_queue, threadFactory);
+        executor.prestartAllCoreThreads();
     }
 
     public void run(List<EventListenerDescriptor> listeners, EventBundle event) {
-        // The following avoids incorrect counts, because ThreadPool workers
-        // started normally may be holding on to a firstTask about to start that
-        // isn't accounted for anywhere (getActiveCount doesn't return it).
-        executor.prestartAllCoreThreads();
         for (EventListenerDescriptor listener : listeners) {
             if (listener.isSingleThreaded()) {
                 mono_executor.execute(new Job(listener, event));

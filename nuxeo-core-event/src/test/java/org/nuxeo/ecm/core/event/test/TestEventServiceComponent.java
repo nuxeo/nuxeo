@@ -13,6 +13,9 @@
 
 package org.nuxeo.ecm.core.event.test;
 
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.net.URL;
 import java.util.List;
 
@@ -23,13 +26,17 @@ import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.HeapDumper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestEventServiceComponent extends NXRuntimeTestCase {
 
+    protected int initialThreadCount;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        initialThreadCount = Thread.activeCount();
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
@@ -58,11 +65,12 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     }
 
     /**
-     * Test that when the event service component is deactivated, the threads
-     * of the async event executor are shut down.
+     * Test that when the event service component is deactivated, the threads of
+     * the async event executor are shut down.
      */
     public void testAsyncEventExecutorShutdown() throws Exception {
-        int initialCount = Thread.activeCount();
+        assertTrue("async exec pool not filled",
+                Thread.activeCount() > initialThreadCount);
         // send an async event to make sure the async event executor spawned
         // some threads
         // load contrib
@@ -71,17 +79,25 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         deployTestContrib("org.nuxeo.ecm.core.event", url);
         // send event
         EventService service = Framework.getService(EventService.class);
-        Event event = new EventImpl("test1", new EventContextImpl());
-        event.setIsCommitEvent(true);
-        service.fireEvent(event);
+        Event test1 = new EventImpl("test1", new EventContextImpl());
+        test1.setIsCommitEvent(true);
+        service.fireEvent(test1);
         // wait for async processing to be done
-        service.waitForAsyncCompletion();
-        // check thread count increased
-        assertTrue(Thread.activeCount() > initialCount);
+        service.waitForAsyncCompletion(2 * 1000);
+        assertEquals("test1 not handled",
+                DummyPostCommitEventListener.handledCount, 1);
+        // can still fire events
+        Event test2 = new EventImpl("test2", new EventContextImpl());
+        test2.setIsCommitEvent(true);
+        service.fireEvent(test2);
         // now stop service
         // this is called by EventServiceComponent.deactivate() in real life
         ((EventServiceImpl) service).shutdown(2 * 1000);
-        assertEquals(initialCount, Thread.activeCount());
+        assertEquals("test2 not handled",
+                DummyPostCommitEventListener.handledCount, 2);
+        Thread.sleep(2 * 1000);
+        assertEquals("thread not death", initialThreadCount,
+                Thread.activeCount());
     }
 
 }

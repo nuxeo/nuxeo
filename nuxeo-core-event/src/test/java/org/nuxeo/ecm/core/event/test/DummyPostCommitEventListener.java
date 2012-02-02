@@ -20,9 +20,11 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 public class DummyPostCommitEventListener implements PostCommitEventListener {
 
+    public static volatile int handledCount;
+
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        // TODO Auto-generated method stub
+        handledCount += 1;
     }
 
 }

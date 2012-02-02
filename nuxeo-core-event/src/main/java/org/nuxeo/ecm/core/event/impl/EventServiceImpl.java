@@ -106,7 +106,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     @Override
     public void waitForAsyncCompletion() {
-        waitForAsyncCompletion(0);
+        waitForAsyncCompletion(Long.MAX_VALUE);
     }
 
     @Override
@@ -416,21 +416,19 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     protected void handleTxCommited() {
         CompositeEventBundle b = compositeBundle.get();
-        try {
-            // notify post commit event listeners
-            for (EventBundle bundle : b.byRepository.values()) {
-                try {
-                    fireEventBundle(bundle);
-                } catch (ClientException e) {
-                    log.error("Error while processing " + bundle, e);
-                }
+        compositeBundle.remove();
+
+        // notify post commit event listeners
+        for (EventBundle bundle : b.byRepository.values()) {
+            try {
+                fireEventBundle(bundle);
+            } catch (ClientException e) {
+                log.error("Error while processing " + bundle, e);
             }
-            // notify post commit tx listeners
-            for (Object listener : txListeners.getListeners()) {
-                ((EventTransactionListener) listener).transactionCommitted();
-            }
-        } finally {
-            compositeBundle.remove();
+        }
+        // notify post commit tx listeners
+        for (Object listener : txListeners.getListeners()) {
+            ((EventTransactionListener) listener).transactionCommitted();
         }
     }
 
