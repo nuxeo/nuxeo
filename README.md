@@ -1,4 +1,4 @@
-# Nuxeo Platform Diff
+# Nuxeo Diff
 
 This repo hosts the source code of a plugin for Nuxeo Platform that allows to render a diff between two documents or two versions of a document.
 The comparison takes into account all the metadatas shared by the documents, which means that if a comparison is done between two documents of a different type, only the schemas in common will be "diffed". 
