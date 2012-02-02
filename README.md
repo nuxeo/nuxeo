@@ -8,9 +8,9 @@ The comparison does not take into account blob-type metadatas.
 
 ## Building and deploying
 
-Install Nuxeo 5.5 from source and maven 2.2.1+ and run:
+Install Nuxeo 5.6-SNAPSHOT from source and maven 2.2.1+ and run:
 
-    mvn install && cp */target/*-5.5.jar $NUXEO_HOME/nxserver/plugins/
+    mvn install && cp */target/*-5.6-SNAPSHOT.jar $NUXEO_HOME/nxserver/plugins/
 
 and restart Nuxeo.
 
