@@ -38,26 +38,30 @@ public class Invalidations implements Serializable {
 
     public static final int DELETED = 2;
 
+    /** used locally when invalidating everything */
+    public boolean all;
+
     /** null when empty */
     public Set<RowId> modified;
 
     /** null when empty */
     public Set<RowId> deleted;
 
+    public Invalidations() {
+    }
+
+    public Invalidations(boolean all) {
+        this.all = all;
+    }
+
     public boolean isEmpty() {
-        return modified == null && deleted == null;
+        return modified == null && deleted == null && !all;
     }
 
     public void clear() {
+        all = false;
         modified = null;
         deleted = null;
-    }
-
-    public boolean contains(RowId rowId) {
-        // even if rowId or the maps contain a Row, only RowId has an equals()
-        // so things comparisons will be correct
-        return (modified != null && modified.contains(rowId))
-                || (deleted != null && deleted.contains(rowId));
     }
 
     /** only call this if it's to add at least one element in the set */
@@ -81,6 +85,15 @@ public class Invalidations implements Serializable {
         if (other == null) {
             return;
         }
+        if (all) {
+            return;
+        }
+        if (other.all) {
+            all = true;
+            modified = null;
+            deleted = null;
+            return;
+        }
         if (other.modified != null) {
             addModified(other.modified);
         }
@@ -90,13 +103,16 @@ public class Invalidations implements Serializable {
     }
 
     public void addModified(RowId rowId) {
+        if (all) {
+            return;
+        }
         if (modified == null) {
             modified = new HashSet<RowId>();
         }
         modified.add(rowId);
     }
 
-    public void addModified(Set<RowId> rowIds) {
+    protected void addModified(Set<RowId> rowIds) {
         if (modified == null) {
             modified = new HashSet<RowId>();
         }
@@ -104,13 +120,16 @@ public class Invalidations implements Serializable {
     }
 
     public void addDeleted(RowId rowId) {
+        if (all) {
+            return;
+        }
         if (deleted == null) {
             deleted = new HashSet<RowId>();
         }
         deleted.add(rowId);
     }
 
-    public void addDeleted(Set<RowId> rowIds) {
+    protected void addDeleted(Set<RowId> rowIds) {
         if (deleted == null) {
             deleted = new HashSet<RowId>();
         }
@@ -131,6 +150,9 @@ public class Invalidations implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder(
                 this.getClass().getSimpleName() + '(');
+        if (all) {
+            sb.append("all=true");
+        }
         if (modified != null) {
             sb.append("modified=");
             sb.append(modified);

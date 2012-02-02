@@ -200,6 +200,9 @@ public class CachingRowMapper implements RowMapper {
         }
 
         // invalidate our cache
+        if (invalidations.all) {
+            clearCache();
+        }
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 cacheRemove(rowId);
@@ -455,11 +458,6 @@ public class CachingRowMapper implements RowMapper {
         // with lots of absent info. the rest is removed entirely
         cachePutAbsent(new RowId(model.HIER_TABLE_NAME, rootInfo.id));
         return infos;
-    }
-
-    @Override
-    public boolean isClusterReconnecting() {
-        return rowMapper.isClusterReconnecting();
     }
 
 }

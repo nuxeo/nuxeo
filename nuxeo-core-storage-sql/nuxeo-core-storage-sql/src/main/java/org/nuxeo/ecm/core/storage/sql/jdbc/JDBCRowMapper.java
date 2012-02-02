@@ -426,7 +426,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             return list;
         } catch (Exception e) {
-            checkConnectionReset(e);
+            checkConnectionReset(e, true);
             throw new StorageException("Could not select: " + select.sql, e);
         } finally {
             if (ps != null) {
@@ -1218,12 +1218,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean isClusterReconnecting() {
-        return clusterNodeHandler != null && checkConnectionValid == true
-                && connection != null;
     }
 
 }
