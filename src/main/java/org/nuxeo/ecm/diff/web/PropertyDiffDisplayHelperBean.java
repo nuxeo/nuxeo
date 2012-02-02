@@ -34,19 +34,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
-<<<<<<< HEAD
-import org.nuxeo.ecm.platform.diff.differs.diff_match_patch;
-import org.nuxeo.ecm.platform.diff.differs.diff_match_patch.Diff;
-import org.nuxeo.ecm.platform.diff.helpers.ComplexPropertyHelper;
-import org.nuxeo.ecm.platform.diff.model.PropertyDiff;
-import org.nuxeo.ecm.platform.diff.model.impl.ListPropertyDiff;
-import org.nuxeo.ecm.platform.diff.model.impl.SimplePropertyDiff;
-import org.nuxeo.ecm.platform.diff.service.DocumentDiffDisplayService;
-=======
+import org.nuxeo.ecm.diff.differs.diff_match_patch;
+import org.nuxeo.ecm.diff.differs.diff_match_patch.Diff;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
+import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.diff.service.DocumentDiffDisplayService;
->>>>>>> master
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -174,7 +167,7 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         else if (propertyValue instanceof Date) {
             DateFormat sdf = new SimpleDateFormat("dd MMMM yyyy - hh:mm");
             propertyDisplay = sdf.format(propertyValue);
-            
+
             if (propertyDiff != null) {
                 String leftValue = ((SimplePropertyDiff) propertyDiff).getLeftValue();
                 String rightValue = ((SimplePropertyDiff) propertyDiff).getRightValue();
@@ -188,7 +181,7 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
                 } else {
                     rightValue = sdf.format(rightValue);
                 }
-                
+
                 LinkedList<Diff> diffs = dmp.diff_main(leftValue, rightValue);
                 propertyDisplay = dmp.diff_prettyHtml(diffs);
             }
