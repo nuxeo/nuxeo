@@ -237,6 +237,10 @@ public class TestXMLUnit extends XMLTestCase {
         // ---------------------------
         // Compare unmatched nodes
         // ---------------------------
+        // First make sure that we have the default behavior for comparing
+        // unmatched nodes by doing XMLUnit.setCompareUnmatched(true).
+        // Indeed, it may have been set to false by a previous test.
+        XMLUnit.setCompareUnmatched(true);
         DetailedDiff myDiff = new DetailedDiff(
                 new Diff(myControlXML, myTestXML));
         List<Difference> allDifferences = myDiff.getAllDifferences();
