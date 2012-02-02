@@ -162,6 +162,7 @@ public class JDBCBackend implements RepositoryBackend {
                 // use the mapper that created the database as cluster mapper
                 clusterNodeHandler = new ClusterNodeHandler(mapper,
                         repositoryDescriptor);
+                connectionPropagator.setClusterNodeHandler(clusterNodeHandler);
                 mapper = createMapper(model, pathResolver);
             }
         }

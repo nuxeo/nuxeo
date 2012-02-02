@@ -192,6 +192,9 @@ public class CachingRowMapper implements RowMapper {
         }
 
         // invalidate our cache
+        if (invalidations.all) {
+            clearCache();
+        }
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 cacheRemove(rowId);

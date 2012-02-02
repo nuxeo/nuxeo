@@ -21,6 +21,7 @@ import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -136,7 +137,11 @@ public class JDBCConnection {
         openConnections();
         // we had to reset a connection; notify all the others that they
         // should check their validity proactively
-        connectionPropagator.checkConnectionValid(this);
+        connectionPropagator.connectionWasReset(this);
+    }
+
+    protected void connectionWasReset() {
+        checkConnectionValid = true;
     }
 
     /**
@@ -179,11 +184,34 @@ public class JDBCConnection {
      * Called with a generic Exception and not just SQLException because the
      * PostgreSQL JDBC driver sometimes fails to unwrap properly some
      * InvocationTargetException / UndeclaredThrowableException.
+     *
+     * @param t the error
      */
     protected void checkConnectionReset(Throwable t) throws StorageException {
+        checkConnectionReset(t, false);
+    }
+
+    /**
+     * Checks the SQL error we got and determine if the low level connection has
+     * to be reset.
+     * <p>
+     * Called with a generic Exception and not just SQLException because the
+     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
+     * InvocationTargetException / UndeclaredThrowableException.
+     *
+     * @param t the error
+     * @param throwIfReset {@code true} if a {@link ConnectionResetException}
+     *            should be thrown when the connection is reset
+     * @since 5.6
+     */
+    protected void checkConnectionReset(Throwable t, boolean throwIfReset)
+            throws StorageException, ConnectionResetException {
         if (connection == null
                 || sqlInfo.dialect.isConnectionClosedException(t)) {
             resetConnection();
+            if (throwIfReset) {
+                throw new ConnectionResetException(t);
+            }
         }
     }
 

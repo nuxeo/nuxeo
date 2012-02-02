@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
@@ -49,6 +50,10 @@ public class ClusterNodeHandler {
         propagator = new InvalidationsPropagator();
     }
 
+    public JDBCConnection getConnection() {
+        return (JDBCConnection) clusterNodeMapper;
+    }
+
     public void close() throws StorageException {
         synchronized (clusterNodeMapper) {
             try {
@@ -57,6 +62,17 @@ public class ClusterNodeHandler {
                 log.error(e.getMessage(), e);
             }
             clusterNodeMapper.close();
+        }
+    }
+
+    public void connectionWasReset() throws StorageException {
+        synchronized (clusterNodeMapper) {
+            // cannot remove, old connection is gone
+            // create should do a cleanup anyway
+            clusterNodeMapper.createClusterNode();
+            // but all invalidations queued for us have been lost
+            // so reset all
+            propagator.propagateInvalidations(new Invalidations(true), null);
         }
     }
 
@@ -76,7 +92,13 @@ public class ClusterNodeHandler {
                 // delay hasn't expired
                 return null;
             }
-            Invalidations invalidations = clusterNodeMapper.getClusterInvalidations();
+            Invalidations invalidations;
+            try {
+                invalidations = clusterNodeMapper.getClusterInvalidations();
+            } catch (ConnectionResetException e) {
+                // retry once
+                invalidations = clusterNodeMapper.getClusterInvalidations();
+            }
             clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis();
             return invalidations;
         }

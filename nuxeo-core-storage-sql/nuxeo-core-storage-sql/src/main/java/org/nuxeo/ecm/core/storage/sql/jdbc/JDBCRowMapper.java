@@ -403,7 +403,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             return list;
         } catch (Exception e) {
-            checkConnectionReset(e);
+            checkConnectionReset(e, true);
             throw new StorageException("Could not select: " + select.sql, e);
         } finally {
             if (ps != null) {
@@ -871,11 +871,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     // make sure things are properly invalidated in this and
                     // other sessions
                     if (Boolean.TRUE.equals(invalidation)) {
-                        invalidations.addModified(Collections.singleton(new RowId(
-                                tableName, overwriteId)));
+                        invalidations.addModified(new RowId(tableName,
+                                overwriteId));
                     } else {
-                        invalidations.addDeleted(Collections.singleton(new RowId(
-                                tableName, overwriteId)));
+                        invalidations.addDeleted(new RowId(tableName,
+                                overwriteId));
                     }
                 }
             }

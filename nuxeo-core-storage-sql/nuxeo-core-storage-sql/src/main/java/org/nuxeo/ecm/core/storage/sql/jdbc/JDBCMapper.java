@@ -45,6 +45,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
@@ -498,7 +499,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             return invalidations;
         } catch (Exception e) {
-            checkConnectionReset(e);
+            checkConnectionReset(e, true);
             throw new StorageException("Could not invalidate", e);
         } finally {
             if (st != null) {
@@ -974,7 +975,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public Lock getLock(Serializable id) throws StorageException {
         checkConnectionValid();
-        Row row = readSimpleRow(new RowId(Model.LOCK_TABLE_NAME, id));
+        RowId rowId = new RowId(Model.LOCK_TABLE_NAME, id);
+        Row row;
+        try {
+            row = readSimpleRow(rowId);
+        } catch (ConnectionResetException e) {
+            // retry once
+            row = readSimpleRow(rowId);
+        }
         return row == null ? null : new Lock(
                 (String) row.get(Model.LOCK_OWNER_KEY),
                 (Calendar) row.get(Model.LOCK_CREATED_KEY));
