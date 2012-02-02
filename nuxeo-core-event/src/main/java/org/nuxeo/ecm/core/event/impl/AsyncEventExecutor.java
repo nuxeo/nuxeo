@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.event.impl;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +47,31 @@ public class AsyncEventExecutor {
 
     protected final BlockingQueue<Runnable> mono_queue;
 
+    protected static class ShutdownHandler implements RejectedExecutionHandler {
+
+        protected final RejectedExecutionHandler runningHandler;
+
+        protected ShutdownHandler(RejectedExecutionHandler handler) {
+            runningHandler = handler;
+        }
+
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            if (!executor.isShutdown()) {
+                runningHandler.rejectedExecution(r, executor);
+            } else {
+                r.run();
+            }
+        }
+
+        public static void install(ThreadPoolExecutor executor) {
+            RejectedExecutionHandler runningHandler = executor.getRejectedExecutionHandler();
+            RejectedExecutionHandler shutdownHandler = new ShutdownHandler(runningHandler);
+            executor.setRejectedExecutionHandler(shutdownHandler);
+        }
+
+    }
+
     public static AsyncEventExecutor create() {
         String val = Framework.getProperty("org.nuxeo.ecm.core.event.async.poolSize");
         int poolSize = val == null ? 4 : Integer.parseInt(val);
@@ -64,17 +90,26 @@ public class AsyncEventExecutor {
     }
 
     public void shutdown(long timeout) {
+        // schedule shutdown
+        ShutdownHandler.install(executor);
         executor.shutdown();
-        // wait for thread pool to drain
-        long t0 = System.currentTimeMillis();
-        while (executor.getPoolSize() > 0) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-            }
-            if (timeout > 0 && System.currentTimeMillis() > t0 + timeout) {
-                break;
-            }
+        ShutdownHandler.install(mono_executor);
+        mono_executor.shutdown();
+
+        // wait for termination
+        long ts = System.currentTimeMillis();
+        try {
+            executor.awaitTermination(timeout, TimeUnit.MICROSECONDS);
+        } catch (InterruptedException e) {
+            ;
+        }
+        if (timeout - System.currentTimeMillis() + ts < 0) {
+            return; // timeout expired
+        }
+        try {
+            mono_executor.awaitTermination(timeout, TimeUnit.MICROSECONDS);
+        } catch (InterruptedException e) {
+            ;
         }
     }
 

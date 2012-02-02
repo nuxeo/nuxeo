@@ -74,7 +74,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     protected final EventListenerList listenerDescriptors;
 
-    protected final AsyncEventExecutor asyncExec;
+    protected volatile AsyncEventExecutor asyncExec;
 
     protected boolean blockAsyncProcessing = false;
 
@@ -93,8 +93,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
     }
 
     public void shutdown(long timeout) {
-        // the possible timeout here is doubled. we don't really care.
-        waitForAsyncCompletion(timeout);
         asyncExec.shutdown(timeout);
     }
 
@@ -113,17 +111,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     @Override
     public void waitForAsyncCompletion(long timeout) {
-        long t0 = System.currentTimeMillis();
-        while (asyncExec.getUnfinishedCount() > 0) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-            }
-            if (timeout > 0 && System.currentTimeMillis() > t0 + timeout) {
-                break;
-            }
-        }
-    }
+        asyncExec.shutdown(timeout);
+        asyncExec = AsyncEventExecutor.create();
+     }
 
     @Override
     public void addEventListener(EventListenerDescriptor listener) {
