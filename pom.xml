@@ -9,7 +9,7 @@
     <version>5.6-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
+  <groupId>org.nuxeo.ecm</groupId>
   <artifactId>nuxeo-diff</artifactId>
   <name>Nuxeo Diff</name>
   <description>Provides a document diff feature</description>
