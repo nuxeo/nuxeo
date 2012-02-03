@@ -1215,11 +1215,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public String getCacheKey() throws ClientException {
         // UUID - sessionId
         String key = id + '-' + sid + '-' + getPathAsString();
-        // :FIXME: Assume a dublin core schema => enough for us right now.
-        Calendar timeStamp = (Calendar) getProperty("dublincore", "modified");
-
-        if (timeStamp != null) {
-            key += '-' + String.valueOf(timeStamp.getTimeInMillis());
+        // assume the doc holds the dublincore schema (enough for us right now)
+        if (hasSchema("dublincore")) {
+            Calendar timeStamp = (Calendar) getProperty("dublincore",
+                    "modified");
+            if (timeStamp != null) {
+                // remove milliseconds as they are not stored in some
+                // databases, which could make the comparison fail just after a
+                // document creation (see NXP-8783)
+                timeStamp.set(Calendar.MILLISECOND, 0);
+                key += '-' + String.valueOf(timeStamp.getTimeInMillis());
+            }
         }
         return key;
     }

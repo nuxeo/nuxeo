@@ -32,13 +32,13 @@ import org.nuxeo.ecm.core.schema.Prefetch;
 /**
  * The document model is a serializable representation of a core document.
  * <p>
- * The document model is made from several data models, each data model is bound
- * to a schema. All the information about a document (like security) is
+ * The document model is made from several data models, each data model is
+ * bound to a schema. All the information about a document (like security) is
  * expressed using schemas (and implicitly data models).
  * <p>
  * Data models are lazily loaded as they are needed. At document model creation
- * only data models corresponding to the default schemas are loaded. The default
- * schemas are configured in the type manager through extension points.
+ * only data models corresponding to the default schemas are loaded. The
+ * default schemas are configured in the type manager through extension points.
  * <p>
  * The user may overwrite the default schemas by passing the schemas to be used
  * at model creation via {@link CoreSession#getDocument(DocumentRef, String[])}
@@ -151,8 +151,8 @@ public interface DocumentModel extends Serializable {
     void attach(String sid) throws ClientException;
 
     /**
-     * Gets a reference to the core document that can be used either remotely or
-     * locally (opens the core JVM).
+     * Gets a reference to the core document that can be used either remotely
+     * or locally (opens the core JVM).
      *
      * @return the document reference
      */
@@ -213,7 +213,6 @@ public interface DocumentModel extends Serializable {
      * facets).
      *
      * @return the schemas
-     *
      * @since 5.4.2
      */
     String[] getSchemas();
@@ -224,7 +223,6 @@ public interface DocumentModel extends Serializable {
      *
      * @deprecated use {@link #getSchemas} instead, or call
      *             {@link #getDocumentType} and look up the type schemas
-     *
      * @return the schemas
      */
     @Deprecated
@@ -244,7 +242,6 @@ public interface DocumentModel extends Serializable {
      * instance facets).
      *
      * @return the facets
-     *
      * @since 5.4.2
      */
     Set<String> getFacets();
@@ -255,7 +252,6 @@ public interface DocumentModel extends Serializable {
      *
      * @deprecated use {@link #getFacets} instead, or call
      *             {@link #getDocumentType} and look up the type facets
-     *
      * @return the facets
      */
     @Deprecated
@@ -279,7 +275,6 @@ public interface DocumentModel extends Serializable {
      * @return {@code true} if the facet was added, or {@code false} if it is
      *         already present
      * @throws DocumentException if the facet does not exist
-     *
      * @since 5.4.2
      */
     boolean addFacet(String facet);
@@ -292,7 +287,6 @@ public interface DocumentModel extends Serializable {
      * @param facet the facet name
      * @return {@code true} if the facet was removed, or {@code false} if it
      *         isn't present or is present on the type or does not exit
-     *
      * @since 5.4.2
      */
     boolean removeFacet(String facet);
@@ -339,7 +333,6 @@ public interface DocumentModel extends Serializable {
      * {@link CoreSession#getLockInfo} to get the non-cached status.
      *
      * @return the lock key if the document is locked or null otherwise
-     *
      * @deprecated since 5.4.2, use {@link #getLockInfo} instead
      */
     @Deprecated
@@ -363,7 +356,6 @@ public interface DocumentModel extends Serializable {
      * @param key the key to use when locking
      * @throws ClientException if the document is already locked or other error
      *             occurs
-     *
      * @deprecated since 5.4.2, use {@link #setLock} instead
      */
     @Deprecated
@@ -374,7 +366,6 @@ public interface DocumentModel extends Serializable {
      *
      * @throws ClientException if the document is already locked or other error
      *             occurs
-     *
      * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
@@ -385,7 +376,6 @@ public interface DocumentModel extends Serializable {
      *
      * @return the lock info that was set
      * @throws ClientException if a lock was already set
-     *
      * @since 5.4.2
      */
     Lock setLock() throws ClientException;
@@ -398,7 +388,6 @@ public interface DocumentModel extends Serializable {
      *
      * @return the lock info if the document is locked, or {@code null}
      *         otherwise
-     *
      * @since 5.4.2
      */
     Lock getLockInfo() throws ClientException;
@@ -406,15 +395,15 @@ public interface DocumentModel extends Serializable {
     /**
      * Removes the lock on the document.
      * <p>
-     * The caller principal should be the same as the one who set the lock or to
-     * belongs to the administrator group, otherwise an exception will be throw.
+     * The caller principal should be the same as the one who set the lock or
+     * to belongs to the administrator group, otherwise an exception will be
+     * throw.
      * <p>
      * If the document was not locked, does nothing.
      * <p>
      * Returns the previous lock info.
      *
      * @return the removed lock info, or {@code null} if there was no lock
-     *
      * @since 5.4.2
      */
     Lock removeLock() throws ClientException;
@@ -422,8 +411,8 @@ public interface DocumentModel extends Serializable {
     /**
      * Tests if the document is checked out.
      * <p>
-     * A checked out document can be modified normally. A checked in document is
-     * identical to the last version that it created, and not modifiable.
+     * A checked out document can be modified normally. A checked in document
+     * is identical to the last version that it created, and not modifiable.
      * <p>
      * Only applicable to documents that are live (not versions and not
      * proxies).
@@ -494,18 +483,21 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Checks if a document is the latest version in the version series.
+     *
      * @since 5.4
      */
     boolean isLatestVersion() throws ClientException;
 
     /**
      * Checks if a document is a major version.
+     *
      * @since 5.4
      */
     boolean isMajorVersion() throws ClientException;
 
     /**
      * Checks if a document is the latest major version in the version series.
+     *
      * @since 5.4
      */
     boolean isLatestMajorVersion() throws ClientException;
@@ -513,6 +505,7 @@ public interface DocumentModel extends Serializable {
     /**
      * Checks if there is a checked out working copy for the version series of
      * this document.
+     *
      * @since 5.4
      */
     boolean isVersionSeriesCheckedOut() throws ClientException;
@@ -549,8 +542,8 @@ public interface DocumentModel extends Serializable {
     /**
      * Gets a property from the given schema.
      * <p>
-     * The data model owning the property will be fetched from the server if not
-     * already fetched.
+     * The data model owning the property will be fetched from the server if
+     * not already fetched.
      *
      * @param schemaName the schema name
      * @param name the property name
@@ -595,7 +588,6 @@ public interface DocumentModel extends Serializable {
      */
     void setProperties(String schemaName, Map<String, Object> data)
             throws ClientException;
-
 
     /**
      * Checks if this document is a folder.
@@ -660,14 +652,12 @@ public interface DocumentModel extends Serializable {
      * @param arg an argument passed to the visitor. This should be used by the
      *            visitor to carry on the visiting context.
      * @throws ClientException
-     *
      * @since 5.5
      */
     void accept(PropertyVisitor visitor, Object arg) throws ClientException;
 
     /**
      * Adapts the document to the given interface.
-     *
      * <p>
      * Attention, the first computation will cache the adaptation result for
      * later calls.
@@ -693,7 +683,6 @@ public interface DocumentModel extends Serializable {
      * Returns the life cycle of the document.
      *
      * @see org.nuxeo.ecm.core.lifecycle
-     *
      * @return the life cycle as a string
      */
     String getCurrentLifeCycleState() throws ClientException;
@@ -702,7 +691,6 @@ public interface DocumentModel extends Serializable {
      * Returns the life cycle policy of the document.
      *
      * @see org.nuxeo.ecm.core.lifecycle
-     *
      * @return the life cycle policy
      */
     String getLifeCyclePolicy() throws ClientException;
@@ -787,6 +775,10 @@ public interface DocumentModel extends Serializable {
      *   </code>
      * <p>
      * We will use the last modification time if present for the timestamp.
+     * <p>
+     * Since 5.6, the timestamp does not hold milliseconds anymore as some
+     * databases do not store them, which could interfere with cache key
+     * comparisons.
      *
      * @return the cache key as a string
      * @throws ClientException
@@ -808,7 +800,6 @@ public interface DocumentModel extends Serializable {
      *
      * @param xpath the property xpath
      * @return {@code true} if it is prefetched
-     *
      * @since 5.5
      */
     boolean isPrefetched(String xpath);
@@ -819,7 +810,6 @@ public interface DocumentModel extends Serializable {
      * @param schemaName the schema name
      * @param name the property name
      * @return {@code true} if it is prefetched
-     *
      * @since 5.5
      */
     boolean isPrefetched(String schemaName, String name);
@@ -838,8 +828,9 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Gets system property of the specified type. This is not a lazy loaded
-     * property, thus the request is made directly to the server. This is needed
-     * as some critical system properties might be changed directly in the core.
+     * property, thus the request is made directly to the server. This is
+     * needed as some critical system properties might be changed directly in
+     * the core.
      */
     <T extends Serializable> T getSystemProp(String systemProperty,
             Class<T> type) throws ClientException, DocumentException;
@@ -981,13 +972,14 @@ public interface DocumentModel extends Serializable {
     DocumentModel clone() throws CloneNotSupportedException;
 
     /**
-     * Opaque string that represents the last update state of the DocumentModel.
+     * Opaque string that represents the last update state of the
+     * DocumentModel.
+     * <p>
      * This token can be used for optimistic locking and avoid dirty updates.
-     *
-     * See CMIS spec : http://docs.oasis-open.org/cmis/CMIS/v1.0/os/cmis-spec-v1.0.html#_Toc243905432
+     * See CMIS spec :
+     * http://docs.oasis-open.org/cmis/CMIS/v1.0/os/cmis-spec-v1.0.html#_Toc243905432
      *
      * @since 5.5
-     *
      * @return the ChangeToken string that can be null for some Document types
      */
     String getChangeToken();
