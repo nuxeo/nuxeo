@@ -58,7 +58,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -830,9 +829,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getType() {
-        // TODO there are some DOcumentModel impl like DocumentMessageImpl which
-        // use null types and extend this impl which is wrong - fix this -> type
-        // must never be null
         return type != null ? type.getName() : null;
     }
 
@@ -1371,7 +1367,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (part == null) {
             throw new PropertyNotFoundException(xpath);
         }
-        String partPath = xpath.substring(xpath.indexOf(':') + 1); // cut prefix
+        // cut prefix
+        String partPath = xpath.substring(xpath.indexOf(':') + 1);
         return part.resolvePath(partPath);
     }
 
@@ -1401,7 +1398,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             // unprefixed
             // search for the first matching schema having a property
             // with the same name as the first path segment
-            for (String schemaName: docSchemas) {
+            for (String schemaName : docSchemas) {
                 Schema schema = schemaManager.getSchema(schemaName);
                 if (schema != null && schema.hasField(prop)) {
                     if (returnName != null) {
@@ -1522,7 +1519,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
         if ((refreshFlags & REFRESH_ACP_IF_LOADED) != 0 && isACPLoaded) {
             refreshFlags |= REFRESH_ACP;
-            // we must not clean the REFRESH_ACP_IF_LOADED flag since it is used
+            // we must not clean the REFRESH_ACP_IF_LOADED flag since it is
+            // used
             // below on the client
         }
 
@@ -1574,7 +1572,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
         try {
             Calendar modified = (Calendar) getProperty("dublincore", "modified");
-            if (modified!=null) {
+            if (modified != null) {
                 return new Long(modified.getTimeInMillis()).toString();
             }
         } catch (ClientException e) {
