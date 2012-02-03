@@ -51,6 +51,7 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.Transactio
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.XATransactions;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
 import org.apache.geronimo.transaction.manager.NamedXAResource;
+import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.nuxeo.runtime.api.InitialContextAccessor;
@@ -560,10 +561,16 @@ public class NuxeoContainer {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        public void recoverResourceManager(NamedXAResource xaResource) {
-            throw new UnsupportedOperationException();
-        }
+		@Override
+		public void registerNamedXAResourceFactory(NamedXAResourceFactory arg0) {
+            throw new UnsupportedOperationException();			
+		}
+
+		@Override
+		public void unregisterNamedXAResourceFactory(String arg0) {
+            throw new UnsupportedOperationException();			
+		}
+
     }
 
     /**
