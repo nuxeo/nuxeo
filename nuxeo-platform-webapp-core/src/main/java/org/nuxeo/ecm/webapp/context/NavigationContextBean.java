@@ -26,7 +26,6 @@ import static org.nuxeo.ecm.webapp.helpers.EventNames.NAVIGATE_TO_DOCUMENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -327,39 +326,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             return false;
         }
         try {
-            boolean equals = ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
-            if (!equals) {
-                // try again without milliseconds
-                equals = getDocumentCacheKey(ctxDoc).equals(
-                        getDocumentCacheKey(newDoc));
-            }
-            return !equals;
+            return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-    }
-
-    /**
-     * Provide a cache key for document, using the dc:modified content, but
-     * removing milliseconds as they are not stored in some databases, which
-     * could make the comparison fail just after a document creation (see
-     * NXP-8783)
-     *
-     * @since 5.6
-     * @throws ClientException
-     */
-    protected String getDocumentCacheKey(DocumentModel doc)
-            throws ClientException {
-        String key = doc.getId() + '-' + doc.getSessionId() + '-'
-                + doc.getPathAsString();
-        // :FIXME: Assume a dublincore schema => enough for us right now.
-        Calendar timeStamp = (Calendar) doc.getProperty("dublincore",
-                "modified");
-        if (timeStamp != null) {
-            timeStamp.set(Calendar.MILLISECOND, 0);
-            key += '-' + String.valueOf(timeStamp.getTimeInMillis());
-        }
-        return key;
     }
 
     public void saveCurrentDocument() throws ClientException {
