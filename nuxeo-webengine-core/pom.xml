@@ -33,7 +33,12 @@
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-core</artifactId>
+      <classifier>minimal</classifier>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
