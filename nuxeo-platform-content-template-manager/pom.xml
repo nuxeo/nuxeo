@@ -51,15 +51,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml</groupId>
+      <groupId>com.sun.xsom</groupId>
       <artifactId>xsom</artifactId>
-      <version>20060306</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>relaxngDatatype</artifactId>
-      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
