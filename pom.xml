@@ -3847,10 +3847,14 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
+                <unCheckedPluginList>org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList>
               </requirePluginVersions>
               <requireReleaseDeps>
                 <message>No Snapshots Allowed!</message>
                 <onlyWhenRelease>true</onlyWhenRelease>
+                <excludes>
+                  <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude>
+                </excludes>
               </requireReleaseDeps>
               <requireMavenVersion>
                 <version>[2.2.1,)</version>
