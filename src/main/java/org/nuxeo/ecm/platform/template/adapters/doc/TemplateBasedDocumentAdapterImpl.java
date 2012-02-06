@@ -134,9 +134,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
             adaptedDoc = getSession().saveDocument(adaptedDoc);
         }
         return adaptedDoc;
-    }
-
-    
+    }    
     
     protected void setBlob(Blob blob) throws ClientException {
         adaptedDoc.getAdapter(BlobHolder.class).setBlob(blob);
@@ -150,8 +148,9 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         TemplateProcessor processor = getTemplateProcessor();
         if (processor != null) {
             Blob blob = processor.renderTemplate(this);
-            if (blob!=null && getSourceTemplate().getOutputFormat()!=null) {
-                return convertBlob(blob, getSourceTemplate().getOutputFormat());
+            String format = getSourceTemplate().getOutputFormat();
+            if (blob!=null && format!=null &&  !format.isEmpty()) {
+                return convertBlob(blob, format);
             } else {
                 return blob;
             }

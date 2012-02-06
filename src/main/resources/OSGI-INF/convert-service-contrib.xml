@@ -78,6 +78,68 @@
       <sourceMimeType>application/wordperfect</sourceMimeType>
    </converter>
 
+   <converter name="any2docx" class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+
+      <destinationMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</destinationMimeType>
+
+      <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>text/html</sourceMimeType>
+      <sourceMimeType>text/plain</sourceMimeType>
+      <sourceMimeType>text/rtf</sourceMimeType>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+   </converter>
+
+   <converter name="any2doc" class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+
+      <destinationMimeType>application/msword</destinationMimeType>
+
+      <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>text/html</sourceMimeType>
+      <sourceMimeType>text/plain</sourceMimeType>
+      <sourceMimeType>text/rtf</sourceMimeType>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+   </converter>
+
    <converter name="md2odt">
       <conversionSteps>
         <subconverter>md2html</subconverter>

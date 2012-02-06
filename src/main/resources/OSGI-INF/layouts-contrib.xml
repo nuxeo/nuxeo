@@ -119,7 +119,7 @@
           <field>tmpl:allowOverride</field>
         </fields>
       </widget>
-      <widget name="converter" type="text">
+      <widget name="converter" type="template">
         <labels>
           <label mode="any">Rendering output format</label>
         </labels>
@@ -127,6 +127,11 @@
         <fields>
           <field>tmpl:outputFormat</field>
         </fields>
+         <properties mode="any">
+          <property name="template">
+            /widgets/converter_selectone.xhtml
+          </property>
+        </properties>
       </widget>
       <widget name="targetTypes" type="template">
         <labels>

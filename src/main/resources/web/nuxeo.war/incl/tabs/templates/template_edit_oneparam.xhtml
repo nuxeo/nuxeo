@@ -28,7 +28,7 @@
         <f:selectItem itemLabel="Date value" itemValue="Date"/>
         <f:selectItem itemLabel="Document property binding" itemValue="source"/>
         <f:selectItem itemLabel="Picture property binding" itemValue="picture"/>
-        <f:selectItem itemLabel="Include" itemValue="include"/>
+        <f:selectItem itemLabel="Include" itemValue="content"/>
         <a4j:support event="onchange" reRender="params_edit" />
     </h:selectOneMenu>
 </c:if>
@@ -55,10 +55,20 @@
   </c:if>
 
   <c:if test="#{param.sourceValue}">
+     <c:if test="#{param.typeAsString=='content'}">
+      <td class="labelColumn"> Content source :</td>
+      <td>
+      <h:selectOneMenu value="#{param.source}">
+        <f:selectItem  itemLabel="Html Preview" itemValue="htmlPreview" />
+      </h:selectOneMenu>
+      </td>
+     </c:if>
+     <c:if test="#{param.typeAsString!='content'}">
       <td class="labelColumn"> Source XPath for value :</td>
       <td>
         <nxl:widgetType name="text" value="#{param.source}" mode="#{widgetMode}" />
       </td>
+     </c:if>
   </c:if>
 </tr>
 </table>
