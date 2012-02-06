@@ -12,7 +12,9 @@
       <a4j:region id="search_groups_region">
         <!-- search form -->
         <a4j:form id="searchForm" ajaxSubmit="true"
-          ignoreDupResponses="true" eventsQueue="adminCenterQueue">
+          ignoreDupResponses="true" eventsQueue="adminCenterQueue"
+          reRender="groupsPanel,searchForm"
+          onsubmit="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
           <script>
             jQuery(document).ready(function() {
               jQuery('#groupsListingView\\:searchForm').focusFirst();
@@ -20,21 +22,16 @@
           </script>
           <h:inputText id="searchText"
             value="#{groupManagementActions.searchString}"
-            onkeydown="if (event.keyCode == 13) {document.getElementById('groupsListingView:searchForm:searchButton').click();return false;} else return true;"
             styleClass="directoryFilter" />
           <f:verbatim>&amp;nbsp;</f:verbatim>
-          <a4j:commandButton id="searchButton"
+          <h:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}"
-            reRender="groupsPanel" ignoreDupResponses="true"
-            onclick="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
-            eventsQueue="adminCenterQueue"
             styleClass="button" />
           <a4j:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{groupManagementActions.clearSearch}"
             styleClass="button"
-            reRender="groupsPanel"
             eventsQueue="adminCenterQueue" />
           <a4j:status>
             <f:facet name="start">

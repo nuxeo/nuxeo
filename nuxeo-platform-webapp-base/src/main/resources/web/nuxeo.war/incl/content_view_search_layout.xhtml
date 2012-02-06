@@ -57,24 +57,20 @@ Needed parameters:
 
     <div class="boxBody"
       style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
-      <a4j:form id="#{filterFormId}" ajaxSubmit="true">
+      <a4j:form id="#{filterFormId}" ajaxSubmit="true"
+        reRender="#{elementsToReRender}"
+        oncomplete="jQuery.fancybox.close();"
+        ignoreDupResponses="true"
+        requestDelay="100"
+        eventsQueue="contentViewQueue">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}" />
         <p class="buttonsGadget">
           <h:commandButton
             value="#{messages['label.contentview.filter.filterAction']}"
             id="submitFilter"
-            styleClass="button">
-            <a4j:support event="onclick"
-              reRender="#{elementsToReRender}"
-              oncomplete="jQuery.fancybox.close();"
-              ignoreDupResponses="true"
-              requestDelay="100"
-              eventsQueue="contentViewQueue">
-              <nxu:actionListenerMethod
-                value="#{contentView.resetPageProvider()}" />
-            </a4j:support>
-          </h:commandButton>
+            action="#{contentView.resetPageProvider()}"
+            styleClass="button" />
           <a4j:commandButton
             value="#{messages['label.contentview.filter.clearFilterButton']}"
             id="resetFilter"
