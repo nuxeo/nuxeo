@@ -29,11 +29,18 @@ import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
+import org.apache.jackrabbit.webdav.client.methods.LockMethod;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
+import org.apache.jackrabbit.webdav.lock.LockDiscovery;
+import org.apache.jackrabbit.webdav.lock.Scope;
+import org.apache.jackrabbit.webdav.lock.Type;
+import org.apache.jackrabbit.webdav.property.DavProperty;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
+import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Element;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,11 +52,17 @@ import static org.junit.Assert.assertTrue;
 
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
+    private static String USERNAME = "userId";
+    
     private static HttpClient client;
 
     @BeforeClass
     public static void setUp() {
         // Setup code
+        client = createClient(USERNAME);
+    }
+
+    protected static HttpClient createClient(String username) {
         HostConfiguration hostConfig = new HostConfiguration();
         hostConfig.setHost("localhost", PORT);
 
@@ -59,11 +72,12 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         params.setMaxConnectionsPerHost(hostConfig, maxHostConnections);
         connectionManager.setParams(params);
 
-        client = new HttpClient(connectionManager);
-        client.setHostConfiguration(hostConfig);
+        HttpClient httpClient = new HttpClient(connectionManager);
+        httpClient.setHostConfiguration(hostConfig);
 
-        Credentials creds = new UsernamePasswordCredentials("userId", "pw");
-        client.getState().setCredentials(AuthScope.ANY, creds);
+        Credentials creds = new UsernamePasswordCredentials(username, "pw");
+        httpClient.getState().setCredentials(AuthScope.ANY, creds);
+        return httpClient;
     }
 
     @Test
@@ -150,9 +164,35 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
         MultiStatusResponse response = responses[0];
         assertEquals(
-                "nuxeo",
+                "workspace",
                 response.getProperties(200).get(
                         DavConstants.PROPERTY_DISPLAYNAME).getValue());
+    }
+    
+    @Test
+    public void testPropFindOnLockedFile() throws Exception {
+        String fileUri = ROOT_URI + "quality.jpg";
+        DavMethod pLock = new LockMethod(
+                fileUri, Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000l, false);
+        client.executeMethod(pLock);
+        pLock.checkSuccess();
+        
+        HttpClient client2 = createClient("user2Id");
+        DavMethod pFind = new PropFindMethod(
+                fileUri, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+        client2.executeMethod(pFind);
+
+        MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
+        MultiStatusResponse[] responses = multiStatus.getResponses();
+        assertEquals(1L, (long) responses.length);
+
+        MultiStatusResponse response = responses[0];
+        DavProperty<?> pLockDiscovery =  
+                response.getProperties(200).get(DavConstants.PROPERTY_LOCKDISCOVERY);
+        Element eLockDiscovery = 
+                (Element) ((Element) pLockDiscovery.getValue()).getParentNode();
+        LockDiscovery lockDiscovery = LockDiscovery.createFromXml(eLockDiscovery);
+        assertEquals("system", lockDiscovery.getValue().get(0).getOwner());
     }
 
 }

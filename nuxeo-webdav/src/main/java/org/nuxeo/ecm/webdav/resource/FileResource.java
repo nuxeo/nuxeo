@@ -19,12 +19,17 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsFolder;
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
 import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
 import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
 import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
+import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
+import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
+
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -119,6 +124,7 @@ public class FileResource extends ExistingResource {
 
         Unmarshaller u = Util.getUnmarshaller();
 
+        Prop prop = null;
         if (request.getInputStream() != null && request.getContentLength() > 0) {
             PropFind propFind;
             try {
@@ -126,35 +132,46 @@ public class FileResource extends ExistingResource {
             } catch (JAXBException e) {
                 return Response.status(400).build();
             }
-            Prop prop = propFind.getProp();
+            prop = propFind.getProp();
         }
         //Util.printAsXml(prop);
 
-        Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
-        Date creationDate = getTimePropertyWrapper(doc, "dc:created");
-
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        long contentLength = 0;
-        if (bh != null) {
-            try {
-                Blob blob = bh.getBlob();
-                if (blob != null) {
-                    contentLength = blob.getLength();
-                }
-            } catch (ClientException e) {
-                log.error("Unable to get blob Size", e);
-            }
+        PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
+        PropStat propStatFound = props.build();
+        PropStat propStatNotFound = null;
+        if (prop != null) {
+            propStatNotFound = props.notFound(prop);
         }
 
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
-        response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                new HRef(uriInfo.getRequestUri()), null, null, null,
-                new PropStat(new Prop(
-                        new CreationDate(creationDate), new GetLastModified(lastModified),
-                        new GetContentType("application/octet-stream"),
-                        new GetContentLength(contentLength)),
-                        new Status(OK)));
-
+        URI uri = uriInfo.getRequestUri();
+        PropStat filePropStat = new PropStat(
+                new Prop(new SupportedLock(new LockEntry(LockScope.EXCLUSIVE, LockType.WRITE))), 
+                new Status(OK));
+        if (doc.isLocked()) {
+            PropStat lockDiscoveryPropStat = new PropStat(
+                    new Prop(getLockDiscovery(doc, uriInfo)), new Status(OK));
+            if (propStatNotFound != null) {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, 
+                        filePropStat, propStatFound, propStatNotFound, lockDiscoveryPropStat);
+            } else {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, 
+                        filePropStat, propStatFound, lockDiscoveryPropStat);
+            }
+        } else {
+            if (propStatNotFound != null) {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, 
+                        filePropStat, propStatFound, propStatNotFound);
+            } else {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, 
+                        filePropStat, propStatFound);
+            }
+        }
+        
         MultiStatus st = new MultiStatus(response);
         return Response.status(207).entity(st).build();
     }

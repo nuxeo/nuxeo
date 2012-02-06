@@ -59,14 +59,17 @@ import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
@@ -253,11 +256,7 @@ public class ExistingResource extends AbstractResource {
                 return Response.status(423).build();
             } else {
                 token = backend.getCheckoutUser(doc.getRef());
-                prop = new Prop(new LockDiscovery(new ActiveLock(
-                        LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
-                        new Owner(token), new TimeOut(10000L), new LockToken(
-                                new HRef("urn:uuid:" + token)), new LockRoot(
-                                new HRef(uriInfo.getRequestUri())))));
+                prop = new Prop(getLockDiscovery(doc, uriInfo));
                 return Response.ok().entity(prop).header("Lock-Token",
                         "urn:uuid:" + token).build();
             }
@@ -270,11 +269,7 @@ public class ExistingResource extends AbstractResource {
             return Response.status(400).build();
         }
 
-        prop = new Prop(new LockDiscovery(new ActiveLock(LockScope.EXCLUSIVE,
-                LockType.WRITE, Depth.ZERO, new Owner(
-                        backend.getCheckoutUser(doc.getRef())), new TimeOut(
-                        10000L), new LockToken(new HRef("urn:uuid:" + token)),
-                new LockRoot(new HRef(uriInfo.getRequestUri())))));
+        prop = new Prop(getLockDiscovery(doc, uriInfo));
 
         backend.saveChanges();
         return Response.ok().entity(prop).header("Lock-Token",
@@ -297,6 +292,52 @@ public class ExistingResource extends AbstractResource {
         }
     }
 
+    protected LockDiscovery getLockDiscovery(DocumentModel doc, UriInfo uriInfo) 
+            throws ClientException {
+        LockDiscovery lockDiscovery = null;
+        if (doc.isLocked()) {
+            String token = backend.getCheckoutUser(doc.getRef());
+            lockDiscovery = new LockDiscovery(new ActiveLock(
+                    LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
+                    new Owner(token), new TimeOut(10000L), new LockToken(
+                            new HRef("urn:uuid:" + token)), new LockRoot(
+                                    new HRef(uriInfo.getRequestUri()))));
+        }
+        return lockDiscovery;
+    }
+    
+    protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo)
+            throws ClientException, URIException {
+        Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
+        Date creationDate = getTimePropertyWrapper(doc, "dc:created");
+        String displayName = URIUtil.encodePath(backend.getDisplayName(doc));
+        PropStatBuilderExt props = new PropStatBuilderExt();
+        props.lastModified(lastModified).creationDate(creationDate).displayName(displayName).status(OK);
+        if (doc.isFolder()) {
+            props.isCollection();
+        } else {
+            String mimeType = "application/octet-stream";
+            long size = 0;
+            BlobHolder bh = doc.getAdapter(BlobHolder.class);
+            if (bh != null) {
+                try {
+                    Blob blob = bh.getBlob();
+                    if (blob != null) {
+                        size = blob.getLength();
+                        mimeType = blob.getMimeType();
+                    }
+                } catch (ClientException e) {
+                    log.error("Unable to get blob Size", e);
+                }
+            }
+            if(StringUtils.isEmpty(mimeType) || "???".equals(mimeType) ){
+                mimeType = "application/octet-stream";
+            }
+            props.isResource(size, mimeType);
+        }
+        return props;
+    }
+    
     protected Date getTimePropertyWrapper(DocumentModel doc, String name) {
         Object property;
         try {
