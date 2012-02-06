@@ -28,7 +28,7 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
         deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.snuxeo.ecm.platform.template.manager",
+        deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/life-cycle-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/adapter-contrib.xml");
