@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.runtime.management;
+package org.nuxeo.runtime.management.jvm;
 
 import java.io.File;
 import java.io.IOException;

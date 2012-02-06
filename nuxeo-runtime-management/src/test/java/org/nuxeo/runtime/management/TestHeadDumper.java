@@ -19,6 +19,8 @@ package org.nuxeo.runtime.management;
 import java.io.File;
 import java.io.IOException;
 
+import org.nuxeo.runtime.management.jvm.HeapDumper;
+
 import junit.framework.TestCase;
 
 /**
