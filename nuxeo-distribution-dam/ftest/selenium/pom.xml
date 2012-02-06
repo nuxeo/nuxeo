@@ -19,6 +19,9 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFile>${basedir}/itests.xml</buildFile>
+        </configuration>
         <executions>
           <execution>
             <id>start-nuxeo</id>
@@ -27,7 +30,6 @@
               <goal>build</goal>
             </goals>
             <configuration>
-              <buildFile>${basedir}/itests.xml</buildFile>
               <targets>
                 <target>prepare-environment</target>
                 <target>add-dam-importer-bundles</target>
@@ -44,7 +46,6 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <buildFile>${basedir}/itests.xml</buildFile>
               <target>run-selenium-tests</target>
             </configuration>
           </execution>
@@ -55,10 +56,7 @@
               <goal>build</goal>
             </goals>
             <configuration>
-              <buildFile>${basedir}/itests.xml</buildFile>
-              <targets>
-                <target>stop</target>
-              </targets>
+              <target>stop</target>
             </configuration>
           </execution>
         </executions>
