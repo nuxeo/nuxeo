@@ -17,8 +17,16 @@
 
 package org.nuxeo.dam.webapp.fileimporter;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,8 +39,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.DetectThreadDeadlocksFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -44,12 +54,8 @@ import org.richfaces.event.UploadEvent;
 
 import com.google.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DetectThreadDeadlocksFeature.class })
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
 @Deploy( { "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
@@ -84,6 +90,18 @@ public class TestZipImporter {
         EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
         eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text",
                 false);
+    }
+
+    @After
+    public void checkShutdown() {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        ThreadMXBean threadMgmt = ManagementFactory.getThreadMXBean();
+        for (ThreadInfo info:threadMgmt.dumpAllThreads(false, false)) {
+            String threadName = info.getThreadName();
+            if (threadName.contains("Nuxeo Async Events")) {
+                throw new Error(threadName + " is still running");
+            }
+        }
     }
 
     protected File getTestFile(String relativePath) {
