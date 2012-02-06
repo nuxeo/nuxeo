@@ -470,7 +470,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if ("configuration".equals(extensionPoint)) {
-            configuration = (UserRegistrationConfiguration) contribution;
+            UserRegistrationConfiguration newConfig = (UserRegistrationConfiguration) contribution;
+            if (configuration != null) {
+                configuration.mergeWith(newConfig);
+            } else {
+                configuration = newConfig;
+            }
         }
     }
 

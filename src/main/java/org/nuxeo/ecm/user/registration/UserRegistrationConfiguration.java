@@ -16,6 +16,7 @@
 
 package org.nuxeo.ecm.user.registration;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -99,4 +100,49 @@ public class UserRegistrationConfiguration {
         return validationRelUrl;
     }
 
+    public void mergeWith(UserRegistrationConfiguration other) {
+        if (!StringUtils.isEmpty(other.requestDocType)) {
+            this.requestDocType = other.requestDocType;
+        }
+
+        if (!StringUtils.isEmpty(other.containerDocType)) {
+            this.containerDocType = other.containerDocType;
+        }
+
+        if (!StringUtils.isEmpty(other.containerParentPath)) {
+            this.containerParentPath = other.containerParentPath;
+        }
+
+        if (!StringUtils.isEmpty(other.containerName)) {
+            this.containerName = other.containerName;
+        }
+
+        if (!StringUtils.isEmpty(other.containerTitle)) {
+            this.containerTitle = other.containerTitle;
+        }
+
+        if (!StringUtils.isEmpty(other.validationEmailTitle)) {
+            this.validationEmailTitle = other.validationEmailTitle;
+        }
+
+        if (!StringUtils.isEmpty(other.validationEmailTemplate)) {
+            this.validationEmailTemplate = other.validationEmailTemplate;
+        }
+
+        if (!StringUtils.isEmpty(other.successEmailTitle)) {
+            this.successEmailTitle = other.successEmailTitle;
+        }
+
+        if (!StringUtils.isEmpty(other.successEmailTemplate)) {
+            this.successEmailTemplate = other.successEmailTemplate;
+        }
+
+        if (other.getRegistrationUserFactory() != null) {
+            this.registrationUserFactory = other.registrationUserFactory;
+        }
+
+        if (!StringUtils.isEmpty(other.validationRelUrl)) {
+            this.validationRelUrl = other.validationRelUrl;
+        }
+    }
 }
