@@ -85,7 +85,11 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
     protected CoreSession getCoreSession() {
         CoreSession session = null;
         if (doc != null) {
-            session = doc.getCoreSession();
+            try {
+                session = doc.getCoreSession();
+            } catch (Throwable e) {
+                // TODO: handle exception
+            }
         }
         if (session == null) {
             session = localCoreSession.get();

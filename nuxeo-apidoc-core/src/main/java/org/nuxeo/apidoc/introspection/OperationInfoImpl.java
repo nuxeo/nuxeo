@@ -34,13 +34,25 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
     public final String version;
 
     protected final String operationClass;
+    
+    protected final String contributingComponent;
 
-    public OperationInfoImpl(OperationDocumentation op, String version, String operationClass) {
+    public OperationInfoImpl(OperationDocumentation op, String version, String operationClass, String contributingComponent) {
         this.op = op;
         this.version = version;
         this.operationClass=operationClass;
-    }
-
+        if (contributingComponent==null || contributingComponent.isEmpty()) {
+            this.contributingComponent = OperationInfo.BUILT_IN;
+        } else {
+            String[] parts = contributingComponent.split(":");
+            if (parts.length>1) {
+                this.contributingComponent=parts[1];    
+            } else {
+                this.contributingComponent=contributingComponent;
+            }
+        }
+    }    
+    
     @Override
     public String getName() {
         return op.getId();
@@ -117,4 +129,8 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
         return operationClass;
     }
 
+    public String getContributingComponent() {
+        return contributingComponent;
+    }
+    
 }

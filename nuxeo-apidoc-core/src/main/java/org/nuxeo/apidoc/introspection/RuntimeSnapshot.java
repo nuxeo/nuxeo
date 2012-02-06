@@ -427,8 +427,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        for (OperationType op : ops) {
-            operations.add(new OperationInfoImpl(op.getDocumentation(), getVersion(), op.getType().getCanonicalName()));
+        for (OperationType op : ops) {            
+            operations.add(new OperationInfoImpl(op.getDocumentation(), getVersion(), op.getType().getCanonicalName(), op.getContributingComponent()));
         }
         opsInitialized = true;
     }

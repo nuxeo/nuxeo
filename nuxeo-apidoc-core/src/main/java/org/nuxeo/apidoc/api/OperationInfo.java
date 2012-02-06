@@ -61,7 +61,13 @@ public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> 
     String PROP_PARAM_REQUIRED = "required";
 
     String PROP_PARAM_ORDER = "order";
+    
+    String PROP_OP_CLASS = "operationClass";
+    
+    String PROP_CONTRIBUTING_COMPONENT = "contributingComponent";
 
+    String BUILT_IN = "BuiltIn";
+    
     /**
      * Actual operation id. ({@link #getId} is prefixed with
      * {@link #ARTIFACT_PREFIX})
@@ -84,4 +90,7 @@ public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> 
 
     List<Param> getParams();
 
+    String getOperationClass();
+    
+    String getContributingComponent();
 }

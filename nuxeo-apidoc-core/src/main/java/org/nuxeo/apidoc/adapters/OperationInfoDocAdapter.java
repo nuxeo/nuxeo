@@ -162,6 +162,8 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue(PROP_LABEL, oi.getLabel());
         doc.setPropertyValue(PROP_REQUIRES, oi.getRequires());
         doc.setPropertyValue(PROP_SINCE, oi.getSince());
+        doc.setPropertyValue(PROP_OP_CLASS, oi.getOperationClass());
+        doc.setPropertyValue(PROP_CONTRIBUTING_COMPONENT, oi.getContributingComponent());
         List<Map<String, Serializable>> params = new ArrayList<Map<String, Serializable>>();
         for (Param p : oi.getParams()) {
             Map<String, Serializable> map = new HashMap<String, Serializable>();
@@ -181,4 +183,16 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         }
         return new OperationInfoDocAdapter(doc);
     }
+    
+    
+    @Override
+    public String getOperationClass() {
+        return safeGet(PROP_OP_CLASS);
+    }
+
+    @Override
+    public String getContributingComponent() {
+        return safeGet(PROP_CONTRIBUTING_COMPONENT);
+    }
+
 }

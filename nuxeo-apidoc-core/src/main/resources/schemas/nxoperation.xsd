@@ -43,5 +43,6 @@
   <xs:element name="requires" type="xs:string" />
   <xs:element name="since" type="xs:string" />
   <xs:element name="params" type="nxs:params" />
-
+  <xs:element name="operationClass" type="xs:string" />
+  <xs:element name="contributingComponent" type="xs:string" />
 </xs:schema>

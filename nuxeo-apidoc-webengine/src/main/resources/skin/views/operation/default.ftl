@@ -46,14 +46,25 @@ ${nxItem.description}
 <p>No parameters.</p>
 </#if>
 
-
 <h2>Signature</h2>
 <table class="listTable">
   <tr><th>Inputs: </th><td> ${This.getInputsAsString(nxItem)} </td></tr>
   <tr><th>Outputs: </th><td> ${This.getOutputsAsString(nxItem)} </td></tr>
 </table>
 
-<h2>JSON</h2>
+<h2>Implementation information</h2>
+<table class="listTable">
+  <tr><th> Implementation class: </th><td> ${nxItem.operationClass?html} </td></tr>
+  <tr><th> Contributing component: </th><td>
+   <#if nxItem.contributingComponent=="BuiltIn">
+      ${nxItem.contributingComponent?html}
+   <#else>
+     <A href="${Root.path}/${distId}/viewContribution/${nxItem.contributingComponent}--operations">${nxItem.contributingComponent}</A>
+   </#if>    
+   </td></tr>
+</table>  
+
+<h2>JSON definition</h2>
 <p><a href="${Root.path}/../automation/${nxItem.name}" target="_new">JSON definition</a></p>
 
 </@block>
