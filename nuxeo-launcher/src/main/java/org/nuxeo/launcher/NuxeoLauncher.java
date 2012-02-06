@@ -864,7 +864,9 @@ public abstract class NuxeoLauncher {
      */
     protected void callPackageManager(String pkgCommand, String[] pkgParams) {
         try {
-            checkNoRunningServer();
+            if (!"list".equals(pkgCommand)) {
+                checkNoRunningServer();
+            }
             List<String> startCommand = new ArrayList<String>();
             startCommand.add(getJavaExecutable().getPath());
             startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
