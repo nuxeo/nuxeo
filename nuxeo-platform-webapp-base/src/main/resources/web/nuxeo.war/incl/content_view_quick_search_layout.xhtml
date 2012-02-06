@@ -31,34 +31,21 @@ Needed parameters:
   <a4j:outputPanel id="#{quickFilterFormId}_panel"
     styleClass="contentViewQuickFilterForm">
     <a4j:region id="#{quickFilterFormId}_region">
-  
-      <a4j:form id="#{quickFilterFormId}" ajaxSubmit="true"
-        styleClass="action_bar">
 
-        <h:outputText value="#{messages['label.contentview.filter.filterAction']} " />
+      <a4j:form id="#{quickFilterFormId}" ajaxSubmit="true"
+        reRender="#{elementsToReRender}"
+        ignoreDupResponses="true"
+        requestDelay="100"
+        eventsQueue="contentViewQueue"
+        styleClass="action_bar">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}"
           template="content_view_quick_filter_layout_template.xhtml" />
-    
-        <div style="display: none;">
-          <c:if test="false">
-            hidden button to click on submit
-          </c:if>
-          <h:commandButton
-            value="#{messages['label.contentview.filter.filterAction']}"
-            id="submitFilter"
-            styleClass="button">
-            <a4j:support event="onclick"
-              reRender="#{elementsToReRender}"
-              ignoreDupResponses="true"
-              requestDelay="100"
-              eventsQueue="contentViewQueue">
-              <nxu:actionListenerMethod
-                value="#{contentView.resetPageProvider()}" />
-            </a4j:support>
-          </h:commandButton>
-        </div>
-    
+        <h:commandButton
+          value="#{messages['label.contentview.filter.filterAction']}"
+          id="submitFilter"
+          styleClass="button"
+          action="#{contentView.resetPageProvider()}" />
       </a4j:form>
   
       <a4j:form id="#{quickFilterFormId}_more" ajaxSubmit="true"
@@ -124,26 +111,23 @@ Needed parameters:
         <div id="#{filterFormId}_box">
       
           <a4j:form id="#{filterFormId}" ajaxSubmit="true"
-            styleClass="action_bar">
+            reRender="#{elementsToReRender}"
+            ignoreDupResponses="true"
+            requestDelay="100"
+            eventsQueue="contentViewQueue"
+            styleClass="action_bar"
+            oncomplete="jQuery.fancybox.close();">
       
             <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
               value="#{contentView.searchDocumentModel}" />
 
             <p class="buttonsGadget">
+            yo
               <h:commandButton
                 value="#{messages['label.contentview.filter.filterAction']}"
                 id="submitFilter"
-                styleClass="button">
-                <a4j:support event="onclick"
-                  reRender="#{elementsToReRender}"
-                  oncomplete="jQuery.fancybox.close();"
-                  ignoreDupResponses="true"
-                  requestDelay="100"
-                  eventsQueue="contentViewQueue">
-                  <nxu:actionListenerMethod
-                    value="#{contentView.resetPageProvider()}" />
-                </a4j:support>
-              </h:commandButton>
+                action="#{contentView.resetPageProvider()}"
+                styleClass="button" />
               <a4j:commandButton
                 value="#{messages['label.contentview.filter.clearFilterButton']}"
                 id="resetFilter"
