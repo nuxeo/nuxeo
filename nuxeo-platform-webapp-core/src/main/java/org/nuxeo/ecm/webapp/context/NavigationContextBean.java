@@ -163,8 +163,16 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
     public void setCurrentDocument(DocumentModel documentModel)
             throws ClientException {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting current document to " + documentModel);
+        }
 
         if (!checkIfUpdateNeeded(currentDocument, documentModel)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Current document already set to %s => give up updates",
+                        documentModel));
+            }
             return;
         }
 
@@ -189,6 +197,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         Contexts.getEventContext().remove("currentDocument");
 
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Current document set to: " + changeableDocument);
+        }
     }
 
     @BypassInterceptors
@@ -197,6 +209,9 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     public void setChangeableDocument(DocumentModel changeableDocument) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting changeable document to: " + changeableDocument);
+        }
         this.changeableDocument = changeableDocument;
         Contexts.getEventContext().set("changeableDocument", changeableDocument);
     }
@@ -318,6 +333,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
     protected boolean checkIfUpdateNeeded(DocumentModel ctxDoc,
             DocumentModel newDoc) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Check if update needed: compare context "
+                    + "doc '%s' to new doc '%s'", ctxDoc, newDoc));
+        }
         if (ctxDoc == null && newDoc != null || ctxDoc != null
                 && newDoc == null) {
             return true;
@@ -326,6 +345,12 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             return false;
         }
         try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Check if update needed: compare cache key on "
+                                + "context doc '%s' with new doc '%s'",
+                        ctxDoc.getCacheKey(), newDoc.getCacheKey()));
+            }
             return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
