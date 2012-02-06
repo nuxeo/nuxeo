@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.HeapDumper;
+import org.nuxeo.runtime.management.jvm.HeapDumper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestEventServiceComponent extends NXRuntimeTestCase {
