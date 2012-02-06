@@ -78,8 +78,13 @@ public class OperationTypeImpl implements OperationType {
      */
     protected List<Field> injectableFields;
 
+    protected String contributingComponent;
 
     public OperationTypeImpl(AutomationService service, Class<?> type) {
+        this(service, type, null);
+    }
+    
+    public OperationTypeImpl(AutomationService service, Class<?> type, String contributingComponent) {
         Operation anno = type.getAnnotation(Operation.class);
         if (anno == null) {
             throw new IllegalArgumentException("Invalid operation class: "
@@ -87,6 +92,7 @@ public class OperationTypeImpl implements OperationType {
         }
         this.service = service;
         this.type = type;
+        this.contributingComponent=contributingComponent;
         id = anno.id();
         if (id.length() == 0) {
             id = type.getName();
@@ -302,4 +308,9 @@ public class OperationTypeImpl implements OperationType {
         }
         return t;
     }
+
+    public String getContributingComponent() {
+        return contributingComponent;
+    }    
+    
 }

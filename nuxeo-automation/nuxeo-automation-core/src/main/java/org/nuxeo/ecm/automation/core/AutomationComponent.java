@@ -206,7 +206,7 @@ public class AutomationComponent extends DefaultComponent {
             throws Exception {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             OperationContribution opc = (OperationContribution) contribution;
-            service.putOperation(opc.type, opc.replace);
+            service.putOperation(opc.type, opc.replace, contributor.getName().toString());
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             service.putOperationChain(

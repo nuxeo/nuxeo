@@ -35,4 +35,10 @@ public interface OperationType {
 
     OperationDocumentation getDocumentation();
 
+    /**
+     * Gets the name of the component that contributed the operation
+     * 
+     * @return
+     */
+    String getContributingComponent();
 }

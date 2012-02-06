@@ -184,9 +184,13 @@ public class OperationServiceImpl implements AutomationService {
         putOperation(op, false);
     }
 
-    public void putOperation(Class<?> type, boolean replace)
+    public void putOperation(Class<?> type, boolean replace) throws OperationException {
+        putOperation(type, replace, null);
+    }    
+
+    public void putOperation(Class<?> type, boolean replace, String contributingComponent)
             throws OperationException {
-        OperationTypeImpl op = new OperationTypeImpl(this, type);
+        OperationTypeImpl op = new OperationTypeImpl(this, type, contributingComponent);
         putOperation(op, replace);
     }
 

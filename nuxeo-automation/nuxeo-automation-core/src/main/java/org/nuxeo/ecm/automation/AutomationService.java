@@ -39,6 +39,16 @@ public interface AutomationService {
      * replaced with this one.
      */
     void putOperation(Class<?> type, boolean replace) throws OperationException;
+    
+
+    /**
+     * Registers an operation given its class. The operation class MUST be
+     * annotated using {@link Operation} annotation. If the <code>replace</code>
+     * argument is true then any existing operation having the same ID will
+     * replaced with this one.
+     * Third argument represents the name of the component registring the operation 
+     */
+    void putOperation(Class<?> type, boolean replace, String contributingComponent) throws OperationException;
 
     /**
      * Removes an operation given its class. If the operation was not registered
