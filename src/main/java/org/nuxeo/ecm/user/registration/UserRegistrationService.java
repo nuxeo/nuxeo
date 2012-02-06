@@ -44,6 +44,14 @@ public interface UserRegistrationService {
     String submitRegistrationRequest(UserRegistrationInfo userInfo, Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept) throws ClientException, UserRegistrationException ;
 
     /**
+     * Stores a resgitration request like submitRegistrationRequest with Document information
+     *
+     * @return a unique ID for it
+     * @since 5.6
+     */
+    String submitRegistrationRequest(UserRegistrationInfo userInfo, DocumentRegistrationInfo docInfo, Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept) throws ClientException, UserRegistrationException ;
+
+    /**
      * accept the registration request
      *
      * @param requestId
@@ -72,6 +80,14 @@ public interface UserRegistrationService {
     Map<String, Serializable> validateRegistrationAndSendEmail(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException ;
 
     NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws ClientException, UserRegistrationException;
+
+    /**
+     * Add an ACL with the right specified in the registration Doc or nothing, if no rights needed.
+     *
+     * @param registrationDoc containing all registration info
+     * @since 5.6
+     */
+    void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) throws ClientException;
 
     UserRegistrationConfiguration getConfiguration();
 }

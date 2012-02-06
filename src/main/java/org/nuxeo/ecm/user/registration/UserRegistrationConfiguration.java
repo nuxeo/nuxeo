@@ -23,6 +23,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("configuration")
 public class UserRegistrationConfiguration {
 
+    @XNode("@merge")
+    private boolean merge = false;
+
     @XNode("requestDocType")
     private String requestDocType;
 
@@ -98,6 +101,14 @@ public class UserRegistrationConfiguration {
 
     public String getValidationRelUrl() {
         return validationRelUrl;
+    }
+
+    public boolean isMerge() {
+        return merge;
+    }
+
+    public void setMerge(boolean merge) {
+        this.merge = merge;
     }
 
     public void mergeWith(UserRegistrationConfiguration other) {

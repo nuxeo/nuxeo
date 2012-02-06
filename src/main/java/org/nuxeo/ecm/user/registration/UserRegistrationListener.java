@@ -46,6 +46,8 @@ public class UserRegistrationListener implements EventListener {
                 UserRegistrationService userRegistrationService = Framework.getService(UserRegistrationService.class);
                 NuxeoPrincipal principal = userRegistrationService.createUser(ctx.getCoreSession(), registration);
                 docCtx.setProperty("registeredUser", principal);
+
+                userRegistrationService.addRightsOnDoc(ctx.getCoreSession(), registration);
             }
             catch (Exception e) {
                 event.markRollBack();

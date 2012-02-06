@@ -100,6 +100,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
         protected UserRegistrationInfo userInfo;
 
+        protected DocumentRegistrationInfo docInfo;
+
         protected Map<String, Serializable> additionnalInfo;
 
         protected String registrationUuid;
@@ -111,12 +113,14 @@ public class UserRegistrationComponent extends DefaultComponent implements
         }
 
         public RegistrationCreator(UserRegistrationInfo userInfo,
+                DocumentRegistrationInfo docInfo,
                 Map<String, Serializable> additionnalInfo,
                 ValidationMethod validationMethod) {
             super(getTargetRepositoryName());
             this.userInfo = userInfo;
             this.additionnalInfo = additionnalInfo;
             this.validationMethod = validationMethod;
+            this.docInfo = docInfo;
         }
 
         protected String getOrCreateRootPath() throws ClientException {
@@ -169,6 +173,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
             // validation method
             doc.setPropertyValue("registration:validationMethod",
                     validationMethod.toString());
+
+            // Document info
+            doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD,
+                    docInfo.getDocumentId());
+            doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_RIGHT_FIELD,
+                    docInfo.getPermission());
 
             // additionnal infos
             for (String key : additionnalInfo.keySet()) {
@@ -391,9 +401,19 @@ public class UserRegistrationComponent extends DefaultComponent implements
             Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException {
+        return submitRegistrationRequest(userInfo,
+                new DocumentRegistrationInfo(), additionnalInfo,
+                validationMethod, autoAccept);
+    }
 
+    @Override
+    public String submitRegistrationRequest(UserRegistrationInfo userInfo,
+            DocumentRegistrationInfo docInfo,
+            Map<String, Serializable> additionnalInfo,
+            ValidationMethod validationMethod, boolean autoAccept)
+            throws ClientException, UserRegistrationException {
         RegistrationCreator creator = new RegistrationCreator(userInfo,
-                additionnalInfo, validationMethod);
+                docInfo, additionnalInfo, validationMethod);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
@@ -471,7 +491,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             throws Exception {
         if ("configuration".equals(extensionPoint)) {
             UserRegistrationConfiguration newConfig = (UserRegistrationConfiguration) contribution;
-            if (configuration != null) {
+            if (configuration != null && newConfig.isMerge()) {
                 configuration.mergeWith(newConfig);
             } else {
                 configuration = newConfig;
@@ -479,10 +499,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         }
     }
 
-    @Override
-    public NuxeoPrincipal createUser(CoreSession session,
-            DocumentModel registrationDoc) throws ClientException,
-            UserRegistrationException {
+    protected RegistrationUserFactory getRegistrationUserFactory() {
         RegistrationUserFactory factory = null;
         Class<? extends RegistrationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
         if (factoryClass != null) {
@@ -497,7 +514,22 @@ public class UserRegistrationComponent extends DefaultComponent implements
         if (factory == null) {
             factory = new DefaultRegistrationUserFactory();
         }
-        return factory.createUser(session, registrationDoc);
+        return factory;
+    }
+
+    @Override
+    public NuxeoPrincipal createUser(CoreSession session,
+            DocumentModel registrationDoc) throws ClientException,
+            UserRegistrationException {
+        return getRegistrationUserFactory().createUser(session, registrationDoc);
+    }
+
+    @Override
+    public void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) throws ClientException {
+        DocumentModel document = getRegistrationUserFactory().doAddDocumentPermission(session, registrationDoc);
+        if (document != null) {
+            getRegistrationUserFactory().doPostAddDocumentPermission(session, registrationDoc, document);
+        }
     }
 
     @Override

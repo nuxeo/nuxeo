@@ -16,12 +16,17 @@
 
 package org.nuxeo.ecm.user.registration;
 
+import static org.nuxeo.ecm.user.registration.DocumentRegistrationInfo.ACL_NAME;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -31,13 +36,27 @@ public class DefaultRegistrationUserFactory implements RegistrationUserFactory {
 
     private static final Log log = LogFactory.getLog(DefaultRegistrationUserFactory.class);
 
-    protected UserManager userManager;
-
     @Override
     public NuxeoPrincipal createUser(CoreSession session,
             DocumentModel registrationDoc) throws ClientException,
             UserRegistrationException {
-        userManager = Framework.getLocalService(UserManager.class);
+        NuxeoPrincipal user = doCreateUser(session, registrationDoc);
+        doPostUserCreation(session, registrationDoc, user);
+        return user;
+    }
+
+    @Override
+    public void doPostUserCreation(CoreSession session,
+            DocumentModel registrationDoc, NuxeoPrincipal user)
+            throws ClientException, UserRegistrationException {
+        // Nothing to do in the default implementation
+    }
+
+    @Override
+    public NuxeoPrincipal doCreateUser(CoreSession session,
+            DocumentModel registrationDoc) throws ClientException,
+            UserRegistrationException {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
 
         String email = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD);
         if (email == null) {
@@ -49,13 +68,25 @@ public class DefaultRegistrationUserFactory implements RegistrationUserFactory {
         NuxeoPrincipal user = userManager.getPrincipal(login);
         if (user == null) {
             DocumentModel newUserDoc = userManager.getBareUserModel();
-            newUserDoc.setPropertyValue(UserConfig.USERNAME_COLUMN, registrationDoc.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD));
-            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN, registrationDoc.getPropertyValue(UserRegistrationInfo.PASSWORD_FIELD));
-            newUserDoc.setPropertyValue(UserConfig.FIRSTNAME_COLUMN, registrationDoc.getPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD));
-            newUserDoc.setPropertyValue(UserConfig.LASTNAME_COLUMN, registrationDoc.getPropertyValue(UserRegistrationInfo.LASTNAME_FIELD));
-            newUserDoc.setPropertyValue(UserConfig.EMAIL_COLUMN, registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD));
-            newUserDoc.setPropertyValue(UserConfig.COMPANY_COLUMN, registrationDoc.getPropertyValue(UserRegistrationInfo.COMPANY_FIELD));
-            newUserDoc = userManager.createUser(newUserDoc);
+            newUserDoc.setPropertyValue(
+                    UserConfig.USERNAME_COLUMN,
+                    registrationDoc.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD));
+            newUserDoc.setPropertyValue(
+                    UserConfig.PASSWORD_COLUMN,
+                    registrationDoc.getPropertyValue(UserRegistrationInfo.PASSWORD_FIELD));
+            newUserDoc.setPropertyValue(
+                    UserConfig.FIRSTNAME_COLUMN,
+                    registrationDoc.getPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD));
+            newUserDoc.setPropertyValue(
+                    UserConfig.LASTNAME_COLUMN,
+                    registrationDoc.getPropertyValue(UserRegistrationInfo.LASTNAME_FIELD));
+            newUserDoc.setPropertyValue(
+                    UserConfig.EMAIL_COLUMN,
+                    registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD));
+            newUserDoc.setPropertyValue(
+                    UserConfig.COMPANY_COLUMN,
+                    registrationDoc.getPropertyValue(UserRegistrationInfo.COMPANY_FIELD));
+            userManager.createUser(newUserDoc);
             user = userManager.getPrincipal(login);
         } else {
             if (email.equals(((NuxeoPrincipalImpl) user).getEmail())) {
@@ -67,17 +98,41 @@ public class DefaultRegistrationUserFactory implements RegistrationUserFactory {
             }
         }
         log.info("New user created:" + user.getName());
-
-        doPostUserCreation(session, registrationDoc, user);
-
         return user;
     }
 
     @Override
-    public void doPostUserCreation(CoreSession session,
-            DocumentModel registrationDoc, NuxeoPrincipal user)
-            throws ClientException, UserRegistrationException {
+    public DocumentModel doAddDocumentPermission(CoreSession session,
+            DocumentModel registrationDoc) throws ClientException {
+        String docId = (String) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
+        if (StringUtils.isEmpty(docId)) {
+            log.info("No document rights needed");
+            return null;
+        }
+        String login = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD);
+        String permission = (String) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_RIGHT_FIELD);
+        if (StringUtils.isEmpty(permission)) {
+            throw new UserRegistrationException("Permission must be specified");
+        }
 
+        DocumentModel document = session.getDocument(new IdRef(docId));
+        if (!document.getACP().getAccess(login, permission).toBoolean()) {
+            ACE ace = new ACE(login, permission, true);
+            document.getACP().getOrCreateACL(ACL_NAME).add(ace);
+
+            session.setACP(document.getRef(), document.getACP(), true);
+        } else {
+            log.info(String.format("User %s already have %s on doc %s", login,
+                    permission, docId));
+        }
+
+        return document;
     }
 
+    @Override
+    public void doPostAddDocumentPermission(CoreSession session,
+            DocumentModel registrationDoc, DocumentModel document)
+            throws ClientException {
+        // Nothing to do in the default implementation
+    }
 }

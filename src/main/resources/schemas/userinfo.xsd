@@ -10,4 +10,7 @@
   <xs:element name="company" type="xs:string" />
   <xs:element name="email" type="xs:string" />
 
+  <xs:element name="documentId" type="xs:string"/>
+  <xs:element name="documentRight" type="xs:string"/>
+
 </xs:schema>
