@@ -78,27 +78,27 @@ public class SuggesterDescriptor implements Cloneable {
         return suggester;
     }
 
-    public void mergeFrom(SuggesterDescriptor previousDescriptor)
+    public void mergeFrom(SuggesterDescriptor newDescriptor)
             throws ComponentInitializationException {
-        if (name == null || !name.equals(previousDescriptor.name)) {
+        if (name == null || !name.equals(newDescriptor.name)) {
             throw new RuntimeException("Cannot merge descriptor with name '"
                     + name + "' with another descriptor with different name "
-                    + previousDescriptor.getName() + "'");
+                    + newDescriptor.getName() + "'");
         }
         if (className == null) {
-            if (enabled && previousDescriptor.className == null) {
+            if (enabled && newDescriptor.className == null) {
                 throw new RuntimeException(
                         "Cannot merge descriptor with name '" + name
                                 + "' with source a source version that has no"
                                 + " className defined.");
             }
-            className = previousDescriptor.className;
-            runtimeContext = previousDescriptor.runtimeContext;
+            className = newDescriptor.className;
+            runtimeContext = newDescriptor.runtimeContext;
         }
         // merged the parameters
         Map<String, String> mergedParameters = new HashMap<String, String>();
-        mergedParameters.putAll(previousDescriptor.parameters);
         mergedParameters.putAll(parameters);
+        mergedParameters.putAll(newDescriptor.parameters);
         parameters = mergedParameters;
         loadParameterizedSuggester();
     }
