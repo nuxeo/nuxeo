@@ -72,4 +72,6 @@ public interface TemplateSourceDocument {
     public void removeForcedType(String type, boolean save) throws ClientException;
 
     public void setForcedTypes(String [] forcedTypes, boolean save) throws ClientException;
+    
+    public String getOutputFormat();
 }

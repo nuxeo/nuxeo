@@ -18,6 +18,6 @@
 
   <xs:element name="allowOverride" type="xs:boolean"/>
 
-  <xs:element name="converterName" type="xs:string"/>
+  <xs:element name="outputFormat" type="xs:string"/>
 
 </xs:schema>

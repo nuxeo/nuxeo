@@ -9,8 +9,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.sound.sampled.TargetDataLine;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -227,13 +230,15 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         report.process(context, out);
 
         Blob newBlob = new FileBlob(generated);
-
-        // newBlob.setMimeType("application/vnd.oasis.opendocument.text");
-        if (templateBasedDocument.getTemplateBlob() != null) {
-            newBlob.setFilename(templateBasedDocument.getTemplateBlob().getFilename());
-        } else {
-            newBlob.setFilename(sourceTemplateBlob.getFilename());
-        }
+        
+        String templateFileName = sourceTemplateBlob.getFilename();
+        
+        // set the output file name 
+        String targetFileExt = FileUtils.getFileExtension(templateFileName);
+        String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
+        targetFileName = targetFileName + "." + targetFileExt;
+        newBlob.setFilename(targetFileName);
+        
         // mark the file for automatic deletion on GC
         Framework.trackFile(generated, newBlob);
         return newBlob;

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.processors.BidirectionalTemplateProcessor;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
+import org.nuxeo.ecm.platform.template.processors.convert.ConvertHelper;
 
 /**
  * Default implementation of {@link TemplateBasedDocument} adapter. This adapter
@@ -53,6 +54,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
 
     public static final String TEMPLATEBASED_FACET = "TemplateBased";
 
+    protected ConvertHelper convertHelper = new ConvertHelper();
+    
     public TemplateBasedDocumentAdapterImpl(DocumentModel doc) {
         this.adaptedDoc = doc;
     }
@@ -133,15 +136,25 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         return adaptedDoc;
     }
 
+    
+    
     protected void setBlob(Blob blob) throws ClientException {
         adaptedDoc.getAdapter(BlobHolder.class).setBlob(blob);
     }
 
+    protected Blob convertBlob(Blob blob, String format) throws Exception {        
+        return convertHelper.convertBlob(blob, format);
+    }
+    
     public Blob renderWithTemplate() throws Exception {
         TemplateProcessor processor = getTemplateProcessor();
         if (processor != null) {
             Blob blob = processor.renderTemplate(this);
-            return blob;
+            if (blob!=null && getSourceTemplate().getOutputFormat()!=null) {
+                return convertBlob(blob, getSourceTemplate().getOutputFormat());
+            } else {
+                return blob;
+            }
         } else {
             throw new ClientException(
                     "No template processor found for template type="

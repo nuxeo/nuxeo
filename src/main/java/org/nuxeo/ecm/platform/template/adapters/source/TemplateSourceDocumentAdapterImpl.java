@@ -52,6 +52,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     public static final String TEMPLATE_APPLICABLE_TYPES_PROP = "tmpl:applicableTypes";
 
     public static final String TEMPLATE_FORCED_TYPES_PROP = "tmpl:forcedTypes";
+    
+    public static final String TEMPLATE_OUTPUT_PROP = "tmpl:outputFormat";
 
     public static final String TEMPLATE_OVERRIDE_PROP = "tmpl:allowOverride";
 
@@ -196,5 +198,13 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException {
         return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(adaptedDoc);
+    }
+    
+    public String getOutputFormat() {        
+        try {
+            return (String) getAdaptedDoc().getPropertyValue(TEMPLATE_OUTPUT_PROP);
+        } catch (Exception e) {
+            return null;
+        } 
     }
 }

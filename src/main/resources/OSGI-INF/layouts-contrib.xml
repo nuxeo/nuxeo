@@ -106,9 +106,9 @@
         <row>
           <widget>processorSelector</widget>
         </row>
-        <!-- <row>
+        <row>
           <widget>converter</widget>
-        </row> -->
+        </row>
       </rows>
       <widget name="allowOverride" type="checkbox">
         <labels>
@@ -121,11 +121,11 @@
       </widget>
       <widget name="converter" type="text">
         <labels>
-          <label mode="any">Associated converter</label>
+          <label mode="any">Rendering output format</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>tmpl:converterName</field>
+          <field>tmpl:outputFormat</field>
         </fields>
       </widget>
       <widget name="targetTypes" type="template">

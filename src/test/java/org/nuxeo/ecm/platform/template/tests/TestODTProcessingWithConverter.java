@@ -7,26 +7,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mvel2.templates.TemplateRegistry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.ecm.platform.template.ContentInputType;
 import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocumentAdapterImpl;
+import org.nuxeo.ecm.platform.template.processors.convert.ConvertHelper;
 import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
+public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
 
     private DocumentModel templateDoc;
 
     private DocumentModel testDoc;
 
+    private static final Log log = LogFactory.getLog(TestODTProcessingWithConverter.class);
+            
+    protected OOoManagerService oooManagerService;
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -35,7 +43,10 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployBundle("org.nuxeo.ecm.platform.convert");
         deployBundle("org.nuxeo.ecm.platform.preview");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
@@ -50,12 +61,29 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/templateprocessor-contrib.xml");
         openSession();
+        
+        oooManagerService = Framework.getService(OOoManagerService.class);
+        try {
+            oooManagerService.startOOoManager();
+        } catch (Exception e) {
+            log.warn("Can't run OpenOffice, JOD converter will not be available.");
+        }
+
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        oooManagerService = Framework.getService(OOoManagerService.class);
+        if (oooManagerService.isOOoManagerStarted()) {
+            oooManagerService.stopOOoManager();
+        }
+        closeSession();           
+        super.tearDown();
+    }
+    
     protected void setupTestDocs() throws Exception {
 
         DocumentModel root = session.getRootDocument();
-
 
         // create the template
         templateDoc = session.createDocumentModel(root
@@ -99,13 +127,13 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
         testDoc = session.createDocument(testDoc);
     }
 
+    public void testNoteWithMasterTemplateAndConverter() throws Exception {
 
-    public void testNothing() throws Exception {
-        // Shut up for now
-    }
-
-    public void testNoteWithMasterTemplate() throws Exception {
-
+        if (!oooManagerService.isOOoManagerStarted()) {
+            log.info("Skipping test since no OOo server can be found");
+            return;
+        }
+        
         setupTestDocs();
 
         // check the template
@@ -119,17 +147,17 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
         List<TemplateInput> params = source.getParams();
         System.out.println(params);
         assertEquals(1, params.size());
-        //assertEquals(InputType.PictureProperty, params.get(0).getType());
-        //assertEquals(InputType.Include, params.get(1).getType());
 
-        // Set params value
-        //params.get(0).setType(InputType.PictureProperty);
-        //params.get(0).setSource("files:files/0/file");
         params.get(0).setType(InputType.Content);
         params.get(0).setSource(ContentInputType.HtmlPreview.getValue());
         
         templateDoc = source.saveParams(params, true);
 
+        // test Converter 
+        templateDoc.setPropertyValue(TemplateSourceDocumentAdapterImpl.TEMPLATE_OUTPUT_PROP, "application/pdf");
+        templateDoc = session.saveDocument(templateDoc);
+        session.save();
+        
         // associate Note to template
         TemplateBasedDocument templateBased = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNull(templateBased);
@@ -139,17 +167,22 @@ public class TestJODProcessingWithFileNote extends SQLRepositoryTestCase {
         templateBased = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
         
-        // associate to template
-        //templateBased.setTemplate(templateDoc, true);
-
         // render
         testDoc = templateBased.initializeFromTemplate(true);
         Blob blob =templateBased.renderWithTemplate();
         assertNotNull(blob);
-
-        File testFile = new File ("/tmp/testOOo.odt");
-
-        blob.transferTo(testFile);
-
+                
+        assertEquals("MyTestNote2.pdf", blob.getFilename());
+        
+        ConvertHelper helper = new ConvertHelper();
+        Blob txtBlob = helper.convertBlob(blob, "text/plain");
+        String txtContent = txtBlob.getString();
+        
+        //System.out.println(txtContent);
+        
+        assertTrue(txtContent.contains("TemplateBasedDocument"));
+        assertTrue(txtContent.contains(testDoc.getTitle()));                
+        
     }
+
 }
