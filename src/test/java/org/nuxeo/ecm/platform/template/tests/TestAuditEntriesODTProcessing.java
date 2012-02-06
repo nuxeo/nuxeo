@@ -22,7 +22,7 @@ public class TestAuditEntriesODTProcessing extends SimpleTemplateDocTestCase {
 
         // build fake AuditEntries
         ArrayList<LogEntry> auditEntries = new ArrayList<LogEntry>();
-        for (int i =0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             LogEntryImpl entry = new LogEntryImpl();
             entry.setId(i);
             entry.setComment("Comment" + i);
@@ -33,12 +33,11 @@ public class TestAuditEntriesODTProcessing extends SimpleTemplateDocTestCase {
         }
         FMContextBuilder.testAuditEntries = auditEntries;
 
-
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        TemplateSourceDocument template =  adapter.getSourceTemplate();
+        TemplateSourceDocument template = adapter.getSourceTemplate();
         assertNotNull(template);
 
         List<TemplateInput> params = template.getParams();

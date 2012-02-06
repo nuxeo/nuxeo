@@ -117,14 +117,16 @@ public class TestService extends NXRuntimeTestCase {
         TemplateProcessor processor = tps.findProcessor(fakeBlob);
         assertNotNull(processor);
 
-        assertEquals(XDocReportProcessor.class.getSimpleName(), processor.getClass().getSimpleName());
+        assertEquals(XDocReportProcessor.class.getSimpleName(),
+                processor.getClass().getSimpleName());
 
         fakeBlob.setFilename("bidon.odt");
 
         processor = tps.findProcessor(fakeBlob);
         assertNotNull(processor);
 
-        assertEquals(XDocReportProcessor.class.getSimpleName(), processor.getClass().getSimpleName());
+        assertEquals(XDocReportProcessor.class.getSimpleName(),
+                processor.getClass().getSimpleName());
 
     }
 

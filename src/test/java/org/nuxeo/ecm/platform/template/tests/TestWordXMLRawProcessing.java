@@ -28,11 +28,16 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
         deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.template.manager",
+        deployContrib("org.snuxeo.ecm.platform.template.manager",
                 "OSGI-INF/life-cycle-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/adapter-contrib.xml");
         openSession();
+    }
+
+    @Override
+    public void tearDown() {
+        closeSession();
     }
 
     protected List<TemplateInput> getTestParams() {
@@ -58,20 +63,18 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
     protected TemplateBasedDocument setupTestDocs() throws Exception {
 
         DocumentModel root = session.getRootDocument();
-        DocumentModel testDoc = session.createDocumentModel(root
-                .getPathAsString(), "templatedDoc", "TemplateBasedFile");
+        DocumentModel testDoc = session.createDocumentModel(
+                root.getPathAsString(), "templatedDoc", "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
 
-        File file = FileUtils
-                .getResourceFileFromContext("data/sample templatet.docx");
+        File file = FileUtils.getResourceFileFromContext("data/sample templatet.docx");
         Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("sample templatet.docx");
         testDoc.setProperty("file", "content", fileBlob);
         testDoc.setProperty("dublincore", "description", "some description");
         testDoc = session.createDocument(testDoc);
 
-        TemplateBasedDocument adapter = testDoc
-                .getAdapter(TemplateBasedDocument.class);
+        TemplateBasedDocument adapter = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(adapter);
 
         return adapter;
@@ -95,42 +98,40 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
         System.out.println(xmlContent);
 
-        assertTrue(xmlContent
-                .contains("name=\"sName_of_Licensee\"><vt:lpwstr>John Smith</vt:lpwstr>"));
-        assertTrue(xmlContent
-                .contains("name=\"name_of_the_call\"><vt:lpwstr>some description</vt:lpwstr>"));
+        assertTrue(xmlContent.contains("name=\"sName_of_Licensee\"><vt:lpwstr>John Smith</vt:lpwstr>"));
+        assertTrue(xmlContent.contains("name=\"name_of_the_call\"><vt:lpwstr>some description</vt:lpwstr>"));
 
     }
 
-    /** Broken for now
-    public void testDocumentUpdateFromFile() throws Exception {
-
-        TemplateBasedDocument adapter = setupTestDocs();
-        DocumentModel testDoc = adapter.getAdaptedDoc();
-
-        List<TemplateInput> params = getTestParams();
-
-        testDoc = adapter.saveParams(params, true);
-        session.save();
-
-        BidirectionalTemplateProcessor processor = new WordXMLTemplateProcessor();
-
-        testDoc = processor.updateDocumentFromBlob(adapter);
-
-        String updatedContent = testDoc.getPropertyValue("dc:description")
-                .toString();
-
-        assertEquals("name of the call", updatedContent);
-
-    }**/
+    /**
+     * Broken for now public void testDocumentUpdateFromFile() throws Exception
+     * {
+     * 
+     * TemplateBasedDocument adapter = setupTestDocs(); DocumentModel testDoc =
+     * adapter.getAdaptedDoc();
+     * 
+     * List<TemplateInput> params = getTestParams();
+     * 
+     * testDoc = adapter.saveParams(params, true); session.save();
+     * 
+     * BidirectionalTemplateProcessor processor = new
+     * WordXMLTemplateProcessor();
+     * 
+     * testDoc = processor.updateDocumentFromBlob(adapter);
+     * 
+     * String updatedContent = testDoc.getPropertyValue("dc:description")
+     * .toString();
+     * 
+     * assertEquals("name of the call", updatedContent);
+     * 
+     * }
+     **/
 
     public void testParameterInit() throws Exception {
 
-        File file = FileUtils
-                .getResourceFileFromContext("data/sample templatet.docx");
+        File file = FileUtils.getResourceFileFromContext("data/sample templatet.docx");
         Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("sample templatet.docx");
-
 
         TemplateProcessor processor = new WordXMLRawTemplateProcessor();
 

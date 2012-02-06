@@ -40,7 +40,8 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         openSession();
     }
 
-    protected TemplateSourceDocument createTemplateDoc(String name) throws Exception {
+    protected TemplateSourceDocument createTemplateDoc(String name)
+            throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
@@ -54,17 +55,16 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc = session.createDocument(templateDoc);
 
-        TemplateSourceDocument result =  templateDoc.getAdapter(TemplateSourceDocument.class);
+        TemplateSourceDocument result = templateDoc.getAdapter(TemplateSourceDocument.class);
         assertNotNull(result);
         return result;
     }
-
 
     public void testTypeBindingAndOverride() throws Exception {
 
         // test simple mapping
         TemplateSourceDocument t1 = createTemplateDoc("t1");
-        t1.setForcedTypes(new String[]{ "File", "Note"}, true);
+        t1.setForcedTypes(new String[] { "File", "Note" }, true);
 
         assertTrue(t1.getForcedTypes().contains("File"));
         assertTrue(t1.getForcedTypes().contains("Note"));
@@ -83,7 +83,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // test override
         TemplateSourceDocument t2 = createTemplateDoc("t2");
-        t2.setForcedTypes(new String[]{"Note"}, true);
+        t2.setForcedTypes(new String[] { "Note" }, true);
 
         assertFalse(t2.getForcedTypes().contains("File"));
         assertTrue(t2.getForcedTypes().contains("Note"));
@@ -101,17 +101,17 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // check update on initial template
         // refetch staled DocumentModel
-        t1 = session.getDocument(new IdRef(t1.getAdaptedDoc().getId())).getAdapter(TemplateSourceDocument.class);
+        t1 = session.getDocument(new IdRef(t1.getAdaptedDoc().getId())).getAdapter(
+                TemplateSourceDocument.class);
         assertTrue(t1.getForcedTypes().contains("File"));
         assertFalse(t1.getForcedTypes().contains("Note"));
     }
-
 
     public void testAutomaticTemplateBinding() throws Exception {
 
         // create a template and a simple mapping
         TemplateSourceDocument t1 = createTemplateDoc("t1");
-        t1.setForcedTypes(new String[]{ "File"}, true);
+        t1.setForcedTypes(new String[] { "File" }, true);
         assertTrue(t1.getForcedTypes().contains("File"));
         session.save();
 
@@ -129,7 +129,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertNotNull(templatizedFile);
 
         // remove binding
-        t1.setForcedTypes(new String[]{}, true);
+        t1.setForcedTypes(new String[] {}, true);
         session.save();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
@@ -142,7 +142,6 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertNull(simpleFile2.getAdapter(TemplateBasedDocument.class));
 
     }
-
 
     public void testManualTemplateBinding() throws Exception {
 
@@ -160,7 +159,8 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertNull(simpleNote.getAdapter(TemplateBasedDocument.class));
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        simpleNote = tps.makeTemplateBasedDocument(simpleNote, t1.getAdaptedDoc(), true);
+        simpleNote = tps.makeTemplateBasedDocument(simpleNote,
+                t1.getAdaptedDoc(), true);
 
         // verify that template has been associated
         assertNotNull(simpleNote.getAdapter(TemplateBasedDocument.class));
@@ -169,6 +169,8 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.waitForAsyncCompletion();
         closeSession();
     }
 

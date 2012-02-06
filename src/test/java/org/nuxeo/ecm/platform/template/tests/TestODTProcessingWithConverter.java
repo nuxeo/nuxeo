@@ -32,9 +32,9 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
     private DocumentModel testDoc;
 
     private static final Log log = LogFactory.getLog(TestODTProcessingWithConverter.class);
-            
+
     protected OOoManagerService oooManagerService;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -61,7 +61,7 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.template.manager",
                 "OSGI-INF/templateprocessor-contrib.xml");
         openSession();
-        
+
         oooManagerService = Framework.getService(OOoManagerService.class);
         try {
             oooManagerService.startOOoManager();
@@ -77,52 +77,49 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         if (oooManagerService.isOOoManagerStarted()) {
             oooManagerService.stopOOoManager();
         }
-        closeSession();           
+        closeSession();
         super.tearDown();
     }
-    
+
     protected void setupTestDocs() throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
         // create the template
-        templateDoc = session.createDocumentModel(root
-                .getPathAsString(), "templatedDoc", "TemplateSource");
+        templateDoc = session.createDocumentModel(root.getPathAsString(),
+                "templatedDoc", "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
-        File file = FileUtils
-                .getResourceFileFromContext("data/Container.odt");
+        File file = FileUtils.getResourceFileFromContext("data/Container.odt");
         Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("Container.odt");
         templateDoc.setProperty("file", "content", fileBlob);
 
         templateDoc = session.createDocument(templateDoc);
 
-
         // create the note
-        testDoc = session.createDocumentModel(root
-                .getPathAsString(), "testDoc", "Note");
+        testDoc = session.createDocumentModel(root.getPathAsString(),
+                "testDoc", "Note");
         testDoc.setProperty("dublincore", "title", "MyTestNote2");
         testDoc.setProperty("dublincore", "description", "Simple note sample");
-        
-        File mdfile = FileUtils
-                .getResourceFileFromContext("data/MDSample.md");
+
+        File mdfile = FileUtils.getResourceFileFromContext("data/MDSample.md");
         Blob mdfileBlob = new FileBlob(mdfile);
-        
+
         testDoc.setPropertyValue("note:note", mdfileBlob.getString());
         testDoc.setPropertyValue("note:mime_type", "text/x-web-markdown");
-        
+
         File imgFile = FileUtils.getResourceFileFromContext("data/android.jpg");
         Blob imgBlob = new FileBlob(imgFile);
         imgBlob.setFilename("android.jpg");
         imgBlob.setMimeType("image/jpeg");
 
-        List<Map<String, Serializable>> blobs = new ArrayList<Map<String,Serializable>>();
+        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> blob1 = new HashMap<String, Serializable>();
         blob1.put("file", (Serializable) imgBlob);
         blob1.put("filename", "android.jpg");
         blobs.add(blob1);
 
-        testDoc.setPropertyValue("files:files", (Serializable)blobs);
+        testDoc.setPropertyValue("files:files", (Serializable) blobs);
 
         testDoc = session.createDocument(testDoc);
     }
@@ -133,7 +130,7 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
             log.info("Skipping test since no OOo server can be found");
             return;
         }
-        
+
         setupTestDocs();
 
         // check the template
@@ -150,14 +147,16 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
 
         params.get(0).setType(InputType.Content);
         params.get(0).setSource(ContentInputType.HtmlPreview.getValue());
-        
+
         templateDoc = source.saveParams(params, true);
 
-        // test Converter 
-        templateDoc.setPropertyValue(TemplateSourceDocumentAdapterImpl.TEMPLATE_OUTPUT_PROP, "application/pdf");
+        // test Converter
+        templateDoc.setPropertyValue(
+                TemplateSourceDocumentAdapterImpl.TEMPLATE_OUTPUT_PROP,
+                "application/pdf");
         templateDoc = session.saveDocument(templateDoc);
         session.save();
-        
+
         // associate Note to template
         TemplateBasedDocument templateBased = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNull(templateBased);
@@ -166,23 +165,23 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         testDoc = tps.makeTemplateBasedDocument(testDoc, templateDoc, true);
         templateBased = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
-        
+
         // render
         testDoc = templateBased.initializeFromTemplate(true);
-        Blob blob =templateBased.renderWithTemplate();
+        Blob blob = templateBased.renderWithTemplate();
         assertNotNull(blob);
-                
+
         assertEquals("MyTestNote2.pdf", blob.getFilename());
-        
+
         ConvertHelper helper = new ConvertHelper();
         Blob txtBlob = helper.convertBlob(blob, "text/plain");
         String txtContent = txtBlob.getString();
-        
-        //System.out.println(txtContent);
-        
+
+        // System.out.println(txtContent);
+
         assertTrue(txtContent.contains("TemplateBasedDocument"));
-        assertTrue(txtContent.contains(testDoc.getTitle()));                
-        
+        assertTrue(txtContent.contains(testDoc.getTitle()));
+
     }
 
 }

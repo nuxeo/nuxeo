@@ -3,6 +3,8 @@ package org.nuxeo.ecm.platform.template.tests;
 import java.io.File;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.template.TemplateInput;
@@ -10,10 +12,7 @@ import org.nuxeo.ecm.platform.template.XMLSerializer;
 import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.ecm.platform.template.processors.xdocreport.XDocReportProcessor;
 
-import junit.framework.TestCase;
-
 public class TestFreemarkerVariableExractor extends TestCase {
-
 
     public void testExtractor() throws Exception {
 
@@ -44,7 +43,6 @@ public class TestFreemarkerVariableExractor extends TestCase {
         assertFalse(vars.contains("auditEntries"));
         assertFalse(vars.contains("auditEntry"));
         assertFalse(vars.contains("subject"));
-
 
         assertFalse(vars.contains("doc['dc:title']"));
         assertFalse(vars.contains("doc['dc:subjects']"));
@@ -140,6 +138,5 @@ public class TestFreemarkerVariableExractor extends TestCase {
             assertTrue(found);
         }
     }
-
 
 }

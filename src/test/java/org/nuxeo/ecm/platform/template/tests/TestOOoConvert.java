@@ -17,7 +17,8 @@ public class TestOOoConvert extends BaseConverterTest {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        String converterName = cs.getConverterName(bh.getBlob().getMimeType(), ODT_MT);
+        String converterName = cs.getConverterName(bh.getBlob().getMimeType(),
+                ODT_MT);
         assertEquals("any2odt", converterName);
 
         BlobHolder result = cs.convert(converterName, bh, null);
@@ -29,7 +30,6 @@ public class TestOOoConvert extends BaseConverterTest {
 
         result = cs.convert(converterName, bh, null);
         result.getBlob().transferTo(new File("/tmp/md.odt"));
-
 
     }
 }
