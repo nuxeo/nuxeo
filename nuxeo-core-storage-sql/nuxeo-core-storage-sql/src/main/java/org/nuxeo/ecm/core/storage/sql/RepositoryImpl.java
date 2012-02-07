@@ -27,6 +27,7 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventService;
@@ -71,6 +72,8 @@ public class RepositoryImpl implements Repository {
     protected final SchemaManager schemaManager;
 
     protected final EventService eventService;
+
+    protected final Class<? extends FulltextParser> fulltextParserClass;
 
     protected final BinaryManager binaryManager;
 
@@ -122,6 +125,24 @@ public class RepositoryImpl implements Repository {
         } catch (Exception e) {
             throw new StorageException(e);
         }
+
+        String className = repositoryDescriptor.fulltextParser;
+        if (StringUtils.isBlank(className)) {
+            className = FulltextParser.class.getName();
+        }
+        Class<?> klass;
+        try {
+            klass = Thread.currentThread().getContextClassLoader().loadClass(
+                    className);
+        } catch (ClassNotFoundException e) {
+            throw new StorageException("Unknown fulltext parser class: "
+                    + className, e);
+        }
+        if (!FulltextParser.class.isAssignableFrom(klass)) {
+            throw new StorageException("Invalid fulltext parser class: "
+                    + className);
+        }
+        fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
         connectionManager = new MultiThreadedHttpConnectionManager();
         HttpConnectionManagerParams params = connectionManager.getParams();
@@ -255,12 +276,11 @@ public class RepositoryImpl implements Repository {
     @Override
     public String getServerURL() {
         String host = Framework.getProperty(RUNTIME_SERVER_HOST, "localhost");
-        if (repositoryDescriptor.listen!=null) {
+        if (repositoryDescriptor.listen != null) {
             return String.format("http://%s:%d/%s", host,
-                repositoryDescriptor.listen.port,
-                repositoryDescriptor.listen.path);
-        }
-        else {
+                    repositoryDescriptor.listen.port,
+                    repositoryDescriptor.listen.path);
+        } else {
             return null;
         }
     }

@@ -142,6 +142,9 @@ public class RepositoryDescriptor {
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
 
+    @XNode("indexing/fulltext@parser")
+    public String fulltextParser;
+
     @XNode("indexing/fulltext@catalog")
     public String fulltextCatalog;
 

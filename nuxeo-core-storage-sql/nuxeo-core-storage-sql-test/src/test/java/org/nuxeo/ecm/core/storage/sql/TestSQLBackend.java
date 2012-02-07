@@ -1950,6 +1950,47 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    public void testFulltextCustomParser() throws Exception {
+        // custom fulltext config
+        repository.close();
+        RepositoryDescriptor descriptor = newDescriptor(-1, false);
+        descriptor.fulltextParser = DummyFulltextParser.class.getName();
+        repository = new RepositoryImpl(descriptor);
+
+        Session session = repository.getConnection();
+        DummyFulltextParser.collected = new HashSet<String>();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+        assertEquals(new HashSet<String>(Arrays.asList( //
+                "tst:title=hello world", //
+                "tst:subjects=foo", //
+                "tst:subjects=bar", //
+                "tst:subjects=moo", //
+                "tst:owner/firstname=Bruce", //
+                "tst:owner/lastname=Willis", //
+                "tst:couple/first/firstname=Steve", //
+                "tst:couple/first/lastname=Jobs", //
+                "tst:couple/second/firstname=Steve", //
+                "tst:couple/second/lastname=McQueen", //
+                "tst:friends/*/firstname=John", //
+                "tst:friends/*/lastname=Smith", //
+                "tst:friends/*/lastname=Lennon")),
+                DummyFulltextParser.collected);
+        DummyFulltextParser.collected = null;
+
+        PartialList<Serializable> res;
+
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'lennon'",
+                QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        // with custom parsing
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'lennonyeah'",
+                QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+    }
+
     public void testFulltextDisabled() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {

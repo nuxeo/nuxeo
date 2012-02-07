@@ -24,12 +24,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestFulltextWordSplit extends NXRuntimeTestCase {
 
     protected void check(String expected, String s) {
-        ArrayList<String> strings = new ArrayList<String>();
-        SessionImpl.addNormalizedFulltext(strings, s);
-        assertEquals(expected, StringUtils.join(strings, "|"));
+        FulltextParser parser = new FulltextParser();
+        parser.strings = new ArrayList<String>();
+        parser.parse(s, "fakepath");
+        assertEquals(expected, StringUtils.join(parser.strings, "|"));
     }
 
-    public void test() throws Exception {
+    public void testDefaultParser() throws Exception {
         check("abc", "abc");
         check("abc|def", "abc def");
         check("abc|def", " abc    def  ");
