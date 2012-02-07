@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -21,14 +21,13 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.nuxeo.connect.update.impl.task.update.Update;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class PackageDef {
 
@@ -38,9 +37,9 @@ public abstract class PackageDef {
 
     protected PackageBuilder builder;
 
-    protected boolean allowDowngrade = Update.ALLOW_DOWNGRADE;
+    protected boolean allowDowngrade = false;
 
-    protected boolean upgradeOnly = Update.UPGRADE_ONLY;
+    protected boolean upgradeOnly = false;
 
     public PackageDef(String name, String version) throws Exception {
         this(name, version, PackageType.ADDON);

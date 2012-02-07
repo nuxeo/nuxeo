@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -373,13 +373,15 @@ public class LocalPackageManager {
      */
     public void performTask(Task task) throws PackageException {
         ValidationStatus status = task.validate();
-
         if (status.hasErrors()) {
             errorValue = 3;
             throw new PackageException("Failed to validate package "
                     + task.getPackage().getId() + " -> " + status.getErrors());
         }
-
+        if (status.hasWarnings()) {
+            log.warn("Got warnings on package validation "
+                    + task.getPackage().getId() + " -> " + status.getWarnings());
+        }
         task.run(null);
     }
 

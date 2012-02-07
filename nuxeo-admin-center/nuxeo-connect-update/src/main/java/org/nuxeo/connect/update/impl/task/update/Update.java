@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -34,21 +34,17 @@ import org.nuxeo.connect.update.task.Task;
 import org.w3c.dom.Element;
 
 /**
- * 
+ *
  * @since 5.5
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Update extends AbstractCommand {
 
     protected static final Log log = LogFactory.getLog(Update.class);
 
     public static final String ID = "update";
-
-    public static final boolean ALLOW_DOWNGRADE = false;
-
-    public static final boolean UPGRADE_ONLY = false;
 
     /**
      * The source file. It can be a file or a directory.
@@ -62,9 +58,9 @@ public class Update extends AbstractCommand {
 
     private boolean removeOnExit;
 
-    private boolean allowDowngrade = ALLOW_DOWNGRADE;
+    private boolean allowDowngrade = false;
 
-    private boolean upgradeOnly = UPGRADE_ONLY;
+    private boolean upgradeOnly = false;
 
     protected Update(String id) {
         super(id);
@@ -154,7 +150,7 @@ public class Update extends AbstractCommand {
                         + file.getName());
             }
         } else if (!file.isDirectory()) {
-            status.addError("Cannot execute command in installer."
+            status.addWarning("Ignored command in installer."
                     + " Source file not found! " + file.getName());
         }
     }
