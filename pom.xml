@@ -125,7 +125,7 @@
       <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <version>1.8.0</version>
+        <version>1.9.3</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
