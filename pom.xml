@@ -2521,10 +2521,10 @@
         <version>1.0.2.GA-nx</version>
       </dependency>
 
+      <!-- patched jersey JAR to exclude javax.ws.rs package -->
       <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-core</artifactId>
-        <!-- patched jersey JAR to exclude javax.ws.rs package -->
         <classifier>minimal</classifier>
         <version>${jersey.version}</version>
       </dependency>
@@ -2537,6 +2537,12 @@
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-server</artifactId>
         <version>${jersey.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.jersey</groupId>
