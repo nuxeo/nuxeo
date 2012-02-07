@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -40,7 +39,6 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
@@ -79,6 +77,8 @@ public class SessionImpl implements Session, XAResource {
 
     private final EventProducer eventProducer;
 
+    protected final FulltextParser fulltextParser;
+
     // public because used by unit tests
     public final PersistenceContext context;
 
@@ -109,6 +109,12 @@ public class SessionImpl implements Session, XAResource {
             eventProducer = Framework.getService(EventProducer.class);
         } catch (Exception e) {
             throw new StorageException("Unable to find EventProducer", e);
+        }
+
+        try {
+            fulltextParser = repository.fulltextParserClass.newInstance();
+        } catch (Exception e) {
+            throw new StorageException(e);
         }
 
         computeRootNode();
@@ -329,10 +335,12 @@ public class SessionImpl implements Session, XAResource {
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
-            if (Boolean.FALSE.equals(model.getFulltextInfo().isFulltextIndexable(documentType))) {
+            if (Boolean.FALSE.equals(model.getFulltextInfo().isFulltextIndexable(
+                    documentType))) {
                 continue;
             }
 
+            fulltextParser.setDocument(document, this);
             for (String indexName : model.getFulltextInfo().indexNames) {
                 Set<String> paths;
                 if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
@@ -344,7 +352,8 @@ public class SessionImpl implements Session, XAResource {
                     // index configured fields
                     paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
                 }
-                String strings = findFulltext(document, paths);
+                String strings = fulltextParser.findFulltext(indexName, paths);
+
                 // Set the computed full text
                 // On INSERT/UPDATE a trigger will change the actual fulltext
                 String propName = model.FULLTEXT_SIMPLETEXT_PROP
@@ -383,94 +392,6 @@ public class SessionImpl implements Session, XAResource {
             eventProducer.fireEvent(event);
         } catch (ClientException e) {
             throw new StorageException(e);
-        }
-    }
-
-    protected String findFulltext(Node document, Set<String> paths)
-            throws StorageException {
-        if (paths == null) {
-            return "";
-        }
-
-        String documentType = document.getPrimaryType();
-        String[] mixinTypes = document.getMixinTypes();
-
-        List<String> strings = new ArrayList<String>();
-
-        for (String path : paths) {
-            ModelProperty pi = model.getPathPropertyInfo(documentType,
-                    mixinTypes, path);
-            if (pi == null) {
-                continue; // doc type doesn't have this property
-            }
-            if (pi.propertyType != PropertyType.STRING
-                    && pi.propertyType != PropertyType.ARRAY_STRING) {
-                continue;
-            }
-            List<Node> nodes = new ArrayList<Node>(
-                    Collections.singleton(document));
-            String[] names = path.split("/");
-            for (int i = 0; i < names.length; i++) {
-                String name = names[i];
-                List<Node> newNodes;
-                if (i + 1 < names.length && "*".equals(names[i + 1])) {
-                    // traverse complex list
-                    i++;
-                    newNodes = new ArrayList<Node>();
-                    for (Node node : nodes) {
-                        newNodes.addAll(getChildren(node, name, true));
-                    }
-                } else {
-                    if (i == names.length - 1) {
-                        // last path component: get value
-                        for (Node node : nodes) {
-                            if (pi.propertyType == PropertyType.STRING) {
-                                String v = node.getSimpleProperty(name).getString();
-                                if (v != null) {
-                                    addNormalizedFulltext(strings, v);
-                                }
-                            } else /* ARRAY_STRING */{
-                                for (Serializable v : node.getCollectionProperty(
-                                        name).getValue()) {
-                                    if (v != null) {
-                                        addNormalizedFulltext(strings, (String) v);
-                                    }
-                                }
-                            }
-                        }
-                        newNodes = Collections.emptyList();
-                    } else {
-                        // traverse
-                        newNodes = new ArrayList<Node>(nodes.size());
-                        for (Node node : nodes) {
-                            node = getChildNode(node, name, true);
-                            if (node != null) {
-                                newNodes.add(node);
-                            }
-                        }
-                    }
-                }
-                nodes = newNodes;
-            }
-
-        }
-        return StringUtils.join(strings, " ");
-    }
-
-    protected static final String WORD_SPLIT_PROP = "org.nuxeo.vcs.fulltext.wordsplit";
-
-    protected static final String WORD_SPLIT_DEF = "[\\s\\p{Punct}]+";
-
-    protected static final Pattern WORD_SPLIT_PATTERN = Pattern.compile(Framework.getProperty(
-            WORD_SPLIT_PROP, WORD_SPLIT_DEF));
-
-    // normalize fulltext to lowercase and no punctuation
-    // to allow for manual phrase search using LIKE
-    protected static void addNormalizedFulltext(List<String> strings, String s) {
-        for (String word : WORD_SPLIT_PATTERN.split(s)) {
-            if (!word.isEmpty()) {
-                strings.add(word.toLowerCase());
-            }
         }
     }
 
@@ -630,7 +551,7 @@ public class SessionImpl implements Session, XAResource {
         List<Fragment> hierFragments = context.getMulti(hierRowIds, false);
 
         // find available paths
-        Map<Serializable,String> paths = new HashMap<Serializable, String>();
+        Map<Serializable, String> paths = new HashMap<Serializable, String>();
         Set<Serializable> parentIds = new HashSet<Serializable>();
         for (Fragment fragment : hierFragments) {
             Serializable id = fragment.getId();
