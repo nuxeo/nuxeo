@@ -1565,6 +1565,47 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    public void testFulltextCustomParser() throws Exception {
+        // custom fulltext config
+        repository.close();
+        RepositoryDescriptor descriptor = newDescriptor(-1, false);
+        descriptor.fulltextParser = DummyFulltextParser.class.getName();
+        repository = new RepositoryImpl(descriptor);
+
+        Session session = repository.getConnection();
+        DummyFulltextParser.collected = new HashSet<String>();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+        assertEquals(new HashSet<String>(Arrays.asList( //
+                "tst:title=hello world", //
+                "tst:subjects=foo", //
+                "tst:subjects=bar", //
+                "tst:subjects=moo", //
+                "tst:owner/firstname=Bruce", //
+                "tst:owner/lastname=Willis", //
+                "tst:couple/first/firstname=Steve", //
+                "tst:couple/first/lastname=Jobs", //
+                "tst:couple/second/firstname=Steve", //
+                "tst:couple/second/lastname=McQueen", //
+                "tst:friends/*/firstname=John", //
+                "tst:friends/*/lastname=Smith", //
+                "tst:friends/*/lastname=Lennon")),
+                DummyFulltextParser.collected);
+        DummyFulltextParser.collected = null;
+
+        PartialList<Serializable> res;
+
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'lennon'",
+                QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        // with custom parsing
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'lennonyeah'",
+                QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+    }
+
     public void testFulltextDisabled() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2382,6 +2423,60 @@ public class TestSQLBackend extends SQLBackendTestCase {
         propagatorField.setAccessible(true);
         InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(clusterNodeHandler);
         return propagator.queues.size();
+    }
+
+    @SuppressWarnings("boxing")
+    protected List<Serializable> makeComplexDoc(Session session)
+            throws StorageException {
+        Node root = session.getRootNode();
+
+        Node doc = session.addChildNode(root, "doc", null, "TestDoc", false);
+        Serializable docId = doc.getId();
+
+        // tst:title = 'hello world'
+        doc.setSimpleProperty("tst:title", "hello world");
+        // tst:subjects = ['foo', 'bar', 'moo']
+        // tst:subjects/item[0] = 'foo'
+        // tst:subjects/0 = 'foo'
+        doc.setCollectionProperty("tst:subjects", new String[] { "foo", "bar",
+                "moo" });
+
+        Node owner = session.addChildNode(doc, "tst:owner", null, "person",
+                true);
+        // tst:owner/firstname = 'Bruce'
+        owner.setSimpleProperty("firstname", "Bruce");
+        // tst:owner/lastname = 'Willis'
+        owner.setSimpleProperty("lastname", "Willis");
+
+        Node duo = session.addChildNode(doc, "tst:couple", null, "duo", true);
+        Node first = session.addChildNode(duo, "first", null, "person", true);
+        Node second = session.addChildNode(duo, "second", null, "person", true);
+        // tst:couple/first/firstname = 'Steve'
+        first.setSimpleProperty("firstname", "Steve");
+        // tst:couple/first/lastname = 'Jobs'
+        first.setSimpleProperty("lastname", "Jobs");
+        // tst:couple/second/firstname = 'Steve'
+        second.setSimpleProperty("firstname", "Steve");
+        // tst:couple/second/lastname = 'McQueen'
+        second.setSimpleProperty("lastname", "McQueen");
+
+        Node friend0 = session.addChildNode(doc, "tst:friends", 0L, "person",
+                true);
+        Node friend1 = session.addChildNode(doc, "tst:friends", 1L, "person",
+                true);
+        // tst:friends/item[0]/firstname = 'John'
+        // tst:friends/0/firstname = 'John'
+        friend0.setSimpleProperty("firstname", "John");
+        // tst:friends/0/lastname = 'Lennon'
+        friend0.setSimpleProperty("lastname", "Lennon");
+        // tst:friends/1/firstname = 'John'
+        friend1.setSimpleProperty("firstname", "John");
+        // tst:friends/1/lastname = 'Smith'
+        friend1.setSimpleProperty("lastname", "Smith");
+
+        session.save();
+
+        return Arrays.asList(docId);
     }
 
 }

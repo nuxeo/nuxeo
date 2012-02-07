@@ -74,6 +74,8 @@ public class SessionImpl implements Session, XAResource {
 
     private final EventProducer eventProducer;
 
+    protected final FulltextParser fulltextParser;
+
     // public because used by unit tests
     public final PersistenceContext context;
 
@@ -104,6 +106,12 @@ public class SessionImpl implements Session, XAResource {
             eventProducer = Framework.getService(EventProducer.class);
         } catch (Exception e) {
             throw new StorageException("Unable to find EventProducer", e);
+        }
+
+        try {
+            fulltextParser = repository.fulltextParserClass.newInstance();
+        } catch (Exception e) {
+            throw new StorageException(e);
         }
 
         computeRootNode();
@@ -324,6 +332,7 @@ public class SessionImpl implements Session, XAResource {
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
+            fulltextParser.setDocument(document, this);
             for (String indexName : model.getFulltextInfo().indexNames) {
                 Set<String> paths;
                 if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
@@ -335,7 +344,8 @@ public class SessionImpl implements Session, XAResource {
                     // index configured fields
                     paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
                 }
-                String strings = findFulltext(document, paths);
+                String strings = fulltextParser.findFulltext(indexName, paths);
+
                 // Set the computed full text
                 // On INSERT/UPDATE a trigger will change the actual fulltext
                 String propName = model.FULLTEXT_SIMPLETEXT_PROP
@@ -371,77 +381,6 @@ public class SessionImpl implements Session, XAResource {
         } catch (ClientException e) {
             throw new StorageException(e);
         }
-    }
-
-    protected String findFulltext(Node document, Set<String> paths)
-            throws StorageException {
-        if (paths == null) {
-            return "";
-        }
-
-        String documentType = document.getPrimaryType();
-        String[] mixinTypes = document.getMixinTypes();
-
-        List<String> strings = new LinkedList<String>();
-
-        for (String path : paths) {
-            ModelProperty pi = model.getPathPropertyInfo(documentType,
-                    mixinTypes, path);
-            if (pi == null) {
-                continue; // doc type doesn't have this property
-            }
-            if (pi.propertyType != PropertyType.STRING
-                    && pi.propertyType != PropertyType.ARRAY_STRING) {
-                continue;
-            }
-            List<Node> nodes = new ArrayList<Node>(
-                    Collections.singleton(document));
-            String[] names = path.split("/");
-            for (int i = 0; i < names.length; i++) {
-                String name = names[i];
-                List<Node> newNodes;
-                if (i + 1 < names.length && "*".equals(names[i + 1])) {
-                    // traverse complex list
-                    i++;
-                    newNodes = new ArrayList<Node>();
-                    for (Node node : nodes) {
-                        newNodes.addAll(getChildren(node, name, true));
-                    }
-                } else {
-                    if (i == names.length - 1) {
-                        // last path component: get value
-                        for (Node node : nodes) {
-                            if (pi.propertyType == PropertyType.STRING) {
-                                String v = node.getSimpleProperty(name).getString();
-                                if (v != null) {
-                                    strings.add(v);
-                                }
-                            } else /* ARRAY_STRING */{
-                                for (Serializable v : node.getCollectionProperty(
-                                        name).getValue()) {
-                                    if (v != null) {
-                                        strings.add((String) v);
-                                    }
-                                }
-                            }
-                        }
-                        newNodes = Collections.emptyList();
-                    } else {
-                        // traverse
-                        newNodes = new ArrayList<Node>(nodes.size());
-                        for (Node node : nodes) {
-                            node = getChildNode(node, name, true);
-                            if (node != null) {
-                                newNodes.add(node);
-                            }
-                        }
-                    }
-                }
-                nodes = newNodes;
-            }
-
-        }
-        return StringUtils.join(strings, " ");
     }
 
     /**
