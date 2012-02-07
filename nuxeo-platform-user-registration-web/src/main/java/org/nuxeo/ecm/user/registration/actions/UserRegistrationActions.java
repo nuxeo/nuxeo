@@ -33,7 +33,9 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("userRegistrationActions")
 @Scope(ScopeType.CONVERSATION)
-public class UserRegistrationActions {
+public class UserRegistrationActions implements Serializable {
+
+    private static final long serialVersionUID = 53468164827894L;
 
     protected UserRegistrationService userRegistrationService;
 

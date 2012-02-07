@@ -12,6 +12,10 @@
   <description>Nuxeo User Registration Parent POM</description>
   <packaging>pom</packaging>
 
+  <properties>
+    <user.registration.version>5.6-SNAPSHOT</user.registration.version>
+  </properties>
+
   <modules>
     <module>nuxeo-platform-user-registration-core</module>
     <module>nuxeo-platform-user-registration-web</module>
