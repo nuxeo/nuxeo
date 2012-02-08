@@ -25,6 +25,8 @@ import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.*;
+
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -106,32 +108,9 @@ public class FolderResource extends ExistingResource {
             // Util.printAsXml(prop);
         }
 
-        // Get key properties from doc
-        Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
-        Date creationDate = getTimePropertyWrapper(doc, "dc:created");
-
-        final net.java.dev.webdav.jaxrs.xml.elements.Response response
-                = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                new HRef(uriInfo.getRequestUri()),
-                null,
-                null,
-                null,
-                new PropStat(
-                        new Prop(
-                                new DisplayName("nuxeo"),
-                                new LockDiscovery(),
-                                new SupportedLock(),
-                                new IsFolder("t"),
-                                new IsCollection(1),
-                                new IsHidden(0),
-                                new GetContentType("application/octet-stream"),
-                                new GetContentLength(0),
-                                new CreationDate(creationDate),
-                                new GetLastModified(lastModified),
-                                COLLECTION
-                        ),
-                        new Status(OK)));
-
+        final net.java.dev.webdav.jaxrs.xml.elements.Response response;
+        response = createResponse(doc, uriInfo, prop);
+        
         if (!doc.isFolder() || depth.equals("0")) {
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
@@ -142,51 +121,8 @@ public class FolderResource extends ExistingResource {
 
         List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
-            lastModified = getTimePropertyWrapper(child, "dc:modified");
-            creationDate = getTimePropertyWrapper(child, "dc:created");
-            String childName = URIUtil.encodePath(backend.getDisplayName(child));
-            PropStatBuilderExt props = new PropStatBuilderExt();
-            props.lastModified(lastModified).creationDate(creationDate).displayName(childName).status(OK);
-            if (child.isFolder()) {
-                props.isCollection();
-            } else {
-                String mimeType = "application/octet-stream";
-                long size = 0;
-                BlobHolder bh = child.getAdapter(BlobHolder.class);
-                if (bh != null) {
-                    try {
-                        Blob blob = bh.getBlob();
-                        if (blob != null) {
-                            size = blob.getLength();
-                            mimeType = blob.getMimeType();
-                        }
-                    } catch (ClientException e) {
-                        log.error("Unable to get blob Size", e);
-                    }
-                }
-                if(StringUtils.isEmpty(mimeType) || "???".equals(mimeType) ){
-                    mimeType = "application/octet-stream";
-                }
-                props.isResource(size, mimeType);
-            }
-
-            PropStat found = props.build();
-            PropStat notFound = null;
-            if (prop != null) {
-                // props.isHidden(false);
-                // props.lastAccessed(lastModified);
-                notFound = props.notFound(prop);
-            }
-
             net.java.dev.webdav.jaxrs.xml.elements.Response childResponse;
-            URI childUri = uriInfo.getRequestUriBuilder().path(childName).build();
-            if (notFound != null) {
-                childResponse = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(childUri), null, null, null, found, notFound);
-            } else {
-                childResponse = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(childUri), null, null, null, found);
-            }
+            childResponse = createResponse(child, uriInfo, prop);
 
             responses.add(childResponse);
         }
@@ -195,6 +131,44 @@ public class FolderResource extends ExistingResource {
                 new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
         //printXml(st);
         return Response.status(207).entity(st).build();
+    }
+
+    protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(
+            DocumentModel doc, UriInfo uriInfo, Prop prop) 
+                    throws ClientException, URIException {
+        PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
+        PropStat propStatFound = props.build();
+        PropStat propStatNotFound = null;
+        if (prop != null) {
+            propStatNotFound = props.notFound(prop);
+        }
+
+        net.java.dev.webdav.jaxrs.xml.elements.Response response;
+        URI uri = uriInfo.getRequestUriBuilder().path(
+                URIUtil.encodePath(backend.getDisplayName(doc))).build();
+        if (doc.isFolder()) {
+            PropStat folderPropStat = new PropStat(
+                    new Prop(new LockDiscovery(), new SupportedLock(), new IsFolder("t")),
+                    new Status(OK));
+            if (propStatNotFound != null) {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, 
+                        propStatFound, propStatNotFound, folderPropStat);
+            } else {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, 
+                        propStatFound, folderPropStat);
+            }
+        } else {
+            if (propStatNotFound != null) {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, propStatFound, propStatNotFound);
+            } else {
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                        new HRef(uri), null, null, null, propStatFound);
+            }
+        }
+        return response;
     }
 
 }
