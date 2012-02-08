@@ -259,8 +259,7 @@ public class DateParser {
      * @return the W3C Date Time representation of the given Date
      */
     public static String formatW3CDateTime(Date date) {
-        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",Locale.US);
-        dateFormater.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return dateFormater.format(date);
     }
 
