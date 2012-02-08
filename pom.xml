@@ -294,7 +294,7 @@
         <artifactId>nuxeo-platform-user-registration-core</artifactId>
         <version>${nuxeo.user.registration.version}</version>
       </dependency>
-       <dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-user-registration-web</artifactId>
         <version>${nuxeo.user.registration.version}</version>
@@ -413,6 +413,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-document-routing-dm</artifactId>
         <version>${nuxeo.routing.version}</version>
       </dependency>
 
