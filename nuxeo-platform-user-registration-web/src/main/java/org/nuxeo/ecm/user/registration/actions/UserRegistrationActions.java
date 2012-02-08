@@ -22,13 +22,17 @@ import java.util.Map;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationException;
+import org.nuxeo.ecm.user.registration.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 @Name("userRegistrationActions")
@@ -38,6 +42,22 @@ public class UserRegistrationActions implements Serializable {
     private static final long serialVersionUID = 53468164827894L;
 
     protected UserRegistrationService userRegistrationService;
+
+    protected UserRegistrationInfo userinfo = new UserRegistrationInfo();
+
+    protected DocumentRegistrationInfo docinfo = new DocumentRegistrationInfo();
+
+    public UserRegistrationInfo getUserinfo() {
+        return userinfo;
+    }
+
+    public DocumentRegistrationInfo getDocinfo() {
+        return docinfo;
+    }
+
+    public UserRegistrationActions getData() {
+        return this;
+    }
 
     public String getDocType() throws ClientException {
         return getUserRegistrationService().getConfiguration().getRequestDocType();
@@ -77,5 +97,11 @@ public class UserRegistrationActions implements Serializable {
             }
         }
         return userRegistrationService;
+    }
+
+    @Observer({ EventNames.DOCUMENT_CHANGED })
+    protected void resetPojos() {
+        userinfo = new UserRegistrationInfo();
+        docinfo = new DocumentRegistrationInfo();
     }
 }

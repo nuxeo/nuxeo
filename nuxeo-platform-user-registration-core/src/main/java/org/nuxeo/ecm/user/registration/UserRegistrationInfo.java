@@ -20,7 +20,7 @@ public class UserRegistrationInfo {
 
     public static final String SCHEMA_NAME = "userinfo";
 
-    public static final String USERNAME_FIELD = "userinfo:username";
+    public static final String USERNAME_FIELD = "userinfo:login";
 
     public static final String PASSWORD_FIELD = "userinfo:password";
 

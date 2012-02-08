@@ -3,7 +3,7 @@
   targetNamespace="http://nuxeo.org/schemas/userinfo"
   xmlns:nxs="http://nuxeo.org/schemas/userinfo">
 
-  <xs:element name="username" type="xs:string" />
+  <xs:element name="login" type="xs:string" />
   <xs:element name="password" type="xs:string" />
   <xs:element name="firstName" type="xs:string" />
   <xs:element name="lastName" type="xs:string" />
