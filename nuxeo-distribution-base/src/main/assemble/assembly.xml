@@ -18,7 +18,7 @@
 
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
-    <!--artifact:print output="dependency-tree.log" /-->
+    <artifact:print output="dependency-tree.log" />
   </target>
 
   <target name="build" depends="init,clean" unless="no.build">
