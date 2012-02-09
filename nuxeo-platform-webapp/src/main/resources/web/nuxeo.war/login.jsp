@@ -215,15 +215,9 @@ body {
 -->
 </style>
 
-<script type="text/javascript">
-function focusOn(eltId) {
-  document.getElementById(eltId).focus();
-}
-</script>
-
 </head>
 
-<body onload="focusOn('username')">
+<body>
 
 <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
   <tbody>
@@ -432,6 +426,10 @@ function focusOn(eltId) {
     </tr>
   </tbody>
 </table>
+
+<script type="text/javascript">
+  document.getElementById('username').focus();
+</script>
 
 <!--   Current User = <%=request.getRemoteUser()%> -->
 
