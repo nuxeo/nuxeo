@@ -380,7 +380,12 @@ body {
               </tr>
               <tr>
                 <td colspan="2">
-                  <c:if test="${param.loginFailed}">
+                  <c:if test="${param.connectionFailed}">
+                    <div class="errorMessage">
+                      <fmt:message bundle="${messages}" key="label.login.connectionFailed" />
+                    </div>
+                  </c:if>
+                  <c:if test="${param.loginFailed == 'true' and param.connectionFailed != 'true'}">
                     <div class="errorMessage">
                       <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
                     </div>
