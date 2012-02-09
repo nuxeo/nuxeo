@@ -8,18 +8,28 @@
 
   <target name="init" unless="init.done">
     <tstamp />
+    <condition property="build.all">
+      <or>
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+        <not>
+          <or>
+            <isset property="maven.profile.nuxeo-cap" />
+            <isset property="maven.profile.nuxeo-coreserver" />
+          </or>
+        </not>
+      </or>
+    </condition>
     <condition property="build.core">
       <or>
         <isset property="maven.profile.nuxeo-coreserver" />
-        <isset property="maven.profile.all" />
-        <isset property="maven.profile.all-distributions" />
+        <isset property="build.all" />
       </or>
     </condition>
     <condition property="build.cap">
       <or>
         <isset property="maven.profile.nuxeo-cap" />
-        <isset property="maven.profile.all" />
-        <isset property="maven.profile.all-distributions" />
+        <isset property="build.all" />
       </or>
     </condition>
     <condition property="build.sdk">
