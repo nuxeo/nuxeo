@@ -14,7 +14,7 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.diff.service;
+package org.nuxeo.ecm.diff.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,33 +24,33 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Complex items descriptor.
+ * Diff display descriptor.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
-@XObject("complexItems")
-public class ComplexItemsDescriptor {
+@XObject("diffDisplay")
+public class DiffDisplayDescriptor {
 
-    @XNode("@property")
-    public String property;
+    @XNode("@name")
+    public String name;
 
-    @XNodeList(value = "item", type = ArrayList.class, componentType = String.class)
-    public List<String> items = new ArrayList<String>();
+    @XNodeList(value = "diffBlocks/diffBlock", type = ArrayList.class, componentType = DiffBlockDescriptor.class)
+    public List<DiffBlockDescriptor> diffBlocks = new ArrayList<DiffBlockDescriptor>();
 
-    public String getProperty() {
-        return property;
+    public String getName() {
+        return name;
     }
 
-    public void setProperty(String property) {
-        this.property = property;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<String> getItems() {
-        return items;
+    public List<DiffBlockDescriptor> getDiffBlocks() {
+        return diffBlocks;
     }
 
-    public void setItems(List<String> items) {
-        this.items = items;
+    public void setDiffBlocks(List<DiffBlockDescriptor> diffBlocks) {
+        this.diffBlocks = diffBlocks;
     }
-
 }

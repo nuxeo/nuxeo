@@ -36,7 +36,6 @@ import org.nuxeo.ecm.diff.model.SchemaDiff;
 import org.nuxeo.ecm.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
-import org.nuxeo.ecm.diff.service.DocumentDiffService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -44,7 +43,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- * Tests XML diff using DocumentDiffService.
+ * Tests the {@link DocumentDiffService} on hand-made pieces of XML similar to
+ * document XML exports.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */

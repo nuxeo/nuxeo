@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.widgets.contrib.test">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <!-- Specific widgets binded to property names -->
+    <widget name="dublincore:modified" type="dateTime">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label>label.diff.dublincore.modified</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormater()}</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>

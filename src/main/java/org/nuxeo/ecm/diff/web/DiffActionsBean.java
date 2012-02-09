@@ -22,6 +22,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.PAGE;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.seam.annotations.Factory;
@@ -32,8 +33,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
-import org.nuxeo.ecm.diff.model.impl.DocumentDiffImpl;
+import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -44,9 +46,9 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-@Name("documentDiffActions")
+@Name("diffActions")
 @Scope(CONVERSATION)
-public class DocumentDiffActionsBean implements Serializable {
+public class DiffActionsBean implements Serializable {
 
     private static final long serialVersionUID = -5507491210664361778L;
 
@@ -159,13 +161,18 @@ public class DocumentDiffActionsBean implements Serializable {
      *         rightDoc aren't null, else null
      * @throws ClientException the client exception
      */
-    @Factory(value = "documentDiff", scope = PAGE)
-    public DocumentDiff getDocumentDiff() throws ClientException {
+    @Factory(value = "defaultDiffDisplayBlocks", scope = PAGE)
+    public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks()
+            throws ClientException {
 
         if (leftDoc == null || rightDoc == null) {
-            return new DocumentDiffImpl();
+            return new ArrayList<DiffDisplayBlock>();
         }
-        return getDocumentDiffService().diff(documentManager, leftDoc, rightDoc);
+
+        DocumentDiff docDiff = getDocumentDiffService().diff(documentManager,
+                leftDoc, rightDoc);
+        return getDiffDisplayService().getDefaultDiffDisplayBlocks(docDiff,
+                leftDoc, rightDoc);
 
     }
 
@@ -208,6 +215,29 @@ public class DocumentDiffActionsBean implements Serializable {
             throw new ClientException("DocumentDiffService is null.");
         }
         return documentDiffService;
+
+    }
+
+    /**
+     * Gets the diff display service.
+     * 
+     * @return the diff display service
+     * @throws ClientException the client exception
+     */
+    protected final DiffDisplayService getDiffDisplayService()
+            throws ClientException {
+
+        DiffDisplayService diffDisplayService;
+
+        try {
+            diffDisplayService = Framework.getService(DiffDisplayService.class);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
+        if (diffDisplayService == null) {
+            throw new ClientException("DiffDisplayService is null.");
+        }
+        return diffDisplayService;
 
     }
 

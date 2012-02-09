@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.widgets.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <!-- Generic widgets binded to diff property types, see: org.nuxeo.ecm.diff.model.PropertyType -->
+    <widget name="string" type="text">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+    <widget name="scalarList" type="list">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+    
+    <widget name="complexList" type="list">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+  </extension>
+
+</component>

@@ -39,7 +39,6 @@ import org.nuxeo.ecm.diff.model.SchemaDiff;
 import org.nuxeo.ecm.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
-import org.nuxeo.ecm.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.diff.xmlexport.DocumentXMLExporter;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -48,14 +47,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- * Tests document diff using DocumentDiffService.
+ * Tests the {@link DocumentDiffService} on document XML exports.
+ * <p>
+ * The {@link DocumentDiffRepositoryInit} class initializes the repository with
+ * 2 documents for this purpose.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = DocumentDiffRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.diff", "org.nuxeo.diff.test" })
+@Deploy({ "org.nuxeo.diff:OSGI-INF/document-xml-export-service.xml",
+        "org.nuxeo.diff:OSGI-INF/document-diff-service.xml",
+        "org.nuxeo.diff.test:OSGI-INF/test-types-contrib.xml" })
 public class TestDocumentDiff extends DiffTestCase {
 
     @Inject

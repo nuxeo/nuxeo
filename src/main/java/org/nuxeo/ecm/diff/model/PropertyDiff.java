@@ -19,8 +19,7 @@ package org.nuxeo.ecm.diff.model;
 import java.io.Serializable;
 
 /**
- * <p>
- * Representation of a property (or field) diff.
+ * Representation of a property (field) diff.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */

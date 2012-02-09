@@ -14,43 +14,33 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.diff.service;
+package org.nuxeo.ecm.diff.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Handles the display of a diff between two documents.
+ * Diff field definition interface.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
-public interface DocumentDiffDisplayService extends Serializable {
+public interface DiffFieldDefinition extends Serializable {
+
+    String getSchema();
 
     /**
-     * Gets the contributions.
+     * Gets the field name.
      * 
-     * @return the contributions
+     * @return the field name
      */
-    Map<String, ComplexItemsDescriptor> getContributions();
+    String getName();
 
     /**
-     * Gets the complex items.
+     * Gets the items.
      * 
-     * @param schemaName the schema name
-     * @param fieldName the field name
-     * @return the complex items
+     * @return the items
      */
-    List<String> getComplexItems(String schemaName, String fieldName);
-
-    /**
-     * Apply complex items order.
-     * 
-     * @param schemaName the schema name
-     * @param fieldName the field name
-     * @param complexItems the complex items
-     */
-    void applyComplexItemsOrder(String schemaName, String fieldName,
-            List<String> complexItems);
+    List<String> getItems();
 
 }

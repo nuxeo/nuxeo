@@ -9,5 +9,6 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.diff;singleton:=true
 Nuxeo-Component: OSGI-INF/document-xml-export-service.xml,
  OSGI-INF/document-diff-service.xml,
- OSGI-INF/document-diff-actions-contrib.xml,
- OSGI-INF/document-diff-display-service.xml
+ OSGI-INF/diff-actions-contrib.xml,
+ OSGI-INF/diff-display-service.xml,
+ OSGI-INF/diff-widgets-contrib.xml

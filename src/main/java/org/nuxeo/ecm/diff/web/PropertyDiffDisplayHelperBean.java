@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
-import org.nuxeo.ecm.diff.service.DocumentDiffDisplayService;
+import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -65,8 +65,7 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         List<String> complexItemNames = ComplexPropertyHelper.getComplexItemNames(
                 schemaName, fieldName);
 
-        getDocumentDiffDisplayService().applyComplexItemsOrder(schemaName,
-                fieldName, complexItemNames);
+        // getDocumentDiffDisplayService().applyComplexItemsOrders
 
         return complexItemNames;
 
@@ -100,8 +99,8 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
         List<String> complexListItemNames = ComplexPropertyHelper.getComplexListItemNames(
                 schemaName, fieldName);
 
-        getDocumentDiffDisplayService().applyComplexItemsOrder(schemaName,
-                fieldName, complexListItemNames);
+        // getDocumentDiffDisplayService().applyComplexItemsOrder(schemaName,
+        // fieldName, complexListItemNames);
 
         return complexListItemNames;
     }
@@ -190,13 +189,13 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
      * @return the document diff display service
      * @throws ClientException the client exception
      */
-    protected final DocumentDiffDisplayService getDocumentDiffDisplayService()
+    protected final DiffDisplayService getDocumentDiffDisplayService()
             throws ClientException {
 
-        DocumentDiffDisplayService docDiffDisplayService;
+        DiffDisplayService docDiffDisplayService;
 
         try {
-            docDiffDisplayService = Framework.getService(DocumentDiffDisplayService.class);
+            docDiffDisplayService = Framework.getService(DiffDisplayService.class);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }

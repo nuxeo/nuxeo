@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.service.DiffDisplayService.contrib.test">
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffDisplay">
+
+    <diffDisplay name="default">
+      <diffBlocks>
+        <diffBlock name="testNoFields" />
+        <diffBlock name="general" label="label.diffBlock.general">
+          <fields>
+            <field schema="dublincore" name="title" />
+            <field schema="dublincore" name="modified" />
+            <field schema="dublincore" name="subjects" />
+          </fields>
+        </diffBlock>
+        <diffBlock name="complexTypes" label="label.diffBlock.complexTypes">
+          <fields>
+            <field schema="complextypes" name="complexList">
+              <items>
+                <item>stringItem</item>
+                <item>dateItem</item>
+                <item>integerItem</item>
+              </items>
+            </field>
+          </fields>
+        </diffBlock>
+      </diffBlocks>
+    </diffDisplay>
+
+  </extension>
+
+</component>
