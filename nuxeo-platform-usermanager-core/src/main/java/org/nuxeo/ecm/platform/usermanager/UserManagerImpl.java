@@ -164,7 +164,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public void setConfiguration(UserManagerDescriptor descriptor) {
+    public void setConfiguration(UserManagerDescriptor descriptor)
+            throws ClientException {
         defaultGroup = descriptor.defaultGroup;
         administratorIds = descriptor.defaultAdministratorIds;
         disableDefaultAdministratorsGroup = false;
@@ -209,15 +210,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         userConfig.nameKey = userIdField;
     }
 
-    protected void setUserDirectoryName(String userDirectoryName) {
+    protected void setUserDirectoryName(String userDirectoryName)
+            throws ClientException {
         this.userDirectoryName = userDirectoryName;
-        try {
-            userSchemaName = dirService.getDirectorySchema(userDirectoryName);
-            userIdField = dirService.getDirectoryIdField(userDirectoryName);
-        } catch (ClientException e) {
-            throw new RuntimeException("Unknown user directory "
-                    + userDirectoryName, e);
-        }
+        userSchemaName = dirService.getDirectorySchema(userDirectoryName);
+        userIdField = dirService.getDirectoryIdField(userDirectoryName);
     }
 
     @Override

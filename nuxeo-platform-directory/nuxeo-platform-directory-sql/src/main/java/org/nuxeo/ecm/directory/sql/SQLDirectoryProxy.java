@@ -47,6 +47,8 @@ public class SQLDirectoryProxy implements Directory {
         if (directory == null) {
             try {
                 directory = new SQLDirectory(descriptor);
+            } catch (DirectoryException e) {
+                throw e;
             } catch (ClientException e) {
                 throw new DirectoryException(e);
             }

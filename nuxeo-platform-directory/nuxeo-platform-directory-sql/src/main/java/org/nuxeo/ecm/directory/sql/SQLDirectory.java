@@ -204,7 +204,8 @@ public class SQLDirectory extends AbstractDirectory {
         try {
             return getDataSource().getConnection();
         } catch (SQLException e) {
-            throw new DirectoryException("could not obtain a connection", e);
+            throw new DirectoryException("Cannot connect to SQL directory '"
+                    + getName() + "': " + e.getMessage(), e);
         }
     }
 

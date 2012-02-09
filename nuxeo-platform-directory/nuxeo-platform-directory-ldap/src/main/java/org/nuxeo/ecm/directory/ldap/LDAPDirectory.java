@@ -285,10 +285,8 @@ public class LDAPDirectory extends AbstractDirectory {
             }
             return new InitialDirContext(contextProperties);
         } catch (NamingException e) {
-            log.error(e);
-            throw new DirectoryException(
-                    "could not initialise LDAP directory context: "
-                            + e.getMessage(), e);
+            throw new DirectoryException("Cannot connect to LDAP directory '"
+                    + getName() + "': " + e.getMessage(), e);
         }
     }
 

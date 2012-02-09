@@ -110,7 +110,7 @@ public class UserService extends DefaultComponent {
             try {
                 return adapter.cast(getUserManager());
             } catch (ClientException e) {
-                log.error("error fetching UserManager: ", e);
+                log.error("Error fetching UserManager: " + e.getMessage(), e);
             }
         }
         return null;
