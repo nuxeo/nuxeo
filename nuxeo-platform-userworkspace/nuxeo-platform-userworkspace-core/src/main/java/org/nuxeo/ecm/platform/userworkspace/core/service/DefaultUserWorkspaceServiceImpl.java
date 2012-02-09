@@ -302,6 +302,8 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
             userManager = Framework.getService(UserManager.class);
         } catch (Exception e) {
             log.debug("failed to get user service", e);
+        }
+        if (userManager == null) {
             return userName;
         }
 
