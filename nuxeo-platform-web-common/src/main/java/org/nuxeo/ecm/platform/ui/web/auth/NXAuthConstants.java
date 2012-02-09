@@ -30,12 +30,14 @@ public final class NXAuthConstants {
     public static final String SWITCH_USER_PAGE = "swuser";
     public static final String PAGE_AFTER_SWITCH = "pageAfterSwitch";
     public static final String SWITCH_USER_KEY = "deputy";
+    public static final String ERROR_CONNECTION_FAILED = "connection.error";
     public static final String ERROR_AUTHENTICATION_FAILED = "authentication.failed";
     public static final String ERROR_USERNAME_MISSING = "username.missing";
     public static final String FORCE_ANONYMOUS_LOGIN = "forceAnonymousLogin";
     public static final String REQUESTED_URL = "requestedUrl";
     public static final String SECURITY_ERROR = "securityError";
     public static final String LOGIN_MISSING = "loginMissing";
+    public static final String LOGIN_CONNECTION_FAILED = "connectionFailed";
     public static final String LOGIN_FAILED = "loginFailed";
     public static final String DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
     public static final String SSO_INITIAL_URL_REQUEST_KEY = "sso.initial.url.request";

@@ -149,7 +149,8 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
             }
         } catch (SQLException e) {
-            throw new DirectoryException("updateConnection failed", e);
+            throw new DirectoryException("Cannot connect to SQL directory '"
+                    + directory.getName() + "': " + e.getMessage(), e);
         }
     }
 

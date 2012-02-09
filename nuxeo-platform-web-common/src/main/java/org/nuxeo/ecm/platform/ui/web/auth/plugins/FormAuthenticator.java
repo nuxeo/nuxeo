@@ -71,6 +71,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             if (loginError != null) {
                 if (ERROR_USERNAME_MISSING.equals(loginError)) {
                     parameters.put(LOGIN_MISSING, "true");
+                } else if (ERROR_CONNECTION_FAILED.equals(loginError)) {
+                    parameters.put(LOGIN_CONNECTION_FAILED, "true");
+                    parameters.put(LOGIN_FAILED, "true"); // compat
                 } else {
                     parameters.put(LOGIN_FAILED, "true");
                 }

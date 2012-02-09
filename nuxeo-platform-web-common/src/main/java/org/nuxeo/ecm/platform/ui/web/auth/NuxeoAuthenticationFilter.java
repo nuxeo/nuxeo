@@ -54,8 +54,10 @@ import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
+import org.nuxeo.ecm.platform.login.PrincipalImpl;
 import org.nuxeo.ecm.platform.login.TrustingLoginPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
@@ -99,6 +101,10 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
 
     public static final String IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY = "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.isLoginNotSynchronized";
+
+    /** Used internally as a marker. */
+    protected static final Principal DIRECTORY_ERROR_PRINCIPAL = new PrincipalImpl(
+            "__DIRECTORY_ERROR__\0\0\0");
 
     private static String anonymous;
 
@@ -236,10 +242,12 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            log.debug("Reason for login failure", e);
             log.info("Login failed for "
                     + cachableUserIdent.getUserInfo().getUserName());
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
+            if (e.getCause() instanceof DirectoryException) {
+                return DIRECTORY_ERROR_PRINCIPAL;
+            }
             return null;
         }
 
@@ -304,7 +312,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 cachableUserIdent.getUserInfo().getAuthPluginName());
 
         Principal principal = doAuthenticate(newCachableUserIdent, httpRequest);
-        if (principal != null) {
+        if (principal != null && principal != DIRECTORY_ERROR_PRINCIPAL) {
             NuxeoPrincipal nxUser = (NuxeoPrincipal) principal;
             if (originatingUser != null) {
                 nxUser.setOriginatingUser(originatingUser);
@@ -456,7 +464,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                     cachableUserIdent = new CachableUserIdentificationInfo(
                             userIdent);
                     principal = doAuthenticate(cachableUserIdent, httpRequest);
-                    if (principal != null) {
+                    if (principal != null
+                            && principal != DIRECTORY_ERROR_PRINCIPAL) {
                         // Do the propagation too ????
                         propagateUserIdentificationInformation(cachableUserIdent);
                         // setPrincipalToSession(httpRequest, principal);
@@ -484,7 +493,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                             }
                         } else {
                             // use the old method
-                            httpRequest.setAttribute(LOGIN_ERROR, ERROR_AUTHENTICATION_FAILED);
+                            String err = principal == DIRECTORY_ERROR_PRINCIPAL ? ERROR_CONNECTION_FAILED
+                                    : ERROR_AUTHENTICATION_FAILED;
+                            httpRequest.setAttribute(LOGIN_ERROR, err);
                             boolean res = handleLoginPrompt(httpRequest,
                                     httpResponse);
                             if (res) {

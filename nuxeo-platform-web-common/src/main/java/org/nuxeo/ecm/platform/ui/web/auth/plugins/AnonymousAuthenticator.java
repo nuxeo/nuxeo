@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -64,9 +65,12 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         if (!initialized) {
             try {
-                anonymousLogin = Framework.getService(UserManager.class).getAnonymousUserId();
-            } catch (Exception e) {
-                log.error(e, e);
+                UserManager userManager = Framework.getLocalService(UserManager.class);
+                if (userManager != null) {
+                    anonymousLogin = userManager.getAnonymousUserId();
+                }
+            } catch (ClientException e) {
+                log.error(e.getMessage(), e);
             }
             initialized = true;
         }
