@@ -1021,6 +1021,9 @@
                   <widget>foldable</widget>
                 </row>
                 <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
                   <widget>useAjaxForm</widget>
                 </row>
                 <row>
