@@ -12,6 +12,8 @@
 
     <nxu:set var="listingMode" value="#{nxu:test(groupManagementActions.listingMode == 'all', 'search_only', groupManagementActions.listingMode)}">
     <nxu:set var="contentViewName" value="groups_listing_#{listingMode}">
+    <nxu:set var="useAjaxForm" value="true">
+    <nxu:set var="useAjaxPagination" value="true">
       <ui:decorate template="/incl/content_view.xhtml">
         <ui:define name="content_view_header">
           <!-- create button -->
@@ -34,14 +36,9 @@
 
           <ui:insert name="groups_search_method" />
         </ui:define>
-
-        <ui:define name="pageNavigationControls" >
-          <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
-            <ui:param name="contentIdToBeReRendered"
-              value="#{contentViewRenderId}_resultsPanel,#{contentViewRenderId}_contentViewActionsPanel" />
-          </ui:include>
-        </ui:define>
       </ui:decorate>
+    </nxu:set>
+    </nxu:set>
     </nxu:set>
     </nxu:set>
 
