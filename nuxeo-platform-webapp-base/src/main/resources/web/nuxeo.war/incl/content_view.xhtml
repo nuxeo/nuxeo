@@ -9,19 +9,30 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
 <c:if test="false">
- Template rendering a content view defined on a document.
+  Template rendering a content view defined on a document.
 
- Parameters:
- - contentViewName: the content view name, mandatory
- - contentViewId: a marker to generate unique ids
-   when iterating over a list of content views, optional
-   when only one content view is displayed in the page.
- - contentViewDocument
- - contentViewSortInfos
- - selectedResultLayoutColumns: list of result layout columns selected
- - hideEmpty: if set to true, hides completely the box when there is no
-   item to list (defaults to false).
- - foldable: if set to true, shows the content view in a foldable box
+  Parameters:
+  - contentViewName: the content view name, mandatory.
+  - contentViewId: a marker to generate unique ids
+    when iterating over a list of content views, optional
+    when only one content view is displayed in the page.
+  - contentViewDocument: the document to use for filter form instead of
+    the default one managed by the content view. optional.
+  - contentViewSortInfos: the default sort infos, optional.
+  - selectedResultLayoutColumns: list of result layout columns selected,
+    optional
+  - hideEmpty: if set to true, nothing is displayed when there is no
+    item to list (even the sentence saying that there are no items in the
+    list). optional, defaults to false.
+  - foldable: if set to true, shows the content view in a foldable box.
+    optional, defaults to false.
+  - removeForm: if set to true, do not enclose the listing with a form
+    (optional, available since 5.5, defaults to false).
+  - useAjaxForm: if removeForm is not set or set to false, use an ajax form if
+    set to true. This will have an impact on selection actions as they will be
+    using ajax calls. (optional, available since 5.6, defaults to false).
+  - useAjaxPagination: use ajax links for page navigation controls when set to
+    true (optional, available since 5.6, defaults to false).
 </c:if>
 
 <nxu:set var="contentView"
@@ -106,8 +117,10 @@
           <ui:decorate template="/incl/documents_layout_table.xhtml">
             <ui:param name="providerId" value="#{contentViewId}" />
             <ui:param name="documents" value="#{provider.currentSelectPage}" />
-            <ui:param name="listName" value="#{contentView.selectionListName}" />
-            <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
+            <ui:param name="layoutName"
+              value="#{contentView.currentResultLayout.name}" />
+            <ui:param name="contentIdToBeReRendered"
+              value="#{contentViewRenderId}_resultsPanel" />
 
             <ui:define name="empty_folder_label">
               <ui:insert name="empty_content_view_label">

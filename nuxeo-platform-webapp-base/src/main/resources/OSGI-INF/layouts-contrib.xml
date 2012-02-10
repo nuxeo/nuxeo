@@ -998,13 +998,14 @@
         <title>Content view</title>
         <description>
           This widget displays a content view, with forms inside it.
+
+          Note that usually layouts do not contain any forms, but are surrounded
+          by one, and nesting forms breaks the available actions. So you should
+          make sure there is no enclosing form around the layout, or around this
+          widget, when using it.
         </description>
         <categories>
-          <!-- don't export it yet -->
-          <category>configuration_not_ready</category>
-          <!--
-            <category>summary</category>
-          -->
+          <category>tab_designer</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
@@ -1016,17 +1017,109 @@
                 <row>
                   <widget>contentViewName</widget>
                 </row>
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget>useAjaxPagination</widget>
+                </row>
               </rows>
               <widget name="contentViewName" type="selectOneResource">
                 <labels>
                   <label mode="any">Content View name</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The content view to display.
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>contentViewName</field>
                 </fields>
                 <properties mode="any">
                   <property name="resourceName">contentViews</property>
+                  <property name="required">true</property>
                 </properties>
+              </widget>
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Make this content view foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the content view will be
+                    displayed in a box that can be folded if users would like to
+                    hide this content view content. Note that this state is not
+                    persisted. Available since 5.6, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be put in a "div"
+                    element around the content view.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxForm" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, selection actions will be
+                    performed using ajax. Note that sometimes, selection actions
+                    will require you to reload the whole page for other elements
+                    than the content view to be re-rendered, so using ajax will
+                    not be user friendly in these cases. Available since 5.6,
+                    defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxForm</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxPagination" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax pagination</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, pagination actions (first,
+                    previous, next, last) actions will be performed using ajax.
+                    Available since 5.6, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxPagination</field>
+                </fields>
+              </widget>
+              <!-- not exposed right now -->
+              <widget name="removeForm" type="checkbox">
+                <labels>
+                  <label mode="any">Remove form on content listing</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.6, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>removeForm</field>
+                </fields>
               </widget>
             </layout>
           </layouts>
