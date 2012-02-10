@@ -36,6 +36,7 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.osgi.application.loader.FrameworkLoader;
 import org.nuxeo.runtime.api.Framework;
 
@@ -98,13 +99,15 @@ public class LocalPackageManager {
 
     private int errorValue = 0;
 
+    private String[] params;
+
     public static void main(String[] args) throws Exception {
         LocalPackageManager main = null;
         try {
             main = new LocalPackageManager(args);
             main.initializeFramework();
             main.startFramework();
-            main.run(args);
+            main.run();
         } catch (Throwable e) {
             log.error(e);
             main.errorValue = 2;
@@ -116,18 +119,63 @@ public class LocalPackageManager {
         System.exit(main.errorValue);
     }
 
+    /**
+     * Read options (i.e. parameters starting with one or two dashes)
+     *
+     * @param args arguments to read
+     * @return the passed arguments without the options
+     * @since 5.6
+     */
+    protected String[] readOptions(String[] args) {
+        int nbOptions = 0;
+        for (String arg : args) {
+            if (arg.startsWith("-") || arg.startsWith("--")) {
+                nbOptions++;
+                if ("-d".equalsIgnoreCase(arg)
+                        || "--debug".equalsIgnoreCase(arg)) {
+                    setDebug();
+                } else if ("-q".equalsIgnoreCase(arg)
+                        || "--quiet".equalsIgnoreCase(arg)) {
+                    setQuiet();
+                } else {
+                    log.error("Unknown option " + arg);
+                }
+            } else {
+                break;
+            }
+        }
+        return Arrays.copyOfRange(args, nbOptions, args.length);
+    }
+
+    /**
+     * @param beQuiet if true, PackageManager will be in quiet mode
+     * @since 5.6
+     */
+    protected void setQuiet() {
+        Log4JHelper.setQuiet(Log4JHelper.CONSOLE_APPENDER_NAME);
+    }
+
+    /**
+     * @param activateDebug if true, will activate the DEBUG logs
+     * @since 5.6
+     */
+    protected void setDebug() {
+        Log4JHelper.setDebug("org.nuxeo.ecm.admin", true, true, "FILE");
+    }
+
     public LocalPackageManager(String[] args) throws FileNotFoundException {
-        if (args.length < 3) {
+        params = readOptions(args);
+        if (params.length < 3) {
             printHelp();
             System.exit(1);
         }
-        wd = new File(args[0]);
+        wd = new File(params[0]);
         if (!wd.isDirectory()) {
             throw new IllegalStateException(wd + " is not a directory!");
         }
-        command = args[1];
-        config = new File(args[2]);
-        if (args.length < 4
+        command = params[1];
+        config = new File(params[2]);
+        if (params.length < 4
                 && Arrays.asList(
                         new String[] { "installpkg", "uninstall", "add",
                                 "remove" }).contains(command)) {
@@ -149,7 +197,7 @@ public class LocalPackageManager {
         targetEnv = createTargetEnvironment();
     }
 
-    public void run(String[] args) {
+    public void run() {
         Environment defaultEnv = Environment.getDefault();
         try {
             Environment.setDefault(targetEnv);
@@ -157,8 +205,8 @@ public class LocalPackageManager {
                 readPackages();
                 update();
             } else if ("installpkg".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(args, 3,
-                        args.length)) {
+                for (String packageParam : Arrays.copyOfRange(params, 3,
+                        params.length)) {
                     if (new File(packageParam).exists()) {
                         // packageParam is a file
                         update(packageParam);
@@ -168,18 +216,18 @@ public class LocalPackageManager {
                     }
                 }
             } else if ("uninstall".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(args, 3,
-                        args.length)) {
+                for (String packageParam : Arrays.copyOfRange(params, 3,
+                        params.length)) {
                     uninstall(packageParam);
                 }
             } else if ("add".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(args, 3,
-                        args.length)) {
+                for (String packageParam : Arrays.copyOfRange(params, 3,
+                        params.length)) {
                     add(packageParam);
                 }
             } else if ("remove".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(args, 3,
-                        args.length)) {
+                for (String packageParam : Arrays.copyOfRange(params, 3,
+                        params.length)) {
                     remove(packageParam);
                 }
             } else if ("list".equalsIgnoreCase(command)) {
