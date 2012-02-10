@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.diff.types.contrib.test" version="1.0">
+<component name="org.nuxeo.ecm.diff.types.contrib.test"
+  version="1.0">
 
   <documentation>
     This component is contributing the test types and schemas needed for
@@ -29,13 +30,12 @@
       <schema name="listoflists" />
     </doctype>
 
-    <!--doctype name="OtherSampleType" extends="Document" -->
-    <doctype name="OtherSampleType" extends="File">
-      <!-- schema name="dublincore"/ -->
+    <doctype name="OtherSampleType" extends="Document">
+      <schema name="dublincore" />
       <schema name="simpletypes" />
       <schema name="complextypes" />
       <schema name="listoflists" />
-      <!-- schema name="note"/ -->
+      <schema name="note" />
     </doctype>
 
   </extension>

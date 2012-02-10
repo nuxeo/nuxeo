@@ -50,7 +50,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.diff" })
+@Deploy({ "org.nuxeo.diff:OSGI-INF/document-xml-export-service.xml",
+        "org.nuxeo.diff:OSGI-INF/document-diff-service.xml" })
 public class TestXMLDiff extends DiffTestCase {
 
     private static final Log LOGGER = LogFactory.getLog(TestXMLDiff.class);

@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.diff.service;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -36,17 +35,12 @@ import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DocumentDiffRepositoryInit;
-import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DiffDisplayField;
-import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.impl.ComplexDiffDisplayField;
-import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
-import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.ListDiffDisplayField;
 import org.nuxeo.ecm.diff.model.impl.SimpleDiffDisplayField;
-import org.nuxeo.ecm.diff.service.impl.DiffDisplayDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -82,61 +76,6 @@ public class TestDiffDisplayService extends TestCase {
     protected DocumentDiffService docDiffService;
 
     /**
-     * Test diff display contrib.
-     * 
-     * @throws ClientException the client exception
-     */
-    @Test
-    public void testDiffDisplayContrib() throws ClientException {
-
-        // Check service
-        assertNotNull(diffDisplayService);
-
-        // Check diffDisplay contribs
-        Map<String, DiffDisplayDescriptor> contribs = diffDisplayService.getContributions();
-        assertNotNull(contribs);
-        assertEquals(1, contribs.size());
-        assertTrue(contribs.containsKey("default"));
-
-        // Check a non existing diffDisplay contrib
-        List<DiffBlockDefinition> diffBlockDefinitions = diffDisplayService.getDiffBlockDefinitions("test");
-        assertNull(diffBlockDefinitions);
-
-        // Check default diffDisplay contrib
-        diffBlockDefinitions = diffDisplayService.getDefaultDiffBlockDefinitions();
-        assertNotNull(diffBlockDefinitions);
-
-        List<DiffBlockDefinition> expectedDiffBlockDefinitions = new ArrayList<DiffBlockDefinition>();
-
-        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "modified"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "subjects"));
-        expectedDiffBlockDefinitions.add(new DiffBlockDefinitionImpl("general",
-                fields));
-
-        fields = new ArrayList<DiffFieldDefinition>();
-        List<String> items = new ArrayList<String>();
-        items.add("stringItem");
-        items.add("dateItem");
-        items.add("integerItem");
-        fields.add(new DiffFieldDefinitionImpl("complextypes", "complexList",
-                items));
-        expectedDiffBlockDefinitions.add(new DiffBlockDefinitionImpl(
-                "complexTypes", fields));
-
-        assertEquals(expectedDiffBlockDefinitions, diffBlockDefinitions);
-
-        // Check that order is taken into account
-        DiffBlockDefinition diffDisplayBlock = expectedDiffBlockDefinitions.get(0);
-        expectedDiffBlockDefinitions.remove(0);
-        expectedDiffBlockDefinitions.add(diffDisplayBlock);
-
-        assertFalse(expectedDiffBlockDefinitions.equals(diffBlockDefinitions));
-
-    }
-
-    /**
      * Test diff display service.
      * 
      * @throws ClientException the client exception
@@ -145,35 +84,97 @@ public class TestDiffDisplayService extends TestCase {
     @Test
     public void testDiffDisplayService() throws ClientException, ParseException {
 
-        // Get left and right docs
-        DocumentModel leftDoc = session.getDocument(new PathRef(
-                DocumentDiffRepositoryInit.LEFT_DOC_PATH));
-        DocumentModel rightDoc = session.getDocument(new PathRef(
-                DocumentDiffRepositoryInit.RIGHT_DOC_PATH));
+        // -----------------------------------------------------------------
+        // Check diff display for 2 documents of different types
+        // => must fall back on the default (Document) diffDisplay contrib
+        // -----------------------------------------------------------------
+
+        // Create left and right docs
+        DocumentModel leftDoc = session.createDocumentModel("Note");
+        leftDoc.setPropertyValue("dc:title", "My note");
+        leftDoc.setPropertyValue("dc:subjects", new String[] { "Art",
+                "Architecture" });
+        leftDoc = session.createDocument(leftDoc);
+
+        DocumentModel rightDoc = session.createDocumentModel("File");
+        rightDoc.setPropertyValue("dc:title", "My file");
+        rightDoc.setPropertyValue("dc:subjects", new String[] { "Art" });
+        rightDoc = session.createDocument(rightDoc);
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
 
-        // Check a non existing diffDisplay contrib
+        // Get diff display blocks
         List<DiffDisplayBlock> diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(
-                "test", docDiff, leftDoc, rightDoc);
-        assertNotNull(diffDisplayBlocks);
-        // TODO: should not be empty, with random schema fields...
-        assertTrue(diffDisplayBlocks.isEmpty());
-
-        // Check default diffDisplay contrib
-        diffDisplayBlocks = diffDisplayService.getDefaultDiffDisplayBlocks(
                 docDiff, leftDoc, rightDoc);
+        assertNotNull(diffDisplayBlocks);
+        assertEquals(1, diffDisplayBlocks.size());
+
+        // Check diff display block
+        DiffDisplayBlock diffDisplayBlock = diffDisplayBlocks.get(0);
+        assertEquals("label.diffBlock.header", diffDisplayBlock.getLabel());
+        Map<String, DiffDisplayField> value = diffDisplayBlock.getValue();
+        assertNotNull(value);
+        assertEquals(2, value.size());
+        assertTrue(value.containsKey("dublincore:title"));
+        assertTrue(value.containsKey("dublincore:subjects"));
+
+        // -----------------------------------------------------------------
+        // Check diff display for 2 documents of the same type but with no
+        // diffDisplay contrib defined for this type
+        // => must fall back on the default (Document) diffDisplay contrib
+        // -----------------------------------------------------------------
+
+        // Create left and right docs
+        rightDoc = session.createDocumentModel("Note");
+        rightDoc = session.createDocument(rightDoc);
+
+        // Do doc diff
+        docDiff = docDiffService.diff(session, leftDoc, rightDoc);
+
+        // Get diff display blocks
+        diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
+                leftDoc, rightDoc);
+        assertNotNull(diffDisplayBlocks);
+        assertEquals(1, diffDisplayBlocks.size());
+
+        // Check diff display block
+        diffDisplayBlock = diffDisplayBlocks.get(0);
+        assertEquals("label.diffBlock.header", diffDisplayBlock.getLabel());
+        value = diffDisplayBlock.getValue();
+        assertNotNull(value);
+        assertEquals(2, value.size());
+        assertTrue(value.containsKey("dublincore:title"));
+        assertTrue(value.containsKey("dublincore:subjects"));
+
+        // -----------------------------------------------------------------
+        // Check diff display for 2 documents of the same type with a
+        // diffDisplay contrib defined for this type
+        // => must use it!
+        // -----------------------------------------------------------------
+
+        // Get left and right docs
+        leftDoc = session.getDocument(new PathRef(
+                DocumentDiffRepositoryInit.LEFT_DOC_PATH));
+        rightDoc = session.getDocument(new PathRef(
+                DocumentDiffRepositoryInit.RIGHT_DOC_PATH));
+
+        // Do doc diff
+        docDiff = docDiffService.diff(session, leftDoc, rightDoc);
+
+        // Get diff display blocks
+        diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
+                leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
         assertEquals(2, diffDisplayBlocks.size());
 
         // ------------------------------
-        // Check first diffDisplay block
+        // Check first diff display block
         // ------------------------------
-        DiffDisplayBlock diffDisplayBlock = diffDisplayBlocks.get(0);
+        diffDisplayBlock = diffDisplayBlocks.get(0);
 
         // Check label
-        assertEquals("label.diffBlock.general", diffDisplayBlock.getLabel());
+        assertEquals("label.diffBlock.header", diffDisplayBlock.getLabel());
 
         // Check value
         Map<String, DiffDisplayField> expectedValue = new HashMap<String, DiffDisplayField>();
@@ -190,13 +191,14 @@ public class TestDiffDisplayService extends TestCase {
         item1.put("index", new SimpleDiffDisplayField("1", "1"));
         item1.put("value", new SimpleDiffDisplayField("Architecture", "N/A"));
         listField.add(item1);
+        // TODO: test list / complex field
         // expectedValue.put("dublincore:subjects", listField);
         expectedValue.put("dublincore:subjects", null);
         assertEquals(expectedValue, diffDisplayBlock.getValue());
 
         // Check layout definition
         LayoutDefinition layoutDef = diffDisplayBlock.getLayoutDefinition();
-        assertEquals("general", layoutDef.getName());
+        assertEquals("header", layoutDef.getName());
 
         // Check layout row definitions
         LayoutRowDefinition[] layoutRowDefinitions = layoutDef.getRows();
@@ -268,28 +270,4 @@ public class TestDiffDisplayService extends TestCase {
 
         // TODO: check props ?
     }
-    /**
-     * Test apply complex items order.
-     */
-    // @Test
-    // public void testApplyComplexItemsOrder() {
-    //
-    // List<String> complexItems = new ArrayList<String>();
-    // complexItems.add("stringItem");
-    // complexItems.add("booleanItem");
-    // complexItems.add("integerItem");
-    // complexItems.add("dateItem");
-    //
-    // docDiffDisplayService.applyComplexItemsOrder("complextypes", "complex",
-    // complexItems);
-    //
-    // List<String> expectedComplexItems = new ArrayList<String>();
-    // expectedComplexItems.add("integerItem");
-    // expectedComplexItems.add("dateItem");
-    // expectedComplexItems.add("stringItem");
-    // expectedComplexItems.add("booleanItem");
-    //
-    // assertEquals(expectedComplexItems, complexItems);
-    // }
-
 }

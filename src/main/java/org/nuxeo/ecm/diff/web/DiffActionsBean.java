@@ -171,8 +171,8 @@ public class DiffActionsBean implements Serializable {
 
         DocumentDiff docDiff = getDocumentDiffService().diff(documentManager,
                 leftDoc, rightDoc);
-        return getDiffDisplayService().getDefaultDiffDisplayBlocks(docDiff,
-                leftDoc, rightDoc);
+        return getDiffDisplayService().getDiffDisplayBlocks(docDiff, leftDoc,
+                rightDoc);
 
     }
 

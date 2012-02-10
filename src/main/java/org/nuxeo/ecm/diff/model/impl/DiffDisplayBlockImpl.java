@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.diff.model.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
@@ -38,11 +37,6 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
     protected Map<String, DiffDisplayField> value;
 
     protected LayoutDefinition layoutDefinition;
-
-    public DiffDisplayBlockImpl(String label) {
-        this.label = label;
-        this.value = new HashMap<String, DiffDisplayField>();
-    }
 
     public DiffDisplayBlockImpl(String label,
             Map<String, DiffDisplayField> value,

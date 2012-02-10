@@ -14,32 +14,28 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.diff.model;
+package org.nuxeo.ecm.diff.service.impl;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Diff block definition interface.
+ * Diff block reference descriptor.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
-public interface DiffDisplayBlock extends Serializable {
+@XObject("diffBlock")
+public class DiffBlockReferenceDescriptor {
 
-    String getLabel();
+    @XNode("@name")
+    public String name;
 
-    Map<String, DiffDisplayField> getValue();
+    public String getName() {
+        return name;
+    }
 
-    LayoutDefinition getLayoutDefinition();
-
-    boolean isEmpty();
-
-    void setLabel(String label);
-
-    void setValue(Map<String, DiffDisplayField> value);
-
-    void setLayoutDefinition(LayoutDefinition layoutDefinition);
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -32,25 +32,36 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("diffDisplay")
 public class DiffDisplayDescriptor {
 
-    @XNode("@name")
-    public String name;
+    @XNode("@type")
+    public String type;
 
-    @XNodeList(value = "diffBlocks/diffBlock", type = ArrayList.class, componentType = DiffBlockDescriptor.class)
-    public List<DiffBlockDescriptor> diffBlocks = new ArrayList<DiffBlockDescriptor>();
+    @XNode("@enabled")
+    public boolean enabled = true;
 
-    public String getName() {
-        return name;
+    @XNodeList(value = "diffBlocks/diffBlock", type = ArrayList.class, componentType = DiffBlockReferenceDescriptor.class)
+    public List<DiffBlockReferenceDescriptor> diffBlocks = new ArrayList<DiffBlockReferenceDescriptor>();
+
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public List<DiffBlockDescriptor> getDiffBlocks() {
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<DiffBlockReferenceDescriptor> getDiffBlocks() {
         return diffBlocks;
     }
 
-    public void setDiffBlocks(List<DiffBlockDescriptor> diffBlocks) {
+    public void setDiffBlocks(List<DiffBlockReferenceDescriptor> diffBlocks) {
         this.diffBlocks = diffBlocks;
     }
 }

@@ -1,32 +1,58 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.diff.service.DiffDisplayService.contrib.test">
 
+  <require>
+    org.nuxeo.ecm.diff.service.DiffDisplayService.contrib
+  </require>
+
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffDisplay">
 
-    <diffDisplay name="default">
+    <!-- Override Document diffDisplay -->
+    <diffDisplay type="Document">
       <diffBlocks>
-        <diffBlock name="testNoFields" />
-        <diffBlock name="general" label="label.diffBlock.general">
-          <fields>
-            <field schema="dublincore" name="title" />
-            <field schema="dublincore" name="modified" />
-            <field schema="dublincore" name="subjects" />
-          </fields>
-        </diffBlock>
-        <diffBlock name="complexTypes" label="label.diffBlock.complexTypes">
-          <fields>
-            <field schema="complextypes" name="complexList">
-              <items>
-                <item>stringItem</item>
-                <item>dateItem</item>
-                <item>integerItem</item>
-              </items>
-            </field>
-          </fields>
-        </diffBlock>
+        <diffBlock name="header" />
+        <diffBlock name="complexTypes" />
       </diffBlocks>
     </diffDisplay>
+
+    <!-- New SampleType diffDisplay -->
+    <diffDisplay type="SampleType">
+      <diffBlocks>
+        <diffBlock name="header" />
+        <diffBlock name="testNoFields" />
+      </diffBlocks>
+    </diffDisplay>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffBlock">
+
+    <!-- Override header diffBlock -->
+    <diffBlock name="header" label="label.diffBlock.header">
+      <fields>
+        <field schema="dublincore" name="title" />
+        <field schema="dublincore" name="modified" />
+        <field schema="dublincore" name="subjects" />
+      </fields>
+    </diffBlock>
+
+    <!-- No fields diffBlock -->
+    <diffBlock name="testNoFields" />
+
+    <!-- New complexTypes diffBlock -->
+    <diffBlock name="complexTypes" label="label.diffBlock.complexTypes">
+      <fields>
+        <field schema="complextypes" name="complexList">
+          <items>
+            <item>stringItem</item>
+            <item>dateItem</item>
+            <item>integerItem</item>
+          </items>
+        </field>
+      </fields>
+    </diffBlock>
 
   </extension>
 

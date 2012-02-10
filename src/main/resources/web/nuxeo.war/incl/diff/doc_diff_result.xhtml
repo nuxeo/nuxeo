@@ -28,7 +28,7 @@
       <h:outputText value="#{messages['document.diff.noDiffAvailable']}"/>
     </h2>
   </c:if>
-  <c:if test="#{diffActions.documentDAvailable}">
+  <c:if test="#{diffActions.documentDiffAvailable}">
   
   <nxu:set var="leftDoc" value="#{diffActions.leftDoc}" cache="true">
   <nxu:set var="rightDoc" value="#{diffActions.rightDoc}" cache="true">
@@ -84,7 +84,8 @@
             <span class="breaker"></span>
           </h3>
           <div class="boxBody">
-            <nxl:layout definition="#{diffDisplayBlock.layoutDefinition}" value="#{diffDisplayBlock.value}" />
+            <nxl:layout mode="view" definition="#{diffDisplayBlock.layoutDefinition}"
+              value="#{diffDisplayBlock.value}" template="/layouts/layout_default_template.xhtml"/>
           </div>
         </div>
       </c:forEach>

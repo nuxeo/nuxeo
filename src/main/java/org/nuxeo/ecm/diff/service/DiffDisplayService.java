@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
-import org.nuxeo.ecm.diff.service.impl.DiffDisplayDescriptor;
 
 /**
  * Handles the configuration of a document diff display.
@@ -35,48 +34,19 @@ import org.nuxeo.ecm.diff.service.impl.DiffDisplayDescriptor;
  */
 public interface DiffDisplayService extends Serializable {
 
-    String DEFAULT_DIFF_DISPLAY_NAME = "default";
+    String DEFAULT_DIFF_DISPLAY_TYPE = "Document";
 
-    /**
-     * Gets the contributions.
-     * 
-     * @return the contributions
-     */
-    Map<String, DiffDisplayDescriptor> getContributions();
+    Map<String, List<String>> getDiffDisplays();
 
-    /**
-     * Gets the diff block definitions.
-     * 
-     * @param diffDisplayName the diff display name
-     * @return the diff block definitions
-     * @throws ClientException the client exception
-     */
-    List<DiffBlockDefinition> getDiffBlockDefinitions(String diffDisplayName);
+    List<String> getDiffDisplay(String type);
 
-    /**
-     * Gets the default diff block definitions.
-     * 
-     * @return the default diff block definitions
-     * @throws ClientException the client exception
-     */
-    List<DiffBlockDefinition> getDefaultDiffBlockDefinitions();
+    List<String> getDefaultDiffDisplay();
 
-    List<DiffDisplayBlock> getDiffDisplayBlocks(String diffDisplayName,
-            DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
-            throws ClientException;
+    Map<String, DiffBlockDefinition> getDiffBlockDefinitions();
 
-    List<DiffDisplayBlock> getDefaultDiffDisplayBlocks(DocumentDiff docDiff,
+    DiffBlockDefinition getDiffBlockDefinition(String name);
+
+    List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff,
             DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException;
-
-    /**
-     * Apply complex items order.
-     * 
-     * @param schemaName the schema name
-     * @param fieldName the field name
-     * @param complexItems the complex items
-     */
-    // void applyComplexItemsOrder(String schemaName, String fieldName,
-    // List<String> complexItems);
-
 }

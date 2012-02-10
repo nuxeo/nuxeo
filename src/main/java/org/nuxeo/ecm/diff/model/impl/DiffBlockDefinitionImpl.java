@@ -16,9 +16,11 @@
  */
 package org.nuxeo.ecm.diff.model.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
 
@@ -28,8 +30,7 @@ import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
-public class DiffBlockDefinitionImpl implements
-        DiffBlockDefinition {
+public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
 
     private static final long serialVersionUID = 511776842683091931L;
 
@@ -44,13 +45,16 @@ public class DiffBlockDefinitionImpl implements
     public DiffBlockDefinitionImpl(String name, String label,
             List<DiffFieldDefinition> fields) {
         this.name = name;
-        this.label = label;
-        this.fields = fields;
-    }
-
-    public DiffBlockDefinitionImpl(String name,
-            List<DiffFieldDefinition> fields) {
-        this(name, DIFF_DISPLAY_BLOCK_LABEL_PREFIX + name, fields);
+        if (StringUtils.isEmpty(label)) {
+            this.label = DIFF_DISPLAY_BLOCK_LABEL_PREFIX + name;
+        } else {
+            this.label = label;
+        }
+        if (fields == null) {
+            this.fields = new ArrayList<DiffFieldDefinition>();
+        } else {
+            this.fields = fields;
+        }
     }
 
     public String getName() {

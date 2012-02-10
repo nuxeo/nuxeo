@@ -66,74 +66,103 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     private static final Log LOGGER = LogFactory.getLog(DiffDisplayServiceImpl.class);
 
-    protected static final String DIFF_DISPLAY_POINT = "diffDisplay";
+    protected static final String DIFF_DISPLAY_EXTENSION_POINT = "diffDisplay";
+
+    protected static final String DIFF_BLOCK_EXTENSION_POINT = "diffBlock";
 
     protected static final String DIFF_WIDGET_CATEGORY = "diff";
 
     protected static final String DIFF_WIDGET_LABEL_PREFIX = "label.diff.widget.";
 
     /** Diff display contributions. */
-    protected Map<String, DiffDisplayDescriptor> contributions = new HashMap<String, DiffDisplayDescriptor>();
+    protected Map<String, List<String>> diffDisplayContribs = new HashMap<String, List<String>>();
 
-    protected Map<String, List<DiffBlockDefinition>> diffDisplayBlockDefinitions = new HashMap<String, List<DiffBlockDefinition>>();
+    /** Diff block contributions. */
+    protected Map<String, DiffBlockDefinition> diffBlockContribs = new HashMap<String, DiffBlockDefinition>();
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
 
-        if (DIFF_DISPLAY_POINT.equals(extensionPoint)) {
+        if (DIFF_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
             if (contribution instanceof DiffDisplayDescriptor) {
                 registerDiffDisplay((DiffDisplayDescriptor) contribution);
+            }
+        } else if (DIFF_BLOCK_EXTENSION_POINT.equals(extensionPoint)) {
+            if (contribution instanceof DiffBlockDescriptor) {
+                registerDiffBlock((DiffBlockDescriptor) contribution);
             }
         }
         super.registerContribution(contribution, extensionPoint, contributor);
     }
 
-    public Map<String, DiffDisplayDescriptor> getContributions() {
-        return contributions;
+    public Map<String, List<String>> getDiffDisplays() {
+        return diffDisplayContribs;
     }
 
-    public List<DiffBlockDefinition> getDiffBlockDefinitions(
-            String diffDisplayName) {
+    public List<String> getDiffDisplay(String type) {
+        return diffDisplayContribs.get(type);
 
-        return diffDisplayBlockDefinitions.get(diffDisplayName);
     }
 
-    public List<DiffBlockDefinition> getDefaultDiffBlockDefinitions() {
+    public List<String> getDefaultDiffDisplay() {
+        return diffDisplayContribs.get(DEFAULT_DIFF_DISPLAY_TYPE);
 
-        return getDiffBlockDefinitions(DEFAULT_DIFF_DISPLAY_NAME);
     }
 
-    public List<DiffDisplayBlock> getDiffDisplayBlocks(String diffDisplayName,
-            DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
+    public Map<String, DiffBlockDefinition> getDiffBlockDefinitions() {
+        return diffBlockContribs;
+    }
+
+    public DiffBlockDefinition getDiffBlockDefinition(String name) {
+        return diffBlockContribs.get(name);
+    }
+
+    public List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff,
+            DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException {
 
-        List<DiffDisplayBlock> diffDisplayBlocks = new ArrayList<DiffDisplayBlock>();
-
-        List<DiffBlockDefinition> diffBlockDefinitions = getDiffBlockDefinitions(diffDisplayName);
-        if (diffBlockDefinitions != null) {
-            for (DiffBlockDefinition diffBlockDefinition : diffBlockDefinitions) {
-
-                DiffDisplayBlock diffDisplayBlock = getDiffDisplayBlock(
-                        diffBlockDefinition, docDiff, leftDoc, rightDoc);
-                if (!diffDisplayBlock.isEmpty()) {
-                    diffDisplayBlocks.add(diffDisplayBlock);
-                }
+        String leftDocType = leftDoc.getType();
+        String rightDocType = rightDoc.getType();
+        if (leftDocType.equals(rightDocType)) {
+            LOGGER.info(String.format(
+                    "The 2 documents have the same type '%s' => looking for a diffDisplay contribution defined for this type.",
+                    leftDocType));
+            List<String> diffBlockRefs = getDiffDisplay(leftDocType);
+            if (diffBlockRefs != null) {
+                LOGGER.info(String.format(
+                        "Found a diffDisplay contribution defined for the type '%s' => using it to display the diff.",
+                        leftDocType));
+                return getDiffDisplayBlocks(diffBlockRefs, docDiff, leftDoc,
+                        rightDoc);
+            } else {
+                LOGGER.info(String.format(
+                        "No diffDisplay contribution was defined for the type '%s' => looking for the default (Document) diffDisplay contribution.",
+                        leftDocType));
             }
         } else {
-            // TODO: Use schema/fields in random order...
+            LOGGER.info(String.format(
+                    "The 2 documents don't have the same type ('%s'/'%s') => looking for the default (Document) diffDisplay contribution.",
+                    leftDocType, rightDocType));
         }
-
-        return diffDisplayBlocks;
+        return getDefaultDiffDisplayBlocks(docDiff, leftDoc, rightDoc);
     }
 
     public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks(
             DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException {
 
-        return getDiffDisplayBlocks(DEFAULT_DIFF_DISPLAY_NAME, docDiff,
-                leftDoc, rightDoc);
+        List<String> diffBlockRefs = getDefaultDiffDisplay();
+        if (diffBlockRefs != null) {
+            LOGGER.info("Found the default (Document) diffDisplay contribution => using it to display the diff.");
+            return getDiffDisplayBlocks(diffBlockRefs, docDiff, leftDoc,
+                    rightDoc);
+        } else {
+            // TODO: Use schema/fields in random order...
+            LOGGER.info("The default (Document) diffDisplay contribution was not found => using the document type schemas and fields to display the diff (random schema and field order).");
+            return new ArrayList<DiffDisplayBlock>();
+        }
     }
 
     /**
@@ -141,55 +170,90 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * 
      * @param contribution the contribution
      */
-    private void registerDiffDisplay(DiffDisplayDescriptor contribution) {
-        contributions.put(contribution.getName(), contribution);
-        registerDiffDisplayBlockDefinitions(contribution);
+    private void registerDiffDisplay(DiffDisplayDescriptor descriptor) {
+
+        String type = descriptor.getType();
+        if (!StringUtils.isEmpty(type)) {
+            boolean enabled = descriptor.isEnabled();
+            // Check existing diffDisplay contrib for this type
+            List<String> diffDisplay = diffDisplayContribs.get(type);
+            if (diffDisplay != null) {
+                // If !enabled remove contrib
+                if (!enabled) {
+                    diffDisplayContribs.remove(type);
+                } else { // Else override contrib (no merge)
+                    diffDisplayContribs.put(type,
+                            getDiffBlockRefs(descriptor.getDiffBlocks()));
+                }
+            } else if (enabled) { // No existing diffDisplay contrib for this
+                                  // type and enabled => add contrib
+                diffDisplayContribs.put(type,
+                        getDiffBlockRefs(descriptor.getDiffBlocks()));
+            }
+        }
     }
 
-    /**
-     * Register diff display block definitions.
-     * 
-     * @param descriptor the descriptor
-     */
-    private void registerDiffDisplayBlockDefinitions(
-            DiffDisplayDescriptor descriptor) {
+    private List<String> getDiffBlockRefs(
+            List<DiffBlockReferenceDescriptor> diffBlocks) {
 
-        List<DiffBlockDefinition> diffBlockDefinitions = new ArrayList<DiffBlockDefinition>();
+        List<String> diffBlockRefs = new ArrayList<String>();
+        for (DiffBlockReferenceDescriptor diffBlockRef : diffBlocks) {
+            diffBlockRefs.add(diffBlockRef.getName());
+        }
+        return diffBlockRefs;
+    }
 
-        List<DiffBlockDescriptor> diffBlockDescriptors = descriptor.getDiffBlocks();
-        for (DiffBlockDescriptor diffBlockDescriptor : diffBlockDescriptors) {
+    private void registerDiffBlock(DiffBlockDescriptor descriptor) {
 
-            String diffBlockName = diffBlockDescriptor.getName();
-            if (!StringUtils.isEmpty(diffBlockName)) {
-                List<DiffFieldDescriptor> fieldDescriptors = diffBlockDescriptor.getFields();
-                // No field descriptors => don't take diff block into account.
-                if (fieldDescriptors == null || fieldDescriptors.isEmpty()) {
-                    LOGGER.warn(String.format(
-                            "The diffBlock contribution named '%s' has no fields, it won't be taken into account.",
-                            diffBlockName));
-                } else {
-                    List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-                    // Some field descriptors were found => use them to add the
-                    // described fields, taking their order into account.
-                    for (DiffFieldDescriptor fieldDescriptor : fieldDescriptors) {
-                        String schema = fieldDescriptor.getSchema();
-                        String name = fieldDescriptor.getName();
-                        if (!StringUtils.isEmpty(schema)
-                                && !StringUtils.isEmpty(name)) {
-                            List<String> items = fieldDescriptor.getItems();
-                            fields.add(new DiffFieldDefinitionImpl(schema,
-                                    name, items));
-                        }
+        String diffBlockName = descriptor.getName();
+        if (!StringUtils.isEmpty(diffBlockName)) {
+            List<DiffFieldDescriptor> fieldDescriptors = descriptor.getFields();
+            // No field descriptors => don't take diff block into account.
+            if (fieldDescriptors == null || fieldDescriptors.isEmpty()) {
+                LOGGER.warn(String.format(
+                        "The diffBlock contribution named '%s' has no fields, it won't be taken into account.",
+                        diffBlockName));
+            } else {
+                List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
+                // Some field descriptors were found => use them to add the
+                // described fields, taking their order into account.
+                for (DiffFieldDescriptor fieldDescriptor : fieldDescriptors) {
+                    String schema = fieldDescriptor.getSchema();
+                    String name = fieldDescriptor.getName();
+                    if (!StringUtils.isEmpty(schema)
+                            && !StringUtils.isEmpty(name)) {
+                        List<String> items = fieldDescriptor.getItems();
+                        fields.add(new DiffFieldDefinitionImpl(schema, name,
+                                items));
                     }
-                    diffBlockDefinitions.add(new DiffBlockDefinitionImpl(
-                            diffBlockName, diffBlockDescriptor.getLabel(),
-                            fields));
+                }
+                diffBlockContribs.put(
+                        diffBlockName,
+                        new DiffBlockDefinitionImpl(diffBlockName,
+                                descriptor.getLabel(), fields));
+            }
+        }
+    }
+
+    private List<DiffDisplayBlock> getDiffDisplayBlocks(
+            List<String> diffBlockNames, DocumentDiff docDiff,
+            DocumentModel leftDoc, DocumentModel rightDoc)
+            throws ClientException {
+
+        List<DiffDisplayBlock> diffDisplayBlocks = new ArrayList<DiffDisplayBlock>();
+
+        for (String diffBlockRef : diffBlockNames) {
+            DiffBlockDefinition diffBlockDef = getDiffBlockDefinition(diffBlockRef);
+            if (diffBlockDef != null) {
+                DiffDisplayBlock diffDisplayBlock = getDiffDisplayBlock(
+                        diffBlockDef, docDiff, leftDoc, rightDoc);
+                if (!diffDisplayBlock.isEmpty()) {
+                    diffDisplayBlocks.add(diffDisplayBlock);
                 }
             }
         }
 
-        diffDisplayBlockDefinitions.put(descriptor.getName(),
-                diffBlockDefinitions);
+        return diffDisplayBlocks;
     }
 
     private DiffDisplayBlock getDiffDisplayBlock(
@@ -197,9 +261,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException {
 
-        DiffDisplayBlock diffDisplayBlock = new DiffDisplayBlockImpl(
-                diffBlockDefinition.getLabel());
-
+        Map<String, DiffDisplayField> value = new HashMap<String, DiffDisplayField>();
         List<LayoutRowDefinition> layoutRowDefinitions = new ArrayList<LayoutRowDefinition>();
         List<WidgetDefinition> widgetDefinitions = new ArrayList<WidgetDefinition>();
 
@@ -210,37 +272,42 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             String fieldName = fieldDefinition.getName();
 
             SchemaDiff schemaDiff = docDiff.getSchemaDiff(schemaName);
-            PropertyDiff fieldDiff = schemaDiff.getFieldDiff(fieldName);
-            if (fieldDiff != null) {
+            if (schemaDiff != null) {
+                PropertyDiff fieldDiff = schemaDiff.getFieldDiff(fieldName);
+                if (fieldDiff != null) {
 
-                String propertyName = getPropertyName(schemaName, fieldName);
-                String propertyType = fieldDiff.getPropertyType();
+                    String propertyName = getPropertyName(schemaName, fieldName);
+                    String propertyType = fieldDiff.getPropertyType();
 
-                // Set diff display field value
-                DiffDisplayField diffDisplayField = getDiffDisplayField(
-                        propertyType,
-                        leftDoc.getProperty(schemaName, fieldName),
-                        rightDoc.getProperty(schemaName, fieldName));
-                diffDisplayBlock.getValue().put(propertyName, diffDisplayField);
+                    // Set diff display field value
+                    DiffDisplayField diffDisplayField = getDiffDisplayField(
+                            propertyType,
+                            leftDoc.getProperty(schemaName, fieldName),
+                            rightDoc.getProperty(schemaName, fieldName));
+                    value.put(propertyName, diffDisplayField);
 
-                // Set layout row definition
-                LayoutRowDefinition layoutRowDefinition = new LayoutRowDefinitionImpl(
-                        propertyName, propertyName, DIFF_WIDGET_CATEGORY);
-                layoutRowDefinitions.add(layoutRowDefinition);
+                    // Set layout row definition
+                    LayoutRowDefinition layoutRowDefinition = new LayoutRowDefinitionImpl(
+                            propertyName, propertyName, DIFF_WIDGET_CATEGORY);
+                    layoutRowDefinitions.add(layoutRowDefinition);
 
-                // Set widget definition
-                WidgetDefinition widgetDefinition = getWidgetDefinition(
-                        schemaName, fieldName, propertyType);
-                widgetDefinitions.add(widgetDefinition);
+                    // Set widget definition
+                    WidgetDefinition widgetDefinition = getWidgetDefinition(
+                            schemaName, fieldName, propertyType);
+                    widgetDefinitions.add(widgetDefinition);
 
+                }
             }
         }
 
-        // Set diff display block layout definition
+        // Build layout definition
         LayoutDefinition layoutDefinition = new LayoutDefinitionImpl(
                 diffBlockDefinition.getName(), null, null,
                 layoutRowDefinitions, widgetDefinitions);
-        diffDisplayBlock.setLayoutDefinition(layoutDefinition);
+
+        // Build diff display block
+        DiffDisplayBlock diffDisplayBlock = new DiffDisplayBlockImpl(
+                diffBlockDefinition.getLabel(), value, layoutDefinition);
 
         return diffDisplayBlock;
     }

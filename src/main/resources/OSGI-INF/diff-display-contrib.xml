@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.service.DiffDisplayService.contrib">
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffDisplay">
+
+    <diffDisplay type="Document">
+      <diffBlocks>
+        <diffBlock name="header" />
+        <diffBlock name="dublincore" />
+      </diffBlocks>
+    </diffDisplay>
+
+    <diffDisplay type="File">
+      <diffBlocks>
+        <diffBlock name="header" />
+        <diffBlock name="dublincore" />
+        <diffBlock name="files" />
+      </diffBlocks>
+    </diffDisplay>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffBlock">
+
+    <diffBlock name="header" label="label.diffBlock.header">
+      <fields>
+        <field schema="dublincore" name="title" />
+        <field schema="dublincore" name="description" />
+      </fields>
+    </diffBlock>
+
+    <diffBlock name="dublincore" label="label.diffBlock.dublincore">
+      <fields>
+        <field schema="dublincore" name="created" />
+        <field schema="dublincore" name="modified" />
+        <field schema="dublincore" name="creator" />
+        <field schema="dublincore" name="lastContributor" />
+      </fields>
+    </diffBlock>
+
+    <diffBlock name="files" label="label.diffBlock.files">
+      <fields>
+        <field schema="files" name="files">
+          <items>
+            <item>filename</item>
+            <item>file</item>
+          </items>
+        </field>
+      </fields>
+    </diffBlock>
+
+  </extension>
+
+</component>
