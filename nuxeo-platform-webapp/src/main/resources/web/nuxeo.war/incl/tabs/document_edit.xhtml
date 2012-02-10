@@ -1,7 +1,5 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -30,7 +28,8 @@
           </div>
         </td>
         <td class="fieldColumn">
-          <h:inputTextarea value="#{currentDocument.contextData['request/comment']}" />
+          <h:inputTextarea
+            value="#{currentDocument.contextData['request/comment']}" />
         </td>
       </tr>
     </tbody>
@@ -52,4 +51,5 @@
   </p>
 
 </h:form>
+
 </div>
