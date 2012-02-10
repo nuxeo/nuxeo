@@ -107,9 +107,9 @@ class Repository(object):
         log("[%s]" % module)
         if os.path.isdir(module):
             os.chdir(module)
-            system("git fetch %s" % (self.alias))
+            system_with_retries("git fetch %s" % (self.alias))
         else:
-            system("git clone %s" % (repo_url))
+            system_with_retries("git clone %s" % (repo_url))
             os.chdir(module)
         self.git_update(version)
         os.chdir(cwd)
