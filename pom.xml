@@ -779,7 +779,7 @@
         <version>${nuxeo.quota.version}</version>
       </dependency>
 
-      <!-- We Mobile -->
+      <!-- Web Mobile -->
       <dependency>
         <groupId>org.nuxeo.ecm.mobile</groupId>
         <artifactId>nuxeo-web-mobile</artifactId>
