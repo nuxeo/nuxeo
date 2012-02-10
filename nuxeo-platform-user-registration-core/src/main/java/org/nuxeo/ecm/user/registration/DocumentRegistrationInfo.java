@@ -11,7 +11,7 @@ public class DocumentRegistrationInfo {
     
     public static final String DOCUMENT_ID_FIELD = SCHEMA_NAME + ":documentId";
 
-    public static final String DOCUMENT_RIGHT_FIELD = SCHEMA_NAME + ":documentRight";
+    public static final String DOCUMENT_RIGHT_FIELD = SCHEMA_NAME + ":permission";
     
     public static final String ACL_NAME = "acl_document_registration";
     

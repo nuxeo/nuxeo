@@ -172,7 +172,7 @@
       </properties>
     </widget>
 
-    <widget name="doc_request_permission" type="text">
+    <widget name="doc_request_permission" type="template">
       <labels>
         <label mode="any">label.docinfo.permission</label>
       </labels>
@@ -181,6 +181,9 @@
       </fields>
       <properties widgetMode="edit">
         <property name="required">true</property>
+      </properties>
+      <properties widgetMode="any">
+        <property name="template">/widgets/user_request_rights_widget_template.xhtml</property>
       </properties>
     </widget>
 

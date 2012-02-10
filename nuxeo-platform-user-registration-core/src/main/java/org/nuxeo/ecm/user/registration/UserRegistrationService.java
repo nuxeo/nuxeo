@@ -26,6 +26,9 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserRegistrationService {
 
+    public static final String REGISTRATION_DATA_DOC = "registrationDoc";
+    public static final String REGISTRATION_DATA_USER = "registeredUser";
+
     public enum ValidationMethod {
         EMAIL, NONE
     }

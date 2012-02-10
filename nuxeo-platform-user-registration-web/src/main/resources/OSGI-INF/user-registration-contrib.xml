@@ -8,7 +8,9 @@
       <facet name="UserRegistration"/>
     </doctype>
 
-    <doctype name="UserRegistrationContainer" extends="Workspace"/>
+    <doctype name="UserRegistrationContainer" extends="Workspace">
+      <facet name="HiddenInNavigation"/>
+    </doctype>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
@@ -25,14 +27,15 @@
       <requestDocType>UserRegistration</requestDocType>
       <container>
         <docType>UserRegistrationContainer</docType>
-        <parentPath>/default-domain/requests/</parentPath>
+        <parentPath>/default-domain/</parentPath>
         <name>registrationRequests</name>
         <title>Registration Requests Container</title>
       </container>
       <validationEmail>
         <title>You are invited to access Nuxeo</title>
-        <template>templates/registration/ValidationEmailTemplate.ftl</template>
+        <template>views/userRegistration/ValidationEmailTemplate.ftl</template>
       </validationEmail>
+      <validationRelUrl>site/userRegistration/validate/</validationRelUrl>
     </configuration>
   </extension>
 
@@ -41,5 +44,13 @@
     <event name="registrationSubmitted"/>
     <event name="registrationAccepted"/>
     <event name="registrationValidated"/>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="openUrl">
+    <openUrl name="RegisterUser_validate">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/validate/.*</grantPattern>
+    </openUrl>
   </extension>
 </component>

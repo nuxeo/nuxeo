@@ -316,8 +316,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
                     UserRegistrationService.REGISTRATION_VALIDATED_EVENT);
 
             registrationDoc.detach(sessionIsAlreadyUnrestricted);
-            registrationData.put("registrationDoc", registrationDoc);
-            registrationData.put("registeredUser",
+            registrationData.put(REGISTRATION_DATA_DOC, registrationDoc);
+            registrationData.put(REGISTRATION_DATA_USER,
                     evContext.getProperty("registeredUser"));
         }
 
