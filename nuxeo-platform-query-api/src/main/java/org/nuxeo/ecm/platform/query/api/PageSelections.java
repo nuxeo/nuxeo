@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * List of {@link PageSelection} elements.
+ *
  * @author Anahide Tchertchian
  */
 public class PageSelections<T> {
