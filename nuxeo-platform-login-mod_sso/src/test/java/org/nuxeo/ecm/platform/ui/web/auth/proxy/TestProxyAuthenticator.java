@@ -14,8 +14,8 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *     Academie de Rennes - proxy CAS support
+ *     Revolution Linux - Username string cleanup
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.proxy;
@@ -37,68 +37,75 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		deployBundle("org.nuxeo.ecm.platform.login.mod_sso.test");
-		deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mock-usermanager-framework.xml");
-		deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mod_sso-descriptor-bundle.xml");
-	}
+        deployBundle("org.nuxeo.ecm.platform.login.mod_sso.test");
+        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test",
+                "OSGI-INF/mock-usermanager-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test",
+                "OSGI-INF/mod_sso-descriptor-bundle.xml");
+    }
 
-	public void testProxyAuthenticationWithoutReplacement() throws Exception {
+    public void testProxyAuthenticationWithoutReplacement() throws Exception {
 
-		ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
+        ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
 
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("ssoHeaderName", "remote_user");
-		// Redirect requires prefilter configuration, skipping...
-		parameters.put("ssoNeverRedirect", "true");
-		proxyAuth.initPlugin(parameters);
-		
-		String username = "test";
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("ssoHeaderName", "remote_user");
+        // Redirect requires prefilter configuration, skipping...
+        parameters.put("ssoNeverRedirect", "true");
+        proxyAuth.initPlugin(parameters);
 
-		MockServletContext context = new MockServletContext();
-		MockHttpSession session = new MockHttpSession(context);
-		MockHttpServletRequest httpRequest = new MockHttpServletRequest(session, null, null, null, "GET");
+        String username = "test";
 
-		httpRequest.getHeaders().put("remote_user", new String[] {username});
+        MockServletContext context = new MockServletContext();
+        MockHttpSession session = new MockHttpSession(context);
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest(
+                session, null, null, null, "GET");
 
-		HttpServletResponse httpResponse = new MockHttpServletResponse();
+        httpRequest.getHeaders().put("remote_user", new String[] { username });
 
-		UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(httpRequest, httpResponse);
-		
-		assertNotNull(identity);
-		assertEquals(username, identity.getUserName());
-	}
+        HttpServletResponse httpResponse = new MockHttpServletResponse();
 
-	public void testProxyAuthenticationWithReplacement() throws Exception {
+        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(
+                httpRequest, httpResponse);
 
-		ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
+        assertNotNull(identity);
+        assertEquals(username, identity.getUserName());
+    }
 
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("ssoHeaderName", "remote_user");
-		// Redirect requires prefilter configuration, skipping...
-		parameters.put("ssoNeverRedirect", "true");
-		String regexp = "@EXAMPLE.COM";
-		parameters.put(ProxyAuthenticator.USERNAME_REMOVE_EXPRESSION, regexp);
-		proxyAuth.initPlugin(parameters);
-		
-		String username = "test";
-		String usernameAndUnwantedPart = username + "@EXAMPLE.COM";
+    public void testProxyAuthenticationWithReplacement() throws Exception {
 
-		MockServletContext context = new MockServletContext();
-		MockHttpSession session = new MockHttpSession(context);
-		MockHttpServletRequest httpRequest = new MockHttpServletRequest(session, null, null, null, "GET");
+        ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
 
-		httpRequest.getHeaders().put("remote_user", new String[] {usernameAndUnwantedPart});
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("ssoHeaderName", "remote_user");
+        // Redirect requires prefilter configuration, skipping...
+        parameters.put("ssoNeverRedirect", "true");
+        String regexp = "@EXAMPLE.COM";
+        parameters.put(ProxyAuthenticator.USERNAME_REMOVE_EXPRESSION, regexp);
+        proxyAuth.initPlugin(parameters);
 
-		HttpServletResponse httpResponse = new MockHttpServletResponse();
+        String username = "test";
+        String usernameAndUnwantedPart = username + "@EXAMPLE.COM";
 
-		UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(httpRequest, httpResponse);
-		
-		assertNotNull(identity);
-		assertEquals(username, identity.getUserName());
-	}
+        MockServletContext context = new MockServletContext();
+        MockHttpSession session = new MockHttpSession(context);
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest(
+                session, null, null, null, "GET");
+
+        httpRequest.getHeaders().put("remote_user",
+                new String[] { usernameAndUnwantedPart });
+
+        HttpServletResponse httpResponse = new MockHttpServletResponse();
+
+        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(
+                httpRequest, httpResponse);
+
+        assertNotNull(identity);
+        assertEquals(username, identity.getUserName());
+    }
 
 }
