@@ -152,6 +152,8 @@ public abstract class NuxeoLauncher {
 
     private boolean quiet = false;
 
+    private boolean debug = false;
+
     /**
      * @since 5.5
      * @return true if quiet mode is active
@@ -877,6 +879,12 @@ public abstract class NuxeoLauncher {
             startCommand.add("-Dnuxeo.runtime.home="
                     + configurationGenerator.getRuntimeHome().getPath());
             startCommand.add(PKG_MANAGER_CLASS);
+            if (quiet) {
+                startCommand.add("-q");
+            }
+            if (debug) {
+                startCommand.add("-d");
+            }
             startCommand.add(tmpDir.getPath());
             startCommand.add(pkgCommand);
             startCommand.add(configurationGenerator.getInstallFile().getPath());
@@ -932,7 +940,7 @@ public abstract class NuxeoLauncher {
      * @param tmpDir temporary directory hosting classpath
      * @throws IOException If temporary directory could not be created.
      */
-    private String getInstallClassPath(File tmpDir) throws IOException {
+    protected String getInstallClassPath(File tmpDir) throws IOException {
         String cp = ".";
         tmpDir.delete();
         tmpDir.mkdirs();
@@ -975,10 +983,12 @@ public abstract class NuxeoLauncher {
         targetDir.mkdirs();
         for (final String filePattern : filenames) {
             File[] files = getFilename(baseDir, filePattern);
-            FileUtils.copyFileToDirectory(files[0], targetDir);
-            File classPathEntry = new File(targetDir, files[0].getName());
-            classpath += System.getProperty("path.separator")
-                    + classPathEntry.getPath();
+            for (File file : files) {
+                FileUtils.copyFileToDirectory(file, targetDir);
+                File classPathEntry = new File(targetDir, file.getName());
+                classpath += System.getProperty("path.separator")
+                        + classPathEntry.getPath();
+            }
         }
         return classpath;
     }
@@ -1279,7 +1289,7 @@ public abstract class NuxeoLauncher {
                 nbOptions++;
                 if ("-d".equalsIgnoreCase(arg)
                         || "--debug".equalsIgnoreCase(arg)) {
-                    setDebug(true);
+                    setDebug();
                 } else if ("-q".equalsIgnoreCase(arg)
                         || "--quiet".equalsIgnoreCase(arg)) {
                     setQuiet();
@@ -1306,8 +1316,9 @@ public abstract class NuxeoLauncher {
      * @param activateDebug if true, will activate the DEBUG logs
      * @since 5.5
      */
-    protected void setDebug(boolean activateDebug) {
-        Log4JHelper.setDebug("org.nuxeo", activateDebug, true, "FILE");
+    protected void setDebug() {
+        debug = true;
+        Log4JHelper.setDebug("org.nuxeo.launcher", true, true, "FILE");
     }
 
     /**

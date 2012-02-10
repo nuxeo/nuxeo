@@ -11,9 +11,9 @@
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%m%n" />
     </layout>
-    <filter class="org.apache.log4j.varia.LevelRangeFilter">
-      <param name="levelMin" value="INFO" />
-    </filter>
+    <!-- <filter class="org.apache.log4j.varia.LevelRangeFilter"> -->
+    <!-- <param name="levelMin" value="INFO" /> -->
+    <!-- </filter> -->
   </appender>
 
   <!-- ================================= -->
@@ -36,7 +36,7 @@
   <logger name="org.nuxeo.launcher">
     <level value="INFO" />
   </logger>
-  <logger name="org.nuxeo.ecm.admin.offline.update">
+  <logger name="org.nuxeo.ecm.admin">
     <level value="INFO" />
   </logger>
   <logger name="org.nuxeo.runtime.deployment.preprocessor">
