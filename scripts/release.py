@@ -85,10 +85,6 @@ PKG_RENAMINGS = {
     "nuxeo-distribution-jboss-%s-nuxeo-cap.zip": "nuxeo-cap-%s-jboss",
     "nuxeo-distribution/nuxeo-distribution-jboss/target/"
     "nuxeo-distribution-jboss-%s-nuxeo-cap-ear.zip": "nuxeo-cap-%s-jboss-ear",
-    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
-    "nuxeo-distribution-jboss-%s-nuxeo-dm.zip": "nuxeo-dm-%s-jboss",
-    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
-    "nuxeo-distribution-jboss-%s-nuxeo-dm-ear.zip": "nuxeo-dm-%s-jboss-ear",
     # Tomcat packages
     "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
     "nuxeo-distribution-tomcat-%s-coreserver.zip":
