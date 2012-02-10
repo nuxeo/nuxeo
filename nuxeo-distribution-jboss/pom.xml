@@ -14,10 +14,6 @@
   <name>Nuxeo JBoss5 Distribution</name>
   <description>Package Nuxeo CAP or DM EAR with JBoss5</description>
 
-  <properties>
-    <product.name>dm</product.name>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -48,28 +44,6 @@
 
   <profiles>
     <profile>
-      <id>all-distributions</id>
-      <!-- profile for building all classifiers -->
-    </profile>
-    <profile>
-      <id>all</id>
-      <!-- profile for building all classifiers -->
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-    </profile>
-    <profile>
-      <id>nuxeo-cap</id>
-      <!-- profile for building JBoss with only Nuxeo CAP -->
-      <properties>
-        <product.name>cap</product.name>
-      </properties>
-    </profile>
-    <profile>
-      <id>nuxeo-dm</id>
-      <!-- profile for building JBoss with only Nuxeo DM -->
-    </profile>
-    <profile>
       <id>release</id>
       <build>
         <plugins>
@@ -77,7 +51,7 @@
             <groupId>org.jboss.tattletale</groupId>
             <artifactId>tattletale-maven</artifactId>
             <configuration>
-              <source>${project.build.directory}/nuxeo-${product.name}-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-${product.name}-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib</source>
+              <source>${project.build.directory}/nuxeo-cap-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-cap-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib</source>
             </configuration>
           </plugin>
         </plugins>
