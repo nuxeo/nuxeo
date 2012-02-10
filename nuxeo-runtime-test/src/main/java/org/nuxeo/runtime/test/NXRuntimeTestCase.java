@@ -51,6 +51,7 @@ import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServiceManager;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
@@ -177,6 +178,9 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         bundles = null;
         ServiceManager.getInstance().reset();
         super.tearDown();
+        if (NuxeoContainer.isInstalled()) {
+            throw new Error("Nuxeo container is still installed", NuxeoContainer.getInstallContext());
+        }
     }
 
     @Override

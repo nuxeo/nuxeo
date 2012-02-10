@@ -102,6 +102,18 @@ public interface RunnerFeature {
     void stop(FeaturesRunner runner) throws Exception;
 
     /**
+     * Before entering in the @Before methods
+     * @param runner TODO
+     */
+    void beforeSetup(FeaturesRunner runner) throws Exception;
+
+    /**
+     * After the call of the @After methods
+     * @param runner TODO
+     */
+    void afterTeardown(FeaturesRunner runner) throws Exception;
+
+    /**
      * Before a test method is invoked.
      */
     void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception;

@@ -83,4 +83,14 @@ public class SimpleFeature implements RunnerFeature {
             Object test) throws Exception {
     }
 
+    @Override
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
+
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
+
+    }
+
 }

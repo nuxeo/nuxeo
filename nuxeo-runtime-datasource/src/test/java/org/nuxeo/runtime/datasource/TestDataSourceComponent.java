@@ -55,8 +55,11 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        super.tearDown();
-       NamingContextFactory.revertSetAsInitial();
+       try {
+         super.tearDown();
+       } finally {
+         NamingContextFactory.revertSetAsInitial();
+       }
     }
 
     public void testJNDIName() throws Exception {

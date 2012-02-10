@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -21,6 +21,8 @@ package org.nuxeo.runtime.test.runner;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Provider;
+import com.google.inject.Scope;
+import com.google.inject.Scopes;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,20 +30,27 @@ import com.google.inject.Provider;
  */
 public class ServiceProvider<T> implements Provider<T> {
 
-    protected final Class<?> clazz;
+    protected final Class<T> clazz;
 
-    public ServiceProvider(Class<?> clazz) {
+    public ServiceProvider(Class<T> clazz) {
         this.clazz = clazz;
     }
 
+    public Class<T> getServiceClass() {
+        return clazz;
+    }
+
     @Override
-    @SuppressWarnings("unchecked")
     public T get() {
         try {
-            return (T)Framework.getService(clazz);
+            return clazz.cast(Framework.getService(clazz));
         } catch (Exception e) {
             throw new RuntimeException("Failed to get service: "+clazz, e);
         }
+    }
+
+    public Scope getScope() {
+        return Scopes.SINGLETON;
     }
 
 }
