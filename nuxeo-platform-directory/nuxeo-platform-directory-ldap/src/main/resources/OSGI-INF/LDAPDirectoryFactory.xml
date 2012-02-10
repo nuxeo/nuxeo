@@ -191,6 +191,7 @@
             -->
             <ldapReference field="members" directory="userDirectory"
                 forceDnConsistencyCheck="false"
+                staticAttributeIdIsDn="true"
                 staticAttributeId="uniqueMember"
                 dynamicAttributeId="memberURL"/>
 
@@ -221,7 +222,9 @@
       
       Nuxeo EP provides group resolution for statically dn-referenced
       entries (in read and write mode) and for dynamically ldapUrl
-      matched entries (readonly).
+      matched entries (readonly). You may also need to statically
+      reference entries without a dn using the 'staticAttributeIdIsDn'
+      attribute.
 
       The references tags are used to dynamically build nxs:stringList
       fields of that schema that are to compute membership relationships
