@@ -18,13 +18,16 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
@@ -37,8 +40,8 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 
 /**
- * A Test Case runner that can be extended through features and provide injection
- * though Guice.
+ * A Test Case runner that can be extended through features and provide
+ * injection though Guice.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -74,11 +77,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected void loadFeature(HashSet<Class<?>> cycles,
             LinkedHashSet<Class<? extends RunnerFeature>> features,
             Class<? extends RunnerFeature> clazz) throws Exception {
-    if (features.contains(clazz)) {
+        if (features.contains(clazz)) {
             return;
         }
         if (cycles.contains(clazz)) {
-            throw new IllegalStateException("Cycle detected in features dependencies of "+clazz);
+            throw new IllegalStateException(
+                    "Cycle detected in features dependencies of " + clazz);
         }
         cycles.add(clazz);
         scanner.scan(clazz);
@@ -93,14 +97,16 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                 }
             }
         }
-        features.add(clazz); // add at the end to ensure requirements are added first
+        features.add(clazz); // add at the end to ensure requirements are added
+                             // first
     }
 
     protected void loadFeatures(Class<?> classToRun) throws Exception {
         scanner.scan(classToRun);
         LinkedHashSet<Class<? extends RunnerFeature>> features = new LinkedHashSet<Class<? extends RunnerFeature>>();
         // load required features from annotation
-        List<Features> annos = scanner.getAnnotations(classToRun, Features.class);
+        List<Features> annos = scanner.getAnnotations(classToRun,
+                Features.class);
         if (annos != null) {
             for (Features anno : annos) {
                 for (Class<? extends RunnerFeature> cl : anno.value()) {
@@ -131,6 +137,23 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return features;
     }
 
+    /**
+     * @since 5.6
+     */
+    public <T extends Annotation> T getConfig(Class<T> type) {
+        T config = getDescription().getAnnotation(type);
+        if (config != null) {
+            return config;
+        }
+        for (RunnerFeature feature : features) {
+            config = feature.getClass().getAnnotation(type);
+            if (config != null) {
+                return config;
+            }
+        }
+        return null;
+    }
+
     protected void initialize() throws Exception {
         for (RunnerFeature feature : features) {
             feature.initialize(this);
@@ -143,13 +166,16 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    protected void beforeMethodRun(FrameworkMethod method, Object test) throws Exception {
+    protected void beforeMethodRun(FrameworkMethod method, Object test)
+            throws Exception {
         for (RunnerFeature feature : features) {
             feature.beforeMethodRun(this, method, test);
         }
+        injector.injectMembers(test);
     }
 
-    protected void afterMethodRun(FrameworkMethod method, Object test) throws Exception {
+    protected void afterMethodRun(FrameworkMethod method, Object test)
+            throws Exception {
         for (RunnerFeature feature : features) {
             feature.afterMethodRun(this, method, test);
         }
@@ -208,9 +234,25 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return Guice.createInjector(module);
     }
 
+    protected final RunListener listener = new RunListener() {
+
+        public void testStarted(Description description) throws Exception {
+            for (RunnerFeature feature : features) {
+                feature.beforeSetup(FeaturesRunner.this);
+            }
+        }
+
+        public void testFinished(Description description) throws Exception {
+            for (RunnerFeature feature : features) {
+                feature.afterTeardown(FeaturesRunner.this);
+            }
+        }
+    };
+
     @Override
     public void run(final RunNotifier notifier) {
         try {
+            notifier.addFirstListener(listener);
             try {
                 start();
                 // create injector
@@ -226,18 +268,20 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
         } catch (Throwable e) {
             notifier.fireTestFailure(new Failure(getDescription(), e));
+        } finally {
+            notifier.removeListener(listener);
         }
     }
 
     @Override
-    public Object createTest() {
+    public Object createTest() throws Exception {
         // Return a Guice injected test class
         Object test = injector.getInstance(getTestClass().getJavaClass());
         // let features adapt the test object if needed
         try {
             testCreated(test);
         } catch (Exception e) {
-            throw new Error("Failed to prepare test instance: "+test, e);
+            throw new Error("Failed to prepare test instance: " + test, e);
         }
         return test;
     }
@@ -255,11 +299,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected class InvokeMethod extends Statement {
         protected final FrameworkMethod testMethod;
+
         protected final Object target;
 
         protected InvokeMethod(FrameworkMethod testMethod, Object target) {
             this.testMethod = testMethod;
-            this.target= target;
+            this.target = target;
         }
 
         @Override
