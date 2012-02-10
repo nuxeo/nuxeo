@@ -11,23 +11,25 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.runner.Description;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
-import org.nuxeo.ecm.core.test.annotations.DatabaseHelperFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -39,9 +41,10 @@ import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.ServiceProvider;
 import org.osgi.framework.Bundle;
 
-import com.google.inject.Provider;
+import com.google.inject.Scope;
 
 /**
  * Repository configuration that can be set using {@link RepositoryConfig} annotations.
@@ -51,7 +54,7 @@ import com.google.inject.Provider;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class RepositorySettings implements Provider<CoreSession> {
+public class RepositorySettings extends ServiceProvider<CoreSession> {
 
     private static final Log log = LogFactory.getLog(RepositorySettings.class);
 
@@ -69,7 +72,7 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     protected Granularity granularity;
 
-    protected DatabaseHelperFactory databaseFactory;
+    protected Class<? extends RepositoryFactory> repositoryFactoryClass;
 
     protected TestRepositoryHandler repo;
 
@@ -84,26 +87,29 @@ public class RepositorySettings implements Provider<CoreSession> {
      * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}.
      */
     protected RepositorySettings() {
+        super(CoreSession.class);
         importAnnotations(Defaults.of(RepositoryConfig.class));
     }
 
     protected RepositorySettings(RepositoryConfig config) {
+        super(CoreSession.class);
         importAnnotations(config);
     }
 
     protected RepositorySettings(FeaturesRunner runner, RepositoryConfig config) {
+        super(CoreSession.class);
         this.runner = runner;
         importAnnotations(config);
     }
 
     public RepositorySettings(FeaturesRunner runner) {
+        super(CoreSession.class);
         this.runner = runner;
-        Description description = runner.getDescription();
-        RepositoryConfig repo = description.getAnnotation(RepositoryConfig.class);
-        if (repo == null) {
-            repo = Defaults.of(RepositoryConfig.class);
+        RepositoryConfig conf = runner.getConfig(RepositoryConfig.class);
+        if (conf == null) {
+            conf = Defaults.of(RepositoryConfig.class);
         }
-        importAnnotations(repo);
+        importAnnotations(conf);
     }
 
     public void importAnnotations(RepositoryConfig repo) {
@@ -112,7 +118,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         databaseName = repo.databaseName();
         username = repo.user();
         granularity = repo.cleanup();
-        databaseFactory = newInstance(repo.factory());
+        repositoryFactoryClass = repo.repositoryFactoryClass();
         repoInitializer = newInstance(repo.init());
     }
 
@@ -179,16 +185,21 @@ public class RepositorySettings implements Provider<CoreSession> {
     }
 
     public void initialize() {
+        DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
-            DatabaseHelper dbHelper = databaseFactory.getHelper(type,
-                    databaseName, repositoryName);
-            dbHelper.setUp();
+            // type is ignored, the config inferred by DatabaseHelper from
+            // system properties will be used
+            dbHelper.setRepositoryName(repositoryName);
+            dbHelper.setUp(repositoryFactoryClass);
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(
                     "org.nuxeo.ecm.core.storage.sql.test");
-            URL contribURL = bundle.getEntry(dbHelper.getDeploymentContrib());
+            String contribPath = dbHelper.getDeploymentContrib();
+            URL contribURL = bundle.getEntry(contribPath);
+            assertNotNull("deployment contrib " + contribPath + " not found",
+                    contribURL);
             Contribution contrib = new ContributionLocation(repositoryName,
                     contribURL);
             harness.getContext().deploy(contrib);
@@ -198,13 +209,20 @@ public class RepositorySettings implements Provider<CoreSession> {
     }
 
     public void shutdown() {
-        if (repo != null) {
-            if (session != null) {
-                repo.releaseSession(session);
-                session = null;
+        try {
+            if (repo != null) {
+                if (session != null) {
+                    releaseSession();
+                }
+                repo.releaseRepository();
+                repo = null;
             }
-            repo.releaseRepository();
-            repo = null;
+        } finally {
+            try {
+                DatabaseHelper.DATABASE.tearDown();
+            } catch (SQLException e) {
+                throw new Error("Cannot release database", e);
+            }
         }
     }
 
@@ -221,15 +239,26 @@ public class RepositorySettings implements Provider<CoreSession> {
         return repo;
     }
 
-    public CoreSession getSession() {
-        if (session == null) {
-            try {
-                session = openSessionAs(getUsername());
-            } catch (Exception e) {
-                log.error(e.toString(), e);
-                return null;
-            }
+    public CoreSession createSession() {
+        assert session == null;
+        try {
+            session = openSessionAs(getUsername());
+        } catch (Exception e) {
+            log.error(e.toString(), e);
         }
+        return session;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void releaseSession() {
+        assert session != null;
+        repo.releaseSession(session);
+        session = null;
+    }
+
+    public CoreSession getSession() {
         return session;
     }
 
@@ -272,4 +301,8 @@ public class RepositorySettings implements Provider<CoreSession> {
         return getSession();
     }
 
+    @Override
+    public Scope getScope() {
+        return CoreScope.INSTANCE;
+    }
 }

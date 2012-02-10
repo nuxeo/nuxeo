@@ -13,7 +13,6 @@ package org.nuxeo.ecm.core.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -67,7 +66,7 @@ public class CoreFeature extends SimpleFeature {
     public void initialize(FeaturesRunner runner) throws Exception {
         repository = new RepositorySettings(runner);
         runner.getFeature(RuntimeFeature.class).addServiceProvider(
-                CoreSession.class, repository);
+                repository);
     }
 
     @Override
@@ -84,14 +83,6 @@ public class CoreFeature extends SimpleFeature {
     public void beforeRun(FeaturesRunner runner) throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         if (repository.getGranularity() != Granularity.METHOD) {
-            initializeSession(runner);
-        }
-    }
-
-    @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
-        if (repository.getGranularity() == Granularity.METHOD) {
             initializeSession(runner);
         }
     }
@@ -119,8 +110,14 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
+        if (repository.getGranularity() == Granularity.METHOD) {
+            initializeSession(runner);
+        }
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
         if (repository.getGranularity() == Granularity.METHOD) {
             cleanupSession(runner);
         }
@@ -144,13 +141,15 @@ public class CoreFeature extends SimpleFeature {
             Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
+        } finally {
+            CoreScope.INSTANCE.exit();
         }
+        repository.releaseSession();
     }
 
     protected void initializeSession(FeaturesRunner runner) {
-        CoreSession session = runner.getInjector().getInstance(
-                CoreSession.class);
-
+        CoreScope.INSTANCE.enter();
+        CoreSession session  = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {

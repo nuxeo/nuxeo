@@ -55,7 +55,8 @@ public class DatabaseH2 extends DatabaseHelper {
         url = String.format("jdbc:h2:%s/%s", h2Path, databaseName);
         origUrl = setProperty(URL_PROPERTY, url);
 
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY,
+                repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
@@ -84,25 +85,24 @@ public class DatabaseH2 extends DatabaseHelper {
         } else {
             System.setProperty(URL_PROPERTY, origUrl);
         }
-        Connection connection = DriverManager.getConnection(url,
-                System.getProperty(USER_PROPERTY),
-                System.getProperty(PASSWORD_PROPERTY));
-        Statement st = connection.createStatement();
-        String sql = "SHUTDOWN";
-        log.trace(sql);
-        st.execute(sql);
-        st.close();
-        connection.close();
+        try {
+            Connection connection = DriverManager.getConnection(url,
+                    System.getProperty(USER_PROPERTY),
+                    System.getProperty(PASSWORD_PROPERTY));
+            Statement st = connection.createStatement();
+            String sql = "SHUTDOWN";
+            log.trace(sql);
+            st.execute(sql);
+            st.close();
+            connection.close();
+        } finally {
+            super.tearDown();
+        }
     }
 
     @Override
     public String getDeploymentContrib() {
         return CONTRIB_XML;
-    }
-
-    @Override
-    public String getPooledDeploymentContrib() {
-        return "test-pooling-h2-contrib.xml";
     }
 
     @Override
@@ -121,6 +121,5 @@ public class DatabaseH2 extends DatabaseHelper {
     public boolean supportsClustering() {
         return true;
     }
-
 
 }

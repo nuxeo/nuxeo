@@ -62,14 +62,19 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        session.cancel();
-        closeSession();
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.setTransactionRollbackOnly();
-            TransactionHelper.commitOrRollbackTransaction();
+        try {
+            session.cancel();
+            closeSession();
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.setTransactionRollbackOnly();
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        } finally {
+            if (NuxeoContainer.isInstalled()) {
+                NuxeoContainer.uninstall();
+            }
+            super.tearDown();
         }
-        super.tearDown();
-        NuxeoContainer.uninstall();
-   }
+    }
 
 }

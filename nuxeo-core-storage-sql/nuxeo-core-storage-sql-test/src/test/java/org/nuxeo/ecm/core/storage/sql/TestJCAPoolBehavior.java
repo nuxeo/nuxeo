@@ -46,6 +46,12 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         NuxeoContainer.install(tmconfig, cmconfig);
     }
 
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
     public void testOpenAllConnections() throws Exception {
         if (!hasPoolingConfig()) {
             return;
@@ -60,11 +66,13 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
             threads[i].start();
         }
         Thread.sleep(500);
-        assertNull(threadException);
-
-        // finish all threads
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
+        try {
+            assertNull(threadException);
+        } finally {
+            // finish all threads
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
         }
         assertNull(threadException);
     }
@@ -89,12 +97,14 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         Thread t = new Thread(new SessionHolder(2000));
         t.start();
         Thread.sleep(BLOCKING_TIMEOUT + 500);
-        assertNotNull(threadException);
-        threadException = null;
-
-        // finish all threads
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
+        try {
+            assertNotNull(threadException);
+            threadException = null;
+        } finally {
+            // finish all threads
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
         }
         assertNull(threadException);
 

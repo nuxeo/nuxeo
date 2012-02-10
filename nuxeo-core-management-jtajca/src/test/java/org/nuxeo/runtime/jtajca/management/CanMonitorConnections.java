@@ -16,8 +16,9 @@
  */
 package org.nuxeo.runtime.jtajca.management;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import java.lang.management.ManagementFactory;
 
@@ -34,7 +35,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionMonitor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -46,9 +46,8 @@ import com.google.inject.Inject;
  *
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, TransactionalFeature.class })
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.core.management.jtajca")
-@RepositoryConfig(factory=PooledH2DatabaseFactory.class)
 public class CanMonitorConnections {
 
      protected ConnectionMonitor monitor;
@@ -59,22 +58,22 @@ public class CanMonitorConnections {
         monitor = JMX.newMXBeanProxy(srv, new ObjectName(ConnectionMonitor.NAME),
                 ConnectionMonitor.class);
     }
-    
-    @Inject 
+
+    @Inject
     @Before
     public void installPooling() {
-        
+
     }
-    
+
     @Inject CoreSession repository;
-    
+
     @Test
     public void isMonitorInstalled() {
         assertThat(monitor, notNullValue());
         monitor.getConnectionCount(); // throw exception is monitor not present
     }
-    
-    @Test 
+
+    @Test
     public void isConnectionOpened() throws ClientException {
        int count = monitor.getConnectionCount();
        assertThat(count, greaterThan(0));

@@ -76,11 +76,6 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     }
 
     @Override
-    public String getPooledDeploymentContrib() {
-        return "test-pooling-postgres-contrib.xml";
-    }
-
-    @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
