@@ -88,13 +88,7 @@ public class CoreFeature extends SimpleFeature {
         }
     }
 
-    @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
-        if (repository.getGranularity() == Granularity.METHOD) {
-            initializeSession(runner);
-        }
-    }
+
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
@@ -120,8 +114,14 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
+        if (repository.getGranularity() == Granularity.METHOD) {
+            initializeSession(runner);
+        }
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
         if (repository.getGranularity() == Granularity.METHOD) {
             cleanupSession(runner);
         }
@@ -149,10 +149,12 @@ public class CoreFeature extends SimpleFeature {
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
         }
+        runner.getFeature(RuntimeFeature.class).removeServiceProvider(
+                CoreSession.class, repository);
     }
 
     protected void initializeSession(FeaturesRunner runner) {
-        CoreSession session  = repository.getSession();
+        CoreSession session  = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {

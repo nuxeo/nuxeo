@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.runtime.jtajca.management;
+package org.nuxeo.ecm.core.test;
 
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.DefaultDatabaseFactory;
@@ -24,16 +24,22 @@ import org.nuxeo.ecm.core.test.annotations.BackendType;
  * @author matic
  *
  */
-public class PooledH2DatabaseFactory extends DefaultDatabaseFactory {
-    
-    
+public class PooledDatabaseFactory extends DefaultDatabaseFactory {
+
+
     @Override
     public DatabaseHelper getHelper(BackendType type, String databaseName,
             String repositoryName) {
-        if (type != BackendType.H2) {
-            throw new IllegalArgumentException("backend should be h2");
+        DatabaseHelper helper = null;
+        if (type == BackendType.H2) {
+            helper = PooledH2Database.INSTANCE;
+        } else if (type == BackendType.POSTGRES) {
+            helper = PooledPostgresDatabase.INSTANCE;
         }
-        DatabaseHelper helper = new PooledH2Database();
+
+        if (helper == null) {
+            throw new UnsupportedOperationException(type + " no pooled database helper available");
+        }
         helper.setDatabaseName(databaseName);
         helper.setRepositoryName(repositoryName);
         return helper;

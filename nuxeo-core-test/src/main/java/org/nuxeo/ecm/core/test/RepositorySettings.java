@@ -33,10 +33,12 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
@@ -98,12 +100,11 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     public RepositorySettings(FeaturesRunner runner) {
         this.runner = runner;
-        Description description = runner.getDescription();
-        RepositoryConfig repo = description.getAnnotation(RepositoryConfig.class);
-        if (repo == null) {
-            repo = Defaults.of(RepositoryConfig.class);
+        RepositoryConfig conf = runner.getConfig(RepositoryConfig.class);
+        if (conf == null) {
+            conf = Defaults.of(RepositoryConfig.class);
         }
-        importAnnotations(repo);
+        importAnnotations(conf);
     }
 
     public void importAnnotations(RepositoryConfig repo) {
@@ -188,7 +189,9 @@ public class RepositorySettings implements Provider<CoreSession> {
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(
                     "org.nuxeo.ecm.core.storage.sql.test");
-            URL contribURL = bundle.getEntry(dbHelper.getDeploymentContrib());
+            String contribPath =
+                   dbHelper.getDeploymentContrib();
+            URL contribURL = bundle.getEntry(contribPath);
             Contribution contrib = new ContributionLocation(repositoryName,
                     contribURL);
             harness.getContext().deploy(contrib);
@@ -221,15 +224,17 @@ public class RepositorySettings implements Provider<CoreSession> {
         return repo;
     }
 
-    public CoreSession getSession() {
-        if (session == null) {
-            try {
-                session = openSessionAs(getUsername());
-            } catch (Exception e) {
-                log.error(e.toString(), e);
-                return null;
-            }
+    public CoreSession createSession() {
+        assert session == null;
+        try {
+            session = openSessionAs(getUsername());
+        } catch (Exception e) {
+            log.error(e.toString(), e);
         }
+        return session;
+    }
+
+    public CoreSession getSession() {
         return session;
     }
 

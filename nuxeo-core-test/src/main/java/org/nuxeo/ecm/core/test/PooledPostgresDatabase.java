@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.runtime.jtajca.management;
+package org.nuxeo.ecm.core.test;
 
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 
@@ -22,11 +22,17 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
  * @author matic
  *
  */
-public class PooledH2Database extends DatabaseH2 {
+public class PooledPostgresDatabase extends DatabaseH2 {
+
+    public static final PooledPostgresDatabase INSTANCE = new PooledPostgresDatabase();
+
+    protected PooledPostgresDatabase() {
+        super();
+    }
 
      @Override
     public String getDeploymentContrib() {
-        return "OSGI-INF/test-pooling-h2-contrib.xml";
+        return "OSGI-INF/test-pooling-postgres-contrib.xml";
     }
 
  }

@@ -101,11 +101,6 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     @Override
-    public String getPooledDeploymentContrib() {
-        return "test-pooling-h2-contrib.xml";
-    }
-
-    @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.h2.jdbcx.JdbcDataSource";

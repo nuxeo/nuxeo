@@ -196,8 +196,4 @@ public abstract class DatabaseHelper {
         return true;
     }
 
-    public String getPooledDeploymentContrib() {
-        throw new UnsupportedOperationException();
-    }
-
 }

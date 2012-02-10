@@ -13,7 +13,8 @@ package org.nuxeo.ecm.core.test;
 
 import java.util.Properties;
 
-import org.junit.runners.model.FrameworkMethod;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.runtime.jtajca.JtaActivator;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -23,6 +24,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.runtime.jtajca" })
+@RepositoryConfig(cleanup=Granularity.METHOD, factory=PooledDatabaseFactory.class)
 public class TransactionalFeature extends SimpleFeature {
 
     protected TransactionalConfig config;
@@ -53,8 +55,7 @@ public class TransactionalFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
         if (config.autoStart() == false) {
             return;
         }
@@ -62,8 +63,7 @@ public class TransactionalFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
         if (txStarted == false) {
             return;
         }
