@@ -55,13 +55,18 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
     @Override
     public CmisService getService(CallContext context) {
         String repositoryId = context.getRepositoryId();
-        NuxeoRepository repository = NuxeoRepositories.getRepository(repositoryId);
-        if (repository == null) {
-            throw new CmisInvalidArgumentException("No such repository: "
-                    + repositoryId);
+        NuxeoRepository repository;
+        if (repositoryId == null) {
+            repository = null;
+        } else {
+            repository = NuxeoRepositories.getRepository(repositoryId);
+            if (repository == null) {
+                throw new CmisInvalidArgumentException("No such repository: "
+                        + repositoryId);
+            }
         }
         NuxeoCmisService service = new NuxeoCmisService(repository, context);
-        if (service.getCoreSession() == null) {
+        if (repository != null && service.getCoreSession() == null) {
             throw new CmisInvalidArgumentException("No such repository: "
                     + repositoryId);
         }
