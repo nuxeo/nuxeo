@@ -134,7 +134,6 @@ public class AsyncEventExecutor {
                 TimeUnit.SECONDS, queue, threadFactory);
         mono_executor = new ThreadPoolExecutor(1, 1, keepAliveTime,
                 TimeUnit.SECONDS, mono_queue, threadFactory);
-        executor.prestartAllCoreThreads();
     }
 
     public void run(List<EventListenerDescriptor> listeners, EventBundle event) {
