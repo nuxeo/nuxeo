@@ -203,8 +203,7 @@ public class RepositorySettings implements Provider<CoreSession> {
     public void shutdown() {
         if (repo != null) {
             if (session != null) {
-                repo.releaseSession(session);
-                session = null;
+                releaseSession();
             }
             repo.releaseRepository();
             repo = null;
@@ -232,6 +231,16 @@ public class RepositorySettings implements Provider<CoreSession> {
             log.error(e.toString(), e);
         }
         return session;
+    }
+
+
+    /**
+     * @since 5.6
+     */
+    public void releaseSession() {
+        assert session != null;
+        repo.releaseSession(session);
+        session = null;
     }
 
     public CoreSession getSession() {

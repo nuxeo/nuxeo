@@ -13,7 +13,6 @@ package org.nuxeo.ecm.core.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -83,12 +82,11 @@ public class CoreFeature extends SimpleFeature {
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        repository.createSession();
         if (repository.getGranularity() != Granularity.METHOD) {
             initializeSession(runner);
         }
     }
-
-
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
@@ -149,12 +147,10 @@ public class CoreFeature extends SimpleFeature {
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
         }
-        runner.getFeature(RuntimeFeature.class).removeServiceProvider(
-                CoreSession.class, repository);
     }
 
     protected void initializeSession(FeaturesRunner runner) {
-        CoreSession session  = repository.createSession();
+        CoreSession session  = repository.getSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {
