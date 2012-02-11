@@ -63,12 +63,6 @@ public class RuntimeFeature extends SimpleFeature {
         serviceProviders.put(clazz, provider);
     }
 
-    public <T> void removeServiceProvider(Class<T> clazz, Provider<T> provider) {
-        if (serviceProviders.get(clazz) == provider) {
-            serviceProviders.remove(clazz);
-        }
-    }
-
     public RuntimeHarness getHarness() {
         return harness;
     }
