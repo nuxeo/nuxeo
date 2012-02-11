@@ -13,9 +13,6 @@
 
 package org.nuxeo.ecm.core.event.test;
 
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
 import java.net.URL;
 import java.util.List;
 
@@ -26,7 +23,6 @@ import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.jvm.HeapDumper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestEventServiceComponent extends NXRuntimeTestCase {
@@ -69,8 +65,6 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
      * the async event executor are shut down.
      */
     public void testAsyncEventExecutorShutdown() throws Exception {
-        assertTrue("async exec pool not filled",
-                Thread.activeCount() > initialThreadCount);
         // send an async event to make sure the async event executor spawned
         // some threads
         // load contrib
