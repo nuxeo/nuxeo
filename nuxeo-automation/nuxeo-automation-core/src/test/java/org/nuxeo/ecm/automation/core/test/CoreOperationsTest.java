@@ -80,7 +80,11 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
+<<<<<<< HEAD
 @Features(CoreFeature.class)
+=======
+@Features( { TransactionalFeature.class, CoreFeature.class })
+>>>>>>> 443c5fc... NXP-8842 fixed features declaration (squashed cherry pick)
 @Deploy("org.nuxeo.ecm.automation.core")
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
@@ -167,7 +171,7 @@ public class CoreOperationsTest {
     /**
      * Create | Copy | Set Property. This is also testing
      * {@link StringToProperties} adapter
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -196,7 +200,7 @@ public class CoreOperationsTest {
     /**
      * Same as before but tests relative paths Create | Copy | Set Property This
      * is also testing {@link StringToProperties} adapter
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -217,7 +221,7 @@ public class CoreOperationsTest {
     /**
      * Same as before Create | Copy | Set Property But also test properties
      * specified using a mvel Expression
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -248,7 +252,7 @@ public class CoreOperationsTest {
 
     /**
      * Same as before but use DocumentWrapper to access properties
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -453,7 +457,7 @@ public class CoreOperationsTest {
     /**
      * Alternate version - use xml properties instead of java properties when
      * defining a properties value
-     * 
+     *
      * @throws Exception
      */
     @Test

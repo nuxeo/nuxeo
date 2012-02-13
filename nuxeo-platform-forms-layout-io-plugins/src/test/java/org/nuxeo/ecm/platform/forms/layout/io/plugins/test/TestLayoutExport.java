@@ -81,6 +81,12 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        NuxeoContainer.uninstallNaming();
+        super.tearDown();
+    }
+
     public static void setUpContextFactory() throws NamingException {
         NamingContextFactory.setAsInitial();
         Context context = new InitialContext();

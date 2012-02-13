@@ -32,13 +32,13 @@ import com.google.inject.Scopes;
 
 /**
  * Shortcut to deploy bundles required by automation in your test
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Deploy({ "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.query.api" })
-@Features({WebEngineFeature.class, TransactionalFeature.class})
+@Features({WebEngineFeature.class})
 public class RestFeature extends SimpleFeature  {
 
     protected HttpAutomationClient client ;
@@ -63,7 +63,7 @@ public class RestFeature extends SimpleFeature  {
                     @Override
                     public HttpAutomationClient get() {
                         if (client ==null) {
-                            client = new HttpAutomationClient("http://localhost:18080/automation");                           
+                            client = new HttpAutomationClient("http://localhost:18080/automation");
                         }
                         return client;
                     }

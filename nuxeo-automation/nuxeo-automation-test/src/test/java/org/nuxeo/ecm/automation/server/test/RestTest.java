@@ -630,8 +630,7 @@ public class RestTest {
         assertThat(docs.size(), is(2));
         assertThat(pageSize, is(2));
         assertThat(pageCount, greaterThanOrEqualTo(8));
-        assertThat(docs.getTotalSize(), greaterThanOrEqualTo((pageCount - 1)
-                * pageSize));
+        assertThat(docs.getTotalSize(), greaterThanOrEqualTo((pageCount - 1)));
     }
 
     @Test

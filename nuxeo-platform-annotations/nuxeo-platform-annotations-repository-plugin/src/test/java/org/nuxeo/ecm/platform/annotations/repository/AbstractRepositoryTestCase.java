@@ -116,9 +116,12 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        closeSession();
-        NamingContextFactory.revertSetAsInitial();
-        super.tearDown();
+        try {
+            closeSession();
+        } finally {
+          NamingContextFactory.revertSetAsInitial();
+          super.tearDown();
+        }
     }
 
     protected void setUpRepository() throws Exception {

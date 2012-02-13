@@ -88,9 +88,12 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        closeSession();
-        NamingContextFactory.revertSetAsInitial();
-        super.tearDown();
+        try {
+            closeSession();
+        } finally {
+            NamingContextFactory.revertSetAsInitial();
+            super.tearDown();
+        }
     }
 
     protected void createInitialDocs() throws Exception {
@@ -151,8 +154,8 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         DocumentModel proxy = ((SimpleCorePublishedDocument) pubDoc).getProxy();
         assertTrue(PublicationRelationHelper.isPublished(proxy));
 
-        assertEquals(tree.getConfigName(), service.getPublicationTreeFor(proxy,
-                session).getConfigName());
+        assertEquals(tree.getConfigName(),
+                service.getPublicationTreeFor(proxy, session).getConfigName());
     }
 
 }
