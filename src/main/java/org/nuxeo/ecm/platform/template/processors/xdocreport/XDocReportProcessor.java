@@ -109,16 +109,13 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
     }
 
+
     @Override
     public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
             throws Exception {
 
-        Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob();
-        if (templateBasedDocument.getSourceTemplateDoc() != null) {
-            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc().getAdapter(
-                    TemplateSourceDocument.class).getTemplateBlob();
-        }
-
+        Blob sourceTemplateBlob = getSourceTemplate(templateBasedDocument);
+    
         // load the template
         IXDocReport report = XDocReportRegistry.getRegistry().loadReport(
                 sourceTemplateBlob.getStream(), TemplateEngineKind.Freemarker,false);

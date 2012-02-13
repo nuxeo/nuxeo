@@ -12,4 +12,6 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/adapter-contrib.xml,
  OSGI-INF/actions-contrib.xml,
  OSGI-INF/listener-contrib.xml,
- OSGI-INF/convert-service-contrib.xml
+ OSGI-INF/convert-service-contrib.xml,
+ OSGI-INF/mimetype-contrib.xml
+

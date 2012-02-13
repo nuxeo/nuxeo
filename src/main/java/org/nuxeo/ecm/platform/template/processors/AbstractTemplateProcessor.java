@@ -22,6 +22,9 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 
 /**
  * Common code between the implementations of {@link TemplateProcessor}
@@ -46,4 +49,13 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
         return workingDir;
     }
 
+    protected Blob getSourceTemplate(TemplateBasedDocument templateBasedDocument) throws Exception {
+        Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob();
+        if (templateBasedDocument.getSourceTemplateDoc() != null) {
+            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc().getAdapter(
+                    TemplateSourceDocument.class).getTemplateBlob();
+        }
+        return sourceTemplateBlob;
+    }
+    
 }

@@ -21,15 +21,18 @@ public class TestOOoConvert extends BaseConverterTest {
                 ODT_MT);
         assertEquals("any2odt", converterName);
 
-        BlobHolder result = cs.convert(converterName, bh, null);
-
-        result.getBlob().transferTo(new File("/tmp/html.odt"));
-
-        bh = getBlobFromPath("data/testMe.md", "text/x-web-markdown");
-        assertEquals("any2odt", converterName);
-
-        result = cs.convert(converterName, bh, null);
-        result.getBlob().transferTo(new File("/tmp/md.odt"));
+        if (cs.isConverterAvailable(converterName).isAvailable()) {
+        
+            BlobHolder result = cs.convert(converterName, bh, null);
+    
+            result.getBlob().transferTo(new File("/tmp/html.odt"));
+    
+            bh = getBlobFromPath("data/testMe.md", "text/x-web-markdown");
+            assertEquals("any2odt", converterName);
+    
+            result = cs.convert(converterName, bh, null);
+            result.getBlob().transferTo(new File("/tmp/md.odt"));
+        }
 
     }
 }
