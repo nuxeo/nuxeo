@@ -18,7 +18,7 @@ import org.nuxeo.ecm.core.test.annotations.DatabaseHelperFactory;
 public class DefaultDatabaseFactory implements DatabaseHelperFactory {
 
     @Override
-    public DatabaseHelper getHelper(BackendType type, String databaseName, String repositoryName) {
+    public DatabaseHelper getHelper(String databaseName, String repositoryName) {
         // type is ignored, the config inferred by DatabaseHelper from
         // system properties will be used
         DatabaseHelper helper = DatabaseHelper.DATABASE;

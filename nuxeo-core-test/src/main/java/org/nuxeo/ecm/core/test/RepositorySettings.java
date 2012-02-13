@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -183,8 +185,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
-            DatabaseHelper dbHelper = databaseFactory.getHelper(type,
-                    databaseName, repositoryName);
+            DatabaseHelper dbHelper = databaseFactory.getHelper(databaseName, repositoryName);
             dbHelper.setUp();
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(
@@ -192,6 +193,7 @@ public class RepositorySettings implements Provider<CoreSession> {
             String contribPath =
                    dbHelper.getDeploymentContrib();
             URL contribURL = bundle.getEntry(contribPath);
+            assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
             Contribution contrib = new ContributionLocation(repositoryName,
                     contribURL);
             harness.getContext().deploy(contrib);

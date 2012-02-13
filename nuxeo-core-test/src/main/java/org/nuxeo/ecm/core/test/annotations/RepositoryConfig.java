@@ -17,6 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.DefaultDatabaseFactory;
 import org.nuxeo.ecm.core.test.NoopRepositoryInit;
 
@@ -30,6 +31,10 @@ public @interface RepositoryConfig {
 
     Class<? extends DatabaseHelperFactory> factory() default DefaultDatabaseFactory.class;
 
+    /**
+     * @deprecated since 5.6 replaced by system properties, see {@link DatabaseHelper}
+     */
+    @Deprecated
     BackendType type() default BackendType.H2;
 
     String repositoryName() default "test";

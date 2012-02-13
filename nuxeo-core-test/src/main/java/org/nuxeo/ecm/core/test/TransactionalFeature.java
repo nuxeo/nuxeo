@@ -24,7 +24,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.runtime.jtajca" })
-@RepositoryConfig(cleanup=Granularity.METHOD, factory=PooledDatabaseFactory.class)
+@RepositoryConfig(cleanup=Granularity.METHOD)
 public class TransactionalFeature extends SimpleFeature {
 
     protected TransactionalConfig config;

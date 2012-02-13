@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 public abstract class DatabaseHelper {
 
@@ -42,10 +43,14 @@ public abstract class DatabaseHelper {
         if (className.indexOf('.') < 0) {
             className = DB_CLASS_NAME_BASE + className;
         }
+        setProperty("nuxeo.test.vcs.repository-factory", !NuxeoContainer.isInstalled() ?
+                "org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory" :
+                    "org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory");
         setDatabaseForTests(className);
     }
 
     public static final String REPOSITORY_PROPERTY = "nuxeo.test.vcs.repository";
+
 
     // available for JDBC tests
     public static final String DRIVER_PROPERTY = "nuxeo.test.vcs.driver";

@@ -7,7 +7,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="${nuxeo.test.vcs.repository}"
-      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      factory="${nuxeo.test.vcs.repository-factory}">
       <repository sendInvalidationEvents="true">
         <schema>
           <field type="largetext">note</field>
