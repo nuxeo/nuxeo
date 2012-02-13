@@ -3,11 +3,9 @@
 <fragment>
 
     <extension target="application#MODULE">
-
-    <module>
-        <java>${bundle.fileName}</java>
-    </module>
-
+        <module>
+            <ejb>${bundle.fileName}</ejb>
+        </module>
     </extension>
 
 </fragment>

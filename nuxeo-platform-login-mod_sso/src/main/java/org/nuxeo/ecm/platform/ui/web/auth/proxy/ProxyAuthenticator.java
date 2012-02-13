@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,11 +37,11 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 
 public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -49,11 +51,17 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final String HEADER_NOREDIRECT_KEY = "ssoNeverRedirect";
 
+    public static final String USERNAME_REMOVE_EXPRESSION = "usernameUnwantedPartExpression";
+
     protected String userIdHeaderName = "remote_user";
+
+    protected String regexp = null;
 
     protected boolean noRedirect;
 
     public static final String HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME = "org.nuxeo.ecm.platform.login.mod_sso.credentialDirectoryField";
+
+    private Pattern usernamePartRemovalPattern;
 
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
@@ -70,6 +78,14 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         if (userName == null) {
             return null;
         }
+        if (regexp != null && usernamePartRemovalPattern != null) {
+            String tmpUsername = userName;
+            Matcher matcher = usernamePartRemovalPattern.matcher(userName);
+            // Remove all instance of regexp from username string
+            userName = matcher.replaceAll("");
+            log.debug(String.format("userName changed from '%s' to '%s'",
+                    tmpUsername, userName));
+        }
 
         String credentialFieldName = Framework.getRuntime().getProperty(
                 HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME);
@@ -78,25 +94,29 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
             // the HTTP header
             Session userDir = null;
             try {
-                String directoryName = Framework.getService(UserManager.class).getUserDirectoryName();
+                String directoryName = Framework.getService(UserManager.class)
+                        .getUserDirectoryName();
                 userDir = Framework.getService(DirectoryService.class).open(
                         directoryName);
                 Map<String, Serializable> queryFilters = new HashMap<String, Serializable>();
                 queryFilters.put(credentialFieldName, userName);
                 DocumentModelList result = userDir.query(queryFilters);
                 if (result.isEmpty()) {
-                    log.error(String.format(
-                            "could not find any user with %s='%s' in directory %s",
-                            credentialFieldName, userName, directoryName));
+                    log.error(String
+                            .format("could not find any user with %s='%s' in directory %s",
+                                    credentialFieldName, userName,
+                                    directoryName));
                     return null;
                 }
                 if (result.size() > 1) {
-                    log.error(String.format(
-                            "found more than one entry for  %s='%s' in directory %s",
-                            credentialFieldName, userName, directoryName));
+                    log.error(String
+                            .format("found more than one entry for  %s='%s' in directory %s",
+                                    credentialFieldName, userName,
+                                    directoryName));
                     return null;
                 }
-                // use the ID of the found user entry as new identification for the principal
+                // use the ID of the found user entry as new identification for
+                // the principal
                 userName = result.get(0).getId();
             } catch (Exception e) {
                 log.error(String.format(
@@ -108,8 +128,9 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
                     try {
                         userDir.close();
                     } catch (DirectoryException e) {
-                        log.error("error while closing directory session: "
-                                + e.getMessage(), e);
+                        log.error(
+                                "error while closing directory session: "
+                                        + e.getMessage(), e);
                     }
                 }
             }
@@ -123,7 +144,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     /**
      * Handle redirection so that context is rebuilt correctly
-     *
+     * 
      * see NXP-2060 + NXP-2064
      */
     protected void handleRedirectToValidStartPage(
@@ -145,7 +166,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         if (session != null && !isStartPageValid) {
             session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY,
                     NuxeoAuthenticationFilter.DEFAULT_START_PAGE
-                    + "?loginRedirection=true");
+                            + "?loginRedirection=true");
         }
     }
 
@@ -154,7 +175,15 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
             userIdHeaderName = parameters.get(HEADER_NAME_KEY);
         }
         if (parameters.containsKey(HEADER_NOREDIRECT_KEY)) {
-            noRedirect = Boolean.parseBoolean(parameters.get(HEADER_NOREDIRECT_KEY));
+            noRedirect = Boolean.parseBoolean(parameters
+                    .get(HEADER_NOREDIRECT_KEY));
+        }
+        if (parameters.containsKey(USERNAME_REMOVE_EXPRESSION)) {
+            regexp = parameters.get(USERNAME_REMOVE_EXPRESSION);
+            log.debug(String.format(
+                    "Will remove all instances of '%s' from userName string.",
+                    regexp));
+            usernamePartRemovalPattern = Pattern.compile(regexp);
         }
     }
 
