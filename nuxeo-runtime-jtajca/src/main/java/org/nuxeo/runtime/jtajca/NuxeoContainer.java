@@ -403,7 +403,7 @@ public class NuxeoContainer {
             try {
                 tm.begin();
             } catch (javax.transaction.NotSupportedException e) {
-                new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
 
