@@ -552,7 +552,7 @@ public class NuxeoContainer {
             try {
                 tm.begin();
             } catch (javax.transaction.NotSupportedException e) {
-                new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
 
@@ -563,12 +563,12 @@ public class NuxeoContainer {
 
 		@Override
 		public void registerNamedXAResourceFactory(NamedXAResourceFactory arg0) {
-            throw new UnsupportedOperationException();			
+            throw new UnsupportedOperationException();
 		}
 
 		@Override
 		public void unregisterNamedXAResourceFactory(String arg0) {
-            throw new UnsupportedOperationException();			
+            throw new UnsupportedOperationException();
 		}
 
     }

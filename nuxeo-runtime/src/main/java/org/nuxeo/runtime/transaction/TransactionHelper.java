@@ -14,8 +14,13 @@ package org.nuxeo.runtime.transaction;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.InvalidTransactionException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
@@ -157,8 +162,8 @@ public class TransactionHelper {
     /**
      * Starts a new User Transaction.
      *
-     * @return {@code true} if the transaction was successfully started, {@code
-     *         false} otherwise
+     * @return {@code true} if the transaction was successfully started,
+     *         {@code false} otherwise
      */
     public static boolean startTransaction() {
         try {
@@ -170,6 +175,57 @@ public class TransactionHelper {
             log.error("Unable to start transaction", e);
         }
         return false;
+    }
+
+    /**
+     * Suspend the current transaction if active and
+     * start a new transaction
+     *
+     * @return the suspended transaction or null
+     * @throws TransactionRuntimeException
+     * @since 5.6
+     */
+    public static Transaction requireNewTransaction() {
+        TransactionManager tm;
+        try {
+            tm = lookupTransactionManager();
+        } catch (NamingException e) {
+            return null;
+        }
+        try {
+            Transaction tx = null;
+            if (tm.getStatus() == Status.STATUS_ACTIVE) {
+                tx = tm.suspend();
+            }
+            tm.begin();
+            return tx;
+        } catch (Exception e) {
+            throw new TransactionRuntimeException("Cannot suspend tx", e);
+        }
+    }
+
+    /**
+     * Commit the current transaction if active and
+     * resume the principal transaction
+     * @param tx
+     */
+    public static void resumeTransaction(Transaction tx) {
+        TransactionManager mgr;
+        try {
+            mgr = lookupTransactionManager();
+        } catch (NamingException e) {
+            return;
+        }
+        try {
+            if (mgr.getStatus() == Status.STATUS_ACTIVE) {
+                mgr.commit();
+            }
+            if (tx != null) {
+                mgr.resume(tx);
+            }
+        } catch (Exception e) {
+            throw new TransactionRuntimeException("Cannot resume tx", e);
+        }
     }
 
     /**
