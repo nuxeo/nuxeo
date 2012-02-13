@@ -9,6 +9,9 @@
  */
 package org.nuxeo.ecm.core.repository;
 
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -41,13 +44,11 @@ public class RepositoryInitializer extends UnrestrictedSessionRunner {
         if (handler == null) {
             return;
         }
-        boolean txOwner = TransactionHelper.startTransaction();
+        Transaction mainTx = TransactionHelper.requireNewTransaction();
         try {
             new RepositoryInitializer(handler, name).runUnrestricted();
         } finally {
-            if (txOwner) {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
+            TransactionHelper.resumeTransaction(mainTx);
         }
     }
 }
