@@ -33,8 +33,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
-import com.google.inject.Scopes;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,16 +49,16 @@ public class RuntimeFeature extends SimpleFeature {
      * Providers contributed by other features to override the default service
      * provider used for a nuxeo service.
      */
-    protected final Map<Class<?>, Provider<?>> serviceProviders;
+    protected final Map<Class<?>, ServiceProvider<?>> serviceProviders;
 
     public RuntimeFeature() {
         harness = new NXRuntimeTestCase();
         deploy = new DeploymentSet();
-        serviceProviders = new HashMap<Class<?>, Provider<?>>();
+        serviceProviders = new HashMap<Class<?>, ServiceProvider<?>>();
     }
 
-    public <T> void addServiceProvider(Class<T> clazz, Provider<T> provider) {
-        serviceProviders.put(clazz, provider);
+    public <T> void addServiceProvider(ServiceProvider<T> provider) {
+        serviceProviders.put(provider.getServiceClass(), provider);
     }
 
     public RuntimeHarness getHarness() {
@@ -175,12 +173,11 @@ public class RuntimeFeature extends SimpleFeature {
         for (String svc : Framework.getRuntime().getComponentManager().getServices()) {
             try {
                 Class clazz = Class.forName(svc);
-                Provider provider = serviceProviders.get(clazz);
+                ServiceProvider provider = serviceProviders.get(clazz);
                 if (provider == null) {
-                    bind0(binder, clazz);
-                } else {
-                    bind0(binder, clazz, provider);
+                    provider = new ServiceProvider(clazz);
                 }
+                bind0(binder, clazz, provider);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to bind service: " + svc, e);
             }
@@ -190,13 +187,8 @@ public class RuntimeFeature extends SimpleFeature {
         // binder.bind(NuxeoRunner.class).toInstance(runner);
     }
 
-    protected <T> void bind0(Binder binder, Class<T> type) {
-        binder.bind(type).toProvider(new ServiceProvider<T>(type)).in(
-                Scopes.SINGLETON);
-    }
-
-    protected <T> void bind0(Binder binder, Class<T> type, Provider<T> provider) {
-        binder.bind(type).toProvider(provider).in(Scopes.SINGLETON);
+    protected <T> void bind0(Binder binder, Class<T> type, ServiceProvider<T> provider) {
+        binder.bind(type).toProvider(provider).in(provider.getScope());
     }
 
     public static void bindDatasource(String key, DataSource ds)
