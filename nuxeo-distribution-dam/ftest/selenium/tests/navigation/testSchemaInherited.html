@@ -11,7 +11,7 @@
 <thead>
 <tr><td rowspan="1" colspan="3">testSchemaInherited</td></tr>
 </thead><tbody>
-  <tr>
+    <tr>
     <td>setTimeout</td>
     <td>12000</td>
     <td></td>
@@ -69,17 +69,17 @@
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_heading:nxw_description_2</td>
+    <td>navigation:assetView:nxl_heading:nxw_description_2</td>
     <td>Test import set description</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_author_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_author_2</td>
     <td>John Do</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_authoringDate_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_authoringDate_2</td>
     <td>8/6/2009</td>
   </tr>
 <!-- test schema inherited for an office file -->
@@ -100,17 +100,17 @@
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_heading:nxw_description_2</td>
+    <td>navigation:assetView:nxl_heading:nxw_description_2</td>
     <td>Test import set description</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_author_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_author_2</td>
     <td>John Do</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_authoringDate_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_authoringDate_2</td>
     <td>8/6/2009</td>
   </tr>
 <!-- test schema inherited for an image file -->
@@ -151,17 +151,17 @@
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_heading:nxw_description_2</td>
+    <td>navigation:assetView:nxl_heading:nxw_description_2</td>
     <td>Test import set description</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_author_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_author_2</td>
     <td>John Do</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_authoringDate_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_authoringDate_2</td>
     <td>8/6/2009</td>
   </tr>
 <!-- test schema inherited for an audio file -->
@@ -222,17 +222,17 @@
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_heading:nxw_description_2</td>
+    <td>navigation:assetView:nxl_heading:nxw_description_2</td>
     <td>Test import set description</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_author_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_author_2</td>
     <td>John Do</td>
   </tr>
   <tr>
     <td>verifyText</td>
-    <td>navigation:assetView:viewSubView:nxl_dam_common:nxw_damc_authoringDate_2</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_authoringDate_2</td>
     <td>8/6/2009</td>
   </tr>
 <!-- to back to showing all documents -->
@@ -289,12 +289,12 @@
   </tr>
   <tr>
     <td>type</td>
-    <td>//*[@id=&quot;navigation:assetView:editSubView:nxl_dam_common_1:nxw_damc_author_3&quot;]</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_author_2</td>
     <td></td>
   </tr>
   <tr>
     <td>type</td>
-    <td>//*[@id=&quot;navigation:assetView:editSubView:nxl_dam_common_1:nxw_damc_authoringDate_3InputDate&quot;]</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_authoringDate_2InputDate</td>
     <td></td>
   </tr>
   <tr>
@@ -314,14 +314,19 @@
   </tr>
 <!-- check that the author details have disappeared from the asset view after they've been saved -->
   <tr>
-    <td>verifyTextNotPresent</td>
-    <td>//*[@id=&quot;navigation:assetView:editSubView:nxl_dam_common_1:nxw_damc_author_2&quot;]</td>
-    <td>John Do</td>
+    <td>verifyText</td>
+    <td>navigation:assetView:nxl_heading:nxw_description_2</td>
+    <td>Test import set description</td>
   </tr>
   <tr>
-    <td>verifyTextNotPresent</td>
-    <td>//*[@id=&quot;navigation:assetView:editSubView:nxl_dam_common_1:nxw_damc_authoringDate_2InputDate&quot;]</td>
-    <td>8/6/2009</td>
+    <td>verifyText</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_author_2</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>navigation:assetView:nxl_dam_common:nxw_damc_authoringDate_2</td>
+    <td></td>
   </tr>
 <!-- since DAM-317: they should now not be updated on the main pane after clicking save -->
   <tr>
