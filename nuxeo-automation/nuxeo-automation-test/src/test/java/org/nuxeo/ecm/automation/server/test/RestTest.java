@@ -78,7 +78,6 @@ import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStr
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -629,23 +628,27 @@ public class RestTest {
         Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
                 root).set("type", "Folder").set("name", "docsInput").set(
                 "properties", "dc:title=Query Test").execute();
+        Document[]  notes = new Document[15];
         // create 15 notes
         for (int i = 0; i<14; i++) {
-            session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+            notes[i] = (Document)session.newRequest(CreateDocument.ID).setInput(folder).set("type",
                     "Note").set("name", "note" + i).set("properties", "dc:title=Note" + i).execute();
         }
 
-        PaginableDocuments docs = (PaginableDocuments) session.newRequest(
+        Documents docs = (Documents)session.newRequest(Query.ID).set("query", "SELECT * from Document").execute();
+
+        PaginableDocuments cursor = (PaginableDocuments) session.newRequest(
                 DocumentPageProviderOperation.ID).set("query",
                 "SELECT * from Document").set("pageSize", 2).execute();
-        final int pageSize = docs.getPageSize();
-        final int pageCount = docs.getPageCount();
-        final int totalSize = docs.getTotalSize();
-        assertThat(docs.size(), is(2));
-        assertThat(totalSize, is(16));
+        final int pageSize = cursor.getPageSize();
+        final int pageCount = cursor.getPageCount();
+        final int totalSize = cursor.getTotalSize();
+        assertThat(cursor.size(), is(2));
+        int size = docs.size();
+        assertThat(totalSize, is(size));
         assertThat(pageSize, is(2));
-        assertThat(pageCount, is(8));
-        assertThat(docs.getTotalSize(), greaterThanOrEqualTo((pageCount - 1)
+        assertThat(pageCount, is(size/2+size%2));
+        assertThat(cursor.getTotalSize(), greaterThanOrEqualTo((pageCount - 1)
                 * pageSize));
     }
 
