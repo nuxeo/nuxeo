@@ -55,8 +55,8 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        super.tearDown();
         NuxeoContainer.uninstallNaming();
+        super.tearDown();
     }
 
     public void testJNDIName() throws Exception {
