@@ -74,7 +74,7 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
         // value is required on layout tag => generate it to map the parent
         // widget or layout value if not set through field definitions (or
-        // explicitely through properties)
+        // explicitly through properties)
         FieldDefinition[] fields = widget.getFieldDefinitions();
         Serializable valueFromProps = widget.getProperty("value");
         if ((fields == null || fields.length == 0) && valueFromProps == null) {

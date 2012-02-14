@@ -137,10 +137,7 @@ public class WidgetTagHandler extends MetaTagHandler {
             throw new FacesException(e);
         }
 
-        // set unique id on widget and sub widgets before building handler.
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        generateWidgetIdsRecursive(helper, widget);
-
         FaceletHandler handler = layoutService.getFaceletHandler(ctx, config,
                 widget);
         if (handler == null) {
