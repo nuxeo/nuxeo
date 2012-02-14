@@ -11,94 +11,94 @@
 <thead>
 <tr><td rowspan="1" colspan="3">testSortColumn</td></tr>
 </thead><tbody>
-<tr>
-	<td>setTimeout</td>
-	<td>120000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>/nuxeo/logout</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>username</td>
-	<td>Administrator</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>password</td>
-	<td>Administrator</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
-</tr>
-<tr>
-  <td>clickAndWait</td>
-  <td>link=DAM</td>
-  <td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>filterForm:fulltextFilter</td>
-	<td>éléments</td>
-</tr>
+  <tr>
+    <td>setTimeout</td>
+    <td>120000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>open</td>
+    <td>/nuxeo/logout</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>username</td>
+    <td>Administrator</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>password</td>
+    <td>Administrator</td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>Submit</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>link=DAM</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>éléments</td>
+  </tr>
 <!-- simulate enter key validation -->
-<tr>
-	<td>keyDown</td>
-	<td>filterForm:fulltextFilter</td>
-	<td>\13</td>
-</tr>
-<tr>
-	<td>keyUp</td>
-	<td>filterForm:fulltextFilter</td>
-	<td>\13</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
+  <tr>
+    <td>keyDown</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>\13</td>
+  </tr>
+  <tr>
+    <td>keyUp</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>\13</td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
 <!-- the first documents do not have the word accents inside -->
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>P-01</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>P-02</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>P-22</td>
-	<td></td>
-</tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-02</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-22</td>
+    <td></td>
+  </tr>
 <!-- only the following documents avec word accents in their attached file -->
-<tr>
-	<td>verifyTextPresent</td>
-	<td>P-23</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>P-24</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>P-25</td>
-	<td></td>
-</tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-23</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-24</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-25</td>
+    <td></td>
+  </tr>
 </tbody></table>
 </body>
 </html>
