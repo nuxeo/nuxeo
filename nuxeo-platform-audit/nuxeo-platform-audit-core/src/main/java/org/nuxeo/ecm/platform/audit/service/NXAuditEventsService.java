@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
@@ -795,6 +796,9 @@ public class NXAuditEventsService extends DefaultComponent implements
         } catch (ClientException e1) {
             throw new AuditRuntimeException(
                     "Cannot fetch life cycle state from " + document, e1);
+        }
+        if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
+            entry.setDocLifeCycle((String)docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO));
         }
         String category = (String) properties.get("category");
         if (category != null) {
