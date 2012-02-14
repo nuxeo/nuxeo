@@ -28,8 +28,10 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.google.inject.Binder;
@@ -163,11 +165,12 @@ public class RuntimeFeature extends SimpleFeature {
             harness.stop();
             // harness = null;
         }
+        Assert.assertFalse("Nuxeo container is still installed", NuxeoContainer.isInstalled());
     }
 
     // TODO this is not ok. we should not force 2 modules layers - we should be
     // able to load any number of module layers.
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         for (String svc : Framework.getRuntime().getComponentManager().getServices()) {
