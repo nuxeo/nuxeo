@@ -82,7 +82,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
     protected String currentDocumentPath;
 
-    protected boolean isUserWorkspace = false;
+    @In(create = true, required = false)
+    protected Boolean isUserWorkspace;
 
     protected String userWorkspacePath;
 
@@ -132,7 +133,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
             DocumentModel firstAccessibleParent = null;
             if (currentDocument != null) {
 
-                if (isUserWorkspace) {
+                if (isUserWorkspace != null && isUserWorkspace) {
                     firstAccessibleParent = documentManager.getDocument(new PathRef(
                             userWorkspacePath));
                 } else {
@@ -273,15 +274,13 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
     @Observer(value = { EventNames.GO_PERSONAL_WORKSPACE }, create = false)
     public void switchToUserWorkspace() {
-        isUserWorkspace = true;
         userWorkspacePath = getCurrentDocumentPath();
         reset();
     }
 
-    @Observer(value = { EventNames.GO_HOME, EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.GO_HOME }, create = false)
     @BypassInterceptors
     public void switchToDocumentBase() {
-        isUserWorkspace = false;
     }
 
     public String forceTreeRefresh() throws IOException {
