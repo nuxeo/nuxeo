@@ -29,9 +29,9 @@ import org.nuxeo.ecm.platform.ui.web.directory.ChainSelect;
  */
 public class ChainSelectCleaner {
 
-    public static final String ASSET_COVERAGE_CHAIN_SELECT_ID = "navigation:assetView:editSubView:nxl_dublincore_1:nxw_coverage_3:nxw_coverage_3_editselect";
+    public static final String ASSET_COVERAGE_CHAIN_SELECT_ID = "navigation:assetView:nxl_dublincore:nxw_coverage_2:nxw_coverage_2_editselect";
 
-    public static final String ASSET_SUBJECTS_CHAIN_SELECT_ID = "navigation:assetView:editSubView:nxl_dublincore_1:nxw_subjects_3:nxw_subjects_3_editselect";
+    public static final String ASSET_SUBJECTS_CHAIN_SELECT_ID = "navigation:assetView:nxl_dublincore:nxw_subjects_2:nxw_subjects_2_editselect";
 
     public static final String IMPORT_COVERAGE_CHAIN_SELECT_ID = "importset_form:nxl_importset:nxl_importset_left:nxw_coverage:nxw_coverage_editselect";
 
