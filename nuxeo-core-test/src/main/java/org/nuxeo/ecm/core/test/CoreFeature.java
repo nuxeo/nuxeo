@@ -66,7 +66,7 @@ public class CoreFeature extends SimpleFeature {
     public void initialize(FeaturesRunner runner) throws Exception {
         repository = new RepositorySettings(runner);
         runner.getFeature(RuntimeFeature.class).addServiceProvider(
-                CoreSession.class, repository);
+                repository);
     }
 
     @Override
@@ -145,10 +145,14 @@ public class CoreFeature extends SimpleFeature {
             waitForAsyncCompletion();
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
+        } finally {
+            CoreScope.INSTANCE.exit();
         }
+        repository.releaseSession();
     }
 
     protected void initializeSession(FeaturesRunner runner) {
+        CoreScope.INSTANCE.enter();
         CoreSession session  = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {

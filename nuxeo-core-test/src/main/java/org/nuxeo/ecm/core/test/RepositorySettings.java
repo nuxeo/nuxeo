@@ -40,9 +40,10 @@ import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.ServiceProvider;
 import org.osgi.framework.Bundle;
 
-import com.google.inject.Provider;
+import com.google.inject.Scope;
 
 /**
  * Repository configuration that can be set using {@link RepositoryConfig} annotations.
@@ -52,7 +53,7 @@ import com.google.inject.Provider;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class RepositorySettings implements Provider<CoreSession> {
+public class RepositorySettings extends ServiceProvider<CoreSession> {
 
     private static final Log log = LogFactory.getLog(RepositorySettings.class);
 
@@ -85,19 +86,23 @@ public class RepositorySettings implements Provider<CoreSession> {
      * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}.
      */
     protected RepositorySettings() {
+        super(CoreSession.class);
         importAnnotations(Defaults.of(RepositoryConfig.class));
     }
 
     protected RepositorySettings(RepositoryConfig config) {
+        super(CoreSession.class);
         importAnnotations(config);
     }
 
     protected RepositorySettings(FeaturesRunner runner, RepositoryConfig config) {
+        super(CoreSession.class);
         this.runner = runner;
         importAnnotations(config);
     }
 
     public RepositorySettings(FeaturesRunner runner) {
+        super(CoreSession.class);
         this.runner = runner;
         RepositoryConfig conf = runner.getConfig(RepositoryConfig.class);
         if (conf == null) {
@@ -288,4 +293,8 @@ public class RepositorySettings implements Provider<CoreSession> {
         return getSession();
     }
 
+    @Override
+    public Scope getScope() {
+        return CoreScope.INSTANCE;
+    }
 }
