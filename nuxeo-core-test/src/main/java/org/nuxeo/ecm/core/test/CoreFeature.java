@@ -82,7 +82,6 @@ public class CoreFeature extends SimpleFeature {
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
-        repository.createSession();
         if (repository.getGranularity() != Granularity.METHOD) {
             initializeSession(runner);
         }
@@ -150,7 +149,7 @@ public class CoreFeature extends SimpleFeature {
     }
 
     protected void initializeSession(FeaturesRunner runner) {
-        CoreSession session  = repository.getSession();
+        CoreSession session  = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {
