@@ -171,6 +171,10 @@
       <artifactId>jboss-common-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jtajca</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
