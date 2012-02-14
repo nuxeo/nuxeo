@@ -165,7 +165,9 @@ public class RuntimeFeature extends SimpleFeature {
             harness.stop();
             // harness = null;
         }
-        Assert.assertFalse("Nuxeo container is still installed", NuxeoContainer.isInstalled());
+        if (NuxeoContainer.isInstalled()) {
+            throw new Error("Nuxeo container is still installed", NuxeoContainer.getInstallContext());
+        }
     }
 
     // TODO this is not ok. we should not force 2 modules layers - we should be

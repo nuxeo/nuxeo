@@ -178,7 +178,9 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         bundles = null;
         ServiceManager.getInstance().reset();
         super.tearDown();
-        assertFalse("Nuxeo container is still installed", NuxeoContainer.isInstalled());
+        if (NuxeoContainer.isInstalled()) {
+            throw new Error("Nuxeo container is still installed", NuxeoContainer.getInstallContext());
+        }
     }
 
     @Override

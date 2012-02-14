@@ -50,7 +50,6 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSup
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.XATransactions;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
-import org.apache.geronimo.transaction.manager.NamedXAResource;
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
@@ -79,7 +78,7 @@ public class NuxeoContainer {
 
     private static ConnectionManagerWrapper connectionManager;
 
-    private static boolean isInstalled;
+    private static InstallContext installContext;
 
     private static Context parentContext;
 
@@ -88,6 +87,15 @@ public class NuxeoContainer {
     protected static Context rootContext;
 
     private NuxeoContainer() {
+    }
+
+    public static class InstallContext extends Throwable {
+        private static final long serialVersionUID = 1L;
+        public final String threadName;
+        InstallContext() {
+            super("Container installation context (" + Thread.currentThread().getName() + ")");
+            this.threadName = Thread.currentThread().getName();
+        }
     }
 
     /**
@@ -126,11 +134,15 @@ public class NuxeoContainer {
     }
 
     public static synchronized boolean isInstalled() {
-        return isInstalled;
+        return installContext != null;
+    }
+
+    public static synchronized InstallContext getInstallContext() {
+        return installContext;
     }
 
     public static synchronized void uninstall() throws NamingException {
-        if (!isInstalled) {
+        if (installContext == null) {
             throw new Error("Nuxeo container not installed");
         }
         uninstallNaming();
@@ -147,7 +159,7 @@ public class NuxeoContainer {
      * @since 5.6
      */
     public static synchronized void installNaming() throws NamingException {
-        isInstalled = true;
+        installContext = new InstallContext();
         setupRootContext();
         setAsInitialContext();
     }
@@ -160,7 +172,7 @@ public class NuxeoContainer {
     public static synchronized void uninstallNaming() {
         parentContext = null;
         rootContext = null;
-        isInstalled = false;
+        installContext = null;
         revertSetAsInitialContext();
     }
 
