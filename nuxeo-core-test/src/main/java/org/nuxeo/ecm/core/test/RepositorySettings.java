@@ -21,26 +21,23 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.runner.Description;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
-import org.nuxeo.ecm.core.test.annotations.DatabaseHelperFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
@@ -73,7 +70,7 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     protected Granularity granularity;
 
-    protected DatabaseHelperFactory databaseFactory;
+    protected Class<? extends RepositoryFactory> repositoryFactoryClass;
 
     protected TestRepositoryHandler repo;
 
@@ -115,7 +112,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         databaseName = repo.databaseName();
         username = repo.user();
         granularity = repo.cleanup();
-        databaseFactory = newInstance(repo.factory());
+        repositoryFactoryClass = repo.repositoryFactoryClass();
         repoInitializer = newInstance(repo.init());
     }
 
@@ -185,7 +182,10 @@ public class RepositorySettings implements Provider<CoreSession> {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
-            DatabaseHelper dbHelper = databaseFactory.getHelper(databaseName, repositoryName);
+            // type is ignored, the config inferred by DatabaseHelper from
+            // system properties will be used
+            DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
+            dbHelper.setRepositoryName(repositoryName);
             dbHelper.setUp();
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(

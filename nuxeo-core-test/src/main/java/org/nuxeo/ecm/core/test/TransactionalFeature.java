@@ -13,6 +13,9 @@ package org.nuxeo.ecm.core.test;
 
 import java.util.Properties;
 
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
@@ -24,7 +27,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.runtime.jtajca" })
-@RepositoryConfig(cleanup=Granularity.METHOD)
+@RepositoryConfig(cleanup=Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class)
 public class TransactionalFeature extends SimpleFeature {
 
     protected TransactionalConfig config;
@@ -32,6 +35,8 @@ public class TransactionalFeature extends SimpleFeature {
     protected String autoactivationValue;
 
     protected boolean txStarted;
+
+    protected Class<? extends RepositoryFactory> defaultFactory;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
@@ -41,7 +46,6 @@ public class TransactionalFeature extends SimpleFeature {
             config = Defaults.of(TransactionalConfig.class);
         }
         autoactivationValue = System.getProperty(JtaActivator.AUTO_ACTIVATION);
-        System.setProperty(JtaActivator.AUTO_ACTIVATION, "true");
     }
 
     @Override

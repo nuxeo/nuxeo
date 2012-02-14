@@ -23,7 +23,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory;
 
 public abstract class DatabaseHelper {
 
@@ -37,16 +38,16 @@ public abstract class DatabaseHelper {
 
     public static final String DB_CLASS_NAME_BASE = "org.nuxeo.ecm.core.storage.sql.Database";
 
+    protected static final Class<? extends RepositoryFactory> defaultRepositoryFactory = SQLRepositoryFactory.class;
+
     static {
         setProperty(DB_PROPERTY, DB_DEFAULT);
         String className = System.getProperty(DB_PROPERTY);
         if (className.indexOf('.') < 0) {
             className = DB_CLASS_NAME_BASE + className;
         }
-        setProperty("nuxeo.test.vcs.repository-factory", !NuxeoContainer.isInstalled() ?
-                "org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory" :
-                    "org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory");
         setDatabaseForTests(className);
+        setRepositoryFactory(defaultRepositoryFactory);
     }
 
     public static final String REPOSITORY_PROPERTY = "nuxeo.test.vcs.repository";
@@ -148,9 +149,18 @@ public abstract class DatabaseHelper {
         st.close();
     }
 
+    public void setUp(Class<? extends RepositoryFactory> factoryClass) {
+        setRepositoryFactory(factoryClass);
+    }
+
     public abstract void setUp() throws Exception;
 
     public void tearDown() throws SQLException {
+        setRepositoryFactory(defaultRepositoryFactory);
+    }
+
+    public static void setRepositoryFactory(Class<? extends RepositoryFactory> factoryClass) {
+        System.setProperty("nuxeo.test.vcs.repository-factory", factoryClass.getName());
     }
 
     public abstract String getDeploymentContrib();
