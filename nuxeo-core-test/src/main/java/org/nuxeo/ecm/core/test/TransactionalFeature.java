@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.test;
 import java.util.Properties;
 
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -46,6 +45,7 @@ public class TransactionalFeature extends SimpleFeature {
             config = Defaults.of(TransactionalConfig.class);
         }
         autoactivationValue = System.getProperty(JtaActivator.AUTO_ACTIVATION);
+        System.setProperty(JtaActivator.AUTO_ACTIVATION, "true");
     }
 
     @Override

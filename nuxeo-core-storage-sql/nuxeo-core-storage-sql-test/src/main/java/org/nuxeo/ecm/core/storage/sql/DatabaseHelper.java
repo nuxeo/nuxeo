@@ -149,8 +149,9 @@ public abstract class DatabaseHelper {
         st.close();
     }
 
-    public void setUp(Class<? extends RepositoryFactory> factoryClass) {
+    public void setUp(Class<? extends RepositoryFactory> factoryClass) throws Exception {
         setRepositoryFactory(factoryClass);
+        setUp();
     }
 
     public abstract void setUp() throws Exception;

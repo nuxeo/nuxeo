@@ -186,7 +186,7 @@ public class RepositorySettings implements Provider<CoreSession> {
             // system properties will be used
             DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
             dbHelper.setRepositoryName(repositoryName);
-            dbHelper.setUp();
+            dbHelper.setUp(repositoryFactoryClass);
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(
                     "org.nuxeo.ecm.core.storage.sql.test");
