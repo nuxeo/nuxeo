@@ -43,7 +43,6 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@Deploy("org.nuxeo.ecm.core.management.jtajca")
 public class TestTransactedAudit {
 
     protected @Inject CoreSession repo;

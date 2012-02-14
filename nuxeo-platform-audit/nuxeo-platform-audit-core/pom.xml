@@ -83,19 +83,16 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
-      <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-sql</artifactId>
-      <version>${nuxeo.services.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
-      <version>${nuxeo.services.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -136,6 +133,16 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-management</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-datasource</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
