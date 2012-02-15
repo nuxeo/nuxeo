@@ -58,8 +58,6 @@ public class SQLRepository implements Repository {
 
     private final String name;
 
-    private boolean initialized;
-
     public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
         schemaManager = Framework.getService(SchemaManager.class);
         repository = new RepositoryImpl(getDescriptor(descriptor));
@@ -98,16 +96,6 @@ public class SQLRepository implements Repository {
      */
     public Session getSession(Map<String, Serializable> context)
             throws DocumentException {
-        synchronized (this) {
-            if (!initialized) {
-                initialized = true;
-                if (context != null) {
-                    // Allow AbstractSession (our caller) to send an
-                    // initialization event.
-                    context.put("REPOSITORY_FIRST_ACCESS", Boolean.TRUE);
-                }
-            }
-        }
         org.nuxeo.ecm.core.storage.sql.Session session;
         try {
             session = repository.getConnection();

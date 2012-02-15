@@ -28,8 +28,6 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
@@ -81,8 +79,6 @@ public class ConnectionFactoryImpl implements Repository,
      * {@link ConnectionManagerImpl}.
      */
     private final boolean managed;
-
-    private boolean firstAccessInitialized;
 
     private boolean servicesInitialized;
 
@@ -213,14 +209,6 @@ public class ConnectionFactoryImpl implements Repository,
         if (context == null) {
             connectionSpec = null;
         } else {
-            synchronized (this) {
-                if (!firstAccessInitialized) {
-                    firstAccessInitialized = true;
-                    // Allow AbstractSession (our caller) to send an
-                    // initialization event.
-                    context.put("REPOSITORY_FIRST_ACCESS", Boolean.TRUE);
-                }
-            }
             NuxeoPrincipal principal = (NuxeoPrincipal) context.get("principal");
             String username = principal == null ? (String) context.get("username")
                     : principal.getName();
