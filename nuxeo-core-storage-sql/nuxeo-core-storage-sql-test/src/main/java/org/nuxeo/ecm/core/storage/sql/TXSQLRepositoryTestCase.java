@@ -66,8 +66,8 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         }
-        super.tearDown();
         NuxeoContainer.uninstall();
+        super.tearDown();
    }
 
 }
