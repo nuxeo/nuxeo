@@ -53,6 +53,7 @@ import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrack
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.InitialContextAccessor;
 
 /**
@@ -79,6 +80,8 @@ public class NuxeoContainer {
     private static ConnectionManagerWrapper connectionManager;
 
     private static InstallContext installContext;
+
+    private static boolean installed;
 
     private static Context parentContext;
 
@@ -134,7 +137,7 @@ public class NuxeoContainer {
     }
 
     public static synchronized boolean isInstalled() {
-        return installContext != null;
+        return installed;
     }
 
     public static synchronized InstallContext getInstallContext() {
@@ -142,7 +145,7 @@ public class NuxeoContainer {
     }
 
     public static synchronized void uninstall() throws NamingException {
-        if (installContext == null) {
+        if (installed) {
             throw new Error("Nuxeo container not installed");
         }
         uninstallNaming();
@@ -159,9 +162,13 @@ public class NuxeoContainer {
      * @since 5.6
      */
     public static synchronized void installNaming() throws NamingException {
-        installContext = new InstallContext();
+        if (Framework.isTestModeSet()) {
+            installContext = new InstallContext();
+            log.trace("Installing nuxeo container", installContext);
+        }
         setupRootContext();
         setAsInitialContext();
+        installed = true;
     }
 
     /**
@@ -170,9 +177,12 @@ public class NuxeoContainer {
      * @since 5.6
      */
     public static synchronized void uninstallNaming() {
+        if (Framework.isTestModeSet()) {
+            log.trace("Uninstalling nuxeo container", installContext);
+            installContext = null;
+        }
         parentContext = null;
         rootContext = null;
-        installContext = null;
         revertSetAsInitialContext();
     }
 
