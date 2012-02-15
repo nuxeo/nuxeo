@@ -37,6 +37,9 @@ public class PostContentCreationHandlersTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "test-content-template-handlers-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "test-content-template-handlers-contrib.xml");
+        fireFrameworkStarted();
         openSession();
 
         service = Framework.getLocalService(ContentTemplateService.class);
@@ -49,8 +52,6 @@ public class PostContentCreationHandlersTest extends SQLRepositoryTestCase {
     }
 
     public void testHandler() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-handlers-contrib.xml");
         DocumentModel root = session.getRootDocument();
         DocumentModelList rootChildren = session.getChildren(root.getRef());
         assertEquals(2, rootChildren.size());
