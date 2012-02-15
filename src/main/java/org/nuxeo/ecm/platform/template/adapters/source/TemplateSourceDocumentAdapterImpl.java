@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.AbstractTemplateDocument;
@@ -56,6 +57,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     public static final String TEMPLATE_OUTPUT_PROP = "tmpl:outputFormat";
 
     public static final String TEMPLATE_OVERRIDE_PROP = "tmpl:allowOverride";
+    
+    public static final String TEMPLATE_USEASMAIN_PROP = "tmpl:useAsMainContent";
 
     public static final String TEMPLATE_FACET = "Template";
 
@@ -206,5 +209,27 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         } catch (Exception e) {
             return null;
         } 
+    }
+    
+    public boolean useAsMainContent() {
+        try {
+            Boolean useAsMain = (Boolean) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_USEASMAIN_PROP);
+            if (useAsMain == null) {
+                useAsMain = false;
+            }
+            return useAsMain;
+        } catch (Exception e) {
+            log.error("Unable to read template useAsMain prop ", e);
+            return false;
+        }
+    }
+    
+    public Blob getTemplateBlob() throws PropertyException, ClientException {
+        BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
+        if (bh != null) {
+            return bh.getBlob();
+        }
+        return null;
     }
 }

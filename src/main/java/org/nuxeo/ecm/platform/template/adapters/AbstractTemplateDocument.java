@@ -67,14 +67,6 @@ public abstract class AbstractTemplateDocument implements Serializable {
 
     protected abstract String getTemplateParamsXPath();
 
-    public Blob getTemplateBlob() throws PropertyException, ClientException {
-        BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
-        if (bh != null) {
-            return bh.getBlob();
-        }
-        return null;
-    }
-
     public List<TemplateInput> getParams() throws ClientException {
         String dataPath = getTemplateParamsXPath();
 

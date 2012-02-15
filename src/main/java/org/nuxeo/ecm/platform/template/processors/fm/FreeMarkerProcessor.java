@@ -37,17 +37,25 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
     public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
             throws Exception {
 
-        Blob sourceTemplateBlob = getSourceTemplate(templateBasedDocument);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument);
 
-        String ftl = sourceTemplateBlob.getString();
+        String fmTemplateKey = "main" + System.currentTimeMillis();        
+/*        if (sourceTemplateBlob instanceof SQLBlob) {
+            fmTemplateKey = fmTemplateKey + ((SQLBlob) sourceTemplateBlob).getBinary().getDigest();
+        } else {
+            fmTemplateKey = fmTemplateKey + System.currentTimeMillis();
+        }*/
         
-        loader.putTemplate("main", ftl);
+        String ftl = sourceTemplateBlob.getString();
+                
+        loader.putTemplate(fmTemplateKey, ftl);
 
         Map<String, Object> ctx = FMContextBuilder.build(templateBasedDocument);
         StringWriter writer = new StringWriter();
-        getEngine().render("main", ctx, writer);
+        getEngine().render(fmTemplateKey, ctx, writer);
 
         Blob result = new StringBlob(writer.toString());
+        
         result.setMimeType("text/html");
         String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
         result.setFilename(targetFileName + ".html");

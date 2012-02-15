@@ -65,7 +65,7 @@ public interface TemplateBasedDocument {
 
     public DocumentModel getAdaptedDoc();
 
-    public Blob getTemplateBlob() throws PropertyException, ClientException;
+    public Blob getTemplateBlob() throws Exception;
 
     public boolean hasEditableParams() throws ClientException;
 }

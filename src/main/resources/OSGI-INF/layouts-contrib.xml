@@ -104,6 +104,9 @@
           <widget>allowOverride</widget>
         </row>
         <row>
+          <widget>useAsMainContent</widget>
+        </row>
+        <row>
           <widget>processorSelector</widget>
         </row>
         <row>
@@ -117,6 +120,15 @@
         <translated>true</translated>
         <fields>
           <field>tmpl:allowOverride</field>
+        </fields>
+      </widget>
+      <widget name="useAsMainContent" type="checkbox">
+        <labels>
+          <label mode="any">Use template file as main content if possible</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:useAsMainContent</field>
         </fields>
       </widget>
       <widget name="converter" type="template">

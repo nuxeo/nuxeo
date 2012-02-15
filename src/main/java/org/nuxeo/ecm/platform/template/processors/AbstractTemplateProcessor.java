@@ -49,12 +49,13 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
         return workingDir;
     }
 
-    protected Blob getSourceTemplate(TemplateBasedDocument templateBasedDocument) throws Exception {
+    protected Blob getSourceTemplateBlob(TemplateBasedDocument templateBasedDocument) throws Exception {
         Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob();
-        if (templateBasedDocument.getSourceTemplateDoc() != null) {
+        
+        /*if (templateBasedDocument.getSourceTemplateDoc() != null) {
             sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc().getAdapter(
                     TemplateSourceDocument.class).getTemplateBlob();
-        }
+        }*/
         return sourceTemplateBlob;
     }
     

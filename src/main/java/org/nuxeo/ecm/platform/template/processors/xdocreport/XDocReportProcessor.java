@@ -114,7 +114,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
     public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
             throws Exception {
 
-        Blob sourceTemplateBlob = getSourceTemplate(templateBasedDocument);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument);
     
         // load the template
         IXDocReport report = XDocReportRegistry.getRegistry().loadReport(

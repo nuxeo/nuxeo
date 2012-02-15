@@ -20,4 +20,6 @@
 
   <xs:element name="outputFormat" type="xs:string"/>
 
+  <xs:element name="useAsMainContent" type="xs:boolean"/>
+
 </xs:schema>

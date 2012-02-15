@@ -49,6 +49,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
     public static final String TEMPLATE_DATA_PROP = "nxts:templateData";
 
     public static final String TEMPLATE_ID_PROP = "nxts:templateId";
+    
+    public static final String TEMPLATE_USE_BLOB_PROP = "nxts:useMainContentAsTemplate";
 
     private static final long serialVersionUID = 1L;
 
@@ -99,6 +101,20 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         return getSession().getDocument(tRef);
     }
 
+    protected boolean useMainContentAsTemplate() {
+        try {
+            Boolean useBlob = (Boolean) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_USE_BLOB_PROP);
+            if (useBlob == null) {
+                useBlob = false;
+            }
+            return useBlob;
+        } catch (Exception e) {
+            log.error("Unable to read template useAsMain prop ", e);
+            return false;
+        }
+    }
+    
     public String getTemplateType() {
         TemplateSourceDocument source = null;
         try {
@@ -129,6 +145,15 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         }
 
         saveParams(myParams, false);
+        
+        if (tmpl.useAsMainContent()) {
+            // copy the template as main blob
+            BlobHolder bh = adaptedDoc.getAdapter(BlobHolder.class);
+            if (bh!=null) {
+                bh.setBlob(tmpl.getTemplateBlob());
+            }
+            adaptedDoc.setPropertyValue(TEMPLATE_USE_BLOB_PROP, true);
+        }        
 
         if (save) {
             adaptedDoc = getSession().saveDocument(adaptedDoc);
@@ -190,4 +215,28 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         return adaptedDoc;
     }
 
+    public Blob getTemplateBlob() throws Exception {
+        TemplateSourceDocument source = getSourceTemplate();
+        if (source!=null) {
+            if (source.useAsMainContent()) {
+                BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
+                if (bh != null) {
+                    Blob blob = bh.getBlob();
+                    if (blob!=null) {
+                        return blob; 
+                    }
+                }                
+            }
+            // get the template from the source
+            Blob blob = source.getTemplateBlob();            
+            return blob;
+        }
+        // fall back
+        BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
+        if (bh==null) {
+            return  null;
+        } else {
+            return bh.getBlob();
+        }
+    }
 }

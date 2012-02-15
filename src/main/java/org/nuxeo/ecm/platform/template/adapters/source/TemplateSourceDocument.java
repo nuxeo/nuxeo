@@ -74,5 +74,6 @@ public interface TemplateSourceDocument {
     public void setForcedTypes(String [] forcedTypes, boolean save) throws ClientException;
     
     public String getOutputFormat();
-    
+
+    public boolean useAsMainContent();
 }

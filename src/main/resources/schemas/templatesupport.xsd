@@ -7,5 +7,7 @@
 
   <xs:element name="templateId" type="xs:string"/>
   <xs:element name="templateData" type="xs:string"/>
+  
+  <xs:element name="useMainContentAsTemplate" type="xs:boolean"/>
 
 </xs:schema>

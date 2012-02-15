@@ -37,7 +37,7 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements
             return null;
         }
                 
-        Blob sourceTemplateBlob = getSourceTemplate(templateBasedDocument);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument);
                 
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer = tFactory.newTransformer(new StreamSource(
