@@ -53,7 +53,7 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
      * <li>{@code TRUE}: in a transaction</li>
      * </ul>
      */
-    private final ThreadLocal<Boolean> threadBound = new ThreadLocal<Boolean>();
+    private final ThreadLocal<Transaction> threadBound = new ThreadLocal<Transaction>();
 
     protected TransactionalCoreSessionWrapper(CoreSession session) {
         this.session = session;
@@ -102,18 +102,17 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
-        Boolean b = threadBound.get();
-        if (b == null) {
+        Transaction main = threadBound.get();
+        if (main == null) {
             // first call in thread
-            Transaction tx = null;
             try {
-                tx = TransactionHelper.lookupTransactionManager().getTransaction();
+                main = TransactionHelper.lookupTransactionManager().getTransaction();
 
-                if (tx != null) {
-                    if (tx.getStatus() != Status.STATUS_MARKED_ROLLBACK) {
-                        tx.registerSynchronization(this);
+                if (main != null) {
+                    if (main.getStatus() != Status.STATUS_MARKED_ROLLBACK) {
+                        main.registerSynchronization(this);
                         session.afterBegin();
-                        threadBound.set(Boolean.TRUE);
+                        threadBound.set(main);
                     }
                 }
             } catch (NamingException e) {
@@ -156,7 +155,16 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
 
     @Override
     public void afterCompletion(int status) {
-        threadBound.remove();
+        Transaction current = null;
+        try {
+            current = TransactionHelper.lookupTransactionManager().getTransaction();
+        } catch (Exception e) {
+            throw new Error("no tx", e);
+        }
+        Transaction main = threadBound.get();
+        if (main.equals(current)) {
+            threadBound.remove();
+        }
         boolean committed;
         if (status == Status.STATUS_COMMITTED) {
             committed = true;
