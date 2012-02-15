@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -21,52 +21,21 @@
 
 package org.nuxeo.runtime;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.Component;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.Extension;
-
 import static junit.framework.Assert.assertEquals;
+
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class MyTestComponent implements Component {
-
-    private static final Log log = LogFactory.getLog(MyTestComponent.class);
+public class MyTestComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
         assertEquals("value", context.getProperty("myString").getValue());
         assertEquals(2, context.getProperty("myInt").getValue());
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        // Auto-generated method stub
-    }
-
-    @Override
-    public void registerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            log.debug("Registering: " + ((DummyContribution) contrib).message);
-        }
-    }
-
-    @Override
-    public void unregisterExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            log.debug("Un-Registering: "
-                    + ((DummyContribution) contrib).message);
-        }
-    }
-
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
     }
 
 }

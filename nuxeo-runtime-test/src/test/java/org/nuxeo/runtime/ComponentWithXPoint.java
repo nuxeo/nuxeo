@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -26,27 +26,18 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.Component;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
-public class ComponentWithXPoint implements Component {
+public class ComponentWithXPoint extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
 
     public static final ComponentName NAME = new ComponentName("BaseXPoint");
 
     final List<DummyContribution> contribs = new ArrayList<DummyContribution>();
-
-    @Override
-    public void activate(ComponentContext context) {
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-    }
 
     @Override
     public void registerExtension(Extension extension) {
@@ -71,8 +62,4 @@ public class ComponentWithXPoint implements Component {
         return contribs.toArray(new DummyContribution[contribs.size()]);
     }
 
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-
-    }
 }
