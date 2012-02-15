@@ -45,6 +45,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        fireFrameworkStarted();
         openSession();
     }
 
