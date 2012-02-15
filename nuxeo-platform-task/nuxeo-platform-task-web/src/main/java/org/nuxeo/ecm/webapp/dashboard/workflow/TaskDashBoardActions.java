@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webapp.dashboard.workflow;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +49,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("taskDashBoardActions")
 @Scope(ScopeType.CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
-public class TaskDashBoardActions {
+public class TaskDashBoardActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
