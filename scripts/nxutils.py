@@ -228,7 +228,7 @@ class Repository(object):
     def get_current_version(self):
         """Return branch or tag version of current Git workspace."""
         t = check_output(["git", "describe", "--all"]).split("/")
-        return t[1]
+        return t[-1]
 
     def mvn(self, commands, skip_tests=False, profiles=None):
         """Run Maven commands (install, package, deploy, ...) on the whole
