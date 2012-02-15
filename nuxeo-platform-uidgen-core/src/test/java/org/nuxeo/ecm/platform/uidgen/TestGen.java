@@ -65,6 +65,15 @@ public class TestGen extends NXRuntimeTestCase {
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.runtime.test.NXRuntimeTestCase#tearDown()
+     */
+    @Override
+    public void tearDown() throws Exception {
+        NamingContextFactory.revertSetAsInitial();
+        super.tearDown();
+    }
+
     public void testUIDGenerator() throws Exception {
         // create Geide doc
         String docTypeName = "GeideDoc";

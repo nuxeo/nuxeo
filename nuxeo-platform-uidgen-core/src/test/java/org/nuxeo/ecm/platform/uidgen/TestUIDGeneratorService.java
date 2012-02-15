@@ -75,6 +75,7 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        NamingContextFactory.revertSetAsInitial();
         super.tearDown();
     }
 

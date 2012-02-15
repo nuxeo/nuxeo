@@ -38,7 +38,6 @@ public class TestScheduler extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         NamingContextFactory.setAsInitial();
-        NuxeoContainer.install();
 
         // scheduler service
         deployContrib("org.nuxeo.ecm.platform.scheduler.core",
@@ -58,10 +57,13 @@ public class TestScheduler extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+        try {
+            undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler-service.xml");
-        NamingContextFactory.revertSetAsInitial();
-        super.tearDown();
+        } finally {
+            NamingContextFactory.revertSetAsInitial();
+            super.tearDown();
+        }
     }
 
     public void testScheduleRegistration() throws Exception {
