@@ -69,6 +69,11 @@ public class DefaultComponent implements Component, Adaptable {
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        return 1000;
+    }
+
+    @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         // do nothing by default
     }

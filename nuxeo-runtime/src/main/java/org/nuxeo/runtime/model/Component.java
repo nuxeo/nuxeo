@@ -45,6 +45,19 @@ public interface Component extends Extensible {
     void deactivate(ComponentContext context) throws Exception;
 
     /**
+     * The component notification order for {@link #applicationStarted}.
+     * <p>
+     * Components are notified in increasing order. Order 1000 is the default
+     * order for components that don't care. Order 100 is the repository
+     * initialization.
+     *
+     * @return the order, 1000 by default
+     *
+     * @since 5.6
+     */
+    int getApplicationStartedOrder();
+
+    /**
      * Notify the component that Nuxeo Framework finished starting all Nuxeo
      * bundles.
      *
