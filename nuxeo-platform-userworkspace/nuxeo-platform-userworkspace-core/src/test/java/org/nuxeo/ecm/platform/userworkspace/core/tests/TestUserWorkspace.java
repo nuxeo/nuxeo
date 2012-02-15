@@ -56,6 +56,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
                 "OSGI-INF/userworkspace-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.userworkspace.core",
                 "OSGI-INF/userWorkspaceImpl.xml");
+        fireFrameworkStarted();
         openSession();
     }
 

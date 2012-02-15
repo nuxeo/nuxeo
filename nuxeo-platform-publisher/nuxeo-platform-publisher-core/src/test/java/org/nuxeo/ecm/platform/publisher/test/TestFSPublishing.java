@@ -68,8 +68,8 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
 
-        openSession();
         fireFrameworkStarted();
+        openSession();
     }
 
     @Override
