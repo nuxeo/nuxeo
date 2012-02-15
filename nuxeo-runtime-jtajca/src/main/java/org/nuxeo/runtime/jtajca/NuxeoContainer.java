@@ -81,8 +81,6 @@ public class NuxeoContainer {
 
     private static InstallContext installContext;
 
-    private static boolean installed;
-
     private static Context parentContext;
 
     private static Map<String, Object> parentEnvironment = new HashMap<String, Object>();
@@ -137,7 +135,7 @@ public class NuxeoContainer {
     }
 
     public static synchronized boolean isInstalled() {
-        return installed;
+        return installContext != null;
     }
 
     public static synchronized InstallContext getInstallContext() {
@@ -145,7 +143,7 @@ public class NuxeoContainer {
     }
 
     public static synchronized void uninstall() throws NamingException {
-        if (installed) {
+        if (installContext != null) {
             throw new Error("Nuxeo container not installed");
         }
         uninstallNaming();
@@ -162,13 +160,12 @@ public class NuxeoContainer {
      * @since 5.6
      */
     public static synchronized void installNaming() throws NamingException {
+        installContext = new InstallContext();
         if (Framework.isTestModeSet()) {
-            installContext = new InstallContext();
             log.trace("Installing nuxeo container", installContext);
         }
         setupRootContext();
         setAsInitialContext();
-        installed = true;
     }
 
     /**
@@ -179,9 +176,8 @@ public class NuxeoContainer {
     public static synchronized void uninstallNaming() {
         if (Framework.isTestModeSet()) {
             log.trace("Uninstalling nuxeo container", installContext);
-            installContext = null;
         }
-        installed = false;
+        installContext = null;
         parentContext = null;
         rootContext = null;
         revertSetAsInitialContext();
