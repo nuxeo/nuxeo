@@ -45,6 +45,7 @@ public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
     @Override
     public void tearDown() throws Exception {
         closeSession();
+        NuxeoContainer.uninstallNaming();
         super.tearDown();
     }
 
