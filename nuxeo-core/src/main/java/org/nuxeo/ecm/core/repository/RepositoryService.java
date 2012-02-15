@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,13 +10,14 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.repository;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -27,12 +28,14 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 import org.nuxeo.runtime.services.event.EventService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
+ * Component and service managing repository instances.
+ *
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-@SuppressWarnings({"SuppressionAnnotation"})
 public class RepositoryService extends DefaultComponent implements EventListener {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.repository.RepositoryService");
@@ -125,6 +128,53 @@ public class RepositoryService extends DefaultComponent implements EventListener
             return (T) LocalSession.createInstance();
         }
         return null;
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        return 100;
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
+        if (handler == null) {
+            return;
+        }
+        boolean started = false;
+        boolean ok = false;
+        try {
+            started = TransactionHelper.startTransaction();
+            for (String name : repositoryMgr.getRepositoryNames()) {
+                initializeRepository(handler, name);
+            }
+            ok = true;
+        } finally {
+            if (started) {
+                try {
+                    if (!ok) {
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+        }
+    }
+
+    protected void initializeRepository(
+            final RepositoryInitializationHandler handler, String name) {
+        try {
+            new UnrestrictedSessionRunner(name) {
+                @Override
+                public void run() throws ClientException {
+                    handler.initializeRepository(session);
+                }
+            }.runUnrestricted();
+        } catch (ClientException e) {
+            throw new RuntimeException("Failed to initialize repository '"
+                    + name + "': " + e.getMessage(), e);
+        }
     }
 
 }
