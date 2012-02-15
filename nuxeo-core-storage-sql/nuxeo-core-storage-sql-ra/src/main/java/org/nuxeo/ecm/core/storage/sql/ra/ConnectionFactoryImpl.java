@@ -24,11 +24,9 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
-import org.nuxeo.ecm.core.repository.RepositoryInitializer;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
@@ -78,10 +76,6 @@ public class ConnectionFactoryImpl implements Repository,
      */
     @SuppressWarnings("unused")
     private final boolean managed;
-
-    private volatile boolean inUse;
-
-    private boolean initHandlerEntered; // protect form self recursion
 
     private boolean servicesInitialized;
 
@@ -221,20 +215,6 @@ public class ConnectionFactoryImpl implements Repository,
         if (context == null) {
             connectionSpec = null;
         } else {
-            synchronized (this) {
-                if (!inUse) {
-                    if (!initHandlerEntered) {
-                        initHandlerEntered = true;
-                        try {
-                            RepositoryInitializer.initialize(this.name);
-                        } catch (ClientException e) {
-                            throw new DocumentException(
-                                    "Cannot initialize content of " + name);
-                        }
-                        inUse = true;
-                    }
-                }
-            }
             NuxeoPrincipal principal = (NuxeoPrincipal) context.get("principal");
             String username = principal == null ? (String) context.get("username")
                     : principal.getName();
