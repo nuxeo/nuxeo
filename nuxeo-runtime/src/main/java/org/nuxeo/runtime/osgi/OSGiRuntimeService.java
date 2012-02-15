@@ -462,13 +462,30 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     protected void notifyComponentsOnStarted() {
-        for (RegistrationInfo ri : manager.getRegistrations()) {
+        List<RegistrationInfo> ris = new ArrayList<RegistrationInfo>(
+                manager.getRegistrations());
+        Collections.sort(ris, new RIApplicationStartedComparator());
+        for (RegistrationInfo ri : ris) {
             try {
                 ri.notifyApplicationStarted();
             } catch (Exception e) {
-                log.error("Failed to notify components on application started",
-                        e);
+                log.error("Failed to notify component '" + ri.getName()
+                        + "' on application started", e);
             }
+        }
+    }
+
+    protected static class RIApplicationStartedComparator implements
+            Comparator<RegistrationInfo> {
+        @Override
+        public int compare(RegistrationInfo r1, RegistrationInfo r2) {
+            int cmp = r2.getApplicationStartedOrder()
+                    - r1.getApplicationStartedOrder();
+            if (cmp == 0) {
+                // fallback on name order, to be deterministic
+                cmp = r2.getName().getName().compareTo(r1.getName().getName());
+            }
+            return cmp;
         }
     }
 
