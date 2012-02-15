@@ -55,6 +55,6 @@ opensocial.proxy.user=
 opensocial.proxy.password=
 opensocial.trusted.hosts=
 
-nuxeo.templates.parsing.extensions=xml,properties,nx
+nuxeo.templates.parsing.extensions=xml,properties,nx,js
 
 session.timeout=60
