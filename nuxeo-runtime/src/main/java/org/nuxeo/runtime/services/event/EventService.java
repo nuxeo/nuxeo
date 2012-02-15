@@ -26,17 +26,16 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.runtime.model.Adaptable;
-import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class EventService implements Component, Adaptable {
+public class EventService extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.runtime.EventService");
@@ -56,10 +55,6 @@ public class EventService implements Component, Adaptable {
         topics = new HashMap<String, ListenerList>();
  //       pendingEvents = new HashMap<String, Collection<Event>>();
         contributions = new Hashtable<String, Object[]>();
-    }
-
-    public void activate(ComponentContext context) throws Exception {
-
     }
 
     public void deactivate(ComponentContext context) throws Exception {

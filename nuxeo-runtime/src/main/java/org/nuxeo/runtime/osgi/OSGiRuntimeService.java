@@ -24,16 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,6 +36,7 @@ import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
@@ -89,6 +81,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     private final BundleContext bundleContext;
 
     private final Map<String, RuntimeContext> contexts;
+    
+    private boolean appStarted;
 
     /**
      * OSGi doesn't provide a method to lookup bundles by symbolic name. This
@@ -97,6 +91,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     final Map<String, Bundle> bundles;
 
     final ComponentPersistence persistence;
+    
 
     public OSGiRuntimeService(BundleContext context) {
         this(new OSGiRuntimeContext(context.getBundle()), context);
@@ -377,6 +372,57 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             return value;
         }
         return expandVars(value);
+    }
+
+
+    protected void notifyComponentsOnStarted() {
+        List<RegistrationInfo> ris = new ArrayList<RegistrationInfo>(
+                manager.getRegistrations());
+        Collections.sort(ris, new RIApplicationStartedComparator());
+        for (RegistrationInfo ri : ris) {
+            try {
+                ri.notifyApplicationStarted();
+            } catch (Exception e) {
+                log.error("Failed to notify component '" + ri.getName()
+                        + "' on application started", e);
+            }
+        }
+    }
+
+    protected static class RIApplicationStartedComparator implements
+            Comparator<RegistrationInfo> {
+        @Override
+        public int compare(RegistrationInfo r1, RegistrationInfo r2) {
+            int cmp = r1.getApplicationStartedOrder()
+                    - r2.getApplicationStartedOrder();
+            if (cmp == 0) {
+                // fallback on name order, to be deterministic
+                cmp = r1.getName().getName().compareTo(r2.getName().getName());
+            }
+            return cmp;
+        }
+    }
+
+    public void fireApplicationStarted() {
+        synchronized (this) {
+            if (appStarted) {
+                return;
+            }
+            appStarted = true;
+        }
+        try {
+            persistence.loadPersistedComponents();
+        } catch (Exception e) {
+            log.error("Failed to load persisted components", e);
+        }
+        // deploy a fake component that is marking the end of startup
+        // XML components that needs to be deployed at the end need to put a
+        // requirement
+        // on this marker component
+        deployFrameworkStartedComponent();
+        notifyComponentsOnStarted();
+        // print the startup message
+        printStatusMessage();
     }
 
     /* --------------- FrameworkListener API ------------------ */

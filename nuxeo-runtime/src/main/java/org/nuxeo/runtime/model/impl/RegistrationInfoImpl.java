@@ -35,15 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.ConfigurationDescriptor;
-import org.nuxeo.runtime.model.Extension;
-import org.nuxeo.runtime.model.ExtensionPoint;
-import org.nuxeo.runtime.model.Property;
-import org.nuxeo.runtime.model.RegistrationInfo;
-import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -266,6 +258,35 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public synchronized void restart() throws Exception {
         deactivate();
         activate();
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        if (component == null) {
+            return 0;
+        }
+        Object ci = component.getInstance();
+        if (!(ci instanceof Component)) {
+            return 0;
+        }
+        return ((Component) ci).getApplicationStartedOrder();
+    }
+
+    @Override
+    public void notifyApplicationStarted() throws Exception {
+        if (component != null) {
+            Object ci = component.getInstance();
+            if (ci instanceof Component) {
+                try {
+                    ((Component) ci).applicationStarted(component);
+                } catch (Exception e) {
+                    log.error(
+                            "Component notification of application started failed.",
+                            e);
+                    state = RESOLVED;
+                }
+            }
+        }
     }
 
     public synchronized void activate() throws Exception {
