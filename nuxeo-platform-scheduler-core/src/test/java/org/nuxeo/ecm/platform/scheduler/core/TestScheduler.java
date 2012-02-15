@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry;
 import org.nuxeo.ecm.platform.scheduler.core.service.ScheduleImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NamingContextFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -56,10 +55,15 @@ public class TestScheduler extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        try {
         undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler-service.xml");
-        NuxeoContainer.uninstall();
-        super.tearDown();
+        } finally {
+            if (NuxeoContainer.isInstalled()) {
+                NuxeoContainer.uninstall();
+            }
+            super.tearDown();
+        }
     }
 
     public void testScheduleRegistration() throws Exception {
