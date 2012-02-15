@@ -71,7 +71,7 @@ public class DatabaseDerby extends DatabaseHelper {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws SQLException {
         Exception ex = null;
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
@@ -86,6 +86,8 @@ public class DatabaseDerby extends DatabaseHelper {
                 return;
             }
             ex = e;
+        } finally {
+            super.tearDown();
         }
         throw new RuntimeException("Expected Derby shutdown exception instead",
                 ex);
