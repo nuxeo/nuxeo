@@ -181,6 +181,7 @@ public class NuxeoContainer {
             log.trace("Uninstalling nuxeo container", installContext);
             installContext = null;
         }
+        installed = false;
         parentContext = null;
         rootContext = null;
         revertSetAsInitialContext();
