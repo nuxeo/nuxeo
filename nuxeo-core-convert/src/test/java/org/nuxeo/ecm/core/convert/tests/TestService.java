@@ -43,7 +43,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     public void testServiceContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib1.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         Converter cv1 = ConversionServiceImpl.getConverter("dummy1");
@@ -59,7 +60,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     public void testConverterLookup() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib1.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         String converterName = cs.getConverterName("text/plain", "test/me");
@@ -68,11 +70,8 @@ public class TestService extends NXRuntimeTestCase {
         converterName = cs.getConverterName("text/plain2", "test/me");
         assertNull(converterName);
 
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
-
-        if (true) {
-            return;
-        }
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib2.xml");
 
         converterName = cs.getConverterName("test/me", "foo/bar");
         assertEquals("dummy2", converterName);
@@ -117,8 +116,10 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     public void testAvailability() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib4.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib2.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib4.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         ConverterCheckResult result = null;
@@ -144,7 +145,6 @@ public class TestService extends NXRuntimeTestCase {
         assertTrue(notRegistred);
 
         // not available converter
-
         notRegistred = false;
         try {
             result = cs.isConverterAvailable("NotAvailableConverter");
@@ -196,7 +196,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     public void testServiceConfig() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-test.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/convert-service-config-test.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
