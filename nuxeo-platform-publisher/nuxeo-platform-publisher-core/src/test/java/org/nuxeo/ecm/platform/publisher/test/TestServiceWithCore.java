@@ -63,7 +63,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         ds.setDatabase("jdbc:hsqldb:mem:jena");
         ds.setUser("sa");
         ds.setPassword("");
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxrelations-default-jena", ds);
+        NuxeoContainer.addDeepBinding(
+                "java:comp/env/jdbc/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -89,9 +90,14 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        closeSession();
-        NuxeoContainer.uninstall();
-        super.tearDown();
+        try {
+            closeSession();
+        } finally {
+            if (NuxeoContainer.isInstalled()) {
+                NuxeoContainer.uninstall();
+            }
+            super.tearDown();
+        }
     }
 
     protected void createInitialDocs() throws Exception {
@@ -146,10 +152,11 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         assertEquals(1, treeNames.size());
 
         // check publication tree
-        PublicationTree tree = service.getPublicationTree(
-                treeNames.get(0), session, null);
+        PublicationTree tree = service.getPublicationTree(treeNames.get(0),
+                session, null);
         assertNotNull(tree);
-        assertEquals("label.publication.tree.local.sections", tree.getTreeTitle());
+        assertEquals("label.publication.tree.local.sections",
+                tree.getTreeTitle());
         assertEquals("RootSectionsPublicationTree", tree.getTreeType());
         assertTrue(tree.getConfigName().startsWith("DefaultSectionsTree"));
 
@@ -179,8 +186,10 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         // check publishing
         PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
         assertNotNull(pubDoc);
-        assertEquals(1, tree.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(
+                1,
+                tree.getExistingPublishedDocument(
+                        new DocumentLocationImpl(doc2Publish)).size());
         session.save();
 
         assertEquals("test", pubDoc.getSourceRepositoryName());
@@ -207,8 +216,10 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublicationNode targetNode2 = nodes.get(0);
         PublishedDocument pubDoc2 = tree.publish(doc2Publish, targetNode2);
         assertNotNull(pubDoc2);
-        assertEquals(2, tree.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(
+                2,
+                tree.getExistingPublishedDocument(
+                        new DocumentLocationImpl(doc2Publish)).size());
         session.save();
 
         assertEquals("test", pubDoc2.getSourceRepositoryName());
@@ -285,8 +296,10 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
         PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
         assertNotNull(pubDoc);
-        assertEquals(1, tree.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(
+                1,
+                tree.getExistingPublishedDocument(
+                        new DocumentLocationImpl(doc2Publish)).size());
     }
 
     public void testWithRootSections() throws Exception {
@@ -309,7 +322,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublisherService service = Framework.getLocalService(PublisherService.class);
 
         PublicationTree tree = service.getPublicationTree(
-                service.getAvailablePublicationTree().get(0), session, null, doc2Publish);
+                service.getAvailablePublicationTree().get(0), session, null,
+                doc2Publish);
         assertNotNull(tree);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();
@@ -342,9 +356,12 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
     protected void publishDocAndReopenSession() throws Exception {
         createInitialDocs();
-        RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
-        DocumentModel section = session.getDocument(new PathRef("/default-domain/sections/section1"));
-        DocumentModel workspace = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
+        RootSectionsManager rootSectionsManager = new RootSectionsManager(
+                session);
+        DocumentModel section = session.getDocument(new PathRef(
+                "/default-domain/sections/section1"));
+        DocumentModel workspace = session.getDocument(new PathRef(
+                "/default-domain/workspaces/ws1"));
         rootSectionsManager.addSection(section.getId(), workspace);
         PublisherService srv = Framework.getLocalService(PublisherService.class);
         PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
@@ -363,7 +380,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublisherService srv = Framework.getLocalService(PublisherService.class);
         PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
         PublicationNode target = tree.getNodeByPath(sectionRef.value);
-        // Unpublish check-in version  (SUPNXP-3013)
+        // Unpublish check-in version (SUPNXP-3013)
         DocumentModel publishedDocVersion = session.getSourceDocument(proxyRef);
         tree.unpublish(publishedDocVersion, target);
         assertFalse(session.exists(proxyRef));

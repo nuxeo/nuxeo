@@ -61,7 +61,8 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         ds.setDatabase("jdbc:hsqldb:mem:jena");
         ds.setUser("sa");
         ds.setPassword("");
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxrelations-default-jena", ds);
+        NuxeoContainer.addDeepBinding(
+                "java:comp/env/jdbc/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -87,9 +88,14 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        closeSession();
-        NuxeoContainer.uninstall();
-        super.tearDown();
+        try {
+            closeSession();
+        } finally {
+            if (NuxeoContainer.isInstalled()) {
+                NuxeoContainer.uninstall();
+            }
+            super.tearDown();
+        }
     }
 
     protected void createInitialDocs() throws Exception {
@@ -150,8 +156,8 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         DocumentModel proxy = ((SimpleCorePublishedDocument) pubDoc).getProxy();
         assertTrue(PublicationRelationHelper.isPublished(proxy));
 
-        assertEquals(tree.getConfigName(), service.getPublicationTreeFor(proxy,
-                session).getConfigName());
+        assertEquals(tree.getConfigName(),
+                service.getPublicationTreeFor(proxy, session).getConfigName());
     }
 
 }

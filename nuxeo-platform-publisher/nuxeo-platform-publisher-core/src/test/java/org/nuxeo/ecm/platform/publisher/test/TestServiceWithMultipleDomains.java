@@ -78,9 +78,14 @@ public class TestServiceWithMultipleDomains extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        closeSession();
-        NuxeoContainer.uninstall();
-        super.tearDown();
+        try {
+            closeSession();
+        } finally {
+            if (NuxeoContainer.isInstalled()) {
+                NuxeoContainer.uninstall();
+            }
+            super.tearDown();
+        }
     }
 
     protected void createInitialDocs(String domainPath) throws Exception {

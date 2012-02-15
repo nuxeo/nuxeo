@@ -84,7 +84,9 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
     @Override
     public void tearDown() throws Exception {
-        NuxeoContainer.uninstall();
+        if (NuxeoContainer.isInstalled()) {
+            NuxeoContainer.uninstall();
+        }
         super.tearDown();
     }
 
