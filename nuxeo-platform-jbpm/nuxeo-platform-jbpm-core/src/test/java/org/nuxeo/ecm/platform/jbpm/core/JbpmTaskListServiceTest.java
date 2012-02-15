@@ -61,6 +61,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
 
+        fireFrameworkStarted();
         openSession();
     }
 
