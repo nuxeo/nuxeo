@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -184,21 +185,21 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     }
 
     public void initialize() {
+        DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
             // type is ignored, the config inferred by DatabaseHelper from
             // system properties will be used
-            DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
             dbHelper.setRepositoryName(repositoryName);
             dbHelper.setUp(repositoryFactoryClass);
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(
                     "org.nuxeo.ecm.core.storage.sql.test");
-            String contribPath =
-                   dbHelper.getDeploymentContrib();
+            String contribPath = dbHelper.getDeploymentContrib();
             URL contribURL = bundle.getEntry(contribPath);
-            assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
+            assertNotNull("deployment contrib " + contribPath + " not found",
+                    contribURL);
             Contribution contrib = new ContributionLocation(repositoryName,
                     contribURL);
             harness.getContext().deploy(contrib);
@@ -208,12 +209,20 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     }
 
     public void shutdown() {
-        if (repo != null) {
-            if (session != null) {
-                releaseSession();
+        try {
+            if (repo != null) {
+                if (session != null) {
+                    releaseSession();
+                }
+                repo.releaseRepository();
+                repo = null;
             }
-            repo.releaseRepository();
-            repo = null;
+        } finally {
+            try {
+                DatabaseHelper.DATABASE.tearDown();
+            } catch (SQLException e) {
+                throw new Error("Cannot release database", e);
+            }
         }
     }
 
@@ -239,7 +248,6 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
         }
         return session;
     }
-
 
     /**
      * @since 5.6
