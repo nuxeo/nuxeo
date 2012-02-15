@@ -50,7 +50,7 @@ public class TestVersionning extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.versioning.api");
         deployBundle("org.nuxeo.ecm.platform.versioning");
-
+        fireFrameworkStarted();
         openRepository();
 
         createTestDocuments();

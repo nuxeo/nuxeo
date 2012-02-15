@@ -66,6 +66,7 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.platform.filemanager.api");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
+        fireFrameworkStarted();
         openRepository();
 
         createTestDocuments();
