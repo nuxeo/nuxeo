@@ -161,9 +161,7 @@ public class NuxeoContainer {
      */
     public static synchronized void installNaming() throws NamingException {
         installContext = new InstallContext();
-        if (Framework.isTestModeSet()) {
-            log.trace("Installing nuxeo container", installContext);
-        }
+        log.trace("Installing nuxeo container", installContext);
         setupRootContext();
         setAsInitialContext();
     }
@@ -174,9 +172,7 @@ public class NuxeoContainer {
      * @since 5.6
      */
     public static synchronized void uninstallNaming() {
-        if (Framework.isTestModeSet()) {
-            log.trace("Uninstalling nuxeo container", installContext);
-        }
+        log.trace("Uninstalling nuxeo container", installContext);
         installContext = null;
         parentContext = null;
         rootContext = null;
