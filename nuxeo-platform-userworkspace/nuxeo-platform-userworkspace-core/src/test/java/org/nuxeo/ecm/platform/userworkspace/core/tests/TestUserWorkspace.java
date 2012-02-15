@@ -55,6 +55,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.userworkspace.core");
+        fireFrameworkStarted();
         openSession();
     }
 

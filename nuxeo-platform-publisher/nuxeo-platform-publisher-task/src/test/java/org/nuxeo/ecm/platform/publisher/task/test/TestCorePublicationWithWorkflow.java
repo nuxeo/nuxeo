@@ -80,6 +80,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         deployBundle(TaskUTConstants.API_BUNDLE_NAME);
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
+        fireFrameworkStarted();
         openSession();
 
         directoryService = Framework.getService(DirectoryService.class);
