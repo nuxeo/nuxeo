@@ -45,7 +45,7 @@ public class TestService extends NXRuntimeTestCase {
     public void testServiceContrib() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests",
                 "OSGI-INF/converters-test-contrib1.xml");
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        assertNotNull(Framework.getLocalService(ConversionService.class));
 
         Converter cv1 = ConversionServiceImpl.getConverter("dummy1");
         assertNotNull(cv1);
@@ -198,7 +198,7 @@ public class TestService extends NXRuntimeTestCase {
     public void testServiceConfig() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests",
                 "OSGI-INF/convert-service-config-test.xml");
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        assertNotNull(Framework.getLocalService(ConversionService.class));
 
         assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
         assertEquals(132, ConversionServiceImpl.getMaxCacheSizeInKB());
