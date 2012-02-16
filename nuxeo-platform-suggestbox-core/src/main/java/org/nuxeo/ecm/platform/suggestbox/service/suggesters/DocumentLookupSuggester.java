@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.suggestbox.service.DocumentSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
@@ -52,13 +53,14 @@ public class DocumentLookupSuggester implements Suggester {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) context.session);
-
-        userInput = userInput.trim();
-        if (userInput.isEmpty()) {
+        userInput = NXQLQueryBuilder.sanitizeFulltextInput(userInput);
+        if (userInput.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        // perform a prefix search on the last typed word
-        userInput += "*";
+        if (!userInput.endsWith(" ")) {
+            // perform a prefix search on the last typed word
+            userInput += "*";
+        }
         try {
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(

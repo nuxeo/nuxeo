@@ -32,12 +32,16 @@ public class I18nHelper {
         while (matcher.find()) {
             int paramId = Integer.valueOf(matcher.group(1));
             if (paramId >= 0 && paramId < params.length) {
-                matcher.appendReplacement(sb, params[paramId].toString());
+                // ugly hack to workaround the fact that for some reason
+                // backslash chars make the appendReplacement crash...
+                String replacement = params[paramId].toString().replaceAll(
+                        "\\\\", "\\\\\\\\");
+                matcher.appendReplacement(sb, replacement);
             } else {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "Invalid placeholder %d in message '%s': %d parameters provided",
-                                paramId, message, params.length));
+                throw new IllegalArgumentException(String.format(
+                        "Invalid placeholder %d in message '%s': %d "
+                                + "parameters provided", paramId, message,
+                        params.length));
             }
         }
         matcher.appendTail(sb);
@@ -51,5 +55,5 @@ public class I18nHelper {
         }
         return interpolate(message, params);
     }
-    
+
 }
