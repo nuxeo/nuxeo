@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -29,6 +30,7 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
         super.setUp(); // calls deployRepositoryConfig()
         Environment.getDefault().setHostApplicationName(
                 Environment.NXSERVER_HOST);
+        fireFrameworkStarted();
         TransactionHelper.startTransaction();
         openSession();
     }
