@@ -36,7 +36,7 @@ import org.w3c.dom.Node;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings( { "SuppressionAnnotation" })
+@SuppressWarnings({ "SuppressionAnnotation" })
 public class XAnnotatedList extends XAnnotatedMember {
 
     protected static final ElementVisitor elementListVisitor = new ElementVisitor();
@@ -84,6 +84,10 @@ public class XAnnotatedList extends XAnnotatedMember {
             }
         }
 
+        if (isNullByDefault && values.isEmpty()) {
+            return null;
+        }
+
         if (type != ArrayList.class) {
             if (type.isArray()) {
                 if (componentType.isPrimitive()) {
@@ -101,9 +105,6 @@ public class XAnnotatedList extends XAnnotatedMember {
             }
         }
 
-        if (isNullByDefault && values.isEmpty()) {
-            values = null;
-        }
         return values;
     }
 
