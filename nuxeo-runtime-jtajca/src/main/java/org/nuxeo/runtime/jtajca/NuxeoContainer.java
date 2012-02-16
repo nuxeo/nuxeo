@@ -149,6 +149,16 @@ public class NuxeoContainer {
         if (installContext == null) {
             throw new Error("Nuxeo container not installed");
         }
+        try {
+            removeBinding(JNDI_TRANSACTION_MANAGER);
+            removeBinding(JNDI_USER_TRANSACTION);
+            removeBinding(JNDI_NUXEO_CONNECTION_MANAGER);
+        } catch (Exception e) {
+            // do nothing
+        } finally {
+            transactionManager = null;
+            connectionManager = null;
+        }
         uninstallNaming();
         transactionManager = null;
         connectionManager = null;
