@@ -55,7 +55,7 @@ public class TaskQueryConstant {
         while (actorIterator.hasNext()) {
             String userName = actorIterator.next();
             sb.append('\'');
-            sb.append(userName);
+            sb.append(userName.replaceAll("'", "\\\\'"));
             sb.append('\'');
             if (actorIterator.hasNext()) {
                 sb.append(',');
