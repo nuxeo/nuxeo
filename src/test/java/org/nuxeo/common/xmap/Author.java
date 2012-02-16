@@ -145,7 +145,7 @@ public class Author {
 
     @XNodeList(value = "testNullByDefaultForList", type = HashSet.class,
             componentType = String.class, nullByDefault = true)
-    List<String> testNullByDefaultForListHashSet;
+    HashSet<String> testNullByDefaultForListHashSet;
 
     @XNodeMap(value = "testNullByDefaultForMap", key = "@name",
             type = HashMap.class, componentType = String.class, nullByDefault = true)
