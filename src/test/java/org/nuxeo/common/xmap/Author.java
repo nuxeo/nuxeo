@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -23,6 +23,7 @@ package org.nuxeo.common.xmap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -141,6 +142,10 @@ public class Author {
     @XNodeList(value = "testNullByDefaultForList", type = ArrayList.class,
             componentType = String.class, nullByDefault = true)
     List<String> testNullByDefaultForList;
+
+    @XNodeList(value = "testNullByDefaultForList", type = HashSet.class,
+            componentType = String.class, nullByDefault = true)
+    List<String> testNullByDefaultForListHashSet;
 
     @XNodeMap(value = "testNullByDefaultForMap", key = "@name",
             type = HashMap.class, componentType = String.class, nullByDefault = true)
