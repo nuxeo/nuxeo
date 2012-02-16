@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -143,6 +143,7 @@ class ElementVisitor implements DOMHelper.NodeVisitor {
 
     private static final Log log = LogFactory.getLog(ElementVisitor.class);
 
+    @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
             Collection<Object> result) {
         try {
@@ -154,6 +155,7 @@ class ElementVisitor implements DOMHelper.NodeVisitor {
 }
 
 class ElementValueVisitor implements DOMHelper.NodeVisitor {
+    @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
             Collection<Object> result) {
         String val = node.getTextContent();
@@ -170,6 +172,7 @@ class ElementValueVisitor implements DOMHelper.NodeVisitor {
 }
 
 class AttributeValueVisitor implements DOMHelper.NodeVisitor {
+    @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
             Collection<Object> result) {
         String val = node.getNodeValue();
