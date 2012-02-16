@@ -151,6 +151,15 @@ public class ComponentManagerImpl implements ComponentManager {
             // IllegalStateException("Component was already registered: " +
             // name);
         }
+        for (ComponentName n : ri.getAliases()) {
+            if (reg.contains(n)) {
+                String msg = "Duplicate component name: " + n + " (alias for "
+                        + name + ")";
+                log.error(msg);
+                Framework.getRuntime().getWarnings().add(msg);
+                return;
+            }
+        }
 
         ri.attach(this);
 

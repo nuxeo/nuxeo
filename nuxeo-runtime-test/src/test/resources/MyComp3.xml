@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="my.comp3">
+  <alias>my.comp3.alias</alias>
+  <alias>my.comp3.alias2</alias>
+
+  <implementation class="org.nuxeo.runtime.ComponentWithXPoint"/>
+
+  <extension-point name="xp">
+    <object class="org.nuxeo.runtime.DummyContribution"/>
+  </extension-point>
+
+</component>

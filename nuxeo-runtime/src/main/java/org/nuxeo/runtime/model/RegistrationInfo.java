@@ -80,6 +80,13 @@ public interface RegistrationInfo extends Serializable {
     Map<String, Property> getProperties();
 
     /**
+     * Gets the list of aliases.
+     *
+     * @return the aliases
+     */
+    Set<ComponentName> getAliases();
+
+    /**
      * Gets the list of the required components.
      *
      * @return the required components

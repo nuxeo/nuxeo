@@ -13,6 +13,7 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -71,6 +72,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     // the registration state
     int state = UNREGISTERED;
+
+    // my aliases
+    @XNodeList(value = "alias", type = HashSet.class, componentType = ComponentName.class)
+    Set<ComponentName> aliases;
 
     // the object names I depend of
     @XNodeList(value = "require", type = HashSet.class, componentType = ComponentName.class)
@@ -224,6 +229,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @Override
     public Extension[] getExtensions() {
         return extensions;
+    }
+
+    @Override
+    public Set<ComponentName> getAliases() {
+        return aliases == null ? Collections.<ComponentName> emptySet()
+                : aliases;
     }
 
     @Override

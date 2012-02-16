@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="my.comp4">
+
+  <require>my.comp3.alias</require>
+
+  <extension target="my.comp3" point="xp">
+    <printer>
+      <message>Using Canonical</message>
+    </printer>
+  </extension>
+
+  <extension target="my.comp3.alias" point="xp">
+    <printer>
+      <message>Using Alias</message>
+    </printer>
+  </extension>
+
+  <extension target="my.comp3.alias2" point="xp">
+    <printer>
+      <message>Using Alias 2</message>
+    </printer>
+  </extension>
+
+</component>
