@@ -70,8 +70,6 @@ public class NuxeoContainer {
 
     private static ConnectionManagerWrapper connectionManager;
 
-    private static boolean isInstalled;
-
     private static boolean isNamingOwner;
 
     private static Context namingContext;
@@ -95,9 +93,6 @@ public class NuxeoContainer {
      * didn't do it using file-based configuration. Binds the names in JNDI.
      */
     public static void install() throws NamingException {
-        if (isInstalled) {
-            throw new Error("Nuxeo container already installed");
-        }
         install(new TransactionManagerConfiguration(),
                 new ConnectionManagerConfiguration());
     }
@@ -114,7 +109,10 @@ public class NuxeoContainer {
     public static synchronized void install(
             TransactionManagerConfiguration txconfig,
             ConnectionManagerConfiguration cmconfig) throws NamingException {
-        isInstalled = true;
+        if (installContext != null) {
+            throw new Error("Nuxeo container already installed", installContext);
+        }
+        installContext = new InstallContext();
         transactionManager = lookupTransactionManager();
         if (transactionManager == null) {
             initTransactionManager(txconfig);
@@ -137,10 +135,10 @@ public class NuxeoContainer {
     }
 
     public static synchronized void uninstall() throws NamingException {
-        if (!isInstalled) {
+        if (installContext == null) {
             throw new Error("Nuxeo container not installed");
         }
-        isInstalled = false;
+        installContext = null;
         try {
             unbind(JNDI_TRANSACTION_MANAGER);
             unbind(JNDI_USER_TRANSACTION);
