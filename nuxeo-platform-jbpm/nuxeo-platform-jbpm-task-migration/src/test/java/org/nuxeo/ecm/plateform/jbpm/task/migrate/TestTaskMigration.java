@@ -66,7 +66,7 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
 
         principal = new UserPrincipal("toto", null, false, false);
 
-        prefixedActorIds.add("user:titi");
+        prefixedActorIds.add("user:tit'i");
 
     }
 
@@ -124,7 +124,7 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
         assertEquals("directive",task.getDirective());
         assertEquals("comment",task.getComments().get(0).getText());
         assertEquals("toto",task.getInitiator());
-        assertEquals("user:titi",task.getActors().get(0));
+        assertEquals("user:tit'i",task.getActors().get(0));
         assertTrue(task.getVariables().keySet().contains("v1"));
         assertTrue(task.getVariables().keySet().contains("v2"));
         assertEquals(doc.getId(), task.getTargetDocumentId());
