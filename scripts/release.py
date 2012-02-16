@@ -505,7 +505,8 @@ mode.""")
             release.perform()
         elif command == "package":
             repo.clone()
-            repo.mvn("clean package", skip_tests=True, profiles="qa")
+            # workaround for NXBT-121: use install instead of package
+            repo.mvn("clean install", skip_tests=True, profiles="qa")
             release.package_all(release.snapshot)
         elif command == "test":
             release.test()
