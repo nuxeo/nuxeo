@@ -30,7 +30,10 @@
             <item id="item2">Item 2</item>
             <item id="item3">Item 3</item>
         </list>
-
+        <listHashSet>
+            <itemHashSet>item in HashSet1</itemHashSet>
+            <itemHashSet>item in HashSet2</itemHashSet>
+        </listHashSet>
         <friends>
             <friend>
                 <firstName>friend1_fn</firstName>

@@ -61,6 +61,9 @@ public class Author {
     @XNodeList(value = "list/item", type = ArrayList.class, componentType = String.class)
     List<String> items;
 
+    @XNodeList(value = "listHashSet/itemHashSet", type = HashSet.class, componentType = String.class)
+    HashSet<String> itemsHashSet;
+
     @XNodeList(value = "list/item@id", type = ArrayList.class, componentType = String.class)
     List<String> itemIds;
 

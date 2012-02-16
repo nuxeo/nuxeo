@@ -26,7 +26,7 @@ import java.net.URL;
 import junit.framework.TestCase;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class XMapTest extends TestCase {
@@ -35,8 +35,8 @@ public class XMapTest extends TestCase {
         XMap xmap = new XMap();
         xmap.register(Author.class);
 
-        URL url = Thread.currentThread().getContextClassLoader()
-            .getResource("test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource(
+                "test-xmap.xml");
 
         Author author = (Author) xmap.load(url);
 
@@ -72,6 +72,8 @@ public class XMapTest extends TestCase {
         assertNull(author.testNullByDefaultForList);
         assertNull(author.testNullByDefaultForMap);
         assertNull(author.testNullByDefaultForListHashSet);
+        assertNotNull(author.itemsHashSet);
+        assertTrue(author.itemsHashSet.size() == 2);
     }
 
 }

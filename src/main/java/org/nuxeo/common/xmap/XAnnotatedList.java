@@ -117,6 +117,8 @@ public class XAnnotatedList extends XAnnotatedMember {
                 objects = (Object[]) v;
             } else if (v instanceof List) {
                 objects = ((List) v).toArray();
+            } else if (v instanceof Collection) {
+                objects = ((Collection) v).toArray();
             } else {
                 objects = PrimitiveArrays.toObjectArray(v);
             }
