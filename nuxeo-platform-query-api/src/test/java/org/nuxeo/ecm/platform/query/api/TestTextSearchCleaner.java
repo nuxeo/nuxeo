@@ -47,6 +47,11 @@ public class TestTextSearchCleaner extends NXRuntimeTestCase {
         assertEquals(
                 "= '+a +b'",
                 NXQLQueryBuilder.serializeFullText("a !#$%&()*+,-./:;<=>?@^`{|}~ b"));
+
+        // raw sanitizeFulltextInput API that does not wrap the input with the
+        // quote and the predicate operator
+        assertEquals("+some +stuff",
+                NXQLQueryBuilder.sanitizeFulltextInput("some & stuff\\"));
     }
 
     public void testCustomCleaner() throws Exception {

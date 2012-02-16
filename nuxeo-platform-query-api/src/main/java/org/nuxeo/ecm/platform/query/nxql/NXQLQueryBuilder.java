@@ -411,16 +411,28 @@ public class NXQLQueryBuilder {
      * @return the serialized statement
      */
 
-    // public static final String SPECIAL_CHARACTERS_REGEXP = "[!-/:-@{-}`^~]";
-
-    public static final String DEFAULT_SPECIAL_CHARACTERS_REGEXP = "!\"#$%&'()*+,-./:-@{|}`^~";
+    public static final String DEFAULT_SPECIAL_CHARACTERS_REGEXP = "!\"#$%&'()*+,-./\\\\:-@{|}`^~";
 
     public static final String IGNORED_CHARS_KEY = "org.nuxeo.query.builder.ignored.chars";
 
-    public static String serializeFullText(String value) {
+    /**
+     * Remove any special character that could be mis-interpreted as a low level
+     * full-text query operator.
+     *
+     * This method should be used by user facing callers of
+     * CoreQuery*PageProviders that use a fixed part or a pattern query. Fields
+     * in where clause already dealt with.
+     *
+     * @since 5.6
+     * @return sanitized text value
+     */
+    public static String sanitizeFulltextInput(String value) {
+        // Ideally the low level full-text language
+        // parser should be robust to any user input however this is much more
+        // complicated to implement correctly than the following simple user
+        // input filtering scheme.
         String ignoredChars = Framework.getProperty(IGNORED_CHARS_KEY,
                 DEFAULT_SPECIAL_CHARACTERS_REGEXP);
-
         String res = "";
         value = value.replaceAll("[" + ignoredChars + "]", " ");
         value = value.trim();
@@ -433,7 +445,12 @@ public class NXQLQueryBuilder {
                 res += "+" + tokens[i];
             }
         }
-        return "= " + prepareStringLiteral(res, true, true);
+        return res;
+    }
+
+    public static String serializeFullText(String value) {
+        value = sanitizeFulltextInput(value);
+        return "= " + prepareStringLiteral(value, true, true);
     }
 
     protected static String serializeUnary(String parameter, String operator,
