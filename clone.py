@@ -127,7 +127,7 @@ def git_fetch(module):
 
 def get_current_version():
     t = check_output(["git", "describe", "--all"]).split("/")
-    return t[1]
+    return t[-1]
 
 
 def assert_git_config():
