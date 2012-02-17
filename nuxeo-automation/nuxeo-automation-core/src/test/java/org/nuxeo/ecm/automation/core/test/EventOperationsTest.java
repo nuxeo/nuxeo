@@ -53,7 +53,7 @@ import com.google.inject.Inject;
 @Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-enc.xml")
-@RepositoryConfig(cleanup=Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class EventOperationsTest {
 
     protected DocumentModel src;

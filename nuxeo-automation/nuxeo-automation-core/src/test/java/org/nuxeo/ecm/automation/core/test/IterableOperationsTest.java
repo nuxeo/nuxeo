@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -49,7 +51,7 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
-// @RepositoryConfig(cleanup=Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class IterableOperationsTest {
 
     protected DocumentModel src;
@@ -64,9 +66,6 @@ public class IterableOperationsTest {
 
     @Before
     public void initRepo() throws Exception {
-        session.removeChildren(session.getRootDocument().getRef());
-        session.save();
-
         src = session.createDocumentModel("/", "src", "Workspace");
         src.setPropertyValue("dc:title", "Source");
         src = session.createDocument(src);
