@@ -26,6 +26,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,6 +84,8 @@ public class TestZipImporter {
 
     protected static final String IMPORT_SET_QUERY = "SELECT * FROM Document WHERE ecm:primaryType = 'ImportSet'";
 
+    protected final Log log = LogFactory.getLog(TestZipImporter.class);
+
     @Inject
     protected CoreSession session;
 
@@ -96,11 +100,18 @@ public class TestZipImporter {
     public void checkShutdown() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         ThreadMXBean threadMgmt = ManagementFactory.getThreadMXBean();
+        boolean stillRunning = false;
         for (ThreadInfo info:threadMgmt.dumpAllThreads(false, false)) {
             String threadName = info.getThreadName();
             if (threadName.contains("Nuxeo Async Events")) {
-                throw new Error(threadName + " is still running");
+                Throwable context = new Throwable();
+                context.setStackTrace(info.getStackTrace());
+                log.warn(threadName + " is still running", context);
+                stillRunning = true;
             }
+        }
+        if (stillRunning) {
+            throw new Error("event services async thread are still running");
         }
     }
 
