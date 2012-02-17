@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,10 +13,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.webapp.navigation;
 
 import static org.jboss.seam.ScopeType.EVENT;
@@ -28,8 +25,6 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -72,36 +67,48 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Install(precedence = FRAMEWORK)
 public class BreadcrumbActionsBean implements BreadcrumbActions {
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(BreadcrumbActionsBean.class);
-
     @In(create = true)
-    NavigationContext navigationContext;
+    protected NavigationContext navigationContext;
 
     @In(create = true, required = false)
-    private CoreSession documentManager;
+    protected CoreSession documentManager;
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    private static final String VIEW_DOMAIN_OUTCOME = "view_domains";
+    /** View id description prefix for message label (followed by "="). */
+    protected static final String BREADCRUMB_PREFIX = "breadcrumb";
 
-    private static final String BREADCRUMB_PREFIX = "breadcrumb";
+    /**
+     * Minimum path segments that must be displayed without shrinking.
+     */
+    protected int getMinPathSegmentsLen() {
+        return 4;
+    }
 
-    private static final String PATH_SHORTCUT = "....";
+    /**
+     * Maximum length path that can be displayed without shrinking.
+     */
+    protected int getMaxPathCharLen() {
+        return 80;
+    }
 
-    // minimum path segments that must be displayed without shrinking
-    protected static int MIN_PATH_SEGMENTS_LEN = 4;
+    protected String getPathEllipsis() {
+        return "....";
+    }
 
-    // maximum length path that can be displayed without shrinking
-    protected static int MAX_PATH_CHAR_LEN = 80;
+    protected String getViewDomainsOutcome() {
+        return "view_domains";
+    }
 
+    @Override
     public String navigateToParent() throws ClientException {
         List<PathElement> documentsFormingPath = getBackendPath();
         int nbDocInList = documentsFormingPath.size();
         // if there is the case, remove the starting
         if (nbDocInList > 0
-                && documentsFormingPath.get(0).getName().equals(PATH_SHORTCUT)) {
+                && documentsFormingPath.get(0).getName().equals(
+                        getPathEllipsis())) {
             documentsFormingPath.remove(0);
         }
 
@@ -137,7 +144,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
             }
             if (navigationContext.getCurrentDocument().getType().equals(
                     "CoreRoot")) {
-                outcome = VIEW_DOMAIN_OUTCOME;
+                outcome = getViewDomainsOutcome();
             }
         }
         return outcome;
@@ -176,6 +183,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
      *
      * @return
      */
+    @Override
     @Factory(value = "backendPath", scope = EVENT)
     public List<PathElement> getBackendPath() throws ClientException {
         String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
@@ -189,7 +197,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
 
     protected List<PathElement> shrinkPathIfNeeded(List<PathElement> paths) {
 
-        if (paths == null || paths.size() <= MIN_PATH_SEGMENTS_LEN) {
+        if (paths == null || paths.size() <= getMinPathSegmentsLen()) {
             return paths;
         }
 
@@ -199,7 +207,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         }
         String completePath = sb.toString();
 
-        if (completePath.length() <= MAX_PATH_CHAR_LEN) {
+        if (completePath.length() <= getMaxPathCharLen()) {
             return paths;
         }
 
@@ -209,7 +217,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         for (int i = paths.size() - 1; i >= 0; i--) {
             PathElement pe = paths.get(i);
             sb.append(pe.getName());
-            if (sb.length() < MAX_PATH_CHAR_LEN) {
+            if (sb.length() < getMaxPathCharLen()) {
                 shrinkedPath.add(0, pe);
             } else {
                 break;
@@ -220,11 +228,11 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
             // this means the current document has a title longer than MAX_PATH_CHAR_LEN !
             shrinkedPath.add(0, paths.get(paths.size()-1));
         }
-        shrinkedPath.add(0, new TextPathElement(PATH_SHORTCUT));
+        shrinkedPath.add(0, new TextPathElement(getPathEllipsis()));
         return shrinkedPath;
     }
 
-    private List<PathElement> makeBackendPathFromLabel(String label) {
+    protected List<PathElement> makeBackendPathFromLabel(String label) {
         List<PathElement> pathElements = new ArrayList<PathElement>();
         label = resourcesAccessor.getMessages().get(label);
         PathElement pathLabel = new TextPathElement(label);
