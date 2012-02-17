@@ -84,13 +84,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
     @Override
     public void tearDown() throws Exception {
-<<<<<<< HEAD
         NamingContextFactory.revertSetAsInitial();
-=======
-        if (NuxeoContainer.isInstalled()) {
-            NuxeoContainer.uninstall();
-        }
->>>>>>> 443c5fc... NXP-8842 fixed features declaration (squashed cherry pick)
         super.tearDown();
     }
 
