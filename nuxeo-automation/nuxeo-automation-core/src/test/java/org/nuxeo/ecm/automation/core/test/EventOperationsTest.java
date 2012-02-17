@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -51,7 +53,7 @@ import com.google.inject.Inject;
 @Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-enc.xml")
-// @RepositoryConfig(cleanup=Granularity.METHOD)
+@RepositoryConfig(cleanup=Granularity.METHOD)
 public class EventOperationsTest {
 
     protected DocumentModel src;
@@ -69,9 +71,6 @@ public class EventOperationsTest {
 
     @Before
     public void initRepo() throws Exception {
-        session.removeChildren(session.getRootDocument().getRef());
-        session.save();
-
         src = session.createDocumentModel("/", "src", "Workspace");
         src.setPropertyValue("dc:title", "Source");
         src = session.createDocument(src);
