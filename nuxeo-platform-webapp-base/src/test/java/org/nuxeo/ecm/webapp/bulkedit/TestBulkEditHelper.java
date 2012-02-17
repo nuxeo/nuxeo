@@ -27,10 +27,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -129,6 +131,10 @@ public class TestBulkEditHelper {
     @Test
     public void testCopyMetadata() throws Exception {
         List<DocumentModel> docs = createTestDocuments();
+        // wait for fulltext processing before copy, to avoid transaction
+        // isolation issues (SQL Server)
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+
         List<String> commonSchemas = BulkEditHelper.getCommonSchemas(docs);
         DocumentModel sourceDoc = new SimpleDocumentModel(commonSchemas);
         sourceDoc.setProperty("dublincore", "title", "new title");
