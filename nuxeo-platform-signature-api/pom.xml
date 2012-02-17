@@ -6,7 +6,7 @@
  <parent>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-signature-parent</artifactId>
-  <version>5.4.2</version>
+  <version>5.5</version>
  </parent>
 
  <artifactId>nuxeo-platform-signature-api</artifactId>
@@ -18,6 +18,7 @@
   <dependency>
    <groupId>com.lowagie</groupId>
    <artifactId>itext</artifactId>
+    <version>2.0.7</version>
    <scope>provided</scope>
   </dependency>
   <dependency>
