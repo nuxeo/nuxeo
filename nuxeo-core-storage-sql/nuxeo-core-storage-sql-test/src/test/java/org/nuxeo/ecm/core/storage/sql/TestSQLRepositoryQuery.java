@@ -499,6 +499,11 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     public void testOrderBySameColumns() throws Exception {
+        if (database instanceof DatabaseSQLServer) {
+            // SQL Server cannot ORDER BY foo, foo
+            return;
+        }
+
         String sql;
         DocumentModelList dml;
         createDocs();
