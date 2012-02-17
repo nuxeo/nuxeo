@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.webapp.contentbrowser;
@@ -98,9 +97,9 @@ public class DocumentActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
 
-    public static String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
+    public static final String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
 
-    public static String LIFE_CYCLE_TRANSITION_KEY = "lifeCycleTransition";
+    public static final String LIFE_CYCLE_TRANSITION_KEY = "lifeCycleTransition";
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -171,6 +170,7 @@ public class DocumentActionsBean extends InputController implements
         return typeManager.getType(changeableDocument.getType());
     }
 
+    @Deprecated
     @Override
     public String editDocument() throws ClientException {
         navigationContext.setChangeableDocument(navigationContext.getCurrentDocument());
@@ -205,6 +205,7 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Deprecated
     @Override
     public String download() throws ClientException {
         try {
@@ -271,45 +272,10 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    // XXX AT: broken right now
+    @Deprecated
     @Override
     public String downloadFromList() throws ClientException {
-        try {
-            // DocumentModel docMod =
-            // getDataTableModel().getSelectedDocModel();
-            DocumentModel docMod = null;
-            if (docMod == null || fileFieldFullName == null) {
-                return null;
-            }
-
-            String[] s = fileFieldFullName.split(":");
-            Blob blob = (Blob) docMod.getProperty(s[0], s[1]);
-            if (blob == null) {
-                log.error("No bytes available for the file");
-                return null;
-            }
-
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            String filename = getFileName(currentDocument);
-            if (filename == null || "".equals(filename)) {
-                filename = "file";
-            }
-
-            FacesContext context = FacesContext.getCurrentInstance();
-            HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-
-            response.setHeader("Content-Disposition", "attachment; filename=\""
-                    + filename + "\";");
-            log.debug("Downloading with mime/type : " + blob.getMimeType());
-            response.setContentType(blob.getMimeType());
-            // response.setCharacterEncoding(blob.getEncoding());
-            response.getOutputStream().write(blob.getByteArray());
-            response.flushBuffer();
-            context.responseComplete();
-            return null;
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        return null;
     }
 
     protected String updateDocument(DocumentModel doc) throws ClientException {
@@ -337,6 +303,7 @@ public class DocumentActionsBean extends InputController implements
         return updateDocument(currentDocument);
     }
 
+    @Deprecated
     @Override
     public String updateDocument() throws ClientException {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
@@ -452,7 +419,7 @@ public class DocumentActionsBean extends InputController implements
     // resultsProviderCache
     // SelectDataModel building should be cheap anyway
     // @Factory(value = "documentActions_childrenSelectModel", scope = EVENT)
-
+    @Deprecated
     @Override
     @Factory(value = "currentChildrenSelectModel", scope = EVENT)
     public SelectDataModel getChildrenSelectModel() throws ClientException {
@@ -473,6 +440,7 @@ public class DocumentActionsBean extends InputController implements
     // resultsProviderCache
     // SelectDataModel building should be cheap anyway
     // @Factory(value = "documentActions_childrenSelectModel", scope = EVENT)
+    @Deprecated
     @Override
     public SelectDataModel getSectionChildrenSelectModel()
             throws ClientException {
@@ -489,7 +457,6 @@ public class DocumentActionsBean extends InputController implements
     }
 
     // SelectModelListener interface
-
     @Override
     public void processSelectRowEvent(SelectDataModelRowEvent event) {
         // could use source to get to the SelectModel and retrieve its name,
@@ -512,6 +479,7 @@ public class DocumentActionsBean extends InputController implements
         return "ERROR: " + errorMessage;
     }
 
+    @Deprecated
     @Override
     @WebRemote
     public String checkCurrentDocAndProcessSelectRow(String docRef,
@@ -524,6 +492,7 @@ public class DocumentActionsBean extends InputController implements
         return processSelectRow(docRef, providerName, listName, selection);
     }
 
+    @Deprecated
     @Override
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
@@ -556,6 +525,7 @@ public class DocumentActionsBean extends InputController implements
         return computeSelectionActions(lName);
     }
 
+    @Deprecated
     @Override
     @WebRemote
     public String checkCurrentDocAndProcessSelectPage(String providerName,
@@ -568,6 +538,7 @@ public class DocumentActionsBean extends InputController implements
         return processSelectPage(providerName, listName, selection);
     }
 
+    @Deprecated
     @Override
     @WebRemote
     public String processSelectPage(String providerName, String listName,
@@ -613,9 +584,8 @@ public class DocumentActionsBean extends InputController implements
     @Override
     public boolean getWriteRight() throws ClientException {
         // TODO: WRITE is a high level compound permission (i.e. more like a
-        // user
-        // profile), public methods of the Nuxeo framework should only check
-        // atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
+        // user profile), public methods of the Nuxeo framework should only
+        // check atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
         // ADD_CHILDREN depending on the action to execute instead
         return documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
@@ -629,11 +599,13 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
+    @Deprecated
     @Override
     public String getComment() {
         return "";
     }
 
+    @Deprecated
     @Override
     public void setComment(String comment) {
         this.comment = comment;
