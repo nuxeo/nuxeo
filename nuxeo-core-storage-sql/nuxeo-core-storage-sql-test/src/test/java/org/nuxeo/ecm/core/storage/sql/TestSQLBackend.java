@@ -1961,6 +1961,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         DummyFulltextParser.collected = new HashSet<String>();
         List<Serializable> oneDoc = makeComplexDoc(session);
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
         assertEquals(new HashSet<String>(Arrays.asList( //
                 "tst:title=hello world", //
                 "tst:subjects=foo", //
