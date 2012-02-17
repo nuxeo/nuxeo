@@ -83,7 +83,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        NamingContextFactory.uninstallNaming();
+        NamingContextFactory.revertSetAsInitial();
         super.tearDown();
     }
 
