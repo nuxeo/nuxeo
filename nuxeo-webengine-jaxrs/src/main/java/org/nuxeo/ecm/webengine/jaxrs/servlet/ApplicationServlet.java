@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationHost;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationManager;
@@ -34,6 +35,8 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.osgi.framework.Bundle;
 
+import com.sun.jersey.api.core.ApplicationAdapter;
+import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 
@@ -77,7 +80,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
             name = ApplicationManager.DEFAULT_HOST;
         }
         app = ApplicationManager.getInstance().getOrCreateApplication(name);
-        container = new ServletContainer(app);
+        container = createServletContainer(new ApplicationAdapter(app));
 
         initContainer(config);
         app.setRendering(initRendering(config));
@@ -196,46 +199,33 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
     }
 
     protected void initContainer(ServletConfig config) throws ServletException {
-        Thread thread = Thread.currentThread();
-        ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(ServiceClassLoader.getLoader());
-        try {
-            container.init(getServletConfig());
-        } finally {
-            thread.setContextClassLoader(cl);
-        }
+        container.init(getServletConfig());
     }
 
     protected void destroyContainer() {
-        Thread thread = Thread.currentThread();
-        ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(ServiceClassLoader.getLoader());
-        try {
-            container.destroy();
-            container = null;
-        } finally {
-            thread.setContextClassLoader(cl);
-        }
+        container.destroy();
+        container = null;
     }
 
     protected synchronized void reloadContainer() throws ServletException {
         // reload is not working correctly since old classes are still referenced
         // for this to work we need a custom ResourceConfig but all fields in jersey
         // classes are private so we cannot set it ...
-        //super.reload();
-        Thread thread = Thread.currentThread();
-        ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(ServiceClassLoader.getLoader());
         try {
             container.destroy();
-            container = new ServletContainer(app);
+            container = createServletContainer(app);
             container.init(getServletConfig());
         } finally {
-            thread.setContextClassLoader(cl);
             isDirty = false;
         }
     }
 
+    protected ServletContainer createServletContainer(Application app) {
+        ApplicationAdapter adapter = new ApplicationAdapter(app);
+        // disable wadl since we got class loader pb in JAXB under equinox
+        adapter.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);
+        return new ServletContainer(adapter);
+    }
 
     @Override
     public File getResourceFile(String key) {

@@ -50,10 +50,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        // we need to set by hand the runtime delegate to avoid letting ServiceFinder discover the implementation
-        // which is not working in an OSGi environment
-        RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
-
         instance = this;
         this.context = context;
         pkgAdm = context.getServiceReference(PackageAdmin.class.getName());

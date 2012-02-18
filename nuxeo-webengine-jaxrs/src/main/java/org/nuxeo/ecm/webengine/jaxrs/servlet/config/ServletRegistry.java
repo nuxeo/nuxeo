@@ -220,6 +220,7 @@ public class ServletRegistry {
             }
             Hashtable<String, String> params = new Hashtable<String, String>();
             if (sd.name != null) {
+                params.putAll(sd.getInitParams());
                 params.put(SERVLET_NAME, sd.name);
             }
             service.registerServlet(sd.path, new ServletHolder(), params, ctx);

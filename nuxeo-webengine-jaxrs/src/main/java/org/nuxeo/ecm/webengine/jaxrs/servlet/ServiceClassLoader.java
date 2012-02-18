@@ -29,6 +29,8 @@ import com.sun.jersey.server.impl.provider.RuntimeDelegateImpl;
  * Support for jersey ServiceFinder lookups in an OSGi environment.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
+ * @deprecated This class is deprecated since jersey 1.11 which fixed OSGi class loader problems.
  */
 public class ServiceClassLoader extends ClassLoader {
 
