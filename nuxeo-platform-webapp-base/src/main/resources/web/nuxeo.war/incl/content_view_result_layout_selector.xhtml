@@ -12,6 +12,13 @@ Needed parameters:
  - contentView: the content view instance, mandatory
  - contentViewRenderId the unique identifier used in main
    content view template
+
+Optional parameters used to override the content view definition when not
+empty:
+ - showPageSizeSelector
+ - showRefreshCommand
+ - showCSVExport
+ - showPDFExport
 </c:if>
 
 <a4j:region id="#{contentViewRenderId}_contentViewActionsRegion">
@@ -41,7 +48,10 @@ Needed parameters:
     </c:if>
 
     <ul class="layoutViewMode" style="display:inline;">
-      <c:if test="#{contentView.showRefreshCommand}">
+
+      <nxu:set var="finalShowRefreshCommand"
+        value="#{nxu:test(empty showRefreshCommand, contentView.showRefreshCommand, showRefreshCommand)}">
+      <c:if test="#{finalShowRefreshCommand}">
         <li>
           <a4j:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
             id="refreshContentViewLink"
@@ -54,9 +64,13 @@ Needed parameters:
           </a4j:commandLink>
         </li>
       </c:if>
+      </nxu:set>
+
       <nxu:set var="contentViewState"
         value="#{contentViewRestActions.getContentViewState(contentView)}">
-        <c:if test="#{contentView.currentResultLayout.showCSVExport}">
+        <nxu:set var="finalShowCSVExport"
+          value="#{nxu:test(empty showCSVExport, contentView.currentResultLayout.showCSVExport, showCSVExport)}">
+        <c:if test="#{finalShowCSVExport}">
           <li>
             <nxd:restDocumentLink document="#{currentDocument}"
               view="xl" addTabInfo="false"
@@ -71,7 +85,10 @@ Needed parameters:
             </nxd:restDocumentLink>
           </li>
         </c:if>
-        <c:if test="#{contentView.currentResultLayout.showPDFExport}">
+        </nxu:set>
+        <nxu:set var="finalShowPDFExport"
+          value="#{nxu:test(empty showPDFExport, contentView.currentResultLayout.showPDFExport, showPDFExport)}">
+        <c:if test="#{finalShowPDFExport}">
           <li>
             <nxd:restDocumentLink document="#{currentDocument}"
               view="content_view_pdf" addTabInfo="false"
@@ -86,6 +103,7 @@ Needed parameters:
             </nxd:restDocumentLink>
           </li>
         </c:if>
+        </nxu:set>
       </nxu:set>
     </ul>
     <nxu:set var="actions"
@@ -106,7 +124,9 @@ Needed parameters:
   </a4j:form>
 </div>
 
-<c:if test="#{contentView.showPageSizeSelector}">
+<nxu:set var="finalShowPageSizeSelector"
+  value="#{nxu:test(empty showPageSizeSelector, contentView.showPageSizeSelector, showPageSizeSelector)}">
+<c:if test="#{finalShowPageSizeSelector}">
   <div class="listingLayoutSelector">
 
     <c:if test="#{contentView.useGlobalPageSize}">
@@ -143,6 +163,7 @@ Needed parameters:
 
   </div>
 </c:if>
+</nxu:set>
 
 </a4j:outputPanel>
 </a4j:region>

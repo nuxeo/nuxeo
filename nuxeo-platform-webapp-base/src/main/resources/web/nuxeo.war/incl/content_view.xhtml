@@ -16,11 +16,6 @@
   - contentViewId: a marker to generate unique ids
     when iterating over a list of content views, optional
     when only one content view is displayed in the page.
-  - contentViewDocument: the document to use for filter form instead of
-    the default one managed by the content view. optional.
-  - contentViewSortInfos: the default sort infos, optional.
-  - selectedResultLayoutColumns: list of result layout columns selected,
-    optional
   - hideEmpty: if set to true, nothing is displayed when there is no
     item to list (even the sentence saying that there are no items in the
     list). optional, defaults to false.
@@ -33,10 +28,44 @@
     using ajax calls. (optional, available since 5.6, defaults to false).
   - useAjaxPagination: use ajax links for page navigation controls when set to
     true (optional, available since 5.6, defaults to false).
+
+  Optional parameters used to override the content view definition when not
+  empty:
+  - contentViewTitle: title to display for this content view instead of the
+    one set on the content view definition.
+  - translateContentViewTitle: boolean to use when translating title,
+    only checked if contentViewTitle is not empty.
+  - contentViewIconPath
+  - showTitle
+  - showPageSizeSelector
+  - showRefreshCommand
+  - showFilterForm
+  - defaultPageSize
+  - showCSVExport
+  - showPDFExport
+  - showSyndicationLinks
+  - contentViewDocument: the document to use for filter form instead of
+    the default one managed by the content view. optional.
+  - contentViewSortInfos: the default sort infos, optional.
+  - selectedResultLayoutColumns: list of result layout columns selected,
+    optional
+
+  Templating zones that can be replaced using facelets tag ui:define:
+  - content_view_title
+  - content_view_quick_search_layout
+  - content_view_selector
+  - content_view_search_layout
+  - content_view_syndication_buttons
+  - content_view_footer
+  - empty_folder_label
 </c:if>
 
+<nxu:set var="finalDefaultPageSize"
+  value="#{nxu:test(empty defaultPageSize, -1, defaultPageSize)}">
+<nxu:set var="finalSortInfos"
+  value="#{nxu:test(empty contentViewSortInfos, null, contentViewSortInfos)}">
 <nxu:set var="contentView"
-  value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, nxu:test(empty contentViewSortInfos, null, contentViewSortInfos), -1, -1)}"
+  value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, finalSortInfos, finalDefaultPageSize, -1, -1)}"
   cache="true">
 <nxu:set var="selectedResultLayoutColumns"
   value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
@@ -54,35 +83,50 @@
     #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
   <c:if test="#{not hideEmpty or not empty provider.currentPage}">
 
-    <div class="#{nxu:test(foldable, 'foldableBox', '')}">
+    <div class="#{nxu:test(foldable, 'foldableBox #{foldableBoxStyleClass}', '#{foldableBoxStyleClass}')}">
 
       <ui:insert name="content_view_title">
-        <c:set var="title"
-          value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
-        <c:choose>
-          <c:when test="#{foldable}">
-            <h3 class="unfolded">
-              <a href="#nogo" onclick="return toggleBox(this)">
-                <c:if test="#{!empty contentView.iconPath}">
-                  <nxu:graphicImage value="#{contentView.iconPath}" title="#{title}" />
-                </c:if>
-                #{title}
-              </a>
-            </h3>
-          </c:when>
-          <c:otherwise>
-            <c:if test="#{contentView.showTitle and not empty title}">
-              <div class="contentViewTitle">
-                <h3>
-                  <c:if test="#{!empty contentView.iconPath}">
-                    <nxu:graphicImage value="#{contentView.iconPath}" title="#{title}" />
+        <nxu:set var="translateTitle"
+          value="#{nxu:test(empty contentViewTitle, contentView.translateTitle, translateContentViewTitle)}">
+        <nxu:set var="title"
+          value="#{nxu:test(empty contentViewTitle, contentView.title, contentViewTitle)}">
+        <nxu:set var="finalTitle"
+          value="#{nxu:test(translateTitle, messages[title], title)}">
+        <nxu:set var="iconPath"
+          value="#{nxu:test(empty contentViewIconPath, contentView.iconPath, contentViewIconPath)}">
+          <c:choose>
+            <c:when test="#{foldable}">
+              <h3 class="unfolded">
+                <a href="#nogo" onclick="return toggleBox(this)">
+                  <c:if test="#{!empty contentViewIconPath}">
+                    <nxu:graphicImage value="#{contentViewIconPath}"
+                      title="#{finalTitle}" />
                   </c:if>
-                  #{title}
-                </h3>
-              </div>
-            </c:if>
-          </c:otherwise>
-        </c:choose>
+                  #{finalTitle}
+                </a>
+              </h3>
+            </c:when>
+            <c:otherwise>
+              <nxu:set var="finalShowTitle"
+                value="#{nxu:test(empty showTitle, contentView.showTitle, showTitle)}">
+                <c:if test="#{finalShowTitle and not empty finalTitle}">
+                  <div class="contentViewTitle">
+                    <h3>
+                      <c:if test="#{!empty contentViewIconPath}">
+                        <nxu:graphicImage value="#{contentViewIconPath}"
+                          title="#{finalTitle}" />
+                      </c:if>
+                      #{finalTitle}
+                    </h3>
+                  </div>
+                </c:if>
+              </nxu:set>
+            </c:otherwise>
+          </c:choose>
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
       </ui:insert>
 
       <div class="#{nxu:test(foldable, 'boxBody', '')}">
@@ -183,10 +227,13 @@
 
             <ui:define name="syndication_buttons">
               <ui:insert name="content_view_syndication_buttons">
-                <c:if test="#{contentView.currentResultLayout.showSyndicationLinks}">
+                <nxu:set var="finalShowSyndicationLinks"
+                  value="#{nxu:test(empty showSyndicationLinks, contentView.currentResultLayout.showSyndicationLinks, showSyndicationLinks)}">
+                <c:if test="#{finalShowSyndicationLinks}">
                   <ui:include src="/incl/content_view_syndication_buttons.xhtml" />
                   <div style="clear:both;" />
                 </c:if>
+                </nxu:set>
               </ui:insert>
             </ui:define>
 
@@ -207,6 +254,8 @@
 </nxu:set>
 </c:if>
 
+</nxu:set>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 

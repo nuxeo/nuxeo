@@ -167,12 +167,41 @@ public class ContentViewActions implements Serializable {
 
     public ContentView getContentViewWithProvider(String name,
             DocumentModel searchDocumentModel, List<SortInfo> sortInfos,
+            Long defaultPageSize, Long pageSize, Long currentPage)
+            throws ClientException {
+        return getContentViewWithProvider(name, searchDocumentModel, sortInfos,
+                defaultPageSize, pageSize, currentPage, (Object[]) null);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public ContentView getContentViewWithProvider(String name,
+            DocumentModel searchDocumentModel, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage, Object... params)
             throws ClientException {
+        return getContentViewWithProvider(name, searchDocumentModel, sortInfos,
+                Long.valueOf(-1), pageSize, currentPage, params);
+    }
+
+    /**
+     * Helper method to retrieve a content view, taking care of initialization
+     * of page provider according to parameters and current global page size.
+     * <p>
+     * This method is not public to avoid EL method resolution issues.
+     */
+    protected ContentView getContentViewWithProvider(String name,
+            DocumentModel searchDocumentModel, List<SortInfo> sortInfos,
+            Long defaultPageSize, Long pageSize, Long currentPage,
+            Object... params) throws ClientException {
         ContentView cView = getContentView(name, searchDocumentModel);
         if (cView != null) {
             if (cView.getUseGlobalPageSize()) {
                 cView.setCurrentPageSize(globalPageSize);
+            }
+            if (cView.getCurrentPageSize() == null && defaultPageSize != null
+                    && defaultPageSize.longValue() >= 0) {
+                cView.setCurrentPageSize(defaultPageSize);
             }
             // initialize provider
             cView.getPageProvider(searchDocumentModel, sortInfos, pageSize,

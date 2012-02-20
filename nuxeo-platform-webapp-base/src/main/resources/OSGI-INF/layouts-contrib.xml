@@ -994,7 +994,7 @@
 
     <widgetType name="contentViewWithForms">
       <configuration>
-        <sinceVersion>5.5</sinceVersion>
+        <sinceVersion>5.6</sinceVersion>
         <title>Content view</title>
         <description>
           This widget displays a content view, with forms inside it.
@@ -1018,9 +1018,6 @@
                   <widget>contentViewName</widget>
                 </row>
                 <row>
-                  <widget>foldable</widget>
-                </row>
-                <row>
                   <widget>styleClass</widget>
                 </row>
                 <row>
@@ -1028,6 +1025,43 @@
                 </row>
                 <row>
                   <widget>useAjaxPagination</widget>
+                </row>
+                <row>
+                  <widget>defaultPageSize</widget>
+                </row>
+                <row>
+                  <widget>showPageSizeSelector</widget>
+                </row>
+                <row>
+                  <widget>showRefreshCommand</widget>
+                </row>
+                <row>
+                  <widget>showFilterForm</widget>
+                </row>
+                <row>
+                  <widget>showSyndicationLinks</widget>
+                </row>
+                <row>
+                  <widget>showCSVExport</widget>
+                </row>
+                <row>
+                  <widget>showPDFExport</widget>
+                </row>
+                <!-- not exposed in studio for now -->
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>foldableBoxStyleClass</widget>
+                </row>
+                <row>
+                  <widget>contentViewTitle</widget>
+                </row>
+                <row>
+                  <widget>showTitle</widget>
+                </row>
+                <row>
+                  <widget>contentViewIconPath</widget>
                 </row>
               </rows>
               <widget name="contentViewName" type="selectOneResource">
@@ -1046,22 +1080,6 @@
                   <property name="resourceName">contentViews</property>
                   <property name="required">true</property>
                 </properties>
-              </widget>
-              <widget name="foldable" type="checkbox">
-                <labels>
-                  <label mode="any">Make this content view foldable</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    If set to true, the content view will be
-                    displayed in a box that can be folded if users would like to
-                    hide this content view content. Note that this state is not
-                    persisted. Available since 5.6, defaults to false.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>foldable</field>
-                </fields>
               </widget>
               <widget name="styleClass" type="text">
                 <labels>
@@ -1087,8 +1105,7 @@
                     performed using ajax. Note that sometimes, selection actions
                     will require you to reload the whole page for other elements
                     than the content view to be re-rendered, so using ajax will
-                    not be user friendly in these cases. Available since 5.6,
-                    defaults to false.
+                    not be user friendly in these cases. Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1103,26 +1120,229 @@
                   <label mode="any">
                     If set to true, pagination actions (first,
                     previous, next, last) actions will be performed using ajax.
-                    Available since 5.6, defaults to false.
+                    Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>useAjaxPagination</field>
                 </fields>
               </widget>
-              <!-- not exposed right now -->
+              <widget name="defaultPageSize" type="int">
+                <labels>
+                  <label mode="any">Default page size</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The default page size to use instead of the
+                    value set on the content view definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>defaultPageSize</field>
+                </fields>
+              </widget>
+              <widget name="showPageSizeSelector" type="checkbox">
+                <labels>
+                  <label mode="any">Show page size selector</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the page size
+                    selector, overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showPageSizeSelector</field>
+                </fields>
+              </widget>
+              <widget name="showRefreshCommand" type="checkbox">
+                <labels>
+                  <label mode="any">Show refresh command</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the refresh command,
+                    overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showRefreshCommand</field>
+                </fields>
+              </widget>
+              <widget name="showFilterForm" type="checkbox">
+                <labels>
+                  <label mode="any">Show filter form</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the filter form,
+                    overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showFilterForm</field>
+                </fields>
+              </widget>
+              <widget name="showSyndicationLinks" type="checkbox">
+                <labels>
+                  <label mode="any">Show syndication links</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide syndication links,
+                    overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showFilterForm</field>
+                </fields>
+              </widget>
+              <widget name="showCSVExport" type="checkbox">
+                <labels>
+                  <label mode="any">Show CSV export</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the CSV export link,
+                    overriding the value set on the content view definition for
+                    every result layouts. Warning: the content view result
+                    layouts should be configured to handle a CSV export.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showCSVExport</field>
+                </fields>
+              </widget>
+              <widget name="showPDFExport" type="checkbox">
+                <labels>
+                  <label mode="any">Show PDF export</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the PDF export link,
+                    overriding the value set on the content view definition for
+                    every result layouts. Warning: the content view result
+                    layouts should be configured to handle a CSV export.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showPDFExport</field>
+                </fields>
+              </widget>
+              <!-- not exposed in studio for now -->
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Make this content view foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the content view will be
+                    displayed in a box that can be folded if users would like to
+                    hide this content view content. Note that this state is not
+                    persisted. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="foldableBoxStyleClass" type="text">
+                <labels>
+                  <label mode="any">Foldable Box Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be used on the
+                    foldable box.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldableBoxStyleClass</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
               <widget name="removeForm" type="checkbox">
                 <labels>
                   <label mode="any">Remove form on content listing</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Available since 5.6, defaults to false.
+                    Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>removeForm</field>
                 </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="contentViewTitle" type="text">
+                <labels>
+                  <label mode="any">Content View title</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The title to display instead of the one set
+                    on the content view definition. If not empty, if will be
+                    translated if the widget is translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>contentViewTitle</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="showTitle" type="checkbox">
+                <labels>
+                  <label mode="any">Show title</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the title,
+                    overriding the value set on the content view definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showTitle</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="contentViewIconPath" type="text">
+                <labels>
+                  <label mode="any">Content icon path</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The icon to display instead of the value set
+                    on the content view definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>contentViewIconPath</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
               </widget>
             </layout>
           </layouts>

@@ -12,9 +12,15 @@
 Needed parameters:
  - contentView: the content view instance
  - contentViewRenderId: unique identifier for this content view in the page
+
+Optional parameters used to override the content view definition when not
+empty:
+ - showFilterForm
 </c:if>
 
-<c:if test="#{contentView.showFilterForm and contentView.searchDocumentModel != null}">
+<nxu:set var="finalShowFilterForm"
+  value="#{nxu:test(empty showFilterForm, contentView.showFilterForm, showFilterForm)}">
+<c:if test="#{finalShowFilterForm and contentView.searchDocumentModel != null}">
 
   <nxu:set var="cvid" value="#{contentViewRenderId}"
     cache="true">
@@ -97,5 +103,6 @@ Needed parameters:
   </nxu:set>
 
 </c:if>
+</nxu:set>
 
 </c:if>
