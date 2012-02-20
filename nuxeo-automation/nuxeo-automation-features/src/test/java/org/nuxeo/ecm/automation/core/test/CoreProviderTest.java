@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -40,11 +42,11 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy( { "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.versioning" })
+@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.automation.features" })
 @LocalDeploy( { "org.nuxeo.ecm.automation.core:test-providers.xml",
         "org.nuxeo.ecm.automation.core:test-operations.xml" })
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class CoreProviderTest {
 
     @Inject
@@ -55,10 +57,6 @@ public class CoreProviderTest {
 
     @Before
     public void initRepo() throws Exception {
-
-        session.removeChildren(session.getRootDocument().getRef());
-        session.save();
-
         DocumentModel ws1 = session.createDocumentModel("/", "ws1", "Workspace");
         ws1.setPropertyValue("dc:title", "WS1");
         ws1 = session.createDocument(ws1);

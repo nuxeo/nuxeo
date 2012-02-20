@@ -48,7 +48,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
+@Deploy("org.nuxeo.ecm.automation.core")
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -96,11 +96,6 @@ public class IterableOperationsTest {
         doc = session.createDocument(doc);
         session.save();
         return session.getDocument(doc.getRef());
-    }
-
-    protected void remove(DocumentModel doc) throws Exception {
-        session.removeDocument(doc.getRef());
-        session.save();
     }
 
     // ------ Tests comes here --------
@@ -175,8 +170,6 @@ public class IterableOperationsTest {
                 out.get(0).getLockInfo().getOwner());
         assertEquals(SecurityConstants.ADMINISTRATOR,
                 out.get(1).getLockInfo().getOwner());
-
-        remove(root);
     }
 
     /**
@@ -208,8 +201,6 @@ public class IterableOperationsTest {
                 out.get(0).getPropertyValue("dc:description"));
         assertEquals("Parent Folder",
                 out.get(0).getPropertyValue("dc:description"));
-
-        remove(root);
     }
 
 
@@ -246,8 +237,6 @@ public class IterableOperationsTest {
         Blob r2 = (Blob)f.getPropertyValue("files:files/file[1]/file");
         assertEquals("the content 1", r1.getString());
         assertEquals("the content 2", r2.getString());
-
-        remove(f);
     }
 
 }
