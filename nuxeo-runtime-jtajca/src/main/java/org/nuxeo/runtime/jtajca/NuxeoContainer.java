@@ -53,7 +53,6 @@ import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrack
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.InitialContextAccessor;
 
 /**
@@ -92,9 +91,12 @@ public class NuxeoContainer {
 
     public static class InstallContext extends Throwable {
         private static final long serialVersionUID = 1L;
+
         public final String threadName;
+
         InstallContext() {
-            super("Container installation context (" + Thread.currentThread().getName() + ")");
+            super("Container installation context ("
+                    + Thread.currentThread().getName() + ")");
             this.threadName = Thread.currentThread().getName();
         }
     }
@@ -127,13 +129,18 @@ public class NuxeoContainer {
         transactionManager = lookupTransactionManager();
         if (transactionManager == null) {
             initTransactionManager(txconfig);
-            addDeepBinding(rootContext, new CompositeName(JNDI_TRANSACTION_MANAGER), getTransactionManagerReference());
-            addDeepBinding(rootContext, new CompositeName(JNDI_USER_TRANSACTION), getUserTransactionReference());
+            addDeepBinding(rootContext, new CompositeName(
+                    JNDI_TRANSACTION_MANAGER), getTransactionManagerReference());
+            addDeepBinding(rootContext,
+                    new CompositeName(JNDI_USER_TRANSACTION),
+                    getUserTransactionReference());
         }
         connectionManager = lookupConnectionManager();
         if (connectionManager == null) {
             initConnectionManager(cmconfig);
-            addDeepBinding(rootContext, new CompositeName(JNDI_NUXEO_CONNECTION_MANAGER), getConnectionManagerReference());
+            addDeepBinding(rootContext, new CompositeName(
+                    JNDI_NUXEO_CONNECTION_MANAGER),
+                    getConnectionManagerReference());
         }
     }
 
@@ -167,8 +174,7 @@ public class NuxeoContainer {
     }
 
     /**
-     * setup root naming context and install initial naming context
-     * factory
+     * setup root naming context and install initial naming context factory
      *
      * @since 5.6
      */
@@ -193,8 +199,8 @@ public class NuxeoContainer {
     }
 
     /**
-     * setup root context, use the system defined context if writable,
-     * use nuxeo context unless
+     * setup root context, use the system defined context if writable, use nuxeo
+     * context unless
      *
      * @since 5.6
      */
@@ -256,11 +262,13 @@ public class NuxeoContainer {
      *
      * since 5.6
      */
-    public static void addDeepBinding(String name, Object obj) throws InvalidNameException, NamingException {
+    public static void addDeepBinding(String name, Object obj)
+            throws InvalidNameException, NamingException {
         addDeepBinding(rootContext, new CompositeName(name), obj);
     }
 
-    protected static void addDeepBinding(Context dir, CompositeName comp, Object obj) throws NamingException {
+    protected static void addDeepBinding(Context dir, CompositeName comp,
+            Object obj) throws NamingException {
         Name name = comp.getPrefix(1);
         if (comp.size() == 1) {
             addBinding(dir, name, obj);
@@ -268,14 +276,15 @@ public class NuxeoContainer {
         }
         Context subdir;
         try {
-            subdir = (Context)dir.lookup(name);
+            subdir = (Context) dir.lookup(name);
         } catch (NamingException e) {
             subdir = dir.createSubcontext(name);
         }
-        addDeepBinding(subdir, (CompositeName)comp.getSuffix(1), obj);
+        addDeepBinding(subdir, (CompositeName) comp.getSuffix(1), obj);
     }
 
-    protected static void addBinding(Context dir, Name name, Object obj) throws NamingException {
+    protected static void addBinding(Context dir, Name name, Object obj)
+            throws NamingException {
         try {
             dir.rebind(name, obj);
         } catch (NamingException e) {
@@ -582,15 +591,15 @@ public class NuxeoContainer {
             throw new UnsupportedOperationException();
         }
 
-		@Override
-		public void registerNamedXAResourceFactory(NamedXAResourceFactory arg0) {
+        @Override
+        public void registerNamedXAResourceFactory(NamedXAResourceFactory arg0) {
             throw new UnsupportedOperationException();
-		}
+        }
 
-		@Override
-		public void unregisterNamedXAResourceFactory(String arg0) {
+        @Override
+        public void unregisterNamedXAResourceFactory(String arg0) {
             throw new UnsupportedOperationException();
-		}
+        }
 
     }
 
