@@ -13,18 +13,18 @@ package org.nuxeo.common.utils;
 
 
 /**
- * Simple wrapper around codec library to preserve backward compatibility 
+ * Simple wrapper around codec library to preserve backward compatibility
  * @author bstefanescu
  *
  */
 public class Base64 {
 
     public final static String encodeBytes(byte[] source) {
-        return org.apache.commons.codec.binary.Base64.encodeBase64String(source);
+        return org.apache.commons.codec.binary.Base64.encodeBase64String(source).trim();
     }
-    
+
     public final static byte[] decode(String s) {
         return org.apache.commons.codec.binary.Base64.decodeBase64(s);
     }
-        
+
 }
