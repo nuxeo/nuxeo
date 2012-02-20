@@ -41,6 +41,7 @@ import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -60,6 +61,8 @@ public class UserRegistrationActions implements Serializable {
 
     protected DocumentRegistrationInfo docinfo = new DocumentRegistrationInfo();
 
+    public static final String REQUEST_DOCUMENT_LIST = "CURRENT_USER_REQUESTS";
+
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
@@ -70,7 +73,10 @@ public class UserRegistrationActions implements Serializable {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
+
+    @In(create = true)
+    protected transient DocumentsListsManager documentsListsManager;
 
     public UserRegistrationInfo getUserinfo() {
         return userinfo;
@@ -115,6 +121,53 @@ public class UserRegistrationActions implements Serializable {
     public void submitUserRegistration() {
         docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
         doSubmitUserRegistration();
+    }
+
+    public boolean getCanDelete() {
+        boolean canDelete = !documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST);
+        for (DocumentModel doc : documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST)) {
+            canDelete &= isDocumentDeletable(doc);
+        }
+        return canDelete;
+    }
+
+    protected boolean isDocumentDeletable(DocumentModel doc) {
+        return true;
+    }
+
+    public boolean getCanRevive() {
+        boolean canRevive = !documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST);
+        for (DocumentModel doc : documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST)) {
+            canRevive &= isDocumentRevivable(doc);
+        }
+        return canRevive;
+    }
+
+    protected boolean isDocumentRevivable(DocumentModel doc) {
+        try {
+            return "accepted".equals(doc.getCurrentLifeCycleState());
+        } catch (ClientException e) {
+            log.warn("Unable to get lifecycle state for " + doc.getId() + ": "
+                    + e.getMessage());
+            log.debug(e);
+            return false;
+        }
+    }
+
+    public void reviveUserRegistration() throws ClientException {
+        if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
+            getUserRegistrationService().reviveRegistrationRequests(
+                    documentManager,
+                    documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
+        }
+    }
+
+    public void deleteUserRegistration() throws ClientException {
+        if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
+            getUserRegistrationService().deleteRegistrationRequests(
+                    documentManager,
+                    documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
+        }
     }
 
     protected void doSubmitUserRegistration() {

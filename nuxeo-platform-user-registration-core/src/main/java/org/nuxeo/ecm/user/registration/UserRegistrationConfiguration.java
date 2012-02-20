@@ -53,6 +53,12 @@ public class UserRegistrationConfiguration {
     @XNode("successEmail/template")
     private String successEmailTemplate;
 
+    @XNode("reviveEmail/title")
+    private String reviveEmailTitle;
+
+    @XNode("reviveEmail/template")
+    private String reviveEmailTemplate;
+
     @XNode("registrationUserFactory")
     private Class<? extends RegistrationUserFactory> registrationUserFactory;
 
@@ -103,6 +109,14 @@ public class UserRegistrationConfiguration {
         return validationRelUrl;
     }
 
+    public String getReviveEmailTitle() {
+        return reviveEmailTitle;
+    }
+
+    public String getReviveEmailTemplate() {
+        return reviveEmailTemplate;
+    }
+
     public boolean isMerge() {
         return merge;
     }
@@ -146,6 +160,14 @@ public class UserRegistrationConfiguration {
 
         if (!StringUtils.isEmpty(other.successEmailTemplate)) {
             this.successEmailTemplate = other.successEmailTemplate;
+        }
+
+        if (!StringUtils.isEmpty(other.reviveEmailTitle)) {
+            this.reviveEmailTitle = other.reviveEmailTitle;
+        }
+
+        if (!StringUtils.isEmpty(other.reviveEmailTemplate)) {
+            this.reviveEmailTemplate = other.reviveEmailTemplate;
         }
 
         if (other.getRegistrationUserFactory() != null) {

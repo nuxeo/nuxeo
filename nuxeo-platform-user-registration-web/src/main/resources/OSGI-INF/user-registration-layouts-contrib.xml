@@ -17,6 +17,18 @@
       <columns>
         <column>
           <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="isHidden">false</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">userinfo:login</property>
           </properties>

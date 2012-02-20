@@ -13,6 +13,7 @@
         </pattern>
         <parameter>#{userRegistrationActions.docType}</parameter>
         <pageSize>20</pageSize>
+        <sort column="dc:created" ascending="false"/>
       </coreQueryPageProvider>
 
       <refresh>
@@ -27,18 +28,22 @@
                 translateTitle="true" iconPath="/icons/document_listing_icon.png"/>
       </resultLayouts>
 
+      <selectionList>CURRENT_USER_REQUESTS</selectionList>
+      <actions category="CURRENT_USER_REQUESTS_GLOBAL"/>
+
     </contentView>
 
-    <contentView name="workspace_user_requests_view">
+    <contentView name="local_user_requests_view">
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
-          SELECT * FROM Document WHERE ecm:primaryType = ? AND ecm:isCheckedInVersion = 0
+          SELECT * FROM Document WHERE ecm:primaryType = ? AND docinfo:documentId = ? AND ecm:isCheckedInVersion = 0
         </pattern>
         <parameter>#{userRegistrationActions.docType}</parameter>
-        <parameter>#{documentManager.docType}</parameter>
+        <parameter>#{navigationContext.currentDocument.id}</parameter>
         <pageSize>20</pageSize>
+        <sort column="dc:created" ascending="false"/>
       </coreQueryPageProvider>
 
       <refresh>
@@ -52,10 +57,22 @@
         <layout name="user_requests_listing_layout" title="document_listing"
                 translateTitle="true" iconPath="/icons/document_listing_icon.png"/>
       </resultLayouts>
+
+      <selectionList>CURRENT_USER_REQUESTS</selectionList>
+      <actions category="CURRENT_USER_REQUESTS_LOCAL"/>
 
     </contentView>
 
   </extension>
 
+  <extension point="list" target="org.nuxeo.ecm.webapp.documentsLists.DocumentsListsService">
+    <documentsList name="CURRENT_USER_REQUESTS">
+      <events>
+        <event>folderishDocumentSelectionChanged</event>
+        <event>searchPerformed</event>
+      </events>
+      <isSession>false</isSession>
+    </documentsList>
+  </extension>
 
 </component>

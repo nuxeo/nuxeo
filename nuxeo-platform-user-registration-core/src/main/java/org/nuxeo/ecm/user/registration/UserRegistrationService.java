@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.user.registration;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -84,6 +85,19 @@ public interface UserRegistrationService {
 
     NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws ClientException, UserRegistrationException;
 
+    /**
+     * Send a mail to the invited user to revive his invitation
+     * If an error occured while sending an email, it logs it and continue.
+     * @since 5.6
+     */
+    void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs);
+
+    /**
+     * Delete a registration document
+     * @since 5.6
+     */
+    void deleteRegistrationRequests(CoreSession session, List<DocumentModel> registrationDoc) throws ClientException;
+    
     /**
      * Add an ACL with the right specified in the registration Doc or nothing, if no rights needed.
      *

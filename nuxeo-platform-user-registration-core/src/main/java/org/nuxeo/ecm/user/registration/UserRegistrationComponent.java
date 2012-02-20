@@ -16,19 +16,21 @@
 
 package org.nuxeo.ecm.user.registration;
 
+import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.EMAIL_FIELD;
+import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.SCHEMA_NAME;
+import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.USERNAME_FIELD;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +49,10 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -157,16 +162,14 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc.setPropertyValue("dc:title", title);
 
             // store userinfo
-            doc.setPropertyValue(UserRegistrationInfo.USERNAME_FIELD,
-                    userInfo.getLogin());
+            doc.setPropertyValue(USERNAME_FIELD, userInfo.getLogin());
             doc.setPropertyValue(UserRegistrationInfo.PASSWORD_FIELD,
                     userInfo.getPassword());
             doc.setPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD,
                     userInfo.getFirstName());
             doc.setPropertyValue(UserRegistrationInfo.LASTNAME_FIELD,
                     userInfo.getLastName());
-            doc.setPropertyValue(UserRegistrationInfo.EMAIL_FIELD,
-                    userInfo.getEmail());
+            doc.setPropertyValue(EMAIL_FIELD, userInfo.getEmail());
             doc.setPropertyValue(UserRegistrationInfo.COMPANY_FIELD,
                     userInfo.getCompany());
 
@@ -349,7 +352,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             Map<String, Serializable> additionnalInfo,
             DocumentModel registrationDoc) throws ClientException {
 
-        String emailAdress = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD);
+        String emailAdress = (String) registrationDoc.getPropertyValue(EMAIL_FIELD);
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.put("registration", registrationDoc);
@@ -525,10 +528,13 @@ public class UserRegistrationComponent extends DefaultComponent implements
     }
 
     @Override
-    public void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) throws ClientException {
-        DocumentModel document = getRegistrationUserFactory().doAddDocumentPermission(session, registrationDoc);
+    public void addRightsOnDoc(CoreSession session,
+            DocumentModel registrationDoc) throws ClientException {
+        DocumentModel document = getRegistrationUserFactory().doAddDocumentPermission(
+                session, registrationDoc);
         if (document != null) {
-            getRegistrationUserFactory().doPostAddDocumentPermission(session, registrationDoc, document);
+            getRegistrationUserFactory().doPostAddDocumentPermission(session,
+                    registrationDoc, document);
         }
     }
 
@@ -537,4 +543,67 @@ public class UserRegistrationComponent extends DefaultComponent implements
         return configuration;
     }
 
+    @Override
+    public void reviveRegistrationRequests(CoreSession session,
+            List<DocumentModel> registrationDocs) {
+        for (DocumentModel registrationDoc : registrationDocs) {
+            try {
+                reviveRegistrationRequest(session, registrationDoc,
+                        new HashMap<String, Object>());
+            } catch (ClientException e) {
+                log.error("Error while trying to revive document: ", e);
+            }
+        }
+    }
+
+    protected void reviveRegistrationRequest(CoreSession session,
+            DocumentModel registrationDoc, Map<String, Object> additionalInfos)
+            throws ClientException {
+        StringWriter writer = new StringWriter();
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.putAll(additionalInfos);
+        input.put("validationBaseURL", BaseURL.getBaseURL()
+                + getConfiguration().getValidationRelUrl());
+        input.put(REGISTRATION_DATA_DOC, registrationDoc);
+
+        try {
+            rh.getRenderingEngine().render(
+                    configuration.getReviveEmailTemplate(), input, writer);
+        } catch (RenderingException e) {
+            throw new ClientException("Error during templating email : ", e);
+        }
+
+        String emailAdress = (String) registrationDoc.getPropertyValue(EMAIL_FIELD);
+        String body = writer.getBuffer().toString();
+        String title = configuration.getReviveEmailTitle();
+
+        if (!Framework.isTestModeSet()) {
+            try {
+                generateMail(emailAdress, title, body);
+            } catch (Exception e) {
+                throw new ClientException("Error while sending mail : ", e);
+            }
+        } else {
+            testRendering = body;
+        }
+    }
+
+    @Override
+    public void deleteRegistrationRequests(CoreSession session,
+            List<DocumentModel> registrationDocs) throws ClientException {
+        for (DocumentModel registration : registrationDocs) {
+            if (!registration.hasSchema(SCHEMA_NAME)) {
+                throw new ClientException(
+                        "Registration document do not contains needed schema");
+            }
+
+            String userName = (String) registration.getPropertyValue(USERNAME_FIELD);
+            session.removeDocument(registration.getRef());
+
+            UserManager userManager = Framework.getLocalService(UserManager.class);
+            if (null != userManager.getUserModel(userName)) {
+                userManager.deleteUser(userName);
+            }
+        }
+    }
 }
