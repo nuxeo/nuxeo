@@ -25,9 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -40,7 +37,9 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.AsyncWaitHook;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
@@ -61,40 +60,52 @@ import com.google.common.collect.MapMaker;
  */
 public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(VideoServiceImpl.class);
+    protected static final Log log = LogFactory.getLog(VideoServiceImpl.class);
 
     public static final String VIDEO_CONVERSIONS_EP = "videoConversions";
 
     public static final String DEFAULT_VIDEO_CONVERSIONS_EP = "automaticVideoConversions";
 
-    private VideoConversionContributionHandler videoConversions;
+    protected VideoConversionContributionHandler videoConversions;
 
-    private AutomaticVideoConversionContributionHandler automaticVideoConversions;
+    protected AutomaticVideoConversionContributionHandler automaticVideoConversions;
 
-    private BlockingQueue<Runnable> conversionTaskQueue;
 
-    private ThreadPoolExecutor conversionExecutor;
+    protected VideoConversionExecutor conversionExecutor;
 
-    private final Map<VideoConversionId, String> states = new MapMaker().concurrencyLevel(
+    protected AsyncWaitHook asyncWaitHook;
+
+    protected final Map<VideoConversionId, String> states = new MapMaker().concurrencyLevel(
             10).expiration(1, TimeUnit.DAYS).makeMap();
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         videoConversions = new VideoConversionContributionHandler();
         automaticVideoConversions = new AutomaticVideoConversionContributionHandler();
-
-        AsyncEventExecutor.NamedThreadFactory serializationThreadFactory = new AsyncEventExecutor.NamedThreadFactory(
-                "Nuxeo Async Video Conversion");
-        conversionTaskQueue = new LinkedBlockingQueue<Runnable>();
-        conversionExecutor = new ThreadPoolExecutor(1, 1, 5, TimeUnit.MINUTES,
-                conversionTaskQueue, serializationThreadFactory);
+        conversionExecutor = new VideoConversionExecutor();
+        asyncWaitHook = new AsyncWaitHook() {
+            @Override
+            public boolean waitForAsync(long timeout) throws InterruptedException {
+               try {
+                   return conversionExecutor.shutdown(timeout);
+               } finally {
+                   conversionExecutor = new VideoConversionExecutor();
+               }
+            }
+        };
+        ((EventServiceImpl)Framework.getLocalService(EventService.class)).registerForAsyncWait(asyncWaitHook);
     }
+
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        conversionTaskQueue.clear();
-        conversionExecutor.shutdownNow();
+        ((EventServiceImpl)Framework.getLocalService(EventService.class)).unregisterForAsyncWait(asyncWaitHook);
+        conversionExecutor.shutdown(500);
+
+        videoConversions = null;
+        automaticVideoConversions = null;
+        conversionExecutor = null;
+        asyncWaitHook = null;
     }
 
     @Override
@@ -126,15 +137,15 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void launchConversion(DocumentModel doc, String conversionName) {
-        VideoConversionTask task = new VideoConversionTask(doc, conversionName,
-                this);
-        if (!conversionTaskQueue.contains(task)) {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    doc.getRepositoryName(), doc.getRef());
-            VideoConversionId id = new VideoConversionId(docLoc, conversionName);
-            states.put(id, VideoConversionStatus.STATUS_CONVERSION_QUEUED);
-            conversionExecutor.execute(task);
+        DocumentLocation docLoc = new DocumentLocationImpl(
+                doc.getRepositoryName(), doc.getRef());
+        VideoConversionId id = new VideoConversionId(docLoc, conversionName);
+        if (states.containsKey(id)) {
+            return;
         }
+        states.put(id, VideoConversionStatus.STATUS_CONVERSION_QUEUED);
+        VideoConversionTask task = new VideoConversionTask(doc, conversionName, this);
+        conversionExecutor.execute(task);
     }
 
     @Override
@@ -193,7 +204,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         @SuppressWarnings("rawtypes")
         Queue q = null;
         if (VideoConversionStatus.STATUS_CONVERSION_QUEUED.equals(status)) {
-            q = conversionTaskQueue;
+            q = conversionExecutor.queue;
         }
         int posInQueue = 0;
         int queueSize = 0;

@@ -53,10 +53,10 @@ public class VideoConversionTask implements Runnable {
 
     private final String conversionName;
 
-    private final VideoService service;
+    private final VideoServiceImpl service;
 
     public VideoConversionTask(DocumentModel doc, String conversionName,
-            VideoService service) {
+            VideoServiceImpl service) {
         docRef = doc.getRef();
         repositoryName = doc.getRepositoryName();
         this.conversionName = conversionName;
@@ -65,17 +65,39 @@ public class VideoConversionTask implements Runnable {
                 docRef), conversionName);
     }
 
+    protected boolean isStopped() {
+        if (Thread.currentThread().isInterrupted()) {
+            return true;
+        }
+        if (service.conversionExecutor.executor.isTerminating()) {
+            return true;
+        }
+        if (service.conversionExecutor.executor.isShutdown()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void run() {
-        Video originalVideo = getVideoToConvert();
-        if (originalVideo != null) {
-            try {
+        try {
+            if (isStopped()) {
+                return;
+            }
+            Video originalVideo = getVideoToConvert();
+            if (originalVideo != null) {
+                if (isStopped()) {
+                    return;
+                }
                 TranscodedVideo transcodedVideo = service.convert(id,
                         originalVideo, conversionName);
+                if (isStopped()) {
+                    return;
+                }
                 saveNewTranscodedVideo(transcodedVideo);
-            } finally {
-                service.clearProgressStatus(id);
             }
+        } finally {
+            service.clearProgressStatus(id);
         }
     }
 
