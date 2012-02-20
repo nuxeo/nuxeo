@@ -32,9 +32,9 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
@@ -76,15 +76,14 @@ public class JSONLayoutExporter {
     public static String encode(JSONObject jsonObject)
             throws UnsupportedEncodingException {
         String json = jsonObject.toString();
-        String encodedValues = Base64.encodeBytes(json.getBytes(), Base64.GZIP
-                | Base64.DONT_BREAK_LINES);
+        String encodedValues = Base64.encodeBase64String(json.getBytes());
         return URLEncoder.encode(encodedValues, ENCODED_VALUES_ENCODING);
     }
 
     public static JSONObject decode(String json)
             throws UnsupportedEncodingException {
         String decodedValues = URLDecoder.decode(json, ENCODED_VALUES_ENCODING);
-        json = new String(Base64.decode(decodedValues));
+        json = new String(Base64.decodeBase64(decodedValues));
         return JSONObject.fromObject(json);
     }
 
