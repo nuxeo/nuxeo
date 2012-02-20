@@ -346,12 +346,19 @@ public class UIValueHolder extends UIInput {
         var = (String) values[1];
         defaultValue = values[2];
         submitValue = (Boolean) values[3];
+        setSubmittedValue(values[4]);
     }
 
+    /**
+     * Saves the locally set literal values kept on the component (from
+     * standard tags attributes) and since 5.6, also saves the submitted value
+     * as {@link UIInput#saveState(FacesContext)} does not do it (see
+     * NXP-8898).
+     */
     @Override
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), var, defaultValue,
-                submitValue };
+                submitValue, getSubmittedValue() };
     }
 
 }
