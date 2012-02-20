@@ -72,7 +72,7 @@
       </span>
     </c:otherwise>
   </c:choose> <span class="labelTool" onclick="showTree('##{widget.id}_tree');"><img
-    src="/nuxeo/icons/add_popup.png" alt="Pop up" /></span></span>
+    src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></span></span>
   <div style="clear: both;"></div>
 
   <div id="#{widget.id}_tree" class="genericPopUp treeSearchPopUp">
@@ -129,7 +129,7 @@
             actionListener="#{editableListBean.performAction}"
             id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
             bypassUpdates="true">
-            <img src="/nuxeo/icons/action_delete_mini_over.png" alt="Delete" />
+            <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
             <f:param name="for" value="#{widget.id}_list" />
             <f:param name="index" value="#{model.rowIndex}" />
             <f:param name="type" value="remove" />

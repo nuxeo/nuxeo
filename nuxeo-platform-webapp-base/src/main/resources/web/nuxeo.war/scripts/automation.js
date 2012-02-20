@@ -127,7 +127,7 @@ function AutomationWrapper(operationId,opts) {
    }
 
    $.fn.automation.defaults = {
-        url : "/nuxeo/site/automation",
+        url : nxContextPath + "/site/automation",
         automationParams : {
            params : {},
            context : {}
