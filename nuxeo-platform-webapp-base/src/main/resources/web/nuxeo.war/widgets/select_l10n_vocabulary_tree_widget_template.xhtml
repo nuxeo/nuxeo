@@ -64,7 +64,7 @@
 
   </script>
 
-  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree"><img src="/nuxeo/icons/add_popup.png" alt="Pop up" /></a>
+  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree"><img src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></a>
 
   <div style="display:none">
     <div id="#{widget.id}_tree">
@@ -116,7 +116,7 @@
             actionListener="#{editableListBean.performAction}"
             id="#{widget.id}_delete" reRender="#{widget.id}_multipleValuePanel"
             bypassUpdates="true">
-            <img src="/nuxeo/icons/action_delete_mini_over.png" alt="Delete" />
+            <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
             <f:param name="for" value="#{widget.id}_list" />
             <f:param name="index" value="#{model.rowIndex}" />
             <f:param name="type" value="remove" />
@@ -134,7 +134,7 @@
       immediate="true"
       onclick="remove#{widget.id}SingleValue()"
       styleClass="#{widget.id}_deleteSingleValueLink">
-      <img src="/nuxeo/icons/action_delete_mini_over.png" alt="Delete" />
+      <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
     </a4j:commandLink>
     <h:inputText id="#{widget.id}_inputHidden" styleClass="#{widget.id}_inputHidden" style="display:none" value="#{field}" />
   </f:subview >
