@@ -61,6 +61,7 @@ import com.google.common.collect.MapMaker;
  */
 public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(VideoServiceImpl.class);
 
     public static final String VIDEO_CONVERSIONS_EP = "videoConversions";
@@ -174,7 +175,6 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
             BlobHolder result = conversionService.convert(
                     conversion.getConverter(), blobHolder, parameters);
-            @SuppressWarnings("unchecked")
             VideoInfo videoInfo = VideoHelper.getVideoInfo(result.getBlob());
             return TranscodedVideo.fromBlobAndInfo(conversionName,
                     result.getBlob(), videoInfo);

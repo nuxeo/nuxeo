@@ -47,6 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestVideoService extends SQLRepositoryTestCase {
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(TestVideoService.class);
 
     public static final String DELTA_MP4 = "DELTA.mp4";
