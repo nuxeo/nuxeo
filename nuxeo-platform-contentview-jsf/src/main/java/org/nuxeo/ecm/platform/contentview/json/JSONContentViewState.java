@@ -35,9 +35,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
@@ -117,8 +117,7 @@ public class JSONContentViewState {
 
         // encoding
         if (encode) {
-            String encodedValues = Base64.encodeBytes(jsonString.getBytes(),
-                    Base64.GZIP | Base64.DONT_BREAK_LINES);
+            String encodedValues = Base64.encodeBase64String(jsonString.getBytes());
             jsonString = URLEncoder.encode(encodedValues,
                     ENCODED_VALUES_ENCODING);
         }
@@ -145,7 +144,7 @@ public class JSONContentViewState {
         if (decode) {
             String decodedValues = URLDecoder.decode(json,
                     ENCODED_VALUES_ENCODING);
-            json = new String(Base64.decode(decodedValues));
+            json = new String(Base64.decodeBase64(decodedValues));
         }
 
         if (log.isDebugEnabled()) {
