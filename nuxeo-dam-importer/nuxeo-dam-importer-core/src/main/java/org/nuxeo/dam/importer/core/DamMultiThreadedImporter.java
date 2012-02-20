@@ -17,9 +17,11 @@
 
 package org.nuxeo.dam.importer.core;
 
+import static org.nuxeo.dam.Constants.IMPORT_FOLDER_TYPE;
+import static org.nuxeo.dam.Constants.IMPORT_SET_TYPE;
+
 import java.io.File;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
@@ -43,10 +45,6 @@ import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import static org.nuxeo.dam.Constants.IMPORT_FOLDER_TYPE;
-import static org.nuxeo.dam.Constants.IMPORT_SET_TYPE;
 
 /**
  * Default Importer for DAM.

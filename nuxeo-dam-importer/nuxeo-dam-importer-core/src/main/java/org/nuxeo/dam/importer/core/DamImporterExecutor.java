@@ -19,8 +19,6 @@ package org.nuxeo.dam.importer.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.dam.AssetLibrary;
-import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.DamService;
 import org.nuxeo.dam.importer.core.filter.DamImporterFilter;
 import org.nuxeo.dam.importer.core.filter.DamImportingDocumentFilter;
