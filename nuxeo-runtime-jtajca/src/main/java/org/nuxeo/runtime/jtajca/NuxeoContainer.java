@@ -592,13 +592,18 @@ public class NuxeoContainer {
         }
 
         @Override
-        public void registerNamedXAResourceFactory(NamedXAResourceFactory arg0) {
-            throw new UnsupportedOperationException();
+        public void registerNamedXAResourceFactory(
+                NamedXAResourceFactory factory) {
+            if (RecoverableTransactionManager.class.isAssignableFrom(tm.getClass())) {
+                ((RecoverableTransactionManager) tm).registerNamedXAResourceFactory(factory);
+            }
         }
 
         @Override
-        public void unregisterNamedXAResourceFactory(String arg0) {
-            throw new UnsupportedOperationException();
+        public void unregisterNamedXAResourceFactory(String factory) {
+            if (RecoverableTransactionManager.class.isAssignableFrom(tm.getClass())) {
+                ((RecoverableTransactionManager) tm).unregisterNamedXAResourceFactory(factory);
+            }
         }
 
     }
