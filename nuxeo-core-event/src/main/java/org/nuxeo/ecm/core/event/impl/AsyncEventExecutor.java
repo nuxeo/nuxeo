@@ -89,7 +89,7 @@ public class AsyncEventExecutor {
         shutdown(0);
     }
 
-    public void shutdown(long timeout) {
+    public boolean shutdown(long timeout) {
         // schedule shutdown
         ShutdownHandler.install(executor);
         executor.shutdown();
@@ -97,32 +97,38 @@ public class AsyncEventExecutor {
         mono_executor.shutdown();
 
         if (timeout <= 0) {
-            return;
+            return false;
         }
 
-        // wait for termination
+        // wait for asynch executor termination
         long ts = System.currentTimeMillis();
         try {
             boolean terminated =
             executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
             if (!terminated) {
-                throw new Error("thread pool executor is not terminated");
+                return false;
             }
         } catch (InterruptedException e) {
-            ;
+            return false;
         }
+
+        // check remaining time
         timeout -= System.currentTimeMillis() - ts;
         if (timeout <= 0) {
-            return; // timeout expired
+            return false; // timeout expired
         }
+
+        // wait for mono executor termination
         try {
             boolean terminated = mono_executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
             if (!terminated) {
-                throw new Error("mono thread pool executor is not terminated");
+                return false;
             }
         } catch (InterruptedException e) {
-            ;
+            return false;
         }
+
+        return true;
     }
 
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime,

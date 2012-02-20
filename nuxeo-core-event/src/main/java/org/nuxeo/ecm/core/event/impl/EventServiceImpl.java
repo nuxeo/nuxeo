@@ -16,8 +16,11 @@ package org.nuxeo.ecm.core.event.impl;
 import java.rmi.dgc.VMID;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,6 +79,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     protected volatile AsyncEventExecutor asyncExec;
 
+    protected final List<AsyncWaitHook> asyncWaitHooks =
+            new CopyOnWriteArrayList<AsyncWaitHook>();
+
     protected boolean blockAsyncProcessing = false;
 
     protected boolean blockSyncPostCommitProcessing = false;
@@ -86,6 +92,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         txListeners = new ListenerList();
         listenerDescriptors = new EventListenerList();
         asyncExec = AsyncEventExecutor.create();
+        asyncWaitHooks.add(new AsyncWaitHook() {
+            @Override
+            public boolean waitForAsync(long timeout) {
+                return asyncExec.shutdown(timeout);
+            }
+        });
     }
 
     public void shutdown() {
@@ -93,7 +105,30 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
     }
 
     public void shutdown(long timeout) {
-        asyncExec.shutdown(timeout);
+        Set<AsyncWaitHook> notTerminated =
+                new HashSet<AsyncWaitHook>();
+        for (AsyncWaitHook hook:asyncWaitHooks) {
+            long startTime = System.currentTimeMillis();
+            try {
+                if (hook.waitForAsync(timeout) == false) {
+                    notTerminated.add(hook);
+                }
+            } catch (InterruptedException e) {
+                notTerminated.add(hook);
+            }
+            timeout -= System.currentTimeMillis() - startTime;
+        }
+        if (!notTerminated.isEmpty()) {
+            throw new Error("Asynch services are still running : " + notTerminated);
+        }
+    }
+
+    public void registerForAsyncWait(AsyncWaitHook callback) {
+        asyncWaitHooks.add(callback);
+    }
+
+    public void unregisterForAsyncWait(AsyncWaitHook callback) {
+        asyncWaitHooks.remove(callback);
     }
 
     /**
