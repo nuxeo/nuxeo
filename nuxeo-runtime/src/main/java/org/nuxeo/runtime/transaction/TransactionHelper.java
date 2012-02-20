@@ -167,6 +167,9 @@ public class TransactionHelper {
      */
     public static boolean startTransaction() {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Starting transaction");
+            }
             lookupUserTransaction().begin();
             return true;
         } catch (NamingException e) {
@@ -277,6 +280,11 @@ public class TransactionHelper {
                     log.debug("Cannot commit transaction because it is marked rollback only");
                 }
                 ut.rollback();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cannot commit transaction with unknown status: "
+                            + status);
+                }
             }
         } catch (Exception e) {
             String msg = "Unable to commit/rollback  " + ut;
@@ -300,6 +308,9 @@ public class TransactionHelper {
      */
     public static boolean setTransactionRollbackOnly() {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Setting transaction as rollback only");
+            }
             lookupUserTransaction().setRollbackOnly();
             return true;
         } catch (NamingException e) {
