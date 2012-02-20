@@ -26,6 +26,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Descriptor for action.
@@ -42,8 +43,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     @XNode("@id")
     private String id = "";
 
-    @XNode("@link")
-    private String link;
+    private String link = null;
 
     // XXX AT: param types still buggy, to fix eventually for optim
     @XNodeList(value = "link-params/param", type = Class[].class, componentType = Class.class)
@@ -126,8 +126,11 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         return link;
     }
 
+    @XNode("@link")
     public void setLink(String link) {
-        this.link = link;
+        if (link != null) {
+            this.link = Framework.expandVars(link);
+        }
     }
 
     public String[] getCategories() {
