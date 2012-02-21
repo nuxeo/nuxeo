@@ -35,7 +35,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -46,6 +45,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayoutImpl;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
+import org.nuxeo.ecm.platform.forms.layout.io.Base64;
 
 /**
  * Exporter/importer in JSON format of a {@link ContentViewState}.
@@ -117,7 +117,8 @@ public class JSONContentViewState {
 
         // encoding
         if (encode) {
-            String encodedValues = Base64.encodeBase64String(jsonString.getBytes());
+            String encodedValues = Base64.encodeBytes(jsonString.getBytes(),
+                    Base64.GZIP, Base64.DONT_BREAK_LINES);
             jsonString = URLEncoder.encode(encodedValues,
                     ENCODED_VALUES_ENCODING);
         }
@@ -144,7 +145,7 @@ public class JSONContentViewState {
         if (decode) {
             String decodedValues = URLDecoder.decode(json,
                     ENCODED_VALUES_ENCODING);
-            json = new String(Base64.decodeBase64(decodedValues));
+            json = new String(Base64.decode(decodedValues));
         }
 
         if (log.isDebugEnabled()) {

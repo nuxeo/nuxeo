@@ -264,7 +264,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
-                "eyJjb250ZW50Vmlld05hbWUiOiJDVVJSRU5UX0RPQ1VNRU5UX0NISUxEUkVOIiwicGFnZVNpemUi%0D%0AOjIsImN1cnJlbnRQYWdlIjowLCJxdWVyeVBhcmFtZXRlcnMiOlsidGVzdF9wYXJlbnRfaWQiXSwi%0D%0Ac2VhcmNoRG9jdW1lbnQiOm51bGwsInNvcnRJbmZvcyI6W3sic29ydENvbHVtbiI6ImRjOnRpdGxl%0D%0AIiwic29ydEFzY2VuZGluZyI6dHJ1ZX1dLCJyZXN1bHRMYXlvdXQiOnsibmFtZSI6ImRvY3VtZW50%0D%0AX2xpc3RpbmciLCJ0aXRsZSI6ImxhYmVsLmRvY3VtZW50X2xpc3RpbmcubGF5b3V0IiwidHJhbnNs%0D%0AYXRlVGl0bGUiOnRydWUsImljb25QYXRoIjoiL2ljb25zL215aWNvbi5wbmciLCJzaG93Q1NWRXhw%0D%0Ab3J0Ijp0cnVlfSwicmVzdWx0Q29sdW1ucyI6WyJjb2x1bW5fMSJdfQ%3D%3D%0D%0A",
+                "H4sIAAAAAAAAAF1Qy07DMBD8lz1bLXD0DSWVqFRK1NcFVZFxlsaSYwd7rRKi%2FjvrpFw4eTyamZ3dEbR3hI5OBq9b1SFIKI673Wp7qMu34viaQfGy3pRMgYBeXXBvflj2JECnENhaMQfyQcBXwjBUKnAMYYgg34EwUt2rLKtNA2cBEVXQbel16pgE6ZK1zPpAa%2Ffps2mcfoW3qXNcp9GSDFmEWfUcNbrGuAtICglvHBkwJksbNfjEgSO4eY%2FmPqO2JlI2CJiDJFj1gXbxX7CwcwTrgnLRKsLDbMiTBBi%2BVaWo5YBlxnHZDfld9FN4bP212J9W3z3XvLf7KzdvM51ET7B%2BhPPtFy6T5JJ%2BAQAA",
                 encodedJson);
     }
 
@@ -283,7 +283,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
         checkContentViewState(state);
 
-        String encodedJson = "eyJjb250ZW50Vmlld05hbWUiOiJDVVJSRU5UX0RPQ1VNRU5UX0NISUxEUkVOIiwicGFnZVNpemUi%0D%0AOjIsImN1cnJlbnRQYWdlIjowLCJxdWVyeVBhcmFtZXRlcnMiOlsidGVzdF9wYXJlbnRfaWQiXSwi%0D%0Ac2VhcmNoRG9jdW1lbnQiOm51bGwsInNvcnRJbmZvcyI6W3sic29ydENvbHVtbiI6ImRjOnRpdGxl%0D%0AIiwic29ydEFzY2VuZGluZyI6dHJ1ZX1dLCJyZXN1bHRMYXlvdXQiOnsibmFtZSI6ImRvY3VtZW50%0D%0AX2xpc3RpbmciLCJ0aXRsZSI6ImxhYmVsLmRvY3VtZW50X2xpc3RpbmcubGF5b3V0IiwidHJhbnNs%0D%0AYXRlVGl0bGUiOnRydWUsImljb25QYXRoIjoiL2ljb25zL215aWNvbi5wbmciLCJzaG93Q1NWRXhw%0D%0Ab3J0Ijp0cnVlfSwicmVzdWx0Q29sdW1ucyI6WyJjb2x1bW5fMSJdfQ%3D%3D%0D%0A";
+        String encodedJson = "H4sIAAAAAAAAAF1Qy07DMBD8lz1bLXD0DSWVqFRK1NcFVZFxlsaSYwd7rRKi%2FjvrpFw4eTyamZ3dEbR3hI5OBq9b1SFIKI673Wp7qMu34viaQfGy3pRMgYBeXXBvflj2JECnENhaMQfyQcBXwjBUKnAMYYgg34EwUt2rLKtNA2cBEVXQbel16pgE6ZK1zPpAa%2Ffps2mcfoW3qXNcp9GSDFmEWfUcNbrGuAtICglvHBkwJksbNfjEgSO4eY%2FmPqO2JlI2CJiDJFj1gXbxX7CwcwTrgnLRKsLDbMiTBBi%2BVaWo5YBlxnHZDfld9FN4bP212J9W3z3XvLf7KzdvM51ET7B%2BhPPtFy6T5JJ%2BAQAA";
         state = JSONContentViewState.fromJSON(encodedJson, true);
         checkContentViewState(state);
     }
@@ -436,7 +436,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
-                "eyJjb250ZW50Vmlld05hbWUiOiJDVVJSRU5UX0RPQ1VNRU5UX0NISUxEUkVOX1dJVEhfU0VBUkNI%0D%0AX0RPQ1VNRU5UIiwicGFnZVNpemUiOjIsImN1cnJlbnRQYWdlIjowLCJxdWVyeVBhcmFtZXRlcnMi%0D%0AOltdLCJzZWFyY2hEb2N1bWVudCI6eyJ0eXBlIjoiRmlsZSIsInByb3BlcnRpZXMiOnsiZGM6dGl0%0D%0AbGUiOiJzZWFyY2gga2V5d29yZHMifX0sInNvcnRJbmZvcyI6W3sic29ydENvbHVtbiI6ImRjOnRp%0D%0AdGxlIiwic29ydEFzY2VuZGluZyI6dHJ1ZX1dLCJyZXN1bHRMYXlvdXQiOm51bGwsInJlc3VsdENv%0D%0AbHVtbnMiOlsiY29sdW1uXzEiXX0%3D%0D%0A",
+                "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuYfBMbcpHWqlsU3dBgc0VVFqRkSaFCfRVKr%2BdxwqdnPej8dWJtDeRXTx1eBtp3oEAfLcNJvdqS338vySB1nV25Kl9q0%2BVe1xs25kdXehgEFd8Wh%2BuPtUgE5EzDuwBmJVwHdCGg%2BKmB2RAoj3SwEBFenP0uvUcxbEBHEc8u5nYzETyQ9I0WDIXqdFNNFmfyk%2BfOF489QFmGeGeYq1%2B%2FCZPf29pLepdxy%2FN5fUOmh0nXFXEJESznwJYUg2btXoE9%2FhkrX%2F2gLJUP6jPLaPcJl%2FAbtiVTcxAQAA",
                 encodedJson);
     }
 
@@ -454,7 +454,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
         checkContentViewStateWithSearchDoc(state);
 
-        String encodedJson = "eyJjb250ZW50Vmlld05hbWUiOiJDVVJSRU5UX0RPQ1VNRU5UX0NISUxEUkVOX1dJVEhfU0VBUkNI%0D%0AX0RPQ1VNRU5UIiwicGFnZVNpemUiOjIsImN1cnJlbnRQYWdlIjowLCJxdWVyeVBhcmFtZXRlcnMi%0D%0AOltdLCJzZWFyY2hEb2N1bWVudCI6eyJ0eXBlIjoiRmlsZSIsInByb3BlcnRpZXMiOnsiZGM6dGl0%0D%0AbGUiOiJzZWFyY2gga2V5d29yZHMifX0sInNvcnRJbmZvcyI6W3sic29ydENvbHVtbiI6ImRjOnRp%0D%0AdGxlIiwic29ydEFzY2VuZGluZyI6dHJ1ZX1dLCJyZXN1bHRMYXlvdXQiOm51bGwsInJlc3VsdENv%0D%0AbHVtbnMiOlsiY29sdW1uXzEiXX0%3D%0D%0A";
+        String encodedJson = "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuYfBMbcpHWqlsU3dBgc0VVFqRkSaFCfRVKr%2BdxwqdnPej8dWJtDeRXTx1eBtp3oEAfLcNJvdqS338vySB1nV25Kl9q0%2BVe1xs25kdXehgEFd8Wh%2BuPtUgE5EzDuwBmJVwHdCGg%2BKmB2RAoj3SwEBFenP0uvUcxbEBHEc8u5nYzETyQ9I0WDIXqdFNNFmfyk%2BfOF489QFmGeGeYq1%2B%2FCZPf29pLepdxy%2FN5fUOmh0nXFXEJESznwJYUg2btXoE9%2FhkrX%2F2gLJUP6jPLaPcJl%2FAbtiVTcxAQAA";
 
         state = JSONContentViewState.fromJSON(encodedJson, true);
         checkContentViewStateWithSearchDoc(state);
