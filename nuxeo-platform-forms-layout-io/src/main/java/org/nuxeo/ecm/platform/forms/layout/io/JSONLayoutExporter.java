@@ -75,8 +75,8 @@ public class JSONLayoutExporter {
     public static String encode(JSONObject jsonObject)
             throws UnsupportedEncodingException {
         String json = jsonObject.toString();
-        String encodedValues = Base64.encodeBytes(json.getBytes(), Base64.GZIP,
-                Base64.DONT_BREAK_LINES);
+        String encodedValues = Base64.encodeBytes(json.getBytes(), Base64.GZIP
+                | Base64.DONT_BREAK_LINES);
         return URLEncoder.encode(encodedValues, ENCODED_VALUES_ENCODING);
     }
 

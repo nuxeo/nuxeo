@@ -118,7 +118,7 @@ public class JSONContentViewState {
         // encoding
         if (encode) {
             String encodedValues = Base64.encodeBytes(jsonString.getBytes(),
-                    Base64.GZIP, Base64.DONT_BREAK_LINES);
+                    Base64.GZIP | Base64.DONT_BREAK_LINES);
             jsonString = URLEncoder.encode(encodedValues,
                     ENCODED_VALUES_ENCODING);
         }
