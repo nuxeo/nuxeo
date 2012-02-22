@@ -30,9 +30,8 @@ public class ImageConverter extends MagickExecutor {
     public static void convert(String inputFilePath, String outputFilePath)
             throws Exception {
         CmdParameters params = new CmdParameters();
-        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
-        params.addNamedParameter("outputFilePath",
-                formatFilePath(outputFilePath));
+        params.addNamedParameter("inputFilePath", inputFilePath);
+        params.addNamedParameter("outputFilePath", outputFilePath);
         execCommand("converter", params);
     }
 

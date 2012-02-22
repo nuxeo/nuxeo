@@ -52,6 +52,8 @@ public class DocumentImageResource implements ImageResource {
     protected String getEscapedxPath(String xPath) {
         String clean = xPath.replace(":", "_");
         clean = clean.replace("/", "_");
+        clean = clean.replace("[", "");
+        clean = clean.replace("]", "");
         return clean;
     }
 

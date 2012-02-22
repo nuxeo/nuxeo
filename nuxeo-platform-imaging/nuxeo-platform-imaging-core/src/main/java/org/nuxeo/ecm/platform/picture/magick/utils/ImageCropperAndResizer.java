@@ -39,9 +39,8 @@ public class ImageCropperAndResizer extends MagickExecutor {
         params.addNamedParameter("offsetY", String.valueOf(offsetY));
         params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
-        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
-        params.addNamedParameter("outputFilePath",
-                formatFilePath(outputFilePath));
+        params.addNamedParameter("inputFilePath", inputFilePath);
+        params.addNamedParameter("outputFilePath", outputFilePath);
         execCommand("cropAndResize", params);
     }
 

@@ -45,8 +45,8 @@ public class ImageResizer extends MagickExecutor {
 
         params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
-        params.addNamedParameter("inputFilePath", formatFilePath(inputFile));
-        params.addNamedParameter("outputFilePath", formatFilePath(outputFile));
+        params.addNamedParameter("inputFilePath", inputFile);
+        params.addNamedParameter("outputFilePath", outputFile);
         params.addNamedParameter("targetDepth", String.valueOf(targetDepth));
         execCommand("resizer", params);
 
