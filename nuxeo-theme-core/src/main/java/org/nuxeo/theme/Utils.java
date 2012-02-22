@@ -277,13 +277,12 @@ public final class Utils {
 
             /* CSS properties */
             CSSProperty property = rule.getProperty();
-            LexicalUnit value = property.getValue();
-            cssWriter.write(value, " ");
-            String strValue = cssWriter.toText();
-
             if (property == null) {
                 styleProperties.setProperty("", "");
             } else {
+                LexicalUnit value = property.getValue();
+                cssWriter.write(value, " ");
+                String strValue = cssWriter.toText();
                 styleProperties.setProperty(property.getName(), strValue);
             }
             style.setPropertiesFor(viewName, selectorStr, styleProperties);
