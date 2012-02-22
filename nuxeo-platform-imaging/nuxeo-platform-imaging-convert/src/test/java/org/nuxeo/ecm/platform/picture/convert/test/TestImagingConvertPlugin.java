@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -75,8 +76,9 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
         for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
-            BlobHolder bh = new SimpleBlobHolder(new FileBlob(
-                    ImagingRessourcesHelper.getFileFromPath(path)));
+            Blob blob = new FileBlob(ImagingRessourcesHelper.getFileFromPath(path));
+            blob.setFilename(filename);
+            BlobHolder bh = new SimpleBlobHolder(blob);
 
             BlobHolder result = cs.convert(converter, bh, options);
             assertNotNull(result);
