@@ -98,11 +98,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javassist</groupId>
-      <artifactId>javassist</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
       <scope>provided</scope>
@@ -175,21 +170,6 @@
     <dependency>
       <groupId>org.javasimon</groupId>
       <artifactId>javasimon-jmx</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>flute</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-commons</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-magger</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
