@@ -76,10 +76,8 @@ public class ScreenshotConverter extends BaseVideoConverter implements
                     ".tmp.jpeg");
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath",
-                    quoteFilePath(inputFile.file.getAbsolutePath()));
-            params.addNamedParameter("outFilePath",
-                    quoteFilePath(outFile.getAbsolutePath()));
+            params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
+            params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
             Double position = 0.0;
             if (parameters != null) {
                 position = (Double) parameters.get(POSITION_PARAMETER);

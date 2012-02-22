@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
-import org.nuxeo.ecm.platform.video.convert.BaseVideoConverter;
 import org.nuxeo.ecm.platform.video.convert.Constants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -228,12 +228,12 @@ public class VideoHelper {
         try {
             CommandLineExecutorService cleService = Framework.getLocalService(CommandLineExecutorService.class);
 
-            file = File.createTempFile("ffmpegInfo", video.getFilename());
+            file = File.createTempFile("ffmpegInfo",
+                    "." + FilenameUtils.getExtension(video.getFilename()));
             video.transferTo(file);
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath",
-                    BaseVideoConverter.quoteFilePath(file.getAbsolutePath()));
+            params.addNamedParameter("inFilePath", file.getAbsolutePath());
 
             // read the duration with a first command to adjust the best rate:
             ExecResult result = cleService.execCommand(

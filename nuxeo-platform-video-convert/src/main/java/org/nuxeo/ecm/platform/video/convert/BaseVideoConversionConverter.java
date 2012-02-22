@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.video.convert;
 
 import static org.nuxeo.ecm.platform.video.convert.Constants.INPUT_FILE_PATH_PARAMETER;
+import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_NAME_PARAMETER;
 import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_PATH_PARAMETER;
 
 import java.io.File;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.ecm.platform.video.VideoInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for converters doing video conversions.
@@ -79,11 +80,14 @@ public abstract class BaseVideoConversionConverter extends
         }
 
         try {
+            File outFile = File.createTempFile("videoConversion", getVideoExtension(), outDir);
+            // delete the file as we need only the path for ffmpeg
+            outFile.delete();
+            Framework.trackFile(outFile, this);
+            cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER,
+                outFile.getAbsolutePath());
             String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
-            String outFileName = StringUtils.deleteWhitespace(baseName)
-                    + getVideoExtension();
-            cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, new File(outDir,
-                    outFileName).getAbsolutePath());
+            cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
 
             VideoInfo videoInfo = (VideoInfo) parameters.get("videoInfo");
             if (videoInfo == null) {
@@ -102,7 +106,7 @@ public abstract class BaseVideoConversionConverter extends
             cmdStringParams.put("width", String.valueOf(newWidth));
             cmdStringParams.put("height", String.valueOf(newHeight));
             return cmdStringParams;
-        } catch (ClientException e) {
+        } catch (Exception e) {
             throw new ConversionException("Unable to get Blob for holder", e);
         }
     }
@@ -114,15 +118,31 @@ public abstract class BaseVideoConversionConverter extends
                 OUTPUT_FILE_PATH_PARAMETER);
         File outputFile = new File(outputPath);
         List<Blob> blobs = new ArrayList<Blob>();
+        String outFileName = cmdParameters.getParameters().get(OUTPUT_FILE_NAME_PARAMETER);
+        if (outFileName == null) {
+            outFileName = outputFile.getName();
+        } else {
+            outFileName = unquoteValue(outFileName);
+        }
 
         Blob blob = new FileBlob(outputFile);
-        blob.setFilename(outputFile.getName());
+        blob.setFilename(outFileName);
         blob.setMimeType(getVideoMimeType());
         blobs.add(blob);
 
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
         return new SimpleBlobHolderWithProperties(blobs, properties);
+    }
+
+    /**
+     * @since 5.6
+     */
+    protected String unquoteValue(String value) {
+        if (value.startsWith("\"") && value.endsWith("\"")) {
+            return value.substring(1, value.length() - 1);
+        }
+        return value;
     }
 
     protected abstract String getVideoMimeType();

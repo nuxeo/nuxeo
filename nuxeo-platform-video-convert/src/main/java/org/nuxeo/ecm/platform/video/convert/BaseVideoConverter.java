@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -63,8 +64,8 @@ public abstract class BaseVideoConverter {
             }
             if (file == null) {
                 // create temporary dfile
-                file = File.createTempFile("StoryboardConverter-in-", "-"
-                        + blob.getFilename());
+                file = File.createTempFile("StoryboardConverter-in-", "."
+                        + FilenameUtils.getExtension(blob.getFilename()));
                 blob.transferTo(file);
                 isTempFile = true;
             }
@@ -97,6 +98,10 @@ public abstract class BaseVideoConverter {
                         + StringUtils.join(output, " "));
     }
 
+    /**
+     * @deprecated since 5.5.
+     */
+    @Deprecated
     public static String quoteFilePath(String filePath) {
         return String.format("\"%s\"", filePath);
     }

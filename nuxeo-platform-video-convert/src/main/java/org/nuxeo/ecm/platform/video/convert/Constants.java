@@ -39,6 +39,8 @@ public class Constants {
 
     public static final String OUTPUT_FILE_PATH_PARAMETER = "outFilePath";
 
+    public static final String OUTPUT_FILE_NAME_PARAMETER = "outFileName";
+
     // Constant utility class.
     private Constants() {
     }
