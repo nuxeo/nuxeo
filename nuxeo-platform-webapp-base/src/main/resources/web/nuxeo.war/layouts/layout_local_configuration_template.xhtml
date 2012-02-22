@@ -83,12 +83,12 @@
       </div>
     </a4j:form>
 
-  </a4j:outputPanel>
+    <script>
+      jQuery(document).ready(function() {
+        jQuery("img.layoutHelpLabel[title]").tooltip({relative: true, position: 'bottom center'});
+      });
+    </script>
 
-  <script>
-    jQuery(document).ready(function() {
-      jQuery("img.layoutHelpLabel[title]").tooltip({relative: true, position: 'bottom center'});
-    });
-  </script>
+  </a4j:outputPanel>
 
 </f:subview>
