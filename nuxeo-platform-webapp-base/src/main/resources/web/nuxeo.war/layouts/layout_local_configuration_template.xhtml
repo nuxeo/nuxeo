@@ -21,52 +21,56 @@
     displayed as a tooltip
 </c:if>
 
-  <c:set var="layoutTemplateToInclude"
-    value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/default_layout_template.xhmtl')}" />
+<c:set var="layoutTemplateToInclude"
+  value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/default_layout_template.xhmtl')}" />
 
-    <a4j:outputPanel layout="block" id="local_configuration_#{layout.id}_panel">
+  <a4j:outputPanel layout="block" id="local_configuration_#{layout.id}_panel">
 
     <c:set var="hasLocalConfigurationFacet"
       value="#{nxu:test(currentDocument.hasFacet(layoutProperty_localConfigurationFacet), true, false)}" />
     <c:set var="titleClass"
       value="#{nxu:test(hasLocalConfigurationFacet, 'unfolded', 'foldedDisabled')}" />
 
-      <a4j:form id="local_configuration_#{layout.id}_form">
-        <div class="foldableBox">
-          <h3 class="#{titleClass}">
-            <c:if test="#{hasLocalConfigurationFacet}">
-              <a href="#nologo" onclick="return toggleBox(this)">
-                <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
-                  <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
-                </c:if>
-              </a>
-            </c:if>
-            <c:if test="#{not hasLocalConfigurationFacet}">
-              <span>
-                <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
-                  <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
-                </c:if>
-              </span>
-            </c:if>
-            <h:graphicImage value="/icons/lightbulb.png"
-              styleClass="layoutHelpLabel"
-              title="#{messages[layoutProperty_helpLabel]}" />
+    <a4j:form id="local_configuration_#{layout.id}_form">
+      <div class="foldableBox">
 
-            <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
-              <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
-                immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{not hasLocalConfigurationFacet}"
-                styleClass="action" id="#{layout.id}_enable">
-                <h:outputText value="#{messages['label.local.configuration.enable']}"/>
-              </a4j:commandLink>
-              <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
-                immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{hasLocalConfigurationFacet}"
-                styleClass="action" id="#{layout.id}_disable">
-                <h:outputText value="#{messages['label.local.configuration.disable']}"/>
-              </a4j:commandLink>
-            </c:if>
+        <h3 class="#{titleClass}">
 
-          </h3>
           <c:if test="#{hasLocalConfigurationFacet}">
+            <a href="#nologo" onclick="return toggleBox(this)">
+              <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
+                <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
+              </c:if>
+            </a>
+          </c:if>
+          <c:if test="#{not hasLocalConfigurationFacet}">
+            <span>
+              <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
+                <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
+              </c:if>
+            </span>
+          </c:if>
+
+          <h:graphicImage value="/icons/lightbulb.png"
+            styleClass="layoutHelpLabel"
+            title="#{messages[layoutProperty_helpLabel]}" />
+
+          <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
+            <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
+              immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{not hasLocalConfigurationFacet}"
+              styleClass="action" id="#{layout.id}_enable">
+              <h:outputText value="#{messages['label.local.configuration.enable']}"/>
+            </a4j:commandLink>
+            <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
+              immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{hasLocalConfigurationFacet}"
+              styleClass="action" id="#{layout.id}_disable">
+              <h:outputText value="#{messages['label.local.configuration.disable']}"/>
+            </a4j:commandLink>
+          </c:if>
+
+        </h3>
+
+        <c:if test="#{hasLocalConfigurationFacet}">
           <div class="boxBody" >
             <ui:include src="#{layoutTemplateToInclude}" />
             <a4j:commandButton value="#{messages['command.save']}"
@@ -74,10 +78,12 @@
               action="#{localConfigurationActions.saveLocalConfiguration}"
               reRender="local_configuration_#{layout.id}_form,facesStatusMessagePanel"/>
           </div>
-          </c:if>
-        </div>
-      </a4j:form>
-    </a4j:outputPanel>
+        </c:if>
+
+      </div>
+    </a4j:form>
+
+  </a4j:outputPanel>
 
   <script>
     jQuery(document).ready(function() {
