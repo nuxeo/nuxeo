@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -315,15 +316,8 @@ public class DownloadServlet extends HttpServlet {
     }
 
     public void handleClientDisconnect(IOException ioe) throws IOException {
-        // handle all IOException that are ClientAbortException by looking at
-        // their class name since the package name is not the same for
-        // jboss, glassfish, tomcat and jetty and we don't want to add
-        // implementation specific build dependencies to this project
-        if ("ClientAbortException".equals(ioe.getClass().getSimpleName())) {
-            // ignore client disconnections that can happen if the client choose
-            // to interrupt the download abruptly, just log the error at the
-            // debug level for developers if necessary
-            log.debug(ioe, ioe);
+        if (ExceptionHelper.isClientAbortError(ioe)) {
+            log.warn("Client disconnected: " + ioe.getMessage());
         } else {
             // this is a real unexpected problem, let the traditional error
             // management handle this case

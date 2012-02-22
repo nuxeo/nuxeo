@@ -146,7 +146,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             } catch (ServletException e) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(e);
                 if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                    log.warn("Client disconnected : "
+                    log.warn("Client disconnected: "
                             + unwrappedError.getMessage());
                 } else {
                     throw e;

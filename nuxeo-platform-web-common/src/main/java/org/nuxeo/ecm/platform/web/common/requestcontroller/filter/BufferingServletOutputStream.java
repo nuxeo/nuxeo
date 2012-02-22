@@ -153,8 +153,8 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     }
 
     /**
-     * This implementation does nothing, we still want to keep buffering and not
-     * flush.
+     * This implementation does nothing, we still want to keep buffering and
+     * not flush.
      * <p>
      * {@inheritDoc}
      */
@@ -223,7 +223,8 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                     } catch (IOException e) {
                         Throwable unwrappedError = ExceptionHelper.unwrapException(e);
                         if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                            log.warn("Client disconnected : " + unwrappedError.getMessage());
+                            log.warn("Client disconnected: "
+                                    + unwrappedError.getMessage());
                         } else {
                             throw e;
                         }
@@ -252,7 +253,8 @@ public class BufferingServletOutputStream extends ServletOutputStream {
             } catch (IOException e) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(e);
                 if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                    log.warn("Client disconnected : " + unwrappedError.getMessage());
+                    log.warn("Client disconnected : "
+                            + unwrappedError.getMessage());
                 } else {
                     throw e;
                 }
