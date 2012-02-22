@@ -247,12 +247,14 @@ public class BundleImpl implements Bundle {
             setStarted();
         } catch (Exception e) {
             if (headers == null) {
-                throw new BundleException("Failed to start bundle at: " + file,
-                        e);
-            } else {
                 throw new BundleException("Failed to start bundle at: " + file
+                        + " with error: " + e.getMessage(), e);
+            } else {
+                throw new BundleException("Failed to start bundle at: "
+                        + file
                         + " with activator: "
-                        + headers.get(Constants.BUNDLE_ACTIVATOR), e);
+                        + headers.get(Constants.BUNDLE_ACTIVATOR
+                                + " with error: " + e.getMessage()), e);
             }
         }
     }
