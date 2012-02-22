@@ -120,16 +120,6 @@ public class TestQueryParser2 extends TestCase {
         "SELECT p1, p2 FROM t WHERE title = \"test\" OR p2 >= 10.2 AND p1 + p2 < 5",
         "SELECT p1, p2 FROM table WHERE p1 > 0 OR p2 <= 10.2 AND p1 - p2 = 5",
         "SELECT * FROM Document WHERE (dc:creator = 'Pedro' OR dc:creator = 'Piotr' OR dc:creator = 'Pierre')",
-
-        "SELECT * FROM Document WHERE (dc:creator = 'default1' OR dc:creator = 'default2')",
-        "SELECT * FROM Document WHERE dc:contributors = 'Administrator' AND ecm:path STARTSWITH 'somelocation'",
-        "SELECT * FROM Document WHERE dc:created < DATE '2006-12-15' ORDER BY dc:modified DESC",
-        "SELECT * FROM Document WHERE dc:created < DATE '2006-12-15' ORDER BY dc:modified",
-        "SELECT * FROM Document WHERE dc:created < DATE '2006-12-15'",
-        "SELECT p1, p2 FROM t WHERE title = \"test\" OR p2 >= 10.2 AND p1 + p2 < 5",
-        "SELECT p1, p2 FROM table WHERE p1 > 0 OR p2 <= 10.2 AND p1 - p2 = 5",
-        "SELECT * FROM Document WHERE (dc:creator = 'Pedro' OR dc:creator = 'Piotr' OR dc:creator = 'Pierre')",
-
         "SELECT * FROM Document WHERE (dc:creator = 'default1' OR dc:creator = 'default2')",
         "SELECT * FROM Document WHERE dc:contributors = 'Administrator' AND ecm:path STARTSWITH 'somelocation'",
         "SELECT * FROM Document WHERE dc:created < DATE '2006-12-15' ORDER BY dc:modified DESC",
