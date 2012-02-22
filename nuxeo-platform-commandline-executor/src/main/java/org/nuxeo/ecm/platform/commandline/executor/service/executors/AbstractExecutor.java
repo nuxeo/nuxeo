@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
@@ -33,14 +34,16 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  */
 public abstract class AbstractExecutor {
 
+    private static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[a-zA-Z_0-9-.%:/\\\\ ]+");
+
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
         return osName.toLowerCase().contains("windows");
     }
 
     /**
-     * Returns parameters as a String after having replaced parameterized
-     * values inside.
+     * Returns parameters as a String after having replaced parameterized values
+     * inside.
      *
      * @param cmdDesc CommandLineDescriptor containing parameters
      * @param params parameterized values
@@ -77,10 +80,19 @@ public abstract class AbstractExecutor {
     private static String replaceParams(Map<String, String> paramsValues,
             String paramString) {
         for (String pname : paramsValues.keySet()) {
-            paramString = paramString.replace("#{" + pname + "}",
-                    paramsValues.get(pname));
+            String param = "#{" + pname + "}";
+            if (paramString.contains(param)) {
+                String value = paramsValues.get(pname);
+                if (!VALID_PARAMETER_PATTERN.matcher(value).matches()) {
+                    throw new IllegalArgumentException(
+                            String.format(
+                                    "'%s' contains illegal characters. It should match: %s",
+                                    value, VALID_PARAMETER_PATTERN));
+                }
+                paramString = paramString.replace("#{" + pname + "}",
+                        String.format("\"%s\"", value));
+            }
         }
         return paramString;
     }
-
 }

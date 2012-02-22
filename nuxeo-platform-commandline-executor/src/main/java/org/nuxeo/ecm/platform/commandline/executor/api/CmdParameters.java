@@ -46,7 +46,7 @@ public class CmdParameters implements Serializable {
     }
 
     public void addNamedParameter(String name, File file) {
-        addNamedParameter(name, "\"" + file.getAbsolutePath() + "\"");
+        addNamedParameter(name, file.getAbsolutePath());
     }
 
     public Map<String, String> getParameters() {

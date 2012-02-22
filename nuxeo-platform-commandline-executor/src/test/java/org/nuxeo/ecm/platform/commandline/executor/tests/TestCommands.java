@@ -72,7 +72,7 @@ public class TestCommands extends NXRuntimeTestCase {
         String parsedParamString = AbstractExecutor.getParametersString(
                 cmdDesc, params);
         assertEquals(
-                "-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < /tmp/textMe.txt",
+                "-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < \"/tmp/textMe.txt\"",
                 parsedParamString);
 
         // test with File param
@@ -80,15 +80,15 @@ public class TestCommands extends NXRuntimeTestCase {
         parsedParamString = AbstractExecutor.getParametersString(cmdDesc,
                 params);
         // System.out.println("command:" + parsedParamString);
-        assertTrue(parsedParamString.startsWith("-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < "));
+        assertTrue(parsedParamString.startsWith("-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < "));
         assertTrue(parsedParamString.contains(System.getProperties().getProperty(
                 "java.io.tmpdir")));
 
         String[] res = AbstractExecutor.getParametersArray(cmdDesc, params);
         assertEquals(7, res.length);
         assertEquals("-a", res[0]);
-        assertEquals("--lang=fr_FR", res[1]);
-        assertEquals("--encoding=utf-8", res[2]);
+        assertEquals("--lang=\"fr_FR\"", res[1]);
+        assertEquals("--encoding=\"utf-8\"", res[2]);
         assertEquals("-H", res[3]);
         assertEquals("--rem-sgml-check=alt", res[4]);
         assertEquals("<", res[5]);

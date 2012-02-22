@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -42,7 +43,8 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base class to implement {@link Converter} based on {@link CommandLineExecutorService}.
+ * Base class to implement {@link Converter} based on
+ * {@link CommandLineExecutorService}.
  *
  * @author tiry
  */
@@ -79,18 +81,22 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
         String commandName = getCommandName(blobHolder, parameters);
         if (commandName == null) {
-            throw new ConversionException("Unable to determine target CommandLine name");
+            throw new ConversionException(
+                    "Unable to determine target CommandLine name");
         }
 
-        Map<String, Blob> blobParams = getCmdBlobParameters(blobHolder, parameters);
-        Map<String, String> strParams = getCmdStringParameters(blobHolder, parameters);
+        Map<String, Blob> blobParams = getCmdBlobParameters(blobHolder,
+                parameters);
+        Map<String, String> strParams = getCmdStringParameters(blobHolder,
+                parameters);
 
         CmdReturn result = execOnBlob(commandName, blobParams, strParams);
 
         return buildResult(result.output, result.params);
     }
 
-    protected String getCommandName(BlobHolder blobHolder, Map<String, Serializable> parameters) {
+    protected String getCommandName(BlobHolder blobHolder,
+            Map<String, Serializable> parameters) {
         String commandName = initParameters.get(CMD_NAME_PARAMETER);
         if (parameters != null && parameters.containsKey(CMD_NAME_PARAMETER)) {
             commandName = (String) parameters.get(CMD_NAME_PARAMETER);
@@ -102,22 +108,26 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
      * Extracts BlobParameters.
      */
     protected abstract Map<String, Blob> getCmdBlobParameters(
-            BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException;
+            BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException;
 
     /**
      * Extracts String parameters.
      */
     protected abstract Map<String, String> getCmdStringParameters(
-            BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException;
+            BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException;
 
     /**
      * Builds result from commandLine output buffer.
      */
-    protected abstract BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException;
+    protected abstract BlobHolder buildResult(List<String> cmdOutput,
+            CmdParameters cmdParams) throws ConversionException;
 
     protected class CmdReturn {
 
         protected final CmdParameters params;
+
         protected final List<String> output;
 
         protected CmdReturn(CmdParameters params, List<String> output) {
@@ -137,7 +147,10 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             if (blobParameters != null) {
                 for (String blobParamName : blobParameters.keySet()) {
                     Blob blob = blobParameters.get(blobParamName);
-                    File file = File.createTempFile("cmdLineBasedConverter", blob.getFilename());
+                    File file = File.createTempFile(
+                            "cmdLineBasedConverter",
+                            "."
+                                    + FilenameUtils.getExtension(blob.getFilename()));
                     blob.transferTo(file);
                     params.addNamedParameter(blobParamName, file);
                     filesToDelete.add(file.getAbsolutePath());
@@ -146,14 +159,19 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
             if (parameters != null) {
                 for (String paramName : parameters.keySet()) {
-                    params.addNamedParameter(paramName, parameters.get(paramName));
+                    params.addNamedParameter(paramName,
+                            parameters.get(paramName));
                 }
             }
 
-            ExecResult result = getCommandLineService().execCommand(commandName, params);
+            ExecResult result = getCommandLineService().execCommand(
+                    commandName, params);
 
             if (!result.isSuccessful()) {
-                throw new ConversionException("CommandLine returned code " + result.getReturnCode() + ":\n  " + StringUtils.join(result.getOutput(), "\n  "), result.getError());
+                throw new ConversionException("CommandLine returned code "
+                        + result.getReturnCode() + ":\n  "
+                        + StringUtils.join(result.getOutput(), "\n  "),
+                        result.getError());
             }
 
             return new CmdReturn(params, result.getOutput());
@@ -161,7 +179,8 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             // XXX bubble installation instructions
             throw new ConversionException("Unable to find targetCommand", e);
         } catch (IOException e) {
-            throw new ConversionException("Error while converting via CommandLineService", e);
+            throw new ConversionException(
+                    "Error while converting via CommandLineService", e);
 
         } finally {
             for (String fileToDelete : filesToDelete) {
@@ -185,12 +204,14 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             return new ConverterCheckResult();
         }
 
-        CommandAvailability ca = getCommandLineService().getCommandAvailability(commandName);
+        CommandAvailability ca = getCommandLineService().getCommandAvailability(
+                commandName);
 
         if (ca.isAvailable()) {
             return new ConverterCheckResult();
         } else {
-            return new ConverterCheckResult(ca.getInstallMessage(), ca.getErrorMessage());
+            return new ConverterCheckResult(ca.getInstallMessage(),
+                    ca.getErrorMessage());
         }
     }
 
