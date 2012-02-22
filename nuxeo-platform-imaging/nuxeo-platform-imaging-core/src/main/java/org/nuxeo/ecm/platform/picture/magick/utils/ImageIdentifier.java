@@ -35,7 +35,7 @@ public class ImageIdentifier extends MagickExecutor {
     public static ImageInfo getInfo(String inputFilePath)
             throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
-        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
+        params.addNamedParameter("inputFilePath", inputFilePath);
         ExecResult result = execCommand("identify", params);
 
         String out = result.getOutput().get(

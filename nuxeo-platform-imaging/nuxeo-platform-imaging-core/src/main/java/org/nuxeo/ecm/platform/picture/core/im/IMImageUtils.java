@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -51,8 +52,8 @@ public class IMImageUtils implements ImageUtils {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
             CommandAvailability commandAvailability = cles.getCommandAvailability("resizer");
             if (commandAvailability.isAvailable()) {
-                File sourceFile = File.createTempFile("source",
-                        blob.getFilename());
+                File sourceFile = File.createTempFile("source", "."
+                        + FilenameUtils.getExtension(blob.getFilename()));
                 try {
                     blob.transferTo(sourceFile);
                     String suffix = getTempSuffix(blob, sourceFile);
@@ -81,8 +82,8 @@ public class IMImageUtils implements ImageUtils {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
             CommandAvailability commandAvailability = cles.getCommandAvailability("resizer");
             if (commandAvailability.isAvailable()) {
-                File sourceFile = File.createTempFile("source",
-                        blob.getFilename());
+                File sourceFile = File.createTempFile("source", "."
+                        + FilenameUtils.getExtension(blob.getFilename()));
                 try {
                     blob.transferTo(sourceFile);
                     String suffix;
@@ -115,8 +116,8 @@ public class IMImageUtils implements ImageUtils {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
             CommandAvailability commandAvailability = cles.getCommandAvailability("rotate");
             if (commandAvailability.isAvailable()) {
-                File sourceFile = File.createTempFile("source",
-                        blob.getFilename());
+                File sourceFile = File.createTempFile("source", "."
+                        + FilenameUtils.getExtension(blob.getFilename()));
                 try {
                     blob.transferTo(sourceFile);
                     String suffix = getTempSuffix(blob, sourceFile);

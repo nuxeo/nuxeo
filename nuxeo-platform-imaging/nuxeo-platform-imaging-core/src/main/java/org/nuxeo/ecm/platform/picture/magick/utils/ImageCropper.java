@@ -38,9 +38,8 @@ public class ImageCropper extends MagickExecutor {
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
         params.addNamedParameter("offsetX", String.valueOf(offsetX));
         params.addNamedParameter("offsetY", String.valueOf(offsetY));
-        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
-        params.addNamedParameter("outputFilePath",
-                formatFilePath(outputFilePath));
+        params.addNamedParameter("inputFilePath", inputFilePath);
+        params.addNamedParameter("outputFilePath", outputFilePath);
         execCommand("crop", params);
     }
 

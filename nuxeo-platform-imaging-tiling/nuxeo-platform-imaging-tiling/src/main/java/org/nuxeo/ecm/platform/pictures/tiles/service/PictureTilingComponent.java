@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -252,10 +253,11 @@ public class PictureTilingComponent extends DefaultComponent implements
             String wdirPath = getWorkingDirPathForRessource(resource);
             inputFilePath = wdirPath;
             Blob blob = resource.getBlob();
+            inputFilePath += Integer.toString(blob.hashCode()) + ".";
             if (blob.getFilename() != null) {
-                inputFilePath += blob.getFilename();
+                inputFilePath += FilenameUtils.getExtension(blob.getFilename());
             } else {
-                inputFilePath += Integer.toString(blob.hashCode()) + ".img";
+                inputFilePath += "img";
             }
 
             if (needToConvert(blob)) {

@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -158,9 +159,13 @@ public class ImagingComponent extends DefaultComponent implements
     @Override
     public ImageInfo getImageInfo(Blob blob) {
         ImageInfo imageInfo = null;
-        File tmpFile = new File(System.getProperty("java.io.tmpdir"),
-                blob.getFilename() != null ? blob.getFilename() : "tmp.tmp");
+        File tmpFile = null;
         try {
+            tmpFile = File.createTempFile(
+                    "imageInfo",
+                    blob.getFilename() != null ? "."
+                            + FilenameUtils.getExtension(blob.getFilename())
+                            : "tmp.tmp");
             blob.transferTo(tmpFile);
             imageInfo = ImageIdentifier.getInfo(tmpFile.getAbsolutePath());
         } catch (CommandNotAvailable e) {
@@ -169,7 +174,9 @@ public class ImagingComponent extends DefaultComponent implements
         } catch (IOException e) {
             log.error("Failed to tranfert file " + blob.getFilename(), e);
         } finally {
-            tmpFile.delete();
+            if (tmpFile != null) {
+                tmpFile.delete();
+            }
         }
         return imageInfo;
     }
