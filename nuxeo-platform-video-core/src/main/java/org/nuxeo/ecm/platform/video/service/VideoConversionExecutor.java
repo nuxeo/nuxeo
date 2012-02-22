@@ -38,20 +38,33 @@ public class VideoConversionExecutor {
         executor.execute(task);
     }
 
-    public boolean shutdown(long timeout) throws InterruptedException {
+    public boolean shutdownNow() {
 
         executor.shutdownNow();
 
-        if (timeout <= 0) {
+        return waitForCompletions(2);
+    }
+
+    public boolean shutdown()  {
+
+        executor.shutdown();
+
+        return waitForCompletions(300);
+    }
+
+    public boolean waitForCompletions(long timeout) {
+        try {
+            if (!executor.awaitTermination(timeout, TimeUnit.SECONDS)) {
+                return false;
+            }
+        } catch (InterruptedException e) {
             return false;
         }
-
-        return executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+        return true;
     }
 
     public static VideoConversionExecutor create() {
         return new VideoConversionExecutor();
     }
-
 
 }

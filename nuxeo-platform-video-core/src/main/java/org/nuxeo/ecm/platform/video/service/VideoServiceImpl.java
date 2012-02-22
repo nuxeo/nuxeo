@@ -70,7 +70,6 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     protected AutomaticVideoConversionContributionHandler automaticVideoConversions;
 
-
     protected VideoConversionExecutor conversionExecutor;
 
     protected AsyncWaitHook asyncWaitHook;
@@ -84,23 +83,32 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         automaticVideoConversions = new AutomaticVideoConversionContributionHandler();
         conversionExecutor = new VideoConversionExecutor();
         asyncWaitHook = new AsyncWaitHook() {
+
             @Override
-            public boolean waitForAsync(long timeout) throws InterruptedException {
-               try {
-                   return conversionExecutor.shutdown(timeout);
-               } finally {
-                   conversionExecutor = new VideoConversionExecutor();
-               }
+            public boolean shutdown() {
+                try {
+                    return conversionExecutor.shutdownNow();
+                } finally {
+                    conversionExecutor = null;
+                }
+            }
+
+            @Override
+            public boolean waitForAsyncCompletion() {
+                try {
+                    return conversionExecutor.shutdown();
+                } finally {
+                    conversionExecutor = new VideoConversionExecutor();
+                }
             }
         };
-        ((EventServiceImpl)Framework.getLocalService(EventService.class)).registerForAsyncWait(asyncWaitHook);
+        ((EventServiceImpl) Framework.getLocalService(EventService.class)).registerForAsyncWait(asyncWaitHook);
     }
-
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        ((EventServiceImpl)Framework.getLocalService(EventService.class)).unregisterForAsyncWait(asyncWaitHook);
-        conversionExecutor.shutdown(500);
+        ((EventServiceImpl) Framework.getLocalService(EventService.class)).unregisterForAsyncWait(asyncWaitHook);
+        conversionExecutor.shutdown();
 
         videoConversions = null;
         automaticVideoConversions = null;
@@ -144,7 +152,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             return;
         }
         states.put(id, VideoConversionStatus.STATUS_CONVERSION_QUEUED);
-        VideoConversionTask task = new VideoConversionTask(doc, conversionName, this);
+        VideoConversionTask task = new VideoConversionTask(doc, conversionName,
+                this);
         conversionExecutor.execute(task);
     }
 
