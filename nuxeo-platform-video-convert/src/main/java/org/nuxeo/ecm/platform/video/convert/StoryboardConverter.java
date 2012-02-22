@@ -120,8 +120,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
             outFolder.mkdir();
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER,
-                    quoteFilePath(inputFile.file.getAbsolutePath()));
+            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, inputFile.file.getAbsolutePath());
 
             Double duration = (Double) parameters.get("duration");
             if (duration == null) {
@@ -144,8 +143,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
                         String.format("%04d", i));
                 outSubFolder.mkdir();
                 File outFile = new File(outSubFolder, "video-thumb-%04d.jpeg");
-                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER,
-                        quoteFilePath(outFile.getAbsolutePath()));
+                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
                 params.addNamedParameter(POSITION_PARAMETER,
                         String.valueOf(timecode));
                 params.addNamedParameter(WIDTH_PARAM,
