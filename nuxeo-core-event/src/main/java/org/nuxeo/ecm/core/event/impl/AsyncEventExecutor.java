@@ -103,19 +103,20 @@ public class AsyncEventExecutor {
         // wait for asynch executor termination
         long ts = System.currentTimeMillis();
         try {
-            boolean terminated =
-            executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+            boolean terminated =executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
             if (!terminated) {
                 return false;
             }
         } catch (InterruptedException e) {
-            return false;
+           return false;
         }
 
         // check remaining time
         timeout -= System.currentTimeMillis() - ts;
         if (timeout <= 0) {
-            return false; // timeout expired
+            if (!mono_executor.isTerminated()) {
+                return false;
+            }
         }
 
         // wait for mono executor termination
@@ -125,7 +126,7 @@ public class AsyncEventExecutor {
                 return false;
             }
         } catch (InterruptedException e) {
-            return false;
+           return false;
         }
 
         return true;

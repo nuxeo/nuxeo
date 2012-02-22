@@ -26,6 +26,8 @@ package org.nuxeo.ecm.core.event.impl;
  */
 public interface AsyncWaitHook {
 
-    boolean waitForAsync(long timeout) throws InterruptedException;
+    boolean shutdown();
+
+    boolean waitForAsyncCompletion();
 
 }
