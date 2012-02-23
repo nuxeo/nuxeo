@@ -25,26 +25,17 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hsqldb.jdbcDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -60,7 +51,6 @@ import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
-import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
@@ -148,7 +138,7 @@ public class SignatureServiceTest {
     public void setup() throws Exception {
         // setup the naming service
 
-        setUpContextFactory();
+//        setUpContextFactory();
         // pre-populate users & certificates
         DocumentModel user = getUser();
         DocumentModel certificate = cUserService.createCertificate(user,
@@ -258,24 +248,6 @@ public class SignatureServiceTest {
     InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
         File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
         return new FileInputStream(keystoreFile);
-    }
-
-    public static void setUpContextFactory() throws NamingException {
-        NamingContextFactory.setAsInitial();
-        Context context = new InitialContext();
-        DataSource datasource = new SimpleDataSource("jdbc:hsqldb:mem:memid",
-                jdbcDriver.class.getName(), "SA", "");
-        DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
-            @Override
-            public Connection getConnection() throws SQLException {
-                Connection con = super.getConnection();
-                con.setAutoCommit(true);
-                return con;
-            }
-        };
-        assertNotNull(datasourceAutocommit);
-        context.bind("java:comp/env/jdbc/nxsqldirectory", datasource);
     }
 
     protected static Directory getDirectory(String dirName)

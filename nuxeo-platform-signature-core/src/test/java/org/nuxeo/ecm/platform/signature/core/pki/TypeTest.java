@@ -17,8 +17,8 @@
 
 package org.nuxeo.ecm.platform.signature.core.pki;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,26 +26,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import org.hsqldb.jdbcDriver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -56,14 +48,12 @@ import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
-import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -76,7 +66,7 @@ import com.google.inject.Inject;
  * 
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
         "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
@@ -107,9 +97,6 @@ public class TypeTest {
 
     @Before
     public void setup() throws Exception {
-
-        NamingContextFactory.setAsInitial();
-        setUpContextFactory();
 
         KeyStore rootKeystore = certService.getKeyStore(
                 getKeystoreIS(keystorePath), ROOT_KEYSTORE_PASSWORD);
@@ -221,22 +208,5 @@ public class TypeTest {
             dir = ((SQLDirectoryProxy) dir).getDirectory();
         }
         return dir;
-    }
-
-    public static void setUpContextFactory() throws NamingException {
-        Context context = new InitialContext();
-        DataSource datasource = new SimpleDataSource("jdbc:hsqldb:mem:memid",
-                jdbcDriver.class.getName(), "SA", "");
-        DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
-            @Override
-            public Connection getConnection() throws SQLException {
-                Connection con = super.getConnection();
-                con.setAutoCommit(true);
-                return con;
-            }
-        };
-        assertNotNull(datasourceAutocommit);
-        context.bind("java:comp/env/jdbc/nxsqldirectory", datasource);
     }
 }

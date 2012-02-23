@@ -21,25 +21,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import org.hsqldb.jdbcDriver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -80,7 +69,7 @@ public class CUserServiceTest {
 
     @Before
     public void setup() throws Exception {
-        setUpContextFactory();
+//        setUpContextFactory();
     }
 
     public void testCreateCert() throws Exception {
@@ -126,21 +115,4 @@ public class CUserServiceTest {
         return userManager;
     }
 
-    public static void setUpContextFactory() throws NamingException {
-        NamingContextFactory.setAsInitial();
-        Context context = new InitialContext();
-        DataSource datasource = new SimpleDataSource("jdbc:hsqldb:mem:memid",
-                jdbcDriver.class.getName(), "SA", "");
-        DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
-            @Override
-            public Connection getConnection() throws SQLException {
-                Connection con = super.getConnection();
-                con.setAutoCommit(true);
-                return con;
-            }
-        };
-        assertNotNull(datasourceAutocommit);
-        context.bind("java:comp/env/jdbc/nxsqldirectory", datasource);
-    }
 }

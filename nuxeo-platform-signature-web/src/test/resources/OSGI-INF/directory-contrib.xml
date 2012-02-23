@@ -13,8 +13,8 @@
 
       <schema>user</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbDriver>org.apache.derby.jdbc.EmbeddedDriver</dbDriver>
+      <dbUrl>jdbc:derby:/tmp/db;create=true</dbUrl>
       <dbUser>sa</dbUser>
       <dbPassword></dbPassword>
 
@@ -40,8 +40,8 @@
 
       <schema>group</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbDriver>org.apache.derby.jdbc.EmbeddedDriver</dbDriver>
+      <dbUrl>jdbc:derby:/tmp/db;create=true</dbUrl>
       <dbUser>sa</dbUser>
       <dbPassword></dbPassword>
 
@@ -69,8 +69,8 @@
   <directory name="certificate">
       <schema>cert</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbDriver>org.apache.derby.jdbc.EmbeddedDriver</dbDriver>
+      <dbUrl>jdbc:derby:/tmp/db;create=true</dbUrl>
       <dbUser>sa</dbUser>
       <dbPassword></dbPassword>
 
