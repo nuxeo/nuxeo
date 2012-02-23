@@ -24,11 +24,11 @@ import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OperandList;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
-import org.nuxeo.ecm.core.query.sql.model.PathReference;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
@@ -127,10 +127,10 @@ public class TestQueryParser extends TestCase {
         Predicate where = query.getWhereClause().predicate;
         Predicate p1 = (Predicate) where.lvalue;
         Predicate p2 = (Predicate) where.rvalue;
-        assertEquals("dc:foo/3/ho", ((PathReference) p1.lvalue).name);
-        assertEquals("dc:bar/*/bobby", ((PathReference) p1.rvalue).name);
-        assertEquals("dc:foo/bar[5]/gee", ((PathReference) p2.lvalue).name);
-        assertEquals("dc:foo/*6/hop", ((PathReference) p2.rvalue).name);
+        assertEquals("dc:foo/3/ho", ((Reference) p1.lvalue).name);
+        assertEquals("dc:bar/*/bobby", ((Reference) p1.rvalue).name);
+        assertEquals("dc:foo/bar[5]/gee", ((Reference) p2.lvalue).name);
+        assertEquals("dc:foo/*6/hop", ((Reference) p2.rvalue).name);
 
         // check parsing of complex properties in other contexts
         SQLQueryParser.parse("SELECT x FROM Document"
@@ -302,6 +302,14 @@ public class TestQueryParser extends TestCase {
         args.add(new Reference("title"));
         args.add(new IntegerLiteral(2));
         assertEquals(args, fn.args);
+    }
+
+    public void testDateCast() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE DATE(dc:modified) = DATE '2010-01-01'");
+
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference); // with cast
+        assertEquals(new Reference("dc:modified", "DATE"), (Reference) lvalue);
     }
 
     public void testAlias() {

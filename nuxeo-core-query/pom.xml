@@ -22,6 +22,10 @@
     </dependency>
 
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
       <groupId>cup</groupId>
       <artifactId>java-cup</artifactId>
     </dependency>

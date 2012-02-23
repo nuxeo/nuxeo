@@ -918,6 +918,17 @@ public abstract class Dialect {
     }
 
     /**
+     * Get the expression to use to cast a column to a DATE type.
+     *
+     * @return a pattern for String.format with one parameter for the column
+     *         name
+     * @since 5.6
+     */
+    public String getDateCast() {
+        return "CAST(%s AS DATE)";
+    }
+
+    /**
      * Gets the expression to use to check security.
      *
      * @param idColumnName the quoted name of the id column to use

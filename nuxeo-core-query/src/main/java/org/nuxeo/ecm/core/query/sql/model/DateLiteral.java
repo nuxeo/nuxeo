@@ -59,6 +59,10 @@ public class DateLiteral extends Literal {
         return value.toGregorianCalendar();
     }
 
+    public java.sql.Date toSqlDate() {
+        return new java.sql.Date(value.toDate().getTime());
+    }
+
     @Override
     public String toString() {
         if (onlyDate) {

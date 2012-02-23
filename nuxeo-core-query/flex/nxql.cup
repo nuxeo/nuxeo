@@ -59,6 +59,7 @@ non terminal SQLQuery      query;
 non terminal Operand       operand;
 non terminal Operand       predicate_operand;
 non terminal Literal       literal;
+non terminal Reference     simple_reference;
 non terminal Reference     reference;
 non terminal Expression    expression;
 non terminal Predicate     predicate;
@@ -295,11 +296,18 @@ expression ::= expression:l SUM operand:r
              ;
 
 
-reference ::= IDENTIFIER:v
-                {: RESULT = new Reference(v); :}
-            | PATH_IDENTIFIER:v
-                {: RESULT = new PathReference(v); :}
+reference ::= simple_reference:ref
+                {: RESULT = ref; :}
+            /* cast */
+            | DATE LPARA simple_reference:ref RPARA
+                {: RESULT = new Reference(ref, "DATE"); :}
             ;
+
+simple_reference ::= IDENTIFIER:v
+                       {: RESULT = new Reference(v); :}
+                   | PATH_IDENTIFIER:v
+                       {: RESULT = new Reference(v); :}
+                   ;
 
 operand ::= literal:v
               {: RESULT = v; :}
