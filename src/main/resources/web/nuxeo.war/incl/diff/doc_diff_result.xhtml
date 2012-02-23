@@ -75,7 +75,7 @@
     
     <c:if test="#{!empty defaultDiffDisplayBlocks}">
       
-      <c:forEach value="#{defaultDiffDisplayBlocks}" var="diffDisplayBlock">
+      <c:forEach items="#{defaultDiffDisplayBlocks}" var="diffDisplayBlock">
         <div class="foldableBox">
           <h3 class="unfolded">
             <a href="#nologo" onclick="return toggleBox(this)">
