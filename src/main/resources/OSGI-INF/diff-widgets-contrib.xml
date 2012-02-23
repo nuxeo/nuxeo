@@ -11,12 +11,18 @@
       </categories>
     </widget>
 
+    <widget name="date" type="datetime">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
     <widget name="scalarList" type="list">
       <categories>
         <category>diff</category>
       </categories>
     </widget>
-    
+
     <widget name="complexList" type="list">
       <categories>
         <category>diff</category>
