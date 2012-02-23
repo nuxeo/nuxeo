@@ -53,6 +53,7 @@ import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrack
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
+import org.apache.xbean.naming.reference.SimpleReference;
 import org.nuxeo.runtime.api.InitialContextAccessor;
 
 /**
@@ -320,8 +321,12 @@ public class NuxeoContainer {
     }
 
     protected static Reference getTransactionManagerReference() {
-        return new Reference(TransactionManager.class.getName(),
-                NuxeoTransactionManagerFactory.class.getName(), null);
+        return new SimpleReference() {
+            private static final long serialVersionUID = 1L;
+            public Object getContent() throws NamingException {
+                return NuxeoContainer.getTransactionManager();
+            }
+        };
     }
 
     /**
@@ -334,8 +339,12 @@ public class NuxeoContainer {
     }
 
     protected static Reference getUserTransactionReference() {
-        return new Reference(UserTransaction.class.getName(),
-                NuxeoUserTransactionFactory.class.getName(), null);
+        return new SimpleReference() {
+            private static final long serialVersionUID = 1L;
+            public Object getContent() throws NamingException {
+                return NuxeoContainer.getUserTransaction();
+            }
+        };
     }
 
     /**
@@ -348,8 +357,12 @@ public class NuxeoContainer {
     }
 
     protected static Reference getConnectionManagerReference() {
-        return new Reference(ConnectionManager.class.getName(),
-                NuxeoConnectionManagerFactory.class.getName(), null);
+        return new SimpleReference() {
+            private static final long serialVersionUID = 1L;
+            public Object getContent() throws NamingException {
+                return NuxeoContainer.getConnectionManager();
+            }
+        };
     }
 
     public static synchronized void initTransactionManager(
