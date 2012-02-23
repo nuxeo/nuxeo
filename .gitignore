@@ -5,7 +5,7 @@
 bin
 build.properties
 target
-*~
 *.orig
-log.txt*
+*.log
 *.jar
+*~
