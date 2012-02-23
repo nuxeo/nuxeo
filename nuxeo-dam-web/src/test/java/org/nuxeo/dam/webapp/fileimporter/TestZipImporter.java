@@ -103,8 +103,8 @@ public class TestZipImporter {
         boolean stillRunning = false;
         for (ThreadInfo info:threadMgmt.dumpAllThreads(false, false)) {
             String threadName = info.getThreadName();
-            if (threadName.contains("Nuxeo Async Events")) {
-                Throwable context = new Throwable();
+            if (isRunningAsyncThread(info)) {
+                Throwable context = new Throwable("Thread stack trace");
                 context.setStackTrace(info.getStackTrace());
                 log.warn(threadName + " is still running", context);
                 stillRunning = true;
@@ -115,6 +115,17 @@ public class TestZipImporter {
         }
     }
 
+    protected boolean isRunningAsyncThread(ThreadInfo info) {
+        if (!info.getThreadName().startsWith("Nuxeo Async")) {
+            return false;
+        }
+        for (StackTraceElement element:info.getStackTrace()) {
+            if (element.getClass().getCanonicalName().startsWith("org.nuxeo")) {
+                return true;
+            }
+        }
+        return false;
+    }
     protected File getTestFile(String relativePath) {
         return new File(FileUtils.getResourcePathFromContext(relativePath));
     }
