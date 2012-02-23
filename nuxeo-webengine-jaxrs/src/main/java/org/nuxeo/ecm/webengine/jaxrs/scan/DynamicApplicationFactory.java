@@ -29,6 +29,9 @@ public class DynamicApplicationFactory implements ApplicationFactory {
     public Application getApplication(Bundle bundle, Map<String, String> args)
     throws Exception {
         String pkg = args.get("package");
+        if (pkg == null) {
+            pkg = "/";
+        }
         Scanner scanner = new Scanner(bundle, pkg);
         scanner.scan();
         final Set<Class<?>> classes = scanner.getClasses();

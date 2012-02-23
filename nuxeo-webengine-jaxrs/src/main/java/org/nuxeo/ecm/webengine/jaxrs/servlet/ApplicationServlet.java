@@ -39,12 +39,14 @@ import com.sun.jersey.api.core.ApplicationAdapter;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
-
 /**
- * JAX-RS servlet based on jersey servlet to provide hot reloading.
+ * A hot re-loadable JAX-RS servlet.
+ * 
+ * This servlet is building a Jersey JAX-RS Application. If you need to support 
+ * other JAX-RS containers than Jersey you need to write your own servlet. 
  * <p>
  * Use it as the webengine servlet in web.xml if you want hot reload, otherwise
- * use {@link ServletContainer}.
+ * directly use the Jersey servlet: {@link ServletContainer}.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

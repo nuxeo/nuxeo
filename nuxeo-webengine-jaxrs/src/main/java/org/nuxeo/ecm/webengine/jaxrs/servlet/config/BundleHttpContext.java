@@ -40,7 +40,11 @@ public class BundleHttpContext implements HttpContext {
     public BundleHttpContext(Bundle bundle, String resourcesPath) {
         this.bundle = bundle;
         if (resourcesPath != null) {
-            resolver = new BundleResourceResolver(bundle, resourcesPath);
+            if (resourcesPath.startsWith("file:")) {
+                resolver = new FileResourceResolver(resourcesPath.substring("file:".length()));
+            } else {
+                resolver = new BundleResourceResolver(bundle, resourcesPath);
+            }
         }
     }
 

@@ -26,12 +26,12 @@ public class BundleResourceResolver implements ResourceResolver {
 
     public BundleResourceResolver(Bundle bundle, String prefix) {
         this.bundle = bundle;
-        this.prefix = prefix.endsWith("/") ? prefix : prefix+"/";
+        this.prefix = prefix.endsWith("/") ? prefix.substring(0, prefix.length()-1) : prefix;
     }
 
     @Override
     public URL getResource(String name) {
-        return bundle.getEntry(prefix+name);
+        return bundle.getEntry(name.startsWith("/") ? prefix+name : prefix+'/'+name);
     }
 
 }

@@ -12,8 +12,6 @@
 package org.nuxeo.ecm.webengine.jaxrs;
 
 
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistry;
@@ -25,8 +23,6 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-
-import com.sun.jersey.server.impl.provider.RuntimeDelegateImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,7 +49,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer {
         instance = this;
         this.context = context;
         pkgAdm = context.getServiceReference(PackageAdmin.class.getName());
-        //TODO hack to disable service tracker on regular Nuxeo distribs until finding a better solution
+        //TODO workaround to disable service tracker on regular Nuxeo distribs until finding a better solution
         if (!"Nuxeo".equals(context.getProperty(Constants.FRAMEWORK_VENDOR))) {
             httpServiceTracker = new ServiceTracker(context, HttpService.class.getName(), this);
             httpServiceTracker.open();
