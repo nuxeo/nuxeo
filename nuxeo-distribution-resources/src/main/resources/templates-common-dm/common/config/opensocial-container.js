@@ -64,7 +64,7 @@
 // iframeBaseUri will automatically have the host inserted
 // if locked domain is enabled and the implementation supports it.
 // query parameters will be added.
-"gadgets.iframeBaseUri" :  "/${org.nuxeo.ecm.contextPath}/opensocial/gadgets/ifr",
+"gadgets.iframeBaseUri" :  "${org.nuxeo.ecm.contextPath}/opensocial/gadgets/ifr",
 
 // jsUriTemplate will have %host% and %js% substituted.
 // No locked domain special cases, but jsUriTemplate must
@@ -121,7 +121,7 @@
     /// parameter if it passes input validation and is not null.
     // This should never be on the same host in a production environment!
     // Only use this for TESTING!
-    "parentRelayUrl" : "/${org.nuxeo.ecm.contextPath}/opensocial/gadgets/files/container/rpc_relay.html",
+    "parentRelayUrl" : "${org.nuxeo.ecm.contextPath}/opensocial/gadgets/files/container/rpc_relay.html",
 
     // If true, this will use the legacy ifpc wire format when making rpc
     // requests.
