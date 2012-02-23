@@ -145,9 +145,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
             }
         }
         if (!notCompleted.isEmpty()) {
-            throw new Error("Asynch tasks are still running : " + notCompleted);
+            throw new Error("Async tasks are still running : " + notCompleted);
         }
-        asyncExec.shutdown(timeout);
+        if (!asyncExec.shutdown(timeout)) {
+            throw new Error("Async event listeners thread pool is not terminated");
+        }
         asyncExec = AsyncEventExecutor.create();
      }
 
