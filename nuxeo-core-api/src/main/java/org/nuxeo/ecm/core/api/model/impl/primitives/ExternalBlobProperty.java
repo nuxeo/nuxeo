@@ -73,7 +73,7 @@ public class ExternalBlobProperty extends MapProperty {
         if (value instanceof Map) {
             map = (Map<String, Serializable>) value;
         } else if (value instanceof Blob) {
-            // XXX: hack: get the uri from the local prop because it's not on
+            // XXX: workaround: get the uri from the local prop because it's not on
             // the Blob
             map = getMapFromBlobWithUri((Blob) value);
         } else {

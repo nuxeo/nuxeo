@@ -45,7 +45,7 @@ public class DateLiteral extends Literal {
         if (onlyDate) {
             this.value = dateParser.parseDateTime(value);
         } else {
-            // hack to allow space instead of T after the date part
+            // workaround to allow space instead of T after the date part
             if (value.charAt(10) == ' ') {
                 char[] s = value.toCharArray();
                 s[10] = 'T';

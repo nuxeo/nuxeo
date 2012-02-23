@@ -1486,7 +1486,7 @@ public class Model {
                     }
                     if (fragmentName.equals(UID_SCHEMA_NAME)
                             && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
-                        // HACK special-case the "uid" schema, put major/minor
+                        // workaround: special-case the "uid" schema, put major/minor
                         // in the hierarchy table
                         fragmentKey = fragmentKey.equals(UID_MAJOR_VERSION_KEY) ? MAIN_MAJOR_VERSION_KEY
                                 : MAIN_MINOR_VERSION_KEY;

@@ -168,7 +168,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
             try {
                 setPropertyValue(name, value);
             } catch (VersionNotModifiableException e) {
-                // hack, only dublincore is allowed to change and
+                // workaround: only dublincore is allowed to change and
                 // it contains only scalars and arrays
                 // cf also SQLSimpleProperty.VERSION_WRITABLE_PROPS
                 if (!name.startsWith("dc:")) {
