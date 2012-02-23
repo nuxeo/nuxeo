@@ -39,7 +39,7 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
     public OSGiRuntimeContext(RuntimeService runtime, Bundle bundle) {
         super(runtime);
         this.bundle = bundle;
-        // hack to correctly handle fragment class loaders
+        // workaround to correctly handle fragment class loaders
         hostBundleId = (String)bundle.getHeaders().get(Constants.FRAGMENT_HOST);
         if (hostBundleId != null) {
             int p = hostBundleId.indexOf(';');
@@ -85,7 +85,7 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         try {
-            if (hostBundleId != null) { // hack to handle fragment bundles that doesn't have class loaders
+            if (hostBundleId != null) { // workaround to handle fragment bundles that doesn't have class loaders
                 return getHostBundle().loadClass(className);
             }
             return bundle.loadClass(className);

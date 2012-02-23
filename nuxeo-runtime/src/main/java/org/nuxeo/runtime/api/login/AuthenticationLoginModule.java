@@ -111,6 +111,9 @@ public class AuthenticationLoginModule implements LoginModule {
 
     @Override
     public boolean logout() throws LoginException {
+        if (principal != null) {
+            subject.getPrincipals().remove(principal);
+        }
         return true;
     }
 
