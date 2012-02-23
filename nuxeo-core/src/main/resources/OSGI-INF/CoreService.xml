@@ -8,7 +8,7 @@
  
   For now there are 2 type of sessions:
   - local sessions
-  - remote sessions (based on EJB remote interfaces)
+  - remote sessions (i.e. EJB remote interfaces)
 
   @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>

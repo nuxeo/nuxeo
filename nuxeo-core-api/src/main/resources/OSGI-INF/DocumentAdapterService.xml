@@ -19,8 +19,8 @@
       Extension Point for registering new document adapters
       XML extensions may contain any number of 'adapter' elements of the form:
       <adapter facet="Versionable"
-        class="org.nuxeo.ecm.adapter.Versionable"
-        factory="org.nuxeo.ecm.adapter.VersionableFactory"/>
+        class="org.nuxeo.ecm.sample.adapter.Versionable"
+        factory="org.nuxeo.ecm.sample.adapter.VersionableFactory"/>
       This means any document having the facet 'facet' can be adapted to a 'class' object using the factory 'factory'
       <p/>
       The facet attribute is optional and serve to restrict the aplicability of the adapter.

@@ -4,8 +4,8 @@ NXCore Security Model
 This is the low-level security model, which will be encapsulated into
 more user-friendly concepts by the UI.
 
-The security model is based on ideas found in JSR-283 and many other
-products.
+The security model is compatible with JAAS and use patterns that are
+common in Java enterprise applications.
 
 Authentication
 --------------

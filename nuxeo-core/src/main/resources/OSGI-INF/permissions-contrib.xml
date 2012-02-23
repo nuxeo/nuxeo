@@ -3,7 +3,7 @@
   <documentation>
     Default permissions (atomic and compound) used by the core. If you
     edit this file, please update the specification file:
-    org.nuxeo.ecm.core/nuxeo-core/doc/NXCore-Security.txt
+    doc/NXCore-Security.txt in core module
 
     @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
   </documentation>

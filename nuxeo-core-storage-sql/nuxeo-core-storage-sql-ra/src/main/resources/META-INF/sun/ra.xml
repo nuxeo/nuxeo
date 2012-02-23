@@ -10,7 +10,7 @@
   <eis-type>Nuxeo SQL</eis-type>
   <resourceadapter-version>1.0.0</resourceadapter-version>
   <license>
-    <description>LGPL</description>
+    <description>EPL</description>
     <license-required>false</license-required>
   </license>
 
@@ -19,7 +19,7 @@
     <config-property>
       <config-property-name>Name</config-property-name>
       <config-property-type>java.lang.String</config-property-type>
-      <config-property-value>Nuxeo Core SQL Storage</config-property-value> 
+      <config-property-value>Nuxeo Core SQL Storage</config-property-value>
     </config-property>
     <outbound-resourceadapter>
       <connection-definition>

@@ -10,7 +10,7 @@
   <eis-type>Nuxeo SQL</eis-type>
   <resourceadapter-version>1.0.0</resourceadapter-version>
   <license>
-    <description>LGPL</description>
+    <description>EPL</description>
     <license-required>false</license-required>
   </license>
 
