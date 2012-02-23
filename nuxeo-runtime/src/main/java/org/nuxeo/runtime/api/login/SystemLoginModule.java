@@ -59,13 +59,13 @@ public class SystemLoginModule implements LoginModule {
         if (loginService == null) {
             throw new LoginException("Nuxeo Login Service is not running - cannot do system login");
         }
-        DefaultCallback cb = new DefaultCallback();
+        CredentialsCallback cb = new CredentialsCallback();
         try {
             callbackHandler.handle(new Callback[] {cb});
         } catch (Exception e) {
             throw new LoginException("System login failed - callback failed");
         }
-        Object credential = cb.getCredential();
+        Object credential = cb.getCredentials();
         if (LoginComponent.isSystemLogin(credential)) {
             Principal principal = (Principal) credential;
             sharedState.put("javax.security.auth.login.name", principal);

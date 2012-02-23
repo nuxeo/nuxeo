@@ -115,7 +115,7 @@ public class SecurityDomain implements Serializable {
 
     public LoginContext login(String username, Object credentials)
             throws LoginException {
-        DefaultCallbackHandler handler = new DefaultCallbackHandler(username,
+        CredentialsCallbackHandler handler = new CredentialsCallbackHandler(username,
                 credentials);
         LoginContext ctx = new LoginContext(name, handler);
         ctx.login();
