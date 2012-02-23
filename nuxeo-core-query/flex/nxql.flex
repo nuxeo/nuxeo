@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -62,7 +63,9 @@ variables, fields, tables, functions
 /*IdentifierLetter = [:jletterdigit:] | \.*/
 Identifier = [:jletter:] [a-zA-Z0-9_:.-]*
 FromIdentifier = {Identifier} (\. {Identifier})*
-PathIdentifier = {Identifier} (\/ {Identifier})+
+PathIdentifier = {Identifier} (\/ {IdentifierOrIndex})+
+IdentifierOrIndex = {Identifier} | {Index} | {Identifier} \[ {Index} \]
+Index = {DecIntegerLiteral} | \* | \* {DecIntegerLiteral}
 
 
 /* integer literal */

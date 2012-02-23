@@ -60,6 +60,7 @@ public class TestQueryParser2 extends TestCase {
             "SELECT p FROM t WHERE title = '%test'",
             "SELECT p FROM t WHERE title IS NULL",
             "SELECT p FROM t WHERE title IS NOT NULL",
+            "SELECT p FROM t WHERE DATE(title) = DATE '2007-01-30'",
     };
 
     static final String[] GOOD_QUERIES = {
@@ -97,6 +98,11 @@ public class TestQueryParser2 extends TestCase {
         "SELECT p FROM t WHERE p=2 OR s=3 AND NOT q=4",
         "SELECT p FROM t WHERE title = DATE '2007-01-30'",
         "SELECT p FROM t WHERE title = TIMESTAMP '2007-01-30 01:02:03+04:00'",
+        "SELECT p FROM t WHERE DATE(title) = DATE '2007-01-30'",
+        "SELECT p FROM t WHERE DATE(title) < DATE '2007-01-30'",
+        "SELECT p FROM t WHERE DATE(title) >= DATE '2007-01-30'",
+        "SELECT p FROM t WHERE DATE(title) BETWEEN DATE '2007-01-30' AND DATE '2007-01-30'",
+        "SELECT p FROM t WHERE DATE(title) NOT BETWEEN DATE '2007-01-30' AND DATE '2007-01-30'",
         "SELECT p FROM t WHERE title = '%te\\'s\"t'",
         "SELECT p FROM t WHERE title0 = 'te\\st'",
         "SELECT p FROM t WHERE title = .2",
@@ -137,6 +143,7 @@ public class TestQueryParser2 extends TestCase {
         "SELECT * FROM Document WHERE dc:created < DATE '2006-12-15'",
         "SELECT * FROM Document WHERE dc:created > DATE '2006-10-12'",
         "SELECT * FROM Document WHERE dc:created BETWEEN DATE '2006-10-12' AND DATE '2006-12-15'",
+        "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2006-10-12' AND DATE '2006-12-15'",
         "SELECT * FROM Document WHERE dc:creator = 'Pedro'",
         "SELECT * FROM Document WHERE intparameter < '3'",
         "SELECT * FROM Document WHERE textparameter = 'some text' AND intparameter < '3'",

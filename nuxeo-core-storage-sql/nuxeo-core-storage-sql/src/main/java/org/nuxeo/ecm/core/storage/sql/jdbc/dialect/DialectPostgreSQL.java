@@ -772,4 +772,10 @@ public class DialectPostgreSQL extends Dialect {
         return "";
     }
 
+  @Override
+    public String getDateCast() {
+        // this is more amenable to being indexed than a CAST
+        return "DATE(%s)";
+    }
+
 }

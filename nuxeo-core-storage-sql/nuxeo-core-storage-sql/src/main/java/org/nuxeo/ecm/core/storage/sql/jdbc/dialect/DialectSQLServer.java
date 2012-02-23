@@ -61,10 +61,18 @@ public class DialectSQLServer extends Dialect {
 
     protected boolean pathOptimizationsEnabled;
 
+    /** 9 = SQL Server 2005, 10 = SQL Server 2008 */
+    protected int majorVersion;
+
     public DialectSQLServer(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
+        try {
+            majorVersion = metadata.getDatabaseMajorVersion();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
         fulltextAnalyzer = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                         : repositoryDescriptor.fulltextAnalyzer;
@@ -481,5 +489,18 @@ public class DialectSQLServer extends Dialect {
         }
         return usersSeparator;
     }
+
+
+    @Override
+    public String getDateCast() {
+        if (majorVersion <= 9) {
+            // SQL Server 2005 doesn't have a DATE type. At all. Sigh.
+            // Style 112 is YYYYMMDD
+            return "CONVERT(DATETIME, CONVERT(VARCHAR, %s, 112), 112)";
+        }
+        return super.getDateCast();
+    }
+
+
 
 }

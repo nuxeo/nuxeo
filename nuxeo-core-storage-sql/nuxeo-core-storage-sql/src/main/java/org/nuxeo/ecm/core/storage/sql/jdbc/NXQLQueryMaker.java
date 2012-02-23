@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
@@ -77,7 +78,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
  * database.
  * <p>
  * The examples below are based on the NXQL statement:
- *
+ * 
  * <pre>
  * SELECT * FROM File
  * WHERE
@@ -85,9 +86,9 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
  *   AND uid:uid = '123'
  *   AND dc:contributors = 'bob'    -- multi-valued
  * </pre>
- *
+ * 
  * If there are no proxies (ecm:isProxy = 0) we get:
- *
+ * 
  * <pre>
  * SELECT hierarchy.id
  *   FROM hierarchy
@@ -101,17 +102,17 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
  *               AND dc_contributors.item = 'bob')
  *   AND NX_ACCESS_ALLOWED(hierarchy.id, 'user1|user2', 'perm1|perm2')
  * </pre>
- *
+ * 
  * The data tables (dublincore, uid) are joined using a LEFT JOIN, as the schema
  * may not be present on all documents but this shouldn't prevent the WHERE
  * clause from being evaluated.
- *
+ * 
  * Complex properties are matched using an EXISTS and a subselect.
- *
+ * 
  * When proxies are matched (ecm:isProxy = 1) there are two additional FULL
  * JOINs. Security checks, id, name, parents and path use the base hierarchy
  * (_H), but all other data use the joined hierarchy.
- *
+ * 
  * <pre>
  * SELECT _H.id
  *   FROM hierarchy _H
@@ -127,11 +128,11 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
  *               AND dc_contributors.item = 'bob')
  *   AND NX_ACCESS_ALLOWED(_H.id, 'user1|user2', 'perm1|perm2') -- uses _H
  * </pre>
- *
+ * 
  * When both normal documents and proxies are matched, we UNION ALL the two
  * queries. If an ORDER BY is requested, then columns from the inner SELECTs
  * have to be aliased so that an outer ORDER BY can user their names.
- *
+ * 
  * @author Florent Guillaume
  */
 public class NXQLQueryMaker implements QueryMaker {
@@ -149,6 +150,8 @@ public class NXQLQueryMaker implements QueryMaker {
     protected static final String UNION_ALIAS = "_T";
 
     protected static final String WITH_ALIAS_PREFIX = "_W";
+
+    protected static final String DATE_CAST = "DATE";
 
     /**
      * These mixins never match an instance mixin when used in a clause
@@ -845,6 +848,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
+            if (node.cast != null) {
+                if (!DATE_CAST.equals(node.cast)) {
+                    throw new QueryMakerException("Invalid cast: " + node);
+                }
+            }
             String name = node.name;
             if (NXQL.ECM_PATH.equals(name) || //
                     NXQL.ECM_ISPROXY.equals(name) || //
@@ -1193,8 +1201,14 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitExpression(Expression node) {
             buf.append('(');
-            String name = node.lvalue instanceof Reference ? ((Reference) node.lvalue).name
+            Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue
                     : null;
+            String name = ref != null ? ref.name : null;
+            String cast = ref != null ? ref.cast : null;
+            Operand rvalue = node.rvalue;
+            if (DATE_CAST.equals(cast)) {
+                checkDateLiteralForCast(rvalue, node);
+            }
             Operator op = node.operator;
             if (op == Operator.STARTSWITH) {
                 visitExpressionStartsWith(node, name);
@@ -1233,28 +1247,31 @@ public class NXQLQueryMaker implements QueryMaker {
                     }
                     buf.append(String.format(
                             "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND (",
-                            table.getQuotedName(), dataHierId,
-                            table.getColumn(model.MAIN_KEY).getFullQuotedName()));
+                            table.getQuotedName(), dataHierId, table.getColumn(
+                                    model.MAIN_KEY).getFullQuotedName()));
 
                     allowArray = true;
                     if (directOp == Operator.ILIKE) {
+
                         visitExpressionIlike(node, directOp);
                     } else {
                         node.lvalue.accept(this);
                         directOp.accept(this);
-                        node.rvalue.accept(this);
+                        rvalue.accept(this);
                     }
                     allowArray = false;
                     buf.append("))");
                 } else {
                     // boolean literals have to be translated according the
                     // database dialect
+
                     if (propertyInfo.propertyType == PropertyType.BOOLEAN) {
-                        if (!(node.rvalue instanceof IntegerLiteral)) {
+                        if (!(rvalue instanceof IntegerLiteral)) {
+
                             throw new QueryMakerException(
                                     "Boolean expressions require literal 0 or 1 as right argument");
                         }
-                        long v = ((IntegerLiteral) node.rvalue).value;
+                        long v = ((IntegerLiteral) rvalue).value;
                         if (v != 0 && v != 1) {
                             throw new QueryMakerException(
                                     "Boolean expressions require literal 0 or 1 as right argument");
@@ -1266,12 +1283,19 @@ public class NXQLQueryMaker implements QueryMaker {
                     if (op == Operator.ILIKE || op == Operator.NOTILIKE) {
                         visitExpressionIlike(node, node.operator);
                     } else {
-                        super.visitExpression(node);
+                        node.lvalue.accept(this);
+                        op.accept(this);
+                        rvalue.accept(this);
+
                     }
                 }
             } else if (node.operator == Operator.BETWEEN
                     || node.operator == Operator.NOTBETWEEN) {
-                LiteralList l = (LiteralList) node.rvalue;
+                LiteralList l = (LiteralList) rvalue;
+                if (DATE_CAST.equals(cast)) {
+                    checkDateLiteralForCast(l.get(0), node);
+                    checkDateLiteralForCast(l.get(1), node);
+                }
                 node.lvalue.accept(this);
                 buf.append(' ');
                 node.operator.accept(this);
@@ -1283,6 +1307,18 @@ public class NXQLQueryMaker implements QueryMaker {
                 super.visitExpression(node);
             }
             buf.append(')');
+        }
+
+        /**
+         * This operand is going to be used with a lvalue that has a DATE cast,
+         * so if it's a date literal make sure it's not a TIMESTAMP.
+         */
+        protected void checkDateLiteralForCast(Operand value, Expression node) {
+            if (value instanceof DateLiteral && !((DateLiteral) value).onlyDate) {
+                throw new QueryMakerException(
+                        "DATE() cast must be used with DATE literal, not TIMESTAMP: "
+                                + node);
+            }
         }
 
         protected void visitExpressionStartsWith(Expression node, String name) {
@@ -1337,8 +1373,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 Table table = database.getTable(propertyInfo.fragmentName);
                 buf.append(String.format(
                         "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ",
-                        table.getQuotedName(), dataHierId,
-                        table.getColumn(model.MAIN_KEY).getFullQuotedName()));
+                        table.getQuotedName(), dataHierId, table.getColumn(
+                                model.MAIN_KEY).getFullQuotedName()));
             }
             buf.append('(');
             allowArray = true;
@@ -1588,13 +1624,14 @@ public class NXQLQueryMaker implements QueryMaker {
                                     "%") + "%";
                 }
 
+                Reference ref = new Reference(name);
                 if (dialect.supportsIlike()) {
-                    visitReference(name);
+                    visitReference(ref);
                     buf.append(" ILIKE ");
                     visitStringLiteral(value);
                 } else {
                     buf.append("LOWER(");
-                    visitReference(name);
+                    visitReference(ref);
                     buf.append(") LIKE ");
                     visitStringLiteral(value);
                 }
@@ -1629,17 +1666,26 @@ public class NXQLQueryMaker implements QueryMaker {
             buf.append(' ');
         }
 
-        @Override
         public void visitReference(Reference node) {
-            visitReference(node.name);
-        }
-
-        protected void visitReference(String name) {
+            String name = node.name;
             Column column = findColumn(name, allowArray, inOrderBy);
             if (inSelect) {
                 whatColumns.add(column);
                 whatKeys.add(name);
-                return;
+            } else {
+                visitReference(column, node.cast);
+            }
+        }
+
+        protected void visitReference(Column column) {
+            visitReference(column, null);
+        }
+
+        protected void visitReference(Column column, String cast) {
+            if (DATE_CAST.equals(cast)
+                    && column.getType() != ColumnType.TIMESTAMP) {
+                throw new QueryMakerException("Cannot cast to " + cast + ": "
+                        + column);
             }
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
@@ -1649,7 +1695,13 @@ public class NXQLQueryMaker implements QueryMaker {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));
                 }
             }
-            buf.append(qname);
+            if (cast != null) {
+                // only DATE cast for now
+                String fmt = dialect.getDateCast();
+                buf.append(String.format(fmt, qname));
+            } else {
+                buf.append(qname);
+            }
         }
 
         @Override
@@ -1667,7 +1719,11 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitDateLiteral(DateLiteral node) {
             buf.append('?');
-            whereParams.add(node.toCalendar());
+            if (node.onlyDate) {
+                whereParams.add(node.toSqlDate());
+            } else {
+                whereParams.add(node.toCalendar());
+            }
         }
 
         @Override

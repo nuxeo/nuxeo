@@ -81,7 +81,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     /**
      * Creates the following structure of documents:
-     *
+     * 
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -240,37 +240,19 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:contributors = 'bob'");
         assertEquals(3, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
-        assertEquals(2, dml.size());
-
-        dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
-        assertEquals(1, dml.size());
-
         // early detection of conflicting types for VCS
         dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'foo'");
         assertEquals(0, dml.size());
     }
 
     public void testQueryBasic2() throws Exception {
-        // Documents without creation date don't match any DATE query
-        // 2 documents with creation date
         createDocs();
         DocumentModelList dml;
 
         if (database == DatabaseDerby.INSTANCE) {
-            // Derby 10.5.3.0 has bugs with LEFT JOIN and NOT BETWEEN
-            // http://issues.apache.org/jira/browse/DERBY-4388
+            // ?
             return;
         }
-
-        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
-        assertEquals(0, dml.size()); // 2 Documents match the BETWEEN query
-
-        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
-        assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
-
-        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
-        assertEquals(2, dml.size()); // 0 Document matches the BETWEEN query
 
         dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'test%'");
         assertEquals(5, dml.size());
@@ -431,14 +413,14 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' ORDER BY dc:description";
         dml = session.query(sql);
         assertEquals(4, dml.size());
-        assertEquals("testfile1_description",
-                dml.get(0).getPropertyValue("dc:description"));
+        assertEquals("testfile1_description", dml.get(0).getPropertyValue(
+                "dc:description"));
 
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' ORDER BY dc:description DESC";
         dml = session.query(sql);
         assertEquals(4, dml.size());
-        assertEquals("testfile4_DESCRIPTION4",
-                dml.get(0).getPropertyValue("dc:description"));
+        assertEquals("testfile4_DESCRIPTION4", dml.get(0).getPropertyValue(
+                "dc:description"));
     }
 
     public void testOrderBySeveralColumns() throws Exception {
@@ -782,9 +764,22 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size());
     }
 
-    // from TestSQLWithDate
+    public void testTimestamp() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
 
-    public void testDate() throws Exception {
+        sql = "SELECT * FROM Document WHERE dc:created >= TIMESTAMP '2007-03-15 00:00:00'";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+
+        sql = "SELECT * FROM Document WHERE dc:created < TIMESTAMP '2037-01-01 01:02:03'";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+    }
+
+    // old-style date comparisons (actually using timestamps)
+    public void testDateOld() throws Exception {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -801,13 +796,122 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query(sql);
         assertEquals(0, dml.size());
 
-        sql = "SELECT * FROM document WHERE dc:created >= TIMESTAMP '2007-03-15 00:00:00'";
+        sql = "SELECT * FROM Document WHERE dc:created >= DATE '2007-02-15' AND dc:created <= DATE '2007-03-15'";
         dml = session.query(sql);
         assertEquals(1, dml.size());
 
-        sql = "SELECT * FROM document WHERE dc:created >= DATE '2007-02-15' AND dc:created <= DATE '2007-03-15'";
+        dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
+        assertEquals(1, dml.size());
+
+        if (!(database instanceof DatabaseDerby)) {
+            // Derby 10.5.3.0 has bugs with LEFT JOIN and NOT BETWEEN
+            // http://issues.apache.org/jira/browse/DERBY-4388
+
+            // Documents without creation date don't match any DATE query
+            // 2 documents with creation date
+
+            dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
+            assertEquals(0, dml.size()); // 2 Documents match the BETWEEN query
+
+            dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
+            assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
+
+            dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
+            assertEquals(2, dml.size()); // 0 Document matches the BETWEEN query
+        }
+    }
+
+    // new-style date comparisons (casting to native DATE type)
+    public void testDateNew() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        // create file 5 (type File2)
+        DocumentModel file5 = new DocumentModelImpl("/", "testfile5", "File2");
+        file5.setPropertyValue("dc:title", "testfile5Title");
+        Calendar cal = getCalendar(2012, 3, 1, 1, 2, 3);
+        file5.setPropertyValue("tst2:dates", new Serializable[] { cal });
+        file5 = session.createDocument(file5);
+        session.save();
+
+        // same as above but with cast
+        sql = "SELECT * FROM File WHERE DATE(dc:created) >= DATE '2007-01-01'";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+
+        sql = "SELECT * FROM File WHERE DATE(dc:created) >= DATE '2007-03-15'";
         dml = session.query(sql);
         assertEquals(1, dml.size());
+
+        sql = "SELECT * FROM File WHERE DATE(dc:created) >= DATE '2007-05-01'";
+        dml = session.query(sql);
+        assertEquals(0, dml.size());
+
+        // equality testing
+        sql = "SELECT * FROM File WHERE DATE(dc:created) = DATE '2007-03-01'";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+
+        // switched order
+        sql = "SELECT * FROM File WHERE DATE '2007-01-01' <= DATE(dc:created)";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+
+        // list with subquery
+        sql = "SELECT * FROM File WHERE DATE(tst2:dates) = DATE '2012-03-01'";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+
+        // less-than on just date, not timestamp at 00:00:00
+        sql = "SELECT * FROM File WHERE DATE(dc:created) <= DATE '2007-03-01'";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+
+        // TODO check bounds for meaningful test
+        sql = "SELECT * FROM File WHERE DATE(dc:created) NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'";
+        dml = session.query(sql);
+        assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
+    }
+
+    public void testDateBad() throws Exception {
+        String sql;
+        createDocs();
+
+        try {
+            sql = "SELECT * FROM File WHERE DATE(dc:title) = DATE '2012-01-01'";
+            session.query(sql);
+            fail("Should fail due to invalid cast");
+        } catch (ClientException e) {
+            String m = e.getMessage();
+            assertTrue(m, m.contains("Cannot cast to DATE"));
+        }
+
+        try {
+            sql = "SELECT * FROM File WHERE DATE(dc:created) = TIMESTAMP '2012-01-01 00:00:00'";
+            session.query(sql);
+            fail("Should fail due to invalid cast");
+        } catch (ClientException e) {
+            String m = e.getMessage();
+            assertTrue(
+                    m,
+                    m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
+        }
+
+        try {
+            sql = "SELECT * FROM File WHERE DATE(dc:created) BETWEEN TIMESTAMP '2012-01-01 00:00:00' AND DATE '2012-02-02'";
+            session.query(sql);
+            fail("Should fail due to invalid cast");
+        } catch (ClientException e) {
+            String m = e.getMessage();
+            assertTrue(
+                    m,
+                    m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
+        }
+
     }
 
     // other tests
@@ -1015,7 +1119,6 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // only keep versions
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isCheckedInVersion = 1");
         assertIdSet(dml, versionId);
-
 
         // "deep" isProxy
         dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
@@ -1893,15 +1996,15 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM File WHERE uid IS NULL");
         assertEquals(2, dml.size());
     }
-    
+
     public void testMultilineQuery() throws Exception {
         DocumentModelList dml;
         createDocs();
-        
+
         String query = "SELECT * \n 		FROM File \n      WHERE dc:title IS NOT NULL \n       ORDER BY ecm:path";
         dml = session.query(query);
         assertEquals(3, dml.size());
-        
+
         query = "SELECT * \r\n        FROM File \r\n      WHERE dc:title IS NULL \r\n       ORDER BY ecm:path DESC";
         dml = session.query(query);
         assertEquals(0, dml.size());

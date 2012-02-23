@@ -184,6 +184,9 @@ public class JDBCLogger {
                     cal.get(Calendar.MILLISECOND), //
                     sign, offset / 60, offset % 60);
         }
+        if (value instanceof java.sql.Date) {
+            return "DATE '" + value.toString() + "'";
+        }
         if (value instanceof Binary) {
             return "'" + ((Binary) value).getDigest() + "'";
         }

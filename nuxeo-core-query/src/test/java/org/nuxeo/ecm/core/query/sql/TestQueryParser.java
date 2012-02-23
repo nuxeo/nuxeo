@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OperandList;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -279,6 +280,14 @@ public class TestQueryParser extends TestCase {
         args.add(new Reference("title"));
         args.add(new IntegerLiteral(2));
         assertEquals(args, fn.args);
+    }
+
+    public void testDateCast() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE DATE(dc:modified) = DATE '2010-01-01'");
+
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference); // with cast
+        assertEquals(new Reference("dc:modified", "DATE"), (Reference) lvalue);
     }
 
     public void testAlias() {
