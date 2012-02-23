@@ -710,6 +710,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     Calendar cal = (Calendar) object;
                     Timestamp ts = new Timestamp(cal.getTimeInMillis());
                     ps.setTimestamp(i++, ts, cal); // cal passed for timezone
+                } else if (object instanceof java.sql.Date) {
+                    ps.setDate(i++, (java.sql.Date) object);
                 } else if (object instanceof String[]) {
                     Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
                             (Object[]) object, connection);

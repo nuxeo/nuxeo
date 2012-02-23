@@ -1032,4 +1032,10 @@ public class DialectPostgreSQL extends Dialect {
         return " DESC NULLS LAST";
     }
 
+    @Override
+    public String getDateCast() {
+        // this is more amenable to being indexed than a CAST
+        return "DATE(%s)";
+    }
+
 }

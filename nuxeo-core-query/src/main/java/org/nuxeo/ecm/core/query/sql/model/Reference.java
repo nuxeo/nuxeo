@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,19 +7,17 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.query.sql.model;
 
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A named reference to a variable (this can be a field or table).
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * <p>
+ * Can also include a cast.
  */
 public class Reference implements Operand {
 
@@ -27,8 +25,23 @@ public class Reference implements Operand {
 
     public final String name;
 
+    public final String cast;
+
     public Reference(String name) {
         this.name = name;
+        cast = null;
+    }
+
+    /** @since 5.6 */
+    public Reference(String name, String cast) {
+        this.name = name;
+        this.cast = cast;
+    }
+
+    /** @since 5.6 */
+    public Reference(Reference other, String cast) {
+        this.name = other.name;
+        this.cast = cast;
     }
 
     @Override
@@ -38,7 +51,11 @@ public class Reference implements Operand {
 
     @Override
     public String toString() {
-        return name;
+        if (cast == null) {
+            return name;
+        } else {
+            return cast + '(' + name + ')';
+        }
     }
 
     @Override
@@ -46,15 +63,20 @@ public class Reference implements Operand {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof Reference) {
-            return name.contentEquals(((Reference) obj).name);
+        if (!(obj instanceof Reference)) {
+            return false;
         }
-        return false;
+        return equals((Reference) obj);
+    }
+
+    private boolean equals(Reference other) {
+        return name.equals(other.name) && StringUtils.equals(cast, other.cast);
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        int result = 31 + (cast == null ? 0 : cast.hashCode());
+        return 31 * result + name.hashCode();
     }
 
     public boolean isPathReference() {

@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
@@ -155,6 +156,8 @@ public class NXQLQueryMaker implements QueryMaker {
     protected static final String WITH_ALIAS_PREFIX = "_W";
 
     protected static final String READ_ACL_ALIAS = "_RACL";
+
+    protected static final String DATE_CAST = "DATE";
 
     /**
      * These mixins never match an instance mixin when used in a clause
@@ -958,6 +961,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
+            if (node.cast != null) {
+                if (!DATE_CAST.equals(node.cast)) {
+                    throw new QueryMakerException("Invalid cast: " + node);
+                }
+            }
             String name = node.name;
             if (NXQL.ECM_PATH.equals(name) || //
                     NXQL.ECM_ISPROXY.equals(name) || //
@@ -1334,8 +1342,14 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitExpression(Expression node) {
             buf.append('(');
-            String name = node.lvalue instanceof Reference ? ((Reference) node.lvalue).name
+            Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue
                     : null;
+            String name = ref != null ? ref.name : null;
+            String cast = ref != null ? ref.cast : null;
+            Operand rvalue = node.rvalue;
+            if (DATE_CAST.equals(cast)) {
+                checkDateLiteralForCast(rvalue, node);
+            }
             Operator op = node.operator;
             if (op == Operator.STARTSWITH) {
                 visitExpressionStartsWith(node);
@@ -1372,24 +1386,23 @@ public class NXQLQueryMaker implements QueryMaker {
                     generateExistsStart(buf, info.column.getTable());
                     allowSubSelect = true;
                     if (directOp == Operator.ILIKE) {
-                        visitExpressionIlike(info.column, directOp, node.rvalue);
+                        visitExpressionIlike(info.column, directOp, rvalue);
                     } else {
-                        visitReference(info.column);
+                        visitReference(info.column, cast);
                         directOp.accept(this);
-                        node.rvalue.accept(this);
+                        rvalue.accept(this);
                     }
                     allowSubSelect = false;
                     generateExistsEnd(buf);
                 } else {
                     // boolean literals have to be translated according the
                     // database dialect
-                    Operand rvalue = node.rvalue;
                     if (info.isBoolean) {
-                        if (!(node.rvalue instanceof IntegerLiteral)) {
+                        if (!(rvalue instanceof IntegerLiteral)) {
                             throw new QueryMakerException(
                                     "Boolean expressions require literal 0 or 1 as right argument");
                         }
-                        long v = ((IntegerLiteral) node.rvalue).value;
+                        long v = ((IntegerLiteral) rvalue).value;
                         if (v != 0 && v != 1) {
                             throw new QueryMakerException(
                                     "Boolean expressions require literal 0 or 1 as right argument");
@@ -1400,14 +1413,18 @@ public class NXQLQueryMaker implements QueryMaker {
                     if (op == Operator.ILIKE || op == Operator.NOTILIKE) {
                         visitExpressionIlike(info.column, op, rvalue);
                     } else {
-                        visitReference(info.column);
+                        visitReference(info.column, cast);
                         op.accept(this);
                         rvalue.accept(this);
                     }
                 }
             } else if (node.operator == Operator.BETWEEN
                     || node.operator == Operator.NOTBETWEEN) {
-                LiteralList l = (LiteralList) node.rvalue;
+                LiteralList l = (LiteralList) rvalue;
+                if (DATE_CAST.equals(cast)) {
+                    checkDateLiteralForCast(l.get(0), node);
+                    checkDateLiteralForCast(l.get(1), node);
+                }
                 node.lvalue.accept(this);
                 buf.append(' ');
                 node.operator.accept(this);
@@ -1419,6 +1436,18 @@ public class NXQLQueryMaker implements QueryMaker {
                 super.visitExpression(node);
             }
             buf.append(')');
+        }
+
+        /**
+         * This operand is going to be used with a lvalue that has a DATE cast,
+         * so if it's a date literal make sure it's not a TIMESTAMP.
+         */
+        protected void checkDateLiteralForCast(Operand value, Expression node) {
+            if (value instanceof DateLiteral && !((DateLiteral) value).onlyDate) {
+                throw new QueryMakerException(
+                        "DATE() cast must be used with DATE literal, not TIMESTAMP: "
+                                + node);
+            }
         }
 
         protected void generateExistsStart(StringBuilder buf, Table table) {
@@ -1741,13 +1770,14 @@ public class NXQLQueryMaker implements QueryMaker {
                                     "%") + "%";
                 }
 
+                Reference ref = new Reference(name);
                 if (dialect.supportsIlike()) {
-                    visitReference(name);
+                    visitReference(ref);
                     buf.append(" ILIKE ");
                     visitStringLiteral(value);
                 } else {
                     buf.append("LOWER(");
-                    visitReference(name);
+                    visitReference(ref);
                     buf.append(") LIKE ");
                     visitStringLiteral(value);
                 }
@@ -1785,20 +1815,26 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
-            visitReference(node.name);
-        }
-
-        protected void visitReference(String name) {
+            String name = node.name;
             Column column = findColumn(name, allowSubSelect, inOrderBy);
             if (inSelect) {
                 whatColumns.add(column);
                 whatKeys.add(name);
             } else {
-                visitReference(column);
+                visitReference(column, node.cast);
             }
         }
 
         protected void visitReference(Column column) {
+            visitReference(column, null);
+        }
+
+        protected void visitReference(Column column, String cast) {
+            if (DATE_CAST.equals(cast)
+                    && column.getType() != ColumnType.TIMESTAMP) {
+                throw new QueryMakerException("Cannot cast to " + cast + ": "
+                        + column);
+            }
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getJdbcType() == Types.CLOB) {
@@ -1807,7 +1843,13 @@ public class NXQLQueryMaker implements QueryMaker {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));
                 }
             }
-            buf.append(qname);
+            if (cast != null) {
+                // only DATE cast for now
+                String fmt = dialect.getDateCast();
+                buf.append(String.format(fmt, qname));
+            } else {
+                buf.append(qname);
+            }
         }
 
         @Override
@@ -1825,7 +1867,11 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitDateLiteral(DateLiteral node) {
             buf.append('?');
-            whereParams.add(node.toCalendar());
+            if (node.onlyDate) {
+                whereParams.add(node.toSqlDate());
+            } else {
+                whereParams.add(node.toCalendar());
+            }
         }
 
         @Override

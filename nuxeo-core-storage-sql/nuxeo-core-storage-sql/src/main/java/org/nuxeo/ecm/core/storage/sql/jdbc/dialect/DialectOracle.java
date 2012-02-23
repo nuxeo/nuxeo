@@ -633,4 +633,12 @@ public class DialectOracle extends Dialect {
         return " DESC NULLS LAST";
     }
 
+    @Override
+    public String getDateCast() {
+        // CAST(%s AS DATE) doesn't work, it doesn't compare exactly to DATE
+        // literals because the internal representation seems to be a float and
+        // CAST AS DATE does not truncate it
+        return "TRUNC(%s)";
+    }
+
 }
