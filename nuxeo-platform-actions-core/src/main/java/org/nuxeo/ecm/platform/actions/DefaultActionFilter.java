@@ -222,9 +222,8 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         if (principal == null) {
             return false;
         }
-        List<String> principalGroups = principal.getGroups();
         for (String group : groups) {
-            if (principalGroups.contains(group)) {
+            if (principal.isMemberOf(group)) {
                 return true;
             }
         }
