@@ -51,7 +51,15 @@ empty:
           value="#{messages['label.contentview.filter.filterAction']}"
           id="submitFilter"
           styleClass="button"
-          action="#{contentView.resetPageProvider()}" />
+          action="#{contentView.resetPageProvider()}">
+          <f:setPropertyActionListener value="false"
+            target="#{selectionActions.selectedValue}" />
+          <f:setPropertyActionListener
+            value="#{cvid}_showFilterFormBox"
+            target="#{selectionActions.selectedValueHolder}" />
+          <nxu:actionListenerMethod
+            value="#{selectionActions.onClick}" />
+        </h:commandButton>
       </a4j:form>
   
       <a4j:form id="#{quickFilterFormId}_more" ajaxSubmit="true"
@@ -66,8 +74,9 @@ empty:
           styleClass="button">
           <f:setPropertyActionListener value="true"
             target="#{selectionActions.selectedValue}" />
-          <f:param name="valueHolderId"
-            value="#{cvid}_showFilterFormBox" />
+          <f:setPropertyActionListener
+            value="#{cvid}_showFilterFormBox"
+            target="#{selectionActions.selectedValueHolder}" />
           <nxu:actionListenerMethod
             value="#{selectionActions.onClick}" />
         </a4j:commandLink>
@@ -87,6 +96,13 @@ empty:
           styleClass="button">
           <nxu:actionListenerMethod
             value="#{contentView.resetSearchDocumentModel()}" />
+          <f:setPropertyActionListener value="false"
+            target="#{selectionActions.selectedValue}" />
+          <f:setPropertyActionListener
+            value="#{cvid}_showFilterFormBox"
+            target="#{selectionActions.selectedValueHolder}" />
+          <nxu:actionListenerMethod
+            value="#{selectionActions.onClick}" />
         </a4j:commandLink>
       </a4j:form>
 
@@ -132,7 +148,15 @@ empty:
                 value="#{messages['label.contentview.filter.filterAction']}"
                 id="submitFilter"
                 action="#{contentView.resetPageProvider()}"
-                styleClass="button" />
+                styleClass="button">
+                <f:setPropertyActionListener value="false"
+                  target="#{selectionActions.selectedValue}" />
+                <f:setPropertyActionListener
+                  value="#{cvid}_showFilterFormBox"
+                  target="#{selectionActions.selectedValueHolder}" />
+                <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
+              </h:commandButton>
               <a4j:commandButton
                 value="#{messages['label.contentview.filter.clearFilterButton']}"
                 id="resetFilter"

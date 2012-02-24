@@ -99,6 +99,26 @@ public class SelectionActionsBean implements Serializable {
         this.selectedValue = selectedValue;
     }
 
+    /**
+     * Value component id held temporarily by this bean to be retrieved from
+     * the JSF component tree.
+     * <p>
+     * this is an alternative to {@link #valueHolderId} request parameter
+     * usage, to make it possible to set this value easily from command buttons
+     * (as only command links do take request parameters into account).
+     *
+     * @since 5.6
+     */
+    protected String selectedValueHolder;
+
+    public String getSelectedValueHolder() {
+        return selectedValueHolder;
+    }
+
+    public void setSelectedValueHolder(String selectedValueHolder) {
+        this.selectedValueHolder = selectedValueHolder;
+    }
+
     public SelectItem[] getEmptySelection() {
         return new SelectItem[0];
     }
@@ -338,6 +358,12 @@ public class SelectionActionsBean implements Serializable {
      * Must pass request parameters "valueHolderId" holding the id of the bound
      * component, and call {@link #setSelectedValue(String)} prior to this
      * call.
+     * <p>
+     * As an alternative, must call {@link #setSelectedValueHolder(String)}
+     * with the id of the bound component, and call
+     * {@link #setSelectedValue(String)} prior to this call (this makes it
+     * possible to use the same logic in command buttons that do not make it
+     * possible to pass request parameters).
      *
      * @since 5.5
      * @param event
@@ -348,10 +374,21 @@ public class SelectionActionsBean implements Serializable {
             return;
         }
         EditableValueHolder hiddenSelector = null;
+        UIComponent base = null;
         if (valueHolderId != null) {
-            UIComponent base = ComponentUtils.getBase(component);
+            base = ComponentUtils.getBase(component);
             hiddenSelector = ComponentUtils.getComponent(base, valueHolderId,
                     EditableValueHolder.class);
+        }
+        if (hiddenSelector == null) {
+            String selectedValueHolder = getSelectedValueHolder();
+            if (selectedValueHolder != null) {
+                if (base == null) {
+                    base = ComponentUtils.getBase(component);
+                }
+                hiddenSelector = ComponentUtils.getComponent(base,
+                        selectedValueHolder, EditableValueHolder.class);
+            }
         }
         if (hiddenSelector != null) {
             String selectedValue = getSelectedValue();
