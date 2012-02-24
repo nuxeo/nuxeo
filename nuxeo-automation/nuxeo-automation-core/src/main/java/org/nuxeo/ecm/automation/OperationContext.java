@@ -54,8 +54,6 @@ public class OperationContext implements Map<String, Object> {
 
     private static final Log log = LogFactory.getLog(OperationContext.class);
 
-    private static final long serialVersionUID = 2944230823597903715L;
-
     /**
      * The context variables map
      */
