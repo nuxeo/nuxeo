@@ -390,6 +390,37 @@
       </fields>
     </widget>
 
+    <widget name="actionsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to 'buttons', actions will be displayed as
+          command
+          buttons. If set to 'links', actions will be displayed as
+          command links. If set to 'icons', actions will be displayed
+          as icons.
+          Else (default behaviour), actions will be
+          displayed as command links
+          and display their icons when
+          defined.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>display</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Icons and links" itemValue="" />
+        <option itemLabel="Icons" itemValue="icons" />
+        <option itemLabel="Buttons" itemValue="buttons" />
+        <option itemLabel="Links" itemValue="links" />
+      </selectOptions>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -1353,6 +1384,238 @@
       </handler-class>
       <property name="template">
         /widgets/content_view_with_forms_widget.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="toggableLayoutWithForms">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Toggable layout</title>
+        <description>
+          This widget displays a layout which mode can be toggled,
+          with forms inside it.
+
+          Note that usually layouts do not contain any
+          forms, but are surrounded by one, and nesting forms breaks the
+          available actions. So you should make sure there is no enclosing form
+          around the layout, or around this widget, when using it.
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="toggableLayoutViewWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>initialLayoutName</widget>
+                </row>
+                <row>
+                  <widget>toggledLayoutName</widget>
+                </row>
+                <row>
+                  <widget>template</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>canToggleMode</widget>
+                </row>
+                <row>
+                  <widget>hideDefaultActions</widget>
+                </row>
+                <row>
+                  <widget>additionalActionsCategory</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget>useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget>initialActionLabel</widget>
+                </row>
+                <row>
+                  <widget>cancelActionLabel</widget>
+                </row>
+              </rows>
+              <widget name="initialLayoutName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Initial layout name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout to display before toggling the
+                    mode.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>initialLayoutName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layouts</property>
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="toggledLayoutName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Toggled layout name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout to display after toggling the
+                    mode.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>toggledLayoutName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layouts</property>
+                </properties>
+              </widget>
+              <widget name="template" type="selectOneResource">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout template to use instead of the
+                    one already set
+                    on the layout(s) definition(s).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">xhtml_templates</property>
+                </properties>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be put in a "div"
+                    element around the layout.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="canToggleMode" type="checkbox">
+                <labels>
+                  <label mode="any">Can toggle mode?</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean property to resolve when
+                    deciding whether the toggle button should be displayed or
+                    not. Defaults to an EL expression checking permission
+                    'Write' on the document. Examples: false,
+                    #{nxd:hasPermission(value,
+                    'Write') and
+                    currentUser.isMemberOf('togglers_groups'))}
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>canToggleMode</field>
+                </fields>
+              </widget>
+              <widget name="hideDefaultActions" type="checkbox">
+                <labels>
+                  <label mode="any">Hide default actions?</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions from the default
+                    category 'EDIT_DOCUMENT_FORM' will not be displayed on the
+                    layout in toggled mode. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideDefaultActions</field>
+                </fields>
+              </widget>
+              <widget name="additionalActionsCategory" type="text">
+                <labels>
+                  <label mode="any">Hide default actions?</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The additional actions category to use when
+                    displaying the layout in toggled mode.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>additionalActionsCategory</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxForm" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions will be performed
+                    using ajax. Note that sometimes, actions will require you to
+                    reload the whole page for other elements than the current
+                    zone to be re-rendered, so using ajax will not be user
+                    friendly in these cases. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxForm</field>
+                </fields>
+              </widget>
+              <widget name="initialActionLabel" type="text">
+                <labels>
+                  <label mode="any">Initial action label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The initial action label to display.
+                    Defaults to 'action.view.modification' (Edit), is always
+                    translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>initialActionLabel</field>
+                </fields>
+              </widget>
+              <widget name="cancelActionLabel" type="text">
+                <labels>
+                  <label mode="any">Cancel action label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The toggled action label to display.
+                    Defaults to 'command.cancel' (Cancel), is always
+                    translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cancelActionLabel</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/toggable_layout_with_forms_widget.xhtml
       </property>
     </widgetType>
 
