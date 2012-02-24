@@ -101,6 +101,7 @@
     <module>nuxeo-quota</module>
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-exalead-connector</module>
+    <module>nuxeo-platform-signature</module>
   </modules>
 
   <dependencyManagement>
@@ -805,6 +806,23 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-exalead-connector</artifactId>
         <version>${nuxeo.exalead.connector.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Platform Signature -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
       </dependency>
 
     </dependencies>
