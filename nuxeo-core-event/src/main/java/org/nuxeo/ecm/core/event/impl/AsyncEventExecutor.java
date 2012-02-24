@@ -137,7 +137,8 @@ public class AsyncEventExecutor {
             if (bundle instanceof ReconnectedEventBundle) {
                 this.bundle = (ReconnectedEventBundle) bundle;
             } else {
-                this.bundle = new ReconnectedEventBundleImpl(bundle);
+                this.bundle = new ReconnectedEventBundleImpl(bundle,
+                        listener.getName());
             }
         }
 

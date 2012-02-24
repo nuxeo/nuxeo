@@ -54,6 +54,9 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected EventBundle sourceEventBundle;
 
+    /** Lister name or names. */
+    protected String listenerName;
+
     protected List<Event> reconnectedEvents;
 
     protected LoginContext loginCtx;
@@ -67,6 +70,12 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     public ReconnectedEventBundleImpl(EventBundle sourceEventBundle) {
         this.sourceEventBundle = sourceEventBundle;
+    }
+
+    /** @since 5.6 */
+    public ReconnectedEventBundleImpl(EventBundle sourceEventBundle, String listenerName) {
+        this.sourceEventBundle = sourceEventBundle;
+        this.listenerName = listenerName;
     }
 
     protected CoreSession getReconnectedCoreSession(String repoName) {
@@ -154,11 +163,21 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     Serializable propValue = prop.getValue();
                     if (refetchDocumentModel(session, propValue)) {
                         DocumentModel oldDoc = (DocumentModel) propValue;
+                        DocumentRef oldRef = oldDoc.getRef();
                         try {
-                            propValue = session.getDocument(oldDoc.getRef());
+                            if (session.exists(oldRef)) {
+                                propValue = session.getDocument(oldRef);
+                            } else {
+                                log.warn("Listener "
+                                        + (listenerName == null ? "" : "'"
+                                                + listenerName + "' ")
+                                        + "cannot refetch missing document: "
+                                        + oldRef + " ("
+                                        + oldDoc.getPathAsString() + ")");
+                            }
                         } catch (ClientException e) {
-                            log.error("Can not refetch Doc with ref "
-                                    + oldDoc.getRef().toString(), e);
+                            log.error("Can not refetch Doc with ref " + oldRef,
+                                    e);
                         }
                     }
                     // XXX treat here other cases !!!!

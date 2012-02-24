@@ -49,7 +49,8 @@ public class PostCommitSynchronousRunner {
         if (event instanceof ReconnectedEventBundle) {
             this.event = (ReconnectedEventBundle) event;
         } else {
-            this.event = new ReconnectedEventBundleImpl(event);
+            this.event = new ReconnectedEventBundleImpl(event,
+                    listeners.toString());
         }
         this.timeout = timeout;
     }
