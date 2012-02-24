@@ -39,11 +39,11 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -138,12 +138,11 @@ public class BatchResource {
             }
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
-            Throwable unwraped = ExceptionHelper.unwrapException(e);
-            if (ExceptionHelper.isSecurityError(unwraped)) {
-                return Response.status(Status.FORBIDDEN).entity("{\"error\" : \"" + unwraped.getMessage() + "\"}").build();
+            if (ExceptionHandler.isSecurityError(e)) {
+                return Response.status(Status.FORBIDDEN).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
             }
             else {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + unwraped.getMessage() + "\"}").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
             }
         }
     }

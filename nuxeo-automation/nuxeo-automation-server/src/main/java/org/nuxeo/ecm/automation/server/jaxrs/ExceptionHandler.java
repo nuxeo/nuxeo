@@ -68,11 +68,16 @@ public class ExceptionHandler {
         return getStatus(cause, 8);
     }
 
+    public static boolean isSecurityError(Throwable t) {
+        return getStatus(t) == 401;
+    }
+
     public static int getStatus(Throwable cause, int depth) {
         if (depth == 0) {
             return 500;
         }
-        if (cause instanceof DocumentSecurityException
+        if ((cause instanceof DocumentSecurityException)
+                || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
             return 401;
         } else if (cause instanceof ClientException) {
