@@ -101,7 +101,7 @@
     <module>nuxeo-quota</module>
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-exalead-connector</module>
-    <module>nuxeo-platform-signature</module>
+    <module>nuxeo-signature</module>
   </modules>
 
   <dependencyManagement>
