@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,9 +34,11 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -77,6 +80,8 @@ public class IterableOperationsTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+
+        Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
     protected DocumentModel createFolder(String name, String title)
@@ -232,7 +237,7 @@ public class IterableOperationsTest {
         assertEquals(2, out.size());
         // both blobs are set in files:files
         Object o  = f.getPropertyValue("files:files/file[0]/file");
-        System.out.println(o);
+        assertNotNull(o);
         Blob r1 = (Blob)f.getPropertyValue("files:files/file[0]/file");
         Blob r2 = (Blob)f.getPropertyValue("files:files/file[1]/file");
         assertEquals("the content 1", r1.getString());
