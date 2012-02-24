@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,261 +7,254 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
+ *     Nuxeo - initial API and implementation
  */
 package org.nuxeo.ecm.core.schema.utils;
 
-import java.text.DateFormat;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
- * A helper class that parses Dates out of Strings with date time in RFC822 and W3CDateTime
- * formats plus the variants Atom (0.3) and RSS (0.9, 0.91, 0.92, 0.93, 0.94, 1.0 and 2.0)
- * specificators added to those formats.
- * <p>
- * It uses the JDK java.text.SimpleDateFormat class attemtping the parse using a mask for
- * each one of the possible formats.
- * <p>
+ * Parse / format ISO 8601 dates.
+ * 
+ * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  *
- * @author Alejandro Abdelnur
  */
 public class DateParser {
 
-
-    // order is like this because the SimpleDateFormat.parse does not fail with exception
-    // if it can parse a valid date out of a substring of the full string given the mask
-    // so we have to check the most complete format first, then it fails with exception
-    private static final String[] RFC822_MASKS = {
-            "EEE, dd MMM yy HH:mm:ss z",
-            "EEE, dd MMM yy HH:mm z",
-            "dd MMM yy HH:mm:ss z",
-            "dd MMM yy HH:mm z"
-        };
-
-
-
-    // order is like this because the SimpleDateFormat.parse does not fail with exception
-    // if it can parse a valid date out of a substring of the full string given the mask
-    // so we have to check the most complete format first, then it fails with exception
-    private static final String[] W3CDATETIME_MASKS = {
-        "yyyy-MM-dd'T'HH:mm:ss.SSSz",
-        "yyyy-MM-dd't'HH:mm:ss.SSSz",
-        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-        "yyyy-MM-dd't'HH:mm:ss.SSS'z'",
-        "yyyy-MM-dd'T'HH:mm:ssz",
-        "yyyy-MM-dd't'HH:mm:ssz",
-        "yyyy-MM-dd'T'HH:mm:ss'Z'",
-        "yyyy-MM-dd't'HH:mm:ss'z'",
-        "yyyy-MM-dd'T'HH:mmz",   // together with logic in the parseW3CDateTime they
-        "yyyy-MM'T'HH:mmz",      // handle W3C dates without time forcing them to be GMT
-        "yyyy'T'HH:mmz",
-        "yyyy-MM-dd't'HH:mmz",
-        "yyyy-MM-dd'T'HH:mm'Z'",
-        "yyyy-MM-dd't'HH:mm'z'",
-        "yyyy-MM-dd",
-        "yyyy-MM",
-        "yyyy"
-    };
-
-
-
-      /**
-   * The masks used to validate and parse the input to this Atom date.
-   * These are a lot more forgiving than what the Atom spec allows.
-   * The forms that are invalid according to the spec are indicated.
-   */
-  private static final String[] masks = {
-    "yyyy-MM-dd'T'HH:mm:ss.SSSz",
-    "yyyy-MM-dd't'HH:mm:ss.SSSz",                         // invalid
-    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-    "yyyy-MM-dd't'HH:mm:ss.SSS'z'",                       // invalid
-    "yyyy-MM-dd'T'HH:mm:ssz",
-    "yyyy-MM-dd't'HH:mm:ssz",                             // invalid
-    "yyyy-MM-dd'T'HH:mm:ss'Z'",
-    "yyyy-MM-dd't'HH:mm:ss'z'",                           // invalid
-    "yyyy-MM-dd'T'HH:mmz",                                // invalid
-    "yyyy-MM-dd't'HH:mmz",                                // invalid
-    "yyyy-MM-dd'T'HH:mm'Z'",                              // invalid
-    "yyyy-MM-dd't'HH:mm'z'",                              // invalid
-    "yyyy-MM-dd",
-    "yyyy-MM",
-    "yyyy"
-  };
-
-
-
-
-    /**
-     * Private constructor to avoid DateParser instances creation.
-     */
-    private DateParser() {
+    public static Calendar parse(String str) throws ParseException {
+    	if (str == null) {
+    		return null;
+    	}
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        cal.clear();
+        int len = str.length();
+        if (len == 0) { // empty string
+            //TODO throw error?
+            return cal; 
+        }        
+        int i = 0;
+        i = readYear(cal, str, i);
+        i = readCharOpt('-', cal, str, i);
+        if (i == -1) {
+            return cal;
+        }
+        i = readMonth(cal, str, i);
+        i = readCharOpt('-', cal, str, i);
+        if (i == -1) {
+            return cal;
+        }        
+        i = readDay(cal, str, i);
+        i = readCharOpt('T', cal, str, i);
+        if (i == -1) {
+            return cal;
+        }        
+        i = readHours(cal, str, i);
+        i = readCharOpt(':', cal, str, i);
+        if (i == -1) {
+            return cal;
+        }        
+        i = readMinutes(cal, str, i);
+        if (isChar(':', str, i)) {
+            i = readSeconds(cal, str, i+1);
+            if (isChar('.', str, i)) {
+                i = readMilliseconds(cal, str, i+1);
+            }            
+        }
+        if (i > -1) {
+            readTimeZone(cal, str, i);
+        }
+        return cal;
     }
-
-    /**
-     * Parses a Date out of a string using an array of masks.
-     * <p>
-     * It uses the masks in order until one of them succedes or all fail.
-     * <p>
-     *
-     * @param masks array of masks to use for parsing the string
-     * @param sDate string to parse for a date.
-     * @return the Date represented by the given string using one of the given masks.
-     * It returns <b>null</b> if it was not possible to parse the the string with any of the masks.
-     *
-     */
-    private static Date parseUsingMask(String[] masks, String sDate) {
-        sDate = (sDate != null) ? sDate.trim() : null;
-        Date d = null;
-        for (int i = 0; d == null && i < masks.length; i++) {
-            DateFormat df = new SimpleDateFormat(masks[i], Locale.US);
-            //df.setLenient(false);
-            df.setLenient(true);
-            try {
-                ParsePosition pp = new ParsePosition(0);
-                d = df.parse(sDate, pp);
-                if (pp.getIndex() != sDate.length()) {
-                    d = null;
-                }
-                //System.out.println("pp["+pp.getIndex()+"] s["+sDate+" m["+masks[i]+"] d["+d+"]");
-            }
-            catch (Exception ex1) {
-                //System.out.println("s: "+sDate+" m: "+masks[i]+" d: "+null);
-            }
+    
+    public static Date parseW3CDateTime(String str) {
+    	if (str == null) {
+    		return null;
+    	}
+        try {
+            return parse(str).getTime();
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Failed to parse ISO 8601 date: "+str, e);
         }
-        return d;
     }
-
+    
     /**
-     * Parses a Date out of a String with a date in RFC822 format.
-     * <p>
-     * It parsers the following formats:
-     * <ul>
-     *   <li>"EEE, dd MMM yyyy HH:mm:ss z"</li>
-     *   <li>"EEE, dd MMM yyyy HH:mm z"</li>
-     *   <li>"EEE, dd MMM yy HH:mm:ss z"</li>
-     *   <li>"EEE, dd MMM yy HH:mm z"</li>
-     *   <li>"dd MMM yyyy HH:mm:ss z"</li>
-     *   <li>"dd MMM yyyy HH:mm z"</li>
-     *   <li>"dd MMM yy HH:mm:ss z"</li>
-     *   <li>"dd MMM yy HH:mm z"</li>
-     * </ul>
-     * <p>
-     * Refer to the java.text.SimpleDateFormat javadocs for details on the format of each element.
-     * <p>
-     * @param sDate string to parse for a date.
-     * @return the Date represented by the given RFC822 string.
-     *         It returns <b>null</b> if it was not possible to parse the given string into a Date.
-     *
-     */
-    public static Date parseRFC822(String sDate) {
-        int utIndex = sDate.indexOf(" UT");
-        if (utIndex>-1) {
-            String pre = sDate.substring(0,utIndex);
-            String post = sDate.substring(utIndex+3);
-            sDate = pre + " GMT" + post;
-        }
-        return parseUsingMask(RFC822_MASKS,sDate);
-    }
-
-
-    /**
-     * Parses a Date out of a String with a date in W3C date-time format.
-     * <p>
-     * It parsers the following formats:
-     * <ul>
-     *   <li>"yyyy-MM-dd'T'HH:mm:ssz"</li>
-     *   <li>"yyyy-MM-dd'T'HH:mmz"</li>
-     *   <li>"yyyy-MM-dd"</li>
-     *   <li>"yyyy-MM"</li>
-     *   <li>"yyyy"</li>
-     * </ul>
-     * <p>
-     * Refer to the java.text.SimpleDateFormat javadocs for details on the format of each element.
-     * <p>
-     * @param sDate string to parse for a date.
-     * @return the Date represented by the given W3C date-time string.
-     *         It returns null if it was not possible to parse the given string into a Date.
-     *
-     */
-    public static Date parseW3CDateTime(String sDate) {
-        if (sDate == null) {
-            return null;
-        }
-        // if sDate has time on it, it injects 'GTM' before de TZ displacement to
-        // allow the SimpleDateFormat parser to parse it properly
-        int tIndex = sDate.indexOf("T");
-        if (tIndex>-1) {
-            if (sDate.endsWith("Z")) {
-                sDate = sDate.substring(0,sDate.length()-1)+"+00:00";
-            }
-            int tzdIndex = sDate.indexOf("+",tIndex);
-            if (tzdIndex==-1) {
-                tzdIndex = sDate.indexOf("-",tIndex);
-            }
-            if (tzdIndex>-1) {
-                String pre = sDate.substring(0,tzdIndex);
-                int secFraction = pre.indexOf(",");
-                if (secFraction>-1) {
-                    pre = pre.substring(0,secFraction);
-                }
-                String post = sDate.substring(tzdIndex);
-                sDate = pre + "GMT" + post;
-            }
-        }
-        else {
-            sDate += "T00:00GMT";
-        }
-        return parseUsingMask(W3CDATETIME_MASKS,sDate);
-    }
-
-    /**
-     * Parses a Date out of a String with a date in W3C date-time format or
-     * in a RFC822 format.
-     *
-     * @param sDate string to parse for a date.
-     * @return the Date represented by the given W3C date-time string,
-     *         or null if it was not possible to parse the given string into a Date.
-     */
-    public static Date parseDate(String sDate) {
-        if (sDate == null) {
-            return null;
-        }
-        Date d = parseW3CDateTime(sDate);
-        if (d == null) {
-            d = parseRFC822(sDate);
-        }
-        return d;
-    }
-
-    /**
-     * Creates a RFC822 representation of a date.
-     * <p>
-     * Refer to the java.text.SimpleDateFormat javadocs for details on the format of each element.
-     *
-     * @param date Date to format
-     * @return the RFC822 representation of the given Date,
-     */
-    public static String formatRFC822(Date date) {
-        SimpleDateFormat dateFormater = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'",Locale.US);
-        dateFormater.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return dateFormater.format(date);
-    }
-
-    /**
-     * Creates a W3C Date Time representation of a date.
-     * <p>
-     * Refer to the java.text.SimpleDateFormat javadocs for details on the format of each element.
-     *
-     * @param date Date to format
-     * @return the W3C Date Time representation of the given Date
+     * 2011-10-23T12:00:00.00Z
+     * @param date
+     * @return
      */
     public static String formatW3CDateTime(Date date) {
-        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",Locale.US);
-        dateFormater.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return dateFormater.format(date);
+    	if (date == null) {
+    		return null;
+    	}
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        cal.setTime(date);
+        StringBuilder buf = new StringBuilder(32);
+        return buf.append(cal.get(Calendar.YEAR))
+            .append('-')
+            .append(pad(cal.get(Calendar.MONTH) + 1))
+            .append('-')
+            .append(pad(cal.get(Calendar.DATE)))
+            .append('T')
+            .append(pad(cal.get(Calendar.HOUR_OF_DAY)))
+            .append(':')
+            .append(pad(cal.get(Calendar.MINUTE)))
+            .append(':')
+            .append(pad(cal.get(Calendar.SECOND)))
+            .append('.')
+            .append(pad(cal.get(Calendar.MILLISECOND) / 10))
+            .append('Z').toString();
+    }
+    
+    private final static String pad(int i) {
+        return i < 10 ? "0".concat(String.valueOf(i)) : String.valueOf(i);    
     }
 
+    
+    private final static int readYear(Calendar cal, String str, int off) throws ParseException {
+        if (str.length() >= off + 4) {
+            cal.set(Calendar.YEAR, Integer.parseInt(str.substring(off, off+4)));
+            return off + 4;
+        }
+        throw new ParseException("Invalid year in date '"+str+"'", off);
+    }
+    
+    private final static int readMonth(Calendar cal, String str, int off) throws ParseException {
+        if (str.length() >= off + 2) {
+            cal.set(Calendar.MONTH, Integer.parseInt(str.substring(off, off+2))-1);
+            return off + 2;
+        }
+        throw new ParseException("Invalid month in date '"+str+"'", off);
+    }
+
+    private final static int readDay(Calendar cal, String str, int off) throws ParseException {
+        if (str.length() >= off + 2) {
+            cal.set(Calendar.DATE, Integer.parseInt(str.substring(off, off+2)));
+            return off + 2;
+        }
+        throw new ParseException("Invalid day in date '"+str+"'", off);
+    }
+
+    private final static int readHours(Calendar cal, String str, int off) throws ParseException {
+        if (str.length() >= off + 2) {
+            cal.set(Calendar.HOUR, Integer.parseInt(str.substring(off, off+2)));
+            return off + 2;
+        }
+        throw new ParseException("Invalid hours in date '"+str+"'", off);
+    }
+
+    private final static int readMinutes(Calendar cal, String str, int off) throws ParseException {
+        if (str.length() >= off + 2) {
+            cal.set(Calendar.MINUTE, Integer.parseInt(str.substring(off, off+2)));
+            return off + 2;
+        }
+        throw new ParseException("Invalid minutes in date '"+str+"'", off);
+    }
+    
+    private final static int readSeconds(Calendar cal, String str, int off) throws ParseException {
+        if (str.length() >= off + 2) {
+            cal.set(Calendar.SECOND, Integer.parseInt(str.substring(off, off+2)));
+            return off + 2;
+        }
+        throw new ParseException("Invalid seconds in date '"+str+"'", off);
+    }
+    
+    /**
+     * Return -1 if no more content to read or the offset of the expected TZ
+     * @param cal
+     * @param str
+     * @param off
+     * @return
+     * @throws ParseException
+     */
+    private final static int readMilliseconds(Calendar cal, String str, int off) throws ParseException {
+        int e = str.indexOf('Z', off);
+        if (e == -1) {
+            e = str.indexOf('+', off);
+            if (e == -1) {
+                e = str.indexOf('-', off);
+            }
+        }
+        String ms = e == -1 ? str.substring(off) : str.substring(off, e);
+        // need to normalize the ms fraction to 3 digits. 
+        // If less than 3 digits right pad with 0
+        // If more than 3 digits truncate to 3 digits.
+        int mslen = ms.length();
+        if (mslen > 0) {
+            int f = 0;
+            switch (mslen) {
+            case 1:
+                f = Integer.parseInt(ms)*100;
+                break;
+            case 2:
+                f = Integer.parseInt(ms)*10;
+                break;
+            case 3:
+                f = Integer.parseInt(ms);
+                break;
+            default: // truncate
+                f = Integer.parseInt(ms.substring(0, 3));
+                break;
+            }
+            cal.set(Calendar.MILLISECOND, f);
+        }
+        return e;
+    }
+    
+    private static final boolean isChar(char c, String str, int off) {
+        return str.length() > off && str.charAt(off) == c;
+    }
+    
+    private static final int readCharOpt(char c, Calendar cal, String str, int off) {
+        if (str.length() > off) {
+            if (str.charAt(off) == c) {
+                return off+1;
+            }
+        }
+        return -1;
+    }
+
+    private final static boolean readTimeZone(Calendar cal, String str, int off) throws ParseException {
+        int len = str.length();
+        if (len == off) {
+            return false;
+        }
+        char c = str.charAt(off); 
+        if (c == 'Z') {            
+            return true;
+        }
+        off++;        
+        boolean plus = false;
+        if (c == '+') {
+            plus = true;
+        } else if (c != '-') {
+            throw new ParseException("Only Z, +, - prefixes are allowed in TZ", off);
+        }
+        int h = 0;
+        int m = 0;
+        int d = len - off;
+        if (d == 2) {
+            h = Integer.parseInt(str.substring(off, off + 2));
+        } else if (d == 5) {
+            h = Integer.parseInt(str.substring(off, off + 2));
+            m = Integer.parseInt(str.substring(off + 3, off + 5));
+            // we do not check for ':'. we assume it is in the correct format
+        } else {
+            throw new ParseException("Invalid TZ in \""+str+"\"", off);
+        }
+        
+        if (plus) {
+            cal.add(Calendar.HOUR, -h);
+            cal.add(Calendar.MINUTE, -m);
+        } else {
+            cal.add(Calendar.HOUR, h);
+            cal.add(Calendar.MINUTE, m);
+        }
+
+        return true;
+    }
+    
 }
