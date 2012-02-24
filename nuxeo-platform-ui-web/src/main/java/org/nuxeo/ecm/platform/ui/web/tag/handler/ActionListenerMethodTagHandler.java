@@ -29,6 +29,8 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 import javax.faces.event.MethodExpressionActionListener;
 
+import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
+
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.tag.TagAttribute;
@@ -66,7 +68,8 @@ public class ActionListenerMethodTagHandler extends TagHandler {
             if (parent.getParent() == null) {
                 ActionSource src = (ActionSource) parent;
                 ActionListener listener = new MethodExpressionActionListener(
-                        value.getMethodExpression(ctx, null, ACTION_LISTENER_SIG));
+                        new MetaMethodExpression(value.getMethodExpression(ctx,
+                                null, ACTION_LISTENER_SIG)));
                 src.addActionListener(listener);
             }
         } else {

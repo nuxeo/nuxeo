@@ -355,6 +355,12 @@
       method makes it possible to add other action listeners before it, without
       having to declare a class (when using the f:actionListener tag).
       </p>
+      <p>
+      Since 5.6, this tag can resolve expressions twice, making it possible to
+      use it with Nuxeo actions configured to reference an EL expression in
+      their definition: first to call action#getLink and then to call the
+      actual action defined by another EL expression.
+      </p>
       ]]>
     </description>
     <attribute>
