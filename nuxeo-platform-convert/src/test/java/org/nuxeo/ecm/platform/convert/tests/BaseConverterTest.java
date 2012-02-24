@@ -24,6 +24,9 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jempbox.xmp.XMPMetadata;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,8 +38,8 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public abstract class BaseConverterTest extends Assert {
 
@@ -95,6 +98,19 @@ public abstract class BaseConverterTest extends Assert {
         String text = textStripper.getText(document);
         document.close();
         return text.trim();
+    }
+
+    public static boolean isPDFA(File pdfFile) throws Exception {
+        PDDocument pddoc = PDDocument.load(pdfFile);
+        XMPMetadata xmp = pddoc.getDocumentCatalog().getMetadata().exportXMPMetadata();
+        Document doc = xmp.getXMPDocument();
+        // <rdf:Description xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"
+        // rdf:about="">
+        // <pdfaid:part>1</pdfaid:part>
+        // <pdfaid:conformance>A</pdfaid:conformance>
+        // </rdf:Description>
+        NodeList list = doc.getElementsByTagName("pdfaid:conformance");
+        return list != null && "A".equals(list.item(0).getTextContent());
     }
 
 }

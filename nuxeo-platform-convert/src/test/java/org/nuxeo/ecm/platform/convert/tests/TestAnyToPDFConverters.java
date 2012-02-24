@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Nuxeo
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.convert.tests;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,8 +28,8 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
+import org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter;
 import org.nuxeo.runtime.api.Framework;
-
 
 public class TestAnyToPDFConverters extends BaseConverterTest {
 
@@ -36,6 +37,12 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
     protected void doTestPDFConverter(String srcMT, String fileName)
             throws Exception {
+        doTestPDFConverter(srcMT, fileName, false); // normal PDF
+        doTestPDFConverter(srcMT, fileName, true); // PDF/A-1
+    }
+
+    protected void doTestPDFConverter(String srcMT, String fileName,
+            boolean pdfa) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -53,14 +60,24 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
-        BlobHolder result = cs.convert(converterName, hg, null);
+        Map<String,Serializable> parameters = new HashMap<String, Serializable>();
+        if (pdfa) {
+            parameters.put(JODBasedConverter.PDFA1_PARAM, Boolean.TRUE);
+        }
+        BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
         File pdfFile = File.createTempFile("testingPDFConverter", ".pdf");
-        result.getBlob().transferTo(pdfFile);
-        String text = readPdfText(pdfFile);
-        assertTrue(text.contains("Hello"));
-        log.info(srcMT + " to PDF conversion : OK");
+        try {
+            result.getBlob().transferTo(pdfFile);
+            String text = readPdfText(pdfFile);
+            assertTrue(text.contains("Hello"));
+            if (pdfa) {
+                assertTrue("Output is not PDF/A", isPDFA(pdfFile));
+            }
+        } finally {
+            pdfFile.delete();
+        }
     }
 
     @Test
@@ -75,7 +92,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
             return;
         }
 
-        // doTestPDFConverter("text/html", "hello.html");
+        doTestPDFConverter("text/html", "hello.html");
         // doTestPDFConverter("text/xml", "hello.xml");
         doTestPDFConverter("application/vnd.ms-excel", "hello.xls");
         doTestPDFConverter("application/vnd.sun.xml.writer", "hello.sxw");

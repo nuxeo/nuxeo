@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,17 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Nuxeo
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +49,10 @@ import org.nuxeo.runtime.services.streaming.FileSource;
 
 import com.sun.star.uno.RuntimeException;
 
+/**
+ * Converter based on JOD which uses an external OpenOffice process to do actual
+ * conversions.
+ */
 public class JODBasedConverter implements ExternalConverter {
 
     protected static final String TMP_PATH_PARAMETER = "TmpDirectory";
@@ -57,6 +60,21 @@ public class JODBasedConverter implements ExternalConverter {
     private static final Log log = LogFactory.getLog(JODBasedConverter.class);
 
     private static final DocumentFormatRegistry formatRegistry = new DefaultDocumentFormatRegistry();
+
+    /**
+     * Boolean conversion parameter for PDF/A-1.
+     *
+     * @since 5.6
+     */
+    public static final String PDFA1_PARAM = "PDF/A-1";
+
+    protected static final Map<DocumentFamily, String> PDF_FILTER_NAMES = new HashMap<DocumentFamily, String>();
+    {
+        PDF_FILTER_NAMES.put(DocumentFamily.TEXT, "writer_pdf_Export");
+        PDF_FILTER_NAMES.put(DocumentFamily.SPREADSHEET, "calc_pdf_Export");
+        PDF_FILTER_NAMES.put(DocumentFamily.PRESENTATION, "impress_pdf_Export");
+        PDF_FILTER_NAMES.put(DocumentFamily.DRAWING, "draw_pdf_Export");
+    }
 
     protected ConverterDescriptor descriptor;
 
@@ -69,11 +87,42 @@ public class JODBasedConverter implements ExternalConverter {
      * <p>
      * It takes the actual destination mimetype from the plugin configuration.
      *
-     * @return the DestinationFormat for this given plugin. {@see
-     *         org.nuxeo.ecm.platform.transform.interfaces.Plugin}
+     * @param sourceFormat the source format
+     * @param pdfa1 true if PDF/A-1 is required
      */
-    private DocumentFormat getDestinationFormat() {
-        return formatRegistry.getFormatByMediaType(getDestinationMimeType());
+    protected DocumentFormat getDestinationFormat(DocumentFormat sourceFormat,
+            boolean pdfa1) {
+        String mimeType = getDestinationMimeType();
+        boolean topdf = "application/pdf".equals(mimeType);
+        boolean html2pdf = "text/html".equals(sourceFormat.getMediaType())
+                && topdf;
+        DocumentFormat destinationFormat;
+        if (topdf) {
+            destinationFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF",
+                    "pdf", "application/pdf");
+            Map<String, Object> storeProperties = new HashMap<String, Object>();
+            DocumentFamily sourceFamily = sourceFormat.getInputFamily();
+            String filterName;
+            if (html2pdf) {
+                // we have to be strict regarding output FilterName,
+                // use "writer_web_pdf_Export" instead of "writer_pdf_Export"
+                filterName = "writer_web_pdf_Export";
+            } else {
+                filterName = PDF_FILTER_NAMES.get(sourceFamily);
+            }
+            storeProperties.put("FilterName", filterName);
+            if (pdfa1) {
+                Map<String, Object> filterData = new HashMap<String, Object>();
+                filterData.put("SelectPdfVersion", Integer.valueOf(1)); // PDF/A-1
+                filterData.put("UseTaggedPDF", Boolean.TRUE); // per spec
+                storeProperties.put("FilterData", filterData);
+            }
+            destinationFormat.setStoreProperties(sourceFamily, storeProperties);
+        } else {
+            // use default JODConverter registry
+            destinationFormat = formatRegistry.getFormatByMediaType(mimeType);
+        }
+        return destinationFormat;
     }
 
     /**
@@ -104,26 +153,7 @@ public class JODBasedConverter implements ExternalConverter {
         super.finalize();
     }
 
-    private static boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,
-            DocumentFormat destinationFormat) {
-
-        // TODO: solve this
-        // due to a random bug, we have to be strict regarding otuput FilterName
-        // html file have to use "writer_web_pdf_Export" instead of JODConverter
-        // simplification "writer_pdf_Export"
-        // patch dynamically
-        if ("text/html".equals(sourceFormat.getMediaType())
-                && "application/pdf".equals(destinationFormat.getMediaType())) {
-            // change the FilterName
-            DocumentFamily family = sourceFormat.getInputFamily();
-            Map<String, String> storeProperties = new HashMap<String, String>();
-            storeProperties.put("FilterName", "writer_web_pdf_Export");
-            destinationFormat.setStoreProperties(family, storeProperties);
-            return true;
-        }
-        return false;
-    }
-
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         Blob inputBlob;
@@ -141,6 +171,9 @@ public class JODBasedConverter implements ExternalConverter {
         }
         // This plugin do deal only with one input source.
         String sourceMimetype = inputBlob.getMimeType();
+
+        boolean pdfa1 = parameters != null
+                && Boolean.TRUE.equals(parameters.get(PDFA1_PARAM));
 
         if (documentConverter != null) {
             File sourceFile = null;
@@ -164,13 +197,12 @@ public class JODBasedConverter implements ExternalConverter {
                 // stream.reset(); // works on a JCRBlobInputStream
                 // }
                 FileUtils.copyToFile(stream, sourceFile);
-                DocumentFormat sourceFormat = null;
 
+                DocumentFormat sourceFormat = null;
                 if (sourceMimetype != null) {
                     // Try to fetch it from the registry.
                     sourceFormat = getSourceFormat(sourceMimetype);
                 }
-
                 // If not found in the registry or not given as a parameter.
                 // Try to sniff ! What does that smell ? :)
                 if (sourceFormat == null) {
@@ -179,7 +211,8 @@ public class JODBasedConverter implements ExternalConverter {
 
                 // From plugin settings because we know the destination
                 // mimetype.
-                DocumentFormat destinationFormat = getDestinationFormat();
+                DocumentFormat destinationFormat = getDestinationFormat(
+                        sourceFormat, pdfa1);
 
                 // allow HTML2PDF filtering
 
@@ -225,8 +258,6 @@ public class JODBasedConverter implements ExternalConverter {
                     }
 
                 } else {
-                    adaptFilterNameForHTML2PDF(sourceFormat, destinationFormat);
-
                     outFile = File.createTempFile("NXJOOoConverterDocumentOut",
                             '.' + destinationFormat.getExtension());
 
@@ -273,10 +304,12 @@ public class JODBasedConverter implements ExternalConverter {
 
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
+    @Override
     public ConverterCheckResult isConverterAvailable() {
         ConverterCheckResult result = new ConverterCheckResult();
         try {
