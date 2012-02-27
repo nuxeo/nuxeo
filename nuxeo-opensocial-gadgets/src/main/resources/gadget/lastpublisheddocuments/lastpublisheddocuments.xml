@@ -39,7 +39,7 @@
       operationParams: {
         providerName: 'domain_published_documents',
         pageSize: 5,
-        queryParams: requestScope + '/'
+        queryParams: requestScope == '/' ? requestScope : requestScope + '/'
       },
       operationContext: {},
       operationDocumentProperties: "common,dublincore",

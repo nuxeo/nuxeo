@@ -8,5 +8,5 @@
 <#else>
 <UserPref name="nuxeoTargetRepository" datatype="hidden" default_value="${contextHelper.getDefaultRepoName()}" />
 </#if>
-<UserPref name="nuxeoTargetContextPath" datatype="hidden" default_value="/default-domain" />
+<UserPref name="nuxeoTargetContextPath" datatype="hidden" default_value="/" />
 <UserPref name="nuxeoTargetContextObject" datatype="hidden" default_value="Domain" />

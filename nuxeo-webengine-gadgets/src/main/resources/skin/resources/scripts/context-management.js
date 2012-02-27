@@ -7,7 +7,7 @@ function getTargetRepository() {
 function getTargetContextPath() {
     var targetContextPath = gadgets.util.unescapeString(prefs.getString("nuxeoTargetContextPath"));
     if (targetContextPath == null || targetContextPath == '') {
-        targetContextPath = "/default-domain"; //in Nuxeo pref should be set at creation time
+        targetContextPath = "/"; //in Nuxeo pref should be set at creation time
     }
     return targetContextPath;
 }

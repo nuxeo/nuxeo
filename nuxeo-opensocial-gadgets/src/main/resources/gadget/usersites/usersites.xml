@@ -36,7 +36,7 @@
         operationParams: {
           providerName: 'user_sites',
           pageSize: 5,
-          queryParams: requestScope + '/, ' + requestScope + '/templates/'
+          queryParams: requestScope == '/' ? requestScope : requestScope + '/'
         },
         operationContext: {},
         operationDocumentProperties: "common,dublincore",
