@@ -46,7 +46,12 @@
                 value="#{messages['command.cert.generate']}"
                 action="#{certActions.createCertificate(firstPassword,secondPassword)}"
                 styleClass="button"
-                rendered="#{certActions.canGenerateCertificate()}" /></td>
+                rendered="#{certActions.canGenerateCertificate()}" />
+              <h:messages globalOnly="true"
+               infoClass="infoFeedback"
+               warnClass="warningFeedback"
+               errorClass="errorFeedback"/>
+            </td>
           </tr>
         </tbody>
       </table>
