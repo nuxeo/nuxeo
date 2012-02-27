@@ -115,14 +115,14 @@ public class TestDocumentDiff extends DiffTestCase {
                 PropertyType.STRING, "description", null);
         // created => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                PropertyType.DATE, "2011-12-29T11:24:25Z",
-                "2011-12-30T12:05:02Z");
+                PropertyType.DATE, "2011-12-29T11:24:25.00Z",
+                "2011-12-30T12:05:02.00Z");
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                PropertyType.DATE, "2011-12-29T11:24:25Z",
-                "2011-12-30T12:05:02Z");
+                PropertyType.DATE, "2011-12-29T11:24:25.00Z",
+                "2011-12-30T12:05:02.00Z");
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
         // contributors => different (update) / same / different (add)
@@ -195,7 +195,7 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
                 PropertyType.LONG, "10", null));
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(
-                PropertyType.DATE, null, "2011-12-29T23:00:00Z"));
+                PropertyType.DATE, null, "2011-12-29T23:00:00.00Z"));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"),
                 expectedComplexFieldDiff);
 
@@ -216,7 +216,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.LONG, "12", null));
         item1ExpectedComplexFieldDiff.putDiff("dateItem",
                 new SimplePropertyDiff(PropertyType.DATE, null,
-                        "2011-12-30T23:00:00Z"));
+                        "2011-12-30T23:00:00.00Z"));
 
         ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
                 PropertyType.COMPLEX);
@@ -329,14 +329,14 @@ public class TestDocumentDiff extends DiffTestCase {
                 PropertyType.STRING, null, "description");
         // created => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                PropertyType.DATE, "2011-12-30T12:05:02Z",
-                "2011-12-29T11:24:25Z");
+                PropertyType.DATE, "2011-12-30T12:05:02.00Z",
+                "2011-12-29T11:24:25.00Z");
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                PropertyType.DATE, "2011-12-30T12:05:02Z",
-                "2011-12-29T11:24:25Z");
+                PropertyType.DATE, "2011-12-30T12:05:02.00Z",
+                "2011-12-29T11:24:25.00Z");
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
         // contributors => different (update) / same / different (remove)
@@ -409,7 +409,7 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(
                 PropertyType.LONG, null, "10"));
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(
-                PropertyType.DATE, "2011-12-29T23:00:00Z", null));
+                PropertyType.DATE, "2011-12-29T23:00:00.00Z", null));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"),
                 expectedComplexFieldDiff);
 
@@ -430,7 +430,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.LONG, null, "12"));
         item1ExpectedComplexFieldDiff.putDiff("dateItem",
                 new SimplePropertyDiff(PropertyType.DATE,
-                        "2011-12-30T23:00:00Z", null));
+                        "2011-12-30T23:00:00.00Z", null));
 
         ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
                 PropertyType.COMPLEX);
