@@ -51,6 +51,8 @@ public class TemplateInput implements Serializable {
 
     protected boolean readOnly;    
     
+    protected boolean autoLoop = false; 
+    
     public TemplateInput(String name) {
         this.name = name;
     }
@@ -78,6 +80,7 @@ public class TemplateInput implements Serializable {
         item.stringValue = stringValue;
         item.type = type;
         item.readOnly = readOnly;
+        item.autoLoop=autoLoop;
         return item;
     }
 
@@ -187,5 +190,14 @@ public class TemplateInput implements Serializable {
         return source != null || dateValue != null || booleanValue != null
                 || stringValue != null || (stringValue!=null && !stringValue.isEmpty());
     }
+
+    public boolean isAutoLoop() {
+        return autoLoop;
+    }
+
+    public void setAutoLoop(boolean autoLoop) {
+        this.autoLoop = autoLoop;
+    }
         
+    
 }

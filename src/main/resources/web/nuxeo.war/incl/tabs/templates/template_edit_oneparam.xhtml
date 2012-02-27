@@ -68,11 +68,15 @@
       <td>
         <nxl:widgetType name="text" value="#{param.source}" mode="#{widgetMode}" />
       </td>
-     </c:if>
+      <td class="labelColumn"> Automatic loop :</td>
+      <td>
+        <nxl:widgetType name="checkbox" value="#{param.autoLoop}"
+          mode="#{widgetMode}" />
+      </td>      
+     </c:if>     
   </c:if>
 </tr>
 </table>
 </h:panelGroup>
-
 
 </div>

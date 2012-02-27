@@ -4,19 +4,23 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.comment.CommentProcessorHelper;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.ecm.platform.template.ContentInputType;
@@ -29,7 +33,8 @@ public class FMContextBuilder {
 
     protected static final Log log = LogFactory.getLog(FMContextBuilder.class);
 
-    public static final String[] RESERVED_VAR_NAMES = {"doc", "document", "auditEntries", "username"};
+    public static final String[] RESERVED_VAR_NAMES = { "doc", "document",
+            "auditEntries", "username" };
 
     public static List<LogEntry> testAuditEntries;
 
@@ -38,63 +43,97 @@ public class FMContextBuilder {
         Map<String, Object> ctx = new HashMap<String, Object>();
         DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
 
+        CoreSession session = doc.getCoreSession();
+
         // doc infos
         ctx.put("doc", nuxeoWrapper.wrap(doc));
         ctx.put("document", nuxeoWrapper.wrap(doc));
 
         // user info
-        ctx.put("username", doc.getCoreSession().getPrincipal().getName());
-        ctx.put("principal", doc.getCoreSession().getPrincipal());
+        ctx.put("username", session.getPrincipal().getName());
+        ctx.put("principal", session.getPrincipal());
 
         // add audit context info
-        AuditReader auditReader = Framework.getLocalService(AuditReader.class);
+        DocumentHistoryReader historyReader = Framework.getLocalService(DocumentHistoryReader.class); 
         List<LogEntry> auditEntries = null;
-        if (auditReader!=null) {
-            auditEntries = auditReader.getLogEntriesFor(doc.getId());
+        if (historyReader != null) {            
+            auditEntries = historyReader.getDocumentHistory(doc, 0, 1000);
         } else {
-            if (Framework.isTestModeSet() && testAuditEntries!=null ) {
+            if (Framework.isTestModeSet() && testAuditEntries != null) {
                 auditEntries = testAuditEntries;
             } else {
                 log.warn("Can not add Audit info to rendering context");
             }
         }
-        if (auditEntries!=null) {
+        if (auditEntries != null) {
+            try {
+                auditEntries = preprocessAuditEntries(auditEntries, session, "en");
+            } catch (Throwable e) {
+                log.warn("Unable to preprocess Audit entries", e);
+            }
             ctx.put("auditEntries", nuxeoWrapper.wrap(auditEntries));
         }
         return ctx;
     }
 
-    public static Map<String, Object> build(TemplateBasedDocument templateBasedDocument) throws Exception {
-        
+    protected static List<LogEntry> preprocessAuditEntries(
+            List<LogEntry> auditEntries, CoreSession session, String lang) {
+        CommentProcessorHelper helper = new CommentProcessorHelper(session);
+        for (LogEntry entry : auditEntries) {
+            String comment = helper.getLogComment(entry);
+            if (comment == null) {
+                comment = "";
+            } else {
+                String i18nComment = I18NUtils.getMessageString("messages",
+                        comment, null, new Locale(lang));
+                if (i18nComment != null) {
+                    comment = i18nComment;
+                }
+            }
+            String eventId = entry.getEventId();
+            String i18nEventId = I18NUtils.getMessageString("messages",
+                    eventId, null, new Locale(lang));
+            if (i18nEventId != null) {
+                entry.setEventId(i18nEventId);
+            }
+            entry.setComment(comment);
+        }
+        return auditEntries;
+    }
+
+    public static Map<String, Object> build(
+            TemplateBasedDocument templateBasedDocument) throws Exception {
+
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
         List<TemplateInput> params = templateBasedDocument.getParams();
-        
+
         Map<String, Object> context = build(doc);
         DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
-        
-        
+
         for (TemplateInput param : params) {
             if (param.isSourceValue()) {
-                if (param.getType() == InputType.Content && ContentInputType.HtmlPreview.getValue().equals(param.getSource())) {
+                if (param.getType() == InputType.Content
+                        && ContentInputType.HtmlPreview.getValue().equals(
+                                param.getSource())) {
                     HtmlPreviewAdapter preview = doc.getAdapter(HtmlPreviewAdapter.class);
-                    String htmlValue="";
-                    if (preview!=null) {
+                    String htmlValue = "";
+                    if (preview != null) {
                         List<Blob> blobs = preview.getFilePreviewBlobs();
-                        if (blobs.size()>0) {
+                        if (blobs.size() > 0) {
                             Blob htmlBlob = preview.getFilePreviewBlobs().get(0);
-                            if (htmlBlob!=null) {
+                            if (htmlBlob != null) {
                                 htmlValue = htmlBlob.getString();
                             }
                         }
-                    }                    
-                    context.put(param.getName(),htmlValue);
-                    //metadata.addFieldAsTextStyling(param.getName(), SyntaxKind.Html);
+                    }
+                    context.put(param.getName(), htmlValue);
+                    // metadata.addFieldAsTextStyling(param.getName(),
+                    // SyntaxKind.Html);
                     continue;
                 }
                 Property property = null;
                 try {
-                    property = doc.getProperty(
-                            param.getSource());
+                    property = doc.getProperty(param.getSource());
                 } catch (Throwable e) {
                     log.warn("Unable to ready property " + param.getSource(), e);
                 }
@@ -102,7 +141,7 @@ public class FMContextBuilder {
                     Serializable value = property.getValue();
                     if (value != null) {
                         if (param.getType() == InputType.Content) {
-                            
+
                         } else {
                             if (Blob.class.isAssignableFrom(value.getClass())) {
                                 Blob blob = (Blob) value;
@@ -138,9 +177,8 @@ public class FMContextBuilder {
                 }
             }
         }
-        
+
         return context;
     }
-    
-    
+
 }

@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.sound.sampled.TargetDataLine;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -22,14 +20,12 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.platform.preview.adapter.HtmlPreviewer;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.ecm.platform.template.ContentInputType;
 import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.fm.FMContextBuilder;
 import org.nuxeo.ecm.platform.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.ecm.platform.template.processors.AbstractTemplateProcessor;
@@ -106,9 +102,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
             }            
         }
         return params;
-
     }
-
 
     @Override
     public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
@@ -179,6 +173,10 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                                     metadata.addFieldAsImage(param.getName());
                                 }
                             } else {
+                                if (param.isAutoLoop()) {
+                                    // XXX do the same on all children properties !
+                                    metadata.addFieldAsList(param.getName());                            
+                                }
                                 context.put(param.getName(),
                                         nuxeoWrapper.wrap(property));
                             }
@@ -216,6 +214,17 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         for (String key : ctx.keySet()) {
             context.put(key, ctx.get(key));
         }
+        // add automatic loop on audit entries
+        metadata.addFieldAsList("auditEntries.principalName");
+        metadata.addFieldAsList("auditEntries.eventId");
+        metadata.addFieldAsList("auditEntries.eventDate");
+        metadata.addFieldAsList("auditEntries.docUUID");
+        metadata.addFieldAsList("auditEntries.docPath");
+        metadata.addFieldAsList("auditEntries.docType");
+        metadata.addFieldAsList("auditEntries.category");
+        metadata.addFieldAsList("auditEntries.comment");
+        metadata.addFieldAsList("auditEntries.docLifeCycle");
+        metadata.addFieldAsList("auditEntries.repositoryId");        
 
         File workingDir = getWorkingDir();
         File generated = new File(workingDir, "XDOCReportresult-"

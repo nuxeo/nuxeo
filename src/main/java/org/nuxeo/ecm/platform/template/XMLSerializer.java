@@ -78,6 +78,10 @@ public class XMLSerializer {
                 field.addAttribute("readonly","true");
             }
 
+            if (input.isAutoLoop()) {
+                field.addAttribute("autoloop","true");
+            }
+
             if (InputType.StringValue.equals(type)) {
                 field.addAttribute("value", input.getStringValue());
             } else if (InputType.DateValue.equals(type)) {
@@ -130,6 +134,10 @@ public class XMLSerializer {
 
             if (elem.attribute("readonly")!=null) {
                 param.setReadOnly(Boolean.parseBoolean(elem.attributeValue("readonly")));
+            }
+
+            if (elem.attribute("autoloop")!=null) {
+                param.setAutoLoop(Boolean.parseBoolean(elem.attributeValue("autoloop")));
             }
 
             param.setDesciption(elem.getText());
