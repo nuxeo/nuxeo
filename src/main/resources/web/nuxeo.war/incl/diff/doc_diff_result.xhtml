@@ -46,7 +46,13 @@
               <span id="title_#{leftDoc.ref}" title="#{leftDoc.dc.description}">
                 <h:outputText value="#{nxd:titleOrId(leftDoc)}" />
               </span>
-            </nxd:restDocumentLink>]
+            </nxd:restDocumentLink>
+            <c:if test="#{leftDoc.version}">
+              <span class="italic">
+                (<h:outputText value="#{messages['label.version']}" />
+                <h:outputText value=" #{documentManager.getVersionLabel(leftDoc)}" />)
+              </span>
+            </c:if>]
           </h2>
         </td>
         <td class="fieldDiffColumn">
@@ -85,7 +91,7 @@
           </h3>
           <div class="boxBody">
             <nxl:layout mode="view" definition="#{diffDisplayBlock.layoutDefinition}"
-              value="#{diffDisplayBlock.value}" template="/layouts/layout_default_template.xhtml"/>
+              value="#{diffDisplayBlock}" template="/layouts/layout_diff_template.xhtml"/>
           </div>
         </div>
       </c:forEach>

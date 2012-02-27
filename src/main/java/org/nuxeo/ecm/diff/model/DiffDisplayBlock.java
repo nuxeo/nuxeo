@@ -31,7 +31,11 @@ public interface DiffDisplayBlock extends Serializable {
 
     String getLabel();
 
-    Map<String, DiffDisplayField> getValue();
+    Map<String, Map<String, Serializable>> getLeftValue();
+
+    Map<String, Map<String, Serializable>> getRightValue();
+
+    Map<String, Map<String, Serializable>> getDetailedDiffValue();
 
     LayoutDefinition getLayoutDefinition();
 
@@ -39,7 +43,12 @@ public interface DiffDisplayBlock extends Serializable {
 
     void setLabel(String label);
 
-    void setValue(Map<String, DiffDisplayField> value);
+    void setLeftValue(Map<String, Map<String, Serializable>> leftValue);
+
+    void setRightValue(Map<String, Map<String, Serializable>> rightValue);
+
+    void setDetailedDiffValue(
+            Map<String, Map<String, Serializable>> detailedDiffValue);
 
     void setLayoutDefinition(LayoutDefinition layoutDefinition);
 }

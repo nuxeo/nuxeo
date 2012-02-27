@@ -18,6 +18,7 @@ package org.nuxeo.ecm.diff.service.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
-import org.nuxeo.ecm.diff.model.DiffDisplayField;
+import org.nuxeo.ecm.diff.model.DiffDisplayListItem;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
@@ -37,8 +38,9 @@ import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.ecm.diff.model.SchemaDiff;
 import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffDisplayBlockImpl;
+import org.nuxeo.ecm.diff.model.impl.DiffDisplayListItemImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
-import org.nuxeo.ecm.diff.model.impl.SimpleDiffDisplayField;
+import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -170,7 +172,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * 
      * @param contribution the contribution
      */
-    private void registerDiffDisplay(DiffDisplayDescriptor descriptor) {
+    protected final void registerDiffDisplay(DiffDisplayDescriptor descriptor) {
 
         String type = descriptor.getType();
         if (!StringUtils.isEmpty(type)) {
@@ -193,7 +195,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         }
     }
 
-    private List<String> getDiffBlockRefs(
+    protected final List<String> getDiffBlockRefs(
             List<DiffBlockReferenceDescriptor> diffBlocks) {
 
         List<String> diffBlockRefs = new ArrayList<String>();
@@ -203,7 +205,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffBlockRefs;
     }
 
-    private void registerDiffBlock(DiffBlockDescriptor descriptor) {
+    protected final void registerDiffBlock(DiffBlockDescriptor descriptor) {
 
         String diffBlockName = descriptor.getName();
         if (!StringUtils.isEmpty(diffBlockName)) {
@@ -235,7 +237,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         }
     }
 
-    private List<DiffDisplayBlock> getDiffDisplayBlocks(
+    protected final List<DiffDisplayBlock> getDiffDisplayBlocks(
             List<String> diffBlockNames, DocumentDiff docDiff,
             DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException {
@@ -256,12 +258,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffDisplayBlocks;
     }
 
-    private DiffDisplayBlock getDiffDisplayBlock(
+    protected final DiffDisplayBlock getDiffDisplayBlock(
             DiffBlockDefinition diffBlockDefinition, DocumentDiff docDiff,
             DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException {
 
-        Map<String, DiffDisplayField> value = new HashMap<String, DiffDisplayField>();
+        Map<String, Map<String, Serializable>> leftValue = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Map<String, Serializable>> rightValue = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Map<String, Serializable>> detailedDiffValue = new HashMap<String, Map<String, Serializable>>();
+
+        // TODO: manage detailedDiff whene needed
+
         List<LayoutRowDefinition> layoutRowDefinitions = new ArrayList<LayoutRowDefinition>();
         List<WidgetDefinition> widgetDefinitions = new ArrayList<WidgetDefinition>();
 
@@ -276,22 +283,36 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 PropertyDiff fieldDiff = schemaDiff.getFieldDiff(fieldName);
                 if (fieldDiff != null) {
 
-                    String propertyName = getPropertyName(schemaName, fieldName);
-                    String propertyType = fieldDiff.getPropertyType();
-
                     // Set diff display field value
-                    DiffDisplayField diffDisplayField = getDiffDisplayField(
-                            propertyType,
-                            leftDoc.getProperty(schemaName, fieldName),
-                            rightDoc.getProperty(schemaName, fieldName));
-                    value.put(propertyName, diffDisplayField);
+                    Serializable leftFieldDiffDisplay = getFieldDiffDisplay(
+                            fieldDiff, (Serializable) leftDoc.getProperty(
+                                    schemaName, fieldName));
+                    Serializable rightFieldDiffDisplay = getFieldDiffDisplay(
+                            fieldDiff, (Serializable) rightDoc.getProperty(
+                                    schemaName, fieldName));
+                    // left
+                    Map<String, Serializable> leftSchemaMap = leftValue.get(schemaName);
+                    if (leftSchemaMap == null) {
+                        leftSchemaMap = new HashMap<String, Serializable>();
+                        leftValue.put(schemaName, leftSchemaMap);
+                    }
+                    leftSchemaMap.put(fieldName, leftFieldDiffDisplay);
+                    // right
+                    Map<String, Serializable> rightSchemaMap = rightValue.get(schemaName);
+                    if (rightSchemaMap == null) {
+                        rightSchemaMap = new HashMap<String, Serializable>();
+                        rightValue.put(schemaName, rightSchemaMap);
+                    }
+                    rightSchemaMap.put(fieldName, rightFieldDiffDisplay);
 
                     // Set layout row definition
+                    String propertyName = getPropertyName(schemaName, fieldName);
                     LayoutRowDefinition layoutRowDefinition = new LayoutRowDefinitionImpl(
                             propertyName, propertyName, DIFF_WIDGET_CATEGORY);
                     layoutRowDefinitions.add(layoutRowDefinition);
 
                     // Set widget definition
+                    String propertyType = fieldDiff.getPropertyType();
                     WidgetDefinition widgetDefinition = getWidgetDefinition(
                             schemaName, fieldName, propertyType);
                     widgetDefinitions.add(widgetDefinition);
@@ -307,24 +328,75 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
         // Build diff display block
         DiffDisplayBlock diffDisplayBlock = new DiffDisplayBlockImpl(
-                diffBlockDefinition.getLabel(), value, layoutDefinition);
+                diffBlockDefinition.getLabel(), leftValue, rightValue,
+                detailedDiffValue, layoutDefinition);
 
         return diffDisplayBlock;
     }
 
-    private DiffDisplayField getDiffDisplayField(String propertyType,
-            Object leftProperty, Object rightProperty) {
+    @SuppressWarnings("unchecked")
+    protected final Serializable getFieldDiffDisplay(PropertyDiff propertyDiff,
+            Serializable property) throws ClientException {
 
-        if (PropertyType.isSimpleType(propertyType)) {
-            return new SimpleDiffDisplayField((Serializable) leftProperty,
-                    (Serializable) rightProperty);
+        if (property == null) {
+            return "N/A";
         }
-        // TODO: list, complex, complex lists, content
 
-        return null;
+        String propertyType = propertyDiff.getPropertyType();
+        if (PropertyType.isListType(propertyType)) {
+
+            if (!(property instanceof List<?> || property instanceof Object[])) {
+                throw new ClientException(
+                        "Property is supposed to be a list but is not a List nor an Array object.");
+            }
+
+            List<DiffDisplayListItem> listFieldDiffDisplay = new ArrayList<DiffDisplayListItem>();
+            List<Integer> listPropertyDiffIndexes = ((ListPropertyDiff) propertyDiff).getDiffIndexes();
+
+            if (property instanceof List<?>) { // List
+                List<Serializable> listProperty = (List<Serializable>) property;
+                for (int index : listPropertyDiffIndexes) {
+                    Serializable listPropertyValue;
+                    if (index < listProperty.size()) {
+                        listPropertyValue = getFormattedFieldDiffDisplay(listProperty.get(index));
+                    } else {
+                        listPropertyValue = "N/A";
+                    }
+                    listFieldDiffDisplay.add(new DiffDisplayListItemImpl(index,
+                            listPropertyValue));
+                }
+            } else { // Array
+                Serializable[] arrayProperty = (Serializable[]) property;
+                for (int index : listPropertyDiffIndexes) {
+                    Serializable listPropertyValue;
+                    if (index < arrayProperty.length) {
+                        listPropertyValue = getFormattedFieldDiffDisplay(arrayProperty[index]);
+                    } else {
+                        listPropertyValue = "N/A";
+                    }
+                    listFieldDiffDisplay.add(new DiffDisplayListItemImpl(index,
+                            listPropertyValue));
+                }
+            }
+
+            return (Serializable) listFieldDiffDisplay;
+        }
+
+        // Default
+        // TODO: manage content, other types?
+        return getFormattedFieldDiffDisplay(property);
     }
 
-    private WidgetDefinition getWidgetDefinition(String schemaName,
+    protected final Serializable getFormattedFieldDiffDisplay(
+            Serializable fieldDiffDisplay) {
+
+        if (fieldDiffDisplay instanceof Calendar) {
+            return ((Calendar) fieldDiffDisplay).getTime();
+        }
+        return fieldDiffDisplay;
+    }
+
+    protected final WidgetDefinition getWidgetDefinition(String schemaName,
             String fieldName, String propertyType) throws ClientException {
 
         String propertyName = getPropertyName(schemaName, fieldName);

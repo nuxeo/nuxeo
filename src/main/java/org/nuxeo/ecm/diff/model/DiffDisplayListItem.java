@@ -14,20 +14,18 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.diff.model.impl;
+package org.nuxeo.ecm.diff.model;
 
-import java.util.ArrayList;
-
-import org.nuxeo.ecm.diff.model.DiffDisplayField;
+import java.io.Serializable;
 
 /**
- * Implementation of PropertyDiff for a complex property.
+ * Handles...
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public class ListDiffDisplayField extends ArrayList<ComplexDiffDisplayField>
-        implements DiffDisplayField {
+public interface DiffDisplayListItem extends Serializable {
 
-    private static final long serialVersionUID = 2430154781168699236L;
+    int getIndex();
 
+    Serializable getValue();
 }

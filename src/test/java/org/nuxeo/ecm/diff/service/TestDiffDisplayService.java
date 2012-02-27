@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.diff.service;
 
+import java.io.Serializable;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +39,9 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DocumentDiffRepositoryInit;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
-import org.nuxeo.ecm.diff.model.DiffDisplayField;
+import org.nuxeo.ecm.diff.model.DiffDisplayListItem;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
-import org.nuxeo.ecm.diff.model.impl.ComplexDiffDisplayField;
-import org.nuxeo.ecm.diff.model.impl.ListDiffDisplayField;
-import org.nuxeo.ecm.diff.model.impl.SimpleDiffDisplayField;
+import org.nuxeo.ecm.diff.model.impl.DiffDisplayListItemImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -112,12 +113,9 @@ public class TestDiffDisplayService extends TestCase {
 
         // Check diff display block
         DiffDisplayBlock diffDisplayBlock = diffDisplayBlocks.get(0);
-        assertEquals("label.diffBlock.header", diffDisplayBlock.getLabel());
-        Map<String, DiffDisplayField> value = diffDisplayBlock.getValue();
-        assertNotNull(value);
-        assertEquals(2, value.size());
-        assertTrue(value.containsKey("dublincore:title"));
-        assertTrue(value.containsKey("dublincore:subjects"));
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.header", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2,
+                Arrays.asList("title", "subjects"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of the same type but with no
@@ -140,12 +138,9 @@ public class TestDiffDisplayService extends TestCase {
 
         // Check diff display block
         diffDisplayBlock = diffDisplayBlocks.get(0);
-        assertEquals("label.diffBlock.header", diffDisplayBlock.getLabel());
-        value = diffDisplayBlock.getValue();
-        assertNotNull(value);
-        assertEquals(2, value.size());
-        assertTrue(value.containsKey("dublincore:title"));
-        assertTrue(value.containsKey("dublincore:subjects"));
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.header", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2,
+                Arrays.asList("title", "subjects"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of the same type with a
@@ -176,25 +171,38 @@ public class TestDiffDisplayService extends TestCase {
         // Check label
         assertEquals("label.diffBlock.header", diffDisplayBlock.getLabel());
 
-        // Check value
-        Map<String, DiffDisplayField> expectedValue = new HashMap<String, DiffDisplayField>();
-        expectedValue.put("dublincore:title", new SimpleDiffDisplayField(
-                "My first sample", "My second sample"));
-        Calendar leftCal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(
-                2011, Calendar.DECEMBER, 29, 11, 24, 25);
-        Calendar rightCal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(
-                2011, Calendar.DECEMBER, 30, 12, 05, 02);
-        expectedValue.put("dublincore:modified", new SimpleDiffDisplayField(
-                leftCal, rightCal));
-        ListDiffDisplayField listField = new ListDiffDisplayField();
-        ComplexDiffDisplayField item1 = new ComplexDiffDisplayField();
-        item1.put("index", new SimpleDiffDisplayField("1", "1"));
-        item1.put("value", new SimpleDiffDisplayField("Architecture", "N/A"));
-        listField.add(item1);
+        // Check left value
+        Map<String, Map<String, Serializable>> expectedValue = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Serializable> expectedFields = new HashMap<String, Serializable>();
+        expectedFields.put("title", "My first sample");
+        Calendar cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 25);
+        expectedFields.put("modified", cal.getTime());
+        List<Serializable> listField = new ArrayList<Serializable>();
+        DiffDisplayListItem item1 = new DiffDisplayListItemImpl(1,
+                "Architecture");
+        listField.add((Serializable) item1);
         // TODO: test list / complex field
-        // expectedValue.put("dublincore:subjects", listField);
-        expectedValue.put("dublincore:subjects", null);
-        assertEquals(expectedValue, diffDisplayBlock.getValue());
+        expectedFields.put("subjects", (Serializable) listField);
+        expectedValue.put("dublincore", expectedFields);
+        assertEquals(expectedValue, diffDisplayBlock.getLeftValue());
+
+        // Check right value
+        expectedValue = new HashMap<String, Map<String, Serializable>>();
+        expectedFields = new HashMap<String, Serializable>();
+        expectedFields.put("title", "My second sample");
+        cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+                Calendar.DECEMBER, 30, 12, 05, 02);
+        expectedFields.put("modified", cal.getTime());
+        listField = new ArrayList<Serializable>();
+        item1 = new DiffDisplayListItemImpl(1, "N/A");
+        listField.add((Serializable) item1);
+        // TODO: test list / complex field
+        expectedFields.put("subjects", (Serializable) listField);
+        expectedValue.put("dublincore", expectedFields);
+        assertEquals(expectedValue, diffDisplayBlock.getRightValue());
+
+        // TODO: check detailedDiff
 
         // Check layout definition
         LayoutDefinition layoutDef = diffDisplayBlock.getLayoutDefinition();
@@ -269,5 +277,51 @@ public class TestDiffDisplayService extends TestCase {
         assertEquals("dublincore:subjects", fieldDef.getPropertyName());
 
         // TODO: check props ?
+    }
+
+    /**
+     * @param diffDisplayBlock
+     */
+    protected final void checkDiffDisplayBlock(
+            DiffDisplayBlock diffDisplayBlock, String label, int schemaCount) {
+
+        // Check label
+        assertEquals(label, diffDisplayBlock.getLabel());
+
+        // Check schema count on left value
+        Map<String, Map<String, Serializable>> value = diffDisplayBlock.getLeftValue();
+        assertNotNull(value);
+        assertEquals(schemaCount, value.size());
+
+        // Check schema count on right value
+        value = diffDisplayBlock.getRightValue();
+        assertNotNull(value);
+        assertEquals(schemaCount, value.size());
+
+        // TODO: manage detailedDiff
+    }
+
+    protected final void checkDiffDisplayBlockSchema(
+            DiffDisplayBlock diffDisplayBlock, String schemaName,
+            int fieldCount, List<String> fieldNames) {
+
+        // Check fields on left value
+        Map<String, Serializable> fields = diffDisplayBlock.getLeftValue().get(
+                schemaName);
+        assertNotNull(fields);
+        assertEquals(fieldCount, fields.size());
+        for (String fieldName : fieldNames) {
+            assertTrue(fields.containsKey(fieldName));
+        }
+
+        // Check fields on right value
+        fields = diffDisplayBlock.getRightValue().get(schemaName);
+        assertNotNull(fields);
+        assertEquals(fieldCount, fields.size());
+        for (String fieldName : fieldNames) {
+            assertTrue(fields.containsKey(fieldName));
+        }
+
+        // TODO: manage detailedDiff
     }
 }

@@ -16,11 +16,11 @@
  */
 package org.nuxeo.ecm.diff.model.impl;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
-import org.nuxeo.ecm.diff.model.DiffDisplayField;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 
 /**
@@ -34,15 +34,23 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
 
     protected String label;
 
-    protected Map<String, DiffDisplayField> value;
+    protected Map<String, Map<String, Serializable>> leftValue;
+
+    protected Map<String, Map<String, Serializable>> rightValue;
+
+    protected Map<String, Map<String, Serializable>> detailedDiffValue;
 
     protected LayoutDefinition layoutDefinition;
 
     public DiffDisplayBlockImpl(String label,
-            Map<String, DiffDisplayField> value,
+            Map<String, Map<String, Serializable>> leftValue,
+            Map<String, Map<String, Serializable>> rightValue,
+            Map<String, Map<String, Serializable>> detailedDiffValue,
             LayoutDefinition layoutDefinition) {
         this.label = label;
-        this.value = value;
+        this.leftValue = leftValue;
+        this.rightValue = rightValue;
+        this.detailedDiffValue = detailedDiffValue;
         this.layoutDefinition = layoutDefinition;
     }
 
@@ -54,12 +62,30 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
         this.label = label;
     }
 
-    public Map<String, DiffDisplayField> getValue() {
-        return value;
+    public Map<String, Map<String, Serializable>> getLeftValue() {
+        return leftValue;
     }
 
-    public void setValue(Map<String, DiffDisplayField> value) {
-        this.value = value;
+    public void setLeftValue(
+            Map<String, Map<String, Serializable>> leftValue) {
+        this.leftValue = leftValue;
+    }
+
+    public Map<String, Map<String, Serializable>> getRightValue() {
+        return rightValue;
+    }
+
+    public void setRightValue(Map<String, Map<String, Serializable>> rightValue) {
+        this.rightValue = rightValue;
+    }
+
+    public Map<String, Map<String, Serializable>> getDetailedDiffValue() {
+        return detailedDiffValue;
+    }
+
+    public void setDetailedDiffValue(
+            Map<String, Map<String, Serializable>> detailedDiffValue) {
+        this.detailedDiffValue = detailedDiffValue;
     }
 
     public LayoutDefinition getLayoutDefinition() {
@@ -71,6 +97,7 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
     }
 
     public boolean isEmpty() {
-        return MapUtils.isEmpty(this.value);
+        return MapUtils.isEmpty(this.detailedDiffValue)
+                && (MapUtils.isEmpty(this.leftValue) || MapUtils.isEmpty(this.rightValue));
     }
 }
