@@ -16,8 +16,8 @@
 
     <coreQueryPageProvider name="domain_documents">
       <pattern>
-        SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND NOT ecm:path
-        STARTSWITH ? AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
+        SELECT * FROM Document WHERE ecm:path STARTSWITH ?
+        AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0
         AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
@@ -59,7 +59,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND
         ecm:currentLifeCycleState != 'deleted' AND webc:isWebContainer = 1 AND
-        ecm:path STARTSWITH ? AND NOT ecm:path STARTSWITH ?
+        ecm:path STARTSWITH ?
       </pattern>
       <sort column="webc:name" ascending="true" />
       <pageSize>5</pageSize>
@@ -69,7 +69,7 @@
       <pattern>
         SELECT * FROM Workspace WHERE ecm:mixinType != 'HiddenInNavigation' AND
         ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 AND ecm:path
-        STARTSWITH ? AND NOT ecm:path STARTSWITH ?
+        STARTSWITH ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>5</pageSize>
