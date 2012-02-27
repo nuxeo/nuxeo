@@ -128,15 +128,15 @@
                     <table>
                       <tbody>
                         <tr>
-                          <td class="labelColumn"><h:outputText
-                              value="#{messages['label.sign.reason']}" /></td>
+                          <td class="labelColumn"><span class="required"><h:outputText
+                              value="#{messages['label.sign.reason']}" /></span></td>
                           <td class="fieldColumn"><h:inputTextarea
                               rows="3" cols="20" id="signingReason"
                               value="#{signingReason}" required="true" /></td>
                         </tr>
                         <tr>
-                          <td class="labelColumn"><h:outputText
-                              value="#{messages['label.sign.password']}" /></td>
+                          <td class="labelColumn"><span class="required"><h:outputText
+                              value="#{messages['label.sign.password']}" /></span></td>
                           <td class="fieldColumn"><h:inputSecret
                               id="password" value="#{password}"
                               required="true" rendered="true" /></td>
