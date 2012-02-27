@@ -195,18 +195,21 @@ public class CertActions implements Serializable {
             try {
                 cUserService.createCertificate(getCurrentUserModel(),
                         firstPassword);
-                facesMessages.add(StatusMessage.Severity.INFO,
+                facesMessages.add(
+                        StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get(
                                 "label.cert.created"));
             } catch (CertException e) {
                 LOG.error(e);
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.cert.generate.problem")
                                 + e.getMessage());
             } catch (ClientException e) {
                 LOG.error(e);
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.cert.generate.problem"));
             }
@@ -233,8 +236,8 @@ public class CertActions implements Serializable {
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.added.reviewer"), null);
-            facesMessages.add(StatusMessage.Severity.ERROR, "ABC"
-                    + message.getDetail());
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    "ABC" + message.getDetail());
             throw new ValidatorException(message);
         }
 
@@ -263,7 +266,9 @@ public class CertActions implements Serializable {
          * exception is thrown, as those passwords should not be the same to
          * increase security and decouple one from another to allow for reuse
          */
-        if (hashedUserPassword!=null && PasswordHelper.verifyPassword(firstPassword, hashedUserPassword)) {
+        if (hashedUserPassword != null
+                && PasswordHelper.verifyPassword(firstPassword,
+                        hashedUserPassword)) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
