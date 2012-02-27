@@ -82,7 +82,7 @@ public class PropertyDiffDisplayHelperBean implements Serializable {
     public List<Integer> getListItemIndexes(ListPropertyDiff listPropertyDiff)
             throws ClientException {
 
-        return ComplexPropertyHelper.getListItemIndexes(listPropertyDiff);
+        return listPropertyDiff.getDiffIndexes();
     }
 
     public Serializable getListItemValue(DocumentModel doc, String schemaName,

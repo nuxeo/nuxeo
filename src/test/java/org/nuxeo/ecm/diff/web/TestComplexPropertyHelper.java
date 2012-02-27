@@ -32,16 +32,11 @@ import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DocumentDiffRepositoryInit;
-import org.nuxeo.ecm.diff.model.PropertyType;
-import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
-import org.nuxeo.ecm.diff.web.ComplexPropertyHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Tests the ComplexPropertyHelper class.
@@ -121,22 +116,6 @@ public class TestComplexPropertyHelper extends TestCase {
         value = ComplexPropertyHelper.getComplexItemValue(doc, "complextypes",
                 "complex", "dateItem");
         assertEquals("", value);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testGetListItemIndexes() throws ClientException {
-
-        ListPropertyDiff listPropertyDiff = new ListPropertyDiff(
-                PropertyType.SCALAR_LIST);
-        listPropertyDiff.putDiff(1, null);
-        listPropertyDiff.putDiff(3, null);
-        listPropertyDiff.putDiff(5, null);
-
-        List<Integer> listItemIndexes = ComplexPropertyHelper.getListItemIndexes(listPropertyDiff);
-        List<Integer> expectedListItemIndexes = Arrays.asList(new Integer[] {
-                1, 3, 5 });
-        assertEquals(expectedListItemIndexes, listItemIndexes);
     }
 
     @Test

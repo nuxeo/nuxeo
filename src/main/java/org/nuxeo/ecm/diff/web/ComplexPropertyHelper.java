@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
-import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -152,19 +151,6 @@ public final class ComplexPropertyHelper {
         }
 
         return getComplexOrContentItemValue(complexProp, complexItemName);
-    }
-
-    /**
-     * Gets the list item indexes.
-     * 
-     * @param listPropertyDiff the listproperty diff
-     * @return the list item indexes
-     * @throws ClientException the client exception
-     */
-    public static List<Integer> getListItemIndexes(
-            ListPropertyDiff listPropertyDiff) throws ClientException {
-
-        return new ArrayList<Integer>(listPropertyDiff.getDiffMap().keySet());
     }
 
     /**

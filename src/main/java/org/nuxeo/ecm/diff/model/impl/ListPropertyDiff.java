@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.diff.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.diff.model.PropertyDiff;
@@ -82,6 +84,15 @@ public class ListPropertyDiff extends PropertyDiff {
 
     public Map<Integer, PropertyDiff> getDiffMap() {
         return diffMap;
+    }
+
+    /**
+     * Gets the diff indexes.
+     * 
+     * @return the diff indexes
+     */
+    public List<Integer> getDiffIndexes() {
+        return new ArrayList<Integer>(diffMap.keySet());
     }
 
     @Override
