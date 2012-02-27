@@ -28,8 +28,11 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  * 
  * This {@link PageProvider} does not accept a fixed part in the whereclause
  * because it is automatically build by the provider itself. This
- * {@link PageProvider} expect to have : * - DocumentModel or UUID as input
- * parameter - CoreSession as property (only used if input parameter is an uuid)
+ * {@link PageProvider} expect to have :
+ * <ul> 
+ *  <li> DocumentModel or UUID as input parameter</li> 
+ *  <li> CoreSession as property (only used if input parameter is an uuid)</li>
+ * </ul>
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * 
