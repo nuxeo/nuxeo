@@ -156,6 +156,18 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         return false;
     }
 
+    protected String getFixedPart() {
+        if (getDefinition().getWhereClause()==null) {
+            return null;
+        } else {
+            return getDefinition().getWhereClause().getFixedPart();    
+        }        
+    }
+
+    protected boolean allowSimplePattern() {
+        return true;
+    }
+    
     protected void buildAuditQuery(boolean includeSort) {
         PageProviderDefinition def = getDefinition();
         Object[] params = getParameters();
@@ -163,6 +175,10 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         if (def.getWhereClause() == null) {
             // Simple Pattern
 
+            if (!allowSimplePattern()) {
+                throw new UnsupportedOperationException("This page provider requires a explicit Where Clause");
+            }
+            
             String baseQuery = def.getPattern();
 
             Map<String, Object> qParams = new HashMap<String, Object>();
@@ -184,7 +200,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
             StringBuilder baseQuery = new StringBuilder("from LogEntry log ");
 
             // manage fixed part
-            String fixedPart = def.getWhereClause().getFixedPart();
+            String fixedPart = getFixedPart();
             Map<String, Object> qParams = new HashMap<String, Object>();
             int idxParam = 0;
             if (fixedPart != null && !fixedPart.isEmpty()) {
@@ -201,113 +217,110 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
 
             // manages predicates
             DocumentModel searchDocumentModel = getSearchDocumentModel();
-            if (searchDocumentModel == null) {
-                throw new ClientRuntimeException(String.format(
-                        "Cannot build query of provider '%s': "
-                                + "no search document model is set", getName()));
-            }
-            PredicateDefinition[] predicates = def.getWhereClause().getPredicates();
-            int idxPredicate = 0;
-
-            for (PredicateDefinition predicate : predicates) {
-
-                // extract data from DocumentModel
-                Object[] val;
-                try {
-                    PredicateFieldDefinition[] fieldDef = predicate.getValues();
-                    val = new Object[fieldDef.length];
-
-                    for (int fidx = 0; fidx < fieldDef.length; fidx++) {
-                        if (fieldDef[fidx].getXpath() != null) {
-                            val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
-                        } else {
-                            val[fidx] = searchDocumentModel.getProperty(
-                                    fieldDef[fidx].getSchema(),
-                                    fieldDef[fidx].getName());
-                        }
-                    }
-                } catch (Exception e) {
-                    throw new ClientRuntimeException(e);
-                }
-
-                if (!isNonNullParam(val)) {
-                    // skip predicate where all values are null
-                    continue;
-                }
-
-                if (idxPredicate > 0 || idxParam > 0) {
-                    baseQuery.append(" AND ");
-                } else {
-                    baseQuery.append(" where ");
-                }
-
-                baseQuery.append(predicate.getParameter());
-                baseQuery.append(" ");
-
-                if (!predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
-                    // don't add the between operation for now
-                    baseQuery.append(predicate.getOperator());
-                }
-
-                if (predicate.getOperator().equalsIgnoreCase("IN")) {
-                    baseQuery.append(" (");
-
-                    if (val[0] instanceof Iterable<?>) {
-                        Iterable<?> vals = (Iterable<?>) val[0];
-                        Iterator<?> valueIterator = vals.iterator();
-
-                        while (valueIterator.hasNext()) {
-                            Object v = valueIterator.next();
-                            qParams.put("param" + idxParam, convertParam(v));
-                            baseQuery.append(" :param" + idxParam);
-                            idxParam++;
-                            if (valueIterator.hasNext()) {
-                                baseQuery.append(",");
+            if (searchDocumentModel != null) {
+                PredicateDefinition[] predicates = def.getWhereClause().getPredicates();
+                int idxPredicate = 0;
+    
+                for (PredicateDefinition predicate : predicates) {
+    
+                    // extract data from DocumentModel
+                    Object[] val;
+                    try {
+                        PredicateFieldDefinition[] fieldDef = predicate.getValues();
+                        val = new Object[fieldDef.length];
+    
+                        for (int fidx = 0; fidx < fieldDef.length; fidx++) {
+                            if (fieldDef[fidx].getXpath() != null) {
+                                val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
+                            } else {
+                                val[fidx] = searchDocumentModel.getProperty(
+                                        fieldDef[fidx].getSchema(),
+                                        fieldDef[fidx].getName());
                             }
                         }
-                    } else if (val[0] instanceof Object[]) {
-                        Object[] valArray = (Object[]) val[0];
-                        for (int i = 0; i < valArray.length; i++) {
-                            Object v = valArray[i];
-                            qParams.put("param" + idxParam, convertParam(v));
-                            baseQuery.append(" :param" + idxParam);
-                            idxParam++;
-                            if (i < valArray.length - 1) {
-                                baseQuery.append(",");
-                            }
-                        }
+                    } catch (Exception e) {
+                        throw new ClientRuntimeException(e);
                     }
-                    baseQuery.append(" ) ");
-                } else if (predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
-                    Object startValue = convertParam(val[0]);
-                    Object endValue = null;
-                    if (val.length > 1) {
-                        endValue = convertParam(val[1]);
+    
+                    if (!isNonNullParam(val)) {
+                        // skip predicate where all values are null
+                        continue;
                     }
-                    if (startValue != null && endValue != null) {
+    
+                    if (idxPredicate > 0 || idxParam > 0) {
+                        baseQuery.append(" AND ");
+                    } else {
+                        baseQuery.append(" where ");
+                    }
+    
+                    baseQuery.append(predicate.getParameter());
+                    baseQuery.append(" ");
+    
+                    if (!predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
+                        // don't add the between operation for now
                         baseQuery.append(predicate.getOperator());
-                        baseQuery.append(" :param" + idxParam);
-                        qParams.put("param" + idxParam, startValue);
-                        idxParam++;
-                        baseQuery.append(" AND :param" + idxParam);
-                        qParams.put("param" + idxParam, endValue);
-                    } else if (startValue == null) {
-                        baseQuery.append("<=");
-                        baseQuery.append(" :param" + idxParam);
-                        qParams.put("param" + idxParam, endValue);
-                    } else if (endValue == null) {
-                        baseQuery.append(">=");
-                        baseQuery.append(" :param" + idxParam);
-                        qParams.put("param" + idxParam, startValue);
                     }
-                    idxParam++;
-                } else {
-                    baseQuery.append(" :param" + idxParam);
-                    qParams.put("param" + idxParam, convertParam(val[0]));
-                    idxParam++;
+    
+                    if (predicate.getOperator().equalsIgnoreCase("IN")) {
+                        baseQuery.append(" (");
+    
+                        if (val[0] instanceof Iterable<?>) {
+                            Iterable<?> vals = (Iterable<?>) val[0];
+                            Iterator<?> valueIterator = vals.iterator();
+    
+                            while (valueIterator.hasNext()) {
+                                Object v = valueIterator.next();
+                                qParams.put("param" + idxParam, convertParam(v));
+                                baseQuery.append(" :param" + idxParam);
+                                idxParam++;
+                                if (valueIterator.hasNext()) {
+                                    baseQuery.append(",");
+                                }
+                            }
+                        } else if (val[0] instanceof Object[]) {
+                            Object[] valArray = (Object[]) val[0];
+                            for (int i = 0; i < valArray.length; i++) {
+                                Object v = valArray[i];
+                                qParams.put("param" + idxParam, convertParam(v));
+                                baseQuery.append(" :param" + idxParam);
+                                idxParam++;
+                                if (i < valArray.length - 1) {
+                                    baseQuery.append(",");
+                                }
+                            }
+                        }
+                        baseQuery.append(" ) ");
+                    } else if (predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
+                        Object startValue = convertParam(val[0]);
+                        Object endValue = null;
+                        if (val.length > 1) {
+                            endValue = convertParam(val[1]);
+                        }
+                        if (startValue != null && endValue != null) {
+                            baseQuery.append(predicate.getOperator());
+                            baseQuery.append(" :param" + idxParam);
+                            qParams.put("param" + idxParam, startValue);
+                            idxParam++;
+                            baseQuery.append(" AND :param" + idxParam);
+                            qParams.put("param" + idxParam, endValue);
+                        } else if (startValue == null) {
+                            baseQuery.append("<=");
+                            baseQuery.append(" :param" + idxParam);
+                            qParams.put("param" + idxParam, endValue);
+                        } else if (endValue == null) {
+                            baseQuery.append(">=");
+                            baseQuery.append(" :param" + idxParam);
+                            qParams.put("param" + idxParam, startValue);
+                        }
+                        idxParam++;
+                    } else {
+                        baseQuery.append(" :param" + idxParam);
+                        qParams.put("param" + idxParam, convertParam(val[0]));
+                        idxParam++;
+                    }
+    
+                    idxPredicate++;
                 }
-
-                idxPredicate++;
             }
 
             if (includeSort) {

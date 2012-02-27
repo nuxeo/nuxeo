@@ -27,8 +27,6 @@ public interface AuditReader {
 
     /**
      * Returns the logs given a doc uuid.
-     * <p>
-     * :XXX: add parameters to this method for paging.
      *
      * @param uuid the document uuid
      * @return a list of log entries

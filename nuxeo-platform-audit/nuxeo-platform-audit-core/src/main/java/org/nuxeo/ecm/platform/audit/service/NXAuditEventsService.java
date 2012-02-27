@@ -60,10 +60,12 @@ import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
+import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
+import org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryReaderImpl;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
@@ -884,4 +886,14 @@ public class NXAuditEventsService extends DefaultComponent implements
     public ExtendedInfo newExtendedInfo(Serializable value) {
         return ExtendedInfoImpl.createExtendedInfo(value);
     }
+    
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.getCanonicalName().equals(DocumentHistoryReader.class.getCanonicalName())) {
+            return adapter.cast(new DocumentHistoryReaderImpl());
+        } else {
+            return super.getAdapter(adapter);
+        }
+    }
+
 }

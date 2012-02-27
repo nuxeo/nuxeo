@@ -13,6 +13,7 @@ import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditPageProvider;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -20,6 +21,12 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Tests the {@link AuditPageProvider}
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
 public class TestPageProvider extends RepositoryOSGITestCase {
 
     protected static final List<String> entriesIdx = Arrays.asList(new String[] {"3","7","7","8","1","8","7","9"});
@@ -396,7 +403,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals( AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+        assertEquals( DocumentHistoryPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,  Long.valueOf(6), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 

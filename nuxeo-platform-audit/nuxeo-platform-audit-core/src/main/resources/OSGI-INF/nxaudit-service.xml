@@ -22,6 +22,7 @@
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditReader" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.Logs" />
+    <provide interface="org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader" />
   </service>
 
   <extension-point name="event">

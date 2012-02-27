@@ -17,7 +17,6 @@
     <action id="TAB_CONTENT_HISTORY" link="/incl/tabs/document_history.xhtml"
       enabled="true" label="action.view.history" icon="/icons/file.gif" order="100">
       <category>VIEW_ACTION_LIST</category>
-      <filter-id>view_content_history</filter-id>
       <filter-id>TAB_CONTENT_HISTORY_has_subtabs</filter-id>
     </action>
 
@@ -25,6 +24,13 @@
       enabled="true" label="action.view.events" icon="/icons/file.gif" order="50">
       <category>TAB_CONTENT_HISTORY_sub_tab</category>
       <filter-id>view_content_history</filter-id>
+    </action>
+
+    <action id="TAB_EVENTS_PROXY" link="/incl/tabs/document_events_cv.xhtml"
+      enabled="true" label="action.view.events" icon="/icons/file.gif" order="50">
+      <category>TAB_CONTENT_HISTORY_sub_tab</category>
+      <filter-id>view_proxy_history</filter-id>
+      <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="TAB_VERSIONS" link="/incl/tabs/document_versions.xhtml"
@@ -48,6 +54,12 @@
       </rule>
     </filter>
 
+    <filter id="view_proxy_history">
+      <rule grant="true">
+        <condition>document.isProxy()</condition>
+      </rule>
+    </filter>
+
     <filter id="TAB_CONTENT_HISTORY_has_subtabs">
       <rule grant="false">
         <condition>
@@ -59,6 +71,9 @@
     <filter id="versionable">
       <rule grant="true">
         <facet>Versionable</facet>
+      </rule>
+      <rule grant="false">
+        <facet>Immutable</facet>
       </rule>
     </filter>
 
