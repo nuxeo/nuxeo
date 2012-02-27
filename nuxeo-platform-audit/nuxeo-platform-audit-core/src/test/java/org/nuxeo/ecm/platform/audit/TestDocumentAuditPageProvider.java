@@ -34,7 +34,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
     protected List<DocumentModel> versions;
 
-    protected int totalEventsNumber = 0;
+    //protected int totalEventsNumber = 0;
 
     protected boolean verbose = false;
 
@@ -77,6 +77,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
     protected void createTestEntries() throws Exception {
 
+        AuditReader reader = Framework.getLocalService(AuditReader.class);        
+        
         DocumentModel section = session.createDocumentModel("/", "section",
                 "Folder");
         section = session.createDocument(section);
@@ -144,13 +146,11 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             }
         }
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
-        assertNotNull(reader);
-
-        List<?> entries = reader.nativeQuery("from LogEntry", 0, 100);
-        totalEventsNumber = entries.size();
-        //assertEquals(20, totalEventsNumber);
-        if (verbose || totalEventsNumber!=20) {
+        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery("from LogEntry", 0, 100);
+        if (!entries.get(0).getDocUUID().equals(section.getId())) {
+            entries.remove(0);
+        }
+        if (verbose) {
             dump(entries);
         }
 
@@ -179,44 +179,43 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
         assertNotNull(pp);
 
+        // Get Live doc history
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
-        
-        assertEquals(totalEventsNumber - 2, entries.size()); // remove section +
-                                                             // proxy
-        assertEquals(Long.valueOf(2).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(20).longValue(),
-                entries.get(totalEventsNumber - 2 - 1).getId());
         if (verbose) {
             System.out.println("Live doc history");
             dump(entries);
         }
 
+        assertEquals(18, entries.size()); // remove section + proxy
+        long startIdx = entries.get(0).getId();
+        long endIdx = entries.get(17).getId();
+        
+
+        // Get Proxy history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
-        assertEquals(totalEventsNumber - 1 - 5, entries.size()); // remove
-                                                                 // section + 5
-                                                                 // updates
-        assertEquals(Long.valueOf(2).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(15).longValue(),
-                entries.get(totalEventsNumber - 1 - 5 - 1).getId());
         if (verbose) {
             System.out.println("Proxy doc history");
             dump(entries);
         }
 
+        // - 5 updates + create
+        assertEquals(18 - 5 +1 , entries.size()); 
+
+        assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
+        assertEquals(Long.valueOf(startIdx+13).longValue(),
+                entries.get(18 - 5).getId());
+
+        // Get version 1 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
-
         entries = (List<LogEntry>) pp.getCurrentPage();
-        assertEquals(1 + 5, entries.size()); // creation + 5 updates
-        assertEquals(Long.valueOf(2).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(7).longValue(), entries.get(5).getId());
 
         if (verbose) {
             System.out.println("Version " + versions.get(0).getVersionLabel()
@@ -224,22 +223,27 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             dump(entries);
         }
 
+        assertEquals(1 + 5, entries.size()); // creation + 5 updates
+        assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
+        assertEquals(Long.valueOf(startIdx+5).longValue(), entries.get(5).getId());
+
+        // get version 2 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
-
+        
         entries = (List<LogEntry>) pp.getCurrentPage();
-        assertEquals(1 + 5 + 1 + 5, entries.size()); // creation + 5x2 updates +
-                                                     // checkin
-        assertEquals(Long.valueOf(2).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(13).longValue(), entries.get(11).getId());
-
+        
         if (verbose) {
             System.out.println("Version " + versions.get(1).getVersionLabel()
                     + " doc history");
             dump(entries);
         }
+
+        assertEquals(1 + 5 + 1 + 5, entries.size()); // creation + 5x2 updates +                                                     // checkin
+        assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
+        assertEquals(Long.valueOf(startIdx+11).longValue(), entries.get(11).getId());
 
     }
     
@@ -253,8 +257,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
         
         List<LogEntry> entries =  reader.getDocumentHistory(versions.get(1), 0, 20);
         assertNotNull(entries);
-        assertEquals(1 + 5 + 1 + 5, entries.size()); // creation + 5x2 updates +
-        // checkin
+        // creation + 5x2 updates + checkin
+        assertEquals(1 + 5 + 1 + 5, entries.size()); 
         
     }
 
