@@ -6,13 +6,6 @@
   xmlns:a4j="http://richfaces.org/a4j">
   <a4j:outputPanel id="signPanel">
 
-    <!-- status messages -->
-    <div id="facesStatusMessage" class="facesStatusMessage">
-      <h:messages globalOnly="true" infoClass="infoFeedback"
-        warnClass="warningFeedback" errorClass="errorFeedback" />
-    </div>
-
-
     <!-- document file -->
     <h3 class="summaryTitle">
       <h:outputText
@@ -128,18 +121,24 @@
                     <table>
                       <tbody>
                         <tr>
-                          <td class="labelColumn"><span class="required"><h:outputText
-                              value="#{messages['label.sign.reason']}" /></span></td>
+                          <td class="labelColumn"><span
+                            class="required"><h:outputText
+                                value="#{messages['label.sign.reason']}" /></span></td>
                           <td class="fieldColumn"><h:inputTextarea
                               rows="3" cols="20" id="signingReason"
-                              value="#{signingReason}" required="true" /></td>
+                              value="#{signingReason}" required="true" />
+                              <h:message for="signingReason" />
+                              </td>
                         </tr>
                         <tr>
-                          <td class="labelColumn"><span class="required"><h:outputText
-                              value="#{messages['label.sign.password']}" /></span></td>
+                          <td class="labelColumn"><span
+                            class="required"><h:outputText
+                                value="#{messages['label.sign.password']}" /></span></td>
                           <td class="fieldColumn"><h:inputSecret
                               id="password" value="#{password}"
-                              required="true" rendered="true" /></td>
+                              required="true" rendered="true" />
+                              <h:message for="password" />
+                              </td>
                         </tr>
                         <tr>
                           <td class="fieldColumn"><a4j:commandButton
@@ -147,7 +146,10 @@
                               value="#{messages['label.sign.submit']}"
                               action="#{signActions.signCurrentDoc(signingReason,password)}"
                               data="#{facesContext.maximumSeverity.ordinal ge 2}"
-                              reRender="signPanel" /></td>
+                              reRender="signPanel" /> <h:messages
+                              globalOnly="true" infoClass="infoFeedback"
+                              warnClass="warningFeedback"
+                              errorClass="errorFeedback" /></td>
                         </tr>
                       </tbody>
                     </table>
