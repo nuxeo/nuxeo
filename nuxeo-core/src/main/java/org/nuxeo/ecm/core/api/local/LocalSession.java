@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -73,12 +74,7 @@ public class LocalSession extends AbstractSession {
                     if (p instanceof NuxeoPrincipal) {
                         principal = (NuxeoPrincipal) p;
                     } else if (LoginComponent.isSystemLogin(p)) {
-                        // TODO: must use SystemPrincipal from
-                        // nuxeo-platform-login
-                        principal = new UserPrincipal(
-                                SecurityConstants.SYSTEM_USERNAME, null, false,
-                                true);
-                        principal.setOriginatingUser(p.getName());
+                        principal = new SystemPrincipal(p.getName());
                     } else {
                         throw new Error("Unsupported principal: "
                                 + p.getClass());
