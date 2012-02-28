@@ -34,8 +34,6 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
     protected List<DocumentModel> versions;
 
-    //protected int totalEventsNumber = 0;
-
     protected boolean verbose = false;
 
     protected void dump(Object ob) {
@@ -108,6 +106,9 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
         session.save();
         waitForEventsDispatched();
 
+        // wait at least 1s to be sure we have a precise timestamp in all DB backend
+        Thread.sleep(1100); 
+        
         // do some more updates
         for (int i = 5; i < 10; i++) {
             doc.setPropertyValue("dc:description", "Update " + i);
@@ -241,7 +242,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             dump(entries);
         }
 
-        assertEquals(1 + 5 + 1 + 5, entries.size()); // creation + 5x2 updates +                                                     // checkin
+        // creation + 5x2 updates + checkin/update
+        assertEquals(1 + 5 + 1 + 5 +1, entries.size()); 
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
         assertEquals(Long.valueOf(startIdx+11).longValue(), entries.get(11).getId());
 
@@ -257,8 +259,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
         
         List<LogEntry> entries =  reader.getDocumentHistory(versions.get(1), 0, 20);
         assertNotNull(entries);
-        // creation + 5x2 updates + checkin
-        assertEquals(1 + 5 + 1 + 5, entries.size()); 
+        // creation + 5x2 updates + checkin/update
+        assertEquals(1 + 5 + 1 + 5 +1, entries.size()); 
         
     }
 
