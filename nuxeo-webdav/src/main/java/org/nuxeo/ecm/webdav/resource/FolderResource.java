@@ -44,6 +44,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -109,8 +110,8 @@ public class FolderResource extends ExistingResource {
         }
 
         final net.java.dev.webdav.jaxrs.xml.elements.Response response;
-        response = createResponse(doc, uriInfo, prop);
-        
+        response = createResponse(doc, uriInfo, prop, false);
+
         if (!doc.isFolder() || depth.equals("0")) {
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
@@ -134,8 +135,14 @@ public class FolderResource extends ExistingResource {
     }
 
     protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(
-            DocumentModel doc, UriInfo uriInfo, Prop prop) 
+            DocumentModel doc, UriInfo uriInfo, Prop prop)
                     throws ClientException, URIException {
+        return createResponse(doc, uriInfo, prop, true);
+    }
+
+    protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(
+            DocumentModel doc, UriInfo uriInfo, Prop prop, boolean append)
+            throws ClientException, URIException {
         PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
         PropStat propStatFound = props.build();
         PropStat propStatNotFound = null;
@@ -144,19 +151,22 @@ public class FolderResource extends ExistingResource {
         }
 
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
-        URI uri = uriInfo.getRequestUriBuilder().path(
-                URIUtil.encodePath(backend.getDisplayName(doc))).build();
+        UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
+        if (append) {
+            uriBuilder.path(URIUtil.encodePath(backend.getDisplayName(doc)));
+        }
+        URI uri = uriBuilder.build();
         if (doc.isFolder()) {
             PropStat folderPropStat = new PropStat(
                     new Prop(new LockDiscovery(), new SupportedLock(), new IsFolder("t")),
                     new Status(OK));
             if (propStatNotFound != null) {
                 response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, 
+                        new HRef(uri), null, null, null,
                         propStatFound, propStatNotFound, folderPropStat);
             } else {
                 response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, 
+                        new HRef(uri), null, null, null,
                         propStatFound, folderPropStat);
             }
         } else {
