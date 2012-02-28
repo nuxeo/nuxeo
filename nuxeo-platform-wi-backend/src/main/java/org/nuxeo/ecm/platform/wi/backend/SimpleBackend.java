@@ -52,6 +52,8 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     private static final int PATH_CACHE_SIZE = 255;
 
+    public static final String SOURCE_EDIT_KEYWORD = "source-edit";
+
     protected String backendDisplayName;
 
     protected String rootPath;
@@ -134,6 +136,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             Blob content) throws ClientException {
         doc.getProperty("file:content").setValue(content);
         doc.getProperty("file:filename").setValue(name);
+        doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
         getSession().saveDocument(doc);
         saveChanges();
         return doc;
@@ -336,6 +339,7 @@ public class SimpleBackend extends AbstractCoreBackend {
     @Override
     public void renameItem(DocumentModel source, String destinationName)
             throws ClientException {
+        source.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
         if (source.isFolder()) {
             source.setPropertyValue("dc:title", destinationName);
             getSession().saveDocument(source);
