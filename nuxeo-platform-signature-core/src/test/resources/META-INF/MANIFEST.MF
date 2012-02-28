@@ -14,4 +14,6 @@ Require-Bundle:  org.nuxeo.ecm.core,
  org.nuxeo.ecm.platform.usermanager.api
 Nuxeo-Component: 
  OSGI-INF/schema-contrib.xml,
- OSGI-INF/directory-contrib.xml
+ OSGI-INF/directory-contrib.xml,
+ OSGI-INF/cuser-contrib.xml,
+ OSGI-INF/root-contrib.xml

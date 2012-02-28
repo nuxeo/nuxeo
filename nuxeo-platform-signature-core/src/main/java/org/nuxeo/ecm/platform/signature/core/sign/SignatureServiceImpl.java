@@ -157,10 +157,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
             throw new SignException(e);
         } catch (DocumentException e) {
             throw new SignException(e);
-        } catch (AlreadySignedException e) {
-            throw new SignException(e.getMessage());
-        } catch (CertException e) {
-            throw new SignException(e.getMessage());
+        } catch (SignException e) {
+            throw e;
         } catch (IllegalArgumentException e) {
             if (String.valueOf(e.getMessage()).contains(
                     "PdfReader not opened with owner password")) {

@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.signature.core.sign;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,7 +75,7 @@ import com.lowagie.text.pdf.PdfReader;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
+ *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -192,13 +193,9 @@ public class SignatureServiceTest {
         try {
             fileSignedTwice=signatureService.signPDF(defaultUser, USER_KEY_PASSWORD,
                     "test reason", new FileInputStream(signedFile));
-        } catch (SignException sE) {
-            if (sE.getCause().getClass().equals(AlreadySignedException.class)) {
-                log.debug("Caught AlreadySignedException");
-            } else {
-                // rethrow if not the alreadySignedException
-                throw sE;
-            }
+            fail("Should raise AlreadySignedException");
+        } catch (AlreadySignedException e) {
+            // ok
         }
 
         // try for the second user to sign the certificate, do not catch the

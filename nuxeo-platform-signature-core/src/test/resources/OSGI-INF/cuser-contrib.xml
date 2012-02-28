@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.signature.api.user.CUserService.config">
+
+  <documentation>
+    Contribution of default values for the certificates creation service.
+    Must be overridden by a project-specific component to provide custom
+    values.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.signature.api.user.CUserService"
+    point="cuserdescriptor">
+    <userDescriptor>
+      <countryCode>US</countryCode>
+      <organization>Example Organization</organization>
+      <organizationalUnit>Headquarters</organizationalUnit>
+    </userDescriptor>
+  </extension>
+
+</component>
