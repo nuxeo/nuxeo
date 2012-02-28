@@ -160,7 +160,7 @@ public final class Functions {
      */
     public static String javaScriptEscape(String data) {
         if (data != null) {
-            data = data.replace("'", "\\'");
+            data = StringEscapeUtils.escapeJavaScript(data);
         }
         return data;
     }
