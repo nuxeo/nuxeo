@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A Dialect encapsulates knowledge about database-specific behavior.
@@ -55,6 +58,27 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
  * @author Florent Guillaume
  */
 public abstract class Dialect {
+
+    /**
+     * System property to override the dialect to use globally instead of the
+     * one auto-detected. It can be suffixed by "." and the database name
+     * (without spaces and as returned by the database itself) to override only
+     * for a specific database.
+     *
+     * @since 5.6
+     */
+    public static final String DIALECT_CLASS = "nuxeo.vcs.dialect";
+
+    public static final Map<String, Class<? extends Dialect>> DIALECTS = new HashMap<String, Class<? extends Dialect>>();
+    static {
+        DIALECTS.put("H2", DialectH2.class);
+        DIALECTS.put("MySQL", DialectMySQL.class);
+        DIALECTS.put("Oracle", DialectOracle.class);
+        DIALECTS.put("PostgreSQL", DialectPostgreSQL.class);
+        DIALECTS.put("Microsoft SQL Server", DialectSQLServer.class);
+        DIALECTS.put("HSQL Database Engine", DialectHSQLDB.class);
+        DIALECTS.put("Apache Derby", DialectDerby.class);
+    }
 
     public static final class JDBCInfo {
         public final String string;
@@ -103,34 +127,48 @@ public abstract class Dialect {
         } catch (SQLException e) {
             throw new StorageException(e);
         }
-        if ("Apache Derby".equals(databaseName)) {
-            return new DialectDerby(metadata, binaryManager,
+        String dialectClassName = Framework.getProperty(DIALECT_CLASS);
+        if (dialectClassName == null) {
+            dialectClassName = Framework.getProperty(DIALECT_CLASS + '.'
+                    + databaseName.replace(" ", ""));
+        }
+        Class<? extends Dialect> dialectClass;
+        if (dialectClassName == null) {
+            dialectClass = DIALECTS.get(databaseName);
+            if (dialectClass == null) {
+                throw new StorageException("Unsupported database: "
+                        + databaseName);
+            }
+        } else {
+            Class<?> klass;
+            try {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                klass = cl.loadClass(dialectClassName);
+            } catch (ClassNotFoundException e) {
+                throw new StorageException(e);
+            }
+            if (!Dialect.class.isAssignableFrom(klass)) {
+                throw new StorageException("Not a Dialect: " + dialectClassName);
+            }
+            dialectClass = (Class<? extends Dialect>) klass;
+        }
+        Constructor<? extends Dialect> ctor;
+        try {
+            ctor = dialectClass.getConstructor(DatabaseMetaData.class,
+                    BinaryManager.class, RepositoryDescriptor.class);
+        } catch (Exception e) {
+            throw new StorageException("Bad constructor signature for: "
+                    + dialectClassName, e);
+        }
+        Dialect dialect;
+        try {
+            dialect = ctor.newInstance(metadata, binaryManager,
                     repositoryDescriptor);
+        } catch (Exception e) {
+            throw new StorageException("Cannot construct dialect: "
+                    + dialectClassName, e);
         }
-        if ("H2".equals(databaseName)) {
-            return new DialectH2(metadata, binaryManager, repositoryDescriptor);
-        }
-        if ("MySQL".equals(databaseName)) {
-            return new DialectMySQL(metadata, binaryManager,
-                    repositoryDescriptor);
-        }
-        if ("Oracle".equals(databaseName)) {
-            return new DialectOracle(metadata, binaryManager,
-                    repositoryDescriptor);
-        }
-        if ("PostgreSQL".equals(databaseName)) {
-            return new DialectPostgreSQL(metadata, binaryManager,
-                    repositoryDescriptor);
-        }
-        if ("Microsoft SQL Server".equals(databaseName)) {
-            return new DialectSQLServer(metadata, binaryManager,
-                    repositoryDescriptor);
-        }
-        if ("HSQL Database Engine".equals(databaseName)) {
-            return new DialectHSQLDB(metadata, binaryManager,
-                    repositoryDescriptor);
-        }
-        throw new StorageException("Unsupported database: " + databaseName);
+        return dialect;
     }
 
     public Dialect(DatabaseMetaData metadata, BinaryManager binaryManager,
