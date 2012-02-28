@@ -51,6 +51,9 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         try {
             DocumentModel documentModel = session.getChildrenIterator(
                     doc.getRef(), "Picture").next();
+            if (documentModel == null) {
+                return null;
+            }
             PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
             return picture.getPictureFromTitle("Original");
         } finally {
