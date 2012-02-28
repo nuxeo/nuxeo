@@ -38,6 +38,7 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.api.login.RestrictedLoginHelper;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
