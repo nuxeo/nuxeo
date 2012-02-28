@@ -48,6 +48,8 @@ import java.util.List;
 
 public class SimpleBackend extends AbstractCoreBackend {
 
+    public static final String SOURCE_EDIT_KEYWORD = "source-edit";
+
     private static final Log log = LogFactory.getLog(SimpleBackend.class);
 
     private static final int PATH_CACHE_SIZE = 255;
@@ -136,6 +138,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         if (bh != null) {
             bh.setBlob(content);
         }
+        doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
         getSession().saveDocument(doc);
         saveChanges();
         return doc;
@@ -337,6 +340,7 @@ public class SimpleBackend extends AbstractCoreBackend {
     @Override
     public void renameItem(DocumentModel source, String destinationName)
             throws ClientException {
+        source.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
         if (source.isFolder()) {
             source.setPropertyValue("dc:title", destinationName);
             getSession().saveDocument(source);
