@@ -2170,6 +2170,12 @@
         </exclusions>
       </dependency>
       <dependency>
+        <!-- also a jboss-seam-pdf dependency -->
+        <groupId>com.lowagie</groupId>
+        <artifactId>itext</artifactId>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
         <version>2.3.11</version>
