@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.signature.web.sign;
 
+import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
+import static org.jboss.seam.international.StatusMessage.Severity.INFO;
+import static org.jboss.seam.international.StatusMessage.Severity.WARN;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -37,7 +41,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -68,7 +71,7 @@ public class SignActions implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private static final Log LOG = LogFactory.getLog(SignActions.class);
+    private static final Log log = LogFactory.getLog(SignActions.class);
 
     @In(create = true)
     protected transient SignatureService signatureService;
@@ -112,7 +115,7 @@ public class SignActions implements Serializable {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.sign.document.missing"));
         }
@@ -123,14 +126,14 @@ public class SignActions implements Serializable {
             originalBlob = blobHolder.getBlob();
             if (originalBlob == null) {
                 facesMessages.add(
-                        StatusMessage.Severity.ERROR,
+                        ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.sign.attachments.missing"));
             } else {
 
                 if (!originalBlob.getMimeType().equals("application/pdf")) {
                     facesMessages.add(
-                            StatusMessage.Severity.ERROR,
+                            ERROR,
                             resourcesAccessor.getMessages().get(
                                     "label.sign.pdf.warning"));
                 }
@@ -150,34 +153,35 @@ public class SignActions implements Serializable {
 
                 // display a signing message
                 facesMessages.add(
-                        StatusMessage.Severity.INFO,
+                        INFO,
                         signedBlob.getFilename()
                                 + " "
                                 + resourcesAccessor.getMessages().get(
                                         "notification.sign.signed"));
             }
         } catch (CertException e) {
-            LOG.info("PDF SIGNING PROBLEM. CERTIFICATE ACCESS PROBLEM" + e);
+            log.error("PDF signing problem: " + e.getMessage(), e);
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "notification.sign.certificate.access.problem"));
         } catch (SignException e) {
-            LOG.info("PDF signing problem:" + e);
+            log.debug("PDF signing problem: " + e.getMessage(), e);
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "notification.sign.problem"));
+            facesMessages.add(ERROR, e.getMessage());
         } catch (IOException e) {
-            LOG.info("PDF SIGNING PROBLEM:" + e);
+            log.error("PDF signing problem: " + e.getMessage(), e);
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "notification.sign.problem"));
-        } catch (ClientException ce) {
-            LOG.info("PDF SIGNING PROBLEM:" + ce);
+        } catch (ClientException e) {
+            log.error("PDF signing problem: " + e.getMessage(), e);
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "notification.sign.problem"));
         }
@@ -266,7 +270,7 @@ public class SignActions implements Serializable {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.sign.document.missing"));
         }
@@ -275,17 +279,17 @@ public class SignActions implements Serializable {
         Blob blob = null;
         blob = blobHolder.getBlob();
         if (blob == null) {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.add(WARN,
                     "Your document does not contain any attachments");
         } else {
             if (blob.getMimeType() == null) {
                 facesMessages.add(
-                        StatusMessage.Severity.INFO,
+                        INFO,
                         resourcesAccessor.getMessages().get(
                                 "label.sign.document.mime"));
             } else if (!blob.getMimeType().equals("application/pdf")) {
                 facesMessages.add(
-                        StatusMessage.Severity.ERROR,
+                        ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.sign.pdf.warning"));
             } else if (blob.getLength() == 0) {
@@ -348,7 +352,7 @@ public class SignActions implements Serializable {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.sign.document.missing"));
         }
@@ -358,13 +362,13 @@ public class SignActions implements Serializable {
         blob = blobHolder.getBlob();
         if (blob == null) {
             facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+                    ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.sign.attachments.missing"));
         } else {
             if (!blob.getMimeType().equals("application/pdf")) {
                 facesMessages.add(
-                        StatusMessage.Severity.ERROR,
+                        ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.sign.pdf.warning"));
             }
@@ -405,7 +409,7 @@ public class SignActions implements Serializable {
         try {
             getEventProducer().fireEvent(eventContext.newEvent(eventId));
         } catch (ClientException e) {
-            LOG.error("Error firing an audit event", e);
+            log.error("Error firing an audit event", e);
         }
     }
 
@@ -417,7 +421,7 @@ public class SignActions implements Serializable {
     }
 
     String getCertificateInfo(X509Certificate certificate) {
-        String pdfCertificateInfo = "This certificate belongs to"
+        String pdfCertificateInfo = "This certificate belongs to "
                 + certificate.getSubjectDN() + ". It was issued by "
                 + certificate.getIssuerDN() + ". It will expire on "
                 + certificate.getNotAfter();

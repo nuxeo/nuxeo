@@ -63,9 +63,9 @@ import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
 
 /**
- * 
+ *
  * Base implementation for the signature service.
- * 
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 public class SignatureServiceImpl extends DefaultComponent implements
@@ -74,8 +74,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
     private static final int SIGNATURE_FIELD_HEIGHT = 50;
     private static final int SIGNATURE_FIELD_WIDTH = 150;
     private static final int SIGNATURE_MARGIN= 10;
-    
-    
+
+
     private static final int PAGE_TO_SIGN = 1;
 
     private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
@@ -158,6 +158,14 @@ public class SignatureServiceImpl extends DefaultComponent implements
         } catch (DocumentException e) {
             throw new SignException(e);
         } catch (AlreadySignedException e) {
+            throw new SignException(e.getMessage());
+        } catch (CertException e) {
+            throw new SignException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            if (String.valueOf(e.getMessage()).contains(
+                    "PdfReader not opened with owner password")) {
+                throw new SignException("PDF is password-protected");
+            }
             throw new SignException(e);
         } catch (Exception e) {
             throw new SignException(e);
@@ -183,12 +191,12 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     /**
      * Provides the position rectangle for the next certificate.
-     * 
+     *
      * An assumption is made that all previous certificates in a given PDF
      * were placed using the same technique and settings.
-     * 
+     *
      * New certificates are added on a vertical plane going downwards.
-     * 
+     *
      * @param reader
      * @param pdfBytes
      * @return
@@ -214,7 +222,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         validatePageBounds(reader, 1, topRightX, true);
         validatePageBounds(reader, 1, topRightY, false);
 
-        
+
         Rectangle positionRectangle = new Rectangle(bottomLeftX, bottomLeftY,
                 topRightX, topRightY);
 
@@ -250,7 +258,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
      * Verifies that a provided value fits within the page bounds. If it does
      * not, a sign exception is thrown. This is to verify externally
      * configurable signature positioning.
-     * 
+     *
      * @param reader
      * @param pageNo
      * @param valueToCheck
@@ -266,7 +274,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
             log.warn(message);
             throw new SignException(message);
         }
-        
+
         Rectangle pageRectangle = reader.getPageSize(pageNo);
         if (isHorizontal && valueToCheck > pageRectangle.getRight()) {
             String message = "The new signature position "
@@ -312,9 +320,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return reason;
     }
 
-    
-    
-    
+
+
+
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {

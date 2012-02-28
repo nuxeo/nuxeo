@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.signature.config.default">
+
+  <documentation>
+    Contribution of default values for the certificates
+    creation service. Must be overridden by a project-specific component
+    to provide custom values.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.signature.api.pki.RootService"
+    point="rootconfig">
+    <documentation>
+      The configuration of the server root certificate.
+    </documentation>
+    <configuration>
+      <rootKeystoreFilePath>pdfca-keystore.jks</rootKeystoreFilePath>
+      <rootKeystorePassword>password</rootKeystorePassword>
+      <rootCertificateAlias>pdfcakey</rootCertificateAlias> <!-- or proper certificate -->
+      <rootKeyAlias>pdfcakey</rootKeyAlias>
+      <rootKeyPassword>password</rootKeyPassword>
+    </configuration>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.signature.api.user.CUserService"
+    point="cuserdescriptor">
+    <documentation>
+      The parameters for user certificate creation.
+    </documentation>
+    <userDescriptor>
+      <countryCode>US</countryCode>
+      <organization>Example Organization</organization>
+      <organizationalUnit>Users</organizationalUnit>
+    </userDescriptor>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.signature.api.sign.SignatureService"
+    point="signature">
+    <documentation>
+      The default reason (when not filled by user) for
+      signing a document.
+    </documentation>
+    <configuration>
+      <reason>This document signed as an example.
+      </reason>
+    </configuration>
+  </extension>
+
+</component>

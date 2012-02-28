@@ -1,6 +1,22 @@
+/*
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Wojciech Sulejman
+ *     Florent Guillaume
+ */
 package org.nuxeo.ecm.platform.signature.core.pki;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,13 +43,10 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DERObject;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSet;
-import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.CertificationRequest;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -62,9 +75,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Base implementation of the certification service.
- * 
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
  */
 public class CertServiceImpl extends DefaultComponent implements CertService {
 
@@ -72,6 +82,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
 
     private static final Log LOG = LogFactory.getLog(CertServiceImpl.class);
 
+    @Override
     public void setRootService(RootService rootService) {
         this.rootService = rootService;
     }
@@ -94,7 +105,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         }
     }
 
-    private X509Certificate createCertificateFromCSR(
+    protected X509Certificate createCertificateFromCSR(
             PKCS10CertificationRequest csr) throws CertException {
         X509Certificate cert;
         try {
@@ -124,6 +135,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
                         PKCSObjectIdentifiers.pkcs_9_at_extensionRequest)) {
                     X509Extensions extensions = X509Extensions.getInstance(attr.getAttrValues().getObjectAt(
                             0));
+                    @SuppressWarnings("rawtypes")
                     Enumeration e = extensions.oids();
                     while (e.hasMoreElements()) {
                         DERObjectIdentifier oid = (DERObjectIdentifier) e.nextElement();
@@ -258,7 +270,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         return certificate;
     }
 
-    private X509Certificate getCertificate(KeyPair keyPair, UserInfo userInfo)
+    protected X509Certificate getCertificate(KeyPair keyPair, UserInfo userInfo)
             throws CertException {
         PKCS10CertificationRequest csr = (PKCS10CertificationRequest) generateCSR(
                 keyPair, userInfo);
@@ -266,8 +278,8 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         return certificate;
     }
 
-    private CertificationRequest generateCSR(KeyPair keyPair, UserInfo userInfo)
-            throws CertException {
+    protected CertificationRequest generateCSR(KeyPair keyPair,
+            UserInfo userInfo) throws CertException {
 
         CertificationRequest csr;
 
@@ -320,37 +332,38 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         } catch (CertificateException e) {
             throw new CertException(e);
         } catch (IOException e) {
+            if (String.valueOf(e.getMessage()).contains(
+                    "password was incorrect")) {
+                // "Keystore was tampered with, or password was incorrect"
+                // is not very useful to end-users
+                throw new CertException("Incorrect password");
+            }
             throw new CertException(e);
         }
         return ks;
     }
 
-
     @Override
-    public String getCertificateEmail(X509Certificate certificate) throws CertException{
+    public String getCertificateEmail(X509Certificate certificate)
+            throws CertException {
         String emailOID = "2.5.29.17";
         byte[] emailBytes = certificate.getExtensionValue(emailOID);
-        String certificateEmail=null;
+        String certificateEmail = null;
         try {
-            byte[] octets=((DEROctetString)org.bouncycastle.asn1.ASN1Object.fromByteArray(emailBytes)).getOctets();
-            GeneralNames generalNameCont=GeneralNames.getInstance(org.bouncycastle.asn1.ASN1Object.fromByteArray(octets));
-            GeneralName[] generalNames=generalNameCont.getNames();
-            if(generalNames.length>0){
-                GeneralName generalName=generalNames[0];
-                certificateEmail=generalName.getName().toString();
+            byte[] octets = ((DEROctetString) org.bouncycastle.asn1.ASN1Object.fromByteArray(emailBytes)).getOctets();
+            GeneralNames generalNameCont = GeneralNames.getInstance(org.bouncycastle.asn1.ASN1Object.fromByteArray(octets));
+            GeneralName[] generalNames = generalNameCont.getNames();
+            if (generalNames.length > 0) {
+                GeneralName generalName = generalNames[0];
+                certificateEmail = generalName.getName().toString();
             }
         } catch (IOException e) {
-             throw new CertException("Email could not be extracted from certificate",e);
+            throw new CertException(
+                    "Email could not be extracted from certificate", e);
         }
         return certificateEmail;
     }
 
-    
-  
-    
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void storeCertificate(KeyStore keystore, OutputStream os,
             String keystorePassword) throws CertException {

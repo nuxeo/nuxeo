@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Digital Signature Default Config
+Bundle-SymbolicName: org.nuxeo.ecm.platform.signature.config;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/signature-default-contrib.xml
