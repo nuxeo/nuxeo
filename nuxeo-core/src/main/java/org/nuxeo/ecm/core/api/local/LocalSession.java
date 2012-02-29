@@ -13,6 +13,8 @@
 
 package org.nuxeo.ecm.core.api.local;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -60,8 +62,12 @@ public class LocalSession extends AbstractSession {
                 if (principal == null) {
                     String username = (String) sessionContext.get("username");
                     if (username != null) {
-                        principal = new UserPrincipal(username,
-                                new ArrayList<String>(), false, false);
+                        if (SYSTEM_USERNAME.equals(username)) {
+                            principal = new SystemPrincipal(SYSTEM_USERNAME);
+                        } else {
+                            principal = new UserPrincipal(username,
+                                    new ArrayList<String>(), false, false);
+                        }
                     }
                 }
             } else {
@@ -83,9 +89,7 @@ public class LocalSession extends AbstractSession {
             }
             if (principal == null) {
                 if (isTestingContext()) {
-                    principal = new UserPrincipal(
-                            SecurityConstants.SYSTEM_USERNAME, null, false,
-                            true);
+                    principal = new SystemPrincipal(SYSTEM_USERNAME);
                 } else {
                     throw new ClientException(
                             "Cannot create a core session outside a security context. You must login first.");
