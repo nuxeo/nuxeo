@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -14,6 +14,8 @@
 
 package org.nuxeo.ecm.platform.dublincore.service;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +28,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -76,11 +79,14 @@ public class DublinCoreStorageService extends DefaultComponent {
         }
 
         String principalName = principal.getName();
-        if (principal instanceof NuxeoPrincipal) {
-            NuxeoPrincipal nxp = (NuxeoPrincipal) principal;
-            if (SecurityConstants.SYSTEM_USERNAME.equals(nxp.getName())
-                    && nxp.getOriginatingUser() != null) {
-                principalName = nxp.getOriginatingUser();
+        if (principal instanceof SystemPrincipal) {
+            SystemPrincipal nxp = (SystemPrincipal) principal;
+            String originatingUser = nxp.getOriginatingUser();
+            if (originatingUser == null
+                    || SYSTEM_USERNAME.equals(originatingUser)) {
+                return;
+            } else {
+                principalName = originatingUser;
             }
         }
 
