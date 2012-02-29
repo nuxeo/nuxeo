@@ -1,0 +1,18 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<ul id="#{widget.id}_wizard">
+<c:forEach var="option" items="#{widgetProperty_wizardOptions}">
+ <li class="presetSelector">
+   <input type="radio" name="presetSelector" value="#{option}"/>
+   <c:set var="optionLabel" value="label.wizard.#{option}" />
+   <h:outputText value="#{messages[optionLabel]}" />
+ </li>
+</c:forEach>
+</ul>
+
+</div>

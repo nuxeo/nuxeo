@@ -92,36 +92,63 @@
 
     <layout name="templateOptionsWizard">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/wizard_layout_template.xhtml</template>
       </templates>
+      <properties mode="any">
+          <property name="wizardAdvancedLayout">templateOptions</property>
+          <property name="wizardMapping">{ "officeTemplate" : [{ "id" : "useAsMainContent", "checked" :  "checked" }] , 
+                 "officeTemplatePDF" : [{ "id" : "useAsMainContent", "checked" :  "checked"},
+                                          { "id" : "converter", "val" : "application/pdf"}] ,                 
+		"rendition" : [],
+		"renditionWeb" : [{"id": "processorSelector", "val" : "Freemarker"}]
+               }</property>      
+      </properties>      
       <rows>
         <row>
           <widget>useCaseSelector</widget>
         </row>
       </rows>
+      <widget name="useCaseSelector" type="template">
+        <labels>
+          <label mode="any">label.wizard.usecase.select</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+        </fields>
+         <properties mode="any">
+          <property name="template">
+            /widgets/usecaseSelector.xhtml
+          </property>
+          <propertyList name="wizardOptions">
+             <value>officeTemplate</value>
+             <value>officeTemplatePDF</value>
+             <value>rendition</value>
+             <value>renditionWeb</value>
+          </propertyList>          
+        </properties>
+      </widget>
     </layout>
     
     <layout name="templateOptions">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="create">/layouts/hiddable_layout_template.xhtml</template>
+        <template mode="edit">/layouts/layout_default_template.xhtml</template>
+        <template mode="view">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
         <row>
-          <widget>targetTypes</widget>
+          <widget>nature</widget>
         </row>
         <row>
+          <widget>targetTypes</widget>
           <widget>forcedTypes</widget>
         </row>
         <row>
           <widget>allowOverride</widget>
-        </row>
-        <row>
           <widget>useAsMainContent</widget>
         </row>
         <row>
           <widget>processorSelector</widget>
-        </row>
-        <row>
           <widget>converter</widget>
         </row>
       </rows>

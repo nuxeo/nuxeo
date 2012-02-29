@@ -15,6 +15,7 @@
       <category>Templates</category>
      <layouts mode="create">
        <layout>heading</layout>
+       <layout>templateOptionsWizard</layout>
        <layout>templateOptions</layout>
        <layout>file</layout>
       </layouts>
