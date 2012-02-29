@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher.config;
@@ -123,7 +122,7 @@ public class TomcatConfigurator extends ServerConfigurator {
      * @return Configured context name
      * @since 5.4.2
      */
-    private String getContextName() {
+    public String getContextName() {
         if (contextName == null) {
             Properties userConfig = generator.getUserConfig();
             if (userConfig != null) {

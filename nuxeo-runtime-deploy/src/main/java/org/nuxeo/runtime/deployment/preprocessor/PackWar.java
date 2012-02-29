@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -45,6 +45,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.runtime.deployment.NuxeoStarter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,9 +90,9 @@ public class PackWar {
 
     private static final String ZIP_LIB = "lib/";
 
-    private static final String ZIP_WEBAPPS_NUXEO = "webapps/nuxeo/";
+    private static final String ZIP_WEBAPPS = "webapps/";
 
-    private static final String ZIP_WEBINF = ZIP_WEBAPPS_NUXEO + "WEB-INF/";
+    private static final String ZIP_WEBINF = "WEB-INF/";
 
     private static final String ZIP_WEBINF_LIB = ZIP_WEBINF + "lib/";
 
@@ -125,6 +126,10 @@ public class PackWar {
     protected File tomcat;
 
     protected File zip;
+
+    private ConfigurationGenerator cg;
+
+    private TomcatConfigurator tomcatConfigurator;
 
     public PackWar(File nxserver, File zip) {
         if (!nxserver.isDirectory() || !nxserver.getName().equals("nxserver")) {
@@ -169,7 +174,9 @@ public class PackWar {
             System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
                     tomcat, "bin/nuxeo.conf").getPath());
         }
-        new ConfigurationGenerator().run();
+        cg = new ConfigurationGenerator();
+        cg.run();
+        tomcatConfigurator = ((TomcatConfigurator) cg.getServerConfigurator());
     }
 
     protected void runDeploymentPreprocessor() throws Exception {
@@ -188,18 +195,26 @@ public class PackWar {
             bout.write(README_BEGIN.getBytes("UTF-8"));
             ServerXmlProcessor.INSTANCE.process(
                     newFile(tomcat, "conf/server.xml"), bout);
-            bout.write(README_END.getBytes("UTF-8"));
+            bout.write(README_END.replace("webapps/nuxeo",
+                    "webapps/" + tomcatConfigurator.getContextName()).getBytes(
+                    "UTF-8"));
             zipBytes(ZIP_README, bout.toByteArray(), zout);
 
-            File nuxeoXml = newFile(tomcat, "conf/Catalina/localhost/nuxeo.xml");
-            zipFile(ZIP_WEBAPPS_NUXEO + "META-INF/context.xml", nuxeoXml, zout,
+            File nuxeoXml = new File(tomcat,
+                    tomcatConfigurator.getTomcatConfig());
+            String zipWebappsNuxeo = ZIP_WEBAPPS
+                    + tomcatConfigurator.getContextName() + "/";
+            zipFile(zipWebappsNuxeo + "META-INF/context.xml", nuxeoXml, zout,
                     NuxeoXmlProcessor.INSTANCE);
-            zipTree(ZIP_WEBAPPS_NUXEO, new File(nxserver, "nuxeo.war"), false,
+            zipTree(zipWebappsNuxeo, new File(nxserver, "nuxeo.war"), false,
                     zout);
-            zipTree(ZIP_WEBINF, new File(nxserver, "config"), false, zout);
-            zipTree(ZIP_WEBINF_LIB, new File(nxserver, "bundles"), false, zout);
-            zipTree(ZIP_WEBINF_LIB, new File(nxserver, "lib"), false, zout);
-            zipLibs(ZIP_WEBINF_LIB, new File(tomcat, "lib"),
+            zipTree(zipWebappsNuxeo + ZIP_WEBINF, new File(nxserver, "config"),
+                    false, zout);
+            zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(nxserver,
+                    "bundles"), false, zout);
+            zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB,
+                    new File(nxserver, "lib"), false, zout);
+            zipLibs(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(tomcat, "lib"),
                     MISSING_WEBINF_LIBS, zout);
             zipLibs(ZIP_LIB, new File(tomcat, "lib"), MISSING_LIBS, zout);
             zipLibs(ZIP_ENDORSED, new File(tomcat, "endorsed"), ENDORSED_LIBS,
@@ -261,6 +276,8 @@ public class PackWar {
             prefix += root.getName() + '/';
             zipDirectory(prefix, zout);
         }
+        String zipWebappsNuxeo = ZIP_WEBAPPS
+                + tomcatConfigurator.getContextName() + "/";
         for (String name : root.list()) {
             File file = new File(root, name);
             if (file.isDirectory()) {
@@ -274,7 +291,7 @@ public class PackWar {
                 }
                 name = prefix + name;
                 FileProcessor processor;
-                if (name.equals(ZIP_WEBINF + "web.xml")) {
+                if (name.equals(zipWebappsNuxeo + ZIP_WEBINF + "web.xml")) {
                     processor = WebXmlProcessor.INSTANCE;
                 } else {
                     processor = null;
@@ -290,7 +307,7 @@ public class PackWar {
 
     protected static class CopyProcessor implements FileProcessor {
 
-        public static CopyProcessor INSTANCE = new CopyProcessor();
+        public static final CopyProcessor INSTANCE = new CopyProcessor();
 
         @Override
         public void process(File file, OutputStream out) throws IOException {
