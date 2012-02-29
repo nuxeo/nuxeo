@@ -30,6 +30,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -81,15 +83,29 @@ public class SetTagHandler extends AliasTagHandler {
         if (cache != null) {
             cacheValue = cache.getBoolean(ctx);
         }
+        boolean resolveTwiceBool = false;
+        if (resolveTwice != null) {
+            resolveTwiceBool = resolveTwice.getBoolean(ctx);
+        }
+
         String varStr = var.getValue(ctx);
         ValueExpression ve;
         if (cacheValue) {
             // resolve value and put it as is in variable mapper
             Object res = value.getObject(ctx);
+            if (resolveTwiceBool && res instanceof String
+                    && ComponentTagUtils.isValueReference((String) res)) {
+                ve = ctx.getExpressionFactory().createValueExpression(ctx,
+                        (String) res, Object.class);
+                res = ve.getValue(ctx);
+            }
             ve = ctx.getExpressionFactory().createValueExpression(res,
                     Object.class);
         } else {
             ve = value.getValueExpression(ctx, Object.class);
+            if (resolveTwiceBool) {
+                ve = new MetaValueExpression(ve);
+            }
         }
 
         AliasVariableMapper target = new AliasVariableMapper(id);
