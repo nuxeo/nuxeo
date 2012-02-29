@@ -1,6 +1,5 @@
 <components xmlns:core="http://jboss.com/products/seam/core"
-  xmlns:framework="http://jboss.com/products/seam/framework"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:framework="http://jboss.com/products/seam/framework" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://jboss.com/products/seam/core http://jboss.com/products/seam/core-2.1.xsd
                  http://jboss.com/products/seam/framework http://jboss.com/products/seam/framework-2.1.xsd">
 
@@ -13,7 +12,7 @@
       <value>org.jboss.seam.ejb.RemoveInterceptor</value>
 
       <value>org.jboss.seam.persistence.HibernateSessionProxyInterceptor</value>
-      <!-- <value>org.jboss.seam.persistence.EntityManagerProxyInterceptor</value>  -->
+      <!-- <value>org.jboss.seam.persistence.EntityManagerProxyInterceptor</value> -->
 
       <value>org.jboss.seam.core.MethodContextInterceptor</value>
       <value>org.jboss.seam.core.EventInterceptor</value>
@@ -23,7 +22,7 @@
       <value>org.jboss.seam.core.ConversationInterceptor</value>
 
       <!-- NXP-5988: patch bijection interceptor -->
-      <!--  <value>org.jboss.seam.core.BijectionInterceptor</value> -->
+      <!-- <value>org.jboss.seam.core.BijectionInterceptor</value> -->
       <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoBijectionInterceptor</value>
 
       <value>org.jboss.seam.transaction.RollbackInterceptor</value>
@@ -35,10 +34,18 @@
     </core:interceptors>
   </core:init>
 
-  <!--  deactivate filters not useful in Nuxeo -->
+  <!-- disable filters not useful in Nuxeo -->
   <component name="org.jboss.seam.web.wicketFilter" disabled="true" />
   <component name="org.jboss.seam.web.authenticationFilter" disabled="true" />
   <component name="org.jboss.seam.web.identityFilter" disabled="true" />
   <component name="org.jboss.seam.web.loggingFilter" disabled="true" />
+
+  <!-- configure custom implementations for Seam Excel library -->
+  <component name="org.jboss.seam.excel.excelFactory">
+    <property name="implementations">
+      <key>jxl</key>
+      <value>org.nuxeo.ecm.platform.ui.web.component.seam.JXLExcelWorkbook</value>
+    </property>
+  </component>
 
 </components>
