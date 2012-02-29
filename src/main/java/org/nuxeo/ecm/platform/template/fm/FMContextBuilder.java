@@ -69,7 +69,7 @@ public class FMContextBuilder {
             try {
                 auditEntries = preprocessAuditEntries(auditEntries, session, "en");
             } catch (Throwable e) {
-                log.warn("Unable to preprocess Audit entries", e);
+                log.warn("Unable to preprocess Audit entries : " + e.getMessage());
             }
             ctx.put("auditEntries", nuxeoWrapper.wrap(auditEntries));
         }

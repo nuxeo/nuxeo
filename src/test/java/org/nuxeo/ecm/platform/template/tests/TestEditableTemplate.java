@@ -137,5 +137,12 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         assertTrue(result.getString().contains(doc.getId()));
                 
     }
+    
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
 
 }
