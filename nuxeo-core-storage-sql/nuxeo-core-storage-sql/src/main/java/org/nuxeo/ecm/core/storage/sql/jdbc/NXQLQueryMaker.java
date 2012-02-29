@@ -1283,9 +1283,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     if (op == Operator.ILIKE || op == Operator.NOTILIKE) {
                         visitExpressionIlike(node, node.operator);
                     } else {
-                        node.lvalue.accept(this);
-                        op.accept(this);
-                        rvalue.accept(this);
+                        super.visitExpression(node);
 
                     }
                 }
