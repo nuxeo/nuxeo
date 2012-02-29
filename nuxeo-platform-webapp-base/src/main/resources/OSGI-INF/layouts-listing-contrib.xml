@@ -557,8 +557,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The tab to select when clicking on the document link.
-                    Available since 5.4.2.
+                    The tab to select when clicking on the
+                    document link. Available since 5.4.2.
                   </label>
                 </helpLabels>
                 <fields>
@@ -571,8 +571,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The sub tab to select when clicking on the document
-                    link. Available since 5.5.
+                    The sub tab to select when clicking on the
+                    document link. Available since 5.5.
                   </label>
                 </helpLabels>
                 <fields>
@@ -939,6 +939,10 @@
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateFormater()}</property>
       </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
     </widget>
 
     <widget name="listing_author" type="listing_author">
@@ -1069,6 +1073,10 @@
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateFormater()}</property>
       </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
     </widget>
 
     <widget name="listing_format" type="text">
@@ -1101,6 +1109,10 @@
       </fields>
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateFormater()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+        <property name="csv_forceType">date</property>
       </properties>
     </widget>
 

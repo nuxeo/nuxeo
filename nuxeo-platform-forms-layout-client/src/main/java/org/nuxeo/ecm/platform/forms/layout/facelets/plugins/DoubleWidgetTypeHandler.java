@@ -79,6 +79,13 @@ public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
+        } else if (BuiltinWidgetModes.CSV.equals(mode)) {
+            // default on text without any converter to ease format
+            // configuration
+            ComponentHandler output = helper.getHtmlComponentHandler(
+                    widgetTagConfigId, attributes, leaf,
+                    HtmlOutputText.COMPONENT_TYPE, null);
+            return output;
         } else {
             // default on text with int converter for other modes
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
