@@ -232,6 +232,8 @@ public class LRUFileCache implements FileCache {
             remove(key);
         }
         lru.clear();
+        cache.clear();
+        files.clear();
     }
 
     protected void recordAccess(String key) {
