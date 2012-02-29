@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
-
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.tag.TagAttribute;
@@ -60,7 +59,7 @@ public class SetTagHandler extends AliasTagHandler {
     protected final TagAttribute value;
 
     /**
-     * @since 5.4.3
+     * @since 5.5
      */
     protected final TagAttribute resolveTwice;
 
@@ -109,13 +108,6 @@ public class SetTagHandler extends AliasTagHandler {
             if (resolveTwiceBool) {
                 ve = new MetaValueExpression(ve);
             }
-        }
-        boolean resolveTwiceBool = false;
-        if (resolveTwice != null) {
-            resolveTwiceBool = resolveTwice.getBoolean(ctx);
-        }
-        if (resolveTwiceBool) {
-            ve = new MetaValueExpression(ve);
         }
 
         AliasVariableMapper target = new AliasVariableMapper(id);
