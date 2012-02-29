@@ -24,6 +24,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.file.FileCache;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Base class for a lazy Binary that fetches its remote stream on first access.
@@ -72,6 +74,31 @@ public abstract class LazyBinary extends Binary {
             }
         }
         return file == null ? null : new FileInputStream(file);
+    }
+
+    @Override
+    public StreamSource getStreamSource() {
+        if (file == null) {
+            file = fileCache.getFile(digest);
+            if (file == null) {
+                File tmp;
+                try {
+                    tmp = fileCache.getTempFile();
+                    if (fetchFile(tmp)) {
+                        file = fileCache.putFile(digest, tmp);
+                    } else {
+                        tmp.delete();
+                    }
+                } catch (IOException e) {
+                    log.error("Unable to retrieve file from SQL binary store", e);
+                }
+            }
+            if (file != null) {
+                length = file.length();
+                hasLength = true;
+            }
+        }
+        return file == null ? null : new FileSource(file);
     }
 
     /**
