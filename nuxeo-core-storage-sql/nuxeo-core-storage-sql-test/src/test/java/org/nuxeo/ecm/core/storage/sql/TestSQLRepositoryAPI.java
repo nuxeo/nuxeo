@@ -1402,15 +1402,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // read the properties
         docModel.getProperty("dublincore", "title");
 
-        // XXX: FIXME: OG the following throws a class cast exception since the
-        // get property returns an HashMap instance instead of a LazyBlob when
-        // the tests are all run together:
-
-        // LazyBlob blob2 = (LazyBlob) docModel.getProperty("file", "content");
-        // assertEquals(-1, blob2.getLength());
-        // assertEquals("text/html", blob2.getMimeType());
-        // assertEquals(42, blob2.getByteArray().length);
-
         // edit the title without touching the blob
         docModel.setProperty("dublincore", "title", "edited title");
         docModel.setProperty("dublincore", "description", "edited description");
@@ -2954,8 +2945,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         return bytes;
     }
 
-    // badly named
-    public void testLazyBlob() throws Exception {
+    public void testBlob2() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "mydoc", "File");

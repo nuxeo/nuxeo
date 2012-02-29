@@ -409,10 +409,6 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // read the properties
         docModel.getProperty("dublincore", "title");
 
-        // XXX: FIXME: OG the following throws a class cast exception since the
-        // get property returns an HashMap instance instead of a LazyBlob when
-        // the tests are all run together:
-
         Blob blob2 = (Blob) docModel.getProperty("file", "content");
         assertEquals(s.length(), blob2.getLength()); // only ascii chars
         assertEquals("text/html", blob2.getMimeType());
