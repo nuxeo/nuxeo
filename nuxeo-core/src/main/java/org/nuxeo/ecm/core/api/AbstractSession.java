@@ -2133,7 +2133,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         props.put("versionLabel", label);
         props.put("checkInComment", checkinComment);
         props.put("checkedInVersionRef", checkedInVersionRef);
-        if (checkinComment == null) {
+        if (checkinComment == null && options!=null) {
             // check if there's a comment already in options
             Object optionsComment = options.get("comment");
             if (optionsComment instanceof String) {
@@ -2143,8 +2143,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         String comment = checkinComment == null ? label : label + ' '
                 + checkinComment;
         props.put("comment", comment); // compat, used in audit
+        // notify checkin on live document
         notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel, props,
                 null, null, true, false);
+        // notify creation on version document
+        notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, getDocument(checkedInVersionRef), props,
+                null, null, true, false);
+        
     }
 
     @Override
@@ -2837,8 +2842,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                         // doc. recreate a version
                         getVersioningService().doCheckOut(doc);
                     }
-                    getVersioningService().doCheckIn(doc, null, checkinComment);
+                    Document version = getVersioningService().doCheckIn(doc, null, checkinComment);
                     docModel.refresh(DocumentModel.REFRESH_STATE, null);
+                    notifyCheckedInVersion(docModel, new IdRef(version.getUUID()), null, checkinComment);
                 }
                 target = doc.getLastVersion();
                 if (overwriteExistingProxy) {
