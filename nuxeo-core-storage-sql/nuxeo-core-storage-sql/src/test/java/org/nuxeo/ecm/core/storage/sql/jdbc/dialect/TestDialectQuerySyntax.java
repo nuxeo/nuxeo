@@ -207,6 +207,7 @@ public class TestDialectQuerySyntax extends TestCase {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
         assertDialectFT("foo", "foo");
+        assertDialectFT("FOO", "FOO");
         assertDialectFT("(foo AND bar)", "foo bar");
         assertDialectFT("(foo NOT bar)", "foo -bar");
         assertDialectFT("(bar NOT foo)", "-foo bar");
