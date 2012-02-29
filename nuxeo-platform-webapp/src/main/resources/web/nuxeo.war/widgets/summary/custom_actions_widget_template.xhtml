@@ -2,6 +2,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
 
 <nxu:set var="category"
@@ -41,69 +42,14 @@
     </c:choose>
 
     <div class="actions_block">
-      <c:choose>
-        <c:when test="#{widgetProperty_display == 'buttons'}">
-          <nxu:dataList layout="simple"
-            var="action" value="#{actions}">
-            <div>
-              <nxh:commandButton action="#{action.getLink()}"
-                immediate="#{action.immediate}"
-                onclick="#{action.confirm}"
-                id="#{widget.id}_#{action.id}"
-                value="#{messages[action.label]}"
-                styleClass="button" />
-            </div>
-          </nxu:dataList>
-        </c:when>
-        <c:when test="#{widgetProperty_display == 'links'}">
-          <nxu:dataList layout="simple"
-            var="action" value="#{actions}">
-            <div>
-              <nxh:commandLink action="#{action.getLink()}"
-                immediate="#{action.immediate}"
-                onclick="#{action.confirm}"
-                id="#{widget.id}_#{action.id}"
-                value="#{messages[action.label]}"
-                styleClass="button" />
-            </div>
-          </nxu:dataList>
-        </c:when>
-        <c:when test="#{widgetProperty_display == 'icons'}">
-          <nxu:dataList layout="simple"
-            var="action" value="#{actions}">
-            <div>
-              <nxh:commandLink action="#{action.getLink()}"
-                id="#{widget.id}_#{action.id}"
-                onclick="#{action.confirm}"
-                immediate="#{action.immediate}">
-                <h:graphicImage value="#{action.icon}"
-                  rendered="#{not empty action.icon}"
-                  title="#{messages[action.label]}"
-                  alt="#{messages[action.label]}"
-                  styleClass="smallIcon" />
-              </nxh:commandLink>
-            </div>
-          </nxu:dataList>
-        </c:when>
-        <c:otherwise>
-          <nxu:dataList layout="simple"
-            var="action" value="#{actions}">
-            <div>
-              <nxh:commandLink action="#{action.getLink()}"
-                id="#{widget.id}_#{action.id}"
-                onclick="#{action.confirm}"
-                immediate="#{action.immediate}">
-                <h:graphicImage value="#{action.icon}"
-                  rendered="#{not empty action.icon}"
-                  title="#{messages[action.label]}"
-                  alt="#{messages[action.label]}"
-                  styleClass="smallIcon" />
-                <h:outputText  value=" #{messages[action.label]}" />
-              </nxh:commandLink>
-            </div>
-          </nxu:dataList>
-        </c:otherwise>
-      </c:choose>
+      <c:forEach var="action" items="#{actions}">
+        <div>
+          <ui:decorate template="/incl/action_template.xhtml">
+            <ui:param name="display" value="#{widgetProperty_display}" />
+            <ui:param name="idPrefix" value="#{widget.id}_" />
+          </ui:decorate>
+        </div>
+      </c:forEach>
     </div>
 
   </c:if>

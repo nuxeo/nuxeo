@@ -71,7 +71,7 @@
                   <widget>category</widget>
                 </row>
                 <row>
-                  <widget>display</widget>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
                 </row>
               </rows>
               <widget name="category" type="text">
@@ -87,30 +87,6 @@
                 <fields>
                   <field>category</field>
                 </fields>
-              </widget>
-              <widget name="display" type="selectOneListbox">
-                <labels>
-                  <label mode="any">Display</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    If set to 'buttons', actions will be displayed as command
-                    buttons. If set to 'links', actions will be displayed as
-                    command links. If set to 'icons', actions will be displayed
-                    as icons. Else (default behaviour), actions will be
-                    displayed as command links and display their icons when
-                    defined.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>display</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Icons and links" itemValue="" />
-                  <option itemLabel="Icons" itemValue="icons" />
-                  <option itemLabel="Buttons" itemValue="buttons" />
-                  <option itemLabel="Links" itemValue="links" />
-                </selectOptions>
               </widget>
             </layout>
           </layouts>
