@@ -14,10 +14,11 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -31,6 +32,9 @@ public class TestRemotableBlob extends NXRuntimeTestCase {
     protected SQLBlob createSQLBlob() throws Exception {
         File file = File.createTempFile("nuxeo-test-", ".blob");
         file.deleteOnExit();
+        OutputStream out = new FileOutputStream(file);
+        out.write("the content".getBytes("UTF-8"));
+        out.close();
         Binary binary = new Binary(file, "abc");
         return new SQLBlob(binary, "test.txt", "text/plain", "UTF-8", "abc");
     }
@@ -44,14 +48,15 @@ public class TestRemotableBlob extends NXRuntimeTestCase {
         ObjectInputStream in = new ObjectInputStream(bais);
         Object obj = in.readObject();
 
-        assertTrue(obj instanceof StreamingBlob);
-        StreamingBlob sblob = (StreamingBlob)obj;
+        assertTrue(obj instanceof SQLBlob);
+        SQLBlob sblob = (SQLBlob) obj;
 
         assertEquals(sblob.getFilename(), blob.getFilename());
         assertEquals(sblob.getDigest(), blob.getDigest());
         assertEquals(sblob.getEncoding(), blob.getEncoding());
         assertEquals(sblob.getLength(), blob.getLength());
         assertEquals(sblob.getMimeType(), blob.getMimeType());
+        assertEquals(sblob.getString(), blob.getString());
     }
 
 }
