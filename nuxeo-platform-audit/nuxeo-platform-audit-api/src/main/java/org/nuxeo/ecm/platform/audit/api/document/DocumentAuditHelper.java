@@ -80,6 +80,8 @@ public class DocumentAuditHelper {
                     } else {
                         // we have no entry in audit log to get the maxDate
                         // fallback to repository timestamp
+                        // this code is here only for compatibility
+                        // so that it works before version events were added to the audit log
                         if (doc.getPropertyValue("dc:modified") != null) {
                             result = new AdditionalDocumentAuditParams();
                             Calendar estimatedDate = ((Calendar) doc.getPropertyValue("dc:modified"));
@@ -103,7 +105,7 @@ public class DocumentAuditHelper {
                             queryString.append(") AND log.eventDate >= :minDate ");
                             queryString.append(" order by log.eventId asc");
                             
-                            estimatedDate.add(Calendar.SECOND, -1);
+                            estimatedDate.add(Calendar.MILLISECOND, -500);
                             Map<String, Object> params = new HashMap<String, Object>();                       
                             params.put("minDate", estimatedDate.getTime());
                             
@@ -112,7 +114,7 @@ public class DocumentAuditHelper {
                                 result.targetUUID = targetUUID;
                                 Calendar maxDate = new GregorianCalendar();
                                 maxDate.setTime(dateEntries.get(0).getEventDate());
-                                maxDate.add(Calendar.MILLISECOND, -10);
+                                maxDate.add(Calendar.MILLISECOND, -500);
                                 result.maxDate = maxDate.getTime();
                             } else {
                                 // no other choice : use the VCS TS

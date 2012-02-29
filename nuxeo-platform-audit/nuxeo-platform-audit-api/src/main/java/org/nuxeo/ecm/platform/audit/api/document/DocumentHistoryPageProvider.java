@@ -12,10 +12,14 @@
  */
 package org.nuxeo.ecm.platform.audit.api.document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.AuditPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
@@ -57,6 +61,18 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
     @Override
     protected boolean allowSimplePattern() {
         return false;
+    }
+    
+    @Override
+    public List<SortInfo> getSortInfos() {
+        
+        List<SortInfo> sort = super.getSortInfos();
+        if (sort==null || sort.size()==0) {
+            sort = new ArrayList<SortInfo>();
+            sort.add(new SortInfo("log.eventDate",true));
+            sort.add(new SortInfo("log.id",true));             
+        }        
+        return sort;
     }
 
     @Override

@@ -129,7 +129,6 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         // Hibernate does not like Calendar type
         if (param instanceof Calendar) {
             return new Timestamp(((Calendar) param).getTime().getTime());
-            // return ((Calendar) param).getTime();
         }
         return param;
     }

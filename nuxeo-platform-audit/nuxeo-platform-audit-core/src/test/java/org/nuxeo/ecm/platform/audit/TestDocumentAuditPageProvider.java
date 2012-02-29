@@ -22,7 +22,7 @@ import org.nuxeo.runtime.api.Framework;
  * Test the {@link DocumentHistoryPageProvider}
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
+ * 
  */
 public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
@@ -57,8 +57,6 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
         deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
                 "nxaudit-tests.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "test-audit-contrib.xml");
 
         deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
                 "test-pageprovider-contrib.xml");
@@ -75,8 +73,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
     protected void createTestEntries() throws Exception {
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);        
-        
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+
         DocumentModel section = session.createDocumentModel("/", "section",
                 "Folder");
         section = session.createDocument(section);
@@ -96,9 +94,10 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             waitForEventsDispatched();
         }
 
-        // wait at least 1s to be sure we have a precise timestamp in all DB backend
-        Thread.sleep(1100); 
-        
+        // wait at least 1s to be sure we have a precise timestamp in all DB
+        // backend
+        Thread.sleep(1100);
+
         // create a version
         doc.putContextData(VersioningService.VERSIONING_OPTION,
                 VersioningOption.MINOR);
@@ -106,9 +105,10 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
         session.save();
         waitForEventsDispatched();
 
-        // wait at least 1s to be sure we have a precise timestamp in all DB backend
-        Thread.sleep(1100); 
-        
+        // wait at least 1s to be sure we have a precise timestamp in all DB
+        // backend
+        Thread.sleep(1100);
+
         // do some more updates
         for (int i = 5; i < 10; i++) {
             doc.setPropertyValue("dc:description", "Update " + i);
@@ -118,15 +118,17 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             waitForEventsDispatched();
         }
 
-        // wait at least 1s to be sure we have a precise timestamp in all DB backend
-        Thread.sleep(1100); 
-        
+        // wait at least 1s to be sure we have a precise timestamp in all DB
+        // backend
+        Thread.sleep(1100);
+
         proxy = session.publishDocument(doc, section);
         session.save();
         waitForEventsDispatched();
 
-        Thread.sleep(1100); // wait at least 1s to be sure we have a precise timestamp in all DB backend
-        
+        Thread.sleep(1100); // wait at least 1s to be sure we have a precise
+                            // timestamp in all DB backend
+
         // do some more updates
         for (int i = 10; i < 15; i++) {
             doc.setPropertyValue("dc:description", "Update " + i);
@@ -143,11 +145,15 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
                 System.out.println("version: " + version.getId());
                 System.out.println("version series: "
                         + version.getVersionSeriesId());
-                System.out.println("version label: " + version.getVersionLabel());         
+                System.out.println("version label: "
+                        + version.getVersionLabel());
+                System.out.println("version date: "
+                        + ((Calendar) version.getPropertyValue("dc:modified")).getTime());
             }
         }
 
-        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery("from LogEntry", 0, 100);
+        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(
+                "from LogEntry", 0, 100);
         if (!entries.get(0).getDocUUID().equals(section.getId())) {
             entries.remove(0);
         }
@@ -187,10 +193,10 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             dump(entries);
         }
 
-        assertEquals(18, entries.size()); // remove section + proxy
+        // create, 15+1 update , 2 checkin
+        assertEquals(19, entries.size());
         long startIdx = entries.get(0).getId();
         long endIdx = entries.get(17).getId();
-        
 
         // Get Proxy history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
@@ -204,12 +210,14 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             dump(entries);
         }
 
-        // - 5 updates + create
-        assertEquals(18 - 5 +1 , entries.size()); 
+        // 19 - 5 updates + create + proxyPublished
+        int proxyEntriesCount = 19 - 5 + 1 + 1;
+        assertEquals(proxyEntriesCount, entries.size());
 
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(startIdx+13).longValue(),
-                entries.get(18 - 5).getId());
+        assertEquals(
+                Long.valueOf(startIdx + proxyEntriesCount + 1).longValue(),
+                entries.get(proxyEntriesCount - 1).getId());
 
         // Get version 1 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
@@ -224,44 +232,57 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             dump(entries);
         }
 
-        assertEquals(1 + 5, entries.size()); // creation + 5 updates
-        assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(startIdx+5).longValue(), entries.get(5).getId());
+        // creation + 5 updates + update + checkin + created
+        int version1EntriesCount = 1 + 5 + 1 + 1 + 1;
+        if (version1EntriesCount == entries.size()) {
+            assertEquals(Long.valueOf(startIdx).longValue(),
+                    entries.get(0).getId());
+            assertEquals(
+                    Long.valueOf(startIdx + version1EntriesCount - 1).longValue(),
+                    entries.get(version1EntriesCount - 1).getId());
+        } else {
+            // because update even may be 1ms behind checkin/created !
+            assertEquals(version1EntriesCount - 1, entries.size());
+        }
 
         // get version 2 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
-        
+
         entries = (List<LogEntry>) pp.getCurrentPage();
-        
+
         if (verbose) {
             System.out.println("Version " + versions.get(1).getVersionLabel()
                     + " doc history");
             dump(entries);
         }
 
-        // creation + 5x2 updates + checkin/update
-        assertEquals(1 + 5 + 1 + 5 +1, entries.size()); 
+        // creation + 5x2 updates + checkin/update + checkin + created
+        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
+        assertEquals(versin2EntriesCount, entries.size());
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(startIdx+11).longValue(), entries.get(11).getId());
+        assertEquals(Long.valueOf(startIdx + versin2EntriesCount).longValue(),
+                entries.get(versin2EntriesCount - 1).getId());
 
     }
-    
+
     public void testDocumentHistoryReader() throws Exception {
-        
+
         openRepository();
         createTestEntries();
-        
+
         DocumentHistoryReader reader = Framework.getLocalService(DocumentHistoryReader.class);
         assertNotNull(reader);
-        
-        List<LogEntry> entries =  reader.getDocumentHistory(versions.get(1), 0, 20);
+
+        List<LogEntry> entries = reader.getDocumentHistory(versions.get(1), 0,
+                20);
         assertNotNull(entries);
-        // creation + 5x2 updates + checkin/update
-        assertEquals(1 + 5 + 1 + 5 +1, entries.size()); 
-        
+        // creation + 5x2 updates + checkin/update + checkin + created
+        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
+        assertEquals(versin2EntriesCount, entries.size());
+
     }
 
 }

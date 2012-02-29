@@ -106,6 +106,8 @@
     <event name="logout" />
     <event name="documentCheckedIn" />
     <event name="versionRemoved" />
+    <event name="documentProxyPublished" />
+    <event name="sectionContentPublished" />          
   </extension>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"

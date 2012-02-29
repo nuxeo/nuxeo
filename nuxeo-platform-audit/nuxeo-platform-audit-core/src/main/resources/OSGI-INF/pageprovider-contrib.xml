@@ -42,6 +42,7 @@
         </predicate>
       </whereClause>
       <sort column="log.eventDate" ascending="true" />
+      <sort column="log.id" ascending="true" />
       <pageSize>10</pageSize>
     </genericPageProvider>
 
