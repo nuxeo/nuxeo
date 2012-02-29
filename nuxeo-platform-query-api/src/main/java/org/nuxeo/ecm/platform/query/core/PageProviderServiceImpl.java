@@ -64,6 +64,12 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             pageProvider = new CoreQueryDocumentPageProvider();
         } else if (desc instanceof GenericPageProviderDescriptor) {
             Class<PageProvider<?>> klass = ((GenericPageProviderDescriptor) desc).getPageProviderClass();
+            if (klass == null) {
+                throw new ClientException(String.format(
+                        "Cannot find class for page provider "
+                                + "definition with name '%s': check"
+                                + " ERROR logs at startup", name));
+            }
             try {
                 pageProvider = klass.newInstance();
             } catch (Exception e) {
@@ -71,7 +77,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             }
         } else {
             throw new ClientException(String.format(
-                    "Invalid page definition with name '%s'", name));
+                    "Invalid page provider definition with name '%s'", name));
         }
 
         pageProvider.setName(name);

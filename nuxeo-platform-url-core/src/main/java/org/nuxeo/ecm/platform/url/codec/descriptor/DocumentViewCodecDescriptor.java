@@ -26,19 +26,19 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class DocumentViewCodecDescriptor {
 
     @XNode("@name")
-    private String name;
+    protected String name;
 
     @XNode("@class")
-    private String className;
+    protected String className;
 
     @XNode("@prefix")
-    private String prefix;
+    protected String prefix;
 
     @XNode("@default")
-    private boolean defaultCodec;
+    protected boolean defaultCodec;
 
     @XNode("@enabled")
-    private boolean enabled;
+    protected boolean enabled;
 
     public String getClassName() {
         return className;

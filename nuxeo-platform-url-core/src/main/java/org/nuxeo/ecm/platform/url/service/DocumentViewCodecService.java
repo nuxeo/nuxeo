@@ -132,12 +132,14 @@ public class DocumentViewCodecService extends DefaultComponent implements
             // try to instanciate it
             DocumentViewCodecDescriptor desc = descriptors.get(codecName);
             if (desc == null) {
-                throw new IllegalArgumentException("Unknown codec " + codecName);
+                throw new IllegalArgumentException(String.format(
+                        "Unknown codec '%s'", codecName));
             }
             String className = desc.getClassName();
             if (className == null) {
-                throw new IllegalArgumentException("Invalid class for codec "
-                        + codecName);
+                throw new IllegalArgumentException(String.format(
+                        "Invalid class for codec '%s': check ERROR logs"
+                                + " at startup", codecName));
             }
             try {
                 // Thread context loader is not working in isolated EARs
@@ -145,8 +147,8 @@ public class DocumentViewCodecService extends DefaultComponent implements
                         className).newInstance();
             } catch (Exception e) {
                 String msg = String.format(
-                        "Caught error when instantiating codec %s with class %s ",
-                        codecName, className);
+                        "Caught error when instantiating codec '%s' with "
+                                + "class '%s' ", codecName, className);
                 throw new IllegalArgumentException(msg, e);
             }
             String prefix = desc.getPrefix();

@@ -41,34 +41,34 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDefinition {
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")
-    String name;
+    protected String name;
 
     @XNode("@enabled")
-    boolean enabled = true;
+    protected boolean enabled = true;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> properties = new HashMap<String, String>();
+    protected Map<String, String> properties = new HashMap<String, String>();
 
     @XNodeList(value = "parameter", type = String[].class, componentType = String.class)
-    String[] queryParameters;
+    protected String[] queryParameters;
 
     @XNode("pageSize")
-    long pageSize = 0;
+    protected long pageSize = 0;
 
     @XNode("pageSizeBinding")
-    String pageSizeBinding;
+    protected String pageSizeBinding;
 
     @XNode("maxPageSize")
-    Long maxPageSize;
+    protected Long maxPageSize;
 
     @XNode("sortable")
-    boolean sortable = true;
+    protected boolean sortable = true;
 
     @XNodeList(value = "sort", type = ArrayList.class, componentType = SortInfoDescriptor.class)
-    List<SortInfoDescriptor> sortInfos;
+    protected List<SortInfoDescriptor> sortInfos;
 
     @XNode("sortInfosBinding")
-    String sortInfosBinding;
+    protected String sortInfosBinding;
 
     protected String pattern;
 
