@@ -183,6 +183,10 @@
           <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
           <property name="timezone">#{timeZone}</property>
         </properties>
+        <properties mode="csv">
+          <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+          <property name="csv_forceType">date</property>
+        </properties>
       </widget>
 
       <widget name="username" type="text">
