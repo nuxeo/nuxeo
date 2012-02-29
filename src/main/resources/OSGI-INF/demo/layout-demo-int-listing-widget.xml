@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.forms.layoutDemo.intWidget.listing.contrib">
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.intWidget.listing.contrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
@@ -48,6 +47,9 @@
         <fields>
           <field>data.lds.intField</field>
         </fields>
+        <properties mode="csv">
+          <property name="csv_forceType">number</property>
+        </properties>
       </widget>
     </layout>
 

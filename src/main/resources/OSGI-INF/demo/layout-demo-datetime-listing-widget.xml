@@ -51,6 +51,10 @@
         <properties widgetMode="view">
           <property name="pattern">#{nxu:basicDateFormater()}</property>
         </properties>
+        <properties mode="csv">
+          <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+          <property name="csv_forceType">date</property>
+        </properties>
       </widget>
     </layout>
 
