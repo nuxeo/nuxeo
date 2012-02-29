@@ -63,7 +63,7 @@ public class LocalSession extends AbstractSession {
                     String username = (String) sessionContext.get("username");
                     if (username != null) {
                         if (SYSTEM_USERNAME.equals(username)) {
-                            principal = new SystemPrincipal(SYSTEM_USERNAME);
+                            principal = new SystemPrincipal(null);
                         } else {
                             principal = new UserPrincipal(username,
                                     new ArrayList<String>(), false, false);
@@ -89,7 +89,7 @@ public class LocalSession extends AbstractSession {
             }
             if (principal == null) {
                 if (isTestingContext()) {
-                    principal = new SystemPrincipal(SYSTEM_USERNAME);
+                    principal = new SystemPrincipal(null);
                 } else {
                     throw new ClientException(
                             "Cannot create a core session outside a security context. You must login first.");
