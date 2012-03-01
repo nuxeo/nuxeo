@@ -3890,7 +3890,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>net.sf.alchim</groupId>
@@ -3939,6 +3939,32 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>properties-maven-plugin</artifactId>
           <version>1.0-alpha-2</version>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only.
+          It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>net.java.maven-incremental-build</groupId>
+                    <artifactId>incremental-build-plugin</artifactId>
+                    <versionRange>[1.4,)</versionRange>
+                    <goals>
+                      <goal>incremental-build</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -4078,7 +4104,7 @@
                 <goals>
                   <goal>compile</goal>
                 </goals>
-               <configuration>
+                <configuration>
                   <draftCompile>false</draftCompile>
                 </configuration>
               </execution>
