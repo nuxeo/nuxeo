@@ -14,26 +14,10 @@
   </script>
 
   <nxl:documentLayout mode="edit" value="#{currentDocument}" />
-  <ui:include src="/incl/document_versioning.xhtml" />
 
-  <table class="dataInput">
-    <tbody>
-      <tr>
-        <td class="labelColumn">
-          <div class="widgetHelpLabel">
-            <h:outputText value="#{messages['label.editComment']}" />
-          </div>
-          <div class="tooltip">
-            #{messages['label.editComment.tooltip']}
-          </div>
-        </td>
-        <td class="fieldColumn">
-          <h:inputTextarea
-            value="#{currentDocument.contextData['request/comment']}" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <ui:include src="/incl/document_versioning.xhtml" />
+  <nxl:layout name="document_edit_form_options"
+    mode="edit" value="#{currentDocument}" />
 
   <p class="buttonsGadget">
     <nxu:set var="actions"
