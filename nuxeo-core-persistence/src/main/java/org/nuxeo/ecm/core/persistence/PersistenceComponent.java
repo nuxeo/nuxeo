@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -34,6 +35,26 @@ public class PersistenceComponent extends DefaultComponent
     protected final Map<String, HibernateConfiguration> registry =
             new HashMap<String, HibernateConfiguration>();
 
+    @Override
+    public int getApplicationStartedOrder() {
+        return 50; // even before repository init
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        /*
+         * Initialize all the persistence units synchronously at startup,
+         * otherwise init may end up being called during the first asynchronous
+         * event, which means hibernate init may happen in parallel with the
+         * main Nuxeo startup thread which may be doing the hibernate init for
+         * someone else (JBPM for instance).
+         */
+        for (String name : registry.keySet()) {
+            PersistenceProvider pp = newProvider(name);
+            pp.openPersistenceUnit(); // creates tables etc.
+            pp.closePersistenceUnit();
+        }
+    }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint,
