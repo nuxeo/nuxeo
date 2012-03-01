@@ -51,8 +51,12 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     public static final String TEMPLATE_TYPE_AUTO = "auto";
 
     public static final String TEMPLATE_APPLICABLE_TYPES_PROP = "tmpl:applicableTypes";
+    
+    public static final String TEMPLATE_APPLICABLE_TYPES_ALL = "all";
 
     public static final String TEMPLATE_FORCED_TYPES_PROP = "tmpl:forcedTypes";
+    
+    public static final String TEMPLATE_FORCED_TYPES_NONE = "none";
     
     public static final String TEMPLATE_OUTPUT_PROP = "tmpl:outputFormat";
 
@@ -142,15 +146,58 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
 
+    public void initTypesBindings() throws Exception {
+        
+        // manage applicable types
+        String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
+                TEMPLATE_APPLICABLE_TYPES_PROP);
+        
+        String[] newApplicableTypesArray=null;
+        
+        if (applicableTypesArray==null || applicableTypesArray.length==0) {
+            newApplicableTypesArray =  new String[]{TEMPLATE_APPLICABLE_TYPES_ALL};
+        } else if (applicableTypesArray.length>1){
+            if (TEMPLATE_APPLICABLE_TYPES_ALL.equals(applicableTypesArray[0])) {
+                List<String> at = Arrays.asList(applicableTypesArray);
+                at.remove(0);
+                newApplicableTypesArray =  at.toArray(new String[at.size()]);;
+            }
+        }
+        if (newApplicableTypesArray!=null) {
+            getAdaptedDoc().setPropertyValue(TEMPLATE_APPLICABLE_TYPES_PROP, newApplicableTypesArray);
+        }
+
+        // manage forcedTypes
+        String[] forcedTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
+                TEMPLATE_FORCED_TYPES_PROP);
+        String[] newForcedTypesArray = null;
+        if (forcedTypesArray==null || forcedTypesArray.length==0) {
+            newForcedTypesArray = new String[]{TEMPLATE_FORCED_TYPES_NONE};
+        } else if (forcedTypesArray.length>1){
+            if (TEMPLATE_FORCED_TYPES_NONE.equals(forcedTypesArray[0])) {
+                List<String> ft = Arrays.asList(forcedTypesArray);
+                ft.remove(0);
+                newForcedTypesArray =  ft.toArray(new String[ft.size()]);;
+            }
+        }
+        if (newForcedTypesArray!=null) {
+            getAdaptedDoc().setPropertyValue(TEMPLATE_FORCED_TYPES_PROP, newForcedTypesArray);
+        }
+        
+        
+        
+        
+    }
+    
     public List<String> getApplicableTypes() {
         try {
             String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
-                    TemplateSourceDocumentAdapterImpl.TEMPLATE_APPLICABLE_TYPES_PROP);
+                    TEMPLATE_APPLICABLE_TYPES_PROP);
             List<String> applicableTypes = new ArrayList<String>();
             if (applicableTypesArray != null) {
                 applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
             }
-            if (applicableTypes.size()>0 && applicableTypes.get(0).equals("all")) {
+            if (applicableTypes.size()>0 && applicableTypes.get(0).equals(TEMPLATE_APPLICABLE_TYPES_ALL)) {
                 applicableTypes.remove(0);
             }
             return applicableTypes;
@@ -162,13 +209,13 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public List<String> getForcedTypes() {
         try {
-            String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
-                    TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP);
+            String[] forcedTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_FORCED_TYPES_PROP);
             List<String> applicableTypes = new ArrayList<String>();
-            if (applicableTypesArray != null) {
-                applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
+            if (forcedTypesArray != null) {
+                applicableTypes.addAll((Arrays.asList(forcedTypesArray)));
             }
-            if (applicableTypes.size()>0 && applicableTypes.get(0).equals("none")) {
+            if (applicableTypes.size()>0 && applicableTypes.get(0).equals(TEMPLATE_FORCED_TYPES_NONE)) {
                 applicableTypes.remove(0);
             }
             return applicableTypes;
@@ -225,11 +272,46 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
     
-    public Blob getTemplateBlob() throws PropertyException, ClientException {
+    public Blob getTemplateBlob() throws ClientException {
         BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
         if (bh != null) {
             return bh.getBlob();
         }
         return null;
+    }
+    
+    public String getName() {
+        return getAdaptedDoc().getName();
+    }
+    
+    public String getFileName() throws ClientException {        
+        Blob blob = getTemplateBlob();
+        if (blob!=null) {
+            return blob.getFilename();
+        }
+        return null;
+    }
+    
+    public String getTitle() throws ClientException {
+        return getAdaptedDoc().getTitle();
+    }
+    
+    public String getVersionLabel() {
+        return getAdaptedDoc().getVersionLabel();
+    }
+    
+    public String getId() {
+        return getAdaptedDoc().getId();
+    }
+    
+    public String getLabel() throws ClientException{
+        StringBuffer sb = new StringBuffer(getTitle());
+        if (!getTitle().equals(getFileName())) {
+            sb.append(" (" + getFileName() + ")");
+        }
+        if (getVersionLabel()!=null) {
+            sb.append(" [" + getVersionLabel() + "]");
+        }
+        return sb.toString();
     }
 }

@@ -47,6 +47,8 @@ public interface TemplateSourceDocument {
 
     public void initTemplate(boolean save) throws Exception;
 
+    public void initTypesBindings() throws Exception;
+    
     public Blob getTemplateBlob() throws PropertyException, ClientException;
 
     public List<TemplateInput> getParams() throws PropertyException,
@@ -76,4 +78,16 @@ public interface TemplateSourceDocument {
     public String getOutputFormat();
 
     public boolean useAsMainContent();
+    
+    public String getName();
+    
+    public String getFileName() throws ClientException;
+    
+    public String getTitle() throws ClientException;
+    
+    public String getVersionLabel();
+    
+    public String getId();
+    
+    public String getLabel() throws ClientException;
 }

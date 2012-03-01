@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -71,6 +72,13 @@ public class TemplateInitListener implements EventListener {
 
                 TemplateSourceDocument templateDoc = targetDoc.getAdapter(TemplateSourceDocument.class);
                 if (templateDoc!=null) {
+                    // init types bindings 
+                    try {
+                        templateDoc.initTypesBindings();
+                    } catch (Exception e) {
+                        log.error("Error during type binding automatic initialization", e);
+                    }
+                    
                     // init template source
                     List<TemplateInput> params = templateDoc.getParams();
                     if (params==null || params.size()==0) {
@@ -83,9 +91,18 @@ public class TemplateInitListener implements EventListener {
                 } else {
                     TemplateBasedDocument tmplBased = targetDoc.getAdapter(TemplateBasedDocument.class);
                     if (tmplBased==null) {
-                        // if not templateBased see if we must add the facet because of the type binding
+                        // if not templateBased see if we must add the facet because of the type binding 
+                        // or template selection as main file
                         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-                        String targetTemplateUid = tps.getTypeMapping().get(targetDoc.getType());
+                        
+                        String targetTemplateUid = (String) targetDoc.getContextData().getScopedValue(ScopeType.REQUEST, "templateId");
+                        if ("none".equals(targetTemplateUid)) {
+                            targetTemplateUid = null;
+                        }
+                        if (targetTemplateUid==null) {
+                            targetTemplateUid = tps.getTypeMapping().get(targetDoc.getType());
+                        } 
+                        // do the association
                         if (targetTemplateUid!=null) {
                             DocumentRef templateRef = new IdRef(targetTemplateUid);
                             // check if source template is visible
@@ -94,9 +111,8 @@ public class TemplateInitListener implements EventListener {
                                 tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
                             }
                         }
-                    }
+                    } 
                 }
-
             }
         }
     }

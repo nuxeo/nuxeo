@@ -28,6 +28,8 @@ public interface TemplateProcessorService {
     List<TemplateSourceDocument> getAvailableTemplates(CoreSession session,
             String targetType) throws ClientException;
 
+    List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType) throws ClientException;
+    
     List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) throws ClientException;
 
     Map<String, String> getTypeMapping();

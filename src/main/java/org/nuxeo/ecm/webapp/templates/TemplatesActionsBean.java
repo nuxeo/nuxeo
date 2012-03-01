@@ -169,6 +169,11 @@ public class TemplatesActionsBean implements Serializable {
         return tps.getAvailableTemplateDocs(documentManager, targetType);
     }
 
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(String targetType) throws ClientException {
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        return tps.getAvailableOfficeTemplates(documentManager, targetType);
+    }
+    
     public List<TemplateInput> getTemplateEditableInputs() throws Exception {
         if (templateEditableInputs==null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();

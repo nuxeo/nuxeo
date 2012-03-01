@@ -153,43 +153,46 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         }
     }
 
+    protected String buildTemplateSearchQuery(String targetType) {
+        StringBuffer sb = new StringBuffer("select * from TemplateSource where ecm:currentLifeCycleState != 'deleted'");
+        if (targetType!=null) {
+            sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType + "')");
+        }        
+        return sb.toString();
+    }
+    
     public List<DocumentModel> getAvailableTemplateDocs(CoreSession session,
             String targetType) throws ClientException {
 
-        StringBuffer sb = new StringBuffer("select * from TemplateSource");
-        DocumentModelList templates = session.query(sb.toString());
-
-        if (targetType==null) {
-            return templates;
-        } else {
-            // post filter
-            List<DocumentModel> filtredResult = new ArrayList<DocumentModel>();
-            for (DocumentModel template : templates) {
-                TemplateSourceDocument srcTmpl = template.getAdapter(TemplateSourceDocument.class);
-                if (srcTmpl!=null) {
-                    List<String> applicableTypes = srcTmpl.getApplicableTypes();
-                    if (applicableTypes.size()==0 || applicableTypes.contains(targetType)) {
-                        filtredResult.add(template);
-                    }
-                }
-            }
-            return filtredResult;
-        }
+        String query = buildTemplateSearchQuery(targetType);
+        
+        return session.query(query);
     }
 
+    
+    protected  <T> List<T> wrap(List<DocumentModel> docs, Class<T> adapter) {        
+        List<T> result = new ArrayList<T>();        
+        for (DocumentModel doc : docs) {
+            T adapted = doc.getAdapter(adapter);
+            if (adapted!=null) {
+                result.add(adapted);
+            }
+        }        
+        return result;
+    }
+    
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType) throws ClientException {
+        
+        String query = buildTemplateSearchQuery(targetType);
+        query = query + " AND tmpl:useAsMainContent=1";        
+        List<DocumentModel> docs = session.query(query);        
+        return wrap(docs, TemplateSourceDocument.class);
+    }
+    
     public List<TemplateSourceDocument> getAvailableTemplates(
             CoreSession session, String targetType) throws ClientException {
-        List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
-        List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);
-        for (DocumentModel template : filtredResult) {
-            TemplateSourceDocument srcTmpl = template.getAdapter(TemplateSourceDocument.class);
-            if (srcTmpl==null) {
-                log.error("Unable to find adapter on TemplateSourceDocument !");
-            } else {
-                result.add(srcTmpl);
-            }
-        }
-        return result;
+        List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);        
+        return wrap(filtredResult, TemplateSourceDocument.class);
     }
 
     @Override
