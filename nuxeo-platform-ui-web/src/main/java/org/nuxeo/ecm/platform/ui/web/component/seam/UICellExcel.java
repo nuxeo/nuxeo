@@ -25,7 +25,6 @@ import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
@@ -255,12 +254,6 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
         style = (String) values[2];
     }
 
-    /**
-     * Saves the locally set literal values kept on the component (from
-     * standard tags attributes) and since 5.6, also saves the submitted value
-     * as {@link UIInput#saveState(FacesContext)} does not do it (see
-     * NXP-8898).
-     */
     @Override
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), forceType, style };
