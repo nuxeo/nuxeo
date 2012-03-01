@@ -38,6 +38,10 @@
     <nxu:set var="useAjaxForm"
       value="#{nxu:test(empty widgetProperty_useAjaxForm, false, widgetProperty_useAjaxForm)}"
       cache="true">
+    <nxu:set var="showEditOptions"
+      value="#{nxu:test(empty widgetProperty_showEditOptions, false, widgetProperty_showEditOptions)}"
+      cache="true">
+
     <nxu:valueHolder
       id="#{widget.id}_modeValueHolder"
       var="layoutWidgetMode"
@@ -93,7 +97,8 @@
             id="#{widget.id}_toggledForm"
             ajaxSubmit="true"
             ignoreDupResponses="true" eventsQueue="#{widget.id}_queue"
-            reRender="#{widget.id}_regionPanel">
+            reRender="#{widget.id}_regionPanel"
+            selfRendered="true">
 
             <nxl:layout
               name="#{widgetProperty_toggledLayoutName}"
@@ -103,6 +108,11 @@
               template="#{widgetProperty_template}"
               selectedRows="#{widgetProperty_selectedRows}"
               selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
+
+            <c:if test="#{showEditOptions and nxd:isDocumentModel(field)}">
+              <nxl:layout name="document_edit_form_options"
+                mode="#{layoutWidgetMode}" value="#{field}" />
+            </c:if>
 
             <p class="buttonsGadget">
 
@@ -214,6 +224,11 @@
               selectedRows="#{widgetProperty_selectedRows}"
               selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
 
+            <c:if test="#{showEditOptions and nxd:isDocumentModel(field)}">
+              <nxl:layout name="document_edit_form_options"
+                mode="#{layoutWidgetMode}" value="#{field}" />
+            </c:if>
+
             <p class="buttonsGadget">
 
               <nxu:set var="display"
@@ -286,6 +301,8 @@
       </c:if>
 
     </nxu:valueHolder>
+
+    </nxu:set>
     </nxu:set>
     </nxu:set>
     </nxu:set>

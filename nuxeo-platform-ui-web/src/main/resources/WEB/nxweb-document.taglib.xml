@@ -97,6 +97,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>isDocumentModel</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      boolean isDocumentModel(java.lang.Object)
+    </function-signature>
+  </function>
+  <function>
     <function-name>hasPermission</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions

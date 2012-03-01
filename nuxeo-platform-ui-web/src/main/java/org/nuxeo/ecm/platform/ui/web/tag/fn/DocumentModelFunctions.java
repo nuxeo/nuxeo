@@ -316,6 +316,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return title;
     }
 
+    public static boolean isDocumentModel(Object value) {
+        return value instanceof DocumentModel;
+    }
+
     public static boolean isDirty(DocumentModel doc) throws ClientException {
         if (doc == null) {
             return false;
