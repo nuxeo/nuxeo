@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: DummyIOResourceAdapter.java 25715 2007-10-05 16:12:07Z dmihalache $
  */
 
 package org.nuxeo.ecm.platform.io.test;
@@ -31,6 +30,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
@@ -45,6 +46,8 @@ import org.nuxeo.ecm.platform.io.api.IOResources;
 public class DummyIOResourceAdapter implements IOResourceAdapter {
 
     private static final long serialVersionUID = 5411716618665857482L;
+
+    private static final Log log = LogFactory.getLog(DummyIOResourceAdapter.class);
 
     // backend for tests: key are document refs, values are dummy corresponding
     // values
@@ -64,8 +67,8 @@ public class DummyIOResourceAdapter implements IOResourceAdapter {
         return new DummyIOResources(extracted);
     }
 
-    public IOResources translateResources(String repo,
-            IOResources resources, DocumentTranslationMap map) {
+    public IOResources translateResources(String repo, IOResources resources,
+            DocumentTranslationMap map) {
         if (!(resources instanceof DummyIOResources)) {
             return null;
         }
@@ -112,15 +115,7 @@ public class DummyIOResourceAdapter implements IOResourceAdapter {
                 }
             }
         } catch (IOException e) {
-        } finally {
-            // shouldn't close here as this will close also the underlying stream
-            // and we don't want because there might be more to read??
-            if (false && reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                }
-            }
+            log.error(e);
         }
         return new DummyIOResources(resources);
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestIORelationAdapter.java 26500 2007-10-26 18:08:51Z fguillaume $
  */
 
 package org.nuxeo.ecm.platform.relations.io.test;
@@ -37,13 +36,11 @@ import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
 import org.nuxeo.ecm.platform.relations.api.Graph;
-import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
@@ -57,7 +54,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-@SuppressWarnings({"RedundantArrayCreation"})
+@SuppressWarnings({ "RedundantArrayCreation" })
 public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static final String repoName = "demo";
@@ -89,8 +86,6 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static final Resource simpleResource = new ResourceImpl(
             "http://www.wikipedia.com/Enterprise_Content_Management");
-
-    private static final Literal literal = new LiteralImpl("NXRuntime");
 
     private IOManager ioService;
 
@@ -188,11 +183,11 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(
-                new DocumentRef[]{ new IdRef(doc1Ref) });
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
+                doc1Ref) });
         IORelationResources ioRes = (IORelationResources) adapter.extractResources(
                 repoName, sources);
-        List<Statement> expected = Arrays.asList(new Statement[]{
+        List<Statement> expected = Arrays.asList(new Statement[] {
                 new StatementImpl(doc2Resource, isBasedOn, doc1Resource),
                 new StatementImpl(doc1Resource, references, simpleResource) });
         Collections.sort(expected);
@@ -206,12 +201,12 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("ignore-external");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[]{ new IdRef(
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
                 doc1Ref) });
         IORelationResources ioRes = (IORelationResources) adapter.extractResources(
                 repoName, sources);
-        List<Statement> expected = Arrays.asList(new Statement[]{
-                new StatementImpl(doc1Resource, references, simpleResource) });
+        List<Statement> expected = Arrays.asList(new Statement[] { new StatementImpl(
+                doc1Resource, references, simpleResource) });
         Collections.sort(expected);
         assertEquals(1, ioRes.getStatements().size());
         List<Statement> actual = ioRes.getStatements();
@@ -223,8 +218,8 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(
-                new DocumentRef[]{ new IdRef(doc1Ref) });
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
+                doc1Ref) });
         IORelationResources ioRes = (IORelationResources) adapter.extractResources(
                 repoName, sources);
         // File tmp = File.createTempFile("test", ".xml");
@@ -243,7 +238,8 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertNotNull(adapter);
         InputStream stream = getTestFile("data/exported_statements.xml");
         IORelationResources ioRes = (IORelationResources) adapter.loadResourcesFromXML(stream);
-        List<Statement> expected = Arrays.asList(new Statement[]{
+        stream.close();
+        List<Statement> expected = Arrays.asList(new Statement[] {
                 new StatementImpl(doc2Resource, isBasedOn, doc1Resource),
                 new StatementImpl(doc1Resource, references, simpleResource) });
         Collections.sort(expected);
@@ -257,7 +253,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[]{ new IdRef(
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
                 doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
         Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
@@ -266,7 +262,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
                 repoName, docRefMap);
         IORelationResources ioRes = (IORelationResources) adapter.translateResources(
                 repoName, resources, map);
-        List<Statement> expected = Arrays.asList(new Statement[]{
+        List<Statement> expected = Arrays.asList(new Statement[] {
                 new StatementImpl(doc2Resource, isBasedOn, doc1ResourceCopy),
                 new StatementImpl(doc1ResourceCopy, references, simpleResource) });
         Collections.sort(expected);
@@ -280,7 +276,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[]{ new IdRef(
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
                 doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
         Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
@@ -289,7 +285,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
                 repoName, docRefMap);
         IORelationResources ioRes = (IORelationResources) adapter.translateResources(
                 repoName, resources, map);
-        List<Statement> expected = Arrays.asList(new Statement[]{
+        List<Statement> expected = Arrays.asList(new Statement[] {
                 new StatementImpl(doc2Resource, isBasedOn, doc1Resource),
                 new StatementImpl(doc1Resource, references, simpleResource) });
         Collections.sort(expected);
@@ -303,7 +299,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[]{ new IdRef(
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
                 doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
         Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
