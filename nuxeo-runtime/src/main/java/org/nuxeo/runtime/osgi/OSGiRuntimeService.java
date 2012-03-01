@@ -479,11 +479,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             Comparator<RegistrationInfo> {
         @Override
         public int compare(RegistrationInfo r1, RegistrationInfo r2) {
-            int cmp = r2.getApplicationStartedOrder()
-                    - r1.getApplicationStartedOrder();
+            int cmp = r1.getApplicationStartedOrder()
+                    - r2.getApplicationStartedOrder();
             if (cmp == 0) {
                 // fallback on name order, to be deterministic
-                cmp = r2.getName().getName().compareTo(r1.getName().getName());
+                cmp = r1.getName().getName().compareTo(r2.getName().getName());
             }
             return cmp;
         }
