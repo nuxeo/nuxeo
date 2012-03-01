@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,24 +12,22 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thomas Roger
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.picture.core.im;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.picture.core.im.IMImageUtils.ImageMagickCaller;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-/**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- */
 public class TestIMImageUtils extends NXRuntimeTestCase {
-
-    IMImageUtils service;
 
     @Override
     public void setUp() throws Exception {
@@ -37,32 +35,76 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployContrib("org.nuxeo.ecm.platform.picture.core",
                 "OSGI-INF/commandline-imagemagick-contrib.xml");
-        service = new IMImageUtils();
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        service = null;
-    }
-
-    public void testGetTempSuffixUsingIM() throws Exception {
-        File file = FileUtils.getResourceFileFromContext("images/test.jpg");
-        assertNotNull(file);
+    protected String checkFileBlob(String filename, boolean usefilename,
+            String targetExt) throws Exception {
+        File file = FileUtils.getResourceFileFromContext(filename);
         Blob blob = new FileBlob(file);
-        assertNotNull(blob);
-        String suffix = service.getTempSuffix(blob, file);
-        assertEquals(".jpeg", suffix.toLowerCase());
+        if (usefilename) {
+            blob.setFilename(filename);
+        }
+        return check(blob, targetExt);
     }
 
-    public void testGetTempSuffixWithBlobFileName() throws Exception {
-        File file = FileUtils.getResourceFileFromContext("images/dummy.raw");
-        assertNotNull(file);
-        Blob blob = new FileBlob(file);
-        blob.setFilename("dummy.raw");
+    protected String checkStringBlob(String filename, boolean usefilename,
+            String targetExt) throws Exception {
+        File file = FileUtils.getResourceFileFromContext(filename);
+        byte[] bytes = org.apache.commons.io.FileUtils.readFileToByteArray(file);
+        Blob blob = new ByteArrayBlob(bytes);
+        if (usefilename) {
+            blob.setFilename(filename);
+        }
+        return check(blob, targetExt);
+    }
+
+    protected String check(Blob blob, String targetExt) throws Exception {
         assertNotNull(blob);
-        String suffix = service.getTempSuffix(blob, file);
-        assertTrue(suffix.toLowerCase().endsWith(".raw"));
+        ImageMagickCaller imc = new ImageMagickCaller() {
+            @Override
+            public void callImageMagick() throws Exception {
+                return;
+            }
+        };
+        try {
+            imc.makeFiles(blob, targetExt);
+            return "src="
+                    + FilenameUtils.getExtension(imc.sourceFile.getName())
+                    + " dst="
+                    + FilenameUtils.getExtension(imc.targetFile.getName())
+                    + " tmp="
+                    + FilenameUtils.getExtension(imc.tmpFile == null ? ""
+                            : imc.tmpFile.getName());
+        } finally {
+            if (imc.targetFile != null) {
+                imc.targetFile.delete();
+            }
+            if (imc.tmpFile != null) {
+                imc.tmpFile.delete();
+            }
+        }
+    }
+
+    public void testImageMagickCaller_MakeFiles() throws Exception {
+        String filename = "images/test.jpg";
+        // FileBlob
+        assertEquals("src=jpg dst=jpg tmp=",
+                checkFileBlob(filename, true, null));
+        assertEquals("src=JPEG dst=JPEG tmp=JPEG",
+                checkFileBlob(filename, false, null));
+        assertEquals("src=jpg dst=png tmp=",
+                checkFileBlob(filename, true, "png"));
+        assertEquals("src=JPEG dst=png tmp=JPEG",
+                checkFileBlob(filename, false, "png"));
+        // StringBlob
+        assertEquals("src=jpg dst=jpg tmp=jpg",
+                checkStringBlob(filename, true, null));
+        assertEquals("src=JPEG dst=JPEG tmp=JPEG",
+                checkStringBlob(filename, false, null));
+        assertEquals("src=jpg dst=png tmp=jpg",
+                checkStringBlob(filename, true, "png"));
+        assertEquals("src=JPEG dst=png tmp=JPEG",
+                checkStringBlob(filename, false, "png"));
     }
 
 }

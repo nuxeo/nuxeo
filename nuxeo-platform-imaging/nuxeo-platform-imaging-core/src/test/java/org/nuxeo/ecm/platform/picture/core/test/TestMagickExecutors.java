@@ -66,6 +66,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         File out = new File(outputFile);
         assertTrue(out.exists());
         assertTrue(out.length() < file.length());
+        out.delete();
     }
 
     public void testCropper() throws Exception {
@@ -85,6 +86,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         assertNotNull(info);
         assertEquals(255, info.getWidth());
         assertEquals(255, info.getHeight());
+        out.delete();
     }
 
     public void testCropperAndResize() throws Exception {
@@ -104,6 +106,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         assertNotNull(info);
         assertEquals(200, info.getWidth());
         assertEquals(200, info.getHeight());
+        out.delete();
     }
 
     public void testConverterWithBmp() throws Exception {
@@ -117,6 +120,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         ImageInfo info = ImageIdentifier.getInfo(outputFilePath);
         assertNotNull(info);
         assertEquals("JPEG", info.getFormat());
+        new File(outputFilePath).delete();
     }
 
     public void testConverterWithGif() throws Exception {
@@ -130,6 +134,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         ImageInfo info = ImageIdentifier.getInfo(outputFilePath);
         assertNotNull(info);
         assertEquals("JPEG", info.getFormat());
+        new File(outputFilePath).delete();
     }
 
 }

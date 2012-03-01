@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -58,17 +59,18 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             return true;
         }
 
-        file = File.createTempFile(
-                "nuxeo-platform-imaging-DefaultPictureAdapter", ".jpg");
-        Framework.trackFile(file, this);
-
-        blob.transferTo(file);
-
-        // use a persistent blob with our file
-        if (!blob.isPersistent()) {
-            blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(),
-                    blob.getFilename(), blob.getDigest());
+        file = BlobHelper.getFileFromBlob(blob);
+        if (file == null) {
+            file = File.createTempFile("nuxeoImage", ".jpg");
+            Framework.trackFile(file, this);
+            blob.transferTo(file);
+            // use a persistent blob with our file
+            if (!blob.isPersistent()) {
+                blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(),
+                        blob.getFilename(), blob.getDigest());
+            }
         }
+
         fileContent = blob;
 
         type = blob.getMimeType();

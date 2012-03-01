@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 
 /**
  * Listener updating the views of a Picture if the main Blob has changed.
@@ -46,10 +47,14 @@ public class PictureChangedListener implements EventListener {
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(PICTURE_FACET)) {
-            Property pictureFileProperty = doc.getProperty("file:content");
-            if (pictureFileProperty.isDirty()) {
-                BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                bh.setBlob(pictureFileProperty.getValue(Blob.class));
+            Property fileProp = doc.getProperty("file:content");
+            Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
+            if (fileProp.isDirty()) {
+                // if the views are dirty, assume they're up to date
+                if (viewsProp == null || !viewsProp.isDirty()) {
+                    BlobHolder bh = doc.getAdapter(BlobHolder.class);
+                    bh.setBlob(fileProp.getValue(Blob.class));
+                }
             }
         }
     }
