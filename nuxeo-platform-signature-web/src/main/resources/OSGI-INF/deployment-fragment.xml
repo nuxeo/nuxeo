@@ -9,19 +9,21 @@
 
  <install>
   <delete path="${bundle.fileName}.tmp" />
-  <!-- create a temporary directory -->
-  <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
-   <include>web/nuxeo.war/**</include>
-   <include>l10n/**</include>
+
+  <!--  unzip the war template -->
+  <unzip from="${bundle.fileName}" to="/" prefix="web">
+     <include>web/nuxeo.war/**</include>
   </unzip>
-  <!-- be sure no directory with that name exists -->
-  <copy from="${bundle.fileName}.tmp/web/nuxeo.war" to="/" prefix="web" />
-  <append from="${bundle.fileName}.tmp/l10n/messages_en.properties"
+
+  <mkdir path="${bundle.fileName}.tmp" />
+  <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+  <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
    to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
-  <append from="${bundle.fileName}.tmp/l10n/messages_fr.properties"
+  <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr.properties"
    to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
-  <append from="${bundle.fileName}.tmp/l10n/messages.properties"
+  <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages.properties"
    to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+  <delete path="${bundle.fileName}.tmp" />
  </install>
 
 
