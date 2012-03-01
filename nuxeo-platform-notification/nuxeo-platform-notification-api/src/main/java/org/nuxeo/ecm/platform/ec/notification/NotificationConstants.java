@@ -61,6 +61,8 @@ public class NotificationConstants {
 
     public static final String DOCUMENT_URL_KEY = "docUrl";
 
+    public static final String USER_URL_KEY = "userUrl";
+
     public static final String DOCUMENT_TITLE_KEY = "docTitle";
 
     public static final String EVENT_ID_KEY = "eventId";
@@ -68,6 +70,16 @@ public class NotificationConstants {
     public static final String USER_PREFIX = "user:";
 
     public static final String GROUP_PREFIX = "group:";
+
+    public static final String DOCUMENT_VERSION = "docVersion";
+
+    public static final String DOCUMENT_STATE = "docState";
+
+    public static final String DOCUMENT_CREATED = "docCreated";
+
+    public static final String DOCUMENT_LOCATION = "docLocation";
+
+    public static final String DOCUMENT_MAIN_FILE = "docMainFileUrl";
 
     private NotificationConstants() {
     }

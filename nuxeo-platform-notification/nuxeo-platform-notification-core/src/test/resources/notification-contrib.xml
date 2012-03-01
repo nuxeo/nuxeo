@@ -39,7 +39,7 @@
     point="notifications">
 
     <notification name="Modification" channel="email" enabled="true" availableIn="workspace"
-      autoSubscribed="false" template="modif" subject="Document modified" label="label.nuxeo.notifications.modif">
+      autoSubscribed="false" template="modif" subject="${docTitle} has been modified by ${author}" label="label.nuxeo.notifications.modif">
       <event name="documentModified"/>
       <event name="contentSubdocumentModified"/>
     </notification>

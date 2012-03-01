@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ec.notification;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -192,17 +194,40 @@ public class NotificationEventListener implements PostCommitEventListener {
         log.debug("Producing notification message.");
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
+        DocumentModel doc = ctx.getSourceDocument();
+        String author = ctx.getPrincipal().getName();
+        Calendar created = (Calendar) ctx.getSourceDocument().getPropertyValue(
+                "dc:created");
 
         eventInfo.put(NotificationConstants.DESTINATION_KEY, subscriptor);
         eventInfo.put(NotificationConstants.NOTIFICATION_KEY, notification);
-        eventInfo.put(NotificationConstants.DOCUMENT_ID_KEY,
-                ctx.getSourceDocument().getId());
-        eventInfo.put(NotificationConstants.DATE_TIME_KEY, new Date(
-                event.getTime()));
-        eventInfo.put(NotificationConstants.AUTHOR_KEY,
-                ctx.getPrincipal().getName());
-
-        DocumentModel doc = ctx.getSourceDocument();
+        eventInfo.put(NotificationConstants.DOCUMENT_ID_KEY, doc.getId());
+        eventInfo.put(NotificationConstants.DATE_TIME_KEY,
+                new Date(event.getTime()));
+        eventInfo.put(NotificationConstants.AUTHOR_KEY, author);
+        eventInfo.put(NotificationConstants.DOCUMENT_VERSION,
+                doc.getVersionLabel());
+        eventInfo.put(NotificationConstants.DOCUMENT_STATE,
+                doc.getCurrentLifeCycleState());
+        eventInfo.put(NotificationConstants.DOCUMENT_CREATED, created.getTime());
+        StringBuilder userUrl = new StringBuilder();
+        userUrl.append(
+                NotificationServiceHelper.getNotificationService().getServerUrlPrefix()).append(
+                "user/").append(ctx.getPrincipal().getName());
+        eventInfo.put(NotificationConstants.USER_URL_KEY, userUrl.toString());
+        eventInfo.put(NotificationConstants.DOCUMENT_LOCATION,
+                doc.getPathAsString());
+        // Main file link for downloading
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh.getBlob() != null) {
+            StringBuilder docMainFile = new StringBuilder();
+            docMainFile.append(
+                    NotificationServiceHelper.getNotificationService().getServerUrlPrefix()).append(
+                    "nxfile/default/").append(doc.getId()).append(
+                    "/blobholder:0/").append(bh.getBlob().getFilename());
+            eventInfo.put(NotificationConstants.DOCUMENT_MAIN_FILE,
+                    docMainFile.toString());
+        }
 
         if (!isDeleteEvent(event.getName())) {
             DocumentView docView = new DocumentViewImpl(doc);
