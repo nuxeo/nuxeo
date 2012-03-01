@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Max Stepanov
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.picture;
 
 import java.io.File;
@@ -32,6 +30,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -41,9 +40,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-/**
- * @author Max Stepanov
- */
 public class ImagingComponent extends DefaultComponent implements
         ImagingService {
 
@@ -60,12 +56,8 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().crop(blob, x, y,
                     width, height);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return blob;
     }
@@ -76,12 +68,8 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().resize(blob,
                     finalFormat, width, height, depth);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return blob;
     }
@@ -91,12 +79,8 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().rotate(blob,
                     angle);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageUtils Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return blob;
     }
@@ -106,12 +90,8 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
                     blob);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageMetadata Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageMetadata Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return null;
     }
@@ -133,12 +113,8 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(
                     in);
-        } catch (InstantiationException e) {
-            log.error("Failed to instantiate ImageMime Class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Failed to instantiate ImageMime Class", e);
-        } catch (ClientException e) {
-            log.error(e, e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
         return null;
     }
@@ -161,13 +137,17 @@ public class ImagingComponent extends DefaultComponent implements
         ImageInfo imageInfo = null;
         File tmpFile = null;
         try {
-            tmpFile = File.createTempFile(
-                    "imageInfo",
-                    blob.getFilename() != null ? "."
-                            + FilenameUtils.getExtension(blob.getFilename())
-                            : "tmp.tmp");
-            blob.transferTo(tmpFile);
-            imageInfo = ImageIdentifier.getInfo(tmpFile.getAbsolutePath());
+            File file = BlobHelper.getFileFromBlob(blob);
+            if (file == null) {
+                tmpFile = File.createTempFile(
+                        "nuxeoImageInfo",
+                        blob.getFilename() != null ? "."
+                                + FilenameUtils.getExtension(blob.getFilename())
+                                : ".tmp");
+                blob.transferTo(tmpFile);
+                file = tmpFile;
+            }
+            imageInfo = ImageIdentifier.getInfo(file.getAbsolutePath());
         } catch (CommandNotAvailable e) {
             log.error("Failed to get ImageInfo for file " + blob.getFilename(),
                     e);
