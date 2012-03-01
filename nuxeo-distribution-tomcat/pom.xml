@@ -81,6 +81,30 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>qa</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>daily-snapshots</id>
+          <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots</url>
+          <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>qapriv</id>
+      <distributionManagement>
+        <repository>
+          <id>releases</id>
+          <url>dav:http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <url>dav:http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots</url>
+          <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
   </profiles>
 
   <build>
@@ -105,5 +129,17 @@
       </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+    <repository>
+      <id>public-releases</id>
+      <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/public-releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots</url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
