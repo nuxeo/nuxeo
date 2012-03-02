@@ -44,6 +44,12 @@ public class CreateBlob {
 
     @OperationMethod
     public Blob run() {
+        String protocol = file.getProtocol();
+        if (!"http".equals(protocol) && !"https".equals(protocol)
+                && !"ftp".equals(protocol)) {
+            // don't let file: through
+            return null;
+        }
         if (fileName == null) {
             fileName = file.getPath();
             int i = fileName.lastIndexOf('/');
