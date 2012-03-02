@@ -56,7 +56,7 @@
 
     <filter id="view_proxy_history">
       <rule grant="true">
-        <condition>document.isProxy()</condition>
+        <condition>document != null &amp;&amp; document.isProxy()</condition>
       </rule>
     </filter>
 
