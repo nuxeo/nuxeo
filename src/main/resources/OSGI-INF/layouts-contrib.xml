@@ -15,6 +15,7 @@
       <fields>
         <field>file:content</field>
         <field>file:filename</field>
+        <field>contextData['request/templateId']</field>
       </fields>
       <widgetModes>
         <mode value="create">create</mode>
@@ -23,7 +24,11 @@
         <mode value="view">preview</mode>
       </widgetModes>
       <properties mode="any">
-        <property name="template">/widgets/filewithtemplate_widget.xhtml
+        <property name="template">
+          /widgets/filewithtemplate_widget.xhtml
+        </property>
+        <property name="availableTemplates">
+          #{templateActions.getAvailableOfficeTemplates(value.type)}
         </property>
       </properties>
     </widget>
@@ -124,12 +129,27 @@
       </templates>
       <properties mode="any">
         <property name="wizardAdvancedLayout">templateOptions</property>
-        <property name="wizardMapping">{ "officeTemplate" : [{ "id" :
-          "useAsMainContent", "checked" : "checked" }] ,
-          "officeTemplatePDF" : [{ "id" : "useAsMainContent", "checked" : "checked"},
-          { "id" : "converter", "val" : "application/pdf"}] ,
-          "rendition" : [],
-          "renditionWeb" : [{"id": "processorSelector", "val" : "Freemarker"}]
+        <property name="wizardMapping">
+          { "officeTemplate":
+          [{
+          "id": "useAsMainContent",
+          "checked": "checked"
+          }],
+          "officeTemplatePDF":
+          [{
+          "id": "useAsMainContent",
+          "checked": "checked"
+          },
+          {
+          "id": "converter",
+          "val": "application/pdf"
+          }],
+          "rendition": [],
+          "renditionWeb":
+          [{
+          "id": "processorSelector",
+          "val": "Freemarker"
+          }]
           }
         </property>
       </properties>

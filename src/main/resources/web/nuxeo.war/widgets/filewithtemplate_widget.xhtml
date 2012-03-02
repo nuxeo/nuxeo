@@ -11,7 +11,7 @@
 
     <div id="#{widget.id}_filecontainer">
       <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
-        filename="#{field_1}" required="#{widget.required}" editFilename="false"
+        filename="#{field_1}" required="#{widgetProperty_required}" editFilename="false"
         onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
       <h:message styleClass="errorMessage" for="#{widget.id}_file"
         id="#{widget.id}_message" />
@@ -19,14 +19,13 @@
 
     <div id="#{widget.id}_templatecontainer" style="display:none">    
       <h:outputText value="#{messages['label.use.template']}" />
-      <h:selectOneMenu value="#{layoutValue.contextData['request/templateId']}"
-        styleClass="#{widget.properties['styleClass']}"
-        required="#{widget.properties['required']}"
+      <h:selectOneMenu value="#{field_2}"
+        styleClass="#{widgetProperty_styleClass}"
+        required="#{widgetProperty_required}"
         id="#{widget.id}_select_template">
         <f:selectItem id="none" itemLabel="None" itemValue="none" />
-        <nxu:selectItems var="tdoc" value="#{templateActions.getAvailableOfficeTemplates(layoutValue.type)}"
-          itemValue="#{tdoc.id}"
-          itemLabel="#{tdoc.label}" />
+        <nxu:selectItems value="#{widgetProperty_availableTemplates}"
+          var="tdoc" itemValue="#{tdoc.id}" itemLabel="#{tdoc.label}" />
       </h:selectOneMenu>
   </div>
 
