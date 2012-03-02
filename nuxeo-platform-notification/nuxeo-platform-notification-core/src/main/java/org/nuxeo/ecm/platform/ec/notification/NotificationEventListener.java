@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,8 +13,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ec.notification;
@@ -219,7 +219,7 @@ public class NotificationEventListener implements PostCommitEventListener {
                 doc.getPathAsString());
         // Main file link for downloading
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh.getBlob() != null) {
+        if (bh != null && bh.getBlob() != null) {
             StringBuilder docMainFile = new StringBuilder();
             docMainFile.append(
                     NotificationServiceHelper.getNotificationService().getServerUrlPrefix()).append(
@@ -266,7 +266,7 @@ public class NotificationEventListener implements PostCommitEventListener {
             throws ClientException {
 
         String eventId = event.getName();
-        log.debug("Recieved a message for notification sender with eventId : "
+        log.debug("Received a message for notification sender with eventId : "
                 + eventId);
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
