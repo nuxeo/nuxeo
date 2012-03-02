@@ -96,13 +96,12 @@ public class Selection {
     protected boolean complete;
 
     /**
-     * The row ids known in the database and not deleted. This list is not
-     * ordered.
+     * The row ids known in the database and not deleted.
      */
-    protected List<Serializable> existing;
+    protected Set<Serializable> existing;
 
     /** The row ids created and not yet flushed to database. */
-    protected List<Serializable> created;
+    protected Set<Serializable> created;
 
     /**
      * The row ids deleted (or for which the clause column changed value) and
@@ -154,7 +153,7 @@ public class Selection {
      */
     public void addExisting(Serializable id) {
         if (existing == null) {
-            existing = new LinkedList<Serializable>();
+            existing = new HashSet<Serializable>();
         }
         if (existing.contains(id) || (created != null && created.contains(id))) {
             // the id is already known here, this happens if the fragment was
@@ -171,7 +170,7 @@ public class Selection {
      */
     public void addCreated(Serializable id) {
         if (created == null) {
-            created = new LinkedList<Serializable>();
+            created = new HashSet<Serializable>();
             // move to hard map
             softMap.remove(selId);
             hardMap.put(selId, this);
@@ -196,7 +195,7 @@ public class Selection {
     public void addExistingComplete(List<Serializable> actualExisting) {
         assert !complete;
         complete = true;
-        existing = actualExisting;
+        existing = new HashSet<Serializable>(actualExisting);
     }
 
     /**
@@ -239,7 +238,7 @@ public class Selection {
     public void flush() {
         if (created != null) {
             if (existing == null) {
-                existing = new LinkedList<Serializable>();
+                existing = new HashSet<Serializable>();
             }
             existing.addAll(created);
             created = null;
