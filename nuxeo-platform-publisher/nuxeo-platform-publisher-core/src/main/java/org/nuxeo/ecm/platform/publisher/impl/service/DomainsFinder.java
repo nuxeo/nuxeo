@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,23 +12,21 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     Thomas Roger
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * Finds the domains for a session.
  */
 public class DomainsFinder extends UnrestrictedSessionRunner {
 
@@ -44,16 +42,11 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
     }
 
     protected List<DocumentModel> getDomainsFiltered() throws ClientException {
-        List<DocumentModel> result = new ArrayList<DocumentModel>();
-        DocumentRef rootRef = session.getRootDocument().getRef();
-
-        Filter filter = new LifeCycleFilter("deleted", false);
-
-        for (DocumentModel doc : session.getChildren(rootRef, "Domain", filter, null)) {
-            result.add(doc);
-        }
-
-        return result;
+        String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_PARENTID
+                + " = '%s' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
+                + LifeCycleConstants.DELETED_STATE + "'";
+        query = String.format(query, session.getRootDocument().getId());
+        return session.query(query); // should disconnect
     }
 
     public List<DocumentModel> getDomains() throws ClientException {
