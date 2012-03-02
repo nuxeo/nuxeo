@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.content.template.factories;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.content.template.listener.RepositoryInitializationListener;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 
@@ -65,8 +67,17 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
     protected boolean shouldCreateContent(DocumentModel eventDoc)
             throws ClientException {
         for (TemplateItemDescriptor item : template) {
-            if (!session.getChildren(eventDoc.getRef(), item.getTypeName()).isEmpty()) {
-                return false;
+            // don't use getChildren, which can be costly
+            // if the folder has a huge number of children
+            String query = "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '%s' AND ecm:primaryType = '%s'";
+            query = String.format(query, eventDoc.getId(), item.getTypeName());
+            IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL);
+            try {
+                if (it.iterator().hasNext()) {
+                    return false;
+                }
+            } finally {
+                it.close();
             }
         }
         return true;
