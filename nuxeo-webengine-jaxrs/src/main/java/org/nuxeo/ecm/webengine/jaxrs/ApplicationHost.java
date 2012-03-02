@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,11 +21,13 @@ import java.util.Set;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourceExtension;
 import org.nuxeo.ecm.webengine.jaxrs.views.BundleResource;
 import org.nuxeo.ecm.webengine.jaxrs.views.TemplateViewMessageBodyWriter;
 import org.nuxeo.ecm.webengine.jaxrs.views.ViewMessageBodyWriter;
-import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.osgi.framework.Bundle;
 
 /**
@@ -35,6 +37,8 @@ import org.osgi.framework.Bundle;
  *
  */
 public class ApplicationHost extends Application {
+
+    private static final Log log = LogFactory.getLog(ApplicationHost.class);
 
     protected final String name;
 
@@ -49,14 +53,12 @@ public class ApplicationHost extends Application {
      */
     protected Map<String, ResourceExtension> extensions;
 
-
     /**
      * Root resource classes to owner bundles.
      * This is a fall-back for FrameworkUtils.getBundle(class)
      * since is not supported in all OSGi like frameworks
      */
     protected HashMap<Class<?>, Bundle> class2Bundles;
-
 
     public ApplicationHost(String name) {
         this.name = name;
@@ -67,7 +69,8 @@ public class ApplicationHost extends Application {
     }
 
     public BundleResource getExtension(BundleResource target, String segment) {
-        ResourceExtension xt = getExtension(target.getClass().getName()+"#"+segment);
+        ResourceExtension xt = getExtension(target.getClass().getName() + "#"
+                + segment);
         if (xt != null) {
             BundleResource res = target.getResource(xt.getResourceClass());
             if (res != null && res.accept(target)) {
@@ -86,7 +89,8 @@ public class ApplicationHost extends Application {
         this.rendering = rendering;
     }
 
-    public synchronized void addExtension(ResourceExtension xt) throws Exception {
+    public synchronized void addExtension(ResourceExtension xt)
+            throws Exception {
         extensions.put(xt.getId(), xt);
         class2Bundles.put(xt.getResourceClass(), xt.getBundle());
         if (rendering != null) {
@@ -94,7 +98,8 @@ public class ApplicationHost extends Application {
         }
     }
 
-    public synchronized void removeExtension(ResourceExtension xt) throws Exception {
+    public synchronized void removeExtension(ResourceExtension xt)
+            throws Exception {
         extensions.remove(xt.getId());
         class2Bundles.remove(xt.getResourceClass());
         if (rendering != null) {
@@ -107,7 +112,8 @@ public class ApplicationHost extends Application {
     }
 
     public synchronized ResourceExtension[] getExtensions(ResourceExtension xt) {
-        return extensions.values().toArray(new ResourceExtension[extensions.size()]);
+        return extensions.values().toArray(
+                new ResourceExtension[extensions.size()]);
     }
 
     public String getName() {
@@ -138,7 +144,7 @@ public class ApplicationHost extends Application {
         for (ApplicationFragment fragment : apps) {
             fragment.reload();
         }
-        //TODO this will not work with extension subresources - find a fix
+        // TODO this will not work with extension subresources - find a fix
         class2Bundles = new HashMap<Class<?>, Bundle>();
         for (Reloadable listener : listeners) {
             listener.reload();
@@ -151,14 +157,12 @@ public class ApplicationHost extends Application {
     /**
      * Get the bundle declaring the given root class.
      * This method is not synchronized since it is assumed to be called
-     * after the application was created and before it was destroyed.
-     * <br>
+     * after the application was created and before it was destroyed. <br>
      * When a bundle is refreshing this method may throw
      * exceptions but it is not usual to refresh bundles at runtime
      * and making requests in same time.
      *
      * @param clazz
-     * @return
      */
     public Bundle getBundle(Class<?> clazz) {
         return class2Bundles.get(clazz);
@@ -168,11 +172,15 @@ public class ApplicationHost extends Application {
     public synchronized Set<Class<?>> getClasses() {
         HashSet<Class<?>> result = new HashSet<Class<?>>();
         for (ApplicationFragment app : getApplications()) {
-            for (Class<?> clazz : app.getClasses()) {
-                if (clazz.isAnnotationPresent(Path.class)) {
-                    class2Bundles.put(clazz, app.getBundle());
+            try {
+                for (Class<?> clazz : app.getClasses()) {
+                    if (clazz.isAnnotationPresent(Path.class)) {
+                        class2Bundles.put(clazz, app.getBundle());
+                    }
+                    result.add(clazz);
                 }
-                result.add(clazz);
+            } catch (java.lang.LinkageError e) {
+                log.error(e);
             }
         }
         return result;
