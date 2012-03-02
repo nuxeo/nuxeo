@@ -159,6 +159,8 @@ public class IterableOperationsTest {
         DocumentModel root = createFolder("test3", "test 3");
         DocumentModel f1 = createFile(root, "file1", "File 1");
         DocumentModel f2 = createFile(root, "file2", "File 2");
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
         OperationContext ctx = new OperationContext(session);
         DocumentRefList docs = new DocumentRefListImpl();
         docs.add(f1.getRef());
@@ -188,6 +190,8 @@ public class IterableOperationsTest {
         DocumentModel root = createFolder("test4", "Parent Folder");
         DocumentModel f1 = createFile(root, "file1", "File 1");
         DocumentModel f2 = createFile(root, "file2", "File 2");
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
         OperationContext ctx = new OperationContext(session);
         DocumentModelList docs = new DocumentModelListImpl();
         docs.add(f1);
@@ -212,6 +216,8 @@ public class IterableOperationsTest {
     @Test
     public void testChain5() throws Exception {
         DocumentModel f = createFile(src, "file5", "the file5");
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
         BlobList blobs = new BlobList();
         StringBlob b1 = new StringBlob("the content 1");
         StringBlob b2 = new StringBlob("the content 2");
