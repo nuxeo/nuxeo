@@ -54,7 +54,7 @@
       feedFormat="#{feedFormat}">
       <ui:repeat var="doc" value="#{provider.currentPage}">
         <r:entry
-          uid="#{doc.id}"
+          uid="#{nxd:complexDocumentUrl(null, doc, null, null, true)}"
           title="#{doc.dc.title}"
           link="#{nxd:documentUrl(doc)}"
           author="#{doc.dc.creator}"
