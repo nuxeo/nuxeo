@@ -10,25 +10,25 @@
 <c:if test="#{widget.mode == 'create'}">
 
     <div id="#{widget.id}_filecontainer">
-	    <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
-	      filename="#{field_1}" required="#{widget.required}" editFilename="false"
-	      onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
-	    <h:message styleClass="errorMessage" for="#{widget.id}_file"
-	      id="#{widget.id}_message" />
+      <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
+        filename="#{field_1}" required="#{widget.required}" editFilename="false"
+        onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+      <h:message styleClass="errorMessage" for="#{widget.id}_file"
+        id="#{widget.id}_message" />
     </div>
 
     <div id="#{widget.id}_templatecontainer" style="display:none">    
-        <h:outputText value="#{messages['label.use.template']}" />
-	    <h:selectOneMenu value="#{layoutValue.contextData['request/templateId']}"
-	      styleClass="#{widget.properties['styleClass']}"
-	      required="#{widget.properties['required']}"
-	      id="#{widget.id}_select_template">
-	      <f:selectItem id="none" itemLabel="None" itemValue="none" />
-	      <nxu:selectItems var="tdoc" value="#{templateActions.getAvailableOfficeTemplates(layoutValue.type)}"
-	        itemValue="#{tdoc.id}"
-	        itemLabel="#{tdoc.label}" />
-	    </h:selectOneMenu>
-	</div>
+      <h:outputText value="#{messages['label.use.template']}" />
+      <h:selectOneMenu value="#{layoutValue.contextData['request/templateId']}"
+        styleClass="#{widget.properties['styleClass']}"
+        required="#{widget.properties['required']}"
+        id="#{widget.id}_select_template">
+        <f:selectItem id="none" itemLabel="None" itemValue="none" />
+        <nxu:selectItems var="tdoc" value="#{templateActions.getAvailableOfficeTemplates(layoutValue.type)}"
+          itemValue="#{tdoc.id}"
+          itemLabel="#{tdoc.label}" />
+      </h:selectOneMenu>
+  </div>
 
 <script>
 jQuery(document).ready(function(){
