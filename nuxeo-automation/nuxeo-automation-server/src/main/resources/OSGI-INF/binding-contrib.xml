@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.bindings"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="bindings">
+    <!-- don't allow GET of arbitrary URLs on the server -->
+    <binding name="Blob.Create">
+      <administrator>true</administrator>
+    </binding>
+    <!-- don't allow POST of arbitrary URLs on the server -->
+    <binding name="Blob.Post">
+      <administrator>true</administrator>
+    </binding>
+    <!-- don't allow write of arbitrary files on the server -->
+    <binding name="Blob.ToFile">
+      <administrator>true</administrator>
+    </binding>
+    <!-- don't allow arbitrary email sending on the server -->
+    <binding name="Notification.SendMail">
+      <administrator>true</administrator>
+    </binding>
+
+    <!-- protect access to directories -->
+    <binding name="Directory.Entries">
+      <administrator>true</administrator>
+    </binding>
+    <!-- protect arbitrary script execution -->
+    <binding name="Context.RunInputScript">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="Context.RunScript">
+      <administrator>true</administrator>
+    </binding>
+    <!-- protect counter access -->
+    <binding name="Counters.GET">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
+
+</component>

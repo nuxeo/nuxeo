@@ -7,7 +7,10 @@ Bundle-Vendor: Nuxeo
 Export-Package: org.nuxeo.ecm.automation.server
 Bundle-ActivationPolicy: lazy
 Nuxeo-WebModule: org.nuxeo.ecm.automation.server.jaxrs.AutomationModule
-Nuxeo-Component: OSGI-INF/AutomationServer.xml, OSGI-INF/auth-contrib.xml, OSGI-INF/batchmanager-framework.xml
+Nuxeo-Component: OSGI-INF/AutomationServer.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/batchmanager-framework.xml,
+ OSGI-INF/binding-contrib.xml
 Import-Package: javax.mail,
  javax.mail.internet,
  javax.mail.util,
