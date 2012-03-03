@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Document template Manager
 Bundle-SymbolicName: org.nuxeo.ecm.platform.template.manager;singleton:=true
 Bundle-Version: 1.0.0
+Nuxeo-WebModule: org.nuxeo.ecm.platform.template.jaxrs.JAXRSRemotingApplication;name=TemplateResources
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/types-contrib.xml,
  OSGI-INF/life-cycle-contrib.xml,
