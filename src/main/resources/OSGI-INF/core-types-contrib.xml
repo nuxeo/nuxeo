@@ -4,26 +4,28 @@
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="documenttemplate" src="schemas/documenttemplate.xsd" prefix="tmpl"/>
-    <schema name="templatesupport" src="schemas/templatesupport.xsd" prefix="nxts"/>
+    <schema name="documenttemplate" src="schemas/documenttemplate.xsd"
+      prefix="tmpl" />
+    <schema name="templatesupport" src="schemas/templatesupport.xsd"
+      prefix="nxts" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
-  <facet name="Template" />
-  <facet name="TemplateBased">
-    <schema name="templatesupport"/>
-  </facet>
-
-  <doctype name="TemplateSource" extends="File">
-    <schema name="documenttemplate"/>
     <facet name="Template" />
-  </doctype>
+    <facet name="TemplateBased">
+      <schema name="templatesupport" />
+    </facet>
 
-  <doctype name="TemplateBasedFile" extends="File">
-    <facet name="TemplateBased" />
-  </doctype>
+    <doctype name="TemplateSource" extends="File">
+      <schema name="documenttemplate" />
+      <facet name="Template" />
+    </doctype>
 
- </extension>
+    <doctype name="TemplateBasedFile" extends="File">
+      <facet name="TemplateBased" />
+    </doctype>
+
+  </extension>
 
 </component>
