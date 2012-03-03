@@ -30,6 +30,9 @@ public class CreateBlob {
 
     public static final String ID = "Blob.Create";
 
+    /** For tests. */
+    public static boolean skipProtocolCheck;
+
     @Param(name = "file")
     protected URL file;
 
@@ -48,7 +51,9 @@ public class CreateBlob {
         if (!"http".equals(protocol) && !"https".equals(protocol)
                 && !"ftp".equals(protocol)) {
             // don't let file: through
-            return null;
+            if (!skipProtocolCheck) {
+                return null;
+            }
         }
         if (fileName == null) {
             fileName = file.getPath();

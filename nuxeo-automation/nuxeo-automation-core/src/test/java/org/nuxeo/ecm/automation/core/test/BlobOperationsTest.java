@@ -136,6 +136,7 @@ public class BlobOperationsTest {
 
         File file = File.createTempFile("nx-test-blob-", ".tmp");
         try {
+            CreateBlob.skipProtocolCheck = true;
             FileUtils.writeFile(file, "blob content");
             OperationChain chain = new OperationChain("testChain");
             chain.add(FetchContextDocument.ID);
@@ -150,6 +151,7 @@ public class BlobOperationsTest {
             Blob out = (Blob) service.run(ctx, chain);
             assertEquals("blob content", out.getString());
         } finally {
+            CreateBlob.skipProtocolCheck = false;
             file.delete();
         }
     }
