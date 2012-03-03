@@ -28,13 +28,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -125,11 +126,14 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
     protected DocumentModel createDocumentRouteInstancesStructure(
             CoreSession session) throws ClientException {
-        FacetFilter facetFilter = new FacetFilter(
-                FacetNames.HIDDEN_IN_NAVIGATION, false);
-        DocumentModel defaultDomain = session.getChildren(
-                session.getRootDocument().getRef(), null, null, facetFilter,
-                null).get(0);
+        String query = "SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID
+                + " = '%s' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
+                + LifeCycleConstants.DELETED_STATE + "' AND "
+                + NXQL.ECM_MIXINTYPE + " <> '"
+                + FacetNames.HIDDEN_IN_NAVIGATION + "' ORDER BY ecm:name";
+        query = String.format(query, session.getRootDocument().getId());
+        DocumentModelList docs = session.query(query, 1);
+        DocumentModel defaultDomain = docs.get(0);
         DocumentModel root = session.createDocumentModel(
                 defaultDomain.getPathAsString(),
                 DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID,
