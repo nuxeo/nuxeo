@@ -5,6 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.nuxeo.ecm.spaces.api.Constants.SPACE_DOCUMENT_TYPE;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -73,15 +77,8 @@ public class LayoutNuxeoTest {
                         0)).getTemplate());
 
         DocumentModelList children = session.getChildren(createdDoc.getRef());
-
         assertEquals(3, children.size());
-
-        assertEquals(children.get(0).getId(),
-                ((YUIUnitImpl) zone.getComponents().get(0)).getId());
-        assertEquals(children.get(1).getId(),
-                ((YUIUnitImpl) zone.getComponents().get(1)).getId());
-        assertEquals(children.get(2).getId(),
-                ((YUIUnitImpl) zone.getComponents().get(2)).getId());
+        checkSame(zone, children);
     }
 
     @Test
@@ -103,16 +100,20 @@ public class LayoutNuxeoTest {
                 ((YUIComponentZone) firstZone).getTemplate());
 
         DocumentModelList children = session.getChildren(createdDoc.getRef());
-
         assertEquals(3, children.size());
-        assertEquals(3, zone.getComponents().size());
+        checkSame(firstZone, children);
+    }
 
-        assertEquals(children.get(0).getId(),
-                ((YUIUnitImpl) firstZone.getComponents().get(0)).getId());
-        assertEquals(children.get(1).getId(),
-                ((YUIUnitImpl) firstZone.getComponents().get(1)).getId());
-        assertEquals(children.get(2).getId(),
-                ((YUIUnitImpl) firstZone.getComponents().get(2)).getId());
+    protected void checkSame(YUIComponent zone, DocumentModelList children) {
+        int size = children.size();
+        assertEquals(zone.getComponents().size(), size);
+        List<String> expected = new ArrayList<String>(size);
+        List<String> actual = new ArrayList<String>(size);
+        for (int i = 0; i < size; i++) {
+            expected.add(((YUIUnitImpl) zone.getComponents().get(i)).getId());
+            actual.add(children.get(i).getId());
+        }
+        assertEquals(new HashSet<String>(expected), new HashSet<String>(actual));
     }
 
     @Test
