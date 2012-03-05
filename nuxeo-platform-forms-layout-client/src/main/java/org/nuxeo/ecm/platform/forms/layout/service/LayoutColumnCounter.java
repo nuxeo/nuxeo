@@ -28,6 +28,7 @@ import org.jboss.seam.annotations.Scope;
  *
  * @since 5.4.2
  */
+// TODO: move this dependency to Seam elsewhere
 @Name("layoutColumnCounter")
 @Scope(ScopeType.EVENT)
 public class LayoutColumnCounter {

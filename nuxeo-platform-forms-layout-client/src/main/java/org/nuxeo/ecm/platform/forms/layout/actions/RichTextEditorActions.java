@@ -45,6 +45,8 @@ import org.nuxeo.runtime.api.Framework;
 @Name("richTextEditorActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
+// TODO: move elsewhere, this is not related to layouts and widgets management
+// and could be moved to a JSF function instead of adding a dependency to Seam
 public class RichTextEditorActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
