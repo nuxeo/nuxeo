@@ -401,7 +401,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-scan-importer</artifactId>
+        <artifactId>nuxeo-scan-importer</artifactId>
         <version>${nuxeo.importer.version}</version>
       </dependency>
 
