@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.platform.el.DocumentModelResolver;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
@@ -36,6 +37,21 @@ public class ValueExpressionHelper {
     private ValueExpressionHelper() {
     }
 
+    /**
+     * Returns true if given expression contains some special characters, in
+     * which case no transformation of the widget field definition will be done
+     * to make it compliant with {@link DocumentModelResolver} lookups when
+     * handling document fields. Special characters are:
+     * <ul>
+     * <li>".": this makes it possible to resolve subelements, for instance
+     * "myfield.mysubfield".</li>
+     * <li>"[": this makes it possible to include map or array sub elements,
+     * for instance "contextData['request/comment']" to fill a document model
+     * context map.</li>
+     * </ul>
+     *
+     * @throws NullPointerException if expression is null
+     */
     public static boolean isFormattedAsELExpression(String expression) {
         if (expression.contains(".") || expression.contains("[")) {
             return true;
@@ -53,22 +69,24 @@ public class ValueExpressionHelper {
         if (field == null || "".equals(field.getPropertyName())) {
             return valueName;
         }
-        List<String> expressionElements = new ArrayList<String>();
-        expressionElements.add(valueName);
-
-        String dmResolverValue;
 
         String fieldName = field.getFieldName();
         if (ComponentTagUtils.isStrictValueReference(fieldName)) {
             // already an EL expression => ignore schema name, do not resolve
             // field, ignore previous expression elements
-            dmResolverValue = ComponentTagUtils.getBareValueName(fieldName);
+            return ComponentTagUtils.getBareValueName(fieldName);
         } else if (isFormattedAsELExpression(fieldName)) {
             // already formatted as an EL expression => ignore schema name, do
             // not resolve field and do not modify expression format
-            expressionElements.add(fieldName);
-            dmResolverValue = StringUtils.join(expressionElements, ".");
+            String format = "%s.%s";
+            if (fieldName.startsWith(".") || fieldName.startsWith("[")) {
+                format = "%s%s";
+            }
+            return String.format(format, valueName, fieldName);
         } else {
+            List<String> expressionElements = new ArrayList<String>();
+            expressionElements.add(valueName);
+
             // try to resolve schema name/prefix
             String schemaName = field.getSchemaName();
             if (schemaName == null) {
@@ -94,9 +112,9 @@ public class ValueExpressionHelper {
                     expressionElements.add(String.format("['%s']", item));
                 }
             }
-            dmResolverValue = StringUtils.join(expressionElements, "");
+
+            return StringUtils.join(expressionElements, "");
         }
-        return dmResolverValue;
     }
 
     public static String createExpressionString(String valueName,
