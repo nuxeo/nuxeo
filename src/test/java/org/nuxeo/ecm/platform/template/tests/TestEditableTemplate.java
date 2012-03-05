@@ -1,18 +1,12 @@
 package org.nuxeo.ecm.platform.template.tests;
 
 import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
@@ -131,7 +125,7 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         Blob result = adapter.renderWithTemplate();
         assertNotNull(result);
         
-        System.out.println("Result=\n" + result.getString());
+        //System.out.println("Result=\n" + result.getString());
         
         assertTrue(result.getString().contains("Hello"));
         assertTrue(result.getString().contains(doc.getId()));
@@ -143,6 +137,5 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         closeSession();
         super.tearDown();
     }
-
 
 }

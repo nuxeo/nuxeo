@@ -43,12 +43,19 @@ public class FMContextBuilder {
         Map<String, Object> ctx = new HashMap<String, Object>();
         DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
 
+        ContextFunctions functions = new ContextFunctions(doc, nuxeoWrapper);
+        
         CoreSession session = doc.getCoreSession();
 
         // doc infos
         ctx.put("doc", nuxeoWrapper.wrap(doc));
         ctx.put("document", nuxeoWrapper.wrap(doc));
 
+        // add functions helper
+        ctx.put("fn", functions);
+        ctx.put("Fn", functions);
+        ctx.put("fonctions", functions);
+        
         // user info
         ctx.put("username", session.getPrincipal().getName());
         ctx.put("principal", session.getPrincipal());
