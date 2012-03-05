@@ -116,12 +116,12 @@ public class SetupWizardActionBean implements Serializable {
     // return dbTemplatesLabels;
     // }
 
-    protected static boolean needsRestart = false;
+    protected boolean needsRestart = false;
 
     protected boolean configurable = false;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @Factory(value = "configurable", scope = ScopeType.SESSION)
     public boolean isConfigurable() {
@@ -131,7 +131,7 @@ public class SetupWizardActionBean implements Serializable {
         return configurable;
     }
 
-    private ConfigurationGenerator configGenerator;
+    private transient ConfigurationGenerator configGenerator;
 
     protected Properties userConfig;
 
@@ -160,7 +160,6 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     private void setParameters() {
-
         userConfig = configGenerator.getUserConfig();
         parameters = new HashMap<String, String>();
         advancedParameters = new TreeMap<String, String>();
@@ -215,6 +214,8 @@ public class SetupWizardActionBean implements Serializable {
             parameters.put("nuxeo.http.proxy.host", "");
             parameters.put("nuxeo.http.proxy.port", "");
         }
+        // Check database parameters
+
         customParameters.putAll(parameters);
         customParameters.putAll(advancedParameters);
         try {
