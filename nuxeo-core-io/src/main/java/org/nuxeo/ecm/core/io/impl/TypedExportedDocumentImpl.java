@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 /**
  * A representation for an exported document aware of property types.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
@@ -57,13 +57,15 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
 
     private static final String COMPLEX_LIST_TYPE_ID = "complexList";
 
+    private static final String CONTENT_LIST_TYPE_ID = "contentList";
+
     public TypedExportedDocumentImpl() {
         super();
     }
 
     /**
      * Instantiates a new typed exported document impl.
-     * 
+     *
      * @param doc the doc
      * @param path the path to use for this document this is used to remove full
      *            paths
@@ -77,7 +79,7 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
 
     /**
      * Instantiates a new typed exported document impl.
-     * 
+     *
      * @param doc the doc
      * @throws IOException Signals that an I/O exception has occurred.
      */
@@ -87,7 +89,7 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
 
     /**
      * Instantiates a new typed exported document impl.
-     * 
+     *
      * @param doc the doc
      * @param inlineBlobs the inline blobs
      * @throws IOException Signals that an I/O exception has occurred.
@@ -130,9 +132,21 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
                 }
             }
         } else if (type.isListType()) {
-            element.addAttribute(TYPE_ATTRIBUTE,
-                    ((ListType) type).isScalarList() ? SCALAR_LIST_TYPE_ID
-                            : COMPLEX_LIST_TYPE_ID);
+            String typeId;
+            ListType listType = ((ListType) type);
+            // Scalar list
+            if (listType.isScalarList()) {
+                typeId = SCALAR_LIST_TYPE_ID;
+            }
+            // Content list
+            else if (TypeConstants.isContentType(listType.getFieldType())) {
+                typeId = CONTENT_LIST_TYPE_ID;
+            }
+            // Complex list
+            else {
+                typeId = COMPLEX_LIST_TYPE_ID;
+            }
+            element.addAttribute(TYPE_ATTRIBUTE, typeId);
             if (value != null) {
                 if (value instanceof List) {
                     readList(element, (ListType) type, (List) value,
@@ -151,7 +165,7 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
 
     /**
      * Gets the simple type id.
-     * 
+     *
      * @param type the type
      * @return the simple type id
      */
