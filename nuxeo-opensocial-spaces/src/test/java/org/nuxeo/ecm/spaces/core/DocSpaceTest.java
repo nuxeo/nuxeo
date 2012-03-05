@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
@@ -30,6 +31,7 @@ import org.nuxeo.opensocial.container.server.layout.YUILayoutAdapter;
 import org.nuxeo.opensocial.container.shared.layout.api.LayoutHelper;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIComponent;
 import org.nuxeo.opensocial.container.shared.layout.api.YUILayout;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -65,6 +67,8 @@ public class DocSpaceTest {
     @Test
     public void layoutIsInitialized() throws Exception {
         Space space = spaceManager.getSpace("homeSpace", session);
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
         YUILayoutAdapter layoutAdapter = space.getLayout();
         assertNotNull(layoutAdapter);
         space.initLayout(LayoutHelper.buildLayout(LayoutHelper.Preset.X_2_33_66));
