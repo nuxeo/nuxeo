@@ -37,9 +37,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-importer</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-importer</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-platform-importer</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-importer.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-importer.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-importer</url>
   </scm>
 
 </project>
