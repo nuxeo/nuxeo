@@ -16,6 +16,7 @@
   <modules>
     <module>nuxeo-platform-importer-core</module>
     <module>nuxeo-platform-importer-jaxrs</module>
+    <module>nuxeo-platform-scan-importer</module>
   </modules>
 
   <repositories>
