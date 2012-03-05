@@ -17,7 +17,7 @@
   
   <target name="add-dam-importer-bundles">
     <copy todir="${nuxeo.nxserver}/bundles/" overwrite="true" flatten="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-importer-jaxrs::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-importer-jaxrs::jar" />
     </copy>
     <copy todir="${nuxeo.nxserver}/bundles/" overwrite="true" flatten="true">
       <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-importer-jaxrs::jar" />

@@ -76,7 +76,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-importer-core</artifactId>
+      <artifactId>nuxeo-importer-core</artifactId>
     </dependency>
   </dependencies>
 
