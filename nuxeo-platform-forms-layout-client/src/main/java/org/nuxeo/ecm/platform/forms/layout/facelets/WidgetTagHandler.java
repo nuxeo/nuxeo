@@ -94,8 +94,8 @@ public class WidgetTagHandler extends MetaTagHandler {
             // set value name on widget instance in case it's changed from
             // first computation
             String valueName = value.getValue();
-            if (ComponentTagUtils.isValueReference(valueName)) {
-                valueName = valueName.substring(2, valueName.length() - 1);
+            if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                valueName = ComponentTagUtils.getBareValueName(valueName);
             }
             // add additional properties put on tag
             List<String> reservedVars = Arrays.asList(reservedVarsArray);

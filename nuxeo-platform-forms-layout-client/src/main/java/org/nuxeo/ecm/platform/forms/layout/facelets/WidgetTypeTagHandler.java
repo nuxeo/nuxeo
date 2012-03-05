@@ -137,8 +137,8 @@ public class WidgetTypeTagHandler extends TagHandler {
         String valueName = null;
         if (value != null) {
             valueName = value.getValue();
-            if (ComponentTagUtils.isValueReference(valueName)) {
-                valueName = valueName.substring(2, valueName.length() - 1);
+            if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                valueName = ComponentTagUtils.getBareValueName(valueName);
             }
         }
         List<FieldDefinition> fieldsValue = new ArrayList<FieldDefinition>();

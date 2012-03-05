@@ -44,10 +44,10 @@ public final class ComponentTagUtils {
     }
 
     /**
-     * Returns true if the specified value conforms to the syntax requirements
-     * of a value binding expression.
+     * Returns true if the specified value contains a value expression, e.g the
+     * start and end of EL markers.
      *
-     * @param value the value to evaluate (not null)
+     * @param value the value to evaluate, returns false if null
      */
     public static boolean isValueReference(String value) {
         if (value == null) {
@@ -56,6 +56,41 @@ public final class ComponentTagUtils {
         return value.contains("#{") && value.indexOf("#{") < value.indexOf('}')
                 || value.contains("${")
                 && value.indexOf("${") < value.indexOf('}');
+    }
+
+    /**
+     * Returns true if the specified value is a value expression, e.g starting
+     * and ending with EL markers after being trimmed.
+     *
+     * @param value the value to evaluate, returns false if null
+     * @since 5.6
+     */
+    public static boolean isStrictValueReference(String value) {
+        if (value == null) {
+            return false;
+        }
+        value = value.trim();
+        return (value.startsWith("#{")
+                && value.indexOf("#{") < value.indexOf('}') && value.endsWith("}"))
+                || (value.startsWith("${")
+                        && value.indexOf("${") < value.indexOf('}') && value.endsWith("}"));
+    }
+
+    /**
+     * Returns a value name for given strict value reference. If reference is
+     * #{foo} or ${foo}, will return "foo".
+     *
+     * @since 5.6
+     * @throws IllegalArgumentException if reference is null or
+     *             {@link #isStrictValueReference(String)} returns false.
+     * @param valueReference
+     */
+    public static String getBareValueName(String valueReference) {
+        if (!isStrictValueReference(valueReference)) {
+            throw new IllegalArgumentException(String.format(
+                    "Invalid value reference '%s'", valueReference));
+        }
+        return valueReference.substring(2, valueReference.length() - 1);
     }
 
     /**

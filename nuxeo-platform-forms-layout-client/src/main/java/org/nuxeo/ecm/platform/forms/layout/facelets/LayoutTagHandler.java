@@ -146,8 +146,8 @@ public class LayoutTagHandler extends TagHandler {
 
         String modeValue = mode.getValue(ctx);
         String valueName = value.getValue();
-        if (ComponentTagUtils.isValueReference(valueName)) {
-            valueName = valueName.substring(2, valueName.length() - 1);
+        if (ComponentTagUtils.isStrictValueReference(valueName)) {
+            valueName = ComponentTagUtils.getBareValueName(valueName);
         }
 
         // expose some layout variables before layout creation so that they

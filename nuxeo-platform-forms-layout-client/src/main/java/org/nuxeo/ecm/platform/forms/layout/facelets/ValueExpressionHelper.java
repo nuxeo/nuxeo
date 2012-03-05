@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
  * Helper for managing value expressions.
@@ -58,7 +59,11 @@ public class ValueExpressionHelper {
         String dmResolverValue;
 
         String fieldName = field.getFieldName();
-        if (isFormattedAsELExpression(fieldName)) {
+        if (ComponentTagUtils.isStrictValueReference(fieldName)) {
+            // already an EL expression => ignore schema name, do not resolve
+            // field, ignore previous expression elements
+            dmResolverValue = ComponentTagUtils.getBareValueName(fieldName);
+        } else if (isFormattedAsELExpression(fieldName)) {
             // already formatted as an EL expression => ignore schema name, do
             // not resolve field and do not modify expression format
             expressionElements.add(fieldName);
