@@ -18,5 +18,9 @@
       <artifactId>commons-io</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
   </dependencies>
 </project>

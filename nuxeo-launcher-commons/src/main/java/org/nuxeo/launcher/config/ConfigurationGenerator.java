@@ -28,8 +28,15 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -40,10 +47,13 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+import org.nuxeo.launcher.commons.DatabaseDriverException;
+import org.nuxeo.launcher.commons.text.TextTemplate;
 import org.nuxeo.log4j.Log4JHelper;
 
 /**
@@ -122,6 +132,20 @@ public class ConfigurationGenerator {
     public static final String PARAM_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
 
     public static final String INSTALL_AFTER_RESTART = "installAfterRestart.log";
+
+    private static final String PARAM_DB_DRIVER = "nuxeo.db.driver";
+
+    private static final String PARAM_DB_JDBC_URL = "nuxeo.db.jdbc.url";
+
+    private static final String PARAM_DB_HOST = "nuxeo.db.host";
+
+    private static final String PARAM_DB_PORT = "nuxeo.db.port";
+
+    private static final String PARAM_DB_NAME = "nuxeo.db.name";
+
+    private static final String PARAM_DB_USER = "nuxeo.db.user";
+
+    private static final String PARAM_DB_PWD = "nuxeo.db.password";
 
     private final File nuxeoHome;
 
@@ -941,6 +965,29 @@ public class ConfigurationGenerator {
         serverConfigurator.checkPaths();
         serverConfigurator.removeExistingLocks();
         checkAddressesAndPorts();
+        if (!"default".equals(userConfig.getProperty(PARAM_TEMPLATE_DBNAME))) {
+            try {
+                checkDatabaseConnection(
+                        userConfig.getProperty(PARAM_TEMPLATE_DBNAME),
+                        userConfig.getProperty(PARAM_DB_NAME),
+                        userConfig.getProperty(PARAM_DB_USER),
+                        userConfig.getProperty(PARAM_DB_PWD),
+                        userConfig.getProperty(PARAM_DB_HOST),
+                        userConfig.getProperty(PARAM_DB_PORT));
+            } catch (FileNotFoundException e) {
+                throw new ConfigurationException(e);
+            } catch (IOException e) {
+                throw new ConfigurationException(e);
+            } catch (DatabaseDriverException e) {
+                log.error(e);
+                throw new ConfigurationException(
+                        "Could not find database driver: " + e.getMessage());
+            } catch (SQLException e) {
+                log.error(e);
+                throw new ConfigurationException(
+                        "Failed to connect on database: " + e.getMessage());
+            }
+        }
     }
 
     /**
@@ -1203,5 +1250,91 @@ public class ConfigurationGenerator {
         saveFilteredConfiguration(newParametersToSave);
         setBasicConfiguration();
         return oldValue;
+    }
+
+    /**
+     * Check driver availability and database connection
+     *
+     * @param databaseTemplate Nuxeo database template
+     * @param dbName nuxeo.db.name parameter in nuxeo.conf
+     * @param dbUser nuxeo.db.user parameter in nuxeo.conf
+     * @param dbPassword nuxeo.db.password parameter in nuxeo.conf
+     * @param dbHost nuxeo.db.host parameter in nuxeo.conf
+     * @param dbPort nuxeo.db.port parameter in nuxeo.conf
+     * @throws DatabaseDriverException
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws SQLException
+     * @since 5.6
+     */
+    public void checkDatabaseConnection(String databaseTemplate, String dbName,
+            String dbUser, String dbPassword, String dbHost, String dbPort)
+            throws FileNotFoundException, IOException, DatabaseDriverException,
+            SQLException {
+        File databaseTemplateDir = new File(nuxeoHome, TEMPLATES
+                + File.separator + databaseTemplate);
+        Properties templateProperties = new Properties();
+        templateProperties.load(new FileInputStream(new File(
+                databaseTemplateDir, NUXEO_DEFAULT_CONF)));
+        String classname = templateProperties.getProperty(PARAM_DB_DRIVER);
+        // Load driver class from template or default lib directory
+        Driver driver = lookupDriver(databaseTemplate, databaseTemplateDir,
+                classname);
+        // Test db connection
+        DriverManager.registerDriver(driver);
+        String connectionUrl = templateProperties.getProperty(PARAM_DB_JDBC_URL);
+        TextTemplate tt = new TextTemplate();
+        tt.setVariable(PARAM_DB_HOST, dbHost);
+        tt.setVariable(PARAM_DB_PORT, dbPort);
+        tt.setVariable(PARAM_DB_NAME, dbName);
+        Properties props = new Properties();
+        props.put("user", dbUser);
+        props.put("password", dbPassword);
+        Connection con = driver.connect(tt.process(connectionUrl), props);
+        con.close();
+    }
+
+    /**
+     * Build an {@link URLClassLoader} for the given databaseTemplate looking in
+     * the templates directory and in the server lib directory, then looks for a
+     * driver
+     *
+     * @param databaseTemplate
+     * @param databaseTemplateDir
+     * @param classname Driver class name, defined by {@link #PARAM_DB_DRIVER}
+     * @return Driver driver if found, else an Exception must have been raised.
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DatabaseDriverException If there was an error when trying to
+     *             instantiate the driver.
+     * @since 5.6
+     */
+    private Driver lookupDriver(String databaseTemplate,
+            File databaseTemplateDir, String classname)
+            throws FileNotFoundException, IOException, DatabaseDriverException {
+        File[] files = (File[]) ArrayUtils.addAll( //
+                new File(databaseTemplateDir, "lib").listFiles(), //
+                serverConfigurator.getServerLibDir().listFiles());
+        List<URL> urlsList = new ArrayList<URL>();
+        for (File file : files) {
+            if (file.getName().endsWith("jar")) {
+                try {
+                    urlsList.add(new URL("jar:file:" + file.getPath() + "!/"));
+                    log.debug("Added " + file.getPath());
+                } catch (MalformedURLException e) {
+                    log.error(e);
+                }
+            }
+        }
+        URLClassLoader ucl = new URLClassLoader(urlsList.toArray(new URL[0]));
+        try {
+            return (Driver) Class.forName(classname, true, ucl).newInstance();
+        } catch (InstantiationException e) {
+            throw new DatabaseDriverException(e);
+        } catch (IllegalAccessException e) {
+            throw new DatabaseDriverException(e);
+        } catch (ClassNotFoundException e) {
+            throw new DatabaseDriverException(e);
+        }
     }
 }
