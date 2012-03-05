@@ -2437,10 +2437,8 @@
     <disabledPropertyRef name="size" />
 
     <!-- rich:calendar does not resolve some attributes as EL expressions -->
-    <disabledPropertyRef name="showApplyButton" widgetType="datetime"
-      enabled="false" />
-    <disabledPropertyRef name="defaultTime" widgetType="datetime"
-      enabled="false" />
+    <disabledPropertyRef name="showApplyButton" widgetType="datetime" />
+    <disabledPropertyRef name="defaultTime" widgetType="datetime" />
 
   </extension>
 
