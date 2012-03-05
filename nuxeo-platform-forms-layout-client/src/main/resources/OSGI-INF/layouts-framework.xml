@@ -200,4 +200,16 @@
       class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor" />
   </extension-point>
 
+  <extension-point name="disabledPropertyRefs">
+
+    <documentation>
+      Since 5.6, makes it possible to define what properties should
+      not be referenced using EL expressions.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.service.DisabledPropertyRefDescriptor" />
+
+  </extension-point>
+
 </component>

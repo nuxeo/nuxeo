@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ValueExpression;
+import javax.faces.FacesException;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.convert.Converter;
@@ -39,8 +40,10 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
+import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -299,7 +302,8 @@ public final class FaceletHandlerHelper {
         }
         // fill with widget properties
         List<TagAttribute> propertyAttrs = getTagAttributes(
-                widget.getProperties(), true);
+                widget.getProperties(), null, true, widget.getType(),
+                widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
         }
@@ -311,11 +315,22 @@ public final class FaceletHandlerHelper {
     }
 
     /**
-     * @since 5.5
+     * @since 5.5, signature changed on 5.6 to include widgetType and
+     *        widgetMode.
      */
     public List<TagAttribute> getTagAttributes(
             Map<String, Serializable> properties,
-            List<String> excludedProperties, boolean useReferenceProperties) {
+            List<String> excludedProperties, boolean useReferenceProperties,
+            String widgetType, String widgetMode) {
+        WebLayoutManager service = null;
+        try {
+            service = Framework.getService(WebLayoutManager.class);
+        } catch (Exception e) {
+            throw new FacesException(e);
+        }
+        if (service == null) {
+            throw new FacesException("Layout service not found");
+        }
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         if (properties != null) {
             for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
@@ -326,8 +341,9 @@ public final class FaceletHandlerHelper {
                     continue;
                 }
                 Serializable valueInstance = prop.getValue();
-                if (!shouldCreateReferenceAttribute(key, valueInstance)
-                        || !useReferenceProperties) {
+                if (!useReferenceProperties
+                        || !service.referencePropertyAsExpression(key,
+                                valueInstance, widgetType, widgetMode, null)) {
                     if (valueInstance == null
                             || valueInstance instanceof String) {
                         // FIXME: this will not be updated correctly using ajax
@@ -349,14 +365,22 @@ public final class FaceletHandlerHelper {
         return attrs;
     }
 
+    /**
+     * @deprecated since 5.6: use
+     *             {@link #getTagAttributes(Map, List, boolean, String, String)}
+     *             instead
+     */
+    @Deprecated
     public List<TagAttribute> getTagAttributes(
             Map<String, Serializable> properties, boolean useReferenceProperties) {
-        return getTagAttributes(properties, null, useReferenceProperties);
+        return getTagAttributes(properties, null, useReferenceProperties, null,
+                null);
     }
 
     public TagAttributes getTagAttributes(WidgetSelectOption selectOption) {
         Map<String, Serializable> props = getSelectOptionProperties(selectOption);
-        List<TagAttribute> attrs = getTagAttributes(props, false);
+        List<TagAttribute> attrs = getTagAttributes(props, null, false, null,
+                null);
         if (attrs == null) {
             attrs = Collections.emptyList();
         }

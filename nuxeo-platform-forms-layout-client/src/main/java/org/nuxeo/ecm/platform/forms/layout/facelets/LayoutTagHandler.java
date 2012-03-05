@@ -248,7 +248,7 @@ public class LayoutTagHandler extends TagHandler {
                     FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
                             "src", templateValue)),
                     getNextHandler(ctx, this.config, helper, layoutInstance,
-                            layoutTagConfigId));
+                            layoutTagConfigId, layoutService));
             FaceletHandler includeHandler = new IncludeHandler(config);
 
             // expose layout variables
@@ -296,8 +296,8 @@ public class LayoutTagHandler extends TagHandler {
 
     protected FaceletHandler getNextHandler(FaceletContext ctx,
             TagConfig tagConfig, FaceletHandlerHelper helper,
-            Layout layoutInstance, String layoutTagConfigId)
-            throws WidgetException {
+            Layout layoutInstance, String layoutTagConfigId,
+            WebLayoutManager layoutManager) throws WidgetException {
         FaceletHandler leaf = new LeafFaceletHandler();
         List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
 
@@ -319,7 +319,8 @@ public class LayoutTagHandler extends TagHandler {
                     RenderVariables.layoutVariables.layoutProperty.name(), key));
             TagAttribute value;
             Serializable valueInstance = prop.getValue();
-            if (!helper.shouldCreateReferenceAttribute(key, valueInstance)) {
+            if (!layoutManager.referencePropertyAsExpression(key,
+                    valueInstance, null, null, null)) {
                 // FIXME: this will not be updated correctly using ajax
                 value = helper.createAttribute("value", (String) valueInstance);
             } else {

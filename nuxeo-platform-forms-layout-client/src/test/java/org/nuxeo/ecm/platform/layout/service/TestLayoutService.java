@@ -305,4 +305,100 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals(BuiltinWidgetModes.VIEW, viewProps.get("mode"));
     }
 
+    public void testPropertyReference() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-props-contrib.xml");
+        assertTrue(service.referencePropertyAsExpression("foo", null, null,
+                null, null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", null,
+                null, null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
+                null, null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
+                "bar", null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
+                "bar", "bar"));
+
+        assertFalse(service.referencePropertyAsExpression("validator", null,
+                null, null, null));
+        assertFalse(service.referencePropertyAsExpression("validator", "bar",
+                null, null, null));
+        assertFalse(service.referencePropertyAsExpression("validator", "bar",
+                "bar", null, null));
+        assertFalse(service.referencePropertyAsExpression("validator", "bar",
+                "bar", "bar", null));
+        assertFalse(service.referencePropertyAsExpression("validator", "bar",
+                "bar", "bar", "bar"));
+
+        assertTrue(service.referencePropertyAsExpression("defaultTime", null,
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "bar", null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "bar", "bar", null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "bar", "bar", "bar"));
+
+        assertTrue(service.referencePropertyAsExpression("defaultTime", null,
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                null, null, null));
+        assertFalse(service.referencePropertyAsExpression("defaultTime", "bar",
+                "datetime", null, null));
+        assertFalse(service.referencePropertyAsExpression("defaultTime", "bar",
+                "datetime", "bar", null));
+        assertFalse(service.referencePropertyAsExpression("defaultTime", "bar",
+                "datetime", "bar", "bar"));
+
+        // override to check merge
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-props-contrib-override.xml");
+
+        assertTrue(service.referencePropertyAsExpression("foo", null, null,
+                null, null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", null,
+                null, null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
+                null, null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
+                "bar", null));
+        assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
+                "bar", "bar"));
+
+        assertTrue(service.referencePropertyAsExpression("validator", null,
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("validator", "bar",
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("validator", "bar",
+                "bar", null, null));
+        assertTrue(service.referencePropertyAsExpression("validator", "bar",
+                "bar", "bar", null));
+        assertTrue(service.referencePropertyAsExpression("validator", "bar",
+                "bar", "bar", "bar"));
+
+        assertTrue(service.referencePropertyAsExpression("defaultTime", null,
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "bar", null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "bar", "bar", null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "bar", "bar", "bar"));
+
+        assertTrue(service.referencePropertyAsExpression("defaultTime", null,
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                null, null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "datetime", null, null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "datetime", "bar", null));
+        assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
+                "datetime", "bar", "bar"));
+
+    }
 }

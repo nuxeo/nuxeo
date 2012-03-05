@@ -123,7 +123,8 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             widgetPropsClone.remove("localize");
         }
         List<TagAttribute> propertyAttrs = helper.getTagAttributes(
-                widgetPropsClone, true);
+                widgetPropsClone, null, true, widget.getType(),
+                widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
         }

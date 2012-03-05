@@ -118,7 +118,8 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         // fill with widget properties
         List<TagAttribute> propertyAttrs = helper.getTagAttributes(
-                widget.getProperties(), true);
+                widget.getProperties(), null, true, widget.getType(),
+                widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
         }

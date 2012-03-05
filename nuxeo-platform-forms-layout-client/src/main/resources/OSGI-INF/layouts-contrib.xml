@@ -2423,4 +2423,25 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="disabledPropertyRefs">
+    <documentation>
+      Configuration of properties disabled by default for reference
+      in EL expressions.
+    </documentation>
+
+    <disabledPropertyRef name="converter" />
+    <disabledPropertyRef name="validator" />
+
+    <!-- avoid bad interactions with JBoss-el size EL resolver... -->
+    <disabledPropertyRef name="size" />
+
+    <!-- rich:calendar does not resolve some attributes as EL expressions -->
+    <disabledPropertyRef name="showApplyButton" widgetType="datetime"
+      enabled="false" />
+    <disabledPropertyRef name="defaultTime" widgetType="datetime"
+      enabled="false" />
+
+  </extension>
+
 </component>

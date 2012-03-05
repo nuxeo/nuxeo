@@ -90,7 +90,16 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
 
     public static final String LAYOUTS_EP_NAME = LayoutStoreImpl.LAYOUTS_EP_NAME;
 
+    public static final String PROPS_REF_EP_NAME = "disabledPropertyRefs";
+
+    protected DisabledPropertyRefRegistry disabledPropertyRefsReg;
+
     // Runtime component API
+
+    public WebLayoutManagerImpl() {
+        super();
+        disabledPropertyRefsReg = new DisabledPropertyRefRegistry();
+    }
 
     @Override
     public void registerContribution(Object contribution,
@@ -101,6 +110,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             registerLayout(((LayoutDescriptor) contribution).getLayoutDefinition());
         } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
             registerWidget(((WidgetDescriptor) contribution).getWidgetDefinition());
+        } else if (extensionPoint.equals(PROPS_REF_EP_NAME)) {
+            registerDisabledPropertyRef(((DisabledPropertyRefDescriptor) contribution));
         } else {
             log.error(String.format(
                     "Unknown extension point %s, can't register !",
@@ -117,6 +128,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             unregisterLayout(((LayoutDescriptor) contribution).getLayoutDefinition());
         } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
             unregisterWidget(((WidgetDescriptor) contribution).getWidgetDefinition());
+        } else if (extensionPoint.equals(PROPS_REF_EP_NAME)) {
+            unregisterDisabledPropertyRef(((DisabledPropertyRefDescriptor) contribution));
         } else {
             log.error(String.format(
                     "Unknown extension point %s, can't unregister !",
@@ -458,6 +471,45 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 subWidgets, 0, null,
                 LayoutFunctions.computeWidgetDefinitionId(wDef));
         return widget;
+    }
+
+    /**
+     * @since 5.6
+     */
+    protected void registerDisabledPropertyRef(
+            DisabledPropertyRefDescriptor desc) {
+        disabledPropertyRefsReg.addContribution(desc);
+        log.info(String.format(
+                "Registered disabled property reference descriptor: %s",
+                desc.toString()));
+    }
+
+    /**
+     * @since 5.6
+     */
+    protected void unregisterDisabledPropertyRef(
+            DisabledPropertyRefDescriptor desc) {
+        disabledPropertyRefsReg.removeContribution(desc);
+        log.info(String.format(
+                "Removed disabled property reference descriptor: %s",
+                desc.toString()));
+    }
+
+    @Override
+    public boolean referencePropertyAsExpression(String name,
+            Serializable value, String widgetType, String widgetMode,
+            String template) {
+        if ((value instanceof String)
+                && (ComponentTagUtils.isValueReference((String) value))) {
+            return false;
+        }
+        for (DisabledPropertyRefDescriptor desc : disabledPropertyRefsReg.getDisabledPropertyRefs()) {
+            if (Boolean.TRUE.equals(desc.getEnabled())
+                    && desc.matches(name, widgetType, widgetMode, template)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

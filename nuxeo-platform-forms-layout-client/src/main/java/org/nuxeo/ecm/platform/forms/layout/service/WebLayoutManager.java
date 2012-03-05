@@ -191,4 +191,33 @@ public interface WebLayoutManager extends LayoutManager {
             String label, String helpLabel, Boolean translated,
             Map<String, Serializable> properties, Widget[] subWidgets);
 
+    /**
+     * Returns true if property with given name and value should be referenced
+     * as a value expression.
+     * <p>
+     * Referencing properties as value expressions makes it possible to resolve
+     * this value again when reloading components in ajax for instance, as
+     * literal values kept by JSF components are not evaluated again.
+     * <p>
+     * But some components wait for a literal value and do not evaluate value
+     * expressions, so their properties should not be referenced as value
+     * expressions. An extension point on the service makes it possible to
+     * declare these properties: by default other properties will be using
+     * references.
+     * <p>
+     * This method returns false if it finds a matching disabled property ref
+     * for given criteria. If any of the given parameters are null, this
+     * criterion is ignored, and this looks up any matching (and enabled)
+     * contribution.
+     *
+     * @since 5.6
+     * @param name the property name
+     * @param value the property value
+     * @param widgetType the widget type if any
+     * @param mode the widget mode if any
+     * @param template the widget template if any
+     */
+    boolean referencePropertyAsExpression(String name, Serializable value,
+            String widgetType, String mode, String template);
+
 }

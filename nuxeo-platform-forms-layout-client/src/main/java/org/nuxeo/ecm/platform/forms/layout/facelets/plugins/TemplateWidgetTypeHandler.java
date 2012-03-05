@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.FacesException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -34,6 +36,8 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.TagConfigFactory;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
+import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -84,7 +88,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 widgetTagConfigId,
                 attributes,
                 getNextHandler(ctx, tagConfig, helper, widget,
-                        widgetTagConfigId));
+                        widgetTagConfigId, template));
         return new DecorateHandler(config);
     }
 
@@ -96,7 +100,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx,
             TagConfig tagConfig, FaceletHandlerHelper helper, Widget widget,
-            String widgetTagConfigId) throws WidgetException {
+            String widgetTagConfigId, String template) throws WidgetException {
         FaceletHandler leaf = new LeafFaceletHandler();
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
         if (fieldDefs == null) {
@@ -114,6 +118,15 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     Integer.valueOf(i)));
         }
         // expose widget properties too
+        WebLayoutManager layoutService;
+        try {
+            layoutService = Framework.getService(WebLayoutManager.class);
+        } catch (Exception e) {
+            throw new FacesException(e);
+        }
+        if (layoutService == null) {
+            throw new FacesException("Layout service not found");
+        }
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();
             TagAttribute name = helper.createAttribute("name", String.format(
@@ -121,7 +134,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     RenderVariables.widgetVariables.widgetProperty.name(), key));
             TagAttribute value;
             Serializable valueInstance = prop.getValue();
-            if (!helper.shouldCreateReferenceAttribute(key, valueInstance)) {
+            if (!layoutService.referencePropertyAsExpression(key,
+                    valueInstance, widget.getType(), widget.getMode(), template)) {
                 // FIXME: this will not be updated correctly using ajax
                 value = helper.createAttribute("value", (String) valueInstance);
             } else {
