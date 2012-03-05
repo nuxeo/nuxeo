@@ -9,14 +9,14 @@
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-importer</artifactId>
+  <artifactId>nuxeo-importer</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Importer parent</name>
 
   <modules>
-    <module>nuxeo-platform-importer-core</module>
-    <module>nuxeo-platform-importer-jaxrs</module>
-    <module>nuxeo-scan-importer</module>
+    <module>nuxeo-importer-core</module>
+    <module>nuxeo-importer-jaxrs</module>
+    <module>nuxeo-importer-scan</module>
   </modules>
 
   <repositories>

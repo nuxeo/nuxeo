@@ -9,14 +9,14 @@ This sample include :
     - to define where to read files
     - to define where to import documents in nuxeo
  - an importer
-    - bases on nuxeo-platform-importer-core
+    - bases on nuxeo-importer-core
     - using configuration service
  - an event listener to trigger import based on events send by the scheduler
 
 Requirements and installation
 =============================
-This plugin require nuxeo-platform-importer-core (5.3 or later).
-You also need to add the nuxeo-platform-scan-importer jar in the nuxeo plugin directory.
+This plugin require nuxeo-importer-core (5.3 or later).
+You also need to add the nuxeo-scan-importer jar in the nuxeo plugin directory.
 
 Configuration
 =============
