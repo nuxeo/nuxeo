@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent.testContrib3">
+
+  <extension target="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent"
+    point="mapping">
+
+    <mapping>
+        <fieldMappings>
+            <fieldMapping sourceXPath="//string[@name='Fournisseur']" sourceAttribute="value" targetXPath="dc:source" targetType="string"/>
+            <fieldMapping sourceXPath="//string[@name='NDeFacture']" sourceAttribute="value" targetXPath="dc:title" targetType="string"/>
+            <fieldMapping sourceXPath="//string[@name='NSAGE']" sourceAttribute="value" targetXPath="dc:coverage" targetType="string"/>
+        </fieldMappings>
+
+        <blobMappings>
+            <blobMapping sourceXPath="//file/content" sourcePathAttribute="filepath" sourceFilenameAttribute="name" ></blobMapping>
+        </blobMappings>
+    </mapping>
+
+  </extension>
+
+</component>

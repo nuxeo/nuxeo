@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent.testConfig0">
+
+  <extension target="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent"
+    point="config">
+
+        <importerConfig>
+            <sourcePath>/tmp/somefolder</sourcePath>
+            <processedPath>/tmp/processed</processedPath>
+            <nbThreads>2</nbThreads>
+            <batchSize>5</batchSize>
+            <targetPath>/default-domain/import</targetPath>
+        </importerConfig>
+
+  </extension>
+
+</component>
