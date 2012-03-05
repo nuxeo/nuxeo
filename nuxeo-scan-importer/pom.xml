@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-scan-importer</artifactId>
+    <artifactId>nuxeo-scan-importer</artifactId>
     <name>Scan importer sample</name>
 
     <dependencies>
