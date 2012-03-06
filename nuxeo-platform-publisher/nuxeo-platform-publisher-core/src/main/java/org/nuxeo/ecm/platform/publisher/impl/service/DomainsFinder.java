@@ -42,9 +42,11 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
     }
 
     protected List<DocumentModel> getDomainsFiltered() throws ClientException {
-        String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_PARENTID
-                + " = '%s' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                + LifeCycleConstants.DELETED_STATE + "'";
+        String query = "SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND "
+                + NXQL.ECM_PARENTID
+                + " = '%s' AND "
+                + NXQL.ECM_LIFECYCLESTATE
+                + " <> '" + LifeCycleConstants.DELETED_STATE + "'";
         query = String.format(query, session.getRootDocument().getId());
         return session.query(query); // should disconnect
     }
