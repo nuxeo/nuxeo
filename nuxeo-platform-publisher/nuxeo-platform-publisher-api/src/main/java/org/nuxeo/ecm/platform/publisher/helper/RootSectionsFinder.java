@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,7 +209,7 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
         // SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain'
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot' )
         String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH '"
-                + path + "' and (";
+                + NXQLQueryBuilder.prepareStringLiteral(path, true, true) + "' and (";
 
         int i = 0;
         for (String type : sectionTypes) {
