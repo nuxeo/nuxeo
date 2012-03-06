@@ -13,7 +13,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 public class HtmlRenditionProvider implements RenditionProvider {
 
     @Override
-    public boolean isAvailable(DocumentModel doc) {
+    public boolean isAvailable(DocumentModel doc, RenditionDefinition def) {
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         if (holder != null) {
             return true;
