@@ -13,7 +13,7 @@ public class DocumentRegistrationInfo {
 
     public static final String DOCUMENT_RIGHT_FIELD = SCHEMA_NAME + ":permission";
     
-    public static final String ACL_NAME = "acl_document_registration";
+    public static final String ACL_NAME = "local";
     
     protected String documentId;
     

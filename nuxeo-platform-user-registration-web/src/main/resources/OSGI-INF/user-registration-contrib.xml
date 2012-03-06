@@ -33,11 +33,11 @@
       </container>
       <validationEmail>
         <title>You are invited to access Nuxeo</title>
-        <template>views/userRegistration/ValidationEmailTemplate.ftl</template>
+        <template>skin/views/userRegistration/ValidationEmailTemplate.ftl</template>
       </validationEmail>
       <reviveEmail>
         <title>You are invited to access Nuxeo</title>
-        <template>views/userRegistration/ReviveEmailTemplate.ftl</template>
+        <template>skin/views/userRegistration/ReviveEmailTemplate.ftl</template>
       </reviveEmail>
       <validationRelUrl>site/userRegistration/validate/</validationRelUrl>
     </configuration>

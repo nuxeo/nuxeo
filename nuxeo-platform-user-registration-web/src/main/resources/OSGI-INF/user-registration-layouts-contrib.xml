@@ -38,6 +38,14 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:email</property>
+          </properties>
+          <widget>user_request_email</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">userinfo:firstName</property>
           </properties>
           <widget>user_request_firstName</widget>

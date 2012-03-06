@@ -19,11 +19,10 @@ package org.nuxeo.ecm.user.registration.actions;
 import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
 import static org.nuxeo.ecm.user.registration.UserRegistrationService.ValidationMethod.EMAIL;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -31,10 +30,12 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.user.registration.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
-import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -63,6 +63,8 @@ public class UserRegistrationActions implements Serializable {
 
     public static final String REQUEST_DOCUMENT_LIST = "CURRENT_USER_REQUESTS";
 
+    public static final String REQUESTS_DOCUMENT_LIST_CHANGED = "requestDocumentsChanged";
+
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
@@ -77,6 +79,9 @@ public class UserRegistrationActions implements Serializable {
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
+
+    @In(create = true)
+    protected ContentViewActions contentViewActions;
 
     public UserRegistrationInfo getUserinfo() {
         return userinfo;
@@ -106,7 +111,8 @@ public class UserRegistrationActions implements Serializable {
         additionalInfo.put("validationBaseURL", getValidationBaseUrl());
         getUserRegistrationService().acceptRegistrationRequest(request.getId(),
                 additionalInfo);
-        EventManager.raiseEventsOnDocumentChange(request);
+        //EventManager.raiseEventsOnDocumentChange(request);
+        Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
     public void rejectRegistrationRequest(DocumentModel request)
@@ -115,12 +121,14 @@ public class UserRegistrationActions implements Serializable {
         additionalInfo.put("validationBaseURL", getValidationBaseUrl());
         getUserRegistrationService().rejectRegistrationRequest(request.getId(),
                 additionalInfo);
-        EventManager.raiseEventsOnDocumentChange(request);
+        //EventManager.raiseEventsOnDocumentChange(request);
+        Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
     public void submitUserRegistration() {
         docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
         doSubmitUserRegistration();
+        Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
     public boolean getCanDelete() {
@@ -132,7 +140,14 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected boolean isDocumentDeletable(DocumentModel doc) {
-        return true;
+        try {
+            return !"validated".equals(doc.getCurrentLifeCycleState());
+        } catch (ClientException e) {
+            log.warn("Unable to get lifecycle state for " + doc.getId() + ": "
+                    + e.getMessage());
+            log.debug(e);
+            return false;
+        }
     }
 
     public boolean getCanRevive() {
@@ -149,29 +164,59 @@ public class UserRegistrationActions implements Serializable {
         } catch (ClientException e) {
             log.warn("Unable to get lifecycle state for " + doc.getId() + ": "
                     + e.getMessage());
-            log.debug(e);
+            log.info(e);
             return false;
         }
     }
 
-    public void reviveUserRegistration() throws ClientException {
+    public void reviveUserRegistration() {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
-            getUserRegistrationService().reviveRegistrationRequests(
-                    documentManager,
-                    documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
+            try {
+                getUserRegistrationService().reviveRegistrationRequests(
+                        documentManager,
+                        documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
+                Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+                facesMessages.add(
+                        INFO,
+                        resourcesAccessor.getMessages().get(
+                                "label.revive.request"));
+            } catch (ClientException e) {
+                log.warn("Unable to revive user: " + e.getMessage());
+                log.info(e);
+                facesMessages.add(
+                        ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "label.unable.revive.request"));
+            }
         }
     }
 
-    public void deleteUserRegistration() throws ClientException {
+    public void deleteUserRegistration() {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
-            getUserRegistrationService().deleteRegistrationRequests(
-                    documentManager,
-                    documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
+            try {
+                getUserRegistrationService().deleteRegistrationRequests(
+                        documentManager,
+                        documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
+                Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+                facesMessages.add(
+                        INFO,
+                        resourcesAccessor.getMessages().get(
+                                "label.delete.request"));
+            } catch (ClientException e) {
+                log.warn("Unable to delete user request:" + e.getMessage());
+                log.info(e);
+                facesMessages.add(
+                        ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "label.unable.delete.request"));
+            }
+
         }
     }
 
     protected void doSubmitUserRegistration() {
         try {
+            userinfo.setPassword(RandomStringUtils.randomAlphanumeric(6));
             getUserRegistrationService().submitRegistrationRequest(userinfo,
                     docinfo, getAdditionalsParameters(), EMAIL, false);
 
@@ -211,5 +256,11 @@ public class UserRegistrationActions implements Serializable {
     public void resetPojos() {
         userinfo = new UserRegistrationInfo();
         docinfo = new DocumentRegistrationInfo();
+    }
+
+    @Observer({ REQUESTS_DOCUMENT_LIST_CHANGED })
+    public void refreshContentViewCache() {
+        contentViewActions.refreshOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+        contentViewActions.resetPageProviderOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 }

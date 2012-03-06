@@ -19,6 +19,7 @@
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
+        <event>requestDocumentsChanged</event>
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
@@ -38,7 +39,8 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
-          SELECT * FROM Document WHERE ecm:primaryType = ? AND docinfo:documentId = ? AND ecm:isCheckedInVersion = 0
+          SELECT * FROM Document WHERE ecm:primaryType = ? AND docinfo:documentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:currentLifeCycleState != 'validated'
         </pattern>
         <parameter>#{userRegistrationActions.docType}</parameter>
         <parameter>#{navigationContext.currentDocument.id}</parameter>
@@ -49,6 +51,7 @@
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
+        <event>requestDocumentsChanged</event>
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>

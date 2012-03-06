@@ -90,7 +90,7 @@ public interface UserRegistrationService {
      * If an error occured while sending an email, it logs it and continue.
      * @since 5.6
      */
-    void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs);
+    void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs) throws ClientException;
 
     /**
      * Delete a registration document

@@ -88,16 +88,14 @@ public class DefaultRegistrationUserFactory implements RegistrationUserFactory {
                     registrationDoc.getPropertyValue(UserRegistrationInfo.COMPANY_FIELD));
             userManager.createUser(newUserDoc);
             user = userManager.getPrincipal(login);
+
+            log.info("New user created:" + user.getName());
         } else {
-            if (email.equals(((NuxeoPrincipalImpl) user).getEmail())) {
-                throw new UserRegistrationException(
-                        "You already have an account");
-            } else {
+            if (!email.equals(((NuxeoPrincipalImpl) user).getEmail())) {
                 throw new UserRegistrationException(
                         "This login is not available");
             }
         }
-        log.info("New user created:" + user.getName());
         return user;
     }
 

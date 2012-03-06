@@ -545,14 +545,9 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     @Override
     public void reviveRegistrationRequests(CoreSession session,
-            List<DocumentModel> registrationDocs) {
+            List<DocumentModel> registrationDocs) throws ClientException {
         for (DocumentModel registrationDoc : registrationDocs) {
-            try {
-                reviveRegistrationRequest(session, registrationDoc,
-                        new HashMap<String, Object>());
-            } catch (ClientException e) {
-                log.error("Error while trying to revive document: ", e);
-            }
+            reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Object>());
         }
     }
 
