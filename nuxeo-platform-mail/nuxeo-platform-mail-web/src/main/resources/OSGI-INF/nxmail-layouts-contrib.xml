@@ -363,7 +363,7 @@
           <widget>files</widget>
         </row>
       </rows>
-      <widget name="files" type="template">
+      <widget name="files" type="list">
         <labels>
           <label mode="any">label.mail.files</label>
         </labels>
@@ -375,7 +375,7 @@
           <property name="diff">true</property>
         </properties>
         <properties mode="any">
-          <property name="template">/widgets/nolabel_list_widget_template.xhtml</property>
+          <property name="hideSubLabels">true</property>
         </properties>
         <subWidgets>
           <widget name="file" type="file">
