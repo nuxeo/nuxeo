@@ -93,6 +93,6 @@ public class RenditionDefinition {
         if (provider == null) {
             return null;
         }
-        return getProviderType().getClass().getSimpleName();
+        return provider.getClass().getSimpleName();
     }
 }
