@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 /**
  * Helper class to manage:
@@ -210,7 +211,7 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
         // )
         String pathForQuery = path.replaceAll("'", "\\\\'");
         String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH '"
-                + pathForQuery + "' and (";
+                + NXQLQueryBuilder.prepareStringLiteral(pathForQuery, true, true) + "' and (";
 
         int i = 0;
         for (String type : sectionTypes) {
