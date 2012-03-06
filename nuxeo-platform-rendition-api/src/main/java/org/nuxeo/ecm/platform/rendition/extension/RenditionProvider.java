@@ -38,9 +38,10 @@ public interface RenditionProvider {
      * Test if the Rendition is available on the given DocumentModel
      * 
      * @param doc
+     * @param definition
      * @return
      */
-    boolean isAvailable(DocumentModel doc);
+    boolean isAvailable(DocumentModel doc, RenditionDefinition definition);
 
     /**
      * Generate the rendition Blobs for a given {@link RenditionDefinition}.

@@ -93,7 +93,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
             DocumentModel doc) {
         List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
         for (RenditionDefinition def : renditionDefinitions.values()) {
-            if (def.getProvider().isAvailable(doc)) {
+            if (def.getProvider().isAvailable(doc, def)) {
                 defs.add(def);
             }
         }

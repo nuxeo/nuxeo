@@ -13,7 +13,7 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 public class DummyRenditionProvider implements RenditionProvider {
 
     @Override
-    public boolean isAvailable(DocumentModel doc) {
+    public boolean isAvailable(DocumentModel doc, RenditionDefinition def) {
         return true;
     }
 

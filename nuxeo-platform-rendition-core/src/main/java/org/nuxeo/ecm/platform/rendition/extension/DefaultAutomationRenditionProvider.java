@@ -16,7 +16,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultAutomationRenditionProvider implements RenditionProvider {
 
     @Override
-    public boolean isAvailable(DocumentModel doc) {
+    public boolean isAvailable(DocumentModel doc, RenditionDefinition def) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         try {
             if (bh == null || bh.getBlob() == null) {
