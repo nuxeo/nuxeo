@@ -153,6 +153,8 @@ public class Repository implements Serializable {
             repositoryUri = name;
         }
         session.connect(repositoryUri, context);
+        // override session POJO with EJB proxy (NXP-8990)
+        CoreInstance.getInstance().registerSession(session.getSessionId(), session);
         return session;
     }
 
