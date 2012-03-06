@@ -1,6 +1,9 @@
 package org.nuxeo.ecm.platform.template.jaxrs;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +22,7 @@ import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.processors.xdocreport.FieldDefinitionGenerator;
 import org.nuxeo.runtime.api.Framework;
 
-import fr.opensagres.xdocreport.remoting.resources.domain.BinaryDataIn;
+import fr.opensagres.xdocreport.remoting.resources.domain.BinaryData;
 import fr.opensagres.xdocreport.remoting.resources.domain.Filter;
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
 import fr.opensagres.xdocreport.remoting.resources.services.rest.JAXRSResourcesService;
@@ -37,7 +40,7 @@ public class XDocReportResourceService extends AbstractResourceService
         return getRoot();
     }
 
-    public List<byte[]> download(List<String> resourcePaths) {
+    public List<BinaryData> download(List<String> resourcePaths) {
         return null;
     }
 
@@ -62,9 +65,23 @@ public class XDocReportResourceService extends AbstractResourceService
         return root;
     }
 
-    public byte[] download(String resourcePath) {
-        // TODO Auto-generated method stub
-        return null;
+    public BinaryData download(String resourcePath) {
+        // String fakeContent = "This is fake Content!!!";
+        // ByteArrayInputStream in = new ByteArrayInputStream(
+        // fakeContent.getBytes());
+
+        // BinaryData result = new BinaryData(in, "test.txt", "text/plain");
+
+        File file = new File("/home/tiry/Lotus23/img/photo2.jpg");
+
+        BinaryData result = null;
+        try {
+            result = new BinaryData(file);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @GET
@@ -99,7 +116,7 @@ public class XDocReportResourceService extends AbstractResourceService
     }
 
     @Override
-    public void upload(BinaryDataIn dataIn) {
+    public void upload(BinaryData dataIn) {
         // TODO Auto-generated method stub
     }
 
