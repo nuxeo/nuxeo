@@ -9,17 +9,18 @@
 
 <script>
   function confirmRestart() {
-	  return window.confirm("<h:outputText value="#{messages['label.restart.confirm']}" />");
+    return window.confirm("<h:outputText value="#{messages['label.restart.confirm']}" />");
   }
 </script>
 
 <a4j:outputPanel id="setupPanel" ajaxRendered="true">
 
-  <c:if test="false">
+  <c:if test="true">
     <h:outputText value="DEBUG: Configurable: #{configurable}" />
     <br />
     <h:outputText
-      value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" />
+      value="DEBUG slkdslk: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" />
+    <a4j:log />
   </c:if>
 
   <h:panelGroup rendered="#{setupRequiresRestart}">
@@ -45,311 +46,28 @@
 
     <a4j:form id="setupForm">
 
-      <nxl:layout name="admin_setup_main" mode="#{setupLayoutMode}"
-        value="#{setupParams}" />
+        <nxl:layout name="admin_setup_main" mode="#{setupLayoutMode}"
+          value="#{setupParams}" />
+        <c:if test="#{setupParams['nuxeo.dbtemplate']!='default'}">
+          <nxl:layout name="admin_setup_database" mode="#{setupLayoutMode}"
+            value="#{setupParams}" />
+        </c:if>
 
-      <c:if test="#{setupParams['nuxeo.dbtemplate']!='default'}">
-        <table class="dataOutput">
-          <tr>
-            <th colspan="2"><h:outputText
-                value="#{messages['label.setup.table.title.dataBase']}" />
-            </th>
-          </tr>
-          <tr>
-            <td>
-              <table>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.db.name']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.db.name']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.db.user']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.db.user']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.db.password']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.db.password']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.db.host']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.db.host']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.db.port']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.db.port']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.db.min-pool-size']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.db.min-pool-size']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.db.max-pool-size']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.db.max-pool-size']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.vcs.min-pool-size']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.vcs.min-pool-size']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.vcs.max-pool-size']}" />
-                  </td>
-                  <td><h:inputText class="dataInputText" size="50"
-                      value="#{setupParams['nuxeo.vcs.max-pool-size']}" />
-                  </td>
-                </tr>
-              </table></td>
-          </tr>
-        </table>
-      </c:if>
+        <nxl:layout name="admin_choose_proxy" mode="#{setupLayoutMode}"
+          value="#{setupParams}" />
+          -DEBUG #{setupWizardAction.proxyType}-
+        <c:if test="#{setupWizardAction.proxyType!='none'}">
+          <nxl:layout name="admin_setup_proxy" mode="#{setupLayoutMode}"
+            value="#{setupParams}" />
+          <c:if test="#{setupWizardAction.proxyType=='authenticated'}">
+            <nxl:layout name="admin_setup_proxy_auth" mode="#{setupLayoutMode}"
+              value="#{setupParams}" />
+          </c:if>
+        </c:if>
 
-      <table class="dataOutput">
-        <tr>
-          <th colspan="2"><h:outputText
-              value="#{messages['label.setup.table.title.httpProxy']}" />
-          </th>
-        </tr>
-        <tr>
-          <td>
-            <table>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.httpProxy.type']}" />
-                </td>
-                <td><h:selectOneMenu class="dataInputText"
-                    immediate="true" value="#{setupWizardAction.proxyType}">
-                    <f:selectItem itemValue="none"
-                      itemLabel="#{messages['label.setup.nuxeo.httpProxy.none']}" />
-                    <f:selectItem itemValue="anonymous"
-                      itemLabel="#{messages['label.setup.nuxeo.httpProxy.anonymous']}" />
-                    <f:selectItem itemValue="authenticated"
-                      itemLabel="#{messages['label.setup.nuxeo.httpProxy.authenticated']}" />
-                    <a4j:support event="onchange" reRender="setupPanel"
-                      actionListener="#{setupWizardAction.proxyChange}">
-                    </a4j:support>
-                  </h:selectOneMenu>
-                </td>
-              </tr>
-              <c:if test="#{setupWizardAction.proxyType!='none'}">
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.http.proxy.host']}" />
-                  </td>
-                  <td id="nuxeo.http.proxy.host"><h:inputText
-                      class="dataInputText" size="30"
-                      value="#{setupParams['nuxeo.http.proxy.host']}" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="wideLabel"><h:outputText
-                      value="#{messages['label.setup.nuxeo.http.proxy.port']}" />
-                  </td>
-                  <td id="nuxeo.http.proxy.port"><h:inputText
-                      class="dataInputText" size="4"
-                      value="#{setupParams['nuxeo.http.proxy.port']}" />
-                  </td>
-                </tr>
-                <c:if test="#{setupWizardAction.proxyType=='authenticated'}">
-                  <tr>
-                    <td class="wideLabel"><h:outputText
-                        value="#{messages['label.setup.nuxeo.http.proxy.login']}" />
-                    </td>
-                    <td id="nuxeo.http.proxy.login"><h:inputText
-                        class="dataInputText" size="20"
-                        value="#{setupParams['nuxeo.http.proxy.login']}" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="wideLabel"><h:outputText
-                        value="#{messages['label.setup.nuxeo.http.proxy.password']}" />
-                    </td>
-                    <td id="nuxeo.http.proxy.password"><h:inputText
-                        class="dataInputText" size="20"
-                        value="#{setupParams['nuxeo.http.proxy.password']}" />
-                    </td>
-                  </tr>
-                </c:if>
-              </c:if>
-            </table></td>
-        </tr>
-      </table>
+        <nxl:layout name="admin_setup_mail" mode="#{setupLayoutMode}"
+          value="#{setupParams}" />
 
-      <table class="dataOutput">
-        <tr>
-          <th colspan="2"><h:outputText
-              value="#{messages['label.setup.table.title.email']}" />
-          </th>
-        </tr>
-        <tr>
-          <td>
-            <table>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.nuxeo.notification.eMailSubjectPrefix']}" />
-                </td>
-                <td id="nuxeo.notification.eMailSubjectPrefix"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['nuxeo.notification.eMailSubjectPrefix']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mailservice.user']}" />
-                </td>
-                <td id="mailservice.user"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mailservice.user']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mailservice.password']}" />
-                </td>
-                <td id="mailservice.password"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mailservice.password']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.store.protocol']}" />
-                </td>
-                <td id="mail.store.protocol"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.store.protocol']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.transport.protocol']}" />
-                </td>
-                <td id="mail.transport.protocol"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.transport.protocol']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.pop3.host']}" />
-                </td>
-                <td id="mail.pop3.host"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.pop3.host']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.debug']}" />
-                </td>
-                <td id="mail.debug"><h:inputText class="dataInputText"
-                    size="50" value="#{setupParams['mail.debug']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.smtp.host']}" />
-                </td>
-                <td id="mail.smtp.host"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.smtp.host']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.smtp.port']}" />
-                </td>
-                <td id="mail.smtp.port"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.smtp.port']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.smtp.auth']}" />
-                </td>
-                <td id="mail.smtp.auth"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.smtp.auth']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.smtp.username']}" />
-                </td>
-                <td id="mail.smtp.username"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.smtp.username']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.smtp.password']}" />
-                </td>
-                <td id="mail.smtp.password"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.smtp.password']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.from']}" />
-                </td>
-                <td id="mail.from"><h:inputText class="dataInputText"
-                    size="50" value="#{setupParams['mail.from']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.smtp.usetls']}" />
-                </td>
-                <td id="mail.smtp.usetls"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['mail.smtp.usetls']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.mail.user']}" />
-                </td>
-                <td id="mail.user"><h:inputText class="dataInputText"
-                    size="50" value="#{setupParams['mail.user']}" />
-                </td>
-              </tr>
-            </table></td>
-        </tr>
-      </table>
 
       <c:if test="#{configurable}">
         <div class="actionBar">

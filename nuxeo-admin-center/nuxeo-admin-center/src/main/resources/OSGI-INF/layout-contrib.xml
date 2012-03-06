@@ -6,8 +6,7 @@
 
     <layout name="fullauditsearch">
       <templates>
-        <template mode="any">
-          /layouts/layout_default_template.xhtml
+        <template mode="any">/layouts/layout_default_template.xhtml
         </template>
       </templates>
       <rows>
@@ -47,7 +46,6 @@
           <mode value="create">hidden</mode>
         </widgetModes>
       </widget>
-
       <widget name="eventId" type="selectManyDirectory">
         <labels>
           <label mode="any">label.performedAction</label>
@@ -61,7 +59,6 @@
           <property name="localize">true</property>
         </properties>
       </widget>
-
       <widget name="eventCategory" type="selectOneDirectory">
         <labels>
           <label mode="any">label.category</label>
@@ -75,7 +72,6 @@
           <property name="localize">true</property>
         </properties>
       </widget>
-
       <widget name="userId" type="singleUserSuggestion">
         <labels>
           <label mode="any">label.username</label>
@@ -91,19 +87,17 @@
           <property name="userSuggestionSearchType">USER_TYPE</property>
         </properties>
       </widget>
-
     </layout>
 
-    <!-- TODO: define global widgets to be shared with event logs
-      displayed in document tabs -->
+    <!-- TODO: define global widgets to be shared with event logs displayed in document
+      tabs -->
     <layout name="event_listing">
       <templates>
-        <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
-        <template mode="csv">
-          /layouts/layout_listing_csv_template.xhtml
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml
         </template>
-        <template mode="pdf">
-          /layouts/layout_listing_pdf_template.xhtml
+        <template mode="csv">/layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">/layouts/layout_listing_pdf_template.xhtml
         </template>
       </templates>
       <properties mode="any">
@@ -158,7 +152,6 @@
           <widget>eventLC</widget>
         </column>
       </columns>
-
       <widget name="eventId" type="text">
         <labels>
           <label mode="any">label.performedAction</label>
@@ -171,7 +164,6 @@
           <property name="localize">true</property>
         </properties>
       </widget>
-
       <widget name="eventDate" type="datetime">
         <labels>
           <label mode="any">label.date</label>
@@ -189,7 +181,6 @@
           <property name="csv_forceType">date</property>
         </properties>
       </widget>
-
       <widget name="username" type="text">
         <labels>
           <label mode="any">label.username</label>
@@ -199,7 +190,6 @@
           <field>data.principalName</field>
         </fields>
       </widget>
-
       <widget name="eventCategory" type="text">
         <labels>
           <label mode="any">label.category</label>
@@ -212,7 +202,6 @@
           <property name="localize">true</property>
         </properties>
       </widget>
-
       <widget name="eventDoc" type="template">
         <labels>
           <label mode="any">label.document</label>
@@ -227,7 +216,6 @@
           </property>
         </properties>
       </widget>
-
       <widget name="eventComment" type="text">
         <labels>
           <label mode="any">label.comment</label>
@@ -237,7 +225,6 @@
           <field>data.comment</field>
         </fields>
       </widget>
-
       <widget name="eventLC" type="text">
         <labels>
           <label mode="any">label.lifecycle</label>
@@ -250,19 +237,15 @@
           <property name="localize">true</property>
         </properties>
       </widget>
-
     </layout>
 
     <layout name="admin_setup_main">
       <templates>
-        <template mode="any">
-          /incl/sysinfo/setup_layout_template.xhtml
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
         </template>
       </templates>
       <properties mode="any">
-        <property name="label">
-          label.setup.table.title.mainSetup
-        </property>
+        <property name="label">label.setup.table.title.mainSetup</property>
       </properties>
       <rows>
         <row>
@@ -287,7 +270,7 @@
           <widget>log.dir</widget>
         </row>
         <row>
-          <widget>templates</widget>
+          <widget>dbtemplate</widget>
         </row>
       </rows>
       <widget name="url" type="text">
@@ -315,6 +298,7 @@
         <properties mode="edit">
           <property name="size">50</property>
           <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
         </properties>
       </widget>
       <widget name="product.version" type="text">
@@ -328,6 +312,7 @@
         <properties mode="edit">
           <property name="size">50</property>
           <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
         </properties>
       </widget>
       <widget name="bind.address" type="text">
@@ -378,44 +363,585 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['log.dir']</field>
+          <field>['nuxeo.log.dir']</field>
         </fields>
         <properties mode="edit">
           <property name="size">50</property>
           <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
         </properties>
       </widget>
-      <widget name="templates" type="template">
+      <widget name="dbtemplate" type="template">
         <labels>
-          <label mode="any">label.setup.nuxeo.template.default</label>
+          <label mode="any">label.setup.database.templates</label>
         </labels>
         <translated>true</translated>
         <fields>
           <field>['nuxeo.dbtemplate']</field>
         </fields>
-        <!-- disabled for now as cannot be retrieved easily from widget template
-          but this could be made easier easily :) -->
-        <!--
-          <selectOptions>
-          <option itemValue="default"
-          itemLabel="#{messages['label.setup.nuxeo.template.default']}" />
-          <option itemValue="postgresql"
-          itemLabel="#{messages['label.setup.nuxeo.template.postgresql']}" />
-          <option itemValue="oracle"
-          itemLabel="#{messages['label.setup.nuxeo.template.oracle']}" />
-          <option itemValue="mysql"
-          itemLabel="#{messages['label.setup.nuxeo.template.mysql']}" />
-          <option itemValue="mssql"
-          itemLabel="#{messages['label.setup.nuxeo.template.mssql']}" />
-          </selectOptions>
-        -->
         <properties mode="any">
           <property name="template">
-            /incl/sysinfo/widgets/database_choser_widget_template.xhtml
+            /incl/sysinfo/widgets/database_chooser_widget_template.xhtml
           </property>
         </properties>
         <properties mode="edit">
           <property name="immediate">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="admin_setup_database">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label">label.setup.table.title.dataBase</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>dbName</widget>
+        </row>
+        <row>
+          <widget>dbUser</widget>
+        </row>
+        <row>
+          <widget>dbPwd</widget>
+        </row>
+        <row>
+          <widget>dbHost</widget>
+        </row>
+        <row>
+          <widget>dbPort</widget>
+        </row>
+        <row>
+          <widget>dbMinPoolSize</widget>
+        </row>
+        <row>
+          <widget>dbMaxPoolSize</widget>
+        </row>
+        <row>
+          <widget>vcsMinPoolSize</widget>
+        </row>
+        <row>
+          <widget>vcsMaxPoolSize</widget>
+        </row>
+      </rows>
+      <widget name="dbName" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.db.name</label>
+        </labels>
+        <!-- <helpLabels> -->
+        <!-- <label mode="any">label.setup.nuxeo.db.name.help</label> -->
+        <!-- </helpLabels> -->
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.db.name']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="dbUser" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.db.user</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.db.user']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="dbPwd" type="secret">
+        <labels>
+          <label mode="any">label.setup.nuxeo.db.password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.db.password']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="dbHost" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.db.host</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.db.host']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="dbPort" type="int">
+        <labels>
+          <label mode="any">label.setup.nuxeo.db.port</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.db.port']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">5</property>
+          <property name="maxlength">5</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="dbMinPoolSize" type="int">
+        <labels>
+          <label mode="any">label.setup.nuxeo.db.min-pool-size</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.db.min-pool-size']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="dbMaxPoolSize" type="int">
+        <labels>
+          <label mode="any">label.setup.nuxeo.db.max-pool-size</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.db.max-pool-size']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="vcsMinPoolSize" type="int">
+        <labels>
+          <label mode="any">label.setup.nuxeo.vcs.min-pool-size</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.vcs.min-pool-size']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="vcsMaxPoolSize" type="int">
+        <labels>
+          <label mode="any">label.setup.nuxeo.vcs.max-pool-size</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.vcs.max-pool-size']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="admin_choose_proxy">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label">label.setup.table.title.httpProxy</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>chooseProxy</widget>
+        </row>
+      </rows>
+      <widget name="chooseProxy" type="template">
+        <labels>
+          <label mode="any">label.setup.httpProxy.type</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['setupWizardAction.proxyType']</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/proxy_chooser_widget_template.xhtml
+          </property>
+        </properties>
+        <properties mode="edit">
+          <property name="immediate">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="admin_setup_proxy">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label">label.setup.table.title.httpProxy</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>proxy.host</widget>
+        </row>
+        <row>
+          <widget>proxy.port</widget>
+        </row>
+      </rows>
+      <widget name="proxy.host" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.http.proxy.host</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.http.proxy.host']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">30</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="proxy.port" type="int">
+        <labels>
+          <label mode="any">label.setup.nuxeo.http.proxy.port</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.http.proxy.port']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">5</property>
+          <property name="maxlength">5</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="admin_setup_proxy_auth">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label">label.setup.table.title.httpProxy</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>proxy.login</widget>
+        </row>
+        <row>
+          <widget>proxy.password</widget>
+        </row>
+      </rows>
+      <widget name="proxy.login" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.http.proxy.login</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.http.proxy.login']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">20</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="proxy.password" type="secret">
+        <labels>
+          <label mode="any">label.setup.nuxeo.http.proxy.password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.http.proxy.password']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">20</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="admin_setup_mail">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label">label.setup.table.title.email</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>eMailSubjectPrefix</widget>
+        </row>
+        <row>
+          <widget>mailservice.user</widget>
+        </row>
+        <row>
+          <widget>mailservice.password</widget>
+        </row>
+        <row>
+          <widget>mail.store.protocol</widget>
+        </row>
+        <row>
+          <widget>mail.transport.protocol</widget>
+        </row>
+        <row>
+          <widget>mail.pop3.host</widget>
+        </row>
+        <row>
+          <widget>mail.debug</widget>
+        </row>
+        <row>
+          <widget>mail.smtp.host</widget>
+        </row>
+        <row>
+          <widget>mail.smtp.port</widget>
+        </row>
+        <row>
+          <widget>mail.smtp.auth</widget>
+        </row>
+        <row>
+          <widget>mail.smtp.username</widget>
+        </row>
+        <row>
+          <widget>mail.smtp.password</widget>
+        </row>
+        <row>
+          <widget>mail.from</widget>
+        </row>
+        <row>
+          <widget>mail.smtp.usetls</widget>
+        </row>
+        <row>
+          <widget>mail.user</widget>
+        </row>
+      </rows>
+      <widget name="eMailSubjectPrefix" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.notification.eMailSubjectPrefix</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.notification.eMailSubjectPrefix']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mailservice.user" type="text">
+        <labels>
+          <label mode="any">label.setup.mailservice.user</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mailservice.user']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mailservice.password" type="secret">
+        <labels>
+          <label mode="any">label.setup.mailservice.password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mailservice.password']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">20</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.store.protocol" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.store.protocol</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.store.protocol']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.transport.protocol" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.transport.protocol</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.transport.protocol']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.pop3.host" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.pop3.host</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.pop3.host']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.debug" type="checkbox">
+        <labels>
+          <label mode="any">label.setup.mail.debug</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.debug']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.smtp.host" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.smtp.host</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.smtp.host']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.smtp.port" type="int">
+        <labels>
+          <label mode="any">label.setup.mail.smtp.port</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.smtp.port']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">5</property>
+          <property name="maxlength">5</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.smtp.auth" type="checkbox">
+        <labels>
+          <label mode="any">label.setup.mail.smtp.auth</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.smtp.auth']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.smtp.username" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.smtp.username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.smtp.username']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.smtp.password" type="secret">
+        <labels>
+          <label mode="any">label.setup.mail.smtp.password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.smtp.password']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">20</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.from" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.from</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.from']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.smtp.usetls" type="checkbox">
+        <labels>
+          <label mode="any">label.setup.mail.smtp.usetls</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.smtp.usetls']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.user" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.user</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.user']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
         </properties>
       </widget>
     </layout>
