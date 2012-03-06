@@ -83,4 +83,9 @@ public abstract class AbstractRendition implements Rendition {
         }
         return null;
     }
+
+    @Override
+    public String getProviderType() {
+        return definition.getProviderType();
+    }
 }

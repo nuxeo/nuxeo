@@ -40,6 +40,13 @@ public interface RenditionService {
     List<RenditionDefinition> getDeclaredRenditionDefinitions();
 
     /**
+     * Returns a {@code List} of registered {@code RenditionDefinition} matching
+     * a given provider type
+     */
+    List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(
+            String providerType);
+
+    /**
      * Returns a {@code List} of {@code RenditionDefinition} available on the
      * given Document. The order of the List does not depend on the registering
      * order.

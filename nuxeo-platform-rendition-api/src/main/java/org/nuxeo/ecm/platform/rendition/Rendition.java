@@ -50,21 +50,66 @@ public interface Rendition {
     String getName();
 
     /**
-     * get the {@link RenditionDefinition} labem
+     * get the {@link RenditionDefinition} label
      * 
      * s@return
      */
     String getLabel();
 
+    /**
+     * Get the King of the {@link RenditionDefinition}
+     * 
+     * @return
+     */
     String getKind();
 
+    /**
+     * return the type of the provider that was used to generate the rendition
+     * 
+     * @return
+     */
+    String getProviderType();
+
+    /**
+     * Indicates if the Rendition is stored or live
+     * 
+     * @return
+     */
     boolean isStored();
 
+    /**
+     * Return rendered Blob
+     * 
+     * @return
+     * @throws RenditionException
+     */
     Blob getBlob() throws RenditionException;
 
+    /**
+     * Return rendered Blobs
+     * 
+     * @return
+     * @throws RenditionException
+     */
     List<Blob> getBlobs() throws RenditionException;
 
+    /**
+     * Return the Document hosting the rendition.
+     * <p>
+     * In case of a Live rendition it will be the target document and in case of
+     * stored Rendition it will be the Rendition document it self
+     * 
+     * @return
+     */
     DocumentModel getHostDocument();
+
+    /**
+     * Get last modification date.
+     * <p>
+     * returns current time for live renditions
+     * 
+     * @return
+     */
 
     Calendar getModificationDate();
 

@@ -10,7 +10,7 @@
 
     <ui:define name="document_publish_before_tree">
       <nxu:set var="renditionDefinitions"
-          value="#{renditionService.getAvailableRenditionDefinitions()}">
+          value="#{renditionService.getAvailableRenditionDefinitions(currentDocument)}">
       <c:if test="#{not renditionDefinitions.isEmpty()}">
         <h:panelGrid styleClass="dataInput"
                      columnClasses="labelColumn, fieldColumn" columns="2">

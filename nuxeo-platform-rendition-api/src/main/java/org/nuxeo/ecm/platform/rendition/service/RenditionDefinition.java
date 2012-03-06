@@ -87,4 +87,12 @@ public class RenditionDefinition {
     public String getKind() {
         return kind;
     }
+
+    public String getProviderType() {
+        RenditionProvider provider = getProvider();
+        if (provider == null) {
+            return null;
+        }
+        return getProviderType().getClass().getSimpleName();
+    }
 }

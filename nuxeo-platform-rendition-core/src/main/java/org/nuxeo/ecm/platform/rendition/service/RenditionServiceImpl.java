@@ -77,6 +77,18 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    public List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(
+            String providerType) {
+        List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
+        for (RenditionDefinition def : getDeclaredRenditionDefinitions()) {
+            if (def.getProviderType().equals(providerType)) {
+                defs.add(def);
+            }
+        }
+        return defs;
+    }
+
+    @Override
     public List<RenditionDefinition> getAvailableRenditionDefinitions(
             DocumentModel doc) {
         List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
