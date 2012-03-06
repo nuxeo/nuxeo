@@ -111,12 +111,12 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
 /**
  * Abstract implementation of the client interface.
  * <p>
- * This handles all the aspects that are independent on the final
- * implementation (like running inside a J2EE platform or not).
+ * This handles all the aspects that are independent on the final implementation
+ * (like running inside a J2EE platform or not).
  * <p>
  * The only aspect not implemented is the session management that should be
  * handled by subclasses.
- *
+ * 
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
@@ -176,9 +176,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     private String sessionId;
 
     /**
-     * Internal method: Gets the current session based on the client session
-     * id.
-     *
+     * Internal method: Gets the current session based on the client session id.
+     * 
      * @return the repository session
      */
     public abstract Session getSession() throws ClientException;
@@ -212,12 +211,12 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * <p>
      * The ID has the following format:
      * &lt;repository-name&gt;-&lt;JVM-Unique-ID&gt; where the JVM-Unique-ID is
-     * an unique ID on a running JVM and repository-name is a used to avoid
-     * name clashes with sessions on different machines (the repository name
-     * should be unique in the system)
+     * an unique ID on a running JVM and repository-name is a used to avoid name
+     * clashes with sessions on different machines (the repository name should
+     * be unique in the system)
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository
-     * in the system)
+     * <li>A is the repository name (which uniquely identifies the repository in
+     * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -377,7 +376,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Sends change notifications to core event listeners. The event contains
      * info with older document (before version change) and newer doc (current
      * document).
-     *
+     * 
      * @param oldDocument
      * @param newDocument
      * @param options additional info to pass to the event
@@ -447,7 +446,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     /**
      * Gets the document model for the given core document.
-     *
+     * 
      * @param doc the document
      * @return the document model
      */
@@ -462,7 +461,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     /**
      * Gets the document model for the given core document, preserving the
      * contextData.
-     *
+     * 
      * @param doc the document
      * @return the document model
      */
@@ -788,6 +787,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
             Document doc = folder.addChild(name, typeName);
 
+            // update facets too since some of them may be dynamic
+            for (String facetName : docModel.getFacets()) {
+                if (!doc.getAllFacets().contains(facetName)) {
+                    doc.addFacet(facetName);
+                }
+            }
+
             // init document life cycle
             LifeCycleService service = NXCore.getLifeCycleService();
             if (service != null) {
@@ -885,7 +891,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * <p>
      * If name is null, a name is generated. If name is already used, a random
      * suffix is appended to it.
-     *
+     * 
      * @return a unique name within given parent's children
      */
     public String generateDocumentName(Document parent, String name)
@@ -2115,7 +2121,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Send a core event for the creation of a new check in version. The source
      * document is the live document model used as the source for the checkin,
      * not the archived version it-self.
-     *
+     * 
      * @param docModel work document that has been checked-in as a version
      * @param checkedInVersionRef document ref of the new checked-in version
      * @param options initial option map, or null
@@ -2133,7 +2139,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         props.put("versionLabel", label);
         props.put("checkInComment", checkinComment);
         props.put("checkedInVersionRef", checkedInVersionRef);
-        if (checkinComment == null && options!=null) {
+        if (checkinComment == null && options != null) {
             // check if there's a comment already in options
             Object optionsComment = options.get("comment");
             if (optionsComment instanceof String) {
@@ -2147,9 +2153,10 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel, props,
                 null, null, true, false);
         // notify creation on version document
-        notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, getDocument(checkedInVersionRef), props,
-                null, null, true, false);
-        
+        notifyEvent(DocumentEventTypes.DOCUMENT_CREATED,
+                getDocument(checkedInVersionRef), props, null, null, true,
+                false);
+
     }
 
     @Override
@@ -2332,9 +2339,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     /**
-     * Update the proxy for doc in the given section to point to the new
-     * target. Do nothing if there are several proxies.
-     *
+     * Update the proxy for doc in the given section to point to the new target.
+     * Do nothing if there are several proxies.
+     * 
      * @return the proxy if it was updated, or {@code null} if none or several
      *         were found
      */
@@ -2842,9 +2849,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                         // doc. recreate a version
                         getVersioningService().doCheckOut(doc);
                     }
-                    Document version = getVersioningService().doCheckIn(doc, null, checkinComment);
+                    Document version = getVersioningService().doCheckIn(doc,
+                            null, checkinComment);
                     docModel.refresh(DocumentModel.REFRESH_STATE, null);
-                    notifyCheckedInVersion(docModel, new IdRef(version.getUUID()), null, checkinComment);
+                    notifyCheckedInVersion(docModel,
+                            new IdRef(version.getUUID()), null, checkinComment);
                 }
                 target = doc.getLastVersion();
                 if (overwriteExistingProxy) {
@@ -3046,7 +3055,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Operations must be reworked to use the new event model. In order for
      * operation notification to work the event compatibility bundle must be
      * deployed.
-     *
+     * 
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
      *      nuxeo-core-event-compat
      */
@@ -3071,7 +3080,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Operations must be reworked to use the new event model. In order for
      * operation notification to work the event compatibility bundle must be
      * deployed.
-     *
+     * 
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
      *      nuxeo-core-event-compat
      */
