@@ -789,7 +789,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             // update facets too since some of them may be dynamic
             for (String facetName : docModel.getFacets()) {
-                if (!doc.getAllFacets().contains(facetName)) {
+                if (!doc.getAllFacets().contains(facetName)
+                        && !FacetNames.IMMUTABLE.equals(facetName)) {
                     doc.addFacet(facetName);
                 }
             }
