@@ -3,6 +3,8 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   class="setupPanel">
 
 <script>
@@ -39,105 +41,12 @@
     <br />
   </h:panelGroup>
 
-  <c:if test="#{configurable}">
+  <nxu:set var="setupLayoutMode" value="#{nxu:test(configurable, 'edit', 'view')}">
 
-    <a4j:form>
+    <a4j:form id="setupForm">
 
-      <table class="dataOutput">
-        <tr>
-          <th colspan="2"><h:outputText
-              value="#{messages['label.setup.table.title.mainSetup']}" />
-          </th>
-        </tr>
-        <tr>
-          <td>
-            <table>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.nuxeo.url']}" />
-                </td>
-                <td id="nuxeo.url"><h:inputText class="dataInputText"
-                    size="50" value="#{setupParams['nuxeo.url']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.org.nuxeo.ecm.product.name']}" />
-                </td>
-                <td id="org.nuxeo.ecm.product.name"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['org.nuxeo.ecm.product.name']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.org.nuxeo.ecm.product.version']}" />
-                </td>
-                <td id="org.nuxeo.ecm.product.version"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['org.nuxeo.ecm.product.version']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.nuxeo.bind.address']}" />
-                </td>
-                <td id="nuxeo.bind.address"><h:inputText
-                    class="dataInputText" size="15"
-                    value="#{setupParams['nuxeo.bind.address']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.nuxeo.conf']}" />
-                </td>
-                <td id="nuxeo.conf"><h:outputText class=""
-                    value="#{setupParams['nuxeo.conf']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.nuxeo.data.dir']}" />
-                </td>
-                <td id="nuxeo.data.dir"><h:inputText
-                    class="dataInputText" size="50"
-                    value="#{setupParams['nuxeo.data.dir']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.nuxeo.log.dir']}" />
-                </td>
-                <td id="nuxeo.log.dir"><h:inputText class="dataInputText"
-                    size="50" value="#{setupParams['nuxeo.log.dir']}" />
-                </td>
-              </tr>
-              <tr>
-                <td class="wideLabel"><h:outputText
-                    value="#{messages['label.setup.database.templates']}" />
-                </td>
-                <td id="nuxeo.dbtemplate"><h:selectOneMenu
-                    class="dataInputText" immediate="true"
-                    value="#{setupParams['nuxeo.dbtemplate']}">
-                    <f:selectItem itemValue="default"
-                      itemLabel="#{messages['label.setup.nuxeo.template.default']}" />
-                    <f:selectItem itemValue="postgresql"
-                      itemLabel="#{messages['label.setup.nuxeo.template.postgresql']}" />
-                    <f:selectItem itemValue="oracle"
-                      itemLabel="#{messages['label.setup.nuxeo.template.oracle']}" />
-                    <f:selectItem itemValue="mysql"
-                      itemLabel="#{messages['label.setup.nuxeo.template.mysql']}" />
-                    <f:selectItem itemValue="mssql"
-                      itemLabel="#{messages['label.setup.nuxeo.template.mssql']}" />
-                    <a4j:support event="onchange" reRender="setupPanel"
-                      actionListener="#{setupWizardAction.templateChange}">
-                    </a4j:support>
-                  </h:selectOneMenu>
-                </td>
-              </tr>
-            </table></td>
-        </tr>
-      </table>
+      <nxl:layout name="admin_setup_main" mode="#{setupLayoutMode}"
+        value="#{setupParams}" />
 
       <c:if test="#{setupParams['nuxeo.dbtemplate']!='default'}">
         <table class="dataOutput">
@@ -442,51 +351,93 @@
         </tr>
       </table>
 
-      <div class="actionBar">
-        <a4j:commandButton value="#{messages['action.setup.save']}"
-          action="#{setupWizardAction.save()}" reRender="setupPanel"
-          styleClass="button"
-          onclick="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
-        <a4j:commandButton value="#{messages['action.setup.cancel']}"
-          action="#{setupWizardAction.resetParameters()}"
-          reRender="setupPanel" styleClass="button" />
-      </div>
+      <c:if test="#{configurable}">
+        <div class="actionBar">
+          <a4j:commandButton value="#{messages['action.setup.save']}"
+            action="#{setupWizardAction.save()}" reRender="setupPanel"
+            styleClass="button"
+            onclick="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
+          <a4j:commandButton value="#{messages['action.setup.cancel']}"
+            action="#{setupWizardAction.resetParameters()}"
+            immediate="true"
+            reRender="setupPanel" styleClass="button" />
+        </div>
+      </c:if>
 
-      <h2>
-        <h:outputText value="#{messages['adminsubtab.sysinfo.advancedsetup']}" />
-      </h2>
-      <p>
-        <h:outputText styleClass="warningLabel"
-          value="#{messages['label.setup.advancedSearch.warning']}" />
-      </p>
+      <nxu:valueHolder
+        id="advancedParams_valueHolder"
+        var="advancedParamsPanelStatus"
+        defaultValue="off">
 
-      <table class="dataOutput">
-        <c:forEach var="advancedParamKey"
-          items="#{advancedParams.keySet().toArray()}">
-          <tr>
-            <td class="wideLabel"><h:outputText
-                value="#{advancedParamKey}" />
-            </td>
-            <td id="#{advancedParamKey}"><h:inputText
-                class="dataInputText" size="100"
-                value="#{advancedParams[advancedParamKey]}" />
-            </td>
-          </tr>
-        </c:forEach>
-      </table>
+        <a4j:outputPanel id="advancedParams_panel">
 
-      <div class="actionBar">
-        <a4j:commandButton value="#{messages['action.setup.save']}"
-          action="#{setupWizardAction.save()}" reRender="setupPanel"
-          styleClass="button"
-          onclick="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
-        <a4j:commandButton value="#{messages['action.setup.cancel']}"
-          action="#{setupWizardAction.resetParameters()}"
-          reRender="setupPanel" styleClass="button" />
-      </div>
+          <c:if test="#{advancedParamsPanelStatus != 'on'}">
+            <f:subview>
+              <a4j:commandButton
+                value="#{messages['adminsubtab.sysinfo.advancedsetup']}"
+                reRender="advancedParams_panel"
+                immediate="true"
+                styleClass="button">
+                <f:setPropertyActionListener
+                  value="on"
+                  target="#{selectionActions.selectedValue}" />
+                <f:param name="valueHolderId"
+                  value="advancedParams_valueHolder" />
+                <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
+              </a4j:commandButton>
+            </f:subview>
+          </c:if>
+
+          <c:if test="#{advancedParamsPanelStatus == 'on'}">
+
+            <h2>
+              <h:outputText value="#{messages['adminsubtab.sysinfo.advancedsetup']}" />
+            </h2>
+
+            <c:if test="#{configurable}">
+              <p>
+                <h:outputText styleClass="warningLabel"
+                  value="#{messages['label.setup.advancedSearch.warning']}" />
+              </p>
+            </c:if>
+
+            <table class="dataOutput">
+              <c:forEach var="advancedParamKey"
+                items="#{advancedParams.keySet().toArray()}">
+                <tr>
+                  <td class="wideLabel">
+                    <h:outputText value="#{advancedParamKey}" />
+                  </td>
+                  <td id="#{advancedParamKey}">
+                    <nxl:widgetType name="text" mode="#{setupLayoutMode}"
+                      styleClass="dataInputText" size="100"
+                      value="#{advancedParams[advancedParamKey]}" />
+                  </td>
+                </tr>
+              </c:forEach>
+            </table>
+
+            <c:if test="#{configurable}">
+              <div class="actionBar">
+                <a4j:commandButton value="#{messages['action.setup.save']}"
+                  action="#{setupWizardAction.save()}" reRender="setupPanel"
+                  styleClass="button"
+                  onclick="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
+                <a4j:commandButton value="#{messages['action.setup.cancel']}"
+                  action="#{setupWizardAction.resetParameters()}"
+                  immediate="true"
+                  reRender="setupPanel" styleClass="button" />
+              </div>
+            </c:if>
+
+          </c:if>
+        </a4j:outputPanel>
+
+      </nxu:valueHolder>
 
     </a4j:form>
-  </c:if>
+  </nxu:set>
 
 </a4j:outputPanel>
 </div>

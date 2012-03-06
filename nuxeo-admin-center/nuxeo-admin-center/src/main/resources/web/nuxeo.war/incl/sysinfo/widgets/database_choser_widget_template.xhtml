@@ -1,0 +1,34 @@
+<span xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  id="#{widget.id}">
+<c:if test="#{widget.mode != 'edit'}">#{field}</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <h:selectOneMenu id="#{widget.id}" value="#{field}"
+    styleClass="#{widgetProperty_styleClass}"
+    required="#{widgetProperty_required}">
+
+    <a4j:support event="onchange" reRender="setupPanel"
+      immediate="#{widgetProperty_immediate}"
+      actionListener="#{setupWizardAction.templateChange}">
+    </a4j:support>
+
+    <f:selectItem itemValue="default"
+      itemLabel="#{messages['label.setup.nuxeo.template.default']}" />
+    <f:selectItem itemValue="postgresql"
+      itemLabel="#{messages['label.setup.nuxeo.template.postgresql']}" />
+    <f:selectItem itemValue="oracle"
+      itemLabel="#{messages['label.setup.nuxeo.template.oracle']}" />
+    <f:selectItem itemValue="mysql"
+      itemLabel="#{messages['label.setup.nuxeo.template.mysql']}" />
+    <f:selectItem itemValue="mssql"
+      itemLabel="#{messages['label.setup.nuxeo.template.mssql']}" />
+
+  </h:selectOneMenu>
+  <h:message styleClass="errorMessage" for="#{widget.id}"
+    id="#{widget.id}_message" />
+
+</c:if>
+</span>

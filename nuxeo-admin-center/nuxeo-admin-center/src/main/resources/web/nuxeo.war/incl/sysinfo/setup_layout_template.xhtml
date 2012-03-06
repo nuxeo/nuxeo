@@ -5,19 +5,30 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="#{layout.id}">
 
-  <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
+<c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
 
-  <table class="dataInput">
-    <tbody>
+<table class="dataOutput">
+  <tbody>
+    <c:if test="#{not empty layout.properties.label}">
+      <tr>
+        <th colspan="2">
+          <h:outputText value="#{messages[layout.properties.label]}" />
+        </th>
+      </tr>
+    </c:if>
 
-      <nxl:layoutRow>
+    <tr><td><table><tbody>
+
+    <nxl:layoutRow>
+      <nxl:layoutRowWidget>
         <tr>
-          <nxl:layoutRowWidget>
+          <c:if test="#{not layoutRow.properties.hideWidgetLabel}">
             <c:choose>
               <c:when test="#{widget.translated}">
-                <td class="labelColumn">
+                <td class="wideLabel">
                   <c:if test="#{empty widget.helpLabel}">
                     <h:outputText value="#{messages[widget.label]}"
                       styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
@@ -34,7 +45,7 @@
                 </td>
               </c:when>
               <c:otherwise>
-                <td class="labelColumn">
+                <td class="wideLabel">
                   <c:if test="#{empty widget.helpLabel}">
                     <h:outputText value="#{widget.label}"
                       styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
@@ -51,15 +62,25 @@
                 </td>
               </c:otherwise>
             </c:choose>
-            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
+          </c:if>
+          <nxu:set
+            var="fieldDef"
+            value="#{widget.fieldDefinitions[0].propertyName}">
+            <td class="fieldColumn"
+              id="#{fn:substring(fieldDef, 2, fn:length(fieldDef) - 2)}"
+              colspan="#{nxu:test(layoutRow.properties.hideWidgetLabel, 2, 1)}">
               <nxl:widget widget="#{widget}" value="#{value}" />
             </td>
-          </nxl:layoutRowWidget>
+          </nxu:set>
         </tr>
-      </nxl:layoutRow>
 
-    </tbody>
-  </table>
+      </nxl:layoutRowWidget>
+    </nxl:layoutRow>
+
+    </tbody></table></td></tr>
+
+  </tbody>
+</table>
 
 <script>
   jQuery(document).ready(function() {
