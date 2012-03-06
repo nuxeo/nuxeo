@@ -166,7 +166,7 @@ public class LockManager {
             } catch (StorageException e) {
                 Throwable c = e.getCause();
                 if (c != null && c instanceof SQLException
-                        && isDuplicateKeyException((SQLException) c)) {
+                        && shouldRetry((SQLException) c)) {
                     // cluster: two simultaneous inserts
                     // retry
                     try {
@@ -185,9 +185,9 @@ public class LockManager {
     }
 
     /**
-     * Is the exception about a duplicate primary key?
+     * Does the exception mean that we should retry the transaction?
      */
-    protected boolean isDuplicateKeyException(SQLException e) {
+    protected boolean shouldRetry(SQLException e) {
         String sqlState = e.getSQLState();
         if ("23000".equals(sqlState)) {
             // MySQL: Duplicate entry ... for key ...
@@ -201,6 +201,11 @@ public class LockManager {
         }
         if ("23505".equals(sqlState)) {
             // PostgreSQL: duplicate key value violates unique constraint
+            return true;
+        }
+        if ("S0005".equals(sqlState)) {
+            // SQL Server: Snapshot isolation transaction aborted due to update
+            // conflict
             return true;
         }
         return false;
