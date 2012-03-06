@@ -26,7 +26,7 @@
          <version>2.4.0</version>
       </dependency>
         <dependency>
-            <groupId>org.nuxeo.common</groupId>           
+            <groupId>org.nuxeo.common</groupId>
             <artifactId>nuxeo-common</artifactId>
             <exclusions>
              <exclusion>
@@ -36,7 +36,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.nuxeo.runtime</groupId>           
+            <groupId>org.nuxeo.runtime</groupId>
             <artifactId>nuxeo-runtime</artifactId>
             <exclusions>
              <exclusion>
@@ -46,9 +46,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.nuxeo.ecm.core</groupId>           
+            <groupId>org.nuxeo.ecm.core</groupId>
             <artifactId>nuxeo-core-api</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.nuxeo.ecm.core</groupId>
             <artifactId>nuxeo-core-event</artifactId>
@@ -86,48 +86,60 @@
            <groupId>org.nuxeo.ecm.platform</groupId>
            <artifactId>nuxeo-platform-audit-api</artifactId>
         </dependency>
-	<!-- docx report -->
+  <!-- docx report -->
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.converter</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.core</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.document</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.template</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>fr.opensagres.xdocreport</groupId>
            <artifactId>fr.opensagres.xdocreport.remoting.resources</artifactId>
            <version>${xdocreport.version}</version>
-        </dependency>        
-	<!-- end docx report -->
+        </dependency>
+  <!-- end docx report -->
+        <dependency>
+           <groupId>org.nuxeo.ecm.platform</groupId>
+           <artifactId>nuxeo-platform-rendition-api</artifactId>
+           <version>5.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+           <groupId>org.nuxeo.ecm.platform</groupId>
+           <artifactId>nuxeo-platform-rendition-core</artifactId>
+           <version>5.6-SNAPSHOT</version>
+           <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
@@ -143,11 +155,11 @@
         <dependency>
            <groupId>org.nuxeo.ecm.webengine</groupId>
            <artifactId>nuxeo-webengine-jaxrs</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
            <groupId>org.nuxeo.ecm.webengine</groupId>
            <artifactId>nuxeo-webengine-core</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
           <groupId>org.codehaus.jackson</groupId>
           <artifactId>jackson-core-asl</artifactId>
@@ -251,7 +263,7 @@
         <repository>
           <id>XDocReport Snapshots</id>
           <url>
-            https://oss.sonatype.org/content/repositories/snapshots/ 
+            https://oss.sonatype.org/content/repositories/snapshots/
           </url>
           <releases>
             <enabled>false</enabled>

@@ -15,26 +15,28 @@ import freemarker.template.TemplateModel;
 public class ContextFunctions {
 
     protected final DocumentModel doc;
-    
+
     protected final DocumentObjectWrapper nuxeoWrapper;
-    
-    public ContextFunctions(DocumentModel doc, DocumentObjectWrapper nuxeoWrapper) {
+
+    public ContextFunctions(DocumentModel doc,
+            DocumentObjectWrapper nuxeoWrapper) {
         this.doc = doc;
-        this.nuxeoWrapper =nuxeoWrapper;
+        this.nuxeoWrapper = nuxeoWrapper;
     }
-    
-    public String getVocabularyLabel(String voc_name, String key) throws Exception {
-        
+
+    public String getVocabularyLabel(String voc_name, String key)
+            throws Exception {
+
         DirectoryManager dm = Framework.getLocalService(DirectoryManager.class);
-        
+
         if (dm.getDirectoryNames().contains(voc_name)) {
             Directory dir = dm.getDirectory(voc_name);
-            
+
             String schema = dir.getSchema();
             if ("vocabulary".equals(schema) || "xvocabulary".equals(schema)) {
-                Session session =  dir.getSession();
+                Session session = dir.getSession();
                 DocumentModel entry = session.getEntry(key);
-                if (entry!=null) {
+                if (entry != null) {
                     return (String) entry.getProperty(schema, "label");
                 }
             }
@@ -43,12 +45,13 @@ public class ContextFunctions {
     }
 
     public List<TemplateModel> getChildren() throws Exception {
-        List<DocumentModel> children = doc.getCoreSession().getChildren(doc.getRef());
-        List<TemplateModel> docs = new ArrayList<TemplateModel>();         
-        for (DocumentModel child : children ) {
+        List<DocumentModel> children = doc.getCoreSession().getChildren(
+                doc.getRef());
+        List<TemplateModel> docs = new ArrayList<TemplateModel>();
+        for (DocumentModel child : children) {
             docs.add(nuxeoWrapper.wrap(child));
-        }        
+        }
         return docs;
     }
-    
+
 }

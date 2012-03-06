@@ -40,9 +40,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
+import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.ecm.platform.template.rendition.TemplateBasedRenditionProvider;
 import org.nuxeo.ecm.platform.template.service.TemplateProcessorDescriptor;
 import org.nuxeo.ecm.platform.template.service.TemplateProcessorService;
 import org.nuxeo.ecm.platform.types.Type;
@@ -57,9 +60,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam bean used as UI Controler
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 @Name("templateActions")
 @Scope(CONVERSATION)
@@ -83,7 +86,7 @@ public class TemplatesActionsBean implements Serializable {
 
     @In(create = true)
     protected transient WebActions webActions;
-    
+
     protected List<TemplateInput> templateInputs;
 
     protected List<TemplateInput> templateEditableInputs;
@@ -94,8 +97,8 @@ public class TemplatesActionsBean implements Serializable {
 
     public String createTemplate() throws Exception {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-        TemplateSourceDocument sourceTemplate =changeableDocument.getAdapter(TemplateSourceDocument.class);
-        if (sourceTemplate!=null && sourceTemplate.getTemplateBlob()!=null){
+        TemplateSourceDocument sourceTemplate = changeableDocument.getAdapter(TemplateSourceDocument.class);
+        if (sourceTemplate != null && sourceTemplate.getTemplateBlob() != null) {
             try {
                 sourceTemplate.initTemplate(false);
                 if (sourceTemplate.hasEditableParams()) {
@@ -113,13 +116,14 @@ public class TemplatesActionsBean implements Serializable {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         TemplateBasedDocument templateBasedDocument = changeableDocument.getAdapter(TemplateBasedDocument.class);
 
-        if (templateBasedDocument!=null){
+        if (templateBasedDocument != null) {
             DocumentModel templateDoc = templateBasedDocument.getSourceTemplateDoc();
-            if (templateDoc!=null) {
+            if (templateDoc != null) {
                 changeableDocument = templateBasedDocument.initializeFromTemplate(false);
                 navigationContext.setChangeableDocument(changeableDocument);
             }
-            if (templateBasedDocument.getSourceTemplate().allowInstanceOverride() && templateBasedDocument.hasEditableParams()) {
+            if (templateBasedDocument.getSourceTemplate().allowInstanceOverride()
+                    && templateBasedDocument.hasEditableParams()) {
                 templateInputs = templateBasedDocument.getParams();
                 return "editTemplateRelatedData";
             }
@@ -136,50 +140,51 @@ public class TemplatesActionsBean implements Serializable {
     }
 
     public String saveDocument() throws Exception {
-        DocumentModel changeableDocument = navigationContext
-                .getChangeableDocument();
+        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
 
         for (TemplateInput ti : templateInputs) {
             log.info(ti.toString());
         }
 
         TemplateBasedDocument templateBasedDocument = changeableDocument.getAdapter(TemplateBasedDocument.class);
-        if (templateBasedDocument!=null) {
+        if (templateBasedDocument != null) {
             templateBasedDocument.saveParams(templateInputs, false);
             templateBasedDocument.renderAndStoreAsAttachment(false);
         }
         TemplateSourceDocument source = changeableDocument.getAdapter(TemplateSourceDocument.class);
-        if (source!=null) {
+        if (source != null) {
             source.saveParams(templateInputs, false);
         }
 
         return documentActions.saveDocument(changeableDocument);
     }
 
-    @Observer( value= { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create=false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
-        templateInputs=null;
-        templateEditableInputs=null;
+        templateInputs = null;
+        templateEditableInputs = null;
     }
 
-    public List<DocumentModel> getAvailableTemplates(String targetType) throws ClientException {
+    public List<DocumentModel> getAvailableTemplates(String targetType)
+            throws ClientException {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         return tps.getAvailableTemplateDocs(documentManager, targetType);
     }
 
-    public List<TemplateSourceDocument> getAvailableOfficeTemplates(String targetType) throws ClientException {
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(
+            String targetType) throws ClientException {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         return tps.getAvailableOfficeTemplates(documentManager, targetType);
     }
-    
+
     public List<TemplateInput> getTemplateEditableInputs() throws Exception {
-        if (templateEditableInputs==null) {
+        if (templateEditableInputs == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
             TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
-            if (template!=null) {
+            if (template != null) {
                 templateEditableInputs = template.getParams();
             } else {
                 TemplateBasedDocument templateBasedDoc = currentDocument.getAdapter(TemplateBasedDocument.class);
@@ -189,7 +194,8 @@ public class TemplatesActionsBean implements Serializable {
         return templateEditableInputs;
     }
 
-    public void setTemplateEditableInputs(List<TemplateInput> templateEditableInputs) {
+    public void setTemplateEditableInputs(
+            List<TemplateInput> templateEditableInputs) {
         this.templateEditableInputs = templateEditableInputs;
     }
 
@@ -198,18 +204,19 @@ public class TemplatesActionsBean implements Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
-        if (template!=null) {
+        if (template != null) {
             currentDocument = template.saveParams(templateEditableInputs, true);
         } else {
             TemplateBasedDocument templateBasedDoc = currentDocument.getAdapter(TemplateBasedDocument.class);
-            currentDocument = templateBasedDoc.saveParams(templateEditableInputs, true);
+            currentDocument = templateBasedDoc.saveParams(
+                    templateEditableInputs, true);
         }
 
         return navigationContext.navigateToDocument(currentDocument);
     }
 
     public TemplateInput getNewInput() {
-        if (newInput==null) {
+        if (newInput == null) {
             newInput = new TemplateInput("newField");
         }
         return newInput;
@@ -222,18 +229,20 @@ public class TemplatesActionsBean implements Serializable {
     public boolean canAddTemplateInputs() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
-        return template!=null?true:false;
+        return template != null ? true : false;
     }
 
     public boolean canUpdateTemplateInputs() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
-        if (template!=null) {
+        if (template != null) {
             return true;
         }
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (templateBased!=null) {
-            return templateBased.hasEditableParams() && documentManager.hasPermission(currentDocument.getRef(), "Write");
+        if (templateBased != null) {
+            return templateBased.hasEditableParams()
+                    && documentManager.hasPermission(currentDocument.getRef(),
+                            "Write");
         }
         return false;
     }
@@ -241,7 +250,7 @@ public class TemplatesActionsBean implements Serializable {
     public boolean canResetParameters() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (templateBased!=null) {
+        if (templateBased != null) {
             return true;
         }
         return false;
@@ -250,30 +259,30 @@ public class TemplatesActionsBean implements Serializable {
     public void resetParameters() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (templateBased!=null) {
+        if (templateBased != null) {
             templateBased.initializeFromTemplate(true);
-            templateEditableInputs=null;
+            templateEditableInputs = null;
         }
     }
-    
+
     public String detachTemplate() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);        
-        currentDocument = tps.detachTemplateBasedDocument(currentDocument, true); 
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        currentDocument = tps.detachTemplateBasedDocument(currentDocument, true);
         webActions.resetTabList();
         return navigationContext.navigateToDocument(currentDocument);
     }
-    
+
     public boolean canRenderTemplate() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         // check that templating is supported
         TemplateBasedDocument template = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (template==null) {
+        if (template == null) {
             return false;
         }
         // check that we can store the result : XXX do better
         BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
-        if (bh==null) {
+        if (bh == null) {
             return false;
         }
         return true;
@@ -283,21 +292,20 @@ public class TemplatesActionsBean implements Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         // check that templating is supported
         TemplateBasedDocument template = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (template==null) {
+        if (template == null) {
             return false;
         }
         return template.isBidirectional();
     }
 
-
     public String addTemplateInput() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
-        if (template!=null) {
+        if (template != null) {
             template.addInput(newInput);
-            newInput=null;
-            templateEditableInputs=null;
+            newInput = null;
+            templateEditableInputs = null;
         } else {
             return null;
         }
@@ -309,7 +317,7 @@ public class TemplatesActionsBean implements Serializable {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument doc = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (doc==null) {
+        if (doc == null) {
             return null;
         }
         doc.renderAndStoreAsAttachment(true);
@@ -317,11 +325,10 @@ public class TemplatesActionsBean implements Serializable {
         return navigationContext.navigateToDocument(doc.getAdaptedDoc());
     }
 
-
     public String updateDocumentFromBlob() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument doc = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (doc==null) {
+        if (doc == null) {
             return null;
         }
 
@@ -360,44 +367,48 @@ public class TemplatesActionsBean implements Serializable {
     }
 
     public TemplateSourceDocument getCurrentDocumentAsTemplateSourceDocument() {
-        return navigationContext.getCurrentDocument().getAdapter(TemplateSourceDocument.class);
+        return navigationContext.getCurrentDocument().getAdapter(
+                TemplateSourceDocument.class);
     }
 
     public TemplateBasedDocument getCurrentDocumentATemplateBasedDocument() {
-        return navigationContext.getCurrentDocument().getAdapter(TemplateBasedDocument.class);
+        return navigationContext.getCurrentDocument().getAdapter(
+                TemplateBasedDocument.class);
     }
 
     public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
         return Framework.getLocalService(TemplateProcessorService.class).getRegistredTemplateProcessors();
     }
 
-
     public String render() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument doc = currentDocument.getAdapter(TemplateBasedDocument.class);
-        if (doc==null) {
+        if (doc == null) {
             return null;
         }
 
         // XXX handle rendering error
         Blob rendition = doc.renderWithTemplate();
-        String filename =rendition.getFilename();
+        String filename = rendition.getFilename();
         FacesContext context = FacesContext.getCurrentInstance();
         return ComponentUtils.download(context, rendition, filename);
     }
 
     public String associateDocumentToTemplate() throws ClientException {
-        if (templateIdToAssociate==null) {
+        if (templateIdToAssociate == null) {
             return null;
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(templateIdToAssociate));
+        DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(
+                templateIdToAssociate));
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        currentDocument = tps.makeTemplateBasedDocument(currentDocument, sourceTemplate, true);
+        currentDocument = tps.makeTemplateBasedDocument(currentDocument,
+                sourceTemplate, true);
         navigationContext.invalidateCurrentDocument();
         EventManager.raiseEventsOnDocumentChange(currentDocument);
         templateIdToAssociate = null;
-        return navigationContext.navigateToDocument(currentDocument, "after-edit");
+        return navigationContext.navigateToDocument(currentDocument,
+                "after-edit");
     }
 
     public String getTemplateIdToAssociate() {
@@ -408,4 +419,8 @@ public class TemplatesActionsBean implements Serializable {
         this.templateIdToAssociate = templateIdToAssociate;
     }
 
+    public List<RenditionDefinition> getRenditions() {
+        RenditionService rs = Framework.getLocalService(RenditionService.class);
+        return rs.getDeclaredRenditionDefinitionsForProviderType(TemplateBasedRenditionProvider.class.getSimpleName());
+    }
 }

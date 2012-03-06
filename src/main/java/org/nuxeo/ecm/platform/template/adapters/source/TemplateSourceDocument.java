@@ -31,9 +31,9 @@ import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
  * Adapter interface for the {@link DocumentModel} that can provide a template.
  * It is mainly the source used by {@link TemplateBasedDocument} to handle the
  * rendering.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public interface TemplateSourceDocument {
 
@@ -48,7 +48,7 @@ public interface TemplateSourceDocument {
     public void initTemplate(boolean save) throws Exception;
 
     public void initTypesBindings() throws Exception;
-    
+
     public Blob getTemplateBlob() throws PropertyException, ClientException;
 
     public List<TemplateInput> getParams() throws PropertyException,
@@ -69,25 +69,31 @@ public interface TemplateSourceDocument {
 
     public List<String> getForcedTypes();
 
-    public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException;
+    public List<TemplateBasedDocument> getTemplateBasedDocuments()
+            throws ClientException;
 
-    public void removeForcedType(String type, boolean save) throws ClientException;
+    public void removeForcedType(String type, boolean save)
+            throws ClientException;
 
-    public void setForcedTypes(String [] forcedTypes, boolean save) throws ClientException;
-    
+    public void setForcedTypes(String[] forcedTypes, boolean save)
+            throws ClientException;
+
     public String getOutputFormat();
 
     public boolean useAsMainContent();
-    
+
     public String getName();
-    
+
     public String getFileName() throws ClientException;
-    
+
     public String getTitle() throws ClientException;
-    
+
     public String getVersionLabel();
-    
+
     public String getId();
-    
+
     public String getLabel() throws ClientException;
+
+    public String getTargetRenditionName() throws ClientException;
+
 }

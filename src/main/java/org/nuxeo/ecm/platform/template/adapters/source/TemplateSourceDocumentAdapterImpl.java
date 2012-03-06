@@ -37,9 +37,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Default implementation of {@link TemplateSourceDocument}. It mainly expect
  * from the underlying DocumentModel to have the "Template" facet.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         implements Serializable, TemplateSourceDocument {
@@ -51,18 +51,20 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     public static final String TEMPLATE_TYPE_AUTO = "auto";
 
     public static final String TEMPLATE_APPLICABLE_TYPES_PROP = "tmpl:applicableTypes";
-    
+
     public static final String TEMPLATE_APPLICABLE_TYPES_ALL = "all";
 
     public static final String TEMPLATE_FORCED_TYPES_PROP = "tmpl:forcedTypes";
-    
+
     public static final String TEMPLATE_FORCED_TYPES_NONE = "none";
-    
+
     public static final String TEMPLATE_OUTPUT_PROP = "tmpl:outputFormat";
 
     public static final String TEMPLATE_OVERRIDE_PROP = "tmpl:allowOverride";
-    
+
     public static final String TEMPLATE_USEASMAIN_PROP = "tmpl:useAsMainContent";
+
+    public static final String TEMPLATE_RENDITION_PROP = "tmpl:targetRenditionName";
 
     public static final String TEMPLATE_FACET = "Template";
 
@@ -101,7 +103,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public String getTemplateType() {
         try {
-            String ttype = (String) getAdaptedDoc().getPropertyValue(TEMPLATE_TYPE_PROP);
+            String ttype = (String) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_TYPE_PROP);
             if (TEMPLATE_TYPE_AUTO.equals(ttype)) {
                 return null;
             }
@@ -114,20 +117,24 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public void initTemplate(boolean save) throws Exception {
         // avoid duplicate init
-        if (getAdaptedDoc().getContextData(TemplateSourceDocument.INIT_DONE_FLAG)==null && getTemplateType()==null) {
+        if (getAdaptedDoc().getContextData(
+                TemplateSourceDocument.INIT_DONE_FLAG) == null
+                && getTemplateType() == null) {
             Blob blob = getTemplateBlob();
-            if (blob!=null) {
+            if (blob != null) {
                 TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
                 String templateType = tps.findProcessorName(blob);
                 if (templateType != null) {
-                    getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP, templateType);
+                    getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP,
+                            templateType);
                 }
                 TemplateProcessor processor = getTemplateProcessor();
                 if (processor != null) {
                     List<TemplateInput> params = processor.getInitialParametersDefinition(blob);
                     saveParams(params, save);
                 }
-                getAdaptedDoc().getContextData().put(TemplateSourceDocument.INIT_DONE_FLAG, true);
+                getAdaptedDoc().getContextData().put(
+                        TemplateSourceDocument.INIT_DONE_FLAG, true);
             }
         }
     }
@@ -147,48 +154,49 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     }
 
     public void initTypesBindings() throws Exception {
-        
+
         // manage applicable types
         String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
                 TEMPLATE_APPLICABLE_TYPES_PROP);
-        
-        String[] newApplicableTypesArray=null;
-        
-        if (applicableTypesArray==null || applicableTypesArray.length==0) {
-            newApplicableTypesArray =  new String[]{TEMPLATE_APPLICABLE_TYPES_ALL};
-        } else if (applicableTypesArray.length>1){
+
+        String[] newApplicableTypesArray = null;
+
+        if (applicableTypesArray == null || applicableTypesArray.length == 0) {
+            newApplicableTypesArray = new String[] { TEMPLATE_APPLICABLE_TYPES_ALL };
+        } else if (applicableTypesArray.length > 1) {
             if (TEMPLATE_APPLICABLE_TYPES_ALL.equals(applicableTypesArray[0])) {
                 List<String> at = Arrays.asList(applicableTypesArray);
                 at.remove(0);
-                newApplicableTypesArray =  at.toArray(new String[at.size()]);;
+                newApplicableTypesArray = at.toArray(new String[at.size()]);
+                ;
             }
         }
-        if (newApplicableTypesArray!=null) {
-            getAdaptedDoc().setPropertyValue(TEMPLATE_APPLICABLE_TYPES_PROP, newApplicableTypesArray);
+        if (newApplicableTypesArray != null) {
+            getAdaptedDoc().setPropertyValue(TEMPLATE_APPLICABLE_TYPES_PROP,
+                    newApplicableTypesArray);
         }
 
         // manage forcedTypes
         String[] forcedTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
                 TEMPLATE_FORCED_TYPES_PROP);
         String[] newForcedTypesArray = null;
-        if (forcedTypesArray==null || forcedTypesArray.length==0) {
-            newForcedTypesArray = new String[]{TEMPLATE_FORCED_TYPES_NONE};
-        } else if (forcedTypesArray.length>1){
+        if (forcedTypesArray == null || forcedTypesArray.length == 0) {
+            newForcedTypesArray = new String[] { TEMPLATE_FORCED_TYPES_NONE };
+        } else if (forcedTypesArray.length > 1) {
             if (TEMPLATE_FORCED_TYPES_NONE.equals(forcedTypesArray[0])) {
                 List<String> ft = Arrays.asList(forcedTypesArray);
                 ft.remove(0);
-                newForcedTypesArray =  ft.toArray(new String[ft.size()]);;
+                newForcedTypesArray = ft.toArray(new String[ft.size()]);
+                ;
             }
         }
-        if (newForcedTypesArray!=null) {
-            getAdaptedDoc().setPropertyValue(TEMPLATE_FORCED_TYPES_PROP, newForcedTypesArray);
+        if (newForcedTypesArray != null) {
+            getAdaptedDoc().setPropertyValue(TEMPLATE_FORCED_TYPES_PROP,
+                    newForcedTypesArray);
         }
-        
-        
-        
-        
+
     }
-    
+
     public List<String> getApplicableTypes() {
         try {
             String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
@@ -197,7 +205,9 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             if (applicableTypesArray != null) {
                 applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
             }
-            if (applicableTypes.size()>0 && applicableTypes.get(0).equals(TEMPLATE_APPLICABLE_TYPES_ALL)) {
+            if (applicableTypes.size() > 0
+                    && applicableTypes.get(0).equals(
+                            TEMPLATE_APPLICABLE_TYPES_ALL)) {
                 applicableTypes.remove(0);
             }
             return applicableTypes;
@@ -215,7 +225,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             if (forcedTypesArray != null) {
                 applicableTypes.addAll((Arrays.asList(forcedTypesArray)));
             }
-            if (applicableTypes.size()>0 && applicableTypes.get(0).equals(TEMPLATE_FORCED_TYPES_NONE)) {
+            if (applicableTypes.size() > 0
+                    && applicableTypes.get(0).equals(TEMPLATE_FORCED_TYPES_NONE)) {
                 applicableTypes.remove(0);
             }
             return applicableTypes;
@@ -225,39 +236,48 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
 
-    public void removeForcedType(String type, boolean save) throws ClientException {
+    public void removeForcedType(String type, boolean save)
+            throws ClientException {
         List<String> types = getForcedTypes();
         if (types.contains(type)) {
             types.remove(type);
             String[] typesArray = types.toArray(new String[types.size()]);
             getAdaptedDoc().setPropertyValue(
-                    TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP, typesArray);
+                    TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP,
+                    typesArray);
             if (save) {
-                adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(getAdaptedDoc());
+                adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(
+                        getAdaptedDoc());
             }
         }
     }
 
-    public void setForcedTypes(String [] forcedTypes, boolean save) throws ClientException {
+    public void setForcedTypes(String[] forcedTypes, boolean save)
+            throws ClientException {
         getAdaptedDoc().setPropertyValue(
-                TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP, forcedTypes);
+                TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP,
+                forcedTypes);
         if (save) {
-            adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(getAdaptedDoc());
+            adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(
+                    getAdaptedDoc());
         }
     }
 
-    public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException {
-        return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(adaptedDoc);
+    public List<TemplateBasedDocument> getTemplateBasedDocuments()
+            throws ClientException {
+        return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(
+                adaptedDoc);
     }
-    
-    public String getOutputFormat() {        
+
+    public String getOutputFormat() {
         try {
-            return (String) getAdaptedDoc().getPropertyValue(TEMPLATE_OUTPUT_PROP);
+            return (String) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_OUTPUT_PROP);
         } catch (Exception e) {
             return null;
-        } 
+        }
     }
-    
+
     public boolean useAsMainContent() {
         try {
             Boolean useAsMain = (Boolean) getAdaptedDoc().getPropertyValue(
@@ -271,7 +291,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             return false;
         }
     }
-    
+
     public Blob getTemplateBlob() throws ClientException {
         BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
         if (bh != null) {
@@ -279,39 +299,51 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
         return null;
     }
-    
+
     public String getName() {
         return getAdaptedDoc().getName();
     }
-    
-    public String getFileName() throws ClientException {        
+
+    public String getFileName() throws ClientException {
         Blob blob = getTemplateBlob();
-        if (blob!=null) {
+        if (blob != null) {
             return blob.getFilename();
         }
         return null;
     }
-    
+
     public String getTitle() throws ClientException {
         return getAdaptedDoc().getTitle();
     }
-    
+
     public String getVersionLabel() {
         return getAdaptedDoc().getVersionLabel();
     }
-    
+
     public String getId() {
         return getAdaptedDoc().getId();
     }
-    
-    public String getLabel() throws ClientException{
+
+    public String getLabel() throws ClientException {
         StringBuffer sb = new StringBuffer(getTitle());
         if (!getTitle().equals(getFileName())) {
             sb.append(" (" + getFileName() + ")");
         }
-        if (getVersionLabel()!=null) {
+        if (getVersionLabel() != null) {
             sb.append(" [" + getVersionLabel() + "]");
         }
         return sb.toString();
     }
+
+    @Override
+    public String getTargetRenditionName() throws ClientException {
+        try {
+            return (String) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_RENDITION_PROP);
+        } catch (Exception e) {
+            log.error("Unable to get target rendition");
+            return null;
+        }
+    }
+
 }

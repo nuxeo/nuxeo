@@ -191,6 +191,7 @@
       <rows>
         <row>
           <widget>nature</widget>
+          <widget>rendition</widget>
         </row>
         <row>
           <widget>targetTypes</widget>
@@ -205,6 +206,20 @@
           <widget>converter</widget>
         </row>
       </rows>
+      <widget name="rendition" type="template">
+        <labels>
+          <label mode="any">Rendition</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:targetRenditionName</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/rendition_selectone.xhtml
+          </property>
+        </properties>
+      </widget>
       <widget name="allowOverride" type="checkbox">
         <labels>
           <label mode="any">Allow parameters override</label>
