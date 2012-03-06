@@ -35,6 +35,8 @@ public class TestDomainsFinder extends SQLRepositoryTestCase {
 
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/publisher-lifecycle-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test",
+                "OSGI-INF/core-types-contrib.xml");
 
         openSession();
 
@@ -56,7 +58,10 @@ public class TestDomainsFinder extends SQLRepositoryTestCase {
         domain1 = session.createDocument(domain1);
         DocumentModel domain2 = session.createDocumentModel("/", "dom1",
                 "Domain");
-        domain2 = session.createDocument(domain1);
+        domain2 = session.createDocument(domain2);
+        DocumentModel socialdomain1 = session.createDocumentModel("/", "social",
+                "SocialDomain");
+        socialdomain1 = session.createDocument(socialdomain1);
         session.save();
         result = domainFinder.getDomainsFiltered();
         assertEquals(2, result.size());
