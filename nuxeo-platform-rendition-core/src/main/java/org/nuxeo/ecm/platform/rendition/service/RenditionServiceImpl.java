@@ -16,7 +16,6 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,37 +24,27 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
+import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
+import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
+import org.nuxeo.ecm.platform.rendition.impl.LiveRendition;
+import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.FILES_SCHEMA;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
-
 /**
  * Default implementation of {@link RenditionService}.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
@@ -83,43 +72,48 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<RenditionDefinition> getAvailableRenditionDefinitions() {
+    public List<RenditionDefinition> getDeclaredRenditionDefinitions() {
         return new ArrayList<RenditionDefinition>(renditionDefinitions.values());
     }
 
     @Override
-    public DocumentRef render(DocumentModel source,
-            String renditionDefinitionName) throws RenditionException {
-        RenditionDefinition renditionDefinition = renditionDefinitions.get(renditionDefinitionName);
-        if (renditionDefinition == null) {
-            String message = "The rendition definition '%s' is not registered";
-            throw new RenditionException(String.format(message,
-                    renditionDefinitionName), "label.rendition.not.defined");
+    public List<RenditionDefinition> getAvailableRenditionDefinitions(
+            DocumentModel doc) {
+        List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
+        for (RenditionDefinition def : renditionDefinitions.values()) {
+            if (def.getProvider().isAvailable(doc)) {
+                defs.add(def);
+            }
         }
-        return render(source, renditionDefinition);
+        // XXX what about "lost renditions" ?
+        return defs;
     }
 
-    protected DocumentRef render(DocumentModel sourceDocument,
-            RenditionDefinition renditionDefinition) throws RenditionException {
-        validateSourceDocument(sourceDocument);
-        try {
-            BlobHolder bh = sourceDocument.getAdapter(BlobHolder.class);
-            Blob renditionBlob = generateRenditionBlob(bh.getBlob(),
-                    renditionDefinition);
+    @Override
+    public DocumentRef storeRendition(DocumentModel source,
+            String renditionDefinitionName) throws RenditionException {
 
+        Rendition rendition = getRendition(source, renditionDefinitionName,
+                true);
+
+        return rendition.getHostDocument().getRef();
+    }
+
+    protected DocumentRef storeRendition(DocumentModel sourceDocument,
+            List<Blob> renderedBlobs, String name) throws RenditionException {
+        try {
             CoreSession session = sourceDocument.getCoreSession();
             DocumentRef versionRef = createVersionIfNeeded(sourceDocument,
                     session);
 
             DocumentModel version = session.getDocument(versionRef);
             RenditionCreator rc = new RenditionCreator(session, sourceDocument,
-                    version, renditionBlob);
+                    version, renderedBlobs.get(0), name);
             rc.runUnrestricted();
 
             return rc.getRenditionDocumentRef();
-        } catch (ClientException e) {
-            throw new RenditionException("Exception while rendering: "
-                    + sourceDocument, e);
+        } catch (Exception e) {
+            throw new RenditionException("Unable to store rendition", e);
         }
     }
 
@@ -149,21 +143,6 @@ public class RenditionServiceImpl extends DefaultComponent implements
         if (mainBlob == null) {
             throw new RenditionException("No main file attached",
                     "label.cannot.render.without.main.blob");
-        }
-    }
-
-    protected Blob generateRenditionBlob(Blob sourceBlob,
-            RenditionDefinition renditionDefinition) throws RenditionException {
-        AutomationService as = getAutomationService();
-        OperationContext oc = new OperationContext();
-        oc.push(Constants.O_BLOB, sourceBlob);
-
-        try {
-            return (Blob) as.run(oc, renditionDefinition.getOperationChain());
-        } catch (Exception e) {
-            throw new RenditionException(
-                    "Exception while running the operation chain: "
-                            + renditionDefinition.getOperationChain(), e);
         }
     }
 
@@ -230,6 +209,22 @@ public class RenditionServiceImpl extends DefaultComponent implements
             log.info("Registering rendition with name: " + name);
             renditionDefinitions.put(name, renditionDefinition);
         }
+
+        // setup the Provider
+        setupProvider(renditionDefinition);
+    }
+
+    protected void setupProvider(RenditionDefinition definition) {
+        if (definition.getProviderClass() == null) {
+            definition.setProvider(new DefaultAutomationRenditionProvider());
+        } else {
+            try {
+                RenditionProvider provider = definition.getProviderClass().newInstance();
+                definition.setProvider(provider);
+            } catch (Exception e) {
+                log.error("Unable to create RenditionProvider", e);
+            }
+        }
     }
 
     protected RenditionDefinition mergeRenditions(
@@ -263,94 +258,92 @@ public class RenditionServiceImpl extends DefaultComponent implements
         log.info("Unregistering rendition with name: " + name);
     }
 
-    public static class RenditionCreator extends UnrestrictedSessionRunner {
+    @Override
+    public Rendition getRendition(DocumentModel doc, String renditionName)
+            throws RenditionException {
+        return getRendition(doc, renditionName, false);
+    }
 
-        protected DocumentRef renditionRef;
+    @Override
+    public Rendition getRendition(DocumentModel doc, String renditionName,
+            boolean store) throws RenditionException {
 
-        protected String liveDocumentId;
+        validateSourceDocument(doc);
 
-        protected DocumentRef versionDocumentRef;
-
-        protected Blob renditionBlob;
-
-        public RenditionCreator(CoreSession session,
-                DocumentModel liveDocument, DocumentModel versionDocument,
-                Blob renditionBlob) {
-            super(session);
-            this.liveDocumentId = liveDocument.getId();
-            this.versionDocumentRef = versionDocument.getRef();
-            this.renditionBlob = renditionBlob;
+        RenditionDefinition renditionDefinition = renditionDefinitions.get(renditionName);
+        if (renditionDefinition == null) {
+            String message = "The rendition definition '%s' is not registered";
+            throw new RenditionException(String.format(message, renditionName),
+                    "label.rendition.not.defined");
         }
 
-        public DocumentRef getRenditionDocumentRef() {
-            return renditionRef;
+        RenditionFinder finder = new RenditionFinder(doc, renditionName);
+
+        DocumentModel stored = null;
+
+        try {
+            finder.run(); // don't run unrestricted
+            stored = finder.getStoredRendition();
+        } catch (ClientException e) {
+            throw new RenditionException(
+                    "Error while searching for stored rendition", e);
         }
 
-        @Override
-        public void run() throws ClientException {
-            DocumentModel versionDocument = session.getDocument(versionDocumentRef);
-            DocumentModel rendition = createRenditionDocument(versionDocument);
-            removeBlobs(rendition);
-            updateMainBlob(rendition);
+        if (stored != null) {
+            if (!doc.isVersion()) {
+                // check if rendition is up to date
+                String storedVersionLabel = stored.getVersionLabel();
+                if (storedVersionLabel != null) {
+                    if (storedVersionLabel.endsWith("+")) { // checked out
+                        storedVersionLabel = storedVersionLabel.substring(0,
+                                storedVersionLabel.length() - 1);
+                    }
+                    if (storedVersionLabel.compareTo(doc.getVersionLabel()) < 0) {
+                        // checkout document is more recent
+                        stored = null;
+                    }
+                }
+            }
+        }
+        if (stored != null) {
+            return new StoredRendition(stored, renditionDefinition);
 
-            rendition = session.createDocument(rendition);
-            renditionRef = rendition.getRef();
-
-            setCorrectVersion(rendition, versionDocument);
-
-            rendition = session.saveDocument(rendition);
-
-            giveReadRightToUser(rendition);
-            session.save();
         }
 
-        protected DocumentModel createRenditionDocument(
-                DocumentModel versionDocument) throws ClientException {
-            DocumentModel rendition = session.createDocumentModel(null,
-                    versionDocument.getName(), versionDocument.getType());
-            rendition.copyContent(versionDocument);
+        LiveRendition rendition = new LiveRendition(doc, renditionDefinition);
 
-            rendition.addFacet(RENDITION_FACET);
-            rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY,
-                    versionDocument.getId());
-            rendition.setPropertyValue(
-                    RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY, liveDocumentId);
+        if (store) {
+            DocumentRef ref = storeRendition(doc, rendition.getBlobs(),
+                    renditionDefinition.getName());
+            try {
+                return new StoredRendition(
+                        doc.getCoreSession().getDocument(ref),
+                        renditionDefinition);
+            } catch (ClientException e) {
+                throw new RenditionException(
+                        "Error while reading stored Rendition", e);
+            }
+
+        } else {
             return rendition;
         }
+    }
 
-        protected void removeBlobs(DocumentModel rendition)
-                throws ClientException {
-            if (rendition.hasSchema(FILES_SCHEMA)) {
-                rendition.setPropertyValue(FILES_FILES_PROPERTY,
-                        new ArrayList<Map<String, Serializable>>());
+    public List<Rendition> getAvailableRenditions(DocumentModel doc)
+            throws RenditionException {
+
+        List<Rendition> renditions = new ArrayList<Rendition>();
+
+        List<RenditionDefinition> defs = getAvailableRenditionDefinitions(doc);
+        if (defs != null) {
+            for (RenditionDefinition def : defs) {
+                Rendition rendition = getRendition(doc, def.getName());
+                if (rendition != null) {
+                    renditions.add(rendition);
+                }
             }
         }
 
-        protected void updateMainBlob(DocumentModel rendition)
-                throws ClientException {
-            BlobHolder bh = rendition.getAdapter(BlobHolder.class);
-            bh.setBlob(renditionBlob);
-        }
-
-        protected void giveReadRightToUser(DocumentModel rendition)
-                throws ClientException {
-            ACP acp = new ACPImpl();
-            ACL acl = new ACLImpl();
-            acp.addACL(acl);
-            ACE ace = new ACE(getOriginatingUsername(), SecurityConstants.READ,
-                    true);
-            acl.add(ace);
-            rendition.setACP(acp, true);
-        }
-
-        protected void setCorrectVersion(DocumentModel rendition,
-                DocumentModel versionDocument) throws ClientException {
-            Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version") - 1L;
-            rendition.setPropertyValue("uid:minor_version", minorVersion);
-            rendition.setPropertyValue("uid:major_version",
-                    versionDocument.getPropertyValue("uid:major_version"));
-        }
-
+        return renditions;
     }
-
 }

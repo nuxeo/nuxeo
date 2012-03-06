@@ -58,7 +58,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
             if (!StringUtils.isEmpty(renditionName)) {
                 DocumentRef renditionDocumentRef;
                 try {
-                    renditionDocumentRef = getRenditionService().render(doc,
+                    renditionDocumentRef = getRenditionService().storeRendition(doc,
                             renditionName);
                 } catch (RenditionException e) {
                     throw new PublisherException(e.getLocalizedMessage(), e);

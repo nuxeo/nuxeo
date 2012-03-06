@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -83,8 +84,8 @@ public class TestRenditionService {
     }
 
     @Test
-    public void testAvailableRenditionDefinitions() {
-        List<RenditionDefinition> renditionDefinitions = renditionService.getAvailableRenditionDefinitions();
+    public void testDeclaredRenditionDefinitions() {
+        List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertFalse(renditionDefinitions.isEmpty());
         assertEquals(2, renditionDefinitions.size());
 
@@ -100,15 +101,39 @@ public class TestRenditionService {
         assertTrue(renditionServiceImpl.renditionDefinitions.containsKey("renditionDefinitionWithUndefinedOperationChain"));
         rd = renditionServiceImpl.renditionDefinitions.get("renditionDefinitionWithUndefinedOperationChain");
         assertNotNull(rd);
-        assertEquals("renditionDefinitionWithUndefinedOperationChain", rd.getName());
+        assertEquals("renditionDefinitionWithUndefinedOperationChain",
+                rd.getName());
         assertEquals("undefinedOperationChain", rd.getOperationChain());
+    }
+
+    @Test
+    public void testAvailableRenditionDefinitions() throws Exception {
+
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file.setPropertyValue("dc:title", "TestFile");
+        file = session.createDocument(file);
+
+        // no blob => rendition list should be empty
+        List<RenditionDefinition> renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
+        assertTrue(renditionDefinitions.size() == 0);
+
+        // add a blob
+        StringBlob blob = new StringBlob("I am a Blob");
+        file.setPropertyValue("file:content", blob);
+        file = session.saveDocument(file);
+
+        // rendition should be available now
+        renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
+        assertTrue(renditionDefinitions.size() > 0);
+
     }
 
     @Test
     public void doPDFRendition() throws ClientException {
         DocumentModel file = createBlobFile();
 
-        DocumentRef renditionDocumentRef = renditionService.render(file, PDF_RENDITION_DEFINITION);
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(
+                file, PDF_RENDITION_DEFINITION);
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
         assertNotNull(renditionDocument);
@@ -127,6 +152,23 @@ public class TestRenditionService {
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
         assertEquals("dummy.txt.pdf", renditionBlob.getFilename());
+
+        // now refetch the rendition
+        Rendition rendition = renditionService.getRendition(file,
+                PDF_RENDITION_DEFINITION);
+        assertNotNull(rendition);
+        assertTrue(rendition.isStored());
+        assertEquals(renditionDocument.getRef(),
+                rendition.getHostDocument().getRef());
+
+        // now update the document
+        file.setPropertyValue("dc:description", "I have been updated");
+        file = session.saveDocument(file);
+        rendition = renditionService.getRendition(file,
+                PDF_RENDITION_DEFINITION);
+        assertNotNull(rendition);
+        assertFalse(rendition.isStored());
+
     }
 
     protected DocumentModel createBlobFile() throws ClientException {
@@ -157,7 +199,7 @@ public class TestRenditionService {
 
         DocumentModel proxy = session.createProxy(file.getRef(), new PathRef(
                 "/"));
-        renditionService.render(proxy, PDF_RENDITION_DEFINITION);
+        renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
     }
 
     @Test
@@ -169,8 +211,8 @@ public class TestRenditionService {
         file.refresh(DocumentModel.REFRESH_STATE, null);
         DocumentModel version = session.getDocument(versionRef);
 
-        DocumentRef renditionDocumentRef = renditionService.render(version,
-                "pdf");
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(
+                version, "pdf");
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
         assertEquals(
@@ -189,7 +231,7 @@ public class TestRenditionService {
     public void shouldNotRenderAnEmptyDocument() throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.render(file, PDF_RENDITION_DEFINITION);
+        renditionService.storeRendition(file, PDF_RENDITION_DEFINITION);
     }
 
     @Test(expected = RenditionException.class)
@@ -197,7 +239,7 @@ public class TestRenditionService {
             throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.render(file, "undefinedRenditionDefinition");
+        renditionService.storeRendition(file, "undefinedRenditionDefinition");
     }
 
     @Test(expected = RenditionException.class)
@@ -205,7 +247,8 @@ public class TestRenditionService {
             throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.render(file, "renditionDefinitionWithUndefinedOperationChain");
+        renditionService.storeRendition(file,
+                "renditionDefinitionWithUndefinedOperationChain");
     }
 
     @Test
@@ -230,7 +273,7 @@ public class TestRenditionService {
         fileDocument.setPropertyValue(FILES_FILES_PROPERTY,
                 (Serializable) files);
 
-        DocumentRef renditionDocumentRef = renditionService.render(
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(
                 fileDocument, PDF_RENDITION_DEFINITION);
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
@@ -248,7 +291,7 @@ public class TestRenditionService {
         DocumentModel folder = session.createDocumentModel("/", "dummy-folder",
                 "Folder");
         folder = session.createDocument(folder);
-        renditionService.render(folder, PDF_RENDITION_DEFINITION);
+        renditionService.storeRendition(folder, PDF_RENDITION_DEFINITION);
     }
 
 }

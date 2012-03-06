@@ -1,0 +1,120 @@
+package org.nuxeo.ecm.platform.rendition.service;
+
+import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.FILES_SCHEMA;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+
+public class RenditionCreator extends UnrestrictedSessionRunner {
+
+    protected DocumentRef renditionRef;
+
+    protected String liveDocumentId;
+
+    protected DocumentRef versionDocumentRef;
+
+    protected Blob renditionBlob;
+
+    protected String renditionName;
+
+    public RenditionCreator(CoreSession session, DocumentModel liveDocument,
+            DocumentModel versionDocument, Blob renditionBlob,
+            String renditionName) {
+        super(session);
+        this.liveDocumentId = liveDocument.getId();
+        this.versionDocumentRef = versionDocument.getRef();
+        this.renditionBlob = renditionBlob;
+        this.renditionName = renditionName;
+    }
+
+    public DocumentRef getRenditionDocumentRef() {
+        return renditionRef;
+    }
+
+    @Override
+    public void run() throws ClientException {
+        DocumentModel versionDocument = session.getDocument(versionDocumentRef);
+        DocumentModel rendition = createRenditionDocument(versionDocument);
+        removeBlobs(rendition);
+        updateMainBlob(rendition);
+
+        rendition = session.createDocument(rendition);
+        renditionRef = rendition.getRef();
+
+        setCorrectVersion(rendition, versionDocument);
+
+        rendition = session.saveDocument(rendition);
+
+        giveReadRightToUser(rendition);
+        session.save();
+    }
+
+    protected DocumentModel createRenditionDocument(
+            DocumentModel versionDocument) throws ClientException {
+        DocumentModel rendition = session.createDocumentModel(null,
+                versionDocument.getName(), versionDocument.getType());
+        rendition.copyContent(versionDocument);
+
+        rendition.addFacet(RENDITION_FACET);
+        rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY,
+                versionDocument.getId());
+        rendition.setPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY,
+                liveDocumentId);
+        rendition.setPropertyValue(RENDITION_NAME_PROPERTY, renditionName);
+        return rendition;
+    }
+
+    protected void removeBlobs(DocumentModel rendition) throws ClientException {
+        if (rendition.hasSchema(FILES_SCHEMA)) {
+            rendition.setPropertyValue(FILES_FILES_PROPERTY,
+                    new ArrayList<Map<String, Serializable>>());
+        }
+    }
+
+    protected void updateMainBlob(DocumentModel rendition)
+            throws ClientException {
+        BlobHolder bh = rendition.getAdapter(BlobHolder.class);
+        bh.setBlob(renditionBlob);
+    }
+
+    protected void giveReadRightToUser(DocumentModel rendition)
+            throws ClientException {
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acp.addACL(acl);
+        ACE ace = new ACE(getOriginatingUsername(), SecurityConstants.READ,
+                true);
+        acl.add(ace);
+        rendition.setACP(acp, true);
+    }
+
+    protected void setCorrectVersion(DocumentModel rendition,
+            DocumentModel versionDocument) throws ClientException {
+        Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version"); // -
+                                                                                          // 1L;
+        rendition.setPropertyValue("uid:minor_version", minorVersion);
+        rendition.setPropertyValue("uid:major_version",
+                versionDocument.getPropertyValue("uid:major_version"));
+    }
+
+}

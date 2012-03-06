@@ -18,15 +18,18 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 
 /**
  * Definition of a rendition.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
 @XObject("renditionDefinition")
 public class RenditionDefinition {
+
+    protected RenditionProvider provider;
 
     @XNode("@name")
     protected String name;
@@ -37,8 +40,17 @@ public class RenditionDefinition {
     @XNode("label")
     protected String label;
 
+    @XNode("icon")
+    protected String icon;
+
+    @XNode("kind")
+    protected String kind;
+
     @XNode("operationChain")
     protected String operationChain;
+
+    @XNode("@class")
+    protected Class<? extends RenditionProvider> providerClass;
 
     public String getName() {
         return name;
@@ -56,4 +68,23 @@ public class RenditionDefinition {
         return operationChain;
     }
 
+    public Class<? extends RenditionProvider> getProviderClass() {
+        return providerClass;
+    }
+
+    public RenditionProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(RenditionProvider provider) {
+        this.provider = provider;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public String getKind() {
+        return kind;
+    }
 }
