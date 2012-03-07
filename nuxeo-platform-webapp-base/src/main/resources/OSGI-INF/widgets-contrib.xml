@@ -81,9 +81,6 @@
             <layout name="image_widget_type_properties_view">
               <rows>
                 <row>
-                  <widget>required</widget>
-                </row>
-                <row>
                   <widget>width</widget>
                 </row>
                 <row>
