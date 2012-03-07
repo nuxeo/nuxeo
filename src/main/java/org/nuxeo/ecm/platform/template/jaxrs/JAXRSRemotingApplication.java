@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
-import fr.opensagres.xdocreport.remoting.resources.services.rest.BinaryDataMessageBodyWriter;
+import fr.opensagres.xdocreport.remoting.resources.services.rest.Providers;
 
 public class JAXRSRemotingApplication extends WebEngineModule {
 
@@ -20,7 +20,7 @@ public class JAXRSRemotingApplication extends WebEngineModule {
     public Set<Object> getSingletons() {
         Set<Object> result = new HashSet<Object>();
         result.add(new ResourceMessageWriter());
-        result.add(new BinaryDataMessageBodyWriter());
+        result.addAll(Providers.get());
         return result;
     }
 

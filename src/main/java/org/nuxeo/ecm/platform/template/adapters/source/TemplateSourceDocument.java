@@ -96,4 +96,6 @@ public interface TemplateSourceDocument {
 
     public String getTargetRenditionName() throws ClientException;
 
+    public void setTemplateBlob(Blob blob, boolean save) throws Exception;
+
 }

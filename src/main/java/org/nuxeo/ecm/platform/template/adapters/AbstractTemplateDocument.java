@@ -39,9 +39,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Base class for shared code bewteen the {@link TemplateBasedDocument} and the
  * {@link TemplateSourceDocument}.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public abstract class AbstractTemplateDocument implements Serializable {
 
@@ -86,9 +86,13 @@ public abstract class AbstractTemplateDocument implements Serializable {
         String xml = XMLSerializer.serialize(params);
         adaptedDoc.setPropertyValue(dataPath, xml);
         if (save) {
-            adaptedDoc = getSession().saveDocument(adaptedDoc);
+            doSave();
         }
         return adaptedDoc;
+    }
+
+    protected void doSave() throws Exception {
+        adaptedDoc = getSession().saveDocument(adaptedDoc);
     }
 
     public DocumentModel save() throws ClientException {

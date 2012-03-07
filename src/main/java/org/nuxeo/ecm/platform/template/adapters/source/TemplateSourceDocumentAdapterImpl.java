@@ -300,6 +300,14 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         return null;
     }
 
+    public void setTemplateBlob(Blob blob, boolean save) throws Exception {
+        BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
+        if (bh != null) {
+            bh.setBlob(blob);
+            initTemplate(save);
+        }
+    }
+
     public String getName() {
         return getAdaptedDoc().getName();
     }
