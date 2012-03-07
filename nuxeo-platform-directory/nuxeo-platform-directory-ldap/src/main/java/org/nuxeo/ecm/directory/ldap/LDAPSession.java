@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SimpleTimeZone;
-
 import javax.naming.Context;
 import javax.naming.LimitExceededException;
 import javax.naming.NameNotFoundException;
@@ -48,10 +47,9 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-
+import javax.naming.ldap.InitialLdapContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,7 +74,7 @@ import org.nuxeo.ecm.directory.Reference;
 
 /**
  * This class represents a session against an LDAPDirectory.
- *
+ * 
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class LDAPSession extends BaseSession implements EntrySource {
@@ -983,12 +981,16 @@ public class LDAPSession extends BaseSession implements EntrySource {
         env.put(Context.SECURITY_PRINCIPAL, dn);
         env.put(Context.SECURITY_CREDENTIALS, password);
 
-        InitialDirContext authenticationDirContext = null;
+        InitialLdapContext authenticationDirContext = null;
         try {
             // creating a context does a bind
             log.debug(String.format("LDAP bind dn='%s'", dn));
             // noinspection ResultOfObjectAllocationIgnored
-            authenticationDirContext = new InitialDirContext(env);
+            authenticationDirContext = new InitialLdapContext(env, null);
+            // force reconnection to prevent from using a previous connection
+            // with an obsolete password (after an user has changed his
+            // password)
+            authenticationDirContext.reconnect(null);
             log.debug("Bind succeeded, authentication ok");
             return true;
         } catch (NamingException e) {
