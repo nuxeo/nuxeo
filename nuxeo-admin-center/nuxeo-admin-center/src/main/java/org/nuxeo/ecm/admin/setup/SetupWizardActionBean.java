@@ -22,18 +22,27 @@ package org.nuxeo.ecm.admin.setup;
 
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
+import javax.faces.validator.ValidatorException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -44,7 +53,9 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
@@ -85,6 +96,12 @@ public class SetupWizardActionBean implements Serializable {
     protected static final String PROXY_ANONYMOUS = "anonymous";
 
     protected static final String PROXY_AUTHENTICATED = "authenticated";
+
+    private static final String ERROR_DB_DRIVER = "error.db.driver.notfound";
+
+    private static final String ERROR_DB_CONNECTION = "error.db.connection";
+
+    private static final String ERROR_DB_FS = "error.db.fs";
 
     protected String proxyType = PROXY_NONE;
 
@@ -159,11 +176,17 @@ public class SetupWizardActionBean implements Serializable {
         }
     }
 
-    private void setParameters() {
+    /**
+     * Fill {@link #parameters} and {@link #advancedParameters} with properties
+     * from #{@link ConfigurationGenerator#getUserConfig()}
+     *
+     * @since 5.6
+     */
+    protected void setParameters() {
         userConfig = configGenerator.getUserConfig();
         parameters = new HashMap<String, String>();
         advancedParameters = new TreeMap<String, String>();
-        // will remove managed parameters later, let only advanced parameters
+        // will remove managed parameters later in setParameter()
         for (String key : userConfig.stringPropertyNames()) {
             if (System.getProperty(key) == null
                     || key.matches("^(nuxeo|org\\.nuxeo|catalina|derby|h2|java\\.home|"
@@ -203,8 +226,20 @@ public class SetupWizardActionBean implements Serializable {
         resetParameters();
     }
 
+    @SuppressWarnings("unchecked")
     protected void saveParameters() {
-        Map<String, String> customParameters = new HashMap<String, String>();
+        // Fix types (replace Long and Boolean with String)
+        for (Iterator<?> entries = parameters.entrySet().iterator(); entries.hasNext();) {
+            @SuppressWarnings("rawtypes")
+            Entry entry = (Entry<String, ?>) entries.next();
+            if (entry.getValue() instanceof Long) {
+                entry.setValue(((Long) entry.getValue()).toString());
+            }
+            if (entry.getValue() instanceof Boolean) {
+                entry.setValue(((Boolean) entry.getValue()).toString());
+            }
+        }
+
         // manage httpProxy settings (setting null is not accepted)
         if (!PROXY_AUTHENTICATED.equals(proxyType)) {
             parameters.put("nuxeo.http.proxy.login", "");
@@ -214,8 +249,17 @@ public class SetupWizardActionBean implements Serializable {
             parameters.put("nuxeo.http.proxy.host", "");
             parameters.put("nuxeo.http.proxy.port", "");
         }
-        // Check database parameters
 
+        // Remove empty values for password keys
+        for (String pwdKey : new String[] { "nuxeo.db.password",
+                "mailservice.password", "mail.smtp.password",
+                "nuxeo.http.proxy.password" }) {
+            if (StringUtils.isEmpty(parameters.get(pwdKey))) {
+                parameters.remove(pwdKey);
+            }
+        }
+
+        Map<String, String> customParameters = new HashMap<String, String>();
         customParameters.putAll(parameters);
         customParameters.putAll(advancedParameters);
         try {
@@ -230,6 +274,75 @@ public class SetupWizardActionBean implements Serializable {
         Contexts.getEventContext().remove("setupParams");
         Contexts.getEventContext().remove("advancedParams");
         Contexts.getEventContext().remove("setupRequiresRestart");
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void checkDatabaseParameters(FacesContext context,
+            UIComponent component, Object value) {
+        Map<String, Object> attributes = component.getAttributes();
+        String dbNameInputId = (String) attributes.get("dbNameInputId");
+        String dbUserInputId = (String) attributes.get("dbUserInputId");
+        String dbPwdInputId = (String) attributes.get("dbPwdInputId");
+        String dbHostInputId = (String) attributes.get("dbHostInputId");
+        String dbPortInputId = (String) attributes.get("dbPortInputId");
+
+        if (dbNameInputId == null || dbUserInputId == null
+                || dbPwdInputId == null || dbHostInputId == null
+                || dbPortInputId == null) {
+            log.error("Cannot validate database parameters: missing inputIds");
+            return;
+        }
+
+        UIInput dbNameComp = (UIInput) component.findComponent(dbNameInputId);
+        UIInput dbUserComp = (UIInput) component.findComponent(dbUserInputId);
+        UIInput dbPwdComp = (UIInput) component.findComponent(dbPwdInputId);
+        UIInput dbHostComp = (UIInput) component.findComponent(dbHostInputId);
+        UIInput dbPortComp = (UIInput) component.findComponent(dbPortInputId);
+        if (dbNameComp == null || dbUserComp == null || dbPwdComp == null
+                || dbHostComp == null || dbPortComp == null) {
+            log.error("Cannot validate inputs: not found");
+            return;
+        }
+
+        String dbName = (String) dbNameComp.getLocalValue();
+        String dbUser = (String) dbUserComp.getLocalValue();
+        String dbPwd = (String) dbPwdComp.getLocalValue();
+        String dbHost = (String) dbHostComp.getLocalValue();
+        Long dbPortLong = (Long) dbPortComp.getLocalValue();
+        String dbPort = dbPortLong.toString();
+
+        if (StringUtils.isEmpty(dbPwd)) {
+            dbPwd = parameters.get("nuxeo.db.password");
+        }
+
+        String errorLabel = null;
+        Exception error = null;
+        try {
+            configGenerator.checkDatabaseConnection(
+                    parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME),
+                    dbName, dbUser, dbPwd, dbHost, dbPort);
+        } catch (FileNotFoundException e) {
+            errorLabel = ERROR_DB_FS;
+            error = e;
+        } catch (IOException e) {
+            errorLabel = ERROR_DB_FS;
+            error = e;
+        } catch (DatabaseDriverException e) {
+            errorLabel = ERROR_DB_DRIVER;
+            error = e;
+        } catch (SQLException e) {
+            errorLabel = ERROR_DB_CONNECTION;
+            error = e;
+        }
+        if (error != null) {
+            log.error(error);
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, errorLabel), null);
+            throw new ValidatorException(message);
+        }
     }
 
     public void templateChange(ActionEvent event) {
@@ -264,8 +377,10 @@ public class SetupWizardActionBean implements Serializable {
         context.renderResponse();
     }
 
+    /**
+     * Initialized by {@link #getParameters()}
+     */
     public String getProxyType() {
-        // XXX: initialized when parameters are
         return proxyType;
     }
 

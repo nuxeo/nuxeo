@@ -399,9 +399,8 @@
             /incl/sysinfo/widgets/database_ajax_panel.xhtml
           </property>
           <property name="ajaxPanelId">database_ajaxPanel</property>
-          <!-- use a 'rendered' property instead of playing with the
-            subwidget mode otherwise proxy selection misbehaves after first
-            non-default database selection -->
+          <!-- use a 'rendered' property instead of playing with the subwidget mode
+            otherwise proxy selection misbehaves after first non-default database selection -->
           <property name="rendered">
             #{value['nuxeo.dbtemplate']!='default'}
           </property>
@@ -456,6 +455,9 @@
         <row>
           <widget>vcsMaxPoolSize</widget>
         </row>
+        <row>
+          <widget>checkDatabaseParameters</widget>
+        </row>
       </rows>
       <widget name="dbName" type="text">
         <labels>
@@ -499,7 +501,7 @@
         <properties mode="edit">
           <property name="size">50</property>
           <property name="styleClass">dataInputText</property>
-          <property name="required">true</property>
+          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="dbHost" type="text">
@@ -540,7 +542,7 @@
           <field>['nuxeo.db.min-pool-size']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
+          <property name="size">4</property>
           <property name="styleClass">dataInputText</property>
           <property name="required">false</property>
         </properties>
@@ -554,7 +556,7 @@
           <field>['nuxeo.db.max-pool-size']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
+          <property name="size">4</property>
           <property name="styleClass">dataInputText</property>
           <property name="required">false</property>
         </properties>
@@ -568,7 +570,7 @@
           <field>['nuxeo.vcs.min-pool-size']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
+          <property name="size">4</property>
           <property name="styleClass">dataInputText</property>
           <property name="required">false</property>
         </properties>
@@ -582,9 +584,19 @@
           <field>['nuxeo.vcs.max-pool-size']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
+          <property name="size">4</property>
           <property name="styleClass">dataInputText</property>
           <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="checkDatabaseParameters" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/database_check_parameters_template.xhtml
+          </property>
         </properties>
       </widget>
     </layout>
@@ -705,7 +717,7 @@
         <properties mode="edit">
           <property name="size">20</property>
           <property name="styleClass">dataInputText</property>
-          <property name="required">true</property>
+          <property name="required">false</property>
         </properties>
       </widget>
     </layout>
@@ -749,6 +761,12 @@
         <row>
           <widget>mail.smtp.auth</widget>
         </row>
+        <!-- <row> -->
+        <!-- <properties mode="any"> -->
+        <!-- <property name="hideWidgetLabel">true</property> -->
+        <!-- </properties> -->
+        <!-- <widget>mail_smtp_auth_decorator</widget> -->
+        <!-- </row> -->
         <row>
           <widget>mail.smtp.username</widget>
         </row>
@@ -767,7 +785,8 @@
       </rows>
       <widget name="eMailSubjectPrefix" type="text">
         <labels>
-          <label mode="any">label.setup.nuxeo.notification.eMailSubjectPrefix</label>
+          <label mode="any">label.setup.nuxeo.notification.eMailSubjectPrefix
+          </label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -901,8 +920,63 @@
         </fields>
         <properties mode="edit">
           <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
+        <!-- Missing reRender property on checkbox widget -->
+        <!-- <properties mode="any"> -->
+        <!-- <property name="reRender">admin_setup_mail_ajaxPanel</property> -->
+        <!-- <property name="ajaxSingle">true</property> -->
+        <!-- </properties> -->
+      </widget>
+      <!-- not used -->
+      <widget name="mail_smtp_auth_decorator" type="template">
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/mail_smtp_auth_ajax_panel.xhtml
+          </property>
+          <property name="ajaxPanelId">admin_setup_mail_ajaxPanel</property>
+          <property name="rendered">#{true}</property>
+          <!-- <property name="rendered">#{value['mail.smtp.auth']==true}</property> -->
+        </properties>
+        <subWidgets>
+          <widget name="mail.smtp.username" type="text">
+            <!-- <widgetModes> -->
+            <!-- <mode value="any"> -->
+            <!-- #{value['mail.smtp.auth']!=true?'hidden':mode} -->
+            <!-- </mode> -->
+            <!-- </widgetModes> -->
+            <labels>
+              <label mode="any">label.setup.mail.smtp.username</label>
+            </labels>
+            <translated>true</translated>
+            <fields>
+              <field>['mail.smtp.username']</field>
+            </fields>
+            <properties mode="edit">
+              <property name="size">50</property>
+              <property name="styleClass">dataInputText</property>
+              <property name="required">false</property>
+            </properties>
+          </widget>
+          <widget name="mail.smtp.password" type="secret">
+            <!-- <widgetModes> -->
+            <!-- <mode value="any"> -->
+            <!-- #{value['mail.smtp.auth']!=true?'hidden':mode} -->
+            <!-- </mode> -->
+            <!-- </widgetModes> -->
+            <labels>
+              <label mode="any">label.setup.mail.smtp.password</label>
+            </labels>
+            <translated>true</translated>
+            <fields>
+              <field>['mail.smtp.password']</field>
+            </fields>
+            <properties mode="edit">
+              <property name="size">20</property>
+              <property name="styleClass">dataInputText</property>
+              <property name="required">false</property>
+            </properties>
+          </widget>
+        </subWidgets>
       </widget>
       <widget name="mail.smtp.username" type="text">
         <labels>
