@@ -17,18 +17,141 @@
 
 package org.nuxeo.ecm.platform.video.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
+import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public interface VideoProvider {
+@XObject("videoProvider")
+public class VideoProvider implements Cloneable {
 
-    void onVideoCreated(DocumentModel doc);
+    @XNode("@name")
+    protected String name;
 
-    void onVideoModified(DocumentModel doc);
+    @XNode("@enabled")
+    protected boolean enabled = true;
 
-    void onVideoRemoved(DocumentModel doc);
+    @XNode("@default")
+    protected boolean isDefault = false;
+
+    @XNodeList(value = "facets", type = ArrayList.class, componentType = String.class)
+    protected List<String> facets = new ArrayList<String>();
+
+    @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> parameters = new HashMap<String, String>();
+
+    @XNode("viewTemplate")
+    protected String viewTemplate;
+
+    @XNode("@keepOriginal")
+    protected boolean keepOriginal = true;
+
+    protected VideoProviderHandler videoProviderHandler;
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
+    }
+
+    public void setFacets(List<String> facets) {
+        this.facets = facets;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setViewTemplate(String viewTemplate) {
+        this.viewTemplate = viewTemplate;
+    }
+
+    public void setKeepOriginal(boolean keepOriginal) {
+        this.keepOriginal = keepOriginal;
+    }
+
+    @XNode("class")
+    public void setVideoProviderClass(
+            Class<? extends VideoProviderHandler> videoProviderClass) {
+        try {
+            videoProviderHandler = videoProviderClass.newInstance();
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public VideoProviderHandler getVideoProviderHandler() {
+        return videoProviderHandler;
+    }
+
+    public void setVideoProviderHandler(
+            VideoProviderHandler videoProviderHandler) {
+        this.videoProviderHandler = videoProviderHandler;
+    }
+
+    public List<String> getFacets() {
+        return facets;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public String getViewTemplate() {
+        return viewTemplate;
+    }
+
+    public boolean isKeepOriginal() {
+        return keepOriginal;
+    }
+
+    @Override
+    public VideoProvider clone() throws CloneNotSupportedException {
+        return (VideoProvider) super.clone();
+    }
+
+    public void onVideoCreated(DocumentModel doc, EventContext ctx) {
+        // Add the contributed facets
+        for (String facet : facets) {
+            if (!doc.hasFacet(facet)) {
+                doc.addFacet(facet);
+            }
+        }
+        videoProviderHandler.onVideoCreated(this, doc, ctx);
+    }
+
+    public void onVideoModified(DocumentModel doc, EventContext ctx) {
+        videoProviderHandler.onVideoModified(this, doc, ctx);
+    }
+
+    public void onVideoRemoved(DocumentModel doc, EventContext ctx) {
+        videoProviderHandler.onVideoRemoved(this, doc, ctx);
+    }
 
 }

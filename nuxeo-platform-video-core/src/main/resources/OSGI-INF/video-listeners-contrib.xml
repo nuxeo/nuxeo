@@ -9,6 +9,7 @@
       class="org.nuxeo.ecm.platform.video.listener.VideoChangedListener" priority="20">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
+      <event>aboutToRemove</event>
     </listener>
 
     <listener name="videoStoryboardListener" async="true" postCommit="true"

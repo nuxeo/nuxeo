@@ -32,4 +32,12 @@
       class="org.nuxeo.ecm.platform.video.service.AutomaticVideoConversion" />
   </extension-point>
 
+  <extension-point name="videoProviders">
+    <documentation>
+      Extension point to contribute Video Provider
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.video.service.VideoProvider" />
+  </extension-point>
+
 </component>

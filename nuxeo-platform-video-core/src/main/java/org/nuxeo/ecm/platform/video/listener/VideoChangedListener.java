@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.platform.video.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_PROPERTY;
 
@@ -25,12 +28,16 @@ import java.io.IOException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.video.VideoHelper;
+import org.nuxeo.ecm.platform.video.service.VideoProvider;
+import org.nuxeo.ecm.platform.video.service.VideoService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Core event listener to update the preview and the info of a Video document.
@@ -51,18 +58,16 @@ public class VideoChangedListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET)) {
-            Property origVideoProperty = doc.getProperty("file:content");
-            if (origVideoProperty.isDirty()) {
-                try {
-                    Blob blob = origVideoProperty.getValue(Blob.class);
-                    VideoHelper.updateVideoInfo(doc, blob);
-                    VideoHelper.updatePreviews(doc, blob);
-                    ctx.setProperty(VIDEO_CHANGED_PROPERTY, true);
-                } catch (IOException e) {
-                    throw ClientException.wrap(e);
-                }
-            }
+
+        VideoService videoService = Framework.getLocalService(VideoService.class);
+        VideoProvider videoProvider = videoService.getDefaultVideoProvider();
+
+        if (ABOUT_TO_CREATE.equals(event.getName())) {
+            videoProvider.onVideoCreated(doc, ctx);
+        } else if (BEFORE_DOC_UPDATE.equals(event.getName())) {
+            videoProvider.onVideoModified(doc, ctx);
+        } else if (ABOUT_TO_REMOVE.equals(event.getName())) {
+            videoProvider.onVideoRemoved(doc, ctx);
         }
     }
 

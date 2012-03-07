@@ -33,6 +33,12 @@ import org.nuxeo.ecm.platform.video.VideoConversionStatus;
  */
 public interface VideoService {
 
+    VideoProvider getVideoProvider(String name);
+
+    VideoProvider getDefaultVideoProvider();
+
+    Collection<VideoProvider> getVideoProviders();
+
     /**
      * Returns the available registered video conversions that can be run on a
      * Video document.

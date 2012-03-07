@@ -18,4 +18,13 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.video.service.VideoService"
+    point="videoProviders">
+
+    <videoProvider name="nuxeo" default="true">
+      <class>org.nuxeo.ecm.platform.video.service.NuxeoVideoProviderHandler</class>
+    </videoProvider>
+
+  </extension>
+
 </component>

@@ -66,9 +66,13 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     public static final String DEFAULT_VIDEO_CONVERSIONS_EP = "automaticVideoConversions";
 
+    public static final String VIDEO_PROVIDERS_EP = "videoProviders";
+
     protected VideoConversionContributionHandler videoConversions;
 
     protected AutomaticVideoConversionContributionHandler automaticVideoConversions;
+
+    protected VideoProviderContributionHandler videoProviders;
 
     protected VideoConversionExecutor conversionExecutor;
 
@@ -81,6 +85,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     public void activate(ComponentContext context) throws Exception {
         videoConversions = new VideoConversionContributionHandler();
         automaticVideoConversions = new AutomaticVideoConversionContributionHandler();
+        videoProviders = new VideoProviderContributionHandler();
         conversionExecutor = new VideoConversionExecutor();
         asyncWaitHook = new AsyncWaitHook() {
 
@@ -112,6 +117,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
         videoConversions = null;
         automaticVideoConversions = null;
+        videoProviders = null;
         conversionExecutor = null;
         asyncWaitHook = null;
     }
@@ -124,6 +130,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             videoConversions.addContribution((VideoConversion) contribution);
         } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
             automaticVideoConversions.addContribution((AutomaticVideoConversion) contribution);
+        } else if (VIDEO_PROVIDERS_EP.equals(extensionPoint)) {
+            videoProviders.addContribution((VideoProvider) contribution);
         }
     }
 
@@ -135,7 +143,24 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             videoConversions.removeContribution((VideoConversion) contribution);
         } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
             automaticVideoConversions.removeContribution((AutomaticVideoConversion) contribution);
+        } else if (VIDEO_PROVIDERS_EP.equals(extensionPoint)) {
+            videoProviders.removeContribution((VideoProvider) contribution);
         }
+    }
+
+    @Override
+    public VideoProvider getVideoProvider(String name) {
+        return videoProviders.registry.get(name);
+    }
+
+    @Override
+    public VideoProvider getDefaultVideoProvider() {
+        return videoProviders.defaultVideoProvider;
+    }
+
+    @Override
+    public Collection<VideoProvider> getVideoProviders() {
+        return videoProviders.registry.values();
     }
 
     @Override
