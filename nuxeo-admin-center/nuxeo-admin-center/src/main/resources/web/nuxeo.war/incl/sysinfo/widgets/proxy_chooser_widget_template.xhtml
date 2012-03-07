@@ -6,25 +6,37 @@
 <c:if test="#{widget.mode != 'edit'}">#{field}</c:if>
 <c:if test="#{widget.mode == 'edit'}">
 
-  <h:selectOneMenu id="#{widget.id}" value="#{field}"
-    styleClass="#{widgetProperty_styleClass}"
-    required="#{widgetProperty_required}">
+  <a4j:region id="#{widget.id}_region">
 
-    <a4j:support event="onchange" reRender="setupPanel"
-      immediate="#{widgetProperty_immediate}"
-      actionListener="#{setupWizardAction.proxyChange}">
-    </a4j:support>
+    <h:selectOneMenu id="#{widget.id}" value="#{field}"
+      styleClass="#{widgetProperty_styleClass}"
+      required="#{widgetProperty_required}">
 
-    <f:selectItem itemValue="none"
-      itemLabel="#{messages['label.setup.nuxeo.httpProxy.none']}" />
-    <f:selectItem itemValue="anonymous"
-      itemLabel="#{messages['label.setup.nuxeo.httpProxy.anonymous']}" />
-    <f:selectItem itemValue="authenticated"
-      itemLabel="#{messages['label.setup.nuxeo.httpProxy.authenticated']}" />
+      <a4j:support event="onchange"
+        reRender="#{widgetProperty_reRender}"
+        immediate="#{widgetProperty_immediate}"
+        ajaxSingle="#{widgetProperty_ajaxSingle}"
+        actionListener="#{setupWizardAction.proxyChange}" />
 
-  </h:selectOneMenu>
-  <h:message styleClass="errorMessage" for="#{widget.id}"
-    id="#{widget.id}_message" />
+      <f:selectItem itemValue="none"
+        itemLabel="#{messages['label.setup.nuxeo.httpProxy.none']}" />
+      <f:selectItem itemValue="anonymous"
+        itemLabel="#{messages['label.setup.nuxeo.httpProxy.anonymous']}" />
+      <f:selectItem itemValue="authenticated"
+        itemLabel="#{messages['label.setup.nuxeo.httpProxy.authenticated']}" />
+
+    </h:selectOneMenu>
+
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+    </a4j:status>
+
+    <h:message styleClass="errorMessage" for="#{widget.id}"
+      id="#{widget.id}_message" />
+
+  </a4j:region>
 
 </c:if>
 </span>

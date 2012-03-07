@@ -13,14 +13,13 @@
   }
 </script>
 
-<a4j:outputPanel id="setupPanel" ajaxRendered="true">
+<a4j:outputPanel id="setupPanel">
 
-  <c:if test="true">
+  <c:if test="false">
     <h:outputText value="DEBUG: Configurable: #{configurable}" />
     <br />
     <h:outputText
-      value="DEBUG slkdslk: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" />
-    <a4j:log />
+      value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" />
   </c:if>
 
   <h:panelGroup rendered="#{setupRequiresRestart}">
@@ -44,41 +43,37 @@
 
   <nxu:set var="setupLayoutMode" value="#{nxu:test(configurable, 'edit', 'view')}">
 
-    <a4j:form id="setupForm">
+    <a4j:form id="setupForm" ajaxSubmit="true" reRender="setupPanel">
 
-        <nxl:layout name="admin_setup_main" mode="#{setupLayoutMode}"
-          value="#{setupParams}" />
-        <c:if test="#{setupParams['nuxeo.dbtemplate']!='default'}">
-          <nxl:layout name="admin_setup_database" mode="#{setupLayoutMode}"
-            value="#{setupParams}" />
-        </c:if>
+      <nxl:layout name="admin_setup_main"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
 
-        <nxl:layout name="admin_choose_proxy" mode="#{setupLayoutMode}"
-          value="#{setupParams}" />
-          -DEBUG #{setupWizardAction.proxyType}-
-        <c:if test="#{setupWizardAction.proxyType!='none'}">
-          <nxl:layout name="admin_setup_proxy" mode="#{setupLayoutMode}"
-            value="#{setupParams}" />
-          <c:if test="#{setupWizardAction.proxyType=='authenticated'}">
-            <nxl:layout name="admin_setup_proxy_auth" mode="#{setupLayoutMode}"
-              value="#{setupParams}" />
-          </c:if>
-        </c:if>
+      <nxl:layout name="admin_choose_proxy"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
 
-        <nxl:layout name="admin_setup_mail" mode="#{setupLayoutMode}"
-          value="#{setupParams}" />
+      <nxl:layout name="admin_setup_mail"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
 
+      <nxl:layout name="admin_setup_custom_properties"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
 
       <c:if test="#{configurable}">
         <div class="actionBar">
-          <a4j:commandButton value="#{messages['action.setup.save']}"
-            action="#{setupWizardAction.save()}" reRender="setupPanel"
-            styleClass="button"
-            onclick="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
-          <a4j:commandButton value="#{messages['action.setup.cancel']}"
-            action="#{setupWizardAction.resetParameters()}"
-            immediate="true"
-            reRender="setupPanel" styleClass="button" />
+          <a4j:region id="setupForm_submitTopRegion">
+            <h:commandButton value="#{messages['action.setup.save']}"
+              action="#{setupWizardAction.save()}"
+              styleClass="button"
+              oncomplete="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
+            <a4j:commandButton value="#{messages['action.setup.cancel']}"
+              action="#{setupWizardAction.resetParameters()}"
+              immediate="true"
+              reRender="setupPanel" styleClass="button" />
+            <a4j:status>
+              <f:facet name="start">
+                <h:graphicImage value="/img/standart_waiter.gif" />
+              </f:facet>
+            </a4j:status>
+          </a4j:region>
         </div>
       </c:if>
 
@@ -109,14 +104,31 @@
 
           <c:if test="#{advancedParamsPanelStatus == 'on'}">
 
-            <h2>
-              <h:outputText value="#{messages['adminsubtab.sysinfo.advancedsetup']}" />
-            </h2>
+            <div>
+              <h2>
+                <h:outputText value="#{messages['adminsubtab.sysinfo.advancedsetup']}" />
+              </h2>
+            </div>
 
             <c:if test="#{configurable}">
               <p>
                 <h:outputText styleClass="warningLabel"
-                  value="#{messages['label.setup.advancedSearch.warning']}" />
+                  value="#{messages['label.setup.advancedSearch.warning']} " />
+                <f:subview>
+                  <a4j:commandButton
+                    value="Leave NOW !!! :)"
+                    reRender="advancedParams_panel"
+                    immediate="true"
+                    styleClass="button">
+                    <f:setPropertyActionListener
+                      value="off"
+                      target="#{selectionActions.selectedValue}" />
+                    <f:param name="valueHolderId"
+                      value="advancedParams_valueHolder" />
+                    <nxu:actionListenerMethod
+                      value="#{selectionActions.onClick}" />
+                  </a4j:commandButton>
+                </f:subview>
               </p>
             </c:if>
 
@@ -138,14 +150,21 @@
 
             <c:if test="#{configurable}">
               <div class="actionBar">
-                <a4j:commandButton value="#{messages['action.setup.save']}"
-                  action="#{setupWizardAction.save()}" reRender="setupPanel"
-                  styleClass="button"
-                  onclick="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
-                <a4j:commandButton value="#{messages['action.setup.cancel']}"
-                  action="#{setupWizardAction.resetParameters()}"
-                  immediate="true"
-                  reRender="setupPanel" styleClass="button" />
+                <a4j:region id="setupForm_submitBottonRegion">
+                  <h:commandButton value="#{messages['action.setup.save']}"
+                    action="#{setupWizardAction.save()}"
+                    styleClass="button"
+                    oncomplete="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
+                  <a4j:commandButton value="#{messages['action.setup.cancel']}"
+                    action="#{setupWizardAction.resetParameters()}"
+                    immediate="true"
+                    reRender="setupPanel" styleClass="button" />
+                  <a4j:status>
+                    <f:facet name="start">
+                      <h:graphicImage value="/img/standart_waiter.gif" />
+                    </f:facet>
+                  </a4j:status>
+                </a4j:region>
               </div>
             </c:if>
 

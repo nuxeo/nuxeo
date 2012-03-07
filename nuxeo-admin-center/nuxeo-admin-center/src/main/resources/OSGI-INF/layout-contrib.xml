@@ -272,6 +272,12 @@
         <row>
           <widget>dbtemplate</widget>
         </row>
+        <row>
+          <properties mode="any">
+            <property name="hideWidgetLabel">true</property>
+          </properties>
+          <widget>database_ajax_decorator</widget>
+        </row>
       </rows>
       <widget name="url" type="text">
         <labels>
@@ -383,12 +389,37 @@
           <property name="template">
             /incl/sysinfo/widgets/database_chooser_widget_template.xhtml
           </property>
-        </properties>
-        <properties mode="edit">
-          <property name="immediate">true</property>
+          <property name="reRender">database_ajaxPanel</property>
+          <property name="ajaxSingle">true</property>
         </properties>
       </widget>
+      <widget name="database_ajax_decorator" type="template">
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/database_ajax_panel.xhtml
+          </property>
+          <property name="ajaxPanelId">database_ajaxPanel</property>
+          <!-- use a 'rendered' property instead of playing with the
+            subwidget mode otherwise proxy selection misbehaves after first
+            non-default database selection -->
+          <property name="rendered">
+            #{value['nuxeo.dbtemplate']!='default'}
+          </property>
+        </properties>
+        <subWidgets>
+          <widget name="database" type="layout">
+            <fields>
+              <field></field>
+            </fields>
+            <properties mode="any">
+              <property name="name">admin_setup_database</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+
     </layout>
+
     <layout name="admin_setup_database">
       <templates>
         <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
@@ -565,10 +596,23 @@
       </templates>
       <properties mode="any">
         <property name="label">label.setup.table.title.httpProxy</property>
+        <property name="ajaxPanelId">admin_choose_proxy_ajaxPanel</property>
       </properties>
       <rows>
         <row>
           <widget>chooseProxy</widget>
+        </row>
+        <row>
+          <widget>proxy.host</widget>
+        </row>
+        <row>
+          <widget>proxy.port</widget>
+        </row>
+        <row>
+          <widget>proxy.login</widget>
+        </row>
+        <row>
+          <widget>proxy.password</widget>
         </row>
       </rows>
       <widget name="chooseProxy" type="template">
@@ -577,35 +621,22 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['setupWizardAction.proxyType']</field>
+          <field>#{setupWizardAction.proxyType}</field>
         </fields>
         <properties mode="any">
           <property name="template">
             /incl/sysinfo/widgets/proxy_chooser_widget_template.xhtml
           </property>
-        </properties>
-        <properties mode="edit">
-          <property name="immediate">true</property>
+          <property name="reRender">admin_choose_proxy_ajaxPanel</property>
+          <property name="ajaxSingle">true</property>
         </properties>
       </widget>
-    </layout>
-    <layout name="admin_setup_proxy">
-      <templates>
-        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
-        </template>
-      </templates>
-      <properties mode="any">
-        <property name="label">label.setup.table.title.httpProxy</property>
-      </properties>
-      <rows>
-        <row>
-          <widget>proxy.host</widget>
-        </row>
-        <row>
-          <widget>proxy.port</widget>
-        </row>
-      </rows>
       <widget name="proxy.host" type="text">
+        <widgetModes>
+          <mode value="any">
+            #{setupWizardAction.proxyType=='none'?'hidden':mode}
+          </mode>
+        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.host</label>
         </labels>
@@ -620,6 +651,11 @@
         </properties>
       </widget>
       <widget name="proxy.port" type="int">
+        <widgetModes>
+          <mode value="any">
+            #{setupWizardAction.proxyType=='none'?'hidden':mode}
+          </mode>
+        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.port</label>
         </labels>
@@ -634,24 +670,12 @@
           <property name="required">true</property>
         </properties>
       </widget>
-    </layout>
-    <layout name="admin_setup_proxy_auth">
-      <templates>
-        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
-        </template>
-      </templates>
-      <properties mode="any">
-        <property name="label">label.setup.table.title.httpProxy</property>
-      </properties>
-      <rows>
-        <row>
-          <widget>proxy.login</widget>
-        </row>
-        <row>
-          <widget>proxy.password</widget>
-        </row>
-      </rows>
       <widget name="proxy.login" type="text">
+        <widgetModes>
+          <mode value="any">
+            #{setupWizardAction.proxyType!='authenticated'?'hidden':mode}
+          </mode>
+        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.login</label>
         </labels>
@@ -666,6 +690,11 @@
         </properties>
       </widget>
       <widget name="proxy.password" type="secret">
+        <widgetModes>
+          <mode value="any">
+            #{setupWizardAction.proxyType!='authenticated'?'hidden':mode}
+          </mode>
+        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.password</label>
         </labels>
@@ -945,6 +974,19 @@
         </properties>
       </widget>
     </layout>
+
+    <!-- placeholder layout for custom properties -->
+    <layout name="admin_setup_custom_properties">
+      <templates>
+        <template mode="any">
+          /incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label">label.setup.table.title.custom</property>
+      </properties>
+    </layout>
+
   </extension>
 
 </component>

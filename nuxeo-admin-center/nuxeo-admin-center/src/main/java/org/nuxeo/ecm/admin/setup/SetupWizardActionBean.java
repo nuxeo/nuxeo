@@ -265,6 +265,7 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     public String getProxyType() {
+        // XXX: initialized when parameters are
         return proxyType;
     }
 
