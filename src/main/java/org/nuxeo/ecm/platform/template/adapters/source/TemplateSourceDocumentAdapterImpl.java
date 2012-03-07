@@ -118,15 +118,16 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     public void initTemplate(boolean save) throws Exception {
         // avoid duplicate init
         if (getAdaptedDoc().getContextData(
-                TemplateSourceDocument.INIT_DONE_FLAG) == null
-                && getTemplateType() == null) {
+                TemplateSourceDocument.INIT_DONE_FLAG) == null) {
             Blob blob = getTemplateBlob();
             if (blob != null) {
-                TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-                String templateType = tps.findProcessorName(blob);
-                if (templateType != null) {
-                    getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP,
-                            templateType);
+                if (getTemplateType() == null) {
+                    TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+                    String templateType = tps.findProcessorName(blob);
+                    if (templateType != null) {
+                        getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP,
+                                templateType);
+                    }
                 }
                 TemplateProcessor processor = getTemplateProcessor();
                 if (processor != null) {
@@ -304,7 +305,10 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         BlobHolder bh = getAdaptedDoc().getAdapter(BlobHolder.class);
         if (bh != null) {
             bh.setBlob(blob);
-            initTemplate(save);
+            initTemplate(false);
+            if (save) {
+                doSave();
+            }
         }
     }
 

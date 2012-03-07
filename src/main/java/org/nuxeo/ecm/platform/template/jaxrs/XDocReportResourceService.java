@@ -129,6 +129,8 @@ public class XDocReportResourceService extends AbstractResourceService
                     newBlob.setFilename(oldBlob.getFilename());
                     newBlob.setMimeType(oldBlob.getMimeType());
 
+                    // make stream resettable
+                    newBlob = newBlob.persist();
                     template.setTemplateBlob(newBlob, true);
                 }
             } catch (Exception e) {

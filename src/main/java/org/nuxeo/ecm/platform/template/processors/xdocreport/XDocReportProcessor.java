@@ -99,7 +99,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
             for (String var : vars) {
                 TemplateInput input = new TemplateInput(var);
                 params.add(input);
-            }            
+            }
         }
         return params;
     }
@@ -109,10 +109,11 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
             throws Exception {
 
         Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument);
-    
+
         // load the template
         IXDocReport report = XDocReportRegistry.getRegistry().loadReport(
-                sourceTemplateBlob.getStream(), TemplateEngineKind.Freemarker,false);
+                sourceTemplateBlob.getStream(), TemplateEngineKind.Freemarker,
+                false);
 
         // manage parameters
         List<TemplateInput> params = templateBasedDocument.getParams();
@@ -131,20 +132,24 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
         for (TemplateInput param : params) {
             if (param.isSourceValue()) {
-                if (param.getType() == InputType.Content && ContentInputType.HtmlPreview.getValue().equals(param.getSource())) {
-                    HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(HtmlPreviewAdapter.class);
-                    String htmlValue="";
-                    if (preview!=null) {
+                if (param.getType() == InputType.Content
+                        && ContentInputType.HtmlPreview.getValue().equals(
+                                param.getSource())) {
+                    HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(
+                            HtmlPreviewAdapter.class);
+                    String htmlValue = "";
+                    if (preview != null) {
                         List<Blob> blobs = preview.getFilePreviewBlobs();
-                        if (blobs.size()>0) {
+                        if (blobs.size() > 0) {
                             Blob htmlBlob = preview.getFilePreviewBlobs().get(0);
-                            if (htmlBlob!=null) {
+                            if (htmlBlob != null) {
                                 htmlValue = htmlBlob.getString();
                             }
                         }
-                    }                    
-                    context.put(param.getName(),htmlValue);
-                    metadata.addFieldAsTextStyling(param.getName(), SyntaxKind.Html);
+                    }
+                    context.put(param.getName(), htmlValue);
+                    metadata.addFieldAsTextStyling(param.getName(),
+                            SyntaxKind.Html);
                     continue;
                 }
                 Property property = null;
@@ -158,7 +163,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                     Serializable value = property.getValue();
                     if (value != null) {
                         if (param.getType() == InputType.Content) {
-                            
+
                         } else {
                             if (Blob.class.isAssignableFrom(value.getClass())) {
                                 Blob blob = (Blob) value;
@@ -174,8 +179,9 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                                 }
                             } else {
                                 if (param.isAutoLoop()) {
-                                    // XXX do the same on all children properties !
-                                    metadata.addFieldAsList(param.getName());                            
+                                    // XXX do the same on all children
+                                    // properties !
+                                    metadata.addFieldAsList(param.getName());
                                 }
                                 context.put(param.getName(),
                                         nuxeoWrapper.wrap(property));
@@ -224,7 +230,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         metadata.addFieldAsList("auditEntries.category");
         metadata.addFieldAsList("auditEntries.comment");
         metadata.addFieldAsList("auditEntries.docLifeCycle");
-        metadata.addFieldAsList("auditEntries.repositoryId");        
+        metadata.addFieldAsList("auditEntries.repositoryId");
 
         File workingDir = getWorkingDir();
         File generated = new File(workingDir, "XDOCReportresult-"
@@ -236,15 +242,15 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         report.process(context, out);
 
         Blob newBlob = new FileBlob(generated);
-        
+
         String templateFileName = sourceTemplateBlob.getFilename();
-        
-        // set the output file name 
+
+        // set the output file name
         String targetFileExt = FileUtils.getFileExtension(templateFileName);
         String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
         targetFileName = targetFileName + "." + targetFileExt;
         newBlob.setFilename(targetFileName);
-        
+
         // mark the file for automatic deletion on GC
         Framework.trackFile(generated, newBlob);
         return newBlob;
