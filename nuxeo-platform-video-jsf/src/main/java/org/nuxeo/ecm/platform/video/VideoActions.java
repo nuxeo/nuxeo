@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.video;
 
+import static org.nuxeo.ecm.platform.video.VideoConstants.EXTERNAL_VIDEO_VIDEO_PROVIDER_NAME_PROPERTY;
+
 import java.io.Serializable;
 import java.util.Calendar;
 
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.video.service.VideoConversionId;
+import org.nuxeo.ecm.platform.video.service.VideoProvider;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -55,6 +58,13 @@ public class VideoActions implements Serializable {
 
     @In(create = true)
     protected VideoService videoService;
+
+    public String getVideoPlayerTemplate(DocumentModel doc)
+            throws ClientException {
+        String videoProviderName = (String) doc.getPropertyValue(EXTERNAL_VIDEO_VIDEO_PROVIDER_NAME_PROPERTY);
+        VideoProvider videoProvider = videoService.getVideoProvider(videoProviderName);
+        return videoProvider.getVideoPlayerTemplate();
+    }
 
     public String getURLForPlayer(DocumentModel doc) throws ClientException {
         return DocumentModelFunctions.bigFileUrl(doc, "file:content", "");

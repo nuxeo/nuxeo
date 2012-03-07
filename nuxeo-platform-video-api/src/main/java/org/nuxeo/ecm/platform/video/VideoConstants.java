@@ -25,13 +25,21 @@ public class VideoConstants {
 
     public static final String VIDEO_FACET = "Video";
 
-    public static final String STORYBOARD_PROPERTY = "vid:storyboard";
-
-    public static final String DURATION_PROPERTY = "vid:info/duration";
+    public static final String EXTERNAL_VIDEO_FACET = "Video";
 
     public static final String HAS_STORYBOARD_FACET = "HasStoryboard";
 
     public static final String HAS_VIDEO_PREVIEW_FACET = "HasVideoPreview";
+
+    public static final String STORYBOARD_PROPERTY = "vid:storyboard";
+
+    public static final String DURATION_PROPERTY = "vid:info/duration";
+
+    public static final String EXTERNAL_VIDEO_EXTERNAL_ID_PROPERTY = "exvid:externalId";
+
+    public static final String EXTERNAL_VIDEO_VIDEO_PROVIDER_NAME_PROPERTY = "exvid:videoProviderName";
+
+    public static final String EXTERNAL_VIDEO_STATUS_PROPERTY = "exvid:status";
 
     public static final String VIDEO_CHANGED_PROPERTY = "videoChanged";
 

@@ -75,7 +75,7 @@ public class VideoProviderContributionHandler extends
         dst.setEnabled(src.isEnabled());
         dst.setDefault(src.isDefault());
         dst.setFacets(src.getFacets());
-        dst.setViewTemplate(src.getViewTemplate());
+        dst.setVideoPlayerTemplate(src.getVideoPlayerTemplate());
         dst.setKeepOriginal(src.isKeepOriginal());
         dst.setParameters(src.getParameters());
         dst.setVideoProviderHandler(src.getVideoProviderHandler());

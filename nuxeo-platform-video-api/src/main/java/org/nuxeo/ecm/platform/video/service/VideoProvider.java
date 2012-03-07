@@ -52,8 +52,8 @@ public class VideoProvider implements Cloneable {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<String, String>();
 
-    @XNode("viewTemplate")
-    protected String viewTemplate;
+    @XNode("videoPlayerTemplate")
+    protected String videoPlayerTemplate;
 
     @XNode("@keepOriginal")
     protected boolean keepOriginal = true;
@@ -88,8 +88,8 @@ public class VideoProvider implements Cloneable {
         this.parameters = parameters;
     }
 
-    public void setViewTemplate(String viewTemplate) {
-        this.viewTemplate = viewTemplate;
+    public void setVideoPlayerTemplate(String videoPlayerTemplate) {
+        this.videoPlayerTemplate = videoPlayerTemplate;
     }
 
     public void setKeepOriginal(boolean keepOriginal) {
@@ -97,10 +97,10 @@ public class VideoProvider implements Cloneable {
     }
 
     @XNode("class")
-    public void setVideoProviderClass(
-            Class<? extends VideoProviderHandler> videoProviderClass) {
+    public void setVideoProviderHandler(
+            Class<? extends VideoProviderHandler> videoProviderHandlerClass) {
         try {
-            videoProviderHandler = videoProviderClass.newInstance();
+            videoProviderHandler = videoProviderHandlerClass.newInstance();
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }
@@ -123,8 +123,8 @@ public class VideoProvider implements Cloneable {
         return parameters;
     }
 
-    public String getViewTemplate() {
-        return viewTemplate;
+    public String getVideoPlayerTemplate() {
+        return videoPlayerTemplate;
     }
 
     public boolean isKeepOriginal() {
