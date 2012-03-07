@@ -131,7 +131,7 @@ public interface WebLayoutManager extends LayoutManager {
      * @param selectAllRowsByDefault boolean indicating if all rows should be
      *            considered selected by default in case parameter selectedRows
      *            resolves to null.
-     * @return a layout computed in this context.
+     * @return a layout computed in this context, null if definition is null.
      * @since 5.4
      */
     Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef,
