@@ -765,8 +765,12 @@ public class TestUserManager extends NXRuntimeTestCase {
         NuxeoGroup newG = userManager.getGroup("test_g");
         List<String> newGUsers = Arrays.asList("test_u1", "test_u3");
         List<String> newGGroups = Arrays.asList("test_g1", "test_g3");
-        assertEquals(newGUsers, newG.getMemberUsers());
-        assertEquals(newGGroups, newG.getMemberGroups());
+        List<String> actualUsers = newG.getMemberUsers();
+        Collections.sort(actualUsers);
+        assertEquals(newGUsers, actualUsers);
+        List<String> actualGroups = newG.getMemberGroups();
+        Collections.sort(actualGroups);
+        assertEquals(newGGroups, actualGroups);
         assertEquals(newG, g);
     }
 
@@ -819,8 +823,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(
                 SecurityConstants.READ, acp));
 
-        List<String> expectedUsers = Arrays.asList("alex",
-                "jdoe", "bree");
+        List<String> expectedUsers = Arrays.asList("alex", "jdoe", "bree");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
@@ -899,8 +902,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
 
-        List<String> expectedUsers = Arrays.asList("alex",
-                "stef", "jdoe");
+        List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
@@ -928,8 +930,7 @@ public class TestUserManager extends NXRuntimeTestCase {
                 SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
-        List<String> expectedUsers = Arrays.asList("alex",
-                "stef", "jdoe");
+        List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
@@ -958,8 +959,7 @@ public class TestUserManager extends NXRuntimeTestCase {
                 SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
-        List<String> expectedUsers = Arrays.asList("alex",
-                "stef", "jdoe");
+        List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
         assertEquals("Expected users having read access are ", expectedUsers,
@@ -981,8 +981,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(
                 SecurityConstants.READ, acp));
         // group3 and group2 but alex should have read access
-        List<String> expectedUsers = Arrays.asList("bree",
-                "jdoe");
+        List<String> expectedUsers = Arrays.asList("bree", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
         assertEquals("Expected users having read access are ", expectedUsers,
