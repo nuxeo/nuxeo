@@ -11,22 +11,129 @@
       </categories>
     </widget>
 
-    <widget name="date" type="datetime">
+    <!-- TODO: display true/false? -->
+    <widget name="boolean" type="checkbox">
       <categories>
         <category>diff</category>
       </categories>
     </widget>
 
-    <widget name="scalarList" type="list">
+    <widget name="date" type="datetime">
       <categories>
         <category>diff</category>
       </categories>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="integer" type="int">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+    <widget name="long" type="int">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+    <widget name="double" type="double">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+    <widget name="content" type="file">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+    <widget name="complex" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <properties mode="any">
+        <property name="display">inline</property>
+        <property name="template">
+          /widgets/complex_diff_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="scalarList" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <properties mode="any">
+        <property name="display">inline</property>
+        <property name="displayAllItems">false</property>
+        <property name="displayItemIndexes">true</property>
+        <property name="template">
+          /widgets/list_diff_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="contentList" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <properties mode="any">
+        <property name="display">inline</property>
+        <property name="displayAllItems">false</property>
+        <property name="displayItemIndexes">true</property>
+        <property name="template">
+          /widgets/list_diff_widget_template.xhtml
+        </property>
+      </properties>
     </widget>
 
     <widget name="complexList" type="list">
       <categories>
         <category>diff</category>
       </categories>
+      <properties mode="any">
+        <property name="display">inline</property>
+        <property name="hideSubLabels">true</property>
+        <property name="displayAllItems">false</property>
+        <property name="displayItemIndexes">true</property>
+        <property name="template">
+          /widgets/list_diff_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <!-- Specific -->
+    <widget name="system:path" type="text">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+    <widget name="system:type" type="text">
+      <categories>
+        <category>diff</category>
+      </categories>
+    </widget>
+
+    <widget name="note:note" type="richtext_with_mimetype">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.note.note</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="view">
+        <property name="translatedHtml">
+          #{noteActions.translateImageLinks(field_0)}
+        </property>
+        <property name="cssClass">note_content_block</property>
+      </properties>
     </widget>
 
   </extension>
