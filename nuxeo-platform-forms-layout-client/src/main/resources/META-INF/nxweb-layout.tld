@@ -289,7 +289,8 @@
       <required>true</required>
       <type>java.lang.String</type>
       <description>
-        Name of the layout as registered on the pluggable layout system.
+        Name of the layout as registered on the pluggable layout system. Since
+        5.6, also a list if layout names, separated by commas.
       </description>
     </attribute>
     <attribute>

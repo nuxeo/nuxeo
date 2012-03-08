@@ -101,9 +101,9 @@ public class LayoutTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name", "definition",
-            "mode", "value", "template", "selectedRows", "selectedColumns",
-            "selectAllByDefault" };
+    protected final String[] reservedVarsArray = { "id", "name", "category",
+            "definition", "mode", "value", "template", "selectedRows",
+            "selectedColumns", "selectAllByDefault" };
 
     public LayoutTagHandler(TagConfig config) {
         super(config);
@@ -243,6 +243,16 @@ public class LayoutTagHandler extends TagHandler {
 
     }
 
+    /**
+     * Resolves layouts names, splitting on character "," and trimming
+     * resulting names, and allowing empty strings if the whole string is not
+     * empty to ease up rendering of layout names using variables.
+     * <p>
+     * For instance, if value is null or empty, will return a single empty
+     * layout name "". If value is "," it will return an empty list, triggering
+     * no error for usage like <nxl:layout name="#{myLayout}, #{myOtherLayout}"
+     * [...] />
+     */
     protected List<String> resolveLayoutNames(String nameValue) {
         List<String> res = new ArrayList<String>();
         if (nameValue != null && nameValue.contains(",")) {
@@ -255,6 +265,11 @@ public class LayoutTagHandler extends TagHandler {
                 }
             }
         } else {
+            if (nameValue == null) {
+                nameValue = "";
+            } else {
+                nameValue = nameValue.trim();
+            }
             res.add(nameValue);
         }
         return res;

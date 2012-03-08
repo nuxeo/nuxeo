@@ -2174,8 +2174,15 @@
               </rows>
               <widget name="name" type="text">
                 <labels>
-                  <label mode="any">Layout name</label>
+                  <label mode="any">Layout name(s)</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout name. Since 5.6, this attibute
+                    accepts a list of multiple layout names, separated by
+                    commas.
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>name</field>
                 </fields>

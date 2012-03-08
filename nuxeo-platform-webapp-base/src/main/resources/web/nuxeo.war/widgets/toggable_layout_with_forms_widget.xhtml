@@ -24,10 +24,10 @@
       value="#{nxu:test(empty widgetProperty_canToggleMode, nxd:hasPermission(field, 'Write'), widgetProperty_canToggleMode)}"
       cache="true">
     <nxu:set var="initialActionLabel"
-      value="#{nxu:test(empty widgetProperty_initialActionLabel, messages['action.view.modification'], widgetProperty_initialActionLabel)}"
+      value="#{nxu:test(empty widgetProperty_initialActionLabel, messages['action.view.modification'], nxu:test(widget.translated, messages[widgetProperty_initialActionLabel], widgetProperty_initialActionLabel))}"
       cache="true">
     <nxu:set var="cancelActionLabel"
-      value="#{nxu:test(empty widgetProperty_cancelActionLabel,  messages['command.cancel'], widgetProperty_cancelActionLabel)}"
+      value="#{nxu:test(empty widgetProperty_cancelActionLabel,  messages['command.cancel'], nxu:test(widget.translated, messages[widgetProperty_cancelActionLabel], widgetProperty_cancelActionLabel))}"
       cache="true">
     <nxu:set var="actionsCategory"
       value="#{nxu:test(widgetProperty_hideDefaultActions, null, 'EDIT_DOCUMENT_FORM')}"

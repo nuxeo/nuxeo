@@ -1455,7 +1455,8 @@
                 <helpLabels>
                   <label mode="any">
                     The layout to display before toggling the
-                    mode.
+                    mode. Also accepts a list of multiple layout names,
+                    separated by commas.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1473,7 +1474,8 @@
                 <helpLabels>
                   <label mode="any">
                     The layout to display after toggling the
-                    mode.
+                    mode. Also accepts a list of multiple layout names,
+                    separated by commas.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1604,8 +1606,8 @@
                 <helpLabels>
                   <label mode="any">
                     The initial action label to display.
-                    Defaults to 'action.view.modification' (Edit), is always
-                    translated.
+                    Defaults to 'action.view.modification' (Edit), is translated
+                    when the widget is translated.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1619,8 +1621,8 @@
                 <helpLabels>
                   <label mode="any">
                     The toggled action label to display.
-                    Defaults to 'command.cancel' (Cancel), is always
-                    translated.
+                    Defaults to 'command.cancel' (Cancel), is translated when
+                    the widget is translated.
                   </label>
                 </helpLabels>
                 <fields>
