@@ -1,4 +1,5 @@
-<f:subview
+<a4j:outputPanel
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -6,7 +7,9 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  id="#{layout.id}">
+  id="#{nxu:test(empty layout.properties.ajaxPanelId, layout.id, layout.properties.ajaxPanelId)}">
+
+<c:if test="#{not empty layout.rows}">
 
 <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
 
@@ -66,8 +69,12 @@
           <nxu:set
             var="fieldDef"
             value="#{widget.fieldDefinitions[0].propertyName}">
+            <c:if test="#{not empty fieldDef}">
+              <c:set var="displayId"
+                value="#{fn:substring(fieldDef, 2, fn:length(fieldDef) - 2)}" />
+            </c:if>
             <td class="fieldColumn"
-              id="#{fn:substring(fieldDef, 2, fn:length(fieldDef) - 2)}"
+              id="#{displayId}"
               colspan="#{nxu:test(layoutRow.properties.hideWidgetLabel, 2, 1)}">
               <nxl:widget widget="#{widget}" value="#{value}" />
             </td>
@@ -88,4 +95,5 @@
   });
 </script>
 
-</f:subview>
+</c:if>
+</a4j:outputPanel>

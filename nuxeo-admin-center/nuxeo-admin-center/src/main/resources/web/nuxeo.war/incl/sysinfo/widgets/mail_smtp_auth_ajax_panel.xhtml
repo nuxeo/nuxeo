@@ -1,0 +1,17 @@
+<a4j:outputPanel xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{nxu:test(empty widgetProperty_ajaxPanelId, widget.id, widgetProperty_ajaxPanelId)}">
+
+  <a4j:outputPanel id="#{widget.id}_subPanel"
+    rendered="#{widgetProperty_rendered}">
+    <a4j:region id="#{widget.id}_subRegion"
+      rendered="#{widgetProperty_rendered}">
+
+      <nxl:subWidget>
+        <nxl:widget widget="#{widget}" value="#{value}" />
+      </nxl:subWidget>
+
+    </a4j:region>
+  </a4j:outputPanel>
+
+</a4j:outputPanel>
