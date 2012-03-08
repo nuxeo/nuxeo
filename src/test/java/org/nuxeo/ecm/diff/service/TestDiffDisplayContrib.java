@@ -37,7 +37,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the contribution to the {@link DiffDisplayService}.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @RunWith(FeaturesRunner.class)
@@ -58,20 +58,21 @@ public class TestDiffDisplayContrib extends TestCase {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(2, diffDisplays.size());
+        assertEquals(3, diffDisplays.size());
         assertTrue(diffDisplays.containsKey("Document"));
         assertTrue(diffDisplays.containsKey("File"));
+        assertTrue(diffDisplays.containsKey("Note"));
 
         // Check a non existing diffDisplay contrib
         List<String> diffDisplay = diffDisplayService.getDiffDisplay("Test");
         assertNull(diffDisplay);
 
         // Check default (Document) diffDisplay contrib
-        diffDisplay = diffDisplayService.getDefaultDiffDisplay();
+        diffDisplay = diffDisplayService.getDefaultTypeDiffDisplay();
         assertNotNull(diffDisplay);
 
         List<String> expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("header");
+        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
@@ -86,8 +87,20 @@ public class TestDiffDisplayContrib extends TestCase {
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("header");
+        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("file");
+        expectedDiffDisplay.add("files");
+        assertEquals(expectedDiffDisplay, diffDisplay);
+
+        // Check Note diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("Note");
+        assertNotNull(diffDisplay);
+
+        expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay.add("heading");
+        expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("note");
         expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
     }
@@ -101,24 +114,26 @@ public class TestDiffDisplayContrib extends TestCase {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(3, contribs.size());
-        assertTrue(contribs.containsKey("header"));
+        assertEquals(5, contribs.size());
+        assertTrue(contribs.containsKey("heading"));
         assertTrue(contribs.containsKey("dublincore"));
+        assertTrue(contribs.containsKey("file"));
         assertTrue(contribs.containsKey("files"));
+        assertTrue(contribs.containsKey("note"));
 
         // Check a non existing diffBlock contrib
         DiffBlockDefinition diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("test");
         assertNull(diffBlockDefinition);
 
-        // Check header diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("header");
+        // Check heading diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("heading");
         assertNotNull(diffBlockDefinition);
 
         List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
         DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "header", null, fields);
+                "heading", null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check that order is taken into account
@@ -133,12 +148,31 @@ public class TestDiffDisplayContrib extends TestCase {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "nature"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "subjects"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "rights"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "source"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "coverage"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "created"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "modified"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "format"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "language"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "expired"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "creator"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "contributors"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "lastContributor"));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
                 null, fields);
+        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check file diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("file");
+        assertNotNull(diffBlockDefinition);
+
+        fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("file", "content"));
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("file", null,
+                fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check files diffDisplay contrib
@@ -147,11 +181,20 @@ public class TestDiffDisplayContrib extends TestCase {
 
         fields = new ArrayList<DiffFieldDefinition>();
         List<String> items = new ArrayList<String>();
-        items.add("filename");
         items.add("file");
         fields.add(new DiffFieldDefinitionImpl("files", "files", items));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
                 null, fields);
+        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check note diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("note");
+        assertNotNull(diffBlockDefinition);
+
+        fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("note", "note"));
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note", null,
+                fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
     }
 }

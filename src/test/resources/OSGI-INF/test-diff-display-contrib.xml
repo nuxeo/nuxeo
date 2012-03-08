@@ -11,16 +11,20 @@
     <!-- Override Document diffDisplay -->
     <diffDisplay type="Document">
       <diffBlocks>
-        <diffBlock name="header" />
-        <diffBlock name="complexTypes" />
+        <diffBlock name="heading" />
+        <diffBlock name="file" />
+        <diffBlock name="testNoFields" />
       </diffBlocks>
     </diffDisplay>
 
-    <!-- New SampleType diffDisplay -->
+    <!-- SampleType diffDisplay -->
     <diffDisplay type="SampleType">
       <diffBlocks>
-        <diffBlock name="header" />
-        <diffBlock name="testNoFields" />
+        <diffBlock name="heading" />
+        <diffBlock name="dublincore" />
+        <diffBlock name="fileAndFiles" />
+        <diffBlock name="simpleTypes" />
+        <diffBlock name="complexTypesAndListOfLists" />
       </diffBlocks>
     </diffDisplay>
 
@@ -29,21 +33,54 @@
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffBlock">
 
-    <!-- Override header diffBlock -->
-    <diffBlock name="header" label="label.diffBlock.header">
+    <!-- No fields diffBlock -->
+    <diffBlock name="testNoFields" />
+
+    <!-- Override dublincore diffBlock -->
+    <diffBlock name="dublincore" label="label.diffBlock.dublincore">
       <fields>
-        <field schema="dublincore" name="title" />
+        <field schema="dublincore" name="created" />
+        <field schema="dublincore" name="creator" />
         <field schema="dublincore" name="modified" />
+        <field schema="dublincore" name="lastContributor" />
+        <field schema="dublincore" name="contributors" />
         <field schema="dublincore" name="subjects" />
       </fields>
     </diffBlock>
 
-    <!-- No fields diffBlock -->
-    <diffBlock name="testNoFields" />
-
-    <!-- New complexTypes diffBlock -->
-    <diffBlock name="complexTypes" label="label.diffBlock.complexTypes">
+    <!-- fileAndFiles diffBlock -->
+    <diffBlock name="fileAndFiles" label="label.diffBlock.fileAndFiles">
       <fields>
+        <field schema="file" name="content" />
+        <field schema="files" name="files" />
+      </fields>
+    </diffBlock>
+
+    <!-- simpleTypes diffBlock -->
+    <diffBlock name="simpleTypes" label="label.diffBlock.simpleTypes">
+      <fields>
+        <field schema="simpletypes" name="string" />
+        <field schema="simpletypes" name="textarea" />
+        <field schema="simpletypes" name="boolean" />
+        <field schema="simpletypes" name="integer" />
+        <field schema="simpletypes" name="date" />
+        <field schema="simpletypes" name="htmlText" />
+        <field schema="simpletypes" name="multivalued" />
+      </fields>
+    </diffBlock>
+
+    <!-- complexTypesAndListOfLists diffBlock -->
+    <diffBlock name="complexTypesAndListOfLists"
+      label="label.diffBlock.complexTypesAndListOfLists">
+      <fields>
+        <field schema="complextypes" name="complex">
+          <items>
+            <item>stringItem</item>
+            <item>integerItem</item>
+            <item>dateItem</item>
+            <item>booleanItem</item>
+          </items>
+        </field>
         <field schema="complextypes" name="complexList">
           <items>
             <item>stringItem</item>
@@ -51,6 +88,7 @@
             <item>integerItem</item>
           </items>
         </field>
+        <field schema="listoflists" name="listOfLists" />
       </fields>
     </diffBlock>
 

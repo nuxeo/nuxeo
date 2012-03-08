@@ -36,8 +36,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- * Tests the contribution to the {@link DiffDisplayService}.
- * 
+ * Tests overrding the contribution to the {@link DiffDisplayService}.
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @RunWith(FeaturesRunner.class)
@@ -59,18 +59,20 @@ public class TestDiffDisplayContribOverride extends TestCase {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(3, diffDisplays.size());
+        assertEquals(4, diffDisplays.size());
         assertTrue(diffDisplays.containsKey("Document"));
         assertTrue(diffDisplays.containsKey("File"));
+        assertTrue(diffDisplays.containsKey("Note"));
         assertTrue(diffDisplays.containsKey("SampleType"));
 
         // Check overridden default (Document) diffDisplay contrib
-        List<String> diffDisplay = diffDisplayService.getDefaultDiffDisplay();
+        List<String> diffDisplay = diffDisplayService.getDefaultTypeDiffDisplay();
         assertNotNull(diffDisplay);
 
         List<String> expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("header");
-        expectedDiffDisplay.add("complexTypes");
+        expectedDiffDisplay.add("heading");
+        expectedDiffDisplay.add("file");
+        expectedDiffDisplay.add("testNoFields");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
         // Check non overridden File diffDisplay contrib
@@ -78,8 +80,20 @@ public class TestDiffDisplayContribOverride extends TestCase {
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("header");
+        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("file");
+        expectedDiffDisplay.add("files");
+        assertEquals(expectedDiffDisplay, diffDisplay);
+
+        // Check non overridden Note diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("Note");
+        assertNotNull(diffDisplay);
+
+        expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay.add("heading");
+        expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("note");
         expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
@@ -88,8 +102,11 @@ public class TestDiffDisplayContribOverride extends TestCase {
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("header");
-        expectedDiffDisplay.add("testNoFields");
+        expectedDiffDisplay.add("heading");
+        expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("fileAndFiles");
+        expectedDiffDisplay.add("simpleTypes");
+        expectedDiffDisplay.add("complexTypesAndListOfLists");
         assertEquals(expectedDiffDisplay, diffDisplay);
     }
 
@@ -102,39 +119,54 @@ public class TestDiffDisplayContribOverride extends TestCase {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(4, contribs.size());
-        assertTrue(contribs.containsKey("header"));
+        assertEquals(8, contribs.size());
+        assertTrue(contribs.containsKey("heading"));
         assertTrue(contribs.containsKey("dublincore"));
+        assertTrue(contribs.containsKey("file"));
         assertTrue(contribs.containsKey("files"));
-        assertTrue(contribs.containsKey("complexTypes"));
+        assertTrue(contribs.containsKey("note"));
+        assertTrue(contribs.containsKey("fileAndFiles"));
+        assertTrue(contribs.containsKey("simpleTypes"));
+        assertTrue(contribs.containsKey("complexTypesAndListOfLists"));
 
         // Check a diffBlock contrib with no fields
         DiffBlockDefinition diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("testNoFields");
         assertNull(diffBlockDefinition);
 
-        // Check overridden header diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("header");
+        // Check non overridden heading diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("heading");
         assertNotNull(diffBlockDefinition);
 
         List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "modified"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "subjects"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
         DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "header", null, fields);
+                "heading", null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
-        // Check non overridden dublincore diffDisplay contrib
+        // Check overridden dublincore diffDisplay contrib
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("dublincore");
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "created"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "modified"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "creator"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "modified"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "lastContributor"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "contributors"));
+        fields.add(new DiffFieldDefinitionImpl("dublincore", "subjects"));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
                 null, fields);
+        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check non overridden file diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("file");
+        assertNotNull(diffBlockDefinition);
+
+        fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("file", "content"));
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("file", null,
+                fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check non overridden files diffDisplay contrib
@@ -143,26 +175,69 @@ public class TestDiffDisplayContribOverride extends TestCase {
 
         fields = new ArrayList<DiffFieldDefinition>();
         List<String> items = new ArrayList<String>();
-        items.add("filename");
         items.add("file");
         fields.add(new DiffFieldDefinitionImpl("files", "files", items));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
                 null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
-        // Check new complexTypes diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("complexTypes");
+        // Check non overridden note diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("note");
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("note", "note"));
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note", null,
+                fields);
+        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check new fileAndFiles diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("fileAndFiles");
+        assertNotNull(diffBlockDefinition);
+
+        fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("file", "content"));
+        fields.add(new DiffFieldDefinitionImpl("files", "files"));
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
+                "fileAndFiles", null, fields);
+        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check new simpleTypes diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("simpleTypes");
+        assertNotNull(diffBlockDefinition);
+
+        fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("simpletypes", "string"));
+        fields.add(new DiffFieldDefinitionImpl("simpletypes", "textarea"));
+        fields.add(new DiffFieldDefinitionImpl("simpletypes", "boolean"));
+        fields.add(new DiffFieldDefinitionImpl("simpletypes", "integer"));
+        fields.add(new DiffFieldDefinitionImpl("simpletypes", "date"));
+        fields.add(new DiffFieldDefinitionImpl("simpletypes", "htmlText"));
+        fields.add(new DiffFieldDefinitionImpl("simpletypes", "multivalued"));
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
+                "simpleTypes", null, fields);
+        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check new complexTypesAndListOfLists diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("complexTypesAndListOfLists");
+        assertNotNull(diffBlockDefinition);
+
+        fields = new ArrayList<DiffFieldDefinition>();
+        items = new ArrayList<String>();
+        items.add("stringItem");
+        items.add("integerItem");
+        items.add("dateItem");
+        items.add("booleanItem");
+        fields.add(new DiffFieldDefinitionImpl("complextypes", "complex", items));
         items = new ArrayList<String>();
         items.add("stringItem");
         items.add("dateItem");
         items.add("integerItem");
         fields.add(new DiffFieldDefinitionImpl("complextypes", "complexList",
                 items));
+        fields.add(new DiffFieldDefinitionImpl("listoflists", "listOfLists"));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "complexTypes", null, fields);
+                "complexTypesAndListOfLists", null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
     }
 }

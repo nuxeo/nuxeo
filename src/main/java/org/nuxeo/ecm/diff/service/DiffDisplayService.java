@@ -28,7 +28,7 @@ import org.nuxeo.ecm.diff.model.DocumentDiff;
 
 /**
  * Handles the configuration of a document diff display.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
@@ -40,7 +40,7 @@ public interface DiffDisplayService extends Serializable {
 
     List<String> getDiffDisplay(String type);
 
-    List<String> getDefaultDiffDisplay();
+    List<String> getDefaultTypeDiffDisplay();
 
     Map<String, DiffBlockDefinition> getDiffBlockDefinitions();
 

@@ -3,7 +3,7 @@
   name="org.nuxeo.ecm.diff.service.DiffDisplayService.contrib.test.noDefaultContrib">
 
   <require>
-    org.nuxeo.ecm.diff.service.DiffDisplayService.contrib.test
+    org.nuxeo.ecm.diff.service.DiffDisplayService.contrib
   </require>
 
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
