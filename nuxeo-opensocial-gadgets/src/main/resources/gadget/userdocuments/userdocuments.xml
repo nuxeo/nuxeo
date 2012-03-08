@@ -5,6 +5,7 @@
     author_aboutme="nuxeo" singleton="false"
     thumbnail="${clientSideBaseUrl}site/gadgets/userdocuments/note_64.png"
     screenshot="${clientSideBaseUrl}site/gadgets/userdocuments/documents.png">
+    <Require feature="nuxeo" />
     <Require feature="setprefs"/>
     <Require feature="settitle" />
     <#include "dynamic-translations.ftl"/>
