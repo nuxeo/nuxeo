@@ -301,7 +301,9 @@ public class StandardVersioningService implements ExtendableVersioningService {
     @Override
     public Document doCheckIn(Document doc, VersioningOption option,
             String checkinComment) throws DocumentException {
-        incrementByOption(doc, option == MAJOR ? MAJOR : MINOR);
+        if (option != VersioningOption.NONE) {
+            incrementByOption(doc, option == MAJOR ? MAJOR : MINOR);
+        }
         return doc.checkIn(null, checkinComment); // auto-label
     }
 
