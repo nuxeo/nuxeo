@@ -46,6 +46,7 @@
       <refresh>
         <event>documentChanged</event>
         <event>documentCreated</event>
+        <event>documentChildrenChanged</event>
       </refresh>
       <cacheSize>10</cacheSize>
       <cacheKey>#{currentDocument.id}</cacheKey>
