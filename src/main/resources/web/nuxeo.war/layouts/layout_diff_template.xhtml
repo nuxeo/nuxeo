@@ -46,12 +46,12 @@
               </c:otherwise>
             </c:choose>
             <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
-              <nxu:set var="leftValue" value="#{value.leftValue}">
+              <nxu:set var="leftValue" value="#{value.leftValue}" cache="true">
                 <nxl:widget widget="#{widget}" value="#{leftValue}" />
               </nxu:set>
             </td>
             <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
-              <nxu:set var="rightValue" value="#{value.rightValue}">
+              <nxu:set var="rightValue" value="#{value.rightValue}" cache="true">
                 <nxl:widget widget="#{widget}" value="#{rightValue}" />
               </nxu:set>
             </td>
