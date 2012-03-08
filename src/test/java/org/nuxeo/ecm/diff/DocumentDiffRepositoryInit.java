@@ -28,18 +28,24 @@ import java.util.TimeZone;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
- * Inits the repository for a document diff test case.
- * 
+ * Inits the repository for a document diff test case with 2 documents of the
+ * same type.
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
-    public static final String LEFT_DOC_PATH = "/leftDoc";
+    public static String getLeftDocPath() {
+        return "/leftDoc";
+    }
 
-    public static final String RIGHT_DOC_PATH = "/rightDoc";
+    public static String getRightDocPath() {
+        return "/rightDoc";
+    }
 
     @Override
     public void populate(CoreSession session) throws ClientException {
@@ -50,12 +56,12 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
     /**
      * Creates the left doc.
-     * 
+     *
      * @param session the session
      * @return the document model
      * @throws ClientException the client exception
      */
-    protected final DocumentModel createLeftDoc(CoreSession session)
+    protected DocumentModel createLeftDoc(CoreSession session)
             throws ClientException {
 
         DocumentModel doc = session.createDocumentModel("/", "leftDoc",
@@ -76,6 +82,27 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
                 "joe", null });
         doc.setPropertyValue("dc:subjects", new String[] { "Art",
                 "Architecture" });
+
+        // -----------------------
+        // file
+        // -----------------------
+        doc.setPropertyValue("file:filename", "Joe.txt");
+        doc.setPropertyValue("file:content", new StringBlob("Joe is rich."));
+
+        // -----------------------
+        // files
+        // -----------------------
+        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> file = new HashMap<String, Serializable>();
+        file.put("filename", "first_attachement.txt");
+        files.add(file);
+        file = new HashMap<String, Serializable>();
+        file.put("filename", "second_attachement.txt");
+        files.add(file);
+        file = new HashMap<String, Serializable>();
+        file.put("filename", "third_attachement.txt");
+        files.add(file);
+        doc.setPropertyValue("files:files", (Serializable) files);
 
         // -----------------------
         // simpletypes
@@ -142,16 +169,16 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
     /**
      * Creates the right doc.
-     * 
+     *
      * @param session the session
      * @return the document model
      * @throws ClientException the client exception
      */
-    protected final DocumentModel createRightDoc(CoreSession session)
+    protected DocumentModel createRightDoc(CoreSession session)
             throws ClientException {
 
         DocumentModel doc = session.createDocumentModel("/", "rightDoc",
-                "OtherSampleType");
+                "SampleType");
 
         // -----------------------
         // dublincore
@@ -166,6 +193,25 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("dc:contributors", new String[] {
                 "anotherAdministrator", "joe", "jack" });
         doc.setPropertyValue("dc:subjects", new String[] { "Art" });
+
+        // -----------------------
+        // file
+        // -----------------------
+        doc.setPropertyValue("file:filename", "Jack.txt");
+        doc.setPropertyValue("file:content", new StringBlob(
+                "Joe is rich, Jack is not."));
+
+        // -----------------------
+        // files
+        // -----------------------
+        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> file = new HashMap<String, Serializable>();
+        file.put("filename", "first_attachement.txt");
+        files.add(file);
+        file = new HashMap<String, Serializable>();
+        file.put("filename", "the_file_name_is_different.txt");
+        files.add(file);
+        doc.setPropertyValue("files:files", (Serializable) files);
 
         // -----------------------
         // simpletypes
@@ -247,7 +293,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
     /**
      * Gets a calendar set on the UTC time zone with 0 milliseconds.
-     * 
+     *
      * @param year the year
      * @param month the month
      * @param day the day

@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DiffTestCase;
@@ -47,19 +46,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- * Tests the {@link DocumentDiffService} on document XML exports.
+ * Tests the {@link DocumentDiffService} on documents of the same type.
  * <p>
  * The {@link DocumentDiffRepositoryInit} class initializes the repository with
  * 2 documents for this purpose.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = DocumentDiffRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(repositoryName = "default", init = DocumentDiffRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.diff:OSGI-INF/document-xml-export-service.xml",
         "org.nuxeo.diff:OSGI-INF/document-diff-service.xml",
-        "org.nuxeo.diff.test:OSGI-INF/test-types-contrib.xml" })
+        "org.nuxeo.diff.test:OSGI-INF/test-diff-types-contrib.xml" })
 public class TestDocumentDiff extends DiffTestCase {
 
     @Inject
@@ -70,7 +69,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
     /**
      * Tests doc diff.
-     * 
+     *
      * @throws ClientException the client exception
      */
     @Test
@@ -78,9 +77,9 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Get left and right docs
         DocumentModel leftDoc = session.getDocument(new PathRef(
-                DocumentDiffRepositoryInit.LEFT_DOC_PATH));
+                DocumentDiffRepositoryInit.getLeftDocPath()));
         DocumentModel rightDoc = session.getDocument(new PathRef(
-                DocumentDiffRepositoryInit.RIGHT_DOC_PATH));
+                DocumentDiffRepositoryInit.getRightDocPath()));
 
         // Create XML export temporary files
         createXMLExportTempFile(leftDoc);
@@ -88,16 +87,13 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 5, docDiff.getSchemaCount());
+        assertEquals("Wrong schema count.", 7, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check system elements
         // ---------------------------
-        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 2);
+        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 1);
 
-        // type
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
-                PropertyType.UNDEFINED, "SampleType", "OtherSampleType");
         // path
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
                 PropertyType.UNDEFINED, "leftDoc", "rightDoc");
@@ -120,7 +116,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"),
                 PropertyType.DATE, "2011-12-29T11:24:25.00Z",
                 "2011-12-30T12:05:02.00Z");
         // lastContributor => same once trimmed
@@ -139,6 +135,49 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff.putDiff(1, new SimplePropertyDiff(
                 PropertyType.STRING, "Architecture", null));
         checkListFieldDiff(schemaDiff.getFieldDiff("subjects"),
+                expectedListFieldDiff);
+
+        // ---------------------------
+        // Check file schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "file", 2);
+
+        // filename => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("filename"),
+                PropertyType.STRING, "Joe.txt", "Jack.txt");
+        // content => different
+        checkContentFieldDiff(schemaDiff.getFieldDiff("content"));
+
+        // ---------------------------
+        // Check files schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "files", 1);
+
+        // files =>
+        // item1: same
+        // item2: different
+        // item3: remove
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
+
+        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
+        item1ExpectedComplexFieldDiff.putDiff("filename",
+                new SimplePropertyDiff(PropertyType.STRING,
+                        "second_attachement.txt",
+                        "the_file_name_is_different.txt"));
+
+        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
+        item2ExpectedComplexFieldDiff.putDiff("filename",
+                new SimplePropertyDiff(PropertyType.STRING,
+                        "third_attachement.txt", null));
+        item2ExpectedComplexFieldDiff.putDiff("file", new ComplexPropertyDiff(
+                PropertyType.CONTENT));
+
+        expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
+
+        checkListFieldDiff(schemaDiff.getFieldDiff("files"),
                 expectedListFieldDiff);
 
         // ---------------------------
@@ -205,7 +244,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // item2: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
                 PropertyType.COMPLEX);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
@@ -218,7 +257,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.DATE, null,
                         "2011-12-30T23:00:00.00Z"));
 
-        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
                 PropertyType.COMPLEX);
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, null,
@@ -284,7 +323,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
     /**
      * Tests inverse doc diff.
-     * 
+     *
      * @throws ClientException the client exception
      */
     @Test
@@ -292,9 +331,9 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Get left and right docs
         DocumentModel leftDoc = session.getDocument(new PathRef(
-                DocumentDiffRepositoryInit.RIGHT_DOC_PATH));
+                DocumentDiffRepositoryInit.getRightDocPath()));
         DocumentModel rightDoc = session.getDocument(new PathRef(
-                DocumentDiffRepositoryInit.LEFT_DOC_PATH));
+                DocumentDiffRepositoryInit.getLeftDocPath()));
 
         // Create XML export temporary files
         createXMLExportTempFile(leftDoc);
@@ -302,16 +341,13 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 5, docDiff.getSchemaCount());
+        assertEquals("Wrong schema count.", 7, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check system elements
         // ---------------------------
-        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 2);
+        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 1);
 
-        // type
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
-                PropertyType.UNDEFINED, "OtherSampleType", "SampleType");
         // path
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
                 PropertyType.UNDEFINED, "rightDoc", "leftDoc");
@@ -334,7 +370,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"),
                 PropertyType.DATE, "2011-12-30T12:05:02.00Z",
                 "2011-12-29T11:24:25.00Z");
         // lastContributor => same once trimmed
@@ -353,6 +389,49 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff.putDiff(1, new SimplePropertyDiff(
                 PropertyType.STRING, null, "Architecture"));
         checkListFieldDiff(schemaDiff.getFieldDiff("subjects"),
+                expectedListFieldDiff);
+
+        // ---------------------------
+        // Check file schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "file", 2);
+
+        // filename => different
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("filename"),
+                PropertyType.STRING, "Jack.txt", "Joe.txt");
+        // content => different
+        checkContentFieldDiff(schemaDiff.getFieldDiff("content"));
+
+        // ---------------------------
+        // Check files schema
+        // ---------------------------
+        schemaDiff = checkSchemaDiff(docDiff, "files", 1);
+
+        // files =>
+        // item1: same
+        // item2: different
+        // item3: add
+        expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
+
+        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
+        item1ExpectedComplexFieldDiff.putDiff("filename",
+                new SimplePropertyDiff(PropertyType.STRING,
+                        "the_file_name_is_different.txt",
+                        "second_attachement.txt"));
+
+        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+                PropertyType.COMPLEX);
+        item2ExpectedComplexFieldDiff.putDiff("filename",
+                new SimplePropertyDiff(PropertyType.STRING, null,
+                        "third_attachement.txt"));
+        item2ExpectedComplexFieldDiff.putDiff("file", new ComplexPropertyDiff(
+                PropertyType.CONTENT));
+
+        expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
+
+        checkListFieldDiff(schemaDiff.getFieldDiff("files"),
                 expectedListFieldDiff);
 
         // ---------------------------
@@ -419,7 +498,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // item2: remove
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
                 PropertyType.COMPLEX);
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
@@ -432,7 +511,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.DATE,
                         "2011-12-30T23:00:00.00Z", null));
 
-        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
                 PropertyType.COMPLEX);
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING,
@@ -498,7 +577,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
     /**
      * Creates an XML export temp file.
-     * 
+     *
      * @param doc the doc
      * @throws ClientException the client exception
      */
