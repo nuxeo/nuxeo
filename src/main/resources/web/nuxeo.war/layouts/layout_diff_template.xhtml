@@ -7,8 +7,6 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   id="#{layout.id}">
 
-  <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
-
   <table class="dataInput">
     <tbody>
 
@@ -63,11 +61,5 @@
 
     </tbody>
   </table>
-
-<script>
-  jQuery(document).ready(function() {
-    jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
-  });
-</script>
 
 </f:subview>

@@ -4,23 +4,30 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" class="docDiffResult">
   
   <style type="text/css">
-    .diffTable {width: 100%; border-collapse: collapse;}
-    .diffHeader.diffTable {margin-bottom: 10px;}
-    .diffHeader.diffTable td {/*border-left: 1px solid #EEEFF0; padding-left: 10px;*/}
-    .diffHeader.diffTable h2, .diffHeader.diffTable a, .diffHeader.diffTable a:hover {color: #000000;}
-    .fieldLabelColumn {width: 20%; font-weight: bold;}
-    .fieldDiffColumn {width: 40%; padding: 0.4em 0.3em;}
+    /*
     div .emptyTextDiff {width: 60px;}    
     div.textDiff, div .emptyTextDiff {float: left; margin-bottom: 0.1em; padding: 0 0.4em;}
     .listItemIndex {float: left; padding-right: 0.5em; font-style: italic;}
     .textDiff.leftDiff, .emptyTextDiff.leftDiff {background-color:#FFDDDD;}
     .textDiff.rightDiff, .emptyTextDiff.rightDiff {background-color:#DDFFDD;}
-    .complexDiffTable th, .complexDiffTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
-    .complexDiffTable th {background-color:  #EEEFF0; text-align: center; font-weight: bold;}
     .italic {font-style: italic;}
+    */
+    
+    table.diffHeader {width: 100%; margin-bottom: 10px;}
+    .diffHeader a.docLink, .diffHeader a.docLink:link, .diffHeader a.docLink:hover {color: #000000;}
+    .docDiffResult .dataInput {width: 100%;}
+    .docDiffResult .labelColumn {width: 16%; text-align: left;}
+    .docDiffResult .fieldColumn {width: 42%;}
+    .docDiffResult .dataInput td {padding: 0.4em 0.3em;}
+    .docDiffResult .dataInput td.labelColumn {padding-right: 20px;}
+    /*.docDiffResult .dataInput .diffDisplayTable {width: 100%;}*/
+    .docDiffResult .dataInput .diffDisplayTable th, .docDiffResult .dataInput .diffDisplayTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
+    .docDiffResult .dataInput .diffDisplayTable th {background-color:  #EEEFF0; text-align: center; font-weight: bold;}
+    .docDiffResult .note_content_block {border:none; margin: 0; padding: 0;}
+    
   </style>
   
   <c:if test="#{!diffActions.documentDiffAvailable}">
@@ -29,85 +36,73 @@
     </h2>
   </c:if>
   <c:if test="#{diffActions.documentDiffAvailable}">
-  
-  <nxu:set var="leftDoc" value="#{diffActions.leftDoc}" cache="true">
-  <nxu:set var="rightDoc" value="#{diffActions.rightDoc}" cache="true">
-  
-    <table class="diffHeader diffTable">
-      <tr>
-        <td class="fieldLabelColumn">
-          <h2>
-            <h:outputText value="#{messages['document.diff.title']}" />
-          </h2>
-        </td>
-        <td class="fieldDiffColumn">
-          <h2>
-            [<nxd:restDocumentLink document="#{leftDoc}">
-              <span id="title_#{leftDoc.ref}" title="#{leftDoc.dc.description}">
-                <h:outputText value="#{nxd:titleOrId(leftDoc)}" />
-              </span>
-            </nxd:restDocumentLink>
-            <c:if test="#{leftDoc.version}">
-              <span class="italic">
-                (<h:outputText value="#{messages['label.version']}" />
-                <h:outputText value=" #{documentManager.getVersionLabel(leftDoc)}" />)
-              </span>
-            </c:if>]
-          </h2>
-        </td>
-        <td class="fieldDiffColumn">
-          <h2>
-            [<nxd:restDocumentLink document="#{rightDoc}">
-              <span id="title_#{rightDoc.ref}" title="#{rightDoc.dc.description}">
-                <h:outputText value="#{nxd:titleOrId(rightDoc)}" />
-              </span>
-            </nxd:restDocumentLink>
-            <c:if test="#{rightDoc.version}">
-              <span class="italic">
-                (<h:outputText value="#{messages['label.version']}" />
-                <h:outputText value=" #{documentManager.getVersionLabel(rightDoc)}" />)
-              </span>
-            </c:if>]
-          </h2>
-        </td>
-      </tr>
-    </table>
     
-    <c:if test="#{empty defaultDiffDisplayBlocks}">
-      <h3>
-        <h:outputText value="#{messages['document.diff.emptyDiff']}"/>
-      </h3>
-    </c:if>
+    <nxu:set var="leftDoc" value="#{diffActions.leftDoc}" cache="true">
+    <nxu:set var="rightDoc" value="#{diffActions.rightDoc}" cache="true">
+
+    <h:form id="document_diff">
+  
+      <table class="diffHeader">
+        <tr>
+          <td class="labelColumn">
+            <h2>
+              <h:outputText value="#{messages['document.diff.title']}" />
+            </h2>
+          </td>
+          <td class="fieldColumn">
+            <ui:include src="/incl/diff/doc_title_link.xhtml">
+              <ui:param name="doc" value="#{leftDoc}" />
+            </ui:include>
+          </td>
+          <td class="fieldColumn">
+            <ui:include src="/incl/diff/doc_title_link.xhtml">
+              <ui:param name="doc" value="#{rightDoc}" />
+            </ui:include>
+          </td>
+        </tr>
+      </table>
     
-    <c:if test="#{!empty defaultDiffDisplayBlocks}">
-      
-      <c:forEach items="#{defaultDiffDisplayBlocks}" var="diffDisplayBlock">
-        <div class="foldableBox">
-          <h3 class="unfolded">
-            <a href="#nologo" onclick="return toggleBox(this)">
-              <h:outputText value="#{messages[diffDisplayBlock.label]}" />
-            </a>
-            <span class="breaker"></span>
-          </h3>
-          <div class="boxBody">
-            <nxl:layout mode="view" definition="#{diffDisplayBlock.layoutDefinition}"
-              value="#{diffDisplayBlock}" template="/layouts/layout_diff_template.xhtml"/>
+      <c:if test="#{empty defaultDiffDisplayBlocks}">
+        <h3>
+          <h:outputText value="#{messages['document.diff.emptyDiff']}"/>
+        </h3>
+      </c:if>
+    
+      <c:if test="#{!empty defaultDiffDisplayBlocks}">        
+        <c:forEach items="#{defaultDiffDisplayBlocks}" var="diffDisplayBlock">
+          <div class="foldableBox">
+            <h3 class="unfolded">
+              <a href="#nologo" onclick="return toggleBox(this)">
+                <h:outputText value="#{messages[diffDisplayBlock.label]}" />
+              </a>
+              <span class="breaker"></span>
+            </h3>
+            <div class="boxBody">
+              <nxl:layout mode="view" definition="#{diffDisplayBlock.layoutDefinition}"
+                value="#{diffDisplayBlock}" template="/layouts/layout_diff_template.xhtml"/>
+            </div>
           </div>
-        </div>
-      </c:forEach>
-      
-      <div>
-        <h:form>
+        </c:forEach>
+        
+        <div>
           <h:commandButton value="#{messages['document.diff.refresh']}"
             action="#{diffActions.refresh()}"
             styleClass="button" />
-        </h:form>
-      </div>    
-    </c:if>
+        </div>
+        
+        <script>
+          jQuery(document).ready(function() {
+            jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
+          });
+        </script>        
+      </c:if>
+      
+    </h:form>
     
-  </nxu:set>
-  </nxu:set>
+    </nxu:set>
+    </nxu:set>
     
   </c:if>
   
 </div>
+
