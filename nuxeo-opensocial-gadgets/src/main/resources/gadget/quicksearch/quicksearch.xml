@@ -6,7 +6,6 @@
     <Require feature="setprefs"/>
     <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />
-    <Require feature="jquery" />
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
   <#include "context-prefs.ftl"/>
@@ -26,100 +25,12 @@
 <![CDATA[
 <html>
   <head>
-  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
-  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
-  <!-- insert JS Context -->
-  ${jsContext}
+    <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css,gadget-documentlists.css,gadget-quicksearch.css?path=${contextPath}&basepath=${contextPath}"/>
 
-  <script src="${specDirectoryUrl}default-automation-request.js"></script>
-  <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
+    <!-- insert JS Context -->
+    ${jsContext}
+    <script src="${clientSideBaseUrl}nxthemes-lib/jquery.js,gadget-default-automation-request.js,gadget-default-documentlist-display.js,gadget-quicksearch.js"></script>
 
-  <script>
-   var prefs = new gadgets.Prefs();
-
-   // configure Automation REST call
-   var NXRequestParams={ operationId : 'Document.PageProvider',
-     operationParams : { pageSize : 10},
-     operationContext : {},                                                // context
-     operationDocumentProperties : "common,dublincore",                    // schema that must be fetched from resulting documents
-     entityType : 'documents',                                             // result type : only document is supported for now
-     usePagination : true,                                                 // manage pagination or not
-     displayMethod : displayDocumentList,                                  // js method used to display the result
-     noEntryLabel: '__MSG_label.gadget.no.document__'
-   };
-
-   function doSearch() {
-      var txt = _gel('searchPattern').value;
-      runSearch(txt);
-   }
-
-   function runSearch(txt) {
-      var queryType = prefs.getString("queryType");
-      var displayMode = prefs.getString("displayMode");
-      if ('NXQL'==queryType) {
-          NXRequestParams.operationParams.query = txt;
-          delete NXRequestParams.operationParams.queryParams;
-      } else
-      {
-          NXRequestParams.operationParams.query = "SELECT * FROM Document WHERE ecm:fulltext LIKE ? AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'";
-          NXRequestParams.operationParams.queryParams = txt;
-      }
-      if ('COMPACT'==displayMode) {
-          NXRequestParams.displayColumns = [ { type: 'builtin', field: 'icon'},
-                      { type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'}];
-      } else {
-          NXRequestParams.displayColumns = [ { type: 'builtin', field: 'icon'},
-                      { type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
-                      { type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
-                      { type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'} ];
-      }
-      doAutomationRequest(NXRequestParams);
-   }
-
-   function doSaveSearch() {
-      var txt = _gel('searchPattern').value;
-      prefs.set('savedQuery',txt);
-      _gel("searchBox").style.display='none';
-      _gel("titleBox").style.display='block';
-      _gel("queryText").innerHTML=txt;
-      runSearch(txt);
-   }
-
-   function loadSearch() {
-      var txt = prefs.getString('savedQuery');
-      if (txt) {
-         runSearch(txt);
-         _gel("queryText").innerHTML=txt;
-         _gel("titleBox").style.display='block';
-      } else {
-         _gel("searchBox").style.display='block';
-      }
-   }
-
-   function doEditSearch() {
-      _gel("searchBox").style.display='block';
-      _gel("titleBox").style.display='none';
-   }
-
-   // auto-adjust gadget height
-   gadgets.util.registerOnLoadHandler(function() {
-     _gel("nxDocumentListData").innerHTML = '<p>__MSG_label.gadget.quicksearch.description__</p>';
-     _gel("nxDocumentList").style.display = 'block';
-     _gel('pageNavigationControls').style.display = 'none'
-
-     loadSearch();
-     gadgets.window.adjustHeight();
-   });
-
-  jQuery(document).ready(function() {
-    jQuery('#searchPattern').keydown(function(event) {
-      if (event.keyCode == '13') {
-        doSearch();
-      }
-    });
-  });
-
-  </script>
   </head>
   <body>
 

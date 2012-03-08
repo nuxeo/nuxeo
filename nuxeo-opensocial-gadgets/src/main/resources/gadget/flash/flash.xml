@@ -23,7 +23,7 @@
 <![CDATA[
 <html>
   <head>
-  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
+  <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css?path=${contextPath}&basepath=${contextPath}"/>
  <style type='text/css'>
  /* A ${specDirectoryUrl} is added in each picture path to keep a relative url.
       Without this, the browser is looking for a 127.0.0.1 url instead of localhost,

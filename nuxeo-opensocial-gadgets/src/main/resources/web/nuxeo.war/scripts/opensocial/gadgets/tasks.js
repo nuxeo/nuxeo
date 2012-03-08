@@ -1,3 +1,32 @@
+var prefs = new gadgets.Prefs();
+
+// configure Automation REST call
+var NXRequestParams = {
+  operationId: 'Workflow.UserTaskPageProvider',
+  operationParams: {
+    language: prefs.getLang(),
+    pageSize: 5
+  },
+  operationContext: {},
+  usePagination: true,
+  operationCallback: displayProcesses,
+  displayColumns: [
+    {type: 'text', field: 'taskName', label: prefs.getMsg('label.workflow.task.name')},
+    {type: 'builtin', field: 'titleWithLink', label: prefs.getMsg('label.title')},
+    {type: 'text', field: 'directive', label: prefs.getMsg('label.review.directive')},
+    {type: 'text', field: 'comment', label: prefs.getMsg('label.review.user.comment')},
+    {type: 'date', field: 'dueDate', label: prefs.getMsg('label.workflow.task.duedate')},
+    {type: 'date', field: 'startDate', label: prefs.getMsg('label.workflow.task.startDate')}
+  ],
+  noEntryLabel: prefs.getMsg('label.dashboard.empty')
+};
+
+// execute automation request onload
+gadgets.util.registerOnLoadHandler(function() {
+ doAutomationRequest(NXRequestParams);
+});
+
+
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject, nxParams) {
   var html = "";

@@ -19,43 +19,12 @@
     <![CDATA[
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
-    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
+    <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css,gadget-documentlists.css,gadget-tasks.css?path=${contextPath}&basepath=${contextPath}"/>
 
     <!-- insert JS Context -->
     ${jsContext}
+    <script src="${clientSideBaseUrl}nxthemes-lib/gadget-default-automation-request.js,gadget-tasks.js"></script>
 
-    <script src="${specDirectoryUrl}default-automation-request.js"></script>
-    <script type="text/javascript" language="javascript" src="tasks.js"></script>
-    <script type="text/javascript">
-      var prefs = new gadgets.Prefs();
-
-      // configure Automation REST call
-      var NXRequestParams = {
-        operationId: 'Workflow.UserTaskPageProvider',
-        operationParams: {
-          language: prefs.getLang(),
-          pageSize: 5
-        },
-        operationContext: {},
-        usePagination: true,
-        operationCallback: displayProcesses,
-        displayColumns: [
-          {type: 'text', field: 'taskName', label: '__MSG_label.workflow.task.name__'},
-          {type: 'builtin', field: 'titleWithLink', label: '__MSG_label.title__'},
-          {type: 'text', field: 'directive', label: '__MSG_label.review.directive__'},
-          {type: 'text', field: 'comment', label: '__MSG_label.review.user.comment__'},
-          {type: 'date', field: 'dueDate', label: '__MSG_label.workflow.task.duedate__'},
-          {type: 'date', field: 'startDate', label: '__MSG_label.workflow.task.startDate__'}
-        ],
-        noEntryLabel: "__MSG_label.dashboard.empty__"
-      };
-
-      // execute automation request onload
-      gadgets.util.registerOnLoadHandler(function() {
-       doAutomationRequest(NXRequestParams);
-      });
-    </script>
   </head>
   <body>
    <div class="tools">

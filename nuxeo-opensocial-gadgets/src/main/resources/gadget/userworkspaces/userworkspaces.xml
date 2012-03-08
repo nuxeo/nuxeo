@@ -18,49 +18,11 @@
 <![CDATA[
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css,gadget-documentlists.css,gadget-userworkspaces.css?path=${contextPath}&basepath=${contextPath}"/>
 
-  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
-  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
-
-  <!-- insert JS Context -->
-  ${jsContext}
-
-  <script src="${specDirectoryUrl}default-automation-request.js"></script>
-  <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
-  <script src="${specDirectoryUrl}context-management.js"></script>
-
-  <script type="text/javascript">
-    var prefs = new gadgets.Prefs();
-
-    var requestScope = getTargetContextPath();
-    // configure Automation REST call
-    var NXRequestParams = {
-      operationId: 'Document.PageProvider',
-      operationParams: {
-        providerName: 'user_workspaces',
-        pageSize: 5,
-        queryParams: requestScope == '/' ? requestScope : requestScope + '/'
-      },
-      operationContext: {},
-      operationDocumentProperties: "common,dublincore",
-      entityType: 'documents',
-      usePagination: true,
-      displayMethod: displayDocumentList,
-      displayColumns: [
-        {type: 'builtin', field: 'icon'},
-        {type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
-        {type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
-        {type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'}
-      ],
-      noEntryLabel: '__MSG_label.gadget.no.document__'
-    };
-
-    // execute automation request onload
-    gadgets.util.registerOnLoadHandler(function() {
-      initContextPathSettingsButton();
-      doAutomationRequest(NXRequestParams);
-    });
-  </script>
+    <!-- insert JS Context -->
+    ${jsContext}
+    <script src="${clientSideBaseUrl}nxthemes-lib/gadget-default-automation-request.js,gadget-default-documentlist-display.js,gadget-context-management.js,gadget-userworkspaces.js"></script>
 
   </head>
    <body>

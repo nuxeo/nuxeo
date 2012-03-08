@@ -14,13 +14,12 @@
 <![CDATA[
 <html>
   <head>
-  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
+  <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css?path=${contextPath}&basepath=${contextPath}"/>
 
   ${jsContext}
 
-  <script src="${specDirectoryUrl}default-automation-request.js"></script>
   <!--[if lte IE 8]><script src="${clientSideBaseUrl}scripts/jquery/flot/excanvas.min.js"></script><![endif]-->
-  <script src="${clientSideBaseUrl}nxthemes-lib/jquery.js"></script>
+  <script src="${clientSideBaseUrl}nxthemes-lib/jquery.js,gadget-default-automation-request.js"></script>
   <script src="${clientSideBaseUrl}scripts/jquery/flot/jquery.flot.min.js"></script>
 
   <script>

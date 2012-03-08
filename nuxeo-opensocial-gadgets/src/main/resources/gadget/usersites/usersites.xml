@@ -11,54 +11,23 @@
     <Require feature="dynamic-height" />
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
+  <#include "context-prefs.ftl"/>
   <UserPref name="title" display_name="Title" required="false" default_value="My Sites"/>
 
   <Content type="html">
 <![CDATA[
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
-    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
+    <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css,gadget-documentlists.css,gadget-usersites.css?path=${contextPath}&basepath=${contextPath}"/>
 
     <!-- insert JS Context -->
     ${jsContext}
-
-    <script src="${specDirectoryUrl}default-automation-request.js"></script>
-    <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
-    <script src="${specDirectoryUrl}context-management.js"></script>
-    <script type="text/javascript">
-      var prefs = new gadgets.Prefs();
-
-      var requestScope = getTargetContextPath();
-      // configure Automation REST call
-      var NXRequestParams = {
-        operationId: 'Document.PageProvider',
-        operationParams: {
-          providerName: 'user_sites',
-          pageSize: 5,
-          queryParams: requestScope == '/' ? requestScope : requestScope + '/'
-        },
-        operationContext: {},
-        operationDocumentProperties: "common,dublincore",
-        entityType: 'documents',
-        usePagination: true,
-        displayMethod: displayDocumentList,
-        displayColumns: [
-          {type: 'builtin', field: 'icon'},
-          {type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
-          {type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
-          {type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'}
-        ],
-        noEntryLabel: '__MSG_label.gadget.no.document__'
-      };
-
-      // execute automation request onload
-      gadgets.util.registerOnLoadHandler(function() {
-       doAutomationRequest(NXRequestParams);
-      });
-    </script>
+    <script src="${clientSideBaseUrl}nxthemes-lib/gadget-default-automation-request.js,gadget-context-management.js,gadget-default-documentlist-display.js,gadget-usersites.js"></script>
   </head>
   <body>
+    <div class="tools">
+      <#include "context-chooser-ui.ftl"/>
+    </div>
     <div id="content">
       <#include "default-documentlist-layout.ftl"/>
       <#include "default-request-controls.ftl"/>
