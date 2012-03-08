@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.wizard.context.Context;
@@ -293,6 +295,22 @@ public class RouterServlet extends HttpServlet {
                     }
                 }
             }
+            ConfigurationGenerator cg = collector.getConfigurationGenerator();
+            try {
+                cg.checkDatabaseConnection(
+                        collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME),
+                        collector.getConfigurationParam("nuxeo.db.name"),
+                        collector.getConfigurationParam("nuxeo.db.user"),
+                        collector.getConfigurationParam("nuxeo.db.password"),
+                        collector.getConfigurationParam("nuxeo.db.host"),
+                        collector.getConfigurationParam("nuxeo.db.port"));
+            } catch (DatabaseDriverException e) {
+                ctx.trackError("nuxeo.db.name", "error.db.driver.notfound");
+                log.warn(e);
+            } catch (SQLException e) {
+                ctx.trackError("nuxeo.db.name", "error.db.connection");
+                log.warn(e);
+            }
         }
 
         if (ctx.hasErrors()) {
@@ -446,8 +464,8 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain",
                     null);
             if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
-                PackageDownloader.instance().setProxy(null, 0, null, null, null,
-                    null);
+                PackageDownloader.instance().setProxy(null, 0, null, null,
+                        null, null);
             }
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
@@ -470,9 +488,9 @@ public class RouterServlet extends HttpServlet {
                 if (!ctx.hasErrors()) {
                     if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
                         PackageDownloader.instance().setProxy(
-                            collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
-                            Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
-                            null, null, null, null);
+                                collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
+                                Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
+                                null, null, null, null);
                     }
                 }
             } else {
@@ -483,12 +501,12 @@ public class RouterServlet extends HttpServlet {
                     if (!ctx.hasErrors()) {
                         if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
                             PackageDownloader.instance().setProxy(
-                                collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
-                                Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
-                                collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
-                                collector.getConfigurationParamValue("nuxeo.http.proxy.password"),
-                                collector.getConfigurationParamValue("nuxeo.http.proxy.ntlm.host"),
-                                collector.getConfigurationParamValue("nuxeo.http.proxy.ntml.domain"));
+                                    collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
+                                    Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
+                                    collector.getConfigurationParamValue("nuxeo.http.proxy.login"),
+                                    collector.getConfigurationParamValue("nuxeo.http.proxy.password"),
+                                    collector.getConfigurationParamValue("nuxeo.http.proxy.ntlm.host"),
+                                    collector.getConfigurationParamValue("nuxeo.http.proxy.ntml.domain"));
                         }
                     }
                 }
