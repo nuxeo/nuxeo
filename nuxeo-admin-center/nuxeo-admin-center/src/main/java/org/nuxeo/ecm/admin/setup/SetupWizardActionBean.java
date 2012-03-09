@@ -343,6 +343,11 @@ public class SetupWizardActionBean implements Serializable {
                             context, errorLabel), null);
             throw new ValidatorException(message);
         }
+
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                ComponentUtils.translate(context, "error.db.none"), null);
+        message.setSeverity(FacesMessage.SEVERITY_INFO);
+        context.addMessage(component.getClientId(context), message);
     }
 
     public void templateChange(ActionEvent event) {
