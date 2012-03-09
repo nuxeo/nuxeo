@@ -113,7 +113,7 @@ public class PackWar {
             + "\n" //
             + "Also note that you should start Tomcat with more memory than its default, for instance:\n" //
             + "\n" //
-            + "  JAVA_OPTS=\"-Xms512m -Xmx1024m -XX:MaxPermSize=512m\" bin/catalina.sh start\n" //
+            + "  JAVA_OPTS=\"-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dnuxeo.log.dir=logs\" bin/catalina.sh start\n" //
             + "\n" //
             + "";
 
@@ -219,6 +219,9 @@ public class PackWar {
             zipLibs(ZIP_LIB, new File(tomcat, "lib"), MISSING_LIBS, zout);
             zipLibs(ZIP_ENDORSED, new File(tomcat, "endorsed"), ENDORSED_LIBS,
                     zout);
+            // add log4j.xml
+            zipFile(ZIP_LIB + "log4j.xml", newFile(tomcat, "lib/log4j.xml"),
+                    zout, null);
         } finally {
             zout.finish();
             zout.close();
