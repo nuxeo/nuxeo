@@ -151,17 +151,21 @@ set PATH=%NUXEO_HOME%\3rdparty\ffmpeg\bin;%NUXEO_HOME%\3rdparty\ImageMagick\bin;
 echo [%DATE%] Command: %0 %1 %2 %3 %4 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 REM *****  Check for gui/nogui parameter *****
 if "%1" == "nogui" (
-  goto NO_GUI
+  goto GUI_NO
 ) else if "%1" == "gui" (
-  goto NEXT_GUI_OPTION
+  goto GUI_YES
 ) else goto ADD_GUI
-:NO_GUI
+:GUI_NO
 SHIFT
-set GUI_OPTION=
-goto NEXT_GUI_OPTION
+set GUI_OPTION=--gui=false
+goto GUI_DONE
+:GUI_YES
+SHIFT
+set GUI_OPTION=--gui=true
+goto GUI_DONE
 :ADD_GUI
-set GUI_OPTION=gui
-:NEXT_GUI_OPTION
+set GUI_OPTION=--gui=true
+:GUI_DONE
 
 REM set LAUNCHER_DEBUG=-Xdebug -Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=y
 

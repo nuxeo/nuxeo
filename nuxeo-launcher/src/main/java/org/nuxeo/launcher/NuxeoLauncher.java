@@ -40,6 +40,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.ParseException;
 import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
@@ -60,7 +70,17 @@ import org.nuxeo.log4j.ThreadedStreamGobbler;
  * @since 5.4.2
  */
 public abstract class NuxeoLauncher {
+
+    // Fallback to avoid an error when the log dir is not initialized
+    static {
+        if (System.getProperty(Environment.NUXEO_LOG_DIR)==null) {
+            System.setProperty(Environment.NUXEO_LOG_DIR, ".");
+        }
+    }
+
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
+
+    private static Options launcherOptions = null;
 
     private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
 
@@ -415,8 +435,71 @@ public abstract class NuxeoLauncher {
         return cp;
     }
 
+    protected static void initParserOptions() {
+        if (launcherOptions == null) {
+            launcherOptions = new Options();
+            Option helpOption = OptionBuilder.withLongOpt("help").withDescription("Show detailed help").create("h");
+            Option quietOption = OptionBuilder.withLongOpt("quiet").withDescription("Suppress information messages").create("q");
+            Option debugOption = OptionBuilder.withLongOpt("debug").withDescription("Activate debug messages").create("d");
+            Option guiOption = OptionBuilder.withLongOpt("gui").hasArg().withArgName("true|false").withDescription("Use graphical interface").create();
+            launcherOptions.addOption(helpOption);
+            launcherOptions.addOption(quietOption);
+            launcherOptions.addOption(debugOption);
+            launcherOptions.addOption(guiOption);
+        }
+    }
+
+    protected static CommandLine parseOptions(String[] args) throws ParseException {
+        initParserOptions();
+        CommandLineParser parser = new PosixParser();
+        CommandLine cmdLine = null;
+        Boolean stopAfterParsing = false;
+        try {
+            cmdLine = parser.parse(launcherOptions, args);
+            if (cmdLine.hasOption("h")) {
+                printLongHelp();
+                stopAfterParsing = true;
+            } else if (cmdLine.getArgs().length == 0) {
+                printShortHelp();
+                stopAfterParsing = true;
+            } else if (cmdLine.getArgs()[0].equals("help")) {
+                printLongHelp();
+                stopAfterParsing = true;
+            }
+        } catch (UnrecognizedOptionException e) {
+            log.error(e.getMessage());
+            printShortHelp();
+            stopAfterParsing = true;
+        } catch (MissingArgumentException e) {
+            log.error(e.getMessage());
+            printShortHelp();
+            stopAfterParsing = true;
+        } catch (ParseException e) {
+            log.error("Error while parsing command line: "+e.getMessage());
+            printShortHelp();
+            stopAfterParsing = true;
+        } finally {
+            if (stopAfterParsing) {
+                throw new ParseException("Invalid command line");
+            }
+        }
+        return cmdLine;
+    }
+
     public static void main(String[] args) throws ConfigurationException {
-        final NuxeoLauncher launcher = createLauncher(args);
+        CommandLine cmdLine = null;
+        try {
+            cmdLine = parseOptions(args);
+        } catch (ParseException e) {
+            System.exit(1);
+        }
+        if (cmdLine.hasOption("q")) {
+            setQuiet();
+        }
+        if (cmdLine.hasOption("d")) {
+            setDebug();
+        }
+        final NuxeoLauncher launcher = createLauncher(cmdLine);
         if (launcher.useGui && launcher.getGUI() == null) {
             launcher.setGUI(new NuxeoLauncherGUI(launcher));
         }
@@ -434,8 +517,6 @@ public abstract class NuxeoLauncher {
         boolean commandSucceeded = true;
         if (launcher.command == null) {
             // Nothing to do
-        } else if ("help".equalsIgnoreCase(launcher.command)) {
-            printHelp();
         } else if ("status".equalsIgnoreCase(launcher.command)) {
             log.warn(launcher.status());
             if (launcher.isStarted()) {
@@ -499,7 +580,7 @@ public abstract class NuxeoLauncher {
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgReset();
         } else {
-            printHelp();
+            printLongHelp();
             commandSucceeded = false;
         }
         if (!commandSucceeded) {
@@ -1222,13 +1303,13 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param args Program arguments
+     * @param cmdLine Program arguments
      * @return a NuxeoLauncher instance specific to current server (JBoss,
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
      * @since 5.5
      */
-    public static NuxeoLauncher createLauncher(String[] args)
+    public static NuxeoLauncher createLauncher(CommandLine cmdLine)
             throws ConfigurationException {
         NuxeoLauncher launcher;
         ConfigurationGenerator configurationGenerator = new ConfigurationGenerator(quiet, debug);
@@ -1241,7 +1322,7 @@ public abstract class NuxeoLauncher {
         } else {
             throw new ConfigurationException("Unknown server !");
         }
-        launcher.setArgs(args);
+        launcher.setArgs(cmdLine);
         configurationGenerator.init();
         launcher.statusServletClient = new StatusServletClient(
                 configurationGenerator);
@@ -1254,60 +1335,40 @@ public abstract class NuxeoLauncher {
      * Sets from program arguments the launcher command and additional
      * parameters.
      *
-     * @param args Program arguments; may be used by launcher implementation.
+     * @param cmdLine Program arguments; may be used by launcher implementation.
      *            Must not be null or empty.
      */
-    private void setArgs(String[] args) {
-        args = readOptions(args);
-        if (args.length == 0) {
-            printHelp();
-            System.exit(2);
+    private void setArgs(CommandLine cmdLine) {
+        String[] argList = cmdLine.getArgs();
+        command = argList[0];
+        log.debug("Launcher command: " + command);
+        if (argList.length > 1) {
+            params = Arrays.copyOfRange(argList, 1, argList.length);
+        } else {
+            params = new String[0];
         }
-        command = args[0];
-        int firstParamToKeep = 1;
-        if ("gui".equalsIgnoreCase(command)
-                || "nogui".equalsIgnoreCase(command)) {
-            useGui = "gui".equalsIgnoreCase(command);
-            command = args.length > 1 ? args[1] : null;
-            firstParamToKeep = 2;
+        for (String param : params) {
+            log.debug("Command parameter: " + param);
         }
-        params = firstParamToKeep > args.length ? new String[0]
-                : Arrays.copyOfRange(args, firstParamToKeep, args.length);
-    }
-
-    /**
-     * Read options (i.e. parameters starting with one or two dashes)
-     *
-     * @param args arguments to read
-     * @return the passed arguments without the options
-     * @since 5.5
-     */
-    protected String[] readOptions(String[] args) {
-        int nbOptions = 0;
-        for (String arg : args) {
-            if (arg.startsWith("-") || arg.startsWith("--")) {
-                nbOptions++;
-                if ("-d".equalsIgnoreCase(arg)
-                        || "--debug".equalsIgnoreCase(arg)) {
-                    setDebug();
-                } else if ("-q".equalsIgnoreCase(arg)
-                        || "--quiet".equalsIgnoreCase(arg)) {
-                    setQuiet();
-                } else {
-                    log.error("Unknown option " + arg);
-                }
+        if (cmdLine.hasOption("gui")) {
+            useGui = Boolean.valueOf(cmdLine.getOptionValue("gui"));
+            log.debug("GUI: " + cmdLine.getOptionValue("gui") + " -> " + new Boolean(useGui).toString());
+        } else {
+            if (PlatformUtils.isWindows()) {
+                useGui = true;
+                log.debug("GUI: option not set - platform is Windows -> start GUI");
             } else {
-                break;
+                useGui = false;
+                log.debug("GUI: option not set - platform is not Windows -> do not start GUI");
             }
         }
-        return Arrays.copyOfRange(args, nbOptions, args.length);
     }
 
     /**
      * @param beQuiet if true, launcher will be in quiet mode
      * @since 5.5
      */
-    protected void setQuiet() {
+    protected static void setQuiet() {
         quiet = true;
         Log4JHelper.setQuiet(Log4JHelper.CONSOLE_APPENDER_NAME);
     }
@@ -1316,66 +1377,60 @@ public abstract class NuxeoLauncher {
      * @param activateDebug if true, will activate the DEBUG logs
      * @since 5.5
      */
-    protected void setDebug() {
+    protected static void setDebug() {
         debug = true;
         Log4JHelper.setDebug("org.nuxeo.launcher", true, true, "FILE");
     }
 
-    /**
-     * Print class usage on standard system output.
-     *
-     * @throws URISyntaxException
-     */
-    public static void printHelp() {
-        log.error("\nnuxeoctl usage:\n\tnuxeoctl [options] [gui|nogui] "
-                + "[help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack] [additional parameters]");
-        log.error("\njava usage:\n\tjava [-D"
+    public static void printShortHelp() {
+        initParserOptions();
+        String cmdLineSyntax = "nuxeoctl [options] <command> [command parameters]";
+        HelpFormatter help = new HelpFormatter();
+        help.setSyntaxPrefix("Usage: ");
+        help.printHelp(cmdLineSyntax, launcherOptions);
+    }
+
+    public static void printLongHelp() {
+        printShortHelp();
+        log.error("\n\nJava usage:\n\tjava [-D"
                 + JAVA_OPTS_PROPERTY
                 + "=\"JVM options\"] [-D"
                 + ConfigurationGenerator.NUXEO_HOME
                 + "=\"/path/to/nuxeo\"] [-D"
                 + ConfigurationGenerator.NUXEO_CONF
                 + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
-                + " \\ \n\t\t[options] [gui] [help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack] [additional parameters]");
-        log.error("\n\t Java parameters:");
-        log.error("\t\t " + JAVA_OPTS_PROPERTY
+                + " \\ \n\t\t[options] <command> [command parameters]");
+        log.error("\n\t" + JAVA_OPTS_PROPERTY
                 + "\tParameters for the server JVM (default are "
                 + JAVA_OPTS_DEFAULT + ").");
-        log.error("\t\t "
+        log.error("\t"
                 + ConfigurationGenerator.NUXEO_HOME
                 + "\t\tNuxeo server root path (default is parent of called script).");
-        log.error("\t\t "
+        log.error("\t"
                 + ConfigurationGenerator.NUXEO_CONF
                 + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
-        log.error("\t\t jvmcheck\t\tWill continue execution if equals to \"nofail\", else will exit.");
-        log.error("\n\t Options:");
-        log.error("\t\t -d, --debug\t\tActivate Launcher DEBUG logs.");
-        log.error("\t\t -q, --quiet\t\tActivate quiet mode.");
-        log.error("\n\t GUI options:");
-        log.error("\t\t gui\t\t\tLauncher with a graphical user interface (default is headless/console mode except under Windows).");
-        log.error("\t\t nogui\t\t\tDeactivate gui option which is set by default under Windows.");
-        log.error("\n\t Commands:");
-        log.error("\t\t help\t\t\tPrint this message.");
-        log.error("\t\t start\t\t\tStart Nuxeo server in background, waiting for effective start. "
+        log.error("\tjvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.");
+        log.error("\n\nCommands list:");
+        log.error("\thelp\t\t\tPrint this message.");
+        log.error("\tstart\t\t\tStart Nuxeo server in background, waiting for effective start. "
                 + "Useful for batch executions requiring the server being immediately available after the script returned.");
-        log.error("\t\t stop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
-        log.error("\t\t restart\t\tRestart Nuxeo server.");
-        log.error("\t\t configure\t\tConfigure Nuxeo server with parameters from nuxeo.conf.");
-        log.error("\t\t wizard\t\t\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).");
-        log.error("\t\t console\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.");
-        log.error("\t\t status\t\t\tPrint server status (running or not).");
-        log.error("\t\t startbg\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
-        log.error("\t\t restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
-        log.error("\t\t pack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
-        log.error("\t\t mp-list\t\tList marketplace packages.");
-        log.error("\t\t mp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
-        log.error("\t\t mp-install\t\tRun marketplace package installation. "
+        log.error("\tstop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
+        log.error("\trestart\t\t\tRestart Nuxeo server.");
+        log.error("\tconfigure\t\tConfigure Nuxeo server with parameters from nuxeo.conf.");
+        log.error("\twizard\t\t\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).");
+        log.error("\tconsole\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.");
+        log.error("\tstatus\t\t\tPrint server status (running or not).");
+        log.error("\tstartbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
+        log.error("\trestartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
+        log.error("\tpack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
+        log.error("\tmp-list\t\t\tList marketplace packages.");
+        log.error("\tmp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
+        log.error("\tmp-install\t\tRun marketplace package installation. "
                 + "It is automatically called at startup if installAfterRestart.log exists. "
                 + "Else you must provide the package file(s) or ID(s) as parameter.");
-        log.error("\t\t mp-uninstall\t\tUninstall marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
-        log.error("\t\t mp-remove\t\tRemove marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
-        log.error("\t\t mp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
-        log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
+        log.error("\tmp-uninstall\t\tUninstall marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
+        log.error("\tmp-remove\t\tRemove marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
+        log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
     }
 
     /**

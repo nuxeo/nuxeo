@@ -24,6 +24,17 @@ MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+
 : ${NUXEO_HOME:=$(cd "$(dirname "$0")"/..; pwd -P)}
 : ${NUXEO_CONF:="$NUXEO_HOME"/bin/nuxeo.conf}
 
+## Backward compatibility
+cmdargs=( "$@" )
+for ((i=0; i<$#; i++)); do
+  if [ "${cmdargs[$i]}" = "gui" ]; then
+    cmdargs[$i]="--gui=true"
+  fi
+  if [ "${cmdargs[$i]}" = "nogui" ]; then
+    cmdargs[$i]="--gui=false"
+  fi
+done
+set -- "${cmdargs[@]}"
 
 ## Helper functions
 warn() {
@@ -96,7 +107,7 @@ EOF
 # Force IPv4
 JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
 
-if [[ ! "x$@" =~ gui ]]; then
+if [[ ! "x$@" =~ --gui=true ]]; then
   # Set AWT headless
   JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"
 fi
@@ -158,5 +169,5 @@ echo "[`date`] Command: $0 $@" >> "$LOG_DIR"/nuxeoctl.log
 #LAUNCHER_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=y"
 
 [[ "x$@" =~ -q || "x$@" =~ --quiet ]] || echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@
-echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@ >> "$LOG_DIR"/nuxeoctl.log
+echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER "$@" >> "$LOG_DIR"/nuxeoctl.log
 exec "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$NUXEO_LAUNCHER" "$@"
