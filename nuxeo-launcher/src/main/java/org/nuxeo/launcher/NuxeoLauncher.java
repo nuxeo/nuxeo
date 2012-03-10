@@ -150,9 +150,9 @@ public abstract class NuxeoLauncher {
 
     private StatusServletClient statusServletClient;
 
-    private boolean quiet = false;
+    private static boolean quiet = false;
 
-    private boolean debug = false;
+    private static boolean debug = false;
 
     /**
      * @since 5.5
@@ -587,7 +587,7 @@ public abstract class NuxeoLauncher {
             return false;
         }
         if (reloadConfiguration) {
-            configurationGenerator = new ConfigurationGenerator();
+            configurationGenerator = new ConfigurationGenerator(quiet, debug);
             configurationGenerator.init();
             reloadConfiguration = false;
         }
@@ -750,7 +750,7 @@ public abstract class NuxeoLauncher {
         boolean serverStarted = false;
         try {
             if (reloadConfiguration) {
-                configurationGenerator = new ConfigurationGenerator();
+                configurationGenerator = new ConfigurationGenerator(quiet, debug);
                 configurationGenerator.init();
             } else {
                 // Ensure reload on next start
@@ -1231,7 +1231,7 @@ public abstract class NuxeoLauncher {
     public static NuxeoLauncher createLauncher(String[] args)
             throws ConfigurationException {
         NuxeoLauncher launcher;
-        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
+        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator(quiet, debug);
         if (configurationGenerator.isJBoss) {
             launcher = new NuxeoJBossLauncher(configurationGenerator);
         } else if (configurationGenerator.isJetty) {
