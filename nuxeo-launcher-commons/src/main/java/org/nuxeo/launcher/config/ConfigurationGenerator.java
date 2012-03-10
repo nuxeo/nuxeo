@@ -189,6 +189,21 @@ public class ConfigurationGenerator {
     }
 
     public ConfigurationGenerator() {
+        this(false, false);
+    }
+
+    private boolean quiet = false;
+
+    private boolean debug = false;
+
+    /**
+     * @param quiet Suppress info level messages from the console output
+     * @param debug Activate debug level logging
+     * @since 5.6
+     */
+    public ConfigurationGenerator(boolean quiet, boolean debug) {
+        this.quiet = quiet;
+        this.debug = debug;
         String nuxeoHomePath = System.getProperty(NUXEO_HOME);
         String nuxeoConfPath = System.getProperty(NUXEO_CONF);
         if (nuxeoHomePath != null) {
@@ -236,8 +251,15 @@ public class ConfigurationGenerator {
         if (Logger.getRootLogger().getAllAppenders() instanceof NullEnumeration) {
             serverConfigurator.initLogs();
         }
-        log.info("Nuxeo home:          " + nuxeoHome.getPath());
-        log.info("Nuxeo configuration: " + nuxeoConf.getPath());
+        String homeInfo = "Nuxeo home:          " + nuxeoHome.getPath();
+        String confInfo = "Nuxeo configuration: " + nuxeoConf.getPath();
+        if (quiet) {
+            log.debug(homeInfo);
+            log.debug(confInfo);
+        } else {
+            log.info(homeInfo);
+            log.info(confInfo);
+        }
     }
 
     /**
@@ -596,7 +618,12 @@ public class ConfigurationGenerator {
                     }
                     // Load configuration from chosen templates
                     defaultConfig.load(new FileInputStream(chosenTemplateConf));
-                    log.info("Include template: " + chosenTemplate.getPath());
+                    String templateInfo = "Include template: " + chosenTemplate.getPath();
+                    if (quiet) {
+                        log.debug(templateInfo);
+                    } else {
+                        log.info(templateInfo);
+                    }
                 } else {
                     log.debug("No default configuration for template "
                             + nextToken);
