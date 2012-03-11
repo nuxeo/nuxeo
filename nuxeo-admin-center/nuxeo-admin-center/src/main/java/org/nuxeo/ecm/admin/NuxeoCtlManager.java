@@ -55,7 +55,7 @@ public class NuxeoCtlManager {
         String[] cmd;
         if (isWindows()) {
             cmd = new String[] { "cmd", "/C",
-                    winEscape(new File(path, CMD_WIN).getPath()), "nogui",
+                    winEscape(new File(path, CMD_WIN).getPath()), "--gui=false",
                     "restartbg" };
         } else {
             cmd = new String[] {
