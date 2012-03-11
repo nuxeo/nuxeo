@@ -16,6 +16,9 @@
 
 package org.nuxeo.ecm.platform.rendition.publisher;
 
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SCHEMA;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,17 +31,18 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree;
 import org.nuxeo.ecm.platform.rendition.Constants;
 
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SCHEMA;
-
 /**
- * Implementation of {@link org.nuxeo.ecm.platform.publisher.api.PublicationTree}
- * that retrieve also any published Rendition documents for the given document.
- *
+ * Implementation of
+ * {@link org.nuxeo.ecm.platform.publisher.api.PublicationTree} that retrieve
+ * also any published Rendition documents for the given document.
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.4.1
  */
 public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String RENDITION_PUBLISHED_DOCUMENTS_FROM_PROXY_DOCUMENT = "SELECT * FROM Document WHERE rend:sourceId = '%s' "
             + "AND ecm:path STARTSWITH '%s'" + " AND ecm:isProxy = 1";

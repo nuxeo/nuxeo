@@ -16,6 +16,8 @@
 
 package org.nuxeo.ecm.platform.rendition.publisher;
 
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
+
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +32,10 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublisherException;
+import org.nuxeo.ecm.platform.publisher.api.PublishingException;
+import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory;
+import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
@@ -38,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of {@link PublishedDocumentFactory} that uses the
  * {@link RenditionService} to publish a Rendition of the given document.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
@@ -56,23 +61,62 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
         if (params != null && params.containsKey(RENDITION_NAME_PARAMETER_KEY)) {
             String renditionName = params.get(RENDITION_NAME_PARAMETER_KEY);
             if (!StringUtils.isEmpty(renditionName)) {
-                DocumentRef renditionDocumentRef;
+                DocumentModel renditionDocument = null;
+                Rendition rendition = null;
                 try {
-                    renditionDocumentRef = getRenditionService().storeRendition(doc,
-                            renditionName);
+                    rendition = getRenditionService().getRendition(doc,
+                            renditionName, true);
+                    if (rendition != null) {
+                        renditionDocument = rendition.getHostDocument();
+                    } else {
+                        throw new PublisherException(
+                                "Unable to render the document");
+                    }
                 } catch (RenditionException e) {
                     throw new PublisherException(e.getLocalizedMessage(), e);
                 }
-                DocumentModel renditionDocument = coreSession.getDocument(renditionDocumentRef);
                 PublishedDocument publishedDocument = super.publishDocument(
                         renditionDocument, targetNode, params);
-
-                new RemoveACP(coreSession, renditionDocumentRef).runUnrestricted();
-
+                DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
+                proxy.attach(doc.getSessionId());
+                if (!hasValidationTask(publishedDocument)) {
+                    removeExistingProxiesOnPreviousVersions(proxy);
+                }
                 return publishedDocument;
             }
+
         }
         return super.publishDocument(doc, targetNode, params);
+    }
+
+    @Override
+    protected DocumentModel getLiveDocument(CoreSession session,
+            DocumentModel proxy) throws ClientException {
+        if (!proxy.hasFacet(RENDITION_FACET)) {
+            return super.getLiveDocument(session, proxy);
+        }
+        RenditionLiveDocFetcher fetcher = new RenditionLiveDocFetcher(session,
+                proxy);
+        fetcher.runUnrestricted();
+        return fetcher.getLiveDocument();
+    }
+
+    @Override
+    protected void removeExistingProxiesOnPreviousVersions(
+            DocumentModel newProxy) throws PublishingException {
+
+        if (!newProxy.hasFacet(RENDITION_FACET)) {
+            super.removeExistingProxiesOnPreviousVersions(newProxy);
+            return;
+        }
+        RenditionsRemover remover = new RenditionsRemover(newProxy);
+        try {
+            remover.runUnrestricted();
+        } catch (ClientException e) {
+            throw new PublishingException(
+                    "Unable to remove old puiblished renditions", e);
+        }
+
     }
 
     protected RenditionService getRenditionService() throws ClientException {

@@ -33,11 +33,13 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -74,6 +76,9 @@ public class TestRenditionService {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected EventService eventService;
 
     @Inject
     protected RenditionService renditionService;
@@ -168,6 +173,81 @@ public class TestRenditionService {
                 PDF_RENDITION_DEFINITION);
         assertNotNull(rendition);
         assertFalse(rendition.isStored());
+
+    }
+
+    @Test
+    public void doRenditionVersioning() throws ClientException {
+        DocumentModel file = createBlobFile();
+
+        // create a version of the document
+        file.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MINOR);
+        file = session.saveDocument(file);
+        session.save();
+        eventService.waitForAsyncCompletion();
+        assertEquals("0.1", file.getVersionLabel());
+
+        // make a rendition on the document
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(
+                file, PDF_RENDITION_DEFINITION);
+        DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
+        assertNotNull(renditionDocument);
+        assertEquals(
+                file.getId(),
+                renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
+        DocumentModel lastVersion = session.getLastDocumentVersion(file.getRef());
+        assertEquals(
+                lastVersion.getId(),
+                renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
+
+        // check that the redition is a version
+        assertTrue(renditionDocument.isVersion());
+        // check that version label of the rendition is the same as the source
+        assertEquals(file.getVersionLabel(),
+                renditionDocument.getVersionLabel());
+
+        // fetch the rendition to check we have the same DocumentModel
+        Rendition rendition = renditionService.getRendition(file,
+                PDF_RENDITION_DEFINITION);
+        assertNotNull(rendition);
+        assertTrue(rendition.isStored());
+        assertEquals(renditionDocument.getRef(),
+                rendition.getHostDocument().getRef());
+
+        // update the source Document
+        file.setPropertyValue("dc:description", "I have been updated");
+        file = session.saveDocument(file);
+        assertEquals("0.1+", file.getVersionLabel());
+
+        // get the rendition from checkedout doc
+        rendition = renditionService.getRendition(file,
+                PDF_RENDITION_DEFINITION);
+        assertNotNull(rendition);
+        // rendition should be live
+        assertFalse(rendition.isStored());
+        // Live Rendition should point to the live doc
+        assertTrue(rendition.getHostDocument().getRef().equals(file.getRef()));
+
+        // now store rendition for version 0.2
+        rendition = renditionService.getRendition(file,
+                PDF_RENDITION_DEFINITION, true);
+        assertEquals("0.2", rendition.getHostDocument().getVersionLabel());
+        assertTrue(rendition.isStored());
+
+        assertTrue(rendition.getHostDocument().isVersion());
+        System.out.println(rendition.getHostDocument().getACP());
+
+        // check that version 0.2 of file was created
+        List<DocumentModel> versions = session.getVersions(file.getRef());
+        assertEquals(2, versions.size());
+
+        // check retrieval
+        Rendition rendition2 = renditionService.getRendition(file,
+                PDF_RENDITION_DEFINITION, false);
+        assertTrue(rendition2.isStored());
+        assertEquals(rendition.getHostDocument().getRef(),
+                rendition2.getHostDocument().getRef());
 
     }
 

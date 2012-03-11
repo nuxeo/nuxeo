@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.rendition.version">
+
+  <extension target="org.nuxeo.ecm.core.CoreService" point="versionRemovalPolicy">
+    <documentation>
+      Contribute a custom VersionRemovalPolicy that does not delete Rendition version
+      that do not have a live/checedout document.
+    </documentation>
+    <policy class="org.nuxeo.ecm.platform.rendition.version.RenditionAwareVersionRemovalPolicy"></policy>
+  </extension>
+</component>

@@ -87,8 +87,8 @@ public interface RenditionService {
      * Return the {@link Rendition} object for the given {@link DocumentModel}
      * and a rendition definition name.
      * <p>
-     * A stored rendition is returned if found and up to date, a new Rendition
-     * is created otherwise.
+     * A stored rendition is returned if found and up to date, a new (live)
+     * Rendition is created otherwise.
      * <p>
      * If store parameter is true, the new created rendition is stored too and
      * returned
@@ -104,7 +104,11 @@ public interface RenditionService {
 
     /**
      * Returns a {@code List} of {@code Rendition} available on the given
-     * Document. The order of the List does not depend on the registering order.
+     * Document.
+     * <p>
+     * The order of the List does not depend on the registering order.
+     * <p>
+     * The returned rendition may be live or stored
      */
     List<Rendition> getAvailableRenditions(DocumentModel doc)
             throws RenditionException;

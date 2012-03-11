@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -48,6 +49,8 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 public class RenditionCreator extends UnrestrictedSessionRunner {
 
     protected DocumentRef renditionRef;
+
+    protected DocumentModel detachedDendition;
 
     protected String liveDocumentId;
 
@@ -71,6 +74,10 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         return renditionRef;
     }
 
+    public DocumentModel getDetachedDendition() {
+        return detachedDendition;
+    }
+
     @Override
     public void run() throws ClientException {
         DocumentModel versionDocument = session.getDocument(versionDocumentRef);
@@ -78,15 +85,23 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         removeBlobs(rendition);
         updateMainBlob(rendition);
 
+        // create a copy of the doc
         rendition = session.createDocument(rendition);
-        renditionRef = rendition.getRef();
-
+        // be sure to have the same version info
         setCorrectVersion(rendition, versionDocument);
-
+        // set ACL
+        // giveReadRightToUser(rendition);
         rendition = session.saveDocument(rendition);
 
-        giveReadRightToUser(rendition);
+        // rendition is checkout : make it checkin
+        DocumentRef renditionCheckoutRef = rendition.getRef();
+        renditionRef = rendition.checkIn(VersioningOption.NONE, null);
+        session.removeDocument(renditionCheckoutRef);
+        rendition = session.getDocument(renditionRef);
         session.save();
+
+        rendition.detach(true);
+        detachedDendition = rendition;
     }
 
     protected DocumentModel createRenditionDocument(

@@ -111,7 +111,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
         return rendition.getHostDocument().getRef();
     }
 
-    protected DocumentRef storeRendition(DocumentModel sourceDocument,
+    protected DocumentModel storeRendition(DocumentModel sourceDocument,
             List<Blob> renderedBlobs, String name) throws RenditionException {
         try {
             CoreSession session = sourceDocument.getCoreSession();
@@ -123,7 +123,10 @@ public class RenditionServiceImpl extends DefaultComponent implements
                     version, renderedBlobs.get(0), name);
             rc.runUnrestricted();
 
-            return rc.getRenditionDocumentRef();
+            DocumentModel detachedRendition = rc.getDetachedDendition();
+
+            detachedRendition.attach(sourceDocument.getSessionId());
+            return detachedRendition;
         } catch (Exception e) {
             throw new RenditionException("Unable to store rendition", e);
         }
@@ -150,11 +153,6 @@ public class RenditionServiceImpl extends DefaultComponent implements
             mainBlob = bh.getBlob();
         } catch (ClientException e) {
             throw new RenditionException("Error while retrieving Main Blob", e);
-        }
-
-        if (mainBlob == null) {
-            throw new RenditionException("No main file attached",
-                    "label.cannot.render.without.main.blob");
         }
     }
 
@@ -289,52 +287,35 @@ public class RenditionServiceImpl extends DefaultComponent implements
                     "label.rendition.not.defined");
         }
 
-        RenditionFinder finder = new RenditionFinder(doc, renditionName);
-
         DocumentModel stored = null;
-
         try {
-            finder.run(); // don't run unrestricted
-            stored = finder.getStoredRendition();
+            if (!doc.isCheckedOut()) {
+                // since stored renditions are done against a version
+                // checkedout Documents can not have a stored rendition
+                RenditionFinder finder = new RenditionFinder(doc, renditionName);
+                finder.runUnrestricted();
+                // retrieve the Detached stored rendition doc
+                stored = finder.getStoredRendition();
+                // re-attach the detached doc
+                if (stored != null) {
+                    stored.attach(doc.getCoreSession().getSessionId());
+                }
+            }
         } catch (ClientException e) {
             throw new RenditionException(
                     "Error while searching for stored rendition", e);
         }
 
         if (stored != null) {
-            if (!doc.isVersion()) {
-                // check if rendition is up to date
-                String storedVersionLabel = stored.getVersionLabel();
-                if (storedVersionLabel != null) {
-                    if (storedVersionLabel.endsWith("+")) { // checked out
-                        storedVersionLabel = storedVersionLabel.substring(0,
-                                storedVersionLabel.length() - 1);
-                    }
-                    if (storedVersionLabel.compareTo(doc.getVersionLabel()) < 0) {
-                        // checkout document is more recent
-                        stored = null;
-                    }
-                }
-            }
-        }
-        if (stored != null) {
             return new StoredRendition(stored, renditionDefinition);
-
         }
 
         LiveRendition rendition = new LiveRendition(doc, renditionDefinition);
 
         if (store) {
-            DocumentRef ref = storeRendition(doc, rendition.getBlobs(),
-                    renditionDefinition.getName());
-            try {
-                return new StoredRendition(
-                        doc.getCoreSession().getDocument(ref),
-                        renditionDefinition);
-            } catch (ClientException e) {
-                throw new RenditionException(
-                        "Error while reading stored Rendition", e);
-            }
+            DocumentModel storedRenditionDoc = storeRendition(doc,
+                    rendition.getBlobs(), renditionDefinition.getName());
+            return new StoredRendition(storedRenditionDoc, renditionDefinition);
 
         } else {
             return rendition;
