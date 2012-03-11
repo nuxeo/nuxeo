@@ -56,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of the {@link PublishedDocumentFactory} for core
  * implementation using native proxy system with validation workflow.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
@@ -124,8 +124,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return runner.getPublishedDocument();
     }
 
-    protected boolean isPublishedDocWaitingForPublication(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    protected boolean isPublishedDocWaitingForPublication(DocumentModel doc,
+            CoreSession session) throws ClientException {
         return !lookupState.isPublished(doc, session);
     }
 
@@ -192,17 +192,14 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return Framework.getLocalService(TaskService.class);
     }
 
-    @Override
-    public void validatorPublishDocument(PublishedDocument publishedDocument,
-            String comment) throws PublishingException {
-        DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+    protected void removeExistingProxiesOnPreviousVersions(
+            DocumentModel newProxy) throws PublishingException {
         try {
 
-            DocumentModel sourceVersion = coreSession.getSourceDocument(proxy.getRef());
+            DocumentModel sourceVersion = coreSession.getSourceDocument(newProxy.getRef());
             DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
             DocumentModelList brothers = coreSession.getProxies(dm.getRef(),
-                    proxy.getParentRef());
+                    newProxy.getParentRef());
             if (brothers != null && brothers.size() > 1) {
                 // we remove the brothers of the published document if any
                 // the use case is:
@@ -210,7 +207,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 // validated
                 // v1 is removed and v2 is now being published
                 for (DocumentModel doc : brothers) {
-                    if (!doc.getId().equals(proxy.getId())) {
+                    if (!doc.getId().equals(newProxy.getId())) {
                         coreSession.removeDocument(doc.getRef());
                     }
                 }
@@ -218,6 +215,16 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         } catch (ClientException e1) {
             throw new PublishingException(e1.getMessage(), e1);
         }
+    }
+
+    @Override
+    public void validatorPublishDocument(PublishedDocument publishedDocument,
+            String comment) throws PublishingException {
+        DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
+        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+
+        removeExistingProxiesOnPreviousVersions(proxy);
+
         try {
             removeACL(proxy, coreSession);
             endTask(proxy, principal, coreSession, comment,
@@ -257,19 +264,27 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                     break;
                 }
             }
-            GetsProxySourceDocumentsUnrestricted runner = new GetsProxySourceDocumentsUnrestricted(
-                    session, document);
-            runner.runUnrestricted();
+
+            DocumentModel liveDoc = getLiveDocument(session, document);
+
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
             if (initiator != null) {
                 properties.put(NotificationConstants.RECIPIENTS_KEY,
                         new String[] { initiator });
             }
-            notifyEvent(event.name(), properties, comment, null,
-                    runner.liveDocument, session);
+            notifyEvent(event.name(), properties, comment, null, liveDoc,
+                    session);
         } catch (ClientException ce) {
             throw new PublishingException(ce);
         }
+    }
+
+    protected DocumentModel getLiveDocument(CoreSession session,
+            DocumentModel proxy) throws ClientException {
+        GetsProxySourceDocumentsUnrestricted runner = new GetsProxySourceDocumentsUnrestricted(
+                session, proxy);
+        runner.runUnrestricted();
+        return runner.liveDocument;
     }
 
     @Override
@@ -280,9 +295,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         try {
             notifyEvent(PublishingEvent.documentPublicationRejected, proxy,
                     coreSession);
-            removeProxy(proxy, coreSession);
             endTask(proxy, principal, coreSession, comment,
                     PublishingEvent.documentPublicationRejected);
+            removeProxy(proxy, coreSession);
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
@@ -317,8 +332,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return publishedDocument;
     }
 
-    protected boolean isPublished(PublishedDocument publishedDocument, CoreSession session)
-            throws PublishingException {
+    protected boolean isPublished(PublishedDocument publishedDocument,
+            CoreSession session) throws PublishingException {
         // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
