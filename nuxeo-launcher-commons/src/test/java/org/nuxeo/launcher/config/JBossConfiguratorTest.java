@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -106,30 +107,42 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
 
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
-        String generatedProperty = new BufferedReader(new FileReader(
-                generatedFile)).readLine();
+        BufferedReader reader = new BufferedReader(
+                new FileReader(generatedFile));
+        String generatedProperty = reader.readLine();
+        IOUtils.closeQuietly(reader);
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
 
         // Check windows path parsing
         generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds_2.xml");
-        generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
+        reader = new BufferedReader(new FileReader(generatedFile));
+        generatedProperty = reader.readLine();
+        IOUtils.closeQuietly(reader);
         assertEquals(generatedProperty, propertyToGenerate2, generatedProperty);
 
         // ignored extension must not be parsed
         generatedFile = new File(configDir.getParentFile(),
                 "config/extension.ignored");
-        generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
-        String originalProperty = new BufferedReader(new FileReader(new File(
-                nuxeoHome, "templates/common/config/extension.ignored"))).readLine();
+        reader = new BufferedReader(new FileReader(generatedFile));
+        generatedProperty = reader.readLine();
+        IOUtils.closeQuietly(reader);
+        reader = new BufferedReader(new FileReader(new File(nuxeoHome,
+                "templates/common/config/extension.ignored")));
+        String originalProperty = reader.readLine();
+        IOUtils.closeQuietly(reader);
         assertEquals(generatedProperty, originalProperty, generatedProperty);
 
         // properly manage files containing accents
         generatedFile = new File(configDir.getParentFile(),
                 "config/file-with-accents.xml");
-        generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
-        originalProperty = new BufferedReader(new FileReader(new File(
-                nuxeoHome, "templates/common/config/file-with-accents.xml"))).readLine();
+        reader = new BufferedReader(new FileReader(generatedFile));
+        generatedProperty = reader.readLine();
+        IOUtils.closeQuietly(reader);
+        reader = new BufferedReader(new FileReader(new File(nuxeoHome,
+                "templates/common/config/file-with-accents.xml")));
+        originalProperty = reader.readLine();
+        IOUtils.closeQuietly(reader);
         assertEquals(generatedProperty, originalProperty, generatedProperty);
     }
 
@@ -161,8 +174,10 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
 
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
-        String generatedProperty = new BufferedReader(new FileReader(
-                generatedFile)).readLine();
+        BufferedReader reader = new BufferedReader(
+                new FileReader(generatedFile));
+        String generatedProperty = reader.readLine();
+        IOUtils.closeQuietly(reader);
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
 
@@ -173,7 +188,7 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
                 + JBossConfigurator.DEFAULT_CONFIGURATION
                 + "/deploy/nuxeo.ear/config");
         testFile = new File(testFile, "test2");
-        testFile.delete();
+        assertTrue(testFile.delete());
         configGenerator2.setForceGeneration(true);
         configGenerator2.run();
         assertTrue(testFile.exists());
@@ -194,6 +209,7 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
         propertyToGenerate = "nuxeo.log.dir=C:/ProgramData/path with space/nuxeo/log";
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
         generatedProperty = br.readLine();
+        IOUtils.closeQuietly(br);
         propertyToGenerate = "some.parameter=d\\u00e9connexion-${nuxeo.log.dir}";
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
