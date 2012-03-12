@@ -107,43 +107,51 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
 
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
-        BufferedReader reader = new BufferedReader(
-                new FileReader(generatedFile));
-        String generatedProperty = reader.readLine();
-        IOUtils.closeQuietly(reader);
-        assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
+        BufferedReader reader = null;
+        String generatedProperty;
+        String originalProperty;
+        try {
+            reader = new BufferedReader(new FileReader(generatedFile));
+            generatedProperty = reader.readLine();
+            IOUtils.closeQuietly(reader);
+            assertEquals(generatedProperty, propertyToGenerate,
+                    generatedProperty);
 
-        // Check windows path parsing
-        generatedFile = new File(configDir.getParentFile(),
-                "datasources/default-repository-ds_2.xml");
-        reader = new BufferedReader(new FileReader(generatedFile));
-        generatedProperty = reader.readLine();
-        IOUtils.closeQuietly(reader);
-        assertEquals(generatedProperty, propertyToGenerate2, generatedProperty);
+            // Check windows path parsing
+            generatedFile = new File(configDir.getParentFile(),
+                    "datasources/default-repository-ds_2.xml");
+            reader = new BufferedReader(new FileReader(generatedFile));
+            generatedProperty = reader.readLine();
+            IOUtils.closeQuietly(reader);
+            assertEquals(generatedProperty, propertyToGenerate2,
+                    generatedProperty);
 
-        // ignored extension must not be parsed
-        generatedFile = new File(configDir.getParentFile(),
-                "config/extension.ignored");
-        reader = new BufferedReader(new FileReader(generatedFile));
-        generatedProperty = reader.readLine();
-        IOUtils.closeQuietly(reader);
-        reader = new BufferedReader(new FileReader(new File(nuxeoHome,
-                "templates/common/config/extension.ignored")));
-        String originalProperty = reader.readLine();
-        IOUtils.closeQuietly(reader);
-        assertEquals(generatedProperty, originalProperty, generatedProperty);
+            // ignored extension must not be parsed
+            generatedFile = new File(configDir.getParentFile(),
+                    "config/extension.ignored");
+            reader = new BufferedReader(new FileReader(generatedFile));
+            generatedProperty = reader.readLine();
+            IOUtils.closeQuietly(reader);
+            reader = new BufferedReader(new FileReader(new File(nuxeoHome,
+                    "templates/common/config/extension.ignored")));
+            originalProperty = reader.readLine();
+            IOUtils.closeQuietly(reader);
+            assertEquals(generatedProperty, originalProperty, generatedProperty);
 
-        // properly manage files containing accents
-        generatedFile = new File(configDir.getParentFile(),
-                "config/file-with-accents.xml");
-        reader = new BufferedReader(new FileReader(generatedFile));
-        generatedProperty = reader.readLine();
-        IOUtils.closeQuietly(reader);
-        reader = new BufferedReader(new FileReader(new File(nuxeoHome,
-                "templates/common/config/file-with-accents.xml")));
-        originalProperty = reader.readLine();
-        IOUtils.closeQuietly(reader);
-        assertEquals(generatedProperty, originalProperty, generatedProperty);
+            // properly manage files containing accents
+            generatedFile = new File(configDir.getParentFile(),
+                    "config/file-with-accents.xml");
+            reader = new BufferedReader(new FileReader(generatedFile));
+            generatedProperty = reader.readLine();
+            IOUtils.closeQuietly(reader);
+            reader = new BufferedReader(new FileReader(new File(nuxeoHome,
+                    "templates/common/config/file-with-accents.xml")));
+            originalProperty = reader.readLine();
+            IOUtils.closeQuietly(reader);
+            assertEquals(generatedProperty, originalProperty, generatedProperty);
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
     }
 
     @Test
@@ -176,8 +184,12 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
                 "datasources/default-repository-ds.xml");
         BufferedReader reader = new BufferedReader(
                 new FileReader(generatedFile));
-        String generatedProperty = reader.readLine();
-        IOUtils.closeQuietly(reader);
+        String generatedProperty;
+        try {
+            generatedProperty = reader.readLine();
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
 
@@ -205,11 +217,16 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
         configGenerator = new ConfigurationGenerator();
         configGenerator.replaceBackslashes();
         BufferedReader br = new BufferedReader(new FileReader(newWindowsConf));
-        String generatedProperty = br.readLine();
-        propertyToGenerate = "nuxeo.log.dir=C:/ProgramData/path with space/nuxeo/log";
-        assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
-        generatedProperty = br.readLine();
-        IOUtils.closeQuietly(br);
+        String generatedProperty;
+        try {
+            generatedProperty = br.readLine();
+            propertyToGenerate = "nuxeo.log.dir=C:/ProgramData/path with space/nuxeo/log";
+            assertEquals(generatedProperty, propertyToGenerate,
+                    generatedProperty);
+            generatedProperty = br.readLine();
+        } finally {
+            IOUtils.closeQuietly(br);
+        }
         propertyToGenerate = "some.parameter=d\\u00e9connexion-${nuxeo.log.dir}";
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
