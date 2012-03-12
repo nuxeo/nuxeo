@@ -8,7 +8,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * 
+ *
  */
 package org.nuxeo.ecm.platform.audit.api.document;
 
@@ -25,21 +25,20 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
  * Page provider that is dedicated to fetching history of a Document.
- * 
- * Because of the way the Audit log is stored (i.e. mainly stores events related
- * to the live document), retrieving history of a version or of a proxy requires
- * some additional processing.
- * 
+ * <p>
+ * Because of the way the Audit log is stored (i.e. mainly stores events
+ * related to the live document), retrieving history of a version or of a proxy
+ * requires some additional processing.
+ * <p>
  * This {@link PageProvider} does not accept a fixed part in the whereclause
  * because it is automatically build by the provider itself. This
  * {@link PageProvider} expect to have :
- * <ul> 
- *  <li> DocumentModel or UUID as input parameter</li> 
- *  <li> CoreSession as property (only used if input parameter is an uuid)</li>
+ * <ul>
+ * <li>DocumentModel or UUID as input parameter</li>
+ * <li>CoreSession as property (only used if input parameter is an uuid)</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class DocumentHistoryPageProvider extends AuditPageProvider {
 
@@ -62,16 +61,16 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
     protected boolean allowSimplePattern() {
         return false;
     }
-    
+
     @Override
     public List<SortInfo> getSortInfos() {
-        
+
         List<SortInfo> sort = super.getSortInfos();
-        if (sort==null || sort.size()==0) {
+        if (sort == null || sort.size() == 0) {
             sort = new ArrayList<SortInfo>();
-            sort.add(new SortInfo("log.eventDate",true));
-            sort.add(new SortInfo("log.id",true));             
-        }        
+            sort.add(new SortInfo("log.eventDate", true));
+            sort.add(new SortInfo("log.id", true));
+        }
         return sort;
     }
 
@@ -111,7 +110,7 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
                             e);
                 }
             } else {
-                log.warn("No core session found : can not compute all info to get complete audit entries");
+                log.warn("No core session found: cannot compute all info to get complete audit entries");
                 return params;
             }
         }

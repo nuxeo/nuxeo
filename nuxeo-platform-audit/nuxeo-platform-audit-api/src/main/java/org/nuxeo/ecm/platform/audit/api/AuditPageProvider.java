@@ -156,17 +156,17 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     }
 
     protected String getFixedPart() {
-        if (getDefinition().getWhereClause()==null) {
+        if (getDefinition().getWhereClause() == null) {
             return null;
         } else {
-            return getDefinition().getWhereClause().getFixedPart();    
-        }        
+            return getDefinition().getWhereClause().getFixedPart();
+        }
     }
 
     protected boolean allowSimplePattern() {
         return true;
     }
-    
+
     protected void buildAuditQuery(boolean includeSort) {
         PageProviderDefinition def = getDefinition();
         Object[] params = getParameters();
@@ -175,9 +175,10 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
             // Simple Pattern
 
             if (!allowSimplePattern()) {
-                throw new UnsupportedOperationException("This page provider requires a explicit Where Clause");
+                throw new UnsupportedOperationException(
+                        "This page provider requires a explicit Where Clause");
             }
-            
+
             String baseQuery = def.getPattern();
 
             Map<String, Object> qParams = new HashMap<String, Object>();
@@ -219,15 +220,15 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
             if (searchDocumentModel != null) {
                 PredicateDefinition[] predicates = def.getWhereClause().getPredicates();
                 int idxPredicate = 0;
-    
+
                 for (PredicateDefinition predicate : predicates) {
-    
+
                     // extract data from DocumentModel
                     Object[] val;
                     try {
                         PredicateFieldDefinition[] fieldDef = predicate.getValues();
                         val = new Object[fieldDef.length];
-    
+
                         for (int fidx = 0; fidx < fieldDef.length; fidx++) {
                             if (fieldDef[fidx].getXpath() != null) {
                                 val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
@@ -240,33 +241,33 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                     } catch (Exception e) {
                         throw new ClientRuntimeException(e);
                     }
-    
+
                     if (!isNonNullParam(val)) {
                         // skip predicate where all values are null
                         continue;
                     }
-    
+
                     if (idxPredicate > 0 || idxParam > 0) {
                         baseQuery.append(" AND ");
                     } else {
                         baseQuery.append(" where ");
                     }
-    
+
                     baseQuery.append(predicate.getParameter());
                     baseQuery.append(" ");
-    
+
                     if (!predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
                         // don't add the between operation for now
                         baseQuery.append(predicate.getOperator());
                     }
-    
+
                     if (predicate.getOperator().equalsIgnoreCase("IN")) {
                         baseQuery.append(" (");
-    
+
                         if (val[0] instanceof Iterable<?>) {
                             Iterable<?> vals = (Iterable<?>) val[0];
                             Iterator<?> valueIterator = vals.iterator();
-    
+
                             while (valueIterator.hasNext()) {
                                 Object v = valueIterator.next();
                                 qParams.put("param" + idxParam, convertParam(v));
@@ -289,7 +290,8 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                             }
                         }
                         baseQuery.append(" ) ");
-                    } else if (predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
+                    } else if (predicate.getOperator().equalsIgnoreCase(
+                            "BETWEEN")) {
                         Object startValue = convertParam(val[0]);
                         Object endValue = null;
                         if (val.length > 1) {
@@ -317,7 +319,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                         qParams.put("param" + idxParam, convertParam(val[0]));
                         idxParam++;
                     }
-    
+
                     idxPredicate++;
                 }
             }

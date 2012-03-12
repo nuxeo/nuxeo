@@ -5,7 +5,8 @@
     <p />
     Most of the work is done at EJB layer though.
 
-    This supports JMS events based notifications on a dedicated topic.
+    This supports JMS events based
+    notifications on a dedicated topic.
 
     @version 1.0
     @author Julien Anguenot
@@ -14,8 +15,7 @@
   <!-- needed so that activation has access to persistence -->
   <require>org.nuxeo.ecm.platform.audit.service.persistence</require>
 
-  <implementation
-    class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
+  <implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents" />
@@ -36,8 +36,7 @@
       event types are selected for auditing.
 
       <programlisting>
-        <extension
-          target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+        <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
           point="event">
           <event name="documentCreated" />
           <event name="documentCreatedByCopy" />
@@ -53,8 +52,7 @@
       </programlisting>
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor" />
+    <object class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor" />
 
   </extension-point>
 
@@ -78,8 +76,7 @@
       register the adapter that will be injected in EL context
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor" />
+    <object class="org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor" />
   </extension-point>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
@@ -107,7 +104,7 @@
     <event name="documentCheckedIn" />
     <event name="versionRemoved" />
     <event name="documentProxyPublished" />
-    <event name="sectionContentPublished" />          
+    <event name="sectionContentPublished" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"

@@ -23,18 +23,18 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Tests the {@link AuditPageProvider}
- * 
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class TestPageProvider extends RepositoryOSGITestCase {
 
-    protected static final List<String> entriesIdx = Arrays.asList(new String[] {"3","7","7","8","1","8","7","9"});
+    protected static final List<String> entriesIdx = Arrays.asList(new String[] {
+            "3", "7", "7", "8", "1", "8", "7", "9" });
 
     protected static final Calendar testDate = Calendar.getInstance();
 
     protected void dump(Object ob) {
-        //System.out.println(ob.toString());
+        // System.out.println(ob.toString());
     }
 
     protected void dump(List<?> obs) {
@@ -51,18 +51,20 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.audit.tests");
         deployBundle("org.nuxeo.ecm.platform.query.api");
 
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "nxaudit-tests.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "test-audit-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
+                "nxaudit-tests.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
+                "test-audit-contrib.xml");
 
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "test-pageprovider-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
+                "test-pageprovider-contrib.xml");
 
         createTestEntries();
     }
 
     @Override
-    public void tearDown() throws Exception
-    {
-        if (session!=null) {
+    public void tearDown() throws Exception {
+        if (session != null) {
             closeSession();
         }
         super.tearDown();
@@ -75,8 +77,9 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
         String query = "select count(log.id) from LogEntry log ";
         List resCount = reader.nativeQuery(query, 1, 20);
-        if (((Long) resCount.get(0)).longValue()>0) {
-            //reader.nativeQuery("DELETE FROM LogEntry log where log.docUUID='uuid'", 1, 20);
+        if (((Long) resCount.get(0)).longValue() > 0) {
+            // reader.nativeQuery("DELETE FROM LogEntry log where log.docUUID='uuid'",
+            // 1, 20);
             return;
         }
 
@@ -88,7 +91,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
             LogEntry entry = new LogEntryImpl();
             entry.setCategory("category" + suffix);
             entry.setEventId("event" + suffix);
-            Calendar eventDate = (Calendar)testDate.clone();
+            Calendar eventDate = (Calendar) testDate.clone();
             eventDate.add(Calendar.DAY_OF_YEAR, Integer.parseInt(suffix));
             entry.setEventDate(eventDate.getTime());
             entry.setDocType("docType" + suffix);
@@ -99,12 +102,14 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
         logger.addLogEntries(entries);
 
-        List res = reader.nativeQuery("select count(log.eventId) from LogEntry log", 1, 20);
+        List res = reader.nativeQuery(
+                "select count(log.eventId) from LogEntry log", 1, 20);
         int count = ((Long) res.get(0)).intValue();
         dump("Audit initialized with " + count + " entries");
         assertEquals(entries.size(), count);
 
-        entries = (List<LogEntry>) reader.nativeQuery("from LogEntry log",0, 10);
+        entries = (List<LogEntry>) reader.nativeQuery("from LogEntry log", 0,
+                10);
         dump(entries);
 
     }
@@ -118,9 +123,12 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals( AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(),
+                gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntries", null,  Long.valueOf(5), Long.valueOf(0), new HashMap<String, Serializable>());
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntries", null,
+                Long.valueOf(5), Long.valueOf(0),
+                new HashMap<String, Serializable>());
 
         assertNotNull(pp);
 
@@ -131,9 +139,12 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
         assertNotNull(entries);
         assertEquals(5, entries.size());
-        assertEquals("category" + entriesIdx.get(0), entries.get(0).getCategory());
-        assertEquals("category" + entriesIdx.get(3), entries.get(3).getCategory());
-        assertEquals("category" + entriesIdx.get(4), entries.get(4).getCategory());
+        assertEquals("category" + entriesIdx.get(0),
+                entries.get(0).getCategory());
+        assertEquals("category" + entriesIdx.get(3),
+                entries.get(3).getCategory());
+        assertEquals("category" + entriesIdx.get(4),
+                entries.get(4).getCategory());
 
         long nbPages = pp.getNumberOfPages();
 
@@ -144,8 +155,10 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         dump(entries);
 
         assertEquals(3, entries.size());
-        assertEquals("category" + entriesIdx.get(0+5), entries.get(0).getCategory());
-        assertEquals("category" + entriesIdx.get(2+5), entries.get(2).getCategory());
+        assertEquals("category" + entriesIdx.get(0 + 5),
+                entries.get(0).getCategory());
+        assertEquals("category" + entriesIdx.get(2 + 5),
+                entries.get(2).getCategory());
 
     }
 
@@ -158,9 +171,12 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals( AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(),
+                gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesInCategory", null,  Long.valueOf(2), Long.valueOf(0), new HashMap<String, Serializable>(), "category7");
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesInCategory",
+                null, Long.valueOf(2), Long.valueOf(0),
+                new HashMap<String, Serializable>(), "category7");
 
         assertNotNull(pp);
 
@@ -198,9 +214,12 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals( AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(),
+                gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesForDocumentInCategory", null,  Long.valueOf(2), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider(
+                "GetAllEntriesForDocumentInCategory", null, Long.valueOf(2),
+                Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
@@ -246,9 +265,12 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals( AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(),
+                gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesForDocumentInCategories", null,  Long.valueOf(2), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider(
+                "GetAllEntriesForDocumentInCategories", null, Long.valueOf(2),
+                Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
@@ -282,7 +304,6 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
-
     public void testProviderWithBetweenDates() throws Exception {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -292,17 +313,20 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals( AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(),
+                gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesBetween2Dates", null,  Long.valueOf(6), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesBetween2Dates",
+                null, Long.valueOf(6), Long.valueOf(0),
+                new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
 
-        Calendar startDate = (Calendar)testDate.clone();
+        Calendar startDate = (Calendar) testDate.clone();
         startDate.add(Calendar.DAY_OF_YEAR, 7);
-        Calendar endDate = (Calendar)testDate.clone();
+        Calendar endDate = (Calendar) testDate.clone();
         endDate.add(Calendar.DAY_OF_YEAR, 9);
 
         searchDoc.setPropertyValue("dc:issued", startDate);
@@ -349,11 +373,10 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(entries);
         assertEquals(2, entries.size());
 
-
         // test with unset startDate
         searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy3");
-        endDate = (Calendar)testDate.clone();
+        endDate = (Calendar) testDate.clone();
         endDate.add(Calendar.DAY_OF_YEAR, 4);
         searchDoc.setPropertyValue("dc:valid", endDate);
         searchDoc = session.createDocument(searchDoc);
@@ -370,11 +393,10 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         nbPages = pp.getNumberOfPages();
         assertEquals(1, nbPages);
 
-
         // test with unset endDate
         searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy3");
-        startDate = (Calendar)testDate.clone();
+        startDate = (Calendar) testDate.clone();
         startDate.add(Calendar.DAY_OF_YEAR, 4);
         searchDoc.setPropertyValue("dc:issued", startDate);
         searchDoc = session.createDocument(searchDoc);
@@ -391,7 +413,6 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         nbPages = pp.getNumberOfPages();
         assertEquals(1, nbPages);
 
-
     }
 
     public void testDocumentHistoryPageProvider() throws Exception {
@@ -403,17 +424,20 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals( DocumentHistoryPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(DocumentHistoryPageProvider.class.getSimpleName(),
+                gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,  Long.valueOf(6), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER",
+                null, Long.valueOf(6), Long.valueOf(0),
+                new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
 
-        Calendar startDate = (Calendar)testDate.clone();
+        Calendar startDate = (Calendar) testDate.clone();
         startDate.add(Calendar.DAY_OF_YEAR, 7);
-        Calendar endDate = (Calendar)testDate.clone();
+        Calendar endDate = (Calendar) testDate.clone();
         endDate.add(Calendar.DAY_OF_YEAR, 9);
 
         searchDoc.setPropertyValue("bas:startDate", startDate);

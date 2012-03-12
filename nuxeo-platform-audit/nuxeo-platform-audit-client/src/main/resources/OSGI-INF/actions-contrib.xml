@@ -5,7 +5,7 @@
     NXAudit action contributions.
 
     @version 1.0
-    @author Julien Anguenot
+    @author Julien  Anguenot
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
