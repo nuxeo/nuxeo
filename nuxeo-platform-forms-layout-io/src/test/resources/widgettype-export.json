@@ -22,6 +22,7 @@
       "view"
     ],
     "acceptingSubWidgets": true,
+    "containingForm": true,
     "fields":     {
       "list": false,
       "complex": false,

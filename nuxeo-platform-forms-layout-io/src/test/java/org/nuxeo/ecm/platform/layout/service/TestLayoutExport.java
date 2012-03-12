@@ -150,6 +150,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals("view", supportedModes.get(1));
 
         assertTrue(conf.isAcceptingSubWidgets());
+        assertTrue(conf.isContainingForm());
 
         List<String> cats = conf.getCategories();
         assertNotNull(cats);

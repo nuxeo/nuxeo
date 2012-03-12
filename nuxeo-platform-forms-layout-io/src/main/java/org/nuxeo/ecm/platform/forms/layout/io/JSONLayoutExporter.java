@@ -171,6 +171,7 @@ public class JSONLayoutExporter {
         }
 
         json.element("acceptingSubWidgets", conf.isAcceptingSubWidgets());
+        json.element("containingForm", conf.isContainingForm());
 
         JSONObject fields = new JSONObject();
         fields.element("list", conf.isList());
@@ -246,7 +247,7 @@ public class JSONLayoutExporter {
         if (conf == null) {
             return new WidgetTypeConfigurationImpl(null, null, null, null,
                     false, Collections.EMPTY_MAP, Collections.EMPTY_LIST,
-                    false, false, false, Collections.EMPTY_LIST,
+                    false, false, false, false, Collections.EMPTY_LIST,
                     Collections.EMPTY_LIST, Collections.EMPTY_LIST,
                     Collections.EMPTY_LIST, Collections.EMPTY_MAP);
         }
@@ -274,6 +275,7 @@ public class JSONLayoutExporter {
 
         boolean acceptingSubWidgets = conf.optBoolean("acceptingSubWidgets",
                 false);
+        boolean containingForm = conf.optBoolean("containingForm", false);
 
         JSONObject fields = conf.optJSONObject("fields");
         boolean list = false;
@@ -328,7 +330,7 @@ public class JSONLayoutExporter {
         WidgetTypeConfiguration res = new WidgetTypeConfigurationImpl(
                 sinceVersion, title, description, demoId, demoPreviewEnabled,
                 confProps, confSupportedModes, acceptingSubWidgets, list,
-                complex, confSupportedTypes, confDefaultTypes,
+                complex, containingForm, confSupportedTypes, confDefaultTypes,
                 defaultFieldDefinitions, confCats, confLayouts);
 
         return res;

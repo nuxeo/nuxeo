@@ -65,7 +65,6 @@ package org.nuxeo.ecm.platform.forms.layout.io;
  * @version 2.1
  * @since 5.6, moved from org.nuxeo.common.utils
  */
-@SuppressWarnings({"ALL"})
 public class Base64
 {
 

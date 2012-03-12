@@ -48,6 +48,7 @@
           <mode>view</mode>
         </supportedModes>
         <acceptingSubWidgets>true</acceptingSubWidgets>
+        <containingForm>true</containingForm>
         <fields>
           <list>false</list>
           <complex>false</complex>
