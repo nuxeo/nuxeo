@@ -132,25 +132,44 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
         for (TemplateInput param : params) {
             if (param.isSourceValue()) {
-                if (param.getType() == InputType.Content
-                        && ContentInputType.HtmlPreview.getValue().equals(
-                                param.getSource())) {
-                    HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(
-                            HtmlPreviewAdapter.class);
-                    String htmlValue = "";
-                    if (preview != null) {
-                        List<Blob> blobs = preview.getFilePreviewBlobs();
-                        if (blobs.size() > 0) {
-                            Blob htmlBlob = preview.getFilePreviewBlobs().get(0);
-                            if (htmlBlob != null) {
-                                htmlValue = htmlBlob.getString();
+                if (param.getType() == InputType.Content) {
+
+                    if (ContentInputType.HtmlPreview.getValue().equals(
+                            param.getSource())) {
+                        HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(
+                                HtmlPreviewAdapter.class);
+                        String htmlValue = "";
+                        if (preview != null) {
+                            List<Blob> blobs = preview.getFilePreviewBlobs();
+                            if (blobs.size() > 0) {
+                                Blob htmlBlob = preview.getFilePreviewBlobs().get(
+                                        0);
+                                if (htmlBlob != null) {
+                                    htmlValue = htmlBlob.getString();
+                                }
                             }
                         }
+                        context.put(param.getName(), htmlValue);
+                        metadata.addFieldAsTextStyling(param.getName(),
+                                SyntaxKind.Html);
+                        continue;
+                    } else if (ContentInputType.BlobContent.getValue().equals(
+                            param.getSource())) {
+                        Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(
+                                param.getSource());
+                        if (propValue != null && propValue instanceof Blob) {
+                            Blob blobValue = (Blob) propValue;
+                            context.put(param.getName(), blobValue.getString());
+                            if ("text/html".equals(blobValue.getMimeType())) {
+                                metadata.addFieldAsTextStyling(param.getName(),
+                                        SyntaxKind.Html);
+                            }
+                        }
+                    } else {
+                        Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(
+                                param.getSource());
+                        context.put(param.getName(), propValue);
                     }
-                    context.put(param.getName(), htmlValue);
-                    metadata.addFieldAsTextStyling(param.getName(),
-                            SyntaxKind.Html);
-                    continue;
                 }
                 Property property = null;
                 try {
@@ -255,5 +274,4 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         Framework.trackFile(generated, newBlob);
         return newBlob;
     }
-
 }

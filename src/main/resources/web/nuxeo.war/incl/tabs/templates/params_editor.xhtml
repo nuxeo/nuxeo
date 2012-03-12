@@ -7,6 +7,7 @@
     xmlns:nxu="http://nuxeo.org/nxweb/util"
     xmlns:c="http://java.sun.com/jstl/core">
 
+            <script src="/nuxeo/scripts/template-edit-param.js"></script>
             <h:form enctype="multipart/form-data" id="params_edit">
                 <nxu:repeat var="param" value="#{templateActions.templateEditableInputs}">
                     <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
@@ -36,7 +37,7 @@
                     <f:selectItem itemLabel="Date value" itemValue="Date"/>
                     <f:selectItem itemLabel="Document property binding" itemValue="source"/>
                     <f:selectItem itemLabel="Picture property binding" itemValue="picture"/>
-                    <f:selectItem itemLabel="Include" itemValue="include"/>
+                    <f:selectItem itemLabel="Include" itemValue="content"/>
                 </h:selectOneMenu>
                 </p>
                 <p class="buttonsGadget">

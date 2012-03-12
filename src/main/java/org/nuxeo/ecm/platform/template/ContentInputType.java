@@ -22,13 +22,12 @@ import java.util.EnumSet;
 
 /**
  * Enum for types on Content associated to a {@link TemplateInput}
- *
+ * 
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public enum ContentInputType {
 
-    HtmlPreview ("htmlPreview"),
-    RawBlob ("raw");
+    HtmlPreview("htmlPreview"), BlobContent("blobContent");
 
     private final String value;
 
@@ -45,7 +44,7 @@ public enum ContentInputType {
         return value;
     }
 
-    public static ContentInputType getByValue(String value){
+    public static ContentInputType getByValue(String value) {
         ContentInputType returnValue = null;
         for (final ContentInputType element : EnumSet.allOf(ContentInputType.class)) {
             if (element.toString().equals(value)) {

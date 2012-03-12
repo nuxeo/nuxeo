@@ -27,9 +27,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Represents input parameters of a Template. Inputs parameters have an
  * {@link InputType}, a name an a value. Value can be a xpath pointing to a
  * {@link DocumentModel} property.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class TemplateInput implements Serializable {
 
@@ -49,10 +49,10 @@ public class TemplateInput implements Serializable {
 
     protected String desciption;
 
-    protected boolean readOnly;    
-    
-    protected boolean autoLoop = false; 
-    
+    protected boolean readOnly;
+
+    protected boolean autoLoop = false;
+
     public TemplateInput(String name) {
         this.name = name;
     }
@@ -80,7 +80,7 @@ public class TemplateInput implements Serializable {
         item.stringValue = stringValue;
         item.type = type;
         item.readOnly = readOnly;
-        item.autoLoop=autoLoop;
+        item.autoLoop = autoLoop;
         return item;
     }
 
@@ -158,6 +158,9 @@ public class TemplateInput implements Serializable {
     }
 
     public String getTypeAsString() {
+        if (type == null) {
+            return "";
+        }
         return type.toString();
     }
 
@@ -188,7 +191,8 @@ public class TemplateInput implements Serializable {
 
     public boolean isSet() {
         return source != null || dateValue != null || booleanValue != null
-                || stringValue != null || (stringValue!=null && !stringValue.isEmpty());
+                || stringValue != null
+                || (stringValue != null && !stringValue.isEmpty());
     }
 
     public boolean isAutoLoop() {
@@ -198,6 +202,5 @@ public class TemplateInput implements Serializable {
     public void setAutoLoop(boolean autoLoop) {
         this.autoLoop = autoLoop;
     }
-        
-    
+
 }
