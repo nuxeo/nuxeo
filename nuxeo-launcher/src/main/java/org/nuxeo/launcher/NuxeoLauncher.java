@@ -39,7 +39,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -72,7 +71,7 @@ public abstract class NuxeoLauncher {
 
     // Fallback to avoid an error when the log dir is not initialized
     static {
-        if (System.getProperty(Environment.NUXEO_LOG_DIR)==null) {
+        if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
             System.setProperty(Environment.NUXEO_LOG_DIR, ".");
         }
     }
@@ -439,21 +438,38 @@ public abstract class NuxeoLauncher {
         return cp;
     }
 
+    /**
+     * @since 5.6
+     */
     protected static void initParserOptions() {
         if (launcherOptions == null) {
             launcherOptions = new Options();
-            Option helpOption = OptionBuilder.withLongOpt("help").withDescription("Show detailed help").create("h");
-            Option quietOption = OptionBuilder.withLongOpt("quiet").withDescription("Suppress information messages").create("q");
-            Option debugOption = OptionBuilder.withLongOpt("debug").withDescription("Activate debug messages").create("d");
-            Option guiOption = OptionBuilder.withLongOpt("gui").hasArg().withArgName("true|false").withDescription("Use graphical interface").create();
-            launcherOptions.addOption(helpOption);
-            launcherOptions.addOption(quietOption);
-            launcherOptions.addOption(debugOption);
-            launcherOptions.addOption(guiOption);
+            // help option
+            OptionBuilder.withLongOpt("help");
+            OptionBuilder.withDescription("Show detailed help");
+            launcherOptions.addOption(OptionBuilder.create("h"));
+            // Quiet option
+            OptionBuilder.withLongOpt("quiet");
+            OptionBuilder.withDescription("Suppress information messages");
+            launcherOptions.addOption(OptionBuilder.create("q"));
+            // Debug option
+            OptionBuilder.withLongOpt("debug");
+            OptionBuilder.withDescription("Activate debug messages");
+            launcherOptions.addOption(OptionBuilder.create("d"));
+            // GUI option
+            OptionBuilder.withLongOpt("gui");
+            OptionBuilder.hasArg();
+            OptionBuilder.withArgName("true|false");
+            OptionBuilder.withDescription("Use graphical interface");
+            launcherOptions.addOption(OptionBuilder.create());
         }
     }
 
-    protected static CommandLine parseOptions(String[] args) throws ParseException {
+    /**
+     * @since 5.6
+     */
+    protected static CommandLine parseOptions(String[] args)
+            throws ParseException {
         initParserOptions();
         CommandLineParser parser = new PosixParser();
         CommandLine cmdLine = null;
@@ -479,7 +495,7 @@ public abstract class NuxeoLauncher {
             printShortHelp();
             stopAfterParsing = true;
         } catch (ParseException e) {
-            log.error("Error while parsing command line: "+e.getMessage());
+            log.error("Error while parsing command line: " + e.getMessage());
             printShortHelp();
             stopAfterParsing = true;
         } finally {
@@ -835,7 +851,8 @@ public abstract class NuxeoLauncher {
         boolean serverStarted = false;
         try {
             if (reloadConfiguration) {
-                configurationGenerator = new ConfigurationGenerator(quiet, debug);
+                configurationGenerator = new ConfigurationGenerator(quiet,
+                        debug);
                 configurationGenerator.init();
             } else {
                 // Ensure reload on next start
@@ -1307,16 +1324,29 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * @throws ParseException
+     * @throws ConfigurationException
+     * @deprecated since 5.6; use {@link #createLauncher(CommandLine)} instead
+     * @since 5.5
+     */
+    @Deprecated
+    public static NuxeoLauncher createLauncher(String[] args)
+            throws ConfigurationException, ParseException {
+        return createLauncher(parseOptions(args));
+    }
+
+    /**
      * @param cmdLine Program arguments
      * @return a NuxeoLauncher instance specific to current server (JBoss,
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
-     * @since 5.5
+     * @since 5.6
      */
     public static NuxeoLauncher createLauncher(CommandLine cmdLine)
             throws ConfigurationException {
         NuxeoLauncher launcher;
-        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator(quiet, debug);
+        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator(
+                quiet, debug);
         if (configurationGenerator.isJBoss) {
             launcher = new NuxeoJBossLauncher(configurationGenerator);
         } else if (configurationGenerator.isJetty) {
@@ -1324,7 +1354,7 @@ public abstract class NuxeoLauncher {
         } else if (configurationGenerator.isTomcat) {
             launcher = new NuxeoTomcatLauncher(configurationGenerator);
         } else {
-            throw new ConfigurationException("Unknown server !");
+            throw new ConfigurationException("Unknown server!");
         }
         launcher.setArgs(cmdLine);
         configurationGenerator.init();
@@ -1356,7 +1386,8 @@ public abstract class NuxeoLauncher {
         }
         if (cmdLine.hasOption("gui")) {
             useGui = Boolean.valueOf(cmdLine.getOptionValue("gui"));
-            log.debug("GUI: " + cmdLine.getOptionValue("gui") + " -> " + new Boolean(useGui).toString());
+            log.debug("GUI: " + cmdLine.getOptionValue("gui") + " -> "
+                    + new Boolean(useGui).toString());
         } else {
             if (PlatformUtils.isWindows()) {
                 useGui = true;
