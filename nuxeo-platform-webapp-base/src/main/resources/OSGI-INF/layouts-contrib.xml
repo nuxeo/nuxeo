@@ -1038,6 +1038,7 @@
         <categories>
           <category>tab_designer</category>
         </categories>
+        <containingForm>true</containingForm>
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
@@ -1403,6 +1404,7 @@
         <categories>
           <category>tab_designer</category>
         </categories>
+        <containingForm>true</containingForm>
         <supportedModes>
           <mode>view</mode>
           <mode>edit</mode>

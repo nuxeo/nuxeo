@@ -171,7 +171,9 @@ public class JSONLayoutExporter {
         }
 
         json.element("acceptingSubWidgets", conf.isAcceptingSubWidgets());
-        json.element("containingForm", conf.isContainingForm());
+        if (conf.isContainingForm()) {
+            json.element("containingForm", true);
+        }
 
         JSONObject fields = new JSONObject();
         fields.element("list", conf.isList());
