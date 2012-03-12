@@ -226,7 +226,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         CoreSession coreSession = null;
         if (rm != null) {
-            // FIXME: this session is never closed?
+            // this session will be closed in the release method
             coreSession = rm.getDefaultRepository().open();
         }
 
@@ -254,6 +254,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
             liveTrees.remove(sid);
         }
         if (remoteLiveTrees.containsKey(sid)) {
+            // close here session opened for remote trees
             String sessionId = remoteLiveTrees.get(sid);
             CoreSession remoteSession = CoreInstance.getInstance().getSession(
                     sessionId);
