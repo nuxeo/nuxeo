@@ -23,7 +23,6 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,20 +35,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.UnrecognizedOptionException;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.ParseException;
 import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
@@ -398,6 +397,11 @@ public abstract class NuxeoLauncher {
     }
 
     protected abstract String getClassPath();
+
+    /**
+     * @since 5.6
+     */
+    protected abstract String getShutdownClassPath();
 
     protected Collection<? extends String> getNuxeoProperties() {
         ArrayList<String> nuxeoProperties = new ArrayList<String>();
@@ -1156,7 +1160,7 @@ public abstract class NuxeoLauncher {
                 List<String> stopCommand = new ArrayList<String>();
                 stopCommand.add(getJavaExecutable().getPath());
                 stopCommand.add("-cp");
-                stopCommand.add(getClassPath());
+                stopCommand.add(getShutdownClassPath());
                 stopCommand.addAll(getNuxeoProperties());
                 stopCommand.addAll(getServerProperties());
                 setServerStopCommand(stopCommand);

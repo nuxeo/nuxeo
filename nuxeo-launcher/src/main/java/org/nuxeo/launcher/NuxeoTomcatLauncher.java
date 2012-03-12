@@ -80,4 +80,8 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
         return TomcatConfigurator.STARTUP_CLASS;
     }
 
+    @Override
+    protected String getShutdownClassPath() {
+        return getClassPath();
+    }
 }
