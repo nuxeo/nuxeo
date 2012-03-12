@@ -45,6 +45,7 @@ import org.w3c.dom.DocumentFragment;
  * @since 5.4
  */
 @XObject("configuration")
+@SuppressWarnings("deprecation")
 public class WidgetTypeConfigurationDescriptor {
 
     private static final Log log = LogFactory.getLog(WidgetTypeConfigurationDescriptor.class);
@@ -75,6 +76,9 @@ public class WidgetTypeConfigurationDescriptor {
 
     @XNode("fields/complex")
     boolean complex = false;
+
+    @XNode("containingForm")
+    boolean containingForm = false;
 
     @XNodeList(value = "fields/supportedTypes/type", type = ArrayList.class, componentType = String.class)
     List<String> supportedFieldTypes;
@@ -134,6 +138,10 @@ public class WidgetTypeConfigurationDescriptor {
 
     public boolean isList() {
         return list;
+    }
+
+    public boolean isContainingForm() {
+        return containingForm;
     }
 
     public List<String> getDefaultFieldTypes() {
@@ -220,8 +228,8 @@ public class WidgetTypeConfigurationDescriptor {
                 getDescription(), getDemoId(), isDemoPreviewEnabled(),
                 getConfProperties(), getSupportedModes(),
                 isAcceptingSubWidgets(), isList(), isComplex(),
-                getSupportedFieldTypes(), getDefaultFieldTypes(),
-                getDefaultFieldDefinitions(), getCategories(),
-                getPropertyLayouts());
+                isContainingForm(), getSupportedFieldTypes(),
+                getDefaultFieldTypes(), getDefaultFieldDefinitions(),
+                getCategories(), getPropertyLayouts());
     }
 }

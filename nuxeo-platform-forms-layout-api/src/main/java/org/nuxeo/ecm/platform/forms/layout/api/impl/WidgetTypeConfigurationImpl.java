@@ -41,6 +41,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected boolean complex = false;
 
+    protected boolean containingForm = false;
+
     protected List<String> supportedFieldTypes;
 
     protected List<String> defaultFieldTypes;
@@ -60,7 +62,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
             String description, String demoId, boolean demoPreviewEnabled,
             Map<String, Serializable> properties, List<String> supportedModes,
             boolean acceptingSubWidgets, boolean list, boolean complex,
-            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
+            boolean containingForm, List<String> supportedFieldTypes,
+            List<String> defaultFieldTypes,
             List<FieldDefinition> defaultFieldDefinitions,
             List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
@@ -75,6 +78,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         this.acceptingSubWidgets = acceptingSubWidgets;
         this.list = list;
         this.complex = complex;
+        this.containingForm = containingForm;
         this.supportedFieldTypes = supportedFieldTypes;
         this.defaultFieldTypes = defaultFieldTypes;
         this.defaultFieldDefinitions = defaultFieldDefinitions;
@@ -134,6 +138,10 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     public boolean isComplex() {
         return complex;
+    }
+
+    public boolean isContainingForm() {
+        return containingForm;
     }
 
     public List<String> getSupportedFieldTypes() {

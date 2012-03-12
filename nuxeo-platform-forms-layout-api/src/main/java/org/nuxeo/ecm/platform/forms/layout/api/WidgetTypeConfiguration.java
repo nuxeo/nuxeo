@@ -59,6 +59,18 @@ public interface WidgetTypeConfiguration extends Serializable {
 
     boolean isComplex();
 
+    /**
+     * Returns true if widget will be containing forms.
+     * <p>
+     * Since forms cannot contains any sub forms, layouts using this widget
+     * should not be surrounded by any form. Other widgets in the same layouts
+     * not containing forms may then need a surrounding form that could be
+     * added by the layout template.
+     *
+     * @since 5.6
+     */
+    boolean isContainingForm();
+
     List<String> getSupportedFieldTypes();
 
     List<String> getDefaultFieldTypes();
