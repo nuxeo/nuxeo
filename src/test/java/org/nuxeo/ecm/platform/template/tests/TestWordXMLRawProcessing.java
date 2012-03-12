@@ -96,7 +96,7 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
         String xmlContent = processor.readPropertyFile(newBlob.getStream());
 
-        System.out.println(xmlContent);
+        // System.out.println(xmlContent);
 
         assertTrue(xmlContent.contains("name=\"sName_of_Licensee\"><vt:lpwstr>John Smith</vt:lpwstr>"));
         assertTrue(xmlContent.contains("name=\"name_of_the_call\"><vt:lpwstr>some description</vt:lpwstr>"));

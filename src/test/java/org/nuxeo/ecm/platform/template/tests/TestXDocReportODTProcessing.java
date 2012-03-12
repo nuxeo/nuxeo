@@ -29,7 +29,7 @@ public class TestXDocReportODTProcessing extends SimpleTemplateDocTestCase {
 
         Blob newBlob = processor.renderTemplate(adapter);
 
-        System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
+        // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob,
                 ZipXmlHelper.OOO_MAIN_FILE);
@@ -39,7 +39,7 @@ public class TestXDocReportODTProcessing extends SimpleTemplateDocTestCase {
         assertTrue(xmlContent.contains("The boolean var is false"));
         assertTrue(xmlContent.contains("xlink:href=\"Pictures/xdocreport_0.jpg\""));
 
-        System.out.println(xmlContent);
+        // System.out.println(xmlContent);
 
     }
 

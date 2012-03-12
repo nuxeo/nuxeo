@@ -80,7 +80,8 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         testDoc.setProperty("dublincore", "title", "MyTestNote2");
         testDoc.setProperty("dublincore", "description", "Simple note sample");
 
-        //File mdfile = FileUtils.getResourceFileFromContext("data/MDSample.md");
+        // File mdfile =
+        // FileUtils.getResourceFileFromContext("data/MDSample.md");
         File mdfile = FileUtils.getResourceFileFromContext("data/debug.md");
         Blob mdfileBlob = new FileBlob(mdfile);
 
@@ -121,7 +122,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         source.initTemplate(true);
 
         List<TemplateInput> params = source.getParams();
-        System.out.println(params);
+        // System.out.println(params);
         assertEquals(1, params.size());
         // assertEquals(InputType.PictureProperty, params.get(0).getType());
         // assertEquals(InputType.Include, params.get(1).getType());
@@ -157,10 +158,10 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
                 ZipXmlHelper.OOO_MAIN_FILE);
 
         // verify that note content has been merged in ODT
-        //assertTrue(xmlContent.contains("TemplateBasedDocument"));
-        //assertTrue(xmlContent.contains(testDoc.getTitle()));
+        // assertTrue(xmlContent.contains("TemplateBasedDocument"));
+        // assertTrue(xmlContent.contains(testDoc.getTitle()));
 
-        File testFile = new File ("/tmp/testOOo.odt");
+        File testFile = new File("/tmp/testOOo.odt");
         blob.transferTo(testFile);
 
     }

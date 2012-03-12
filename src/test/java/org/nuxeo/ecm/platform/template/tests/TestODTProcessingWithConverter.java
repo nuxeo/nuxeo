@@ -145,7 +145,7 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         source.initTemplate(true);
 
         List<TemplateInput> params = source.getParams();
-        System.out.println(params);
+        // System.out.println(params);
         assertEquals(1, params.size());
 
         params.get(0).setType(InputType.Content);

@@ -21,7 +21,7 @@ public class TestFreemarkerVariableExractor extends TestCase {
 
         List<String> vars = FreeMarkerVariableExtractor.extractVariables(content);
 
-        System.out.println(vars);
+        // System.out.println(vars);
 
         assertTrue(vars.contains("simpleVar"));
         assertTrue(vars.contains("objectVar"));

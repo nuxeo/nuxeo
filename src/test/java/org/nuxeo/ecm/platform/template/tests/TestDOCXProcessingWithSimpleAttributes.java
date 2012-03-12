@@ -19,7 +19,7 @@ public class TestDOCXProcessingWithSimpleAttributes extends
 
         Blob newBlob = adapter.renderAndStoreAsAttachment(true);
 
-        System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
+        // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob,
                 ZipXmlHelper.DOCX_MAIN_FILE);

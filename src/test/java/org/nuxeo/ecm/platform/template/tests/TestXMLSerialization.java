@@ -44,7 +44,7 @@ public class TestXMLSerialization extends TestCase {
 
         String xml = XMLSerializer.serialize(params);
 
-        System.out.println(xml);
+        // System.out.println(xml);
 
         List<TemplateInput> params2 = XMLSerializer.readFromXml(xml);
         assertNotNull(params2);
