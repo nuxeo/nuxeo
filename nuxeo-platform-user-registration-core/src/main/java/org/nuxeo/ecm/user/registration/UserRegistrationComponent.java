@@ -16,6 +16,7 @@
 
 package org.nuxeo.ecm.user.registration;
 
+import static org.nuxeo.ecm.user.registration.RegistrationRules.FACET_REGISTRATION_RULES;
 import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.EMAIL_FIELD;
 import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.SCHEMA_NAME;
 import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.USERNAME_FIELD;
@@ -97,8 +98,44 @@ public class UserRegistrationComponent extends DefaultComponent implements
         return repoName;
     }
 
+    protected boolean userAlreadyExists(
+            UserRegistrationInfo userRegistrationInfo) {
+        try {
+            DocumentModel user = Framework.getLocalService(UserManager.class).getUserModel(
+                    userRegistrationInfo.getLogin());
+            return user != null;
+        } catch (ClientException e) {
+            log.debug(e, e);
+            return false;
+        }
+    }
+
     protected String getJavaMailJndiName() {
         return Framework.getProperty("jndi.java.mail", "java:/Mail");
+    }
+
+    protected DocumentModel getOrCreateRootDocument(CoreSession session)
+            throws ClientException {
+        String targetPath = getRootPath() + configuration.getContainerName();
+        DocumentRef targetRef = new PathRef(targetPath);
+        DocumentModel root;
+
+        if (!session.exists(targetRef)) {
+            root = session.createDocumentModel(configuration.getContainerDocType());
+            root.setPathInfo(getRootPath(), configuration.getContainerName());
+            root.setPropertyValue("dc:title", configuration.getContainerTitle());
+            // XXX ACLs ?!!!
+            root = session.createDocument(root);
+        } else {
+            root = session.getDocument(targetRef);
+        }
+
+        // Add configuration facet
+        if (!root.hasFacet(FACET_REGISTRATION_RULES)) {
+            root.addFacet(FACET_REGISTRATION_RULES);
+            root = session.saveDocument(root);
+        }
+        return root;
     }
 
     protected class RegistrationCreator extends UnrestrictedSessionRunner {
@@ -128,24 +165,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
             this.docInfo = docInfo;
         }
 
-        protected String getOrCreateRootPath() throws ClientException {
-
-            String targetPath = getRootPath()
-                    + configuration.getContainerName();
-            DocumentRef targetRef = new PathRef(targetPath);
-
-            if (!session.exists(targetRef)) {
-                DocumentModel root = session.createDocumentModel(configuration.getContainerDocType());
-                root.setPathInfo(getRootPath(),
-                        configuration.getContainerName());
-                root.setPropertyValue("dc:title",
-                        configuration.getContainerTitle());
-                // XXX ACLs ?!!!
-                root = session.createDocument(root);
-            }
-            return targetPath;
-        }
-
         @Override
         public void run() throws ClientException {
 
@@ -155,7 +174,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             String name = IdUtils.generateId(title + "-"
                     + System.currentTimeMillis());
 
-            String targetPath = getOrCreateRootPath();
+            String targetPath = getOrCreateRootDocument(session).getPathAsString();
 
             DocumentModel doc = session.createDocumentModel(configuration.getRequestDocType());
             doc.setPathInfo(targetPath, name);
@@ -420,6 +439,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
+        boolean userAlreadyExists = false;
         if (autoAccept) {
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
@@ -538,16 +558,43 @@ public class UserRegistrationComponent extends DefaultComponent implements
         }
     }
 
+    protected class RootDocumentGetter extends UnrestrictedSessionRunner {
+
+        DocumentModel doc;
+
+        protected RootDocumentGetter() {
+            super(getTargetRepositoryName());
+        }
+
+        @Override
+        public void run() throws ClientException {
+            doc = getOrCreateRootDocument(session);
+            doc.detach(true);
+        }
+
+        public DocumentModel getDoc() {
+            return doc;
+        }
+    }
+
     @Override
     public UserRegistrationConfiguration getConfiguration() {
         return configuration;
     }
 
     @Override
+    public RegistrationRules getRegistrationRules() throws ClientException {
+        RootDocumentGetter rdg = new RootDocumentGetter();
+        rdg.runUnrestricted();
+        return rdg.getDoc().getAdapter(RegistrationRules.class);
+    }
+
+    @Override
     public void reviveRegistrationRequests(CoreSession session,
             List<DocumentModel> registrationDocs) throws ClientException {
         for (DocumentModel registrationDoc : registrationDocs) {
-            reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Object>());
+            reviveRegistrationRequest(session, registrationDoc,
+                    new HashMap<String, Object>());
         }
     }
 

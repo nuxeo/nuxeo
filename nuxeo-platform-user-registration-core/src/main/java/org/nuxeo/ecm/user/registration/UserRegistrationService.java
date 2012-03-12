@@ -107,4 +107,10 @@ public interface UserRegistrationService {
     void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) throws ClientException;
 
     UserRegistrationConfiguration getConfiguration();
+
+    /**
+     * Get registration rules adapter
+     * @since 5.6
+     */
+    RegistrationRules getRegistrationRules() throws ClientException;
 }

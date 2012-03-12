@@ -8,7 +8,9 @@
     <schema name="userinfo" src="schemas/userinfo.xsd"
       prefix="userinfo" />
     <schema name="docinfo" src="schemas/docinfo.xsd"
-          prefix="docinfo" />
+      prefix="docinfo" />
+    <schema name="registrationrules" src="schemas/registrationrules.xsd"
+      prefix="registrationrules" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
@@ -16,6 +18,10 @@
       <schema name="userinfo" />
       <schema name="docinfo" />
       <schema name="registration" />
+    </facet>
+
+    <facet name="RegistrationConfiguration">
+      <schema name="registrationrules" />
     </facet>
   </extension>
 </component>
