@@ -22,10 +22,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.ProxySelector;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.google.inject.Injector;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -43,8 +42,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import com.google.inject.Injector;
 
 public class OpenSocialServiceImpl extends DefaultComponent implements
         OpenSocialService {
@@ -132,10 +129,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     public String getKeyForContainer(String defaultContainer) {
         return keys.get(defaultContainer);
-    }
-
-    public ProxySelector getProxySelector() {
-        return new SimpleProxySelector();
     }
 
     public void setupOpenSocial() throws Exception {

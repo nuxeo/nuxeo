@@ -20,20 +20,20 @@ package org.nuxeo.opensocial.shindig.gadgets;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Proxy;
-import java.net.ProxySelector;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.internal.Preconditions;
+import com.google.inject.name.Named;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -49,12 +49,7 @@ import org.apache.shindig.gadgets.http.HttpFetcher;
 import org.apache.shindig.gadgets.http.HttpRequest;
 import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.HttpResponseBuilder;
-import org.nuxeo.runtime.api.Framework;
-
-import com.google.common.collect.Maps;
-import com.google.inject.Inject;
-import com.google.inject.internal.Preconditions;
-import com.google.inject.name.Named;
+import org.nuxeo.opensocial.helper.ProxyHelper;
 
 /**
  * We have to copy BasicHttpFetcher because we must override the way proxy is
@@ -210,27 +205,7 @@ public class NXHttpFetcher implements HttpFetcher {
         String methodType = request.getMethod();
         String requestUri = request.getUri().toString();
 
-        // Select a proxy based on the URI. May be Proxy.NO_PROXY
-        Proxy proxy = ProxySelector.getDefault().select(
-                request.getUri().toJavaUri()).get(0);
-
-        /**
-         * Nuxeo Specific code to correctly handle proxy authentication
-         */
-        if (proxy != Proxy.NO_PROXY) {
-            String proxyHost = Framework.getProperty(SHINDIG_PROXY_PROXY_HOST);
-            int proxyPort = Integer.parseInt(Framework.getProperty(SHINDIG_PROXY_PORT));
-
-            String proxyUser = Framework.getProperty(SHINDIG_PROXY_USER);
-            String proxyPass = Framework.getProperty(SHINDIG_PROXY_PASSWORD);
-
-            httpClient.getHostConfiguration().setProxy(proxyHost, proxyPort);
-            httpClient.getState().setProxyCredentials(
-                    new AuthScope(proxyHost, proxyPort, null),
-                    new UsernamePasswordCredentials(proxyUser, proxyPass));
-        } else {
-            httpClient.getHostConfiguration().setProxyHost(null);
-        }
+        ProxyHelper.fillProxy(httpClient, requestUri);
 
         // true for non-HEAD requests
         boolean requestCompressedContent = true;

@@ -18,13 +18,10 @@
 package org.nuxeo.opensocial.service.api;
 
 import java.io.File;
-import java.net.ProxySelector;
-
+import com.google.inject.Injector;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
-
-import com.google.inject.Injector;
 
 public interface OpenSocialService {
 
@@ -37,11 +34,6 @@ public interface OpenSocialService {
      * Specify the GUICE injector to user for the service
      */
     void setInjector(Injector injector);
-
-    /**
-     * Returns the proxy settings if set
-     */
-    ProxySelector getProxySelector();
 
     /**
      * Returns a file handle to the base64 encoded key that is used to sign

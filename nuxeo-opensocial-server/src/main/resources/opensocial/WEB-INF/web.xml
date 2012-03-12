@@ -21,7 +21,6 @@
     <param-name>guice-modules</param-name>
     <param-value>
       org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
-      org.nuxeo.opensocial.shindig.ProxyModule:
       org.apache.shindig.social.core.config.SocialApiGuiceModule:
       org.nuxeo.opensocial.services.NuxeoServiceModule:
       org.nuxeo.opensocial.services.NuxeoCryptoModule:
