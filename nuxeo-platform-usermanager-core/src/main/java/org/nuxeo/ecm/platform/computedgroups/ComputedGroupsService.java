@@ -41,6 +41,11 @@ public interface ComputedGroupsService {
     List<String> computeGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal);
 
     /**
+     * Update the virtual groups of the user with the computed groups.
+     */
+    void updateGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal);
+
+    /**
      * Resolves a computed group by it's name.
      */
     NuxeoGroup getComputedGroup(String groupName);
