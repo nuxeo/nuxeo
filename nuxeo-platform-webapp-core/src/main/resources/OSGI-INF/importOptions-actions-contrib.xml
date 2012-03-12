@@ -39,6 +39,15 @@
    <action id="BlobHolder.Attach"
       link=""
       order="10" label="label.dnd.attach"
+      help="desc.dnd.attach"
+      enabled="false">
+      <category>mainBlob</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>user_canedit</filter-id>
+   </action>
+   <action id="Chain.VersionAndAttachFile"
+      link=""
+      order="10" label="label.dnd.attach"
       help="desc.dnd.attach">
       <category>mainBlob</category>
       <filter-id>mutable_document</filter-id>
@@ -48,6 +57,15 @@
       link=""
       order="10" label="label.dnd.attachfiles"
       help="desc.dnd.attachfiles">
+      <category>otherBlobs</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>user_canedit</filter-id>
+   </action>
+   <action id="Chain.VersionAndAttachFiles"
+      link=""
+      order="10" label="label.dnd.attachfiles"
+      help="desc.dnd.attachfiles"
+      enabled="false">
       <category>otherBlobs</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>user_canedit</filter-id>
