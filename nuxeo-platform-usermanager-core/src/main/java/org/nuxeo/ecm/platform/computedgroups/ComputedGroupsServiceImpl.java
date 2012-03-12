@@ -22,12 +22,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -94,6 +96,21 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                     + nuxeoPrincipal.getName(), e);
         }
         return userGroups;
+    }
+
+    @Override
+    public void updateGroupsForUser(
+            NuxeoPrincipalImpl nuxeoPrincipal) {
+        try {
+            List<String> computedGroups = computeGroupsForUser(nuxeoPrincipal);
+            Set<String> virtualGroups = new HashSet<String>(
+                    nuxeoPrincipal.getVirtualGroups());
+            virtualGroups.addAll(computedGroups);
+            nuxeoPrincipal.setVirtualGroups(new ArrayList<String>(virtualGroups));
+        } catch (ClientException e) {
+            log.error("Error while updating the virtual groups for user "
+                    + nuxeoPrincipal.getName(), e);
+        }
     }
 
     public boolean allowGroupOverride() {
