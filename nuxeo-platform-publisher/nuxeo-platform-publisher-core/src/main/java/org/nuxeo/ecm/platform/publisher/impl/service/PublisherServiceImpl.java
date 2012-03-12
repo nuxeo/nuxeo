@@ -54,7 +54,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * POJO implementation of the publisher service Implements both
  * {@link PublisherService} and {@link RemotePublicationTreeManager}.
- *
+ * 
  * @author tiry
  */
 public class PublisherServiceImpl extends DefaultComponent implements
@@ -173,7 +173,11 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     protected String computeTreeSessionId(String treeConfigName,
             CoreSession coreSession) {
-        return treeConfigName + coreSession.getSessionId();
+        return computeTreeSessionId(treeConfigName, coreSession.getSessionId());
+    }
+
+    protected String computeTreeSessionId(String treeConfigName, String sid) {
+        return treeConfigName + sid;
     }
 
     public List<String> getAvailablePublicationTree() {
@@ -241,6 +245,13 @@ public class PublisherServiceImpl extends DefaultComponent implements
             tree = liveTrees.get(sid);
             tree.release();
             liveTrees.remove(sid);
+        }
+    }
+
+    public void releaseAllTrees(String sessionId) {
+        for (String configName : treeConfigDescriptors.keySet()) {
+            String treeid = computeTreeSessionId(configName, sessionId);
+            release(treeid);
         }
     }
 
