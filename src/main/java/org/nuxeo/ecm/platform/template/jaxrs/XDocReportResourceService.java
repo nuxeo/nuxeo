@@ -1,8 +1,6 @@
 package org.nuxeo.ecm.platform.template.jaxrs;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +13,10 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
@@ -126,11 +122,12 @@ public class XDocReportResourceService extends AbstractResourceService
                     Blob oldBlob = template.getTemplateBlob();
 
                     Blob newBlob = new InputStreamBlob(dataIn.getStream());
-                    newBlob.setFilename(oldBlob.getFilename());
-                    newBlob.setMimeType(oldBlob.getMimeType());
 
                     // make stream resettable
                     newBlob = newBlob.persist();
+                    newBlob.setFilename(oldBlob.getFilename());
+                    newBlob.setMimeType(oldBlob.getMimeType());
+
                     template.setTemplateBlob(newBlob, true);
                 }
             } catch (Exception e) {

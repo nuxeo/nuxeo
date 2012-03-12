@@ -91,7 +91,7 @@ public abstract class AbstractTemplateDocument implements Serializable {
         return adaptedDoc;
     }
 
-    protected void doSave() throws Exception {
+    protected void doSave() throws ClientException {
         adaptedDoc = getSession().saveDocument(adaptedDoc);
     }
 

@@ -275,7 +275,19 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             return (String) getAdaptedDoc().getPropertyValue(
                     TEMPLATE_OUTPUT_PROP);
         } catch (Exception e) {
+            log.error("Error while getting output format", e);
             return null;
+        }
+    }
+
+    public void setOutputFormat(String mimetype, boolean save) {
+        try {
+            getAdaptedDoc().setPropertyValue(TEMPLATE_OUTPUT_PROP, mimetype);
+            if (save) {
+                doSave();
+            }
+        } catch (Exception e) {
+            log.error("Error while setting output format", e);
         }
     }
 
@@ -353,8 +365,15 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             return (String) getAdaptedDoc().getPropertyValue(
                     TEMPLATE_RENDITION_PROP);
         } catch (Exception e) {
-            log.error("Unable to get target rendition");
-            return null;
+            throw new ClientException("Unable to get target rendition", e);
+        }
+    }
+
+    public void setTargetRenditioName(String renditionName, boolean save)
+            throws ClientException {
+        getAdaptedDoc().setPropertyValue(TEMPLATE_RENDITION_PROP, renditionName);
+        if (save) {
+            doSave();
         }
     }
 

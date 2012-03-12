@@ -78,6 +78,8 @@ public interface TemplateSourceDocument {
     public void setForcedTypes(String[] forcedTypes, boolean save)
             throws ClientException;
 
+    public void setOutputFormat(String mimetype, boolean save);
+
     public String getOutputFormat();
 
     public boolean useAsMainContent();
@@ -93,6 +95,9 @@ public interface TemplateSourceDocument {
     public String getId();
 
     public String getLabel() throws ClientException;
+
+    public void setTargetRenditioName(String renditionName, boolean save)
+            throws ClientException;
 
     public String getTargetRenditionName() throws ClientException;
 
