@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -73,6 +74,10 @@ public class PublisherServiceImpl extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(PublisherServiceImpl.class);
 
     protected static Map<String, PublicationTree> liveTrees = new HashMap<String, PublicationTree>();
+
+    // Store association between treeSid and CoreSession that was opened locally
+    // for them : this unable proper cleanup of allocated sessions
+    protected Map<String, String> remoteLiveTrees = new HashMap<String, String>();
 
     public static final String TREE_EP = "tree";
 
@@ -228,6 +233,8 @@ public class PublisherServiceImpl extends DefaultComponent implements
         PublicationTree tree = getPublicationTree(treeConfigName, coreSession,
                 params);
 
+        remoteLiveTrees.put(tree.getSessionId(), coreSession.getSessionId());
+
         Map<String, String> res = new HashMap<String, String>();
         res.put("sessionId", tree.getSessionId());
         res.put("title", tree.getTitle());
@@ -245,6 +252,13 @@ public class PublisherServiceImpl extends DefaultComponent implements
             tree = liveTrees.get(sid);
             tree.release();
             liveTrees.remove(sid);
+        }
+        if (remoteLiveTrees.containsKey(sid)) {
+            String sessionId = remoteLiveTrees.get(sid);
+            CoreSession remoteSession = CoreInstance.getInstance().getSession(
+                    sessionId);
+            CoreInstance.getInstance().close(remoteSession);
+            remoteLiveTrees.remove(sid);
         }
     }
 
