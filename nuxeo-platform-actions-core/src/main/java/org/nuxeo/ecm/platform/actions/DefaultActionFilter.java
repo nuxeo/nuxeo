@@ -162,7 +162,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     /**
      * Returns true if document has one of the given facets, else false.
-     * 
+     *
      * @return true if document has one of the given facets, else false.
      */
     protected final boolean checkFacets(ActionContext context, String[] facets) {
@@ -182,7 +182,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * Returns true if given document has one of the permissions, else false.
      * <p>
      * If no document is found, return true only if principal is a manager.
-     * 
+     *
      * @return true if given document has one of the given permissions, else
      *         false
      */
@@ -233,7 +233,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * Returns true if one of the conditions is verified, else false.
      * <p>
      * If one evaluation fails, return false.
-     * 
+     *
      * @return true if one of the conditions is verified, else false.
      */
     protected final boolean checkConditions(ActionContext context,
@@ -249,7 +249,8 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                 Context ctx = new Context();
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
-                // aliases for consistency with seam variables
+                // aliases for consistency with seam variables, available since
+                // 5.5
                 ctx.put("currentDocument", doc);
                 ctx.put("currentUser", currentPrincipal);
                 // get custom context from ActionContext
@@ -278,7 +279,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * <p>
      * If document is null, consider context is the server and return true if
      * 'Server' is in the list.
-     * 
+     *
      * @return true if document type is one of the given types, else false.
      */
     protected final boolean checkTypes(ActionContext context, String[] types) {
@@ -301,7 +302,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     /**
      * Returns true if document has one of the given schemas, else false.
-     * 
+     *
      * @return true if document has one of the given schemas, else false
      */
     protected final boolean checkSchemas(ActionContext context, String[] schemas) {
