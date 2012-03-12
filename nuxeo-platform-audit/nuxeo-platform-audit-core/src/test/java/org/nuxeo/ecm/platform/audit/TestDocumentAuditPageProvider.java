@@ -20,9 +20,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test the {@link DocumentHistoryPageProvider}
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 

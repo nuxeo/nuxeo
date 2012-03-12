@@ -10,7 +10,8 @@
       <translateTitle>true</translateTitle>
       <showTitle>true</showTitle>
 
-      <genericPageProvider class="org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider">
+      <genericPageProvider
+        class="org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider">
         <property name="coreSession">#{documentManager}</property>
         <property name="generateUIComments">true</property>
 

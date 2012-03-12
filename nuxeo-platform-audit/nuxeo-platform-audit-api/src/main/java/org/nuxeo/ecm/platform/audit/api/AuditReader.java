@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -51,7 +51,6 @@ public interface AuditReader {
      * history.
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
-     *
      * @param eventIds the event ids.
      * @param dateRange a preset date range.
      * @return a list of log entries.
@@ -65,14 +64,12 @@ public interface AuditReader {
      * history.
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
-     *
      * @param eventIds the event ids.
      * @param dateRange a preset date range.
      * @param category add filter on events category
      * @param path add filter on document path
      * @param pageNb page number (ignore if <=1)
      * @param pageSize number of results per page
-     *
      * @return a list of log entries.
      */
     List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
@@ -88,14 +85,12 @@ public interface AuditReader {
      * history.
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
-     *
      * @param eventIds the event ids.
      * @param limit filter events by date from limit to now
      * @param category add filter on events category
      * @param path add filter on document path
      * @param pageNb page number (ignore if <=1)
      * @param pageSize number of results per page
-     *
      * @return a list of log entries.
      */
     List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
@@ -111,8 +106,8 @@ public interface AuditReader {
     List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize);
 
     /**
-     * Returns a batched list of entries. query string is a native query
-     * clause for the backend : here EJBQL 3.0 can be used
+     * Returns a batched list of entries. query string is a native query clause
+     * for the backend : here EJBQL 3.0 can be used
      */
     List<?> nativeQuery(String query, int pageNb, int pageSize);
 
@@ -124,6 +119,7 @@ public interface AuditReader {
      * @param pageNb the page number (starts at 1)
      * @param pageSize the number of results per page
      */
-    List<?> nativeQuery(String query, Map<String, Object> params, int pageNb, int pageSize);
+    List<?> nativeQuery(String query, Map<String, Object> params, int pageNb,
+            int pageSize);
 
 }
