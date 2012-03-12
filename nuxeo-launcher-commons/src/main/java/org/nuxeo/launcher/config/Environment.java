@@ -67,5 +67,14 @@ public class Environment {
     public static final String OPENSOCIAL_GADGETS_PORT = "opensocial.gadgets.port";
 
     public static final String OPENSOCIAL_GADGETS_PATH = "opensocial.gadgets.path";
+    
+    // proxy
+    public static final String NUXEO_HTTP_PROXY_HOST = "nuxeo.http.proxy.host";
+
+    public static final String NUXEO_HTTP_PROXY_PORT = "nuxeo.http.proxy.port";
+
+    public static final String NUXEO_HTTP_PROXY_LOGIN = "nuxeo.http.proxy.login";
+
+    public static final String NUXEO_HTTP_PROXY_PASSWORD = "nuxeo.http.proxy.password";
 
 }
