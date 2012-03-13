@@ -26,6 +26,9 @@ public class RegistrationRules {
     public static final String FIELD_DISPLAY_LOCAL_REGISTRATION = SCHEMA_REGISTRATION_RULES
             + ":" + "displayLocalRegistrationTab";
 
+    public static final String FIELD_USE_MAIL_AS_LOGIN = SCHEMA_REGISTRATION_RULES
+            + ":" + "useEmailAsLogin";
+
     protected DocumentModel requestContainer;
 
     private static final Log log = LogFactory.getLog(RegistrationRules.class);
@@ -51,7 +54,7 @@ public class RegistrationRules {
         } catch (ClientException e) {
             log.warn("Unable to fetch AllowDirectValidation flag using default value: "
                     + e.getMessage());
-            return true;
+            return false;
         }
     }
 
@@ -69,9 +72,19 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_DISPLAY_LOCAL_REGISTRATION);
         } catch (ClientException e) {
-            log.warn("Unable to fetch ForceRight flag using default value: "
+            log.warn("Unable to fetch localRegistration flag using default value: "
                     + e.getMessage());
             return true;
+        }
+    }
+
+    public boolean useEmailAsLogin() {
+        try {
+            return (Boolean) requestContainer.getPropertyValue(FIELD_USE_MAIL_AS_LOGIN);
+        } catch (ClientException e) {
+            log.warn("Unable to fetch ForceRight flag using default value: "
+                    + e.getMessage());
+            return false;
         }
     }
 }
