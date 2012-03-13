@@ -272,7 +272,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         resetCurrentDocumentData();
     }
 
-    @Observer(value = { EventNames.GO_PERSONAL_WORKSPACE }, create = false)
+    @Observer(value = { EventNames.GO_PERSONAL_WORKSPACE }, create = true)
     public void switchToUserWorkspace() {
         userWorkspacePath = getCurrentDocumentPath();
         reset();
