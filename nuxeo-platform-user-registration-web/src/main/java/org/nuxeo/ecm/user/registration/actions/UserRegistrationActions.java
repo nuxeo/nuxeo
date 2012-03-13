@@ -45,7 +45,6 @@ import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 @Name("userRegistrationActions")
 @Scope(ScopeType.CONVERSATION)
@@ -54,8 +53,6 @@ public class UserRegistrationActions implements Serializable {
     private static final long serialVersionUID = 53468164827894L;
 
     private static Log log = LogFactory.getLog(UserRegistrationActions.class);
-
-    protected UserRegistrationService userRegistrationService;
 
     protected UserRegistrationInfo userinfo = new UserRegistrationInfo();
 
@@ -83,7 +80,10 @@ public class UserRegistrationActions implements Serializable {
     protected transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
-    protected ContentViewActions contentViewActions;
+    protected transient ContentViewActions contentViewActions;
+
+    @In(create = true)
+    protected transient UserRegistrationService userRegistrationService;
 
     public UserRegistrationInfo getUserinfo() {
         return userinfo;
@@ -99,19 +99,19 @@ public class UserRegistrationActions implements Serializable {
     }
 
     public String getDocType() throws ClientException {
-        return getUserRegistrationService().getConfiguration().getRequestDocType();
+        return userRegistrationService.getConfiguration().getRequestDocType();
     }
 
     public String getValidationBaseUrl() throws ClientException {
         return BaseURL.getBaseURL()
-                + getUserRegistrationService().getConfiguration().getValidationRelUrl();
+                + userRegistrationService.getConfiguration().getValidationRelUrl();
     }
 
     public void acceptRegistrationRequest(DocumentModel request)
             throws UserRegistrationException, ClientException {
         Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
         additionalInfo.put("validationBaseURL", getValidationBaseUrl());
-        getUserRegistrationService().acceptRegistrationRequest(request.getId(),
+        userRegistrationService.acceptRegistrationRequest(request.getId(),
                 additionalInfo);
         // EventManager.raiseEventsOnDocumentChange(request);
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
@@ -121,7 +121,7 @@ public class UserRegistrationActions implements Serializable {
             throws UserRegistrationException, ClientException {
         Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
         additionalInfo.put("validationBaseURL", getValidationBaseUrl());
-        getUserRegistrationService().rejectRegistrationRequest(request.getId(),
+        userRegistrationService.rejectRegistrationRequest(request.getId(),
                 additionalInfo);
         // EventManager.raiseEventsOnDocumentChange(request);
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
@@ -143,8 +143,7 @@ public class UserRegistrationActions implements Serializable {
 
     public DocumentModel getConfigurationDocument() throws ClientException {
         if (currentConfiguration == null) {
-            currentConfiguration = getUserRegistrationService().getConfigurationDocument(
-                    documentManager);
+            currentConfiguration = userRegistrationService.getConfigurationDocument(documentManager);
         }
         return currentConfiguration;
     }
@@ -200,7 +199,7 @@ public class UserRegistrationActions implements Serializable {
     public void reviveUserRegistration() {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
             try {
-                getUserRegistrationService().reviveRegistrationRequests(
+                userRegistrationService.reviveRegistrationRequests(
                         documentManager,
                         documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
@@ -222,7 +221,7 @@ public class UserRegistrationActions implements Serializable {
     public void deleteUserRegistration() {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
             try {
-                getUserRegistrationService().deleteRegistrationRequests(
+                userRegistrationService.deleteRegistrationRequests(
                         documentManager,
                         documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
@@ -245,7 +244,7 @@ public class UserRegistrationActions implements Serializable {
     protected void doSubmitUserRegistration() {
         try {
             userinfo.setPassword(RandomStringUtils.randomAlphanumeric(6));
-            getUserRegistrationService().submitRegistrationRequest(userinfo,
+            userRegistrationService.submitRegistrationRequest(userinfo,
                     docinfo, getAdditionalsParameters(), EMAIL, false);
 
             facesMessages.add(
@@ -265,19 +264,6 @@ public class UserRegistrationActions implements Serializable {
 
     protected Map<String, Serializable> getAdditionalsParameters() {
         return new HashMap<String, Serializable>();
-    }
-
-    protected UserRegistrationService getUserRegistrationService()
-            throws ClientException {
-        if (userRegistrationService == null) {
-            try {
-                userRegistrationService = Framework.getService(UserRegistrationService.class);
-            } catch (Exception e) {
-                throw new ClientException(
-                        "Failed to get UserRegistrationService", e);
-            }
-        }
-        return userRegistrationService;
     }
 
     @Observer({ EventNames.DOCUMENT_CHANGED })

@@ -38,7 +38,7 @@
       <filter-id>mutable_document</filter-id>
       <filter id="displayUserRegistrationListingLocal">
         <rule grant="true">
-          <condition>#{userRegistrationActions.registrationRules.displayLocalRegistration}</condition>
+          <condition>#{userRegistrationService.registrationRules.displayLocalRegistration}</condition>
         </rule>
       </filter>
     </action>
