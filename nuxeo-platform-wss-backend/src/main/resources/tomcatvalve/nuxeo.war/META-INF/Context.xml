@@ -1,3 +1,0 @@
-<Context>
-  <Valve className="org.nuxeo.wss.WSSRootValve"/>
-</Context>
