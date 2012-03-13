@@ -16,6 +16,12 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="UserRegistrationConfiguration" link="/incl/userregistration/requests_configuration.xhtml"
+            label="tab.userregistration.configuration" order="20">
+      <category>UserRegistration_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
     <action id="UserRegistrationRequestsCreate"
             link="/incl/userregistration/requests_create.xhtml"
             order="220" label="tab.userregistration.requests.create">

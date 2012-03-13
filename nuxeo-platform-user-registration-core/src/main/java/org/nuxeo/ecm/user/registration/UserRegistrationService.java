@@ -113,4 +113,11 @@ public interface UserRegistrationService {
      * @since 5.6
      */
     RegistrationRules getRegistrationRules() throws ClientException;
+
+    /**
+     * Get documentmodel that stores request configuration using RegistrationConfiguration facet.
+     * @param session
+     * @return
+     */
+    DocumentModel getConfigurationDocument(CoreSession session) throws ClientException;
 }

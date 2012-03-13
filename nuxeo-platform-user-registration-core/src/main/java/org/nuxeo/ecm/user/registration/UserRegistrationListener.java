@@ -44,10 +44,15 @@ public class UserRegistrationListener implements EventListener {
 
             try {
                 UserRegistrationService userRegistrationService = Framework.getService(UserRegistrationService.class);
-                NuxeoPrincipal principal = userRegistrationService.createUser(ctx.getCoreSession(), registration);
-                docCtx.setProperty("registeredUser", principal);
+                RegistrationRules rules = userRegistrationService.getRegistrationRules();
+                if (rules.allowUserCreation()) {
+                    NuxeoPrincipal principal = userRegistrationService.createUser(ctx.getCoreSession(), registration);
+                    docCtx.setProperty("registeredUser", principal);
+                }
 
-                userRegistrationService.addRightsOnDoc(ctx.getCoreSession(), registration);
+                if (rules.allowUserCreation() || rules.isForcingRight()) {
+                    userRegistrationService.addRightsOnDoc(ctx.getCoreSession(), registration);
+                }
             }
             catch (Exception e) {
                 event.markRollBack();

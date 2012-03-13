@@ -61,6 +61,8 @@ public class UserRegistrationActions implements Serializable {
 
     protected DocumentRegistrationInfo docinfo = new DocumentRegistrationInfo();
 
+    protected DocumentModel currentConfiguration;
+
     public static final String REQUEST_DOCUMENT_LIST = "CURRENT_USER_REQUESTS";
 
     public static final String REQUESTS_DOCUMENT_LIST_CHANGED = "requestDocumentsChanged";
@@ -111,7 +113,7 @@ public class UserRegistrationActions implements Serializable {
         additionalInfo.put("validationBaseURL", getValidationBaseUrl());
         getUserRegistrationService().acceptRegistrationRequest(request.getId(),
                 additionalInfo);
-        //EventManager.raiseEventsOnDocumentChange(request);
+        // EventManager.raiseEventsOnDocumentChange(request);
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
@@ -121,7 +123,7 @@ public class UserRegistrationActions implements Serializable {
         additionalInfo.put("validationBaseURL", getValidationBaseUrl());
         getUserRegistrationService().rejectRegistrationRequest(request.getId(),
                 additionalInfo);
-        //EventManager.raiseEventsOnDocumentChange(request);
+        // EventManager.raiseEventsOnDocumentChange(request);
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
@@ -137,6 +139,32 @@ public class UserRegistrationActions implements Serializable {
             canDelete &= isDocumentDeletable(doc);
         }
         return canDelete;
+    }
+
+    public DocumentModel getConfigurationDocument() throws ClientException {
+        if (currentConfiguration == null) {
+            currentConfiguration = getUserRegistrationService().getConfigurationDocument(
+                    documentManager);
+        }
+        return currentConfiguration;
+    }
+
+    public void saveConfiguration() {
+        try {
+            documentManager.saveDocument(currentConfiguration);
+            currentConfiguration = null;
+            facesMessages.add(
+                    INFO,
+                    resourcesAccessor.getMessages().get(
+                            "label.save.configuration.request"));
+        } catch (ClientException e) {
+            log.warn("Unable to save configuration document: " + e.getMessage());
+            log.info(e);
+            facesMessages.add(
+                    ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.unable.save.configuration.request"));
+        }
     }
 
     protected boolean isDocumentDeletable(DocumentModel doc) {
@@ -256,6 +284,7 @@ public class UserRegistrationActions implements Serializable {
     public void resetPojos() {
         userinfo = new UserRegistrationInfo();
         docinfo = new DocumentRegistrationInfo();
+        currentConfiguration = null;
     }
 
     @Observer({ REQUESTS_DOCUMENT_LIST_CHANGED })

@@ -114,7 +114,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
         return Framework.getProperty("jndi.java.mail", "java:/Mail");
     }
 
-    protected DocumentModel getOrCreateRootDocument(CoreSession session)
+    public DocumentModel getConfigurationDocument(CoreSession session) throws ClientException {
+        // By default, configuration is hold by the root request document
+        return getOrCreateRootDocument(session);
+    }
+
+    public DocumentModel getOrCreateRootDocument(CoreSession session)
             throws ClientException {
         String targetPath = getRootPath() + configuration.getContainerName();
         DocumentRef targetRef = new PathRef(targetPath);
@@ -439,8 +444,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
-        boolean userAlreadyExists = false;
-        if (autoAccept) {
+        boolean userAlreadyExists = null != Framework.getLocalService(
+                UserManager.class).getPrincipal(userInfo.getLogin());
+        // Directly accept registration if the configuration allow it and the
+        // user already exists
+        if (autoAccept
+                || (userAlreadyExists && getRegistrationRules().allowDirectValidationForExistingUser())) {
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
         return registrationUuid;

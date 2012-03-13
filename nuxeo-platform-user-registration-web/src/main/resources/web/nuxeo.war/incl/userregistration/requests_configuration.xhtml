@@ -1,0 +1,15 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <h:form enctype="multipart/form-data" id="workspace_requests_create">
+
+    <nxl:layout name="user_request_configuration" mode="edit"
+            value="#{userRegistrationActions.configurationDocument}" />
+
+    <p class="buttonsGadget">
+      <h:commandButton type="submit" value="#{messages['command.save']}"
+              styleClass="button"
+              action="#{userRegistrationActions.saveConfiguration}" />
+    </p>
+  </h:form>
+</div>
