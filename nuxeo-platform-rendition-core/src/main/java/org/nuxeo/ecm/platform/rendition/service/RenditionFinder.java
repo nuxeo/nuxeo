@@ -50,7 +50,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
     @Override
     public void run() throws ClientException {
 
-        String query = "select * from Document where ";
+        String query = "select * from Document where ecm:isProxy = 0 AND ";
         query = query + RENDITION_NAME_PROPERTY + "='" + definitionName
                 + "' AND ";
         String versionUUUID = source.getId();
