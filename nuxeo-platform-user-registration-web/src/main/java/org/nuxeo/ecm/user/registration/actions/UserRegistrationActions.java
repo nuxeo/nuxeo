@@ -155,14 +155,14 @@ public class UserRegistrationActions implements Serializable {
             facesMessages.add(
                     INFO,
                     resourcesAccessor.getMessages().get(
-                            "label.save.configuration.request"));
+                            "label.save.configuration.registration"));
         } catch (ClientException e) {
             log.warn("Unable to save configuration document: " + e.getMessage());
             log.info(e);
             facesMessages.add(
                     ERROR,
                     resourcesAccessor.getMessages().get(
-                            "label.unable.save.configuration.request"));
+                            "label.unable.save.configuration.registration"));
         }
     }
 
