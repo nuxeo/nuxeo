@@ -12,7 +12,7 @@
         <a4j:form id="searchForm">
           <h:inputText id="searchText"
             value="#{userManagementActions.searchString}"
-            onkeydown="if(event.keyCode == 13) {document.getElementById('usersListingView:searchForm:searchButton').click();return false;} else return true;}"
+            onkeydown="if(event.keyCode == 13) {document.getElementById('usersListingView:searchForm:searchButton').click();return false;} else return true;"
             styleClass="directoryFilter" />
           <f:verbatim>&amp;nbsp;</f:verbatim>
           <a4j:commandButton id="searchButton"
