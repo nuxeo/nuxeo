@@ -17,12 +17,13 @@
 
 package org.nuxeo.opensocial.container.server.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.container.shared.webcontent.UserPref;
@@ -60,6 +61,8 @@ public class UrlBuilder {
     private static final String VIEW_VALUE = "default";
 
     private static final String PERMISSION_KEY = "permission";
+    
+    private static final String PERMISSION_VALUE = "[]";
 
     private static final String PARENT_KEY = "parent";
 
@@ -80,50 +83,35 @@ public class UrlBuilder {
     public static String buildShindigUrl(OpenSocialData data, String serverBase)
             throws ClientException {
         String gadgetDef = data.getGadgetDef();
+        List<UserPref> userPrefs = data.getUserPrefs();
 
-        StringBuilder sb = new StringBuilder();
+        Map<String, String> params = new LinkedHashMap<String, String>();
 
-        // http://localhost:8080/nuxeo/opensocial/gadgets/ifr?
-        sb.append(serverBase + SERVLET_PATH + "?");
-
-        // container=default&nocache=1&country=fr&lang=ALL&view=default&
-        sb.append(getDefaultParams() + "&");
-
-        // mid=123456&
-        sb.append(GADGET_ID_KEY + "=" + containerId++ + "&");
-
+        // container=default&nocache=1&country=fr&lang=ALL&view=default
+        params.putAll(getDefaultParams());
+        // mid=123456
+        params.put(GADGET_ID_KEY, Integer.toString(containerId++));
         // parent=http://localhost:8080/...
-        // TODO: Verify it works... should not.
-        sb.append(PARENT_KEY + "=" + serverBase + "&");
-
-        // perm=1 -> does the session has write perm on gadget
-        // XXX: is this used ?
-        sb.append(PERMISSION_KEY + "=[]&");
-
+        params.put(PARENT_KEY, serverBase);
         // url=http://.../gadget.xml?up_prefname=prefvalue
-        sb.append(URL_KEY + "=" + gadgetDef + getUserPrefs(data.getUserPrefs())
-                + "&");
-
+        params.put(URL_KEY, gadgetDef);
+        params.putAll(getUserPrefsParams(userPrefs));
         // turn on debugging for the JS (avoid compression)
-        if (SHINDIG_DEBUG) {
-            sb.append("debug=1" + "&");
-        } else {
-            sb.append("debug=0" + "&");
-        }
-
-        // st=qdlfjqsmfkjqf&
+        params.put("debug", (SHINDIG_DEBUG) ? "1" : "0");
+        // st=qdlfjqsmfkjqf
         try {
-            sb.append(SECURITY_TOKEN_KEY + "="
-                    + getSecurityToken(data, gadgetDef));
+            params.put(SECURITY_TOKEN_KEY, getSecurityToken(data, gadgetDef));
         } catch (Exception e) {
             log.warn("Unable to get security token");
         }
+        // rpctoken=123415
+        params.put(RPC_TOKEN, "open-social-" + data.getId());
+        
+        // http://localhost:8080/nuxeo/opensocial/gadgets/ifr
+        String url = URIUtils.getURIPath(serverBase + SERVLET_PATH);
+        url = URIUtils.addParametersToURIQuery(url, params);
 
-        // #rpctoken=123415
-        sb.append("&" + RPC_TOKEN + "=" + "open-social-" + data.getId());
-
-        return sb.toString();
-
+        return url;
     }
 
     // /**
@@ -147,39 +135,35 @@ public class UrlBuilder {
     }
 
     /**
-     * Build a url format parameters with preferences of gadget Util for render
+     * Build parameters map with preferences of gadget Util for render
      * gadget into Shinding opensocial server
      *
      * @param prefs
-     * @return String &up_key=value&up..
+     * @return Map<String, String> <up_key, value>...
      */
-    protected static String getUserPrefs(List<UserPref> prefs) {
-        String prefsParams = "";
+    protected static Map<String, String> getUserPrefsParams(List<UserPref> prefs) {
+        Map<String, String> prefsParams = new LinkedHashMap<String, String>();
         for (UserPref pref : prefs) {
             String value;
-
             if (pref.getActualValue() == null) {
                 value = pref.getDefaultValue();
             } else {
                 value = pref.getActualValue();
             }
-
-            // TODO has to be tested
-            try {
-                prefsParams += "&" + PREF_PREFIX + pref.getName() + "="
-                        + URLEncoder.encode(value, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error(e);
-            }
+            prefsParams.put(PREF_PREFIX + pref.getName(), value);
         }
         return prefsParams;
     }
 
-    private static String getDefaultParams() {
-        return CONTAINER_KEY + "=" + CONTAINER_VALUE + "&" + NOCACHE_KEY + "="
-                + NOCACHE_VALUE + "&" + COUNTRY_KEY + "=" + COUNTRY_VALUE + "&"
-                + LANG_KEY + "=" + DEFAULT_LANG_VALUE + "&" + VIEW_KEY + "="
-                + VIEW_VALUE;
+    private static Map<String, String> getDefaultParams() {
+        Map<String, String> defaultParams = new LinkedHashMap<String, String>();
+        defaultParams.put(CONTAINER_KEY, CONTAINER_VALUE);
+        defaultParams.put(NOCACHE_KEY, NOCACHE_VALUE);
+        defaultParams.put(COUNTRY_KEY, COUNTRY_VALUE);
+        defaultParams.put(LANG_KEY, DEFAULT_LANG_VALUE);
+        defaultParams.put(VIEW_KEY, VIEW_VALUE);
+        defaultParams.put(PERMISSION_KEY, PERMISSION_VALUE);
+        return defaultParams;
     }
 
 }
