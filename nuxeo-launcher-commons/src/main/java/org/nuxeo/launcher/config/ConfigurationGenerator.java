@@ -189,7 +189,7 @@ public class ConfigurationGenerator {
     }
 
     public ConfigurationGenerator() {
-        this(false, false);
+        this(true, false);
     }
 
     private boolean quiet = false;
