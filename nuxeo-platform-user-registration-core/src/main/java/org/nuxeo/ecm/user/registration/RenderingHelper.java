@@ -31,13 +31,14 @@ public class RenderingHelper {
         public File getResourceFile(String key) {
             return null;
         }
+
         public URL getResourceURL(String key) {
             return this.getClass().getClassLoader().getResource(key);
         }
     }
 
     public RenderingEngine getRenderingEngine() {
-        if (engine==null) {
+        if (engine == null) {
             engine = new FreemarkerEngine();
             engine.setResourceLocator(new CLResourceLocator());
         }

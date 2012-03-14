@@ -54,7 +54,7 @@ public interface RegistrationUserFactory {
      * @see UserRegistrationComponent#addRightsOnDoc
      */
     DocumentModel doAddDocumentPermission(CoreSession session,
-                                          DocumentModel registrationDoc) throws ClientException;
+            DocumentModel registrationDoc) throws ClientException;
 
     /**
      * Called just after the right is setted
@@ -63,6 +63,6 @@ public interface RegistrationUserFactory {
      * @see UserRegistrationComponent#addRightsOnDoc
      */
     void doPostAddDocumentPermission(CoreSession session,
-                                     DocumentModel registrationDoc, DocumentModel document)
+            DocumentModel registrationDoc, DocumentModel document)
             throws ClientException;
 }

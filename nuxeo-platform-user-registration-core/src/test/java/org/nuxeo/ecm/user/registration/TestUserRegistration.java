@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import com.google.inject.Inject;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;

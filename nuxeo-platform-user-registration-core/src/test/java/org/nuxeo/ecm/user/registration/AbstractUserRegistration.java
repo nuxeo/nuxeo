@@ -1,7 +1,6 @@
 package org.nuxeo.ecm.user.registration;
 
 import com.google.inject.Inject;
-
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

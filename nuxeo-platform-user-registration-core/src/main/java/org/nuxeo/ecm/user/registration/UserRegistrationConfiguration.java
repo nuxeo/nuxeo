@@ -24,13 +24,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class UserRegistrationConfiguration {
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default_registration";
-    
+
     @XNode("@merge")
     private boolean merge = false;
 
     @XNode("@remove")
     private boolean remove = false;
-    
+
     @XNode("@name")
     private String name = DEFAULT_CONFIGURATION_NAME;
 

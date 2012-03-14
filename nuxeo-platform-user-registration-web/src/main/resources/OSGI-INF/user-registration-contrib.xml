@@ -9,7 +9,7 @@
     </doctype>
 
     <doctype name="UserRegistrationContainer" extends="Workspace">
-      <facet name="HiddenInNavigation" />
+      <facet name="HiddenInNavigation"/>
     </doctype>
   </extension>
 

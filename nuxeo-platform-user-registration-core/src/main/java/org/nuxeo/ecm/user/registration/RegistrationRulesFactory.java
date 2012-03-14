@@ -12,7 +12,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 public class RegistrationRulesFactory implements DocumentAdapterFactory {
 
     private static final Log log = LogFactory.getLog(RegistrationRulesFactory.class);
-    
+
     protected static final String REGISTRATION_CONFIG_FACET = "RegistrationConfiguration";
 
     @Override
@@ -21,7 +21,8 @@ public class RegistrationRulesFactory implements DocumentAdapterFactory {
             try {
                 return new RegistrationRules(doc);
             } catch (ClientException e) {
-                log.warn("Unable to build RegistrationRules adapter: " + e.getMessage());
+                log.warn("Unable to build RegistrationRules adapter: "
+                        + e.getMessage());
                 log.debug(e, e);
                 return null;
             }

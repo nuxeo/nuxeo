@@ -45,9 +45,9 @@ public class UserRegistrationInfo {
     protected String company;
 
     protected String country;
-    
+
     protected String documentId;
-    
+
     protected String documentRight;
 
     public String getLogin() {

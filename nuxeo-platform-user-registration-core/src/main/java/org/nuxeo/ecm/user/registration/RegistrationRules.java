@@ -28,8 +28,9 @@ public class RegistrationRules {
 
     public static final String FIELD_USE_MAIL_AS_LOGIN = SCHEMA_REGISTRATION_RULES
             + ":" + "useEmailAsLogin";
-    
-    public static final String FIELD_CONFIGURATION_NAME = SCHEMA_REGISTRATION_RULES + ":" + "name";
+
+    public static final String FIELD_CONFIGURATION_NAME = SCHEMA_REGISTRATION_RULES
+            + ":" + "name";
 
     protected DocumentModel requestContainer;
 

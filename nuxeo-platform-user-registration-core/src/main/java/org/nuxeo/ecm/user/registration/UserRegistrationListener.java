@@ -33,7 +33,8 @@ public class UserRegistrationListener implements EventListener {
 
     public void handleEvent(Event event) throws ClientException {
 
-        if(!event.getName().equals(UserRegistrationService.REGISTRATION_VALIDATED_EVENT)) {
+        if (!event.getName().equals(
+                UserRegistrationService.REGISTRATION_VALIDATED_EVENT)) {
             return;
         }
 
@@ -47,15 +48,16 @@ public class UserRegistrationListener implements EventListener {
                 UserRegistrationConfiguration config = userRegistrationService.getConfiguration(registration);
                 RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
                 if (rules.allowUserCreation()) {
-                    NuxeoPrincipal principal = userRegistrationService.createUser(ctx.getCoreSession(), registration);
+                    NuxeoPrincipal principal = userRegistrationService.createUser(
+                            ctx.getCoreSession(), registration);
                     docCtx.setProperty("registeredUser", principal);
                 }
 
                 if (rules.allowUserCreation() || rules.isForcingRight()) {
-                    userRegistrationService.addRightsOnDoc(ctx.getCoreSession(), registration);
+                    userRegistrationService.addRightsOnDoc(
+                            ctx.getCoreSession(), registration);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 event.markRollBack();
                 throw new ClientException("Unable to complete registration", e);
             }
