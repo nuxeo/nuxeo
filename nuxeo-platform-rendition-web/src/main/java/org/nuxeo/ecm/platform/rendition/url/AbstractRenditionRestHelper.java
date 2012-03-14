@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.rendition.url;
 import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.seam.annotations.In;
@@ -68,6 +69,11 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
             FacesContext context = FacesContext.getCurrentInstance();
             Blob rendered = renderAsBlob(doc, renditionName);
             if (rendered != null) {
+                if (rendered.getMimeType() != null
+                        && rendered.getMimeType().startsWith("text/")) {
+                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+                    // add inline download flag
+                }
                 ComponentUtils.download(context, rendered,
                         rendered.getFilename());
             } else {

@@ -5,6 +5,7 @@
     point="renditionDefinitions">
     <renditionDefinition name="pdf" enable="true">
       <label>label.rendition.pdf</label>
+      <icon>/icons/pdf.png</icon>
       <operationChain>blobToPDF</operationChain>
     </renditionDefinition>
   </extension>
