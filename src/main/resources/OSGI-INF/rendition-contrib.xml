@@ -6,9 +6,11 @@
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
     point="renditionDefinitions">
     <renditionDefinition name="delivery" enable="true" class="org.nuxeo.ecm.platform.template.rendition.TemplateBasedRenditionProvider">
+      <icon>/icons/delivery.png</icon>
       <label>label.rendition.delivery</label>
     </renditionDefinition>
     <renditionDefinition name="webView" enable="true" class="org.nuxeo.ecm.platform.template.rendition.TemplateBasedRenditionProvider">
+      <icon>/icons/htmlView.png</icon>
       <label>label.rendition.webView</label>
     </renditionDefinition>
   </extension>

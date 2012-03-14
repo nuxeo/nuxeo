@@ -135,6 +135,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-rendition-web</artifactId>
+      <version>5.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-rendition-core</artifactId>
       <version>5.6-SNAPSHOT</version>
       <scope>test</scope>
