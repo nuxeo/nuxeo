@@ -17,7 +17,7 @@
        <layout>heading</layout>
        <layout>templateOptionsWizard</layout>
        <layout>templateOptions</layout>
-       <layout>file</layout>
+       <layout>fileWithoutTemplate</layout>
       </layouts>
       <layouts mode="view">
         <layout>heading</layout>
@@ -28,10 +28,11 @@
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>templateOptions</layout>
-        <layout>file</layout>
+        <layout>fileWithoutTemplate</layout>
       </layouts>
     </type>
 
+<!--
     <type id="TemplateBasedFile" coretype="TemplateBasedFile">
       <label>Template based file</label>
       <icon>/icons/doctemplate.png</icon>
@@ -52,16 +53,17 @@
         <layout>templateChooser</layout>
       </layouts>
     </type>
+ -->
 
      <type id="Folder" coretype="Folder">
       <subtypes>
-        <type>TemplateBasedFile</type>
+<!--         <type>TemplateBasedFile</type> -->
         <type>TemplateSource</type>
       </subtypes>
     </type>
     <type id="Workspace" coretype="Workspace">
-      <subtypes>
-        <type>TemplateBasedFile</type>
+      <subtypes>s
+<!--         <type>TemplateBasedFile</type> -->
         <type>TemplateSource</type>
       </subtypes>
     </type>

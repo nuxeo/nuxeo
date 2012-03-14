@@ -58,6 +58,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public static final String TEMPLATE_FORCED_TYPES_NONE = "none";
 
+    public static final String TEMPLATE_RENDITION_NONE = "none";
+
     public static final String TEMPLATE_OUTPUT_PROP = "tmpl:outputFormat";
 
     public static final String TEMPLATE_OVERRIDE_PROP = "tmpl:allowOverride";
@@ -362,8 +364,12 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     @Override
     public String getTargetRenditionName() throws ClientException {
         try {
-            return (String) getAdaptedDoc().getPropertyValue(
+            String targetRendition = (String) getAdaptedDoc().getPropertyValue(
                     TEMPLATE_RENDITION_PROP);
+            if (TEMPLATE_RENDITION_NONE.equals(targetRendition)) {
+                return null;
+            }
+            return targetRendition;
         } catch (Exception e) {
             throw new ClientException("Unable to get target rendition", e);
         }

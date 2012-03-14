@@ -21,9 +21,10 @@
       styleClass="#{widget.properties['styleClass']}"
       required="#{widget.properties['required']}"
       id="#{widget.id}">
+       <f:selectItem  itemLabel="label.rendition.none" itemValue="none" />
        <nxu:selectItems var="rend" value="#{templateActions.getRenditions()}"
         itemValue="#{rend.name}"
-        itemLabel="#{rend.label}" />
+        itemLabel="#{messages[rend.label]}" />
     </h:selectOneMenu>
     <h:message for="#{widget.id}" styleClass="errorMessage" />
   </c:if>
