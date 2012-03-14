@@ -10,9 +10,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 
 public class RegistrationRules {
-    public static final String FACET_REGISTRATION_RULES = "RegistrationConfiguration";
+    public static final String FACET_REGISTRATION_CONFIGURATION = "RegistrationConfiguration";
 
-    public static final String SCHEMA_REGISTRATION_RULES = "registrationrules";
+    public static final String SCHEMA_REGISTRATION_RULES = "registrationconfiguration";
 
     public static final String FIELD_ALLOW_USER_CREATION = SCHEMA_REGISTRATION_RULES
             + ":" + "allowUserCreation";
@@ -28,6 +28,8 @@ public class RegistrationRules {
 
     public static final String FIELD_USE_MAIL_AS_LOGIN = SCHEMA_REGISTRATION_RULES
             + ":" + "useEmailAsLogin";
+    
+    public static final String FIELD_CONFIGURATION_NAME = SCHEMA_REGISTRATION_RULES + ":" + "name";
 
     protected DocumentModel requestContainer;
 

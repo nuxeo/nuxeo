@@ -16,27 +16,32 @@
 
 package org.nuxeo.ecm.user.registration;
 
-import static org.nuxeo.ecm.user.registration.RegistrationRules.FACET_REGISTRATION_RULES;
+import static org.nuxeo.ecm.user.registration.RegistrationRules.FACET_REGISTRATION_CONFIGURATION;
+import static org.nuxeo.ecm.user.registration.RegistrationRules.FIELD_CONFIGURATION_NAME;
+import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.EMAIL_FIELD;
 import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.SCHEMA_NAME;
 import static org.nuxeo.ecm.user.registration.UserRegistrationInfo.USERNAME_FIELD;
+
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
-import org.apache.commons.lang.StringUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -69,16 +74,9 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     protected RenderingHelper rh = new RenderingHelper();
 
-    protected UserRegistrationConfiguration configuration;
+    protected Map<String, UserRegistrationConfiguration> configurations = new HashMap<String, UserRegistrationConfiguration>();
 
-    protected String getRootPath() {
-        if (Framework.isTestModeSet()
-                || StringUtils.isBlank(configuration.getContainerParentPath())) {
-            return "/";
-        } else {
-            return configuration.getContainerParentPath();
-        }
-    }
+    // protected UserRegistrationConfiguration configuration;
 
     public String getTestedRendering() {
         return testRendering;
@@ -114,20 +112,25 @@ public class UserRegistrationComponent extends DefaultComponent implements
         return Framework.getProperty("jndi.java.mail", "java:/Mail");
     }
 
-    public DocumentModel getConfigurationDocument(CoreSession session) throws ClientException {
+    public DocumentModel getRegistrationRulesDocument(CoreSession session,
+            String configurationName) throws ClientException {
         // By default, configuration is hold by the root request document
-        return getOrCreateRootDocument(session);
+        return getOrCreateRootDocument(session, configurationName);
     }
 
-    public DocumentModel getOrCreateRootDocument(CoreSession session)
-            throws ClientException {
-        String targetPath = getRootPath() + configuration.getContainerName();
+    protected DocumentModel getOrCreateRootDocument(CoreSession session,
+            String configurationName) throws ClientException {
+        UserRegistrationConfiguration configuration = getConfiguration(configurationName);
+
+        String targetPath = configuration.getContainerParentPath()
+                + configuration.getContainerName();
         DocumentRef targetRef = new PathRef(targetPath);
         DocumentModel root;
 
         if (!session.exists(targetRef)) {
             root = session.createDocumentModel(configuration.getContainerDocType());
-            root.setPathInfo(getRootPath(), configuration.getContainerName());
+            root.setPathInfo(configuration.getContainerParentPath(),
+                    configuration.getContainerName());
             root.setPropertyValue("dc:title", configuration.getContainerTitle());
             // XXX ACLs ?!!!
             root = session.createDocument(root);
@@ -136,8 +139,10 @@ public class UserRegistrationComponent extends DefaultComponent implements
         }
 
         // Add configuration facet
-        if (!root.hasFacet(FACET_REGISTRATION_RULES)) {
-            root.addFacet(FACET_REGISTRATION_RULES);
+        if (!root.hasFacet(FACET_REGISTRATION_CONFIGURATION)) {
+            root.addFacet(FACET_REGISTRATION_CONFIGURATION);
+            root.setPropertyValue(FIELD_CONFIGURATION_NAME,
+                    configuration.getName());
             root = session.saveDocument(root);
         }
         return root;
@@ -155,11 +160,14 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
         protected ValidationMethod validationMethod;
 
+        protected UserRegistrationConfiguration configuration;
+
         public String getRegistrationUuid() {
             return registrationUuid;
         }
 
-        public RegistrationCreator(UserRegistrationInfo userInfo,
+        public RegistrationCreator(String configurationName,
+                UserRegistrationInfo userInfo,
                 DocumentRegistrationInfo docInfo,
                 Map<String, Serializable> additionnalInfo,
                 ValidationMethod validationMethod) {
@@ -168,6 +176,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             this.additionnalInfo = additionnalInfo;
             this.validationMethod = validationMethod;
             this.docInfo = docInfo;
+            this.configuration = getConfiguration(configurationName);
         }
 
         @Override
@@ -179,14 +188,15 @@ public class UserRegistrationComponent extends DefaultComponent implements
             String name = IdUtils.generateId(title + "-"
                     + System.currentTimeMillis());
 
-            String targetPath = getOrCreateRootDocument(session).getPathAsString();
+            String targetPath = getOrCreateRootDocument(session,
+                    configuration.getName()).getPathAsString();
 
             DocumentModel doc = session.createDocumentModel(configuration.getRequestDocType());
             doc.setPathInfo(targetPath, name);
             doc.setPropertyValue("dc:title", title);
 
             // store userinfo
-            if (getRegistrationRules().useEmailAsLogin()) {
+            if (getRegistrationRules(configuration.getName()).useEmailAsLogin()) {
                 doc.setPropertyValue(USERNAME_FIELD, userInfo.getEmail());
             } else {
                 doc.setPropertyValue(USERNAME_FIELD, userInfo.getLogin());
@@ -387,6 +397,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         input.put("info", (Serializable) additionnalInfo);
         StringWriter writer = new StringWriter();
 
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         try {
             rh.getRenderingEngine().render(
                     configuration.getValidationEmailTemplate(), input, writer);
@@ -432,19 +443,20 @@ public class UserRegistrationComponent extends DefaultComponent implements
             Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException {
-        return submitRegistrationRequest(userInfo,
+        return submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
                 new DocumentRegistrationInfo(), additionnalInfo,
                 validationMethod, autoAccept);
     }
 
     @Override
-    public String submitRegistrationRequest(UserRegistrationInfo userInfo,
-            DocumentRegistrationInfo docInfo,
+    public String submitRegistrationRequest(String configurationName,
+            UserRegistrationInfo userInfo, DocumentRegistrationInfo docInfo,
             Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException, UserRegistrationException {
-        RegistrationCreator creator = new RegistrationCreator(userInfo,
-                docInfo, additionnalInfo, validationMethod);
+        RegistrationCreator creator = new RegistrationCreator(
+                configurationName, userInfo, docInfo, additionnalInfo,
+                validationMethod);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
@@ -453,7 +465,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         // Directly accept registration if the configuration allow it and the
         // user already exists
         if (autoAccept
-                || (userAlreadyExists && getRegistrationRules().allowDirectValidationForExistingUser())) {
+                || (userAlreadyExists && getRegistrationRules(configurationName).allowDirectValidationForExistingUser())) {
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
         return registrationUuid;
@@ -498,6 +510,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         input.put("info", (Serializable) additionnalInfo);
         StringWriter writer = new StringWriter();
 
+        UserRegistrationConfiguration configuration = getConfiguration((DocumentModel) registrationInfo.get(REGISTRATION_DATA_DOC));
         try {
             rh.getRenderingEngine().render(
                     configuration.getSuccessEmailTemplate(), input, writer);
@@ -527,15 +540,24 @@ public class UserRegistrationComponent extends DefaultComponent implements
             throws Exception {
         if ("configuration".equals(extensionPoint)) {
             UserRegistrationConfiguration newConfig = (UserRegistrationConfiguration) contribution;
-            if (configuration != null && newConfig.isMerge()) {
-                configuration.mergeWith(newConfig);
+
+            if (configurations.containsKey(newConfig.getName())) {
+                if (newConfig.isMerge()) {
+                    configurations.get(newConfig.getName()).mergeWith(newConfig);
+                } else if (newConfig.isRemove()) {
+                    configurations.remove(newConfig.getName());
+                } else {
+                    log.warn("Trying to register an existing userRegistration configuration without removing or merging it, in: "
+                            + contributor.getName());
+                }
             } else {
-                configuration = newConfig;
+                configurations.put(newConfig.getName(), newConfig);
             }
         }
     }
 
-    protected RegistrationUserFactory getRegistrationUserFactory() {
+    protected RegistrationUserFactory getRegistrationUserFactory(
+            UserRegistrationConfiguration configuration) {
         RegistrationUserFactory factory = null;
         Class<? extends RegistrationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
         if (factoryClass != null) {
@@ -557,31 +579,37 @@ public class UserRegistrationComponent extends DefaultComponent implements
     public NuxeoPrincipal createUser(CoreSession session,
             DocumentModel registrationDoc) throws ClientException,
             UserRegistrationException {
-        return getRegistrationUserFactory().createUser(session, registrationDoc);
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
+        return getRegistrationUserFactory(configuration).createUser(session,
+                registrationDoc);
     }
 
     @Override
     public void addRightsOnDoc(CoreSession session,
             DocumentModel registrationDoc) throws ClientException {
-        DocumentModel document = getRegistrationUserFactory().doAddDocumentPermission(
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
+        DocumentModel document = getRegistrationUserFactory(configuration).doAddDocumentPermission(
                 session, registrationDoc);
         if (document != null) {
-            getRegistrationUserFactory().doPostAddDocumentPermission(session,
-                    registrationDoc, document);
+            getRegistrationUserFactory(configuration).doPostAddDocumentPermission(
+                    session, registrationDoc, document);
         }
     }
 
     protected class RootDocumentGetter extends UnrestrictedSessionRunner {
 
-        DocumentModel doc;
+        protected DocumentModel doc;
 
-        protected RootDocumentGetter() {
+        protected String configurationName;
+
+        protected RootDocumentGetter(String configurationName) {
             super(getTargetRepositoryName());
+            this.configurationName = configurationName;
         }
 
         @Override
         public void run() throws ClientException {
-            doc = getOrCreateRootDocument(session);
+            doc = getOrCreateRootDocument(session, configurationName);
             doc.detach(true);
         }
 
@@ -592,12 +620,51 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     @Override
     public UserRegistrationConfiguration getConfiguration() {
-        return configuration;
+        return getConfiguration(DEFAULT_CONFIGURATION_NAME);
     }
 
     @Override
-    public RegistrationRules getRegistrationRules() throws ClientException {
-        RootDocumentGetter rdg = new RootDocumentGetter();
+    public UserRegistrationConfiguration getConfiguration(
+            DocumentModel requestDoc) {
+        try {
+            DocumentModel parent = requestDoc.getCoreSession().getDocument(
+                    requestDoc.getParentRef());
+            String configurationName = DEFAULT_CONFIGURATION_NAME;
+            if (parent.hasFacet(FACET_REGISTRATION_CONFIGURATION)) {
+                configurationName = (String) parent.getPropertyValue(FIELD_CONFIGURATION_NAME);
+            }
+
+            if (!configurations.containsKey(configurationName)) {
+                throw new ClientException("Configuration " + configurationName
+                        + " is not registered");
+            }
+            return configurations.get(configurationName);
+        } catch (ClientException e) {
+            log.info("Unable to get request parent document: " + e.getMessage());
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel getRegistrationRulesDocument(CoreSession session)
+            throws ClientException {
+        return null; // To change body of implemented methods use File |
+                     // Settings | File Templates.
+    }
+
+    @Override
+    public UserRegistrationConfiguration getConfiguration(String name) {
+        if (!configurations.containsKey(name)) {
+            throw new ClientRuntimeException(
+                    "Trying to get unknown user registration configuration.");
+        }
+        return configurations.get(name);
+    }
+
+    @Override
+    public RegistrationRules getRegistrationRules(String configurationName)
+            throws ClientException {
+        RootDocumentGetter rdg = new RootDocumentGetter(configurationName);
         rdg.runUnrestricted();
         return rdg.getDoc().getAdapter(RegistrationRules.class);
     }
@@ -621,6 +688,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 + getConfiguration().getValidationRelUrl());
         input.put(REGISTRATION_DATA_DOC, registrationDoc);
 
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         try {
             rh.getRenderingEngine().render(
                     configuration.getReviveEmailTemplate(), input, writer);

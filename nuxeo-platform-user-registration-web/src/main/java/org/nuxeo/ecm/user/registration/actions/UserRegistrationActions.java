@@ -18,10 +18,13 @@ package org.nuxeo.ecm.user.registration.actions;
 
 import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
+import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 import static org.nuxeo.ecm.user.registration.UserRegistrationService.ValidationMethod.EMAIL;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,12 +102,20 @@ public class UserRegistrationActions implements Serializable {
     }
 
     public String getDocType() throws ClientException {
-        return userRegistrationService.getConfiguration().getRequestDocType();
+        return getDocType(DEFAULT_CONFIGURATION_NAME);
+    }
+
+    public String getDocType(String name) throws ClientException {
+        return userRegistrationService.getConfiguration(name).getRequestDocType();
+    }
+
+    public String getValidationBaseUrl(String name) throws ClientException {
+        return BaseURL.getBaseURL()
+                + userRegistrationService.getConfiguration().getValidationRelUrl();
     }
 
     public String getValidationBaseUrl() throws ClientException {
-        return BaseURL.getBaseURL()
-                + userRegistrationService.getConfiguration().getValidationRelUrl();
+        return getValidationBaseUrl(DEFAULT_CONFIGURATION_NAME);
     }
 
     public void acceptRegistrationRequest(DocumentModel request)
@@ -143,7 +154,7 @@ public class UserRegistrationActions implements Serializable {
 
     public DocumentModel getConfigurationDocument() throws ClientException {
         if (currentConfiguration == null) {
-            currentConfiguration = userRegistrationService.getConfigurationDocument(documentManager);
+            currentConfiguration = userRegistrationService.getRegistrationRulesDocument(documentManager);
         }
         return currentConfiguration;
     }
@@ -244,8 +255,9 @@ public class UserRegistrationActions implements Serializable {
     protected void doSubmitUserRegistration() {
         try {
             userinfo.setPassword(RandomStringUtils.randomAlphanumeric(6));
-            userRegistrationService.submitRegistrationRequest(userinfo,
-                    docinfo, getAdditionalsParameters(), EMAIL, false);
+            userRegistrationService.submitRegistrationRequest(
+                    DEFAULT_CONFIGURATION_NAME, userinfo, docinfo,
+                    getAdditionalsParameters(), EMAIL, false);
 
             facesMessages.add(
                     INFO,

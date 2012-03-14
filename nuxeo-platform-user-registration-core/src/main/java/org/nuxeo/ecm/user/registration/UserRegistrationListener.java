@@ -44,7 +44,8 @@ public class UserRegistrationListener implements EventListener {
 
             try {
                 UserRegistrationService userRegistrationService = Framework.getService(UserRegistrationService.class);
-                RegistrationRules rules = userRegistrationService.getRegistrationRules();
+                UserRegistrationConfiguration config = userRegistrationService.getConfiguration(registration);
+                RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
                 if (rules.allowUserCreation()) {
                     NuxeoPrincipal principal = userRegistrationService.createUser(ctx.getCoreSession(), registration);
                     docCtx.setProperty("registeredUser", principal);

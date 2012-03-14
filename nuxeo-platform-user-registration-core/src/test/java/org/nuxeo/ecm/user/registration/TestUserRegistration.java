@@ -4,43 +4,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
+
 import java.io.Serializable;
 import java.util.HashMap;
+
 import com.google.inject.Inject;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
-
-@RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.user.registration" })
-@LocalDeploy({ "org.nuxeo.ecm.user.registration:test-types-contrib.xml" })
-public class TestUserRegistration {
-
-    @Inject
-    protected CoreSession session;
+public class TestUserRegistration extends AbstractUserRegistration {
 
     @Inject
     protected UserManager userManager;
 
-    @Inject
-    protected UserRegistrationService userRegistrationService;
-
     @Test
     public void testTestContribution() throws ClientException {
+        initializeRegistrations();
+
         DocumentModel doc = session.createDocumentModel("TestRegistration");
         assertTrue(doc.hasFacet("UserRegistration"));
 
@@ -51,6 +38,8 @@ public class TestUserRegistration {
 
     @Test
     public void testBasicUserRegistration() throws ClientException {
+        initializeRegistrations();
+
         UserRegistrationInfo userInfo = new UserRegistrationInfo();
         userInfo.setLogin("jolivier");
         userInfo.setFirstName("John");
@@ -69,6 +58,8 @@ public class TestUserRegistration {
 
     @Test
     public void testUserRegistrationWithDocument() throws ClientException {
+        initializeRegistrations();
+
         DocumentModel testWorkspace = session.createDocumentModel(
                 "/default-domain", "testWorkspace", "Workspace");
         testWorkspace.setPropertyValue("dc:title", "Test Workspace");
@@ -91,7 +82,8 @@ public class TestUserRegistration {
                 "testUser", SecurityConstants.READ_WRITE).toBoolean());
 
         String requestId = userRegistrationService.submitRegistrationRequest(
-                userInfo, docInfo, new HashMap<String, Serializable>(),
+                DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
+                new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId);
 

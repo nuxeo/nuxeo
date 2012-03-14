@@ -23,8 +23,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("configuration")
 public class UserRegistrationConfiguration {
 
+    public static final String DEFAULT_CONFIGURATION_NAME = "default_registration";
+    
     @XNode("@merge")
     private boolean merge = false;
+
+    @XNode("@remove")
+    private boolean remove = false;
+    
+    @XNode("@name")
+    private String name = DEFAULT_CONFIGURATION_NAME;
 
     @XNode("requestDocType")
     private String requestDocType;
@@ -117,12 +125,28 @@ public class UserRegistrationConfiguration {
         return reviveEmailTemplate;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean isMerge() {
         return merge;
     }
 
     public void setMerge(boolean merge) {
         this.merge = merge;
+    }
+
+    public boolean isRemove() {
+        return remove;
+    }
+
+    public void setRemove(boolean remove) {
+        this.remove = remove;
     }
 
     public void mergeWith(UserRegistrationConfiguration other) {
