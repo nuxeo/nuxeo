@@ -85,6 +85,9 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @In(create = true, required = false)
     protected Boolean isUserWorkspace;
 
+    @In(create = true, required = false)
+    protected String currentPersonalWorkspacePath;
+
     protected String userWorkspacePath;
 
     @In(create = true)
@@ -127,13 +130,16 @@ public class TreeActionsBean implements TreeActions, Serializable {
             reset();
             treeInvalidator.invalidationDone();
         }
+        if (Boolean.TRUE.equals(isUserWorkspace)) {
+            userWorkspacePath = getUserWorkspacePath();
+        }
         List<DocumentTreeNode> currentTree = trees.get(treeName);
         if (currentTree == null) {
             currentTree = new ArrayList<DocumentTreeNode>();
             DocumentModel firstAccessibleParent = null;
             if (currentDocument != null) {
 
-                if (isUserWorkspace != null && isUserWorkspace) {
+                if (Boolean.TRUE.equals(isUserWorkspace)) {
                     firstAccessibleParent = documentManager.getDocument(new PathRef(
                             userWorkspacePath));
                 } else {
@@ -227,6 +233,27 @@ public class TreeActionsBean implements TreeActions, Serializable {
             }
         }
         return currentDocumentPath;
+    }
+
+    protected String getUserWorkspacePath() {
+        String currentDocumentPath = getCurrentDocumentPath();
+        if (currentPersonalWorkspacePath == null || "".equals(currentPersonalWorkspacePath)) {
+            reset();
+            return currentDocumentPath;
+        }
+        if (userWorkspacePath == null
+                || !userWorkspacePath.contains(currentPersonalWorkspacePath)) {
+            // navigate to another personal workspace
+            reset();
+            try {
+                return documentManager.exists(new PathRef(
+                        currentPersonalWorkspacePath)) ? currentPersonalWorkspacePath
+                        : currentDocumentPath;
+            } catch (ClientException e) {
+                return currentDocumentPath;
+            }
+        }
+        return userWorkspacePath;
     }
 
     public Boolean adviseNodeOpened(UITree treeComponent) {
