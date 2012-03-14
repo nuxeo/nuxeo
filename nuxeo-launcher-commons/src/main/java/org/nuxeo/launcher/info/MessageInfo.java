@@ -15,21 +15,28 @@
  *     mguillaume
  */
 
-package org.nuxeo.launcher.commons;
+package org.nuxeo.launcher.info;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
-import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Date;
 
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "commands")
-public class CommandSetInfo {
+@XmlRootElement(name = "message")
+public class MessageInfo {
 
-    @XmlElement(name = "command")
-    public List<CommandInfo> commands = new ArrayList<CommandInfo>();
+    public static enum LOG_LEVEL { DEBUG, INFO, WARN, ERROR};
+
+    @XmlAttribute()
+    public LOG_LEVEL level;
+
+    @XmlAttribute()
+    public Date time;
+
+    @XmlAttribute()
+    public String message;
 
 }

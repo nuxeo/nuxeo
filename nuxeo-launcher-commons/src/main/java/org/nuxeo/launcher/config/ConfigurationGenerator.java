@@ -194,6 +194,7 @@ public class ConfigurationGenerator {
 
     private boolean quiet = false;
 
+    @SuppressWarnings("unused")
     private boolean debug = false;
 
     /**

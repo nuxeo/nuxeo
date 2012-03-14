@@ -15,40 +15,21 @@
  *     mguillaume
  */
 
-package org.nuxeo.launcher.commons;
+package org.nuxeo.launcher.info;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlAttribute;
-
-import org.nuxeo.connect.update.LocalPackage;
+import java.util.List;
+import java.util.ArrayList;
 
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "package")
-public class PackageInfo {
+@XmlRootElement(name = "commands")
+public class CommandSetInfo {
 
-    public PackageInfo() {}
-
-    public PackageInfo(LocalPackage pkg) {
-        name = pkg.getName();
-        version = pkg.getVersion().toString();
-        id = pkg.getId();
-        state = pkg.getState();
-    }
-
-    @XmlAttribute()
-    public String name;
-
-    @XmlAttribute()
-    public String version;
-
-    @XmlAttribute()
-    public String id;
-
-    @XmlAttribute()
-    public int state;
+    @XmlElement(name = "command")
+    public List<CommandInfo> commands = new ArrayList<CommandInfo>();
 
 }

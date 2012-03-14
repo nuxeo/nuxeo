@@ -15,28 +15,39 @@
  *     mguillaume
  */
 
-package org.nuxeo.launcher.commons;
+package org.nuxeo.launcher.info;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.nuxeo.connect.update.LocalPackage;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "message")
-public class MessageInfo {
+@XmlRootElement(name = "package")
+public class PackageInfo {
 
-    public static enum LOG_LEVEL { DEBUG, INFO, WARN, ERROR};
+    public PackageInfo() {
+    }
+
+    public PackageInfo(LocalPackage pkg) {
+        name = pkg.getName();
+        version = pkg.getVersion().toString();
+        id = pkg.getId();
+        state = pkg.getState();
+    }
 
     @XmlAttribute()
-    public LOG_LEVEL level;
+    public String name;
 
     @XmlAttribute()
-    public Date time;
+    public String version;
 
     @XmlAttribute()
-    public String message;
+    public String id;
+
+    @XmlAttribute()
+    public int state;
 
 }

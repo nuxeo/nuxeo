@@ -15,7 +15,7 @@
  *     mguillaume
  */
 
-package org.nuxeo.launcher.commons;
+package org.nuxeo.launcher.info;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
