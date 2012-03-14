@@ -24,8 +24,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -98,7 +96,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
             }
         };
         NuxeoContainer.installNaming();
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
+                datasourceAutocommit);
     }
 
     public void testLayoutDefinitionExport() throws Exception {
@@ -137,7 +136,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
         String expectedString = FileUtils.read(expected);
         String writtenString = FileUtils.read(written);
-        assertTrue(FileUtils.areFilesContentEquals(expectedString, writtenString));
+        assertTrue(FileUtils.areFilesContentEquals(expectedString,
+                writtenString));
     }
 
 }

@@ -8,7 +8,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * 
+ *
  */
 package org.nuxeo.ecm.platform.audit.api.document;
 
@@ -18,22 +18,21 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
- * Simple helper to fetch the target Audited document 
- * 
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * Simple helper to fetch the target Audited document
  *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class SourceDocumentResolver extends UnrestrictedSessionRunner {
 
     public DocumentModel sourceDocument;
 
-    protected final DocumentModel document; 
-    
+    protected final DocumentModel document;
+
     SourceDocumentResolver(CoreSession session, DocumentModel doc) {
         super(session);
         this.document = doc;
     }
-    
+
     @Override
     public void run() throws ClientException {
         DocumentModel version = null;
@@ -43,8 +42,7 @@ public class SourceDocumentResolver extends UnrestrictedSessionRunner {
             version = document;
         }
         if (version != null) {
-            sourceDocument = session.getSourceDocument(
-                    version.getRef());
+            sourceDocument = session.getSourceDocument(version.getRef());
         }
     }
 

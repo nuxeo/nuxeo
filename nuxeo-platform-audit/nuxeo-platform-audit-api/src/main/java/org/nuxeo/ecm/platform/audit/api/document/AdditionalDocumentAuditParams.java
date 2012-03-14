@@ -8,7 +8,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * 
+ *
  */
 package org.nuxeo.ecm.platform.audit.api.document;
 
@@ -17,9 +17,8 @@ import java.util.Date;
 /**
  * Simple object used to store the additional parameters that are used to fetch
  * the history for a DocumentModel
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class AdditionalDocumentAuditParams {
 

@@ -806,7 +806,7 @@ public class NXAuditEventsService extends DefaultComponent implements
                     "Cannot fetch life cycle state from " + document, e1);
         }
         if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
-            entry.setDocLifeCycle((String)docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO));
+            entry.setDocLifeCycle((String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO));
         }
         String category = (String) properties.get("category");
         if (category != null) {
@@ -886,10 +886,11 @@ public class NXAuditEventsService extends DefaultComponent implements
     public ExtendedInfo newExtendedInfo(Serializable value) {
         return ExtendedInfoImpl.createExtendedInfo(value);
     }
-    
+
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.getCanonicalName().equals(DocumentHistoryReader.class.getCanonicalName())) {
+        if (adapter.getCanonicalName().equals(
+                DocumentHistoryReader.class.getCanonicalName())) {
             return adapter.cast(new DocumentHistoryReaderImpl());
         } else {
             return super.getAdapter(adapter);

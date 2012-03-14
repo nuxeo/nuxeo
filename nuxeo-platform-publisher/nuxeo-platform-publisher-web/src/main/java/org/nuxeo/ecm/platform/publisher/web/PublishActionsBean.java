@@ -77,7 +77,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean manages the publishing tab.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @Name("publishActions")
@@ -127,6 +127,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     protected Map<String, String> publicationParameters = new HashMap<String, String>();
 
+    protected String treeSID;
+
     @Create
     public void create() {
         try {
@@ -143,9 +145,13 @@ public class PublishActionsBean extends AbstractPublishActions implements
             currentPublicationTree.release();
             currentPublicationTree = null;
         }
+        if (treeSID != null) {
+            publisherService.releaseAllTrees(treeSID);
+        }
     }
 
-    protected Map<String, String> filterEmptyTrees(Map<String, String> trees) throws PublicationTreeNotAvailable, ClientException {
+    protected Map<String, String> filterEmptyTrees(Map<String, String> trees)
+            throws PublicationTreeNotAvailable, ClientException {
 
         Map<String, String> filteredTrees = new HashMap<String, String>();
 
@@ -158,7 +164,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
         return filteredTrees;
     }
 
-    protected List<String> filterEmptyTrees(Collection<String> trees) throws PublicationTreeNotAvailable, ClientException {
+    protected List<String> filterEmptyTrees(Collection<String> trees)
+            throws PublicationTreeNotAvailable, ClientException {
         List<String> filteredTrees = new ArrayList<String>();
 
         for (String tree : trees) {
@@ -227,7 +234,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
                     null, comment, null, currentDocument);
             Events.instance().raiseEvent(
                     EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION);
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "document_submitted_for_publication"),
                     resourcesAccessor.getMessages().get(
@@ -242,7 +250,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
             Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLISHED);
             // publish may checkin the document -> change
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_published"),
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
@@ -282,6 +291,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 return currentPublicationTree;
             }
             try {
+                treeSID = documentManager.getSessionId();
                 currentPublicationTree = publisherService.getPublicationTree(
                         currentPublicationTreeNameForPublishing,
                         documentManager, null,
@@ -468,7 +478,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public String rejectDocument() throws ClientException {
         if (publishingComment == null || "".equals(publishingComment)) {
-            facesMessages.addToControl("publishingComment",
+            facesMessages.addToControl(
+                    "publishingComment",
                     StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
@@ -621,7 +632,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.add(
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "selection_contains_non_publishable_docs"));
         }

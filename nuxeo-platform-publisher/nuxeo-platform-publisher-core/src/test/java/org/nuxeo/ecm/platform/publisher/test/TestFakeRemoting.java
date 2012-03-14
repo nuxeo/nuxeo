@@ -208,6 +208,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
                 doc2Publish));
         assertEquals(0, detectedProxies.size());
 
+        tree.release();
+
     }
 
     public void testWrappingThroughRemoting() throws Exception {
@@ -276,6 +278,10 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         assertEquals("CoreFolderPublicationNode", serverNode.getNodeType());
         assertEquals(serverTreeClientId, serverNode.getSessionId());
 
+        proxyTree.release();
+        clientTree.release();
+        serverTree.release();
+
     }
 
     public void testTitleWithSpaces() throws Exception {
@@ -305,6 +311,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         PublishedDocument publisheDocument = clientTree.publish(doc, clientNode);
         assertNotNull(publisheDocument);
         assertTrue(publisheDocument.getPath().endsWith("A title with spaces"));
+
+        clientTree.release();
     }
 
 }

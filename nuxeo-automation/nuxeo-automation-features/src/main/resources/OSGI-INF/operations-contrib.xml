@@ -51,15 +51,61 @@
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.CreatePicture" />
-      
+
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.RunOperationOnProvider" />
-      
+
   </extension>
 
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="VersionAndAttachFile">
+      <operation id="Blob.PushList">
+      </operation>
+      <operation id ="Document.Fetch">
+        <param type="string" name="value">expr:Context.get("currentDocument")</param>
+      </operation>
+      <operation id="Document.CheckIn">
+        <param type="string" name="version">minor</param>
+        <param type="string" name="comment">Automatic checkin before file update</param>
+      </operation>
+      <operation id="Context.SetInputAsVar">
+        <param type="string" name="name">newDocument</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">currentDocument</param>
+        <param type="string" name="value">expr:Context.get("newDocument").id</param>
+      </operation>
+      <operation id="Blob.PopList">
+      </operation>
+      <operation id="BlobHolder.Attach">
+        <param type="boolean" name="useMainBlob">true</param>
+      </operation>
+    </chain>
     <chain id="AttachFiles">
+      <operation id="BlobHolder.Attach">
+        <param type="boolean" name="useMainBlob">false</param>
+      </operation>
+    </chain>
+    <chain id="VersionAndAttachFiles">
+      <operation id="Blob.PushList">
+      </operation>
+      <operation id ="Document.Fetch">
+        <param type="string" name="value">expr:Context.get("currentDocument")</param>
+      </operation>
+      <operation id="Document.CheckIn">
+        <param type="string" name="version">minor</param>
+        <param type="string" name="comment">Automatic checkin before files update</param>
+      </operation>
+      <operation id="Context.SetInputAsVar">
+        <param type="string" name="name">newDocument</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">currentDocument</param>
+        <param type="string" name="value">expr:Context.get("newDocument").id</param>
+      </operation>
+      <operation id="Blob.PopList">
+      </operation>
       <operation id="BlobHolder.Attach">
         <param type="boolean" name="useMainBlob">false</param>
       </operation>

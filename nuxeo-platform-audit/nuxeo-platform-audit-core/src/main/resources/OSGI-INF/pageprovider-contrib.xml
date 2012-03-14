@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.audit.PageProviderservice.contrib">
+<component name="org.nuxeo.ecm.platform.audit.PageProviderservice.contrib">
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
@@ -10,7 +9,7 @@
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
       <whereClause docType="BasicAuditSearch">
         <fixedPart>
-          log.docUUID = ?    
+          log.docUUID = ?
         </fixedPart>
         <predicate parameter="log.eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />

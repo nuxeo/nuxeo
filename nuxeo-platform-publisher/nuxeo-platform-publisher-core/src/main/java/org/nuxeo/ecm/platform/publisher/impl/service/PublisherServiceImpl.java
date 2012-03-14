@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,7 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * POJO implementation of the publisher service Implements both
  * {@link PublisherService} and {@link RemotePublicationTreeManager}.
- *
+ * 
  * @author tiry
  */
 public class PublisherServiceImpl extends DefaultComponent implements
@@ -73,6 +74,10 @@ public class PublisherServiceImpl extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(PublisherServiceImpl.class);
 
     protected static Map<String, PublicationTree> liveTrees = new HashMap<String, PublicationTree>();
+
+    // Store association between treeSid and CoreSession that was opened locally
+    // for them : this unable proper cleanup of allocated sessions
+    protected Map<String, String> remoteLiveTrees = new HashMap<String, String>();
 
     public static final String TREE_EP = "tree";
 
@@ -173,7 +178,11 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     protected String computeTreeSessionId(String treeConfigName,
             CoreSession coreSession) {
-        return treeConfigName + coreSession.getSessionId();
+        return computeTreeSessionId(treeConfigName, coreSession.getSessionId());
+    }
+
+    protected String computeTreeSessionId(String treeConfigName, String sid) {
+        return treeConfigName + sid;
     }
 
     public List<String> getAvailablePublicationTree() {
@@ -217,12 +226,14 @@ public class PublisherServiceImpl extends DefaultComponent implements
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         CoreSession coreSession = null;
         if (rm != null) {
-            // FIXME: this session is never closed?
+            // this session will be closed in the release method
             coreSession = rm.getDefaultRepository().open();
         }
 
         PublicationTree tree = getPublicationTree(treeConfigName, coreSession,
                 params);
+
+        remoteLiveTrees.put(tree.getSessionId(), coreSession.getSessionId());
 
         Map<String, String> res = new HashMap<String, String>();
         res.put("sessionId", tree.getSessionId());
@@ -241,6 +252,21 @@ public class PublisherServiceImpl extends DefaultComponent implements
             tree = liveTrees.get(sid);
             tree.release();
             liveTrees.remove(sid);
+        }
+        if (remoteLiveTrees.containsKey(sid)) {
+            // close here session opened for remote trees
+            String sessionId = remoteLiveTrees.get(sid);
+            CoreSession remoteSession = CoreInstance.getInstance().getSession(
+                    sessionId);
+            CoreInstance.getInstance().close(remoteSession);
+            remoteLiveTrees.remove(sid);
+        }
+    }
+
+    public void releaseAllTrees(String sessionId) {
+        for (String configName : treeConfigDescriptors.keySet()) {
+            String treeid = computeTreeSessionId(configName, sessionId);
+            release(treeid);
         }
     }
 
