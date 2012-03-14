@@ -373,7 +373,10 @@ public class CommentManagerImpl implements CommentManager {
         if (parent != null) {
             props.put(CommentConstants.PARENT_COMMENT, parent);
         }
-        props.put(CommentConstants.COMMENT, child);
+        props.put(CommentConstants.COMMENT_DOCUMENT, child);
+        props.put(CommentConstants.COMMENT, (String) child.getProperty(
+                "comment", "text"));
+        // Keep comment_text for compatibility
         props.put(CommentConstants.COMMENT_TEXT, (String) child.getProperty(
                 "comment", "text"));
         props.put("category", CommentConstants.EVENT_COMMENT_CATEGORY);
