@@ -12,31 +12,45 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu, jcarsique, mguillaume
  */
 package org.nuxeo.ecm.admin.offline.update;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.connect.update.AlreadyExistsPackageException;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.log4j.Log4JHelper;
+import org.nuxeo.launcher.info.CommandInfo;
+import org.nuxeo.launcher.info.MessageInfo;
+import org.nuxeo.launcher.info.MessageInfoLogger;
+import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.osgi.application.loader.FrameworkLoader;
 import org.nuxeo.runtime.api.Framework;
 
@@ -75,7 +89,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class LocalPackageManager {
 
-    static final Log log = LogFactory.getLog(LocalPackageManager.class);
+    static final MessageInfoLogger log = new MessageInfoLogger();
 
     protected File home;
 
@@ -85,103 +99,163 @@ public class LocalPackageManager {
 
     protected List<File> bundles;
 
-    protected File config;
-
     protected Map<String, Object> env;
 
     protected Environment targetEnv;
 
-    protected List<String> packages = new ArrayList<String>();
-
     protected PackageUpdateService pus;
+
+    private static CommandInfo cmdInfo = new CommandInfo();
 
     private String command;
 
+    private String param;
+
     private int errorValue = 0;
 
-    private String[] params;
+    private static Options launcherOptions = null;
+
+    private static final Map<String, Integer> cmdNumArgs;
+    static {
+        cmdNumArgs = new HashMap<String, Integer>();
+        cmdNumArgs.put(CommandInfo.CMD_LIST, 0);
+        cmdNumArgs.put(CommandInfo.CMD_RESET, 0);
+        cmdNumArgs.put(CommandInfo.CMD_ADD, 1);
+        cmdNumArgs.put(CommandInfo.CMD_INSTALL, 1);
+        cmdNumArgs.put(CommandInfo.CMD_UNINSTALL, 1);
+        cmdNumArgs.put(CommandInfo.CMD_REMOVE, 1);
+    }
+
+    protected static void initParserOptions() {
+        if (launcherOptions == null) {
+            launcherOptions = new Options();
+            OptionBuilder.withLongOpt("help");
+            OptionBuilder.withDescription("Show detailed help");
+            launcherOptions.addOption(OptionBuilder.create("h"));
+            OptionBuilder.withLongOpt("workdir");
+            OptionBuilder.hasArg();
+            OptionBuilder.withArgName("wd");
+            OptionBuilder.isRequired();
+            OptionBuilder.withDescription("Working directory (framework home)");
+            launcherOptions.addOption(OptionBuilder.create());
+        }
+    }
+
+    protected static CommandLine parseOptions(String[] args)
+            throws ParseException {
+        initParserOptions();
+        CommandLineParser parser = new PosixParser();
+        CommandLine cmdLine = null;
+        Boolean stopAfterParsing = false;
+        try {
+            cmdLine = parser.parse(launcherOptions, args);
+            if (cmdLine.hasOption("h")) {
+                printHelp();
+                stopAfterParsing = true;
+            } else if (cmdLine.getArgs().length == 0) {
+                printHelp();
+                stopAfterParsing = true;
+            } else {
+                String arg0 = cmdLine.getArgs()[0];
+                Integer nParams = cmdLine.getArgs().length - 1;
+                if (!cmdNumArgs.containsKey(arg0)) {
+                    log.error("Unknown command: " + arg0);
+                    printHelp();
+                    stopAfterParsing = true;
+                } else if (nParams != cmdNumArgs.get(arg0)) {
+                    log.error("Wrong number of arguments for command: " + arg0);
+                    printHelp();
+                    stopAfterParsing = true;
+                }
+            }
+        } catch (UnrecognizedOptionException e) {
+            log.error(e.getMessage());
+            printHelp();
+            stopAfterParsing = true;
+        } catch (MissingArgumentException e) {
+            log.error(e.getMessage());
+            printHelp();
+            stopAfterParsing = true;
+        } catch (ParseException e) {
+            log.error("Error while parsing command line: " + e.getMessage());
+            printHelp();
+            stopAfterParsing = true;
+        } finally {
+            if (stopAfterParsing) {
+                throw new ParseException("Invalid command line");
+            }
+        }
+        return cmdLine;
+    }
+
+    protected static void printCommandInfo() {
+        try {
+            Writer xml = new StringWriter();
+            JAXBContext jaxbContext = JAXBContext.newInstance(
+                    CommandInfo.class, PackageInfo.class, MessageInfo.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(cmdInfo, xml);
+            System.out.println(xml.toString());
+        } catch (JAXBException e) {
+            System.out.println("Output serialization failed");
+            System.out.println("LocalPackageManager messages:");
+            log.printMessages();
+            System.exit(4);
+        }
+    }
+
+    protected static void errorExit(int exitCode) {
+        cmdInfo.exitCode = exitCode;
+        cmdInfo.messages = log.getMessages();
+        printCommandInfo();
+        System.exit(exitCode);
+    }
 
     public static void main(String[] args) throws Exception {
+        cmdInfo.name = CommandInfo.CMD_UNKNOWN;
+        CommandLine cmdLine = null;
+        try {
+            cmdLine = parseOptions(args);
+        } catch (ParseException e) {
+            errorExit(1);
+        }
         LocalPackageManager main = null;
         try {
-            main = new LocalPackageManager(args);
+            main = new LocalPackageManager(cmdLine);
             main.initializeFramework();
             main.startFramework();
             main.run();
         } catch (Throwable e) {
             log.error(e);
-            main.errorValue = 2;
+            if (main != null) {
+                main.errorValue = 2;
+            } else {
+                errorExit(2);
+            }
         } finally {
             if (main != null) {
                 main.stopFramework();
             }
         }
-        System.exit(main.errorValue);
+        errorExit(main.errorValue);
     }
 
-    /**
-     * Read options (i.e. parameters starting with one or two dashes)
-     *
-     * @param args arguments to read
-     * @return the passed arguments without the options
-     * @since 5.6
-     */
-    protected String[] readOptions(String[] args) {
-        int nbOptions = 0;
-        for (String arg : args) {
-            if (arg.startsWith("-") || arg.startsWith("--")) {
-                nbOptions++;
-                if ("-d".equalsIgnoreCase(arg)
-                        || "--debug".equalsIgnoreCase(arg)) {
-                    setDebug();
-                } else if ("-q".equalsIgnoreCase(arg)
-                        || "--quiet".equalsIgnoreCase(arg)) {
-                    setQuiet();
-                } else {
-                    log.error("Unknown option " + arg);
-                }
-            } else {
-                break;
-            }
-        }
-        return Arrays.copyOfRange(args, nbOptions, args.length);
-    }
-
-    /**
-     * @param beQuiet if true, PackageManager will be in quiet mode
-     * @since 5.6
-     */
-    protected void setQuiet() {
-        Log4JHelper.setQuiet(Log4JHelper.CONSOLE_APPENDER_NAME);
-    }
-
-    /**
-     * @param activateDebug if true, will activate the DEBUG logs
-     * @since 5.6
-     */
-    protected void setDebug() {
-        Log4JHelper.setDebug("org.nuxeo.ecm.admin", true, true, "FILE");
-    }
-
-    public LocalPackageManager(String[] args) throws FileNotFoundException {
-        params = readOptions(args);
-        if (params.length < 3) {
-            printHelp();
-            System.exit(1);
-        }
-        wd = new File(params[0]);
+    public LocalPackageManager(CommandLine cmdLine)
+            throws FileNotFoundException {
+        wd = new File(cmdLine.getOptionValue("workdir"));
         if (!wd.isDirectory()) {
             throw new IllegalStateException(wd + " is not a directory!");
         }
-        command = params[1];
-        config = new File(params[2]);
-        if (params.length < 4
-                && Arrays.asList(
-                        new String[] { "installpkg", "uninstall", "add",
-                                "remove" }).contains(command)) {
-            log.error("Missing parameter");
-            printHelp();
-            System.exit(1);
+        String[] argList = cmdLine.getArgs();
+        command = argList[0];
+        if (argList.length == 1) {
+            param = null;
+        } else if (argList.length == 2) {
+            param = argList[1];
+        } else {
+            throw new IllegalStateException("Multiple parameters not supported");
+            // params = Arrays.copyOfRange(argList, 1, argList.length);
         }
 
         home = new File(System.getProperty("nuxeo.runtime.home"));
@@ -201,39 +275,54 @@ public class LocalPackageManager {
         Environment defaultEnv = Environment.getDefault();
         try {
             Environment.setDefault(targetEnv);
-            if ("install".equalsIgnoreCase(command)) {
-                readPackages();
-                update();
-            } else if ("installpkg".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(params, 3,
-                        params.length)) {
-                    if (new File(packageParam).exists()) {
-                        // packageParam is a file
-                        update(packageParam);
-                    } else {
-                        // packageParam maybe an ID
-                        updatePackage(packageParam);
+            if (CommandInfo.CMD_INSTALL.equalsIgnoreCase(command)) {
+                cmdInfo.name = CommandInfo.CMD_INSTALL;
+                cmdInfo.param = param;
+                LocalPackage installed = install(param);
+                if (installed != null) {
+                    PackageInfo info = new PackageInfo(installed);
+                    // If the package requires a restart, state will be
+                    // INSTALLED
+                    // However, we are offline, show as STARTED
+                    if (info.state == PackageState.INSTALLED) {
+                        info.state = PackageState.STARTED;
                     }
+                    cmdInfo.packages.add(info);
                 }
-            } else if ("uninstall".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(params, 3,
-                        params.length)) {
-                    uninstall(packageParam);
+            } else if (CommandInfo.CMD_UNINSTALL.equalsIgnoreCase(command)) {
+                cmdInfo.name = CommandInfo.CMD_UNINSTALL;
+                cmdInfo.param = param;
+                LocalPackage uninstalled = uninstall(param);
+                if (uninstalled != null) {
+                    PackageInfo info = new PackageInfo(uninstalled);
+                    cmdInfo.packages.add(info);
                 }
-            } else if ("add".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(params, 3,
-                        params.length)) {
-                    add(packageParam);
+            } else if (CommandInfo.CMD_ADD.equalsIgnoreCase(command)) {
+                cmdInfo.name = CommandInfo.CMD_ADD;
+                cmdInfo.param = param;
+                LocalPackage added = add(param);
+                if (added != null) {
+                    PackageInfo info = new PackageInfo(added);
+                    cmdInfo.packages.add(info);
                 }
-            } else if ("remove".equalsIgnoreCase(command)) {
-                for (String packageParam : Arrays.copyOfRange(params, 3,
-                        params.length)) {
-                    remove(packageParam);
+            } else if (CommandInfo.CMD_REMOVE.equalsIgnoreCase(command)) {
+                cmdInfo.name = CommandInfo.CMD_REMOVE;
+                cmdInfo.param = param;
+                LocalPackage removed = remove(param);
+                if (removed != null) {
+                    PackageInfo info = new PackageInfo(removed);
+                    info.state = PackageState.REMOTE;
+                    cmdInfo.packages.add(info);
                 }
-            } else if ("list".equalsIgnoreCase(command)) {
-                readPackages();
-                listPackages();
-            } else if ("reset".equalsIgnoreCase(command)) {
+            } else if (CommandInfo.CMD_LIST.equalsIgnoreCase(command)) {
+                cmdInfo.name = CommandInfo.CMD_LIST;
+                List<LocalPackage> listed = listPackages();
+                for (LocalPackage l : listed) {
+                    PackageInfo info = new PackageInfo(l);
+                    cmdInfo.packages.add(info);
+                }
+            } else if (CommandInfo.CMD_RESET.equalsIgnoreCase(command)) {
+                cmdInfo.name = CommandInfo.CMD_RESET;
                 reset();
             } else {
                 printHelp();
@@ -247,17 +336,23 @@ public class LocalPackageManager {
         }
     }
 
-    public void printHelp() {
-        log.error("\nLocalPackageManager usage: working_directory command [parameters]");
+    public static void printHelp() {
+        initParserOptions();
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        String cmdLineSyntax = "LocalPackageManager [options] <command> [parameter]";
+        HelpFormatter help = new HelpFormatter();
+        help.setSyntaxPrefix("Usage: ");
+        help.printHelp(pw, HelpFormatter.DEFAULT_WIDTH, cmdLineSyntax, "",
+                launcherOptions, HelpFormatter.DEFAULT_LEFT_PAD,
+                HelpFormatter.DEFAULT_DESC_PAD, "");
+        log.error(sw.toString());
         log.error("Commands:");
         log.error("\tlist\t\t\t\t\t\tList local packages and their status.");
-        log.error("\tadd </path/to/package>...\t\t\tAdd the given package(s)"
-                + " into the local cache.");
-        log.error("\tinstall </path/to/package>...\t\t\tInstall the given package(s).");
-        log.error("\tinstallpkg </path/to/package|packageId>...\tInstall the given"
-                + " package(s) (as a file or its ID).");
-        log.error("\tuninstall packageId...\t\t\t\tUninstall the specified package(s).");
-        log.error("\tremove packageId...\t\t\t\tRemove the specified package(s).");
+        log.error("\tadd </path/to/package>\t\t\tAdd the package to the local cache.");
+        log.error("\tinstall </path/to/package|packgeId>\t\t\tInstall the package.");
+        log.error("\tuninstall <packageId>\t\t\t\tUninstall the package.");
+        log.error("\tremove <packageId>\t\t\t\tRemove the package from the local cache.");
         log.error("\treset\t\t\t\t\t\tReset all package states to DOWNLOADED. "
                 + "This may be useful after a manual upgrade of the server.");
     }
@@ -317,101 +412,6 @@ public class LocalPackageManager {
         }
     }
 
-    public void update() throws PackageException {
-        if (packages.isEmpty()) {
-            return;
-        }
-        log.info("Performing update ...");
-        for (String pkgId : packages) {
-            try {
-                String cmd = "install";
-                if (pkgId.startsWith("uninstall ")) {
-                    pkgId = pkgId.substring(10);
-                    cmd = "uninstall";
-                } else if (pkgId.startsWith("install ")) {
-                    pkgId = pkgId.substring(8);
-                    cmd = "install";
-                } else if (pkgId.startsWith("add ")) {
-                    pkgId = pkgId.substring(4);
-                    cmd = "add";
-                }
-
-                if (pkgId.startsWith("file:")) {
-                    String packageFileName = pkgId.substring(5);
-                    log.info("Getting Installation package " + packageFileName);
-                    LocalPackage pkg = pus.addPackage(new File(packageFileName));
-                    pkgId = pkg.getId();
-                }
-                if ("uninstall".equals(cmd)) {
-                    uninstall(pkgId);
-                } else if ("install".equals(cmd)) {
-                    updatePackage(pkgId);
-                }
-            } catch (AlreadyExistsPackageException e) {
-                log.warn(e);
-            } catch (PackageException e) {
-                log.error(e);
-                errorValue = 1;
-            }
-        }
-        if (errorValue != 0) {
-            File bak = new File(config.getPath() + ".bak");
-            bak.delete();
-            config.renameTo(bak);
-            throw new PackageException("An error occurred. File renamed to "
-                    + bak);
-        }
-        log.info("Done.");
-        config.delete();
-    }
-
-    protected void readPackages() {
-        if (!config.isFile()) {
-            log.debug("No file " + config);
-            return;
-        }
-        List<String> lines;
-        try {
-            lines = FileUtils.readLines(config);
-            for (String line : lines) {
-                line = line.trim();
-                if (line.length() > 0 && !line.startsWith("#")) {
-                    packages.add(line);
-                }
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-        return;
-    }
-
-    /**
-     * @param pkgId
-     * @throws PackageException
-     * @since 5.5
-     */
-    public void update(String packageFileName) throws PackageException {
-        LocalPackage pkg = pus.addPackage(new File(packageFileName));
-        String pkgId = pkg.getId();
-        updatePackage(pkgId);
-    }
-
-    protected void updatePackage(String pkgId) throws PackageException {
-        LocalPackage pkg = pus.getPackage(pkgId);
-        if (pkg == null) {
-            throw new IllegalStateException("No package found: " + pkgId);
-        }
-        log.info("Updating " + pkgId);
-        Task installTask = pkg.getInstallTask();
-        try {
-            performTask(installTask);
-        } catch (Throwable e) {
-            installTask.rollback();
-            errorValue = 1;
-            log.error("Failed to install package: " + pkgId, e);
-        }
-    }
-
     /**
      * Validate and run given task
      *
@@ -436,9 +436,60 @@ public class LocalPackageManager {
     /**
      * @param pkgId Marketplace package id
      * @throws PackageException
-     * @since 5.5
+     * @since 5.6
      */
-    private void uninstall(String pkgId) throws PackageException {
+    private LocalPackage add(String packageFileName) throws PackageException {
+        if (packageFileName.startsWith("file:")) {
+            packageFileName = packageFileName.substring(5);
+        }
+        log.info("Adding " + packageFileName);
+        try {
+            LocalPackage pkg = pus.addPackage(new File(packageFileName));
+            return pkg;
+        } catch (Throwable e) {
+            log.error("Failed to add package: " + packageFileName, e);
+            return null;
+        }
+    }
+
+    /**
+     * @param pkgId Marketplace package id
+     * @throws PackageException
+     * @since 5.6
+     */
+    private LocalPackage install(String pkgIdOrFileName)
+            throws PackageException {
+        LocalPackage pkg = pus.getPackage(pkgIdOrFileName);
+        // Unknown ID : assume it's a filename
+        if (pkg == null) {
+            pkg = add(pkgIdOrFileName);
+            // Validate install went OK
+            if (pkg == null) {
+                errorValue = 1;
+                throw new IllegalStateException("Package not found: "
+                        + pkgIdOrFileName);
+            }
+        }
+        log.info("Updating " + pkg.getId());
+        Task installTask = pkg.getInstallTask();
+        try {
+            performTask(installTask);
+            return pus.getPackage(pkg.getId());
+        } catch (Throwable e) {
+            installTask.rollback();
+            errorValue = 1;
+            log.error("Failed to install package: " + pkg.getId(), e);
+            return null;
+        }
+
+    }
+
+    /**
+     * @param pkgId Marketplace package id
+     * @throws PackageException
+     * @since 5.6
+     */
+    private LocalPackage uninstall(String pkgId) throws PackageException {
         LocalPackage pkg = pus.getPackage(pkgId);
         if (pkg == null) {
             throw new IllegalStateException("No package found: " + pkgId);
@@ -447,62 +498,51 @@ public class LocalPackageManager {
         Task uninstallTask = pkg.getUninstallTask();
         try {
             performTask(uninstallTask);
+            return pkg;
         } catch (Throwable e) {
             uninstallTask.rollback();
             errorValue = 1;
             log.error("Failed to uninstall package: " + pkgId, e);
+            return null;
         }
     }
 
     /**
      * @param pkgId Marketplace package id
      * @throws PackageException
-     * @since 5.5
+     * @since 5.6
      */
-    private void add(String packageFileName) throws PackageException {
-        log.info("Adding " + packageFileName);
-        try {
-            pus.addPackage(new File(packageFileName));
-        } catch (Throwable e) {
-            log.error("Failed to add package: " + packageFileName, e);
-        }
-    }
-
-    /**
-     * @param pkgId Marketplace package id
-     * @throws PackageException
-     * @since 5.5
-     */
-    private void remove(String pkgId) throws PackageException {
+    private LocalPackage remove(String pkgId) throws PackageException {
         LocalPackage pkg = pus.getPackage(pkgId);
         if (pkg == null) {
             throw new IllegalStateException("No package found: " + pkgId);
         }
+
+        if ((pkg.getState() == PackageState.STARTED)
+                || (pkg.getState() == PackageState.INSTALLED)) {
+            uninstall(pkgId);
+            // Refresh state
+            pkg = pus.getPackage(pkgId);
+        }
         if (pkg.getState() != PackageState.DOWNLOADED) {
             throw new IllegalStateException(
-                    "Can only remove packages in DOWNLOADED state");
+                    "Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
         }
         log.info("Removing " + pkgId);
         try {
             pus.removePackage(pkgId);
+            return pkg;
         } catch (Throwable e) {
             log.error("Failed to remove package: " + pkgId, e);
+            return pkg;
         }
     }
 
     /**
      * @throws PackageException
-     * @since 5.5
+     * @since 5.6
      */
-    private void listPackages() throws PackageException {
-        if (packages.isEmpty()) {
-            log.info("No package waiting for install.");
-        } else {
-            log.info("Waiting for install:");
-            for (String pkg : packages) {
-                log.info(pkg);
-            }
-        }
+    private List<LocalPackage> listPackages() throws PackageException {
         List<LocalPackage> localPackages = pus.getPackages();
         if (localPackages.isEmpty()) {
             log.info("No local package.");
@@ -535,10 +575,12 @@ public class LocalPackageManager {
                 log.info(packageDescription);
             }
         }
+        return localPackages;
     }
 
     private void reset() throws PackageException {
         pus.reset();
         log.info("Packages reset done: All packages were marked as DOWNLOADED");
     }
+
 }
