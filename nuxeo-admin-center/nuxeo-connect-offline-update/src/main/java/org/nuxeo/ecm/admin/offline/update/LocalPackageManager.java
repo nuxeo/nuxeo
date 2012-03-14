@@ -16,49 +16,43 @@
  */
 package org.nuxeo.ecm.admin.offline.update;
 
-import java.io.Writer;
-import java.io.StringWriter;
-import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.JAXBException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.HelpFormatter;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.ParseException;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.connect.update.AlreadyExistsPackageException;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.log4j.Log4JHelper;
+import org.nuxeo.launcher.info.CommandInfo;
+import org.nuxeo.launcher.info.MessageInfo;
+import org.nuxeo.launcher.info.MessageInfoLogger;
+import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.osgi.application.loader.FrameworkLoader;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.launcher.commons.CommandInfo;
-import org.nuxeo.launcher.commons.PackageInfo;
-import org.nuxeo.launcher.commons.MessageInfo;
 
 /**
  * Offline Marketplace packages manager.
@@ -95,7 +89,7 @@ import org.nuxeo.launcher.commons.MessageInfo;
  */
 public class LocalPackageManager {
 
-    static final FakeLog log = new FakeLog();
+    static final MessageInfoLogger log = new MessageInfoLogger();
 
     protected File home;
 
@@ -121,26 +115,34 @@ public class LocalPackageManager {
 
     private static Options launcherOptions = null;
 
-    private static Map<String, Integer> cmdNumArgs = new HashMap<String, Integer>() {{
-        put(CommandInfo.CMD_LIST, 0);
-        put(CommandInfo.CMD_RESET, 0);
-        put(CommandInfo.CMD_ADD, 1);
-        put(CommandInfo.CMD_INSTALL, 1);
-        put(CommandInfo.CMD_UNINSTALL, 1);
-        put(CommandInfo.CMD_REMOVE, 1);
-    }};
+    private static final Map<String, Integer> cmdNumArgs;
+    static {
+        cmdNumArgs = new HashMap<String, Integer>();
+        cmdNumArgs.put(CommandInfo.CMD_LIST, 0);
+        cmdNumArgs.put(CommandInfo.CMD_RESET, 0);
+        cmdNumArgs.put(CommandInfo.CMD_ADD, 1);
+        cmdNumArgs.put(CommandInfo.CMD_INSTALL, 1);
+        cmdNumArgs.put(CommandInfo.CMD_UNINSTALL, 1);
+        cmdNumArgs.put(CommandInfo.CMD_REMOVE, 1);
+    }
 
     protected static void initParserOptions() {
         if (launcherOptions == null) {
             launcherOptions = new Options();
-            Option helpOption = OptionBuilder.withLongOpt("help").withDescription("Show detailed help").create("h");
-            Option wdOption = OptionBuilder.withLongOpt("workdir").hasArg().withArgName("wd").isRequired().withDescription("Working directory (framework home)").create();
-            launcherOptions.addOption(helpOption);
-            launcherOptions.addOption(wdOption);
+            OptionBuilder.withLongOpt("help");
+            OptionBuilder.withDescription("Show detailed help");
+            launcherOptions.addOption(OptionBuilder.create("h"));
+            OptionBuilder.withLongOpt("workdir");
+            OptionBuilder.hasArg();
+            OptionBuilder.withArgName("wd");
+            OptionBuilder.isRequired();
+            OptionBuilder.withDescription("Working directory (framework home)");
+            launcherOptions.addOption(OptionBuilder.create());
         }
     }
 
-    protected static CommandLine parseOptions(String[] args) throws ParseException {
+    protected static CommandLine parseOptions(String[] args)
+            throws ParseException {
         initParserOptions();
         CommandLineParser parser = new PosixParser();
         CommandLine cmdLine = null;
@@ -155,13 +157,13 @@ public class LocalPackageManager {
                 stopAfterParsing = true;
             } else {
                 String arg0 = cmdLine.getArgs()[0];
-                Integer nParams = cmdLine.getArgs().length -1;
+                Integer nParams = cmdLine.getArgs().length - 1;
                 if (!cmdNumArgs.containsKey(arg0)) {
-                    log.error("Unknown command: "+arg0);
+                    log.error("Unknown command: " + arg0);
                     printHelp();
                     stopAfterParsing = true;
-                } else if (nParams != cmdNumArgs.get(arg0)){
-                    log.error("Wrong number of arguments for command: "+arg0);
+                } else if (nParams != cmdNumArgs.get(arg0)) {
+                    log.error("Wrong number of arguments for command: " + arg0);
                     printHelp();
                     stopAfterParsing = true;
                 }
@@ -175,7 +177,7 @@ public class LocalPackageManager {
             printHelp();
             stopAfterParsing = true;
         } catch (ParseException e) {
-            log.error("Error while parsing command line: "+e.getMessage());
+            log.error("Error while parsing command line: " + e.getMessage());
             printHelp();
             stopAfterParsing = true;
         } finally {
@@ -189,7 +191,8 @@ public class LocalPackageManager {
     protected static void printCommandInfo() {
         try {
             Writer xml = new StringWriter();
-            JAXBContext jaxbContext = JAXBContext.newInstance(CommandInfo.class, PackageInfo.class, MessageInfo.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(
+                    CommandInfo.class, PackageInfo.class, MessageInfo.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(cmdInfo, xml);
@@ -238,7 +241,8 @@ public class LocalPackageManager {
         errorExit(main.errorValue);
     }
 
-    public LocalPackageManager(CommandLine cmdLine) throws FileNotFoundException {
+    public LocalPackageManager(CommandLine cmdLine)
+            throws FileNotFoundException {
         wd = new File(cmdLine.getOptionValue("workdir"));
         if (!wd.isDirectory()) {
             throw new IllegalStateException(wd + " is not a directory!");
@@ -251,7 +255,7 @@ public class LocalPackageManager {
             param = argList[1];
         } else {
             throw new IllegalStateException("Multiple parameters not supported");
-            //params = Arrays.copyOfRange(argList, 1, argList.length);
+            // params = Arrays.copyOfRange(argList, 1, argList.length);
         }
 
         home = new File(System.getProperty("nuxeo.runtime.home"));
@@ -277,7 +281,8 @@ public class LocalPackageManager {
                 LocalPackage installed = install(param);
                 if (installed != null) {
                     PackageInfo info = new PackageInfo(installed);
-                    // If the package requires a restart, state will be INSTALLED
+                    // If the package requires a restart, state will be
+                    // INSTALLED
                     // However, we are offline, show as STARTED
                     if (info.state == PackageState.INSTALLED) {
                         info.state = PackageState.STARTED;
@@ -338,7 +343,9 @@ public class LocalPackageManager {
         String cmdLineSyntax = "LocalPackageManager [options] <command> [parameter]";
         HelpFormatter help = new HelpFormatter();
         help.setSyntaxPrefix("Usage: ");
-        help.printHelp(pw, HelpFormatter.DEFAULT_WIDTH, cmdLineSyntax, "", launcherOptions, HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "");
+        help.printHelp(pw, HelpFormatter.DEFAULT_WIDTH, cmdLineSyntax, "",
+                launcherOptions, HelpFormatter.DEFAULT_LEFT_PAD,
+                HelpFormatter.DEFAULT_DESC_PAD, "");
         log.error(sw.toString());
         log.error("Commands:");
         log.error("\tlist\t\t\t\t\t\tList local packages and their status.");
@@ -450,7 +457,8 @@ public class LocalPackageManager {
      * @throws PackageException
      * @since 5.6
      */
-    private LocalPackage install(String pkgIdOrFileName) throws PackageException {
+    private LocalPackage install(String pkgIdOrFileName)
+            throws PackageException {
         LocalPackage pkg = pus.getPackage(pkgIdOrFileName);
         // Unknown ID : assume it's a filename
         if (pkg == null) {
@@ -458,7 +466,8 @@ public class LocalPackageManager {
             // Validate install went OK
             if (pkg == null) {
                 errorValue = 1;
-                throw new IllegalStateException("Package not found: " + pkgIdOrFileName);
+                throw new IllegalStateException("Package not found: "
+                        + pkgIdOrFileName);
             }
         }
         log.info("Updating " + pkg.getId());
@@ -472,7 +481,7 @@ public class LocalPackageManager {
             log.error("Failed to install package: " + pkg.getId(), e);
             return null;
         }
-        
+
     }
 
     /**
@@ -509,7 +518,8 @@ public class LocalPackageManager {
             throw new IllegalStateException("No package found: " + pkgId);
         }
 
-        if ((pkg.getState() == PackageState.STARTED) || (pkg.getState() == PackageState.INSTALLED)) {
+        if ((pkg.getState() == PackageState.STARTED)
+                || (pkg.getState() == PackageState.INSTALLED)) {
             uninstall(pkgId);
             // Refresh state
             pkg = pus.getPackage(pkgId);
