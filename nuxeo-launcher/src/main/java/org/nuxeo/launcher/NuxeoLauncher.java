@@ -21,12 +21,11 @@ package org.nuxeo.launcher;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.StringReader;
-import java.io.Writer;
-import java.io.StringWriter;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.SocketTimeoutException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,44 +37,44 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.JAXBException;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.UnrecognizedOptionException;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.ParseException;
 import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 import org.artofsolving.jodconverter.process.UnixProcessManager;
 import org.artofsolving.jodconverter.process.WindowsProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
-import org.json.XML;
 import org.json.JSONException;
-
+import org.json.XML;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
+import org.nuxeo.launcher.info.CommandInfo;
+import org.nuxeo.launcher.info.CommandSetInfo;
+import org.nuxeo.launcher.info.MessageInfo;
+import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.launcher.monitoring.StatusServletClient;
-import org.nuxeo.launcher.commons.CommandSetInfo;
-import org.nuxeo.launcher.commons.CommandInfo;
-import org.nuxeo.launcher.commons.MessageInfo;
-import org.nuxeo.launcher.commons.PackageInfo;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
@@ -87,7 +86,7 @@ public abstract class NuxeoLauncher {
 
     // Fallback to avoid an error when the log dir is not initialized
     static {
-        if (System.getProperty(Environment.NUXEO_LOG_DIR)==null) {
+        if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
             System.setProperty(Environment.NUXEO_LOG_DIR, ".");
         }
     }
@@ -362,10 +361,11 @@ public abstract class NuxeoLauncher {
 
     /**
      * Reads a process' stdout and stderr into string lists
+     *
      * @since 5.6
      */
-    public ArrayList<ThreadedStreamGobbler> captureProcessStreams(Process process,
-            List<String> cmdOutput, List<String> cmdError) {
+    public ArrayList<ThreadedStreamGobbler> captureProcessStreams(
+            Process process, List<String> cmdOutput, List<String> cmdError) {
         ArrayList<ThreadedStreamGobbler> sgArray = new ArrayList<ThreadedStreamGobbler>();
         ThreadedStreamGobbler inputSG, errorSG;
         inputSG = new ThreadedStreamGobbler(process.getInputStream(), cmdOutput);
@@ -474,12 +474,18 @@ public abstract class NuxeoLauncher {
     protected static void initParserOptions() {
         if (launcherOptions == null) {
             launcherOptions = new Options();
-            Option helpOption = OptionBuilder.withLongOpt("help").withDescription("Show detailed help").create("h");
-            Option quietOption = OptionBuilder.withLongOpt("quiet").withDescription("Suppress information messages").create("q");
-            Option debugOption = OptionBuilder.withLongOpt("debug").withDescription("Activate debug messages").create("d");
-            Option xmlOption = OptionBuilder.withLongOpt("xml").withDescription("Output XML for mp-commands").create();
-            Option jsonOption = OptionBuilder.withLongOpt("json").withDescription("Output JSON for mp-commands").create();
-            Option guiOption = OptionBuilder.withLongOpt("gui").hasArg().withArgName("true|false").withDescription("Use graphical interface").create();
+            Option helpOption = OptionBuilder.withLongOpt("help").withDescription(
+                    "Show detailed help").create("h");
+            Option quietOption = OptionBuilder.withLongOpt("quiet").withDescription(
+                    "Suppress information messages").create("q");
+            Option debugOption = OptionBuilder.withLongOpt("debug").withDescription(
+                    "Activate debug messages").create("d");
+            Option xmlOption = OptionBuilder.withLongOpt("xml").withDescription(
+                    "Output XML for mp-commands").create();
+            Option jsonOption = OptionBuilder.withLongOpt("json").withDescription(
+                    "Output JSON for mp-commands").create();
+            Option guiOption = OptionBuilder.withLongOpt("gui").hasArg().withArgName(
+                    "true|false").withDescription("Use graphical interface").create();
             launcherOptions.addOption(helpOption);
             launcherOptions.addOption(quietOption);
             launcherOptions.addOption(debugOption);
@@ -489,7 +495,8 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    protected static CommandLine parseOptions(String[] args) throws ParseException {
+    protected static CommandLine parseOptions(String[] args)
+            throws ParseException {
         initParserOptions();
         CommandLineParser parser = new PosixParser();
         CommandLine cmdLine = null;
@@ -515,7 +522,7 @@ public abstract class NuxeoLauncher {
             printShortHelp();
             stopAfterParsing = true;
         } catch (ParseException e) {
-            log.error("Error while parsing command line: "+e.getMessage());
+            log.error("Error while parsing command line: " + e.getMessage());
             printShortHelp();
             stopAfterParsing = true;
         } finally {
@@ -882,7 +889,8 @@ public abstract class NuxeoLauncher {
         boolean serverStarted = false;
         try {
             if (reloadConfiguration) {
-                configurationGenerator = new ConfigurationGenerator(quiet, debug);
+                configurationGenerator = new ConfigurationGenerator(quiet,
+                        debug);
                 configurationGenerator.init();
             } else {
                 // Ensure reload on next start
@@ -1025,11 +1033,12 @@ public abstract class NuxeoLauncher {
                 cmdInfo.pending = true;
                 cset.commands.add(cmdInfo);
             } else {
-                log.info("Pending action: "+cmd+" "+param);
+                log.info("Pending action: " + cmd + " " + param);
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean executePending(boolean doExecute) {
         if (doExecute) {
             checkNoRunningServer();
@@ -1046,27 +1055,39 @@ public abstract class NuxeoLauncher {
                 String[] split = line.split("\\s+", 2);
                 if (split.length == 2) {
                     if (split[0].equals(CommandInfo.CMD_INSTALL)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_INSTALL, split[1]);
+                        doPendingCommand(doExecute, CommandInfo.CMD_INSTALL,
+                                split[1]);
                     } else if (split[0].equals(CommandInfo.CMD_ADD)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_ADD, split[1]);
+                        doPendingCommand(doExecute, CommandInfo.CMD_ADD,
+                                split[1]);
                     } else if (split[0].equals(CommandInfo.CMD_UNINSTALL)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_UNINSTALL, split[1]);
+                        doPendingCommand(doExecute, CommandInfo.CMD_UNINSTALL,
+                                split[1]);
                     } else if (split[0].equals(CommandInfo.CMD_REMOVE)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_REMOVE, split[1]);
+                        doPendingCommand(doExecute, CommandInfo.CMD_REMOVE,
+                                split[1]);
                     } else {
                         errorValue = 1;
                     }
                 } else if (split.length == 1) {
                     if (line.length() > 0 && !line.startsWith("#")) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_INSTALL, line);
+                        doPendingCommand(doExecute, CommandInfo.CMD_INSTALL,
+                                line);
                     }
                 }
                 if (errorValue != 0) {
-                    log.error("Error processing pending package/command: " + line);
+                    log.error("Error processing pending package/command: "
+                            + line);
                 }
             }
             if (doExecute) {
-                pending.delete();
+                if (errorValue != 0) {
+                    File bak = new File(pending.getPath() + ".bak");
+                    bak.delete();
+                    pending.renameTo(bak);
+                } else {
+                    pending.delete();
+                }
             }
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -1096,10 +1117,10 @@ public abstract class NuxeoLauncher {
             File tmpDir = File.createTempFile("install", null);
             startCommand.add(getInstallClassPath(tmpDir));
             startCommand.addAll(getNuxeoProperties());
-            startCommand.add("-D"+Environment.NUXEO_RUNTIME_HOME+"="
+            startCommand.add("-D" + Environment.NUXEO_RUNTIME_HOME + "="
                     + configurationGenerator.getRuntimeHome().getPath());
             startCommand.add(PKG_MANAGER_CLASS);
-            startCommand.add("--workdir="+tmpDir.getPath());
+            startCommand.add("--workdir=" + tmpDir.getPath());
             startCommand.add(pkgCommand);
             if (pkgParam != null) {
                 startCommand.add(pkgParam);
@@ -1117,7 +1138,8 @@ public abstract class NuxeoLauncher {
             if (tmpDir.isFile()) {
                 FileUtils.deleteQuietly(tmpDir);
             }
-            handleProcessManagerOutput(pkgCommand, exitCode, cmdOutput, cmdError);
+            handleProcessManagerOutput(pkgCommand, exitCode, cmdOutput,
+                    cmdError);
         } catch (IOException e) {
             errorValue = 1;
             log.error("Could not start process", e);
@@ -1136,7 +1158,7 @@ public abstract class NuxeoLauncher {
      * @since 5.6
      */
     protected void handleProcessManagerOutput(String pkgCommand, int exitCode,
-                                List<String> cmdOutput, List<String> cmdError) {
+            List<String> cmdOutput, List<String> cmdError) {
         StringBuilder outputBuilder = new StringBuilder();
         for (String outLine : cmdOutput) {
             outputBuilder.append(outLine);
@@ -1158,9 +1180,10 @@ public abstract class NuxeoLauncher {
         // Try to deserialize LocalPackageManager output
         try {
             StringReader outputReader = new StringReader(outputString);
-            JAXBContext jaxbContext = JAXBContext.newInstance(CommandInfo.class, PackageInfo.class, MessageInfo.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(
+                    CommandInfo.class, PackageInfo.class, MessageInfo.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            CommandInfo pkgRun = (CommandInfo)unmarshaller.unmarshal(outputReader);
+            CommandInfo pkgRun = (CommandInfo) unmarshaller.unmarshal(outputReader);
             if (xmlOutput) {
                 pkgRun.exitCode = exitCode;
                 cset.commands.add(pkgRun);
@@ -1178,10 +1201,11 @@ public abstract class NuxeoLauncher {
                 }
             }
         } catch (JAXBException e) {
-            log.error("Unexpected non-XML output from LocalPackageManager:");
-            log.error(outputString);
+            log.error(String.format(
+                    "Unexpected non-XML output from LocalPackageManager (%s):\n%s",
+                    e.getMessage(), outputString));
         }
-        
+
     }
 
     /**
@@ -1193,7 +1217,9 @@ public abstract class NuxeoLauncher {
         }
         try {
             Writer xml = new StringWriter();
-            JAXBContext jaxbContext = JAXBContext.newInstance(CommandSetInfo.class, CommandInfo.class, PackageInfo.class, MessageInfo.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(
+                    CommandSetInfo.class, CommandInfo.class, PackageInfo.class,
+                    MessageInfo.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(cset, xml);
@@ -1201,15 +1227,16 @@ public abstract class NuxeoLauncher {
                 System.out.println(xml.toString());
             } else {
                 try {
-                    System.out.println(XML.toJSONObject(xml.toString()).toString(2));
+                    System.out.println(XML.toJSONObject(xml.toString()).toString(
+                            2));
                 } catch (JSONException e) {
-                    log.error("XML to JSON conversion failed");
-                    log.error("XML output was:");
-                    log.error(xml.toString());
+                    log.error(String.format(
+                            "XML to JSON conversion failed: %s\nOutput was:\n%s",
+                            e.getMessage(), xml.toString()));
                 }
             }
         } catch (JAXBException e) {
-            log.error("Output serialization failed");
+            log.error("Output serialization failed: " + e.getMessage());
             errorValue = 7;
         }
     }
@@ -1529,7 +1556,8 @@ public abstract class NuxeoLauncher {
     public static NuxeoLauncher createLauncher(CommandLine cmdLine)
             throws ConfigurationException {
         NuxeoLauncher launcher;
-        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator(quiet, debug);
+        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator(
+                quiet, debug);
         if (configurationGenerator.isJBoss) {
             launcher = new NuxeoJBossLauncher(configurationGenerator);
         } else if (configurationGenerator.isJetty) {
@@ -1569,7 +1597,8 @@ public abstract class NuxeoLauncher {
         }
         if (cmdLine.hasOption("gui")) {
             useGui = Boolean.valueOf(cmdLine.getOptionValue("gui"));
-            log.debug("GUI: " + cmdLine.getOptionValue("gui") + " -> " + new Boolean(useGui).toString());
+            log.debug("GUI: " + cmdLine.getOptionValue("gui") + " -> "
+                    + new Boolean(useGui).toString());
         } else {
             if (PlatformUtils.isWindows()) {
                 useGui = true;
@@ -1608,6 +1637,7 @@ public abstract class NuxeoLauncher {
         jsonOutput = true;
         setXMLOutput();
     }
+
     public static void printShortHelp() {
         initParserOptions();
         String cmdLineSyntax = "nuxeoctl [options] <command> [command parameters]";
