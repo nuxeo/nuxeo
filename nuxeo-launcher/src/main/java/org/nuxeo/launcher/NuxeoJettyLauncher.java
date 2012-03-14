@@ -75,4 +75,9 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
         return JettyConfigurator.STARTUP_CLASS;
     }
 
+    @Override
+    protected String getShutdownClassPath() {
+        return getClassPath();
+    }
+
 }

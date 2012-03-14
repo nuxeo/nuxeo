@@ -47,7 +47,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -435,6 +434,11 @@ public abstract class NuxeoLauncher {
 
     protected abstract String getClassPath();
 
+    /**
+     * @since 5.6
+     */
+    protected abstract String getShutdownClassPath();
+
     protected Collection<? extends String> getNuxeoProperties() {
         ArrayList<String> nuxeoProperties = new ArrayList<String>();
         nuxeoProperties.add("-Dnuxeo.home="
@@ -471,30 +475,44 @@ public abstract class NuxeoLauncher {
         return cp;
     }
 
+    /**
+     * @since 5.6
+     */
     protected static void initParserOptions() {
         if (launcherOptions == null) {
             launcherOptions = new Options();
-            Option helpOption = OptionBuilder.withLongOpt("help").withDescription(
-                    "Show detailed help").create("h");
-            Option quietOption = OptionBuilder.withLongOpt("quiet").withDescription(
-                    "Suppress information messages").create("q");
-            Option debugOption = OptionBuilder.withLongOpt("debug").withDescription(
-                    "Activate debug messages").create("d");
-            Option xmlOption = OptionBuilder.withLongOpt("xml").withDescription(
-                    "Output XML for mp-commands").create();
-            Option jsonOption = OptionBuilder.withLongOpt("json").withDescription(
-                    "Output JSON for mp-commands").create();
-            Option guiOption = OptionBuilder.withLongOpt("gui").hasArg().withArgName(
-                    "true|false").withDescription("Use graphical interface").create();
-            launcherOptions.addOption(helpOption);
-            launcherOptions.addOption(quietOption);
-            launcherOptions.addOption(debugOption);
-            launcherOptions.addOption(xmlOption);
-            launcherOptions.addOption(jsonOption);
-            launcherOptions.addOption(guiOption);
+            // help option
+            OptionBuilder.withLongOpt("help");
+            OptionBuilder.withDescription("Show detailed help");
+            launcherOptions.addOption(OptionBuilder.create("h"));
+            // Quiet option
+            OptionBuilder.withLongOpt("quiet");
+            OptionBuilder.withDescription("Suppress information messages");
+            launcherOptions.addOption(OptionBuilder.create("q"));
+            // Debug option
+            OptionBuilder.withLongOpt("debug");
+            OptionBuilder.withDescription("Activate debug messages");
+            launcherOptions.addOption(OptionBuilder.create("d"));
+            // XML option
+            OptionBuilder.withLongOpt("xml");
+            OptionBuilder.withDescription("Output XML for mp-commands");
+            launcherOptions.addOption(OptionBuilder.create());
+            // JSON option
+            OptionBuilder.withLongOpt("json");
+            OptionBuilder.withDescription("Output JSON for mp-commands");
+            launcherOptions.addOption(OptionBuilder.create());
+            // GUI option
+            OptionBuilder.withLongOpt("gui");
+            OptionBuilder.hasArg();
+            OptionBuilder.withArgName("true|false");
+            OptionBuilder.withDescription("Use graphical interface");
+            launcherOptions.addOption(OptionBuilder.create());
         }
     }
 
+    /**
+     * @since 5.6
+     */
     protected static CommandLine parseOptions(String[] args)
             throws ParseException {
         initParserOptions();
@@ -1400,7 +1418,7 @@ public abstract class NuxeoLauncher {
                 List<String> stopCommand = new ArrayList<String>();
                 stopCommand.add(getJavaExecutable().getPath());
                 stopCommand.add("-cp");
-                stopCommand.add(getClassPath());
+                stopCommand.add(getShutdownClassPath());
                 stopCommand.addAll(getNuxeoProperties());
                 stopCommand.addAll(getServerProperties());
                 setServerStopCommand(stopCommand);
@@ -1547,11 +1565,23 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * @throws ParseException
+     * @throws ConfigurationException
+     * @deprecated since 5.6; use {@link #createLauncher(CommandLine)} instead
+     * @since 5.5
+     */
+    @Deprecated
+    public static NuxeoLauncher createLauncher(String[] args)
+            throws ConfigurationException, ParseException {
+        return createLauncher(parseOptions(args));
+    }
+
+    /**
      * @param cmdLine Program arguments
      * @return a NuxeoLauncher instance specific to current server (JBoss,
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
-     * @since 5.5
+     * @since 5.6
      */
     public static NuxeoLauncher createLauncher(CommandLine cmdLine)
             throws ConfigurationException {
@@ -1565,7 +1595,7 @@ public abstract class NuxeoLauncher {
         } else if (configurationGenerator.isTomcat) {
             launcher = new NuxeoTomcatLauncher(configurationGenerator);
         } else {
-            throw new ConfigurationException("Unknown server !");
+            throw new ConfigurationException("Unknown server!");
         }
         launcher.setArgs(cmdLine);
         configurationGenerator.init();

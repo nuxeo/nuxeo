@@ -54,6 +54,13 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     }
 
     @Override
+    protected String getShutdownClassPath() {
+        String cp = ".";
+        cp = addToClassPath(cp, "bin" + File.separator + "shutdown.jar");
+        return cp;
+    }
+
+    @Override
     protected void setServerStartCommand(List<String> command) {
         command.add(JBossConfigurator.STARTUP_CLASS);
         command.add("-b");
