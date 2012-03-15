@@ -47,7 +47,9 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.WebActions;import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
+import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 
@@ -91,8 +93,16 @@ public class StartupHelper implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    /**
+     * @deprecated since 5.6: use {@link RestHelper#setLocaleString(String)}
+     *             instead of {@link LocaleSelector#setLocaleString(String)}
+     */
     @In(create = true)
+    @Deprecated
     protected transient LocaleSelector localeSelector;
+
+    @In(create = true)
+    protected transient RestHelper restHelper;
 
     /**
      * Initializes the context with the principal id, and try to connect to the
@@ -154,9 +164,10 @@ public class StartupHelper implements Serializable {
 
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
+            // language selection now handled by url pattern, here for compat
             if (request.getParameter(LANGUAGE_PARAMETER) != null) {
                 String localeStr = request.getParameter(LANGUAGE_PARAMETER);
-                localeSelector.setLocaleString(localeStr);
+                restHelper.setLocaleString(localeStr);
             }
 
             if (!DOMAINS_VIEW.equals(result)) {
