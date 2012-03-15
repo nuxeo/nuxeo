@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -323,13 +324,22 @@ public class RestHelper implements Serializable {
     }
 
     /**
-     * Sets the locale string if given string is not null and not empty.
+     * Sets the locale string if given string is not null and not empty, as
+     * well as on faces context view root in case it was already created so
+     * that it holds the new locale for future lookups by JSF components.
      * <p>
      * Useful for url pattern bindings.
      */
     public void setLocaleString(String localeString) {
-        if (localeString != null && !localeString.trim().isEmpty()) {
-            localeSelector.setLocaleString(localeString);
+        if (!StringUtils.isBlank(localeString)) {
+            localeSelector.setLocaleString(localeString.trim());
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            if (ctx != null) {
+                UIViewRoot viewRoot = ctx.getViewRoot();
+                if (viewRoot != null) {
+                    viewRoot.setLocale(localeSelector.getLocale());
+                }
+            }
         }
     }
 
