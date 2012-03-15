@@ -43,7 +43,11 @@ import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeDescriptor;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublishedDocumentFactoryDescriptor;
+import org.nuxeo.ecm.platform.publisher.descriptors.RootSectionFinderFactoryDescriptor;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinderFactory;
+import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -75,6 +79,8 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     protected static Map<String, PublicationTree> liveTrees = new HashMap<String, PublicationTree>();
 
+    protected RootSectionFinderFactory rootSectionFinderFactory = null;
+
     // Store association between treeSid and CoreSession that was opened locally
     // for them : this unable proper cleanup of allocated sessions
     protected Map<String, String> remoteLiveTrees = new HashMap<String, String>();
@@ -86,6 +92,8 @@ public class PublisherServiceImpl extends DefaultComponent implements
     public static final String VALIDATORS_RULE_EP = "validatorsRule";
 
     public static final String FACTORY_EP = "factory";
+
+    public static final String ROOT_SECTION_FINDER_FACTORY_EP = "rootSectionFinderFactory";
 
     protected static final String ROOT_PATH_KEY = "RootPath";
 
@@ -159,6 +167,13 @@ public class PublisherServiceImpl extends DefaultComponent implements
         } else if (VALIDATORS_RULE_EP.equals(extensionPoint)) {
             ValidatorsRuleDescriptor desc = (ValidatorsRuleDescriptor) contribution;
             validatorsRuleDescriptors.put(desc.getName(), desc);
+        } else if (ROOT_SECTION_FINDER_FACTORY_EP.equals(extensionPoint)) {
+            RootSectionFinderFactoryDescriptor desc = (RootSectionFinderFactoryDescriptor) contribution;
+            try {
+                rootSectionFinderFactory = desc.getFactory().newInstance();
+            } catch (Throwable t) {
+                log.error("Unable to load custom RootSectionFinderFactory", t);
+            }
         }
     }
 
@@ -743,5 +758,12 @@ public class PublisherServiceImpl extends DefaultComponent implements
             parameters.putAll(desc.getParameters());
         }
         return parameters;
+    }
+
+    public RootSectionFinder getRootSectionFinder(CoreSession session) {
+        if (rootSectionFinderFactory != null) {
+            return rootSectionFinderFactory.getRootSectionFinder(session);
+        }
+        return new DefaultRootSectionsFinder(session);
     }
 }

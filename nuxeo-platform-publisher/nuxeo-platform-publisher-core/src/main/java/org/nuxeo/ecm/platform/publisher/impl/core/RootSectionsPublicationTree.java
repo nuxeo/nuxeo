@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.publisher.impl.core;
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinder;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
 
     protected DocumentModel currentDocument;
 
-    protected RootSectionsFinder rootFinder;
+    protected RootSectionFinder rootFinder;
 
     protected boolean useRootSections = true;
 
