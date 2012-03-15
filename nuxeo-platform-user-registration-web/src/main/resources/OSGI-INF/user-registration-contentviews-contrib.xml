@@ -9,9 +9,8 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
-          SELECT * FROM Document WHERE ecm:primaryType = ? AND ecm:isCheckedInVersion = 0
+          SELECT * FROM Document WHERE ecm:mixinType = 'UserRegistration' AND ecm:isCheckedInVersion = 0
         </pattern>
-        <parameter>#{userRegistrationActions.docType}</parameter>
         <pageSize>20</pageSize>
         <sort column="dc:created" ascending="false"/>
       </coreQueryPageProvider>
@@ -39,10 +38,9 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
-          SELECT * FROM Document WHERE ecm:primaryType = ? AND docinfo:documentId = ? AND ecm:isCheckedInVersion = 0 AND
+          SELECT * FROM Document WHERE ecm:mixinType = 'UserRegistration' AND docinfo:documentId = ? AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState != 'validated'
         </pattern>
-        <parameter>#{userRegistrationActions.docType}</parameter>
         <parameter>#{navigationContext.currentDocument.id}</parameter>
         <pageSize>20</pageSize>
         <sort column="dc:created" ascending="false"/>

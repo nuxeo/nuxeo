@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -138,9 +139,9 @@ public class UserRegistrationActions implements Serializable {
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
-    public void submitUserRegistration() {
+    public void submitUserRegistration(String configurationName) {
         docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
-        doSubmitUserRegistration();
+        doSubmitUserRegistration(configurationName);
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
@@ -252,11 +253,15 @@ public class UserRegistrationActions implements Serializable {
         }
     }
 
-    protected void doSubmitUserRegistration() {
+    protected void doSubmitUserRegistration(String configurationName) {
+        if (StringUtils.isBlank(configurationName)) {
+            configurationName = DEFAULT_CONFIGURATION_NAME;
+        }
+
         try {
             userinfo.setPassword(RandomStringUtils.randomAlphanumeric(6));
             userRegistrationService.submitRegistrationRequest(
-                    DEFAULT_CONFIGURATION_NAME, userinfo, docinfo,
+                    configurationName, userinfo, docinfo,
                     getAdditionalsParameters(), EMAIL, false);
 
             facesMessages.add(

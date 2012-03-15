@@ -1,17 +1,25 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
         xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:c="http://java.sun.com/jstl/core"
         xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <c:if test="false">
+    Parameter:
+     - configurationName: The configuration name, if empty default_registration is used.
+  </c:if>
   <h:form enctype="multipart/form-data" id="workspace_requests_create">
 
-    <nxl:layout name="user_registration_userinfo" mode="edit"
-            value="#{userRegistrationActions}" />
-    <nxl:layout name="user_registration_docinfo" mode="edit"
-            value="#{userRegistrationActions}" />
+    <ui:insert name="create_registration_layouts">
+      <nxl:layout name="user_registration_userinfo" mode="edit"
+              value="#{userRegistrationActions}" />
+      <nxl:layout name="user_registration_docinfo" mode="edit"
+              value="#{userRegistrationActions}" />
+    </ui:insert>
 
     <p class="buttonsGadget">
       <h:commandButton type="submit" value="#{messages['command.createUser']}"
               styleClass="button"
-              action="#{userRegistrationActions.submitUserRegistration}" />
+              action="#{userRegistrationActions.submitUserRegistration(configurationName)}" />
     </p>
   </h:form>
 </div>

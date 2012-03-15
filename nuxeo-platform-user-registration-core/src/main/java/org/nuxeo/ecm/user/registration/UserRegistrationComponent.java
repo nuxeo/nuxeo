@@ -196,11 +196,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc.setPropertyValue("dc:title", title);
 
             // store userinfo
-            if (getRegistrationRules(configuration.getName()).useEmailAsLogin()) {
-                doc.setPropertyValue(USERNAME_FIELD, userInfo.getEmail());
-            } else {
-                doc.setPropertyValue(USERNAME_FIELD, userInfo.getLogin());
-            }
+            doc.setPropertyValue(USERNAME_FIELD, userInfo.getLogin());
             doc.setPropertyValue(UserRegistrationInfo.PASSWORD_FIELD,
                     userInfo.getPassword());
             doc.setPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD,

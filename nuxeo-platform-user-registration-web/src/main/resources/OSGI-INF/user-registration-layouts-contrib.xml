@@ -154,9 +154,6 @@
         <row>
           <widget>request_config_displayLocalRegistration</widget>
         </row>
-        <row>
-          <widget>request_config_useEmailAsLogin</widget>
-        </row>
       </rows>
     </layout>
 
@@ -217,19 +214,6 @@
       </fields>
     </widget>
 
-    <widget name="request_config_useEmailAsLogin" type="checkbox">
-      <labels>
-        <label mode="any">label.registration.config.useEmailAsLogin</label>
-      </labels>
-      <helpLabels>
-        <label mode="edit">label.registration.config.help.useEmailAsLogin</label>
-      </helpLabels>
-      <translated>true</translated>
-      <fields>
-        <field>registrationrules:useEmailAsLogin</field>
-      </fields>
-    </widget>
-
     <widget name="user_request_login" type="text">
       <labels>
         <label mode="any">label.userinfo.login</label>
@@ -237,11 +221,6 @@
       <fields>
         <field>data.userinfo.login</field>
       </fields>
-      <widgetModes>
-        <mode value="edit">
-          #{userRegistrationService.registrationRules.useEmailAsLogin() ? 'hidden' : mode}
-        </mode>
-      </widgetModes>
       <properties widgetMode="edit">
         <property name="required">true</property>
         <property name="styleClass">dataInputText</property>

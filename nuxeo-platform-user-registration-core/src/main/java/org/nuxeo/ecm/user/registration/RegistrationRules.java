@@ -23,12 +23,6 @@ public class RegistrationRules {
     public static final String FIELD_FORCE_RIGHT = SCHEMA_REGISTRATION_RULES
             + ":" + "forceRightAssignment";
 
-    public static final String FIELD_DISPLAY_LOCAL_REGISTRATION = SCHEMA_REGISTRATION_RULES
-            + ":" + "displayLocalRegistrationTab";
-
-    public static final String FIELD_USE_MAIL_AS_LOGIN = SCHEMA_REGISTRATION_RULES
-            + ":" + "useEmailAsLogin";
-
     public static final String FIELD_CONFIGURATION_NAME = SCHEMA_REGISTRATION_RULES
             + ":" + "name";
 
@@ -64,26 +58,6 @@ public class RegistrationRules {
     public boolean isForcingRight() {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_FORCE_RIGHT);
-        } catch (ClientException e) {
-            log.warn("Unable to fetch ForceRight flag using default value: "
-                    + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean isDisplayLocalRegistration() {
-        try {
-            return (Boolean) requestContainer.getPropertyValue(FIELD_DISPLAY_LOCAL_REGISTRATION);
-        } catch (ClientException e) {
-            log.warn("Unable to fetch localRegistration flag using default value: "
-                    + e.getMessage());
-            return true;
-        }
-    }
-
-    public boolean useEmailAsLogin() {
-        try {
-            return (Boolean) requestContainer.getPropertyValue(FIELD_USE_MAIL_AS_LOGIN);
         } catch (ClientException e) {
             log.warn("Unable to fetch ForceRight flag using default value: "
                     + e.getMessage());

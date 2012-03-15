@@ -10,6 +10,7 @@ import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -29,11 +30,18 @@ public abstract class AbstractUserRegistration {
     protected CoreSession session;
 
     @Inject
+    protected UserManager userManager;
+
+    @Inject
     protected UserRegistrationService userRegistrationService;
 
     public void initializeRegistrations() throws ClientException {
         DocumentModel container = session.createDocumentModel("Workspace");
         container.setPathInfo("/", "requests");
+        session.createDocument(container);
+
+        container = session.createDocumentModel("Workspace");
+        container.setPathInfo("/", "test-requests");
         session.createDocument(container);
 
         session.save();

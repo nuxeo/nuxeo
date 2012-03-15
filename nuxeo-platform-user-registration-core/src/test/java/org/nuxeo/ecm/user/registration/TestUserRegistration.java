@@ -9,21 +9,15 @@ import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFA
 import java.io.Serializable;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
-
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 public class TestUserRegistration extends AbstractUserRegistration {
-
-    @Inject
-    protected UserManager userManager;
 
     @Test
     public void testTestContribution() throws ClientException {

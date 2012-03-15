@@ -36,11 +36,6 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
       <filter-id>mutable_document</filter-id>
-      <filter id="displayUserRegistrationListingLocal">
-        <rule grant="true">
-          <condition>#{userRegistrationService.registrationRules.displayLocalRegistration}</condition>
-        </rule>
-      </filter>
     </action>
 
     <action id="UserRegistrationDelete"
