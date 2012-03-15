@@ -32,6 +32,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
@@ -237,7 +238,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
     protected String getUserWorkspacePath() {
         String currentDocumentPath = getCurrentDocumentPath();
-        if (currentPersonalWorkspacePath == null || "".equals(currentPersonalWorkspacePath)) {
+        if (StringUtils.isBlank(currentPersonalWorkspacePath)) {
             reset();
             return currentDocumentPath;
         }
