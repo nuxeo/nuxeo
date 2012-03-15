@@ -58,6 +58,21 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         super();
     }
 
+    // BBB
+    public WidgetTypeConfigurationImpl(String sinceVersion, String title,
+            String description, String demoId, boolean demoPreviewEnabled,
+            Map<String, Serializable> properties, List<String> supportedModes,
+            boolean acceptingSubWidgets, boolean list, boolean complex,
+            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
+            List<FieldDefinition> defaultFieldDefinitions,
+            List<String> categories,
+            Map<String, List<LayoutDefinition>> propertyLayouts) {
+        this(sinceVersion, title, description, demoId, demoPreviewEnabled,
+                properties, supportedModes, acceptingSubWidgets, list, complex,
+                false, supportedFieldTypes, defaultFieldTypes,
+                defaultFieldDefinitions, categories, propertyLayouts);
+    }
+
     public WidgetTypeConfigurationImpl(String sinceVersion, String title,
             String description, String demoId, boolean demoPreviewEnabled,
             Map<String, Serializable> properties, List<String> supportedModes,
