@@ -75,15 +75,21 @@ public class VideoImporter extends AbstractFileImporter {
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-            docModel = documentManager.createDocumentModel(VideoConstants.VIDEO_TYPE);
+
+            String docType = getDocType();
+            if (docType == null) {
+                docType = VideoConstants.VIDEO_TYPE;
+            }
+
+            docModel = documentManager.createDocumentModel(docType);
             docModel.setProperty("dublincore", "title", title);
             docModel.setPropertyValue("file:content", (Serializable) content);
             docModel.setPropertyValue("file:filename", filename);
 
             // updating icon
-            Type docType = typeService.getType(VideoConstants.VIDEO_TYPE);
-            if (docType != null) {
-                String iconPath = docType.getIcon();
+            Type type = typeService.getType(docType);
+            if (type != null) {
+                String iconPath = type.getIcon();
                 docModel.setProperty("common", "icon", iconPath);
             }
             docModel.setPathInfo(path, pss.generatePathSegment(docModel));
