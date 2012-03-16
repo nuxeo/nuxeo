@@ -1404,6 +1404,11 @@
         <categories>
           <category>tab_designer</category>
         </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
         <containingForm>true</containingForm>
         <supportedModes>
           <mode>view</mode>
@@ -1519,7 +1524,7 @@
                   <field>styleClass</field>
                 </fields>
               </widget>
-              <widget name="canToggleMode" type="checkbox">
+              <widget name="canToggleMode" type="text">
                 <labels>
                   <label mode="any">Can toggle mode</label>
                 </labels>
