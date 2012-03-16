@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ldoguin
+ *     ldoguin, Antoine Taillefer
  *
  * $Id$
  */
@@ -27,11 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -40,13 +37,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
@@ -55,7 +45,6 @@ import org.nuxeo.ecm.platform.task.TaskPersisterDescriptor;
 import org.nuxeo.ecm.platform.task.TaskProvider;
 import org.nuxeo.ecm.platform.task.TaskProviderDescriptor;
 import org.nuxeo.ecm.platform.task.TaskService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -72,13 +61,11 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.task.core.TaskService");
 
-    private static final Log log = LogFactory.getLog(TaskServiceImpl.class);
+    public static final String DEFAULT_TASK_PROVIDER = "documentTaskProvider";
 
     private static final String TASK_PROVIDER_XP = "taskProvider";
 
     private static final String TASK_PERSISTER_XP = "taskPersister";
-
-    private EventProducer eventProducer;
 
     private Map<String, TaskProvider> tasksProviders;
 
@@ -169,82 +156,55 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     NotificationConstants.RECIPIENTS_KEY,
                     notificationRecipients.toArray(new String[notificationRecipients.size()]));
 
-            notifyEvent(coreSession, document, principal, task,
-                    TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventProperties,
-                    comment, null);
+            TaskEventNotificationHelper.notifyEvent(coreSession, document,
+                    principal, task, TaskEventNames.WORKFLOW_TASK_ASSIGNED,
+                    eventProperties, comment, null);
         }
         return tasks;
     }
 
     @Override
-    public void acceptTask(CoreSession coreSession, NuxeoPrincipal principal,
+    public String acceptTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment) throws ClientException {
-        endTask(coreSession, principal, task, comment,
+        return endTask(coreSession, principal, task, comment,
                 TaskEventNames.WORKFLOW_TASK_COMPLETED, true);
     }
 
     @Override
-    public void rejectTask(CoreSession coreSession, NuxeoPrincipal principal,
+    public String rejectTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment) throws ClientException {
-        endTask(coreSession, principal, task, comment,
+        return endTask(coreSession, principal, task, comment,
                 TaskEventNames.WORKFLOW_TASK_REJECTED, false);
     }
 
+    /**
+     * Use the task provider held by the {@link Task#TASK_PROVIDER_KEY} task
+     * variable to end the {@code task}. If null use the
+     * {@link #DEFAULT_TASK_PROVIDER}.
+     */
     @Override
-    public void endTask(CoreSession coreSession, NuxeoPrincipal principal,
+    public String endTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment, String eventName, boolean isValidated)
             throws ClientException {
+
         if (!canEndTask(principal, task)) {
             throw new ClientException(String.format(
                     "User with id '%s' cannot end this task",
                     principal.getName()));
         }
-        try {
-            // put user comment on the task
-            if (!StringUtils.isEmpty(comment)) {
-                task.addComment(principal.getName(), comment);
-            }
-
-            // end the task, adding boolean marker that task was validated or
-            // rejected
-            task.setVariable(TaskService.VariableName.validated.name(),
-                    String.valueOf(isValidated));
-            task.end(coreSession);
-            coreSession.saveDocument(task.getDocument());
-            // notify
-            Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-            ArrayList<String> notificationRecipients = new ArrayList<String>();
-            notificationRecipients.add(task.getInitiator());
-            notificationRecipients.addAll(task.getActors());
-            eventProperties.put(NotificationConstants.RECIPIENTS_KEY,
-                    notificationRecipients);
-            // try to resolve document when notifying
-            DocumentModel document = null;
-            String docId = task.getVariable(TaskService.VariableName.documentId.name());
-            String docRepo = task.getVariable(TaskService.VariableName.documentRepositoryName.name());
-            if (coreSession.getRepositoryName().equals(docRepo)) {
-                try {
-                    document = coreSession.getDocument(new IdRef(docId));
-                } catch (Exception e) {
-                    log.error(
-                            String.format(
-                                    "Could not fetch document with id '%s:%s' for notification",
-                                    docRepo, docId), e);
-                }
-            } else {
-                log.error(String.format(
-                        "Could not resolve document for notification: "
-                                + "document is on repository '%s' and given session is on "
-                                + "repository '%s'", docRepo,
-                        coreSession.getRepositoryName()));
-            }
-
-            notifyEvent(coreSession, document, principal, task, eventName,
-                    eventProperties, comment, null);
-
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
+        String taskProviderId = task.getVariable(Task.TASK_PROVIDER_KEY);
+        if (taskProviderId == null) {
+            taskProviderId = DEFAULT_TASK_PROVIDER;
         }
+        TaskProvider taskProvider = tasksProviders.get(taskProviderId);
+        if (taskProvider == null) {
+            throw new ClientException(
+                    String.format(
+                            "No task provider registered, cannot end task. Please contribute at least the default task provider: %s.",
+                            DEFAULT_TASK_PROVIDER));
+        }
+        return taskProvider.endTask(coreSession, principal, task, comment,
+                eventName, isValidated);
     }
 
     @Override
@@ -285,72 +245,6 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             }
         }
         return false;
-    }
-
-    protected EventProducer getEventProducer() {
-        try {
-            if (eventProducer == null) {
-                eventProducer = Framework.getService(EventProducer.class);
-            }
-            return eventProducer;
-        } catch (Exception e) {
-            throw new RuntimeException("Could not get EventProducer service", e);
-        }
-    }
-
-    @Override
-    public void notifyEventListeners(String name, String comment,
-            String[] recipients, CoreSession session, NuxeoPrincipal principal,
-            DocumentModel doc) throws ClientException {
-        DocumentEventContext ctx = new DocumentEventContext(session, principal,
-                doc);
-        ctx.setProperty("recipients", recipients);
-        ctx.getProperties().put("comment", comment);
-        try {
-            getEventProducer().fireEvent(ctx.newEvent(name));
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-    }
-
-    protected void notifyEvent(CoreSession coreSession, DocumentModel document,
-            NuxeoPrincipal principal, Task task, String eventId,
-            Map<String, Serializable> properties, String comment,
-            String category) throws ClientException {
-        // Default category
-        if (category == null) {
-            category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
-        }
-        if (properties == null) {
-            properties = new HashMap<String, Serializable>();
-        }
-
-        EventContext eventContext = null;
-        if (document != null) {
-            properties.put(CoreEventConstants.REPOSITORY_NAME,
-                    document.getRepositoryName());
-            properties.put(CoreEventConstants.SESSION_ID,
-                    coreSession.getSessionId());
-            properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                    document.getCurrentLifeCycleState());
-            eventContext = new DocumentEventContext(coreSession, principal,
-                    document);
-        } else {
-            eventContext = new EventContextImpl(coreSession, principal);
-        }
-        properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
-        properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, category);
-        properties.put(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY, task);
-        String disableNotif = task.getVariable(TaskEventNames.DISABLE_NOTIFICATION_SERVICE);
-        if (disableNotif != null
-                && Boolean.TRUE.equals(Boolean.valueOf(disableNotif))) {
-            properties.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE,
-                    Boolean.TRUE);
-        }
-        eventContext.setProperties(properties);
-
-        Event event = eventContext.newEvent(eventId);
-        getEventProducer().fireEvent(event);
     }
 
     @Override

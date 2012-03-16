@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     Anahide Tchertchian, Antoine Taillefer
  */
 package org.nuxeo.ecm.platform.task.web;
 
@@ -46,8 +46,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * Seam component holding tasks actions created using the
- * {@link TaskService} in document context cache.
+ * Seam component holding tasks actions created using the {@link TaskService} in
+ * document context cache.
  *
  * @author Anahide Tchertchian
  */
@@ -83,14 +83,14 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     protected String comment;
 
     @Factory(value = "currentSingleTasks", scope = ScopeType.EVENT)
-    public List<Task> getCurrentDocumentTasks()
-            throws ClientException {
+    public List<Task> getCurrentDocumentTasks() throws ClientException {
         if (tasks == null) {
             tasks = new ArrayList<Task>();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument != null) {
-                NuxeoPrincipal principal = (NuxeoPrincipal)documentManager.getPrincipal();
-                tasks = taskService.getTaskInstances(currentDocument, principal, documentManager);
+                NuxeoPrincipal principal = (NuxeoPrincipal) documentManager.getPrincipal();
+                tasks = taskService.getTaskInstances(currentDocument,
+                        principal, documentManager);
             }
         }
         return tasks;
@@ -99,10 +99,12 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     @Factory(value = "currentDashBoardItems", scope = ScopeType.EVENT)
     public List<DashBoardItem> getCurrentDashBoardItems()
             throws ClientException {
-        if (items==null) {
+        if (items == null) {
             items = new ArrayList<DashBoardItem>();
             for (Task task : getCurrentDocumentTasks()) {
-                DashBoardItem item = new DashBoardItemImpl(task,navigationContext.getCurrentDocument(), localeSelector.getLocale());
+                DashBoardItem item = new DashBoardItemImpl(task,
+                        navigationContext.getCurrentDocument(),
+                        localeSelector.getLocale());
                 items.add(item);
             }
         }
@@ -112,19 +114,20 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     @Factory(value = "currentDashBoardItemsExceptPublishingTasks", scope = ScopeType.EVENT)
     public List<DashBoardItem> getCurrentDashBoardItemsExceptPublishingTasks()
             throws ClientException {
-        if (items==null) {
+        if (items == null) {
             items = new ArrayList<DashBoardItem>();
             for (Task task : getCurrentDocumentTasks()) {
                 String taskType = task.getVariable(Task.TaskVariableName.taskType.name());
                 if (!"publish_moderate".equals(taskType)) {
-                    DashBoardItem item = new DashBoardItemImpl(task, navigationContext.getCurrentDocument(), localeSelector.getLocale());
+                    DashBoardItem item = new DashBoardItemImpl(task,
+                            navigationContext.getCurrentDocument(),
+                            localeSelector.getLocale());
                     items.add(item);
                 }
             }
         }
         return items;
     }
-
 
     public String getComment() {
         return comment;
@@ -139,11 +142,12 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
         setComment(null);
     }
 
-    public void acceptTask(Task task, String comment)
-            throws ClientException {
-        taskService.acceptTask(documentManager,
+    public void acceptTask(Task task, String comment) throws ClientException {
+        String seamEventName = taskService.acceptTask(documentManager,
                 (NuxeoPrincipal) documentManager.getPrincipal(), task, comment);
-        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+        if (seamEventName != null) {
+            Events.instance().raiseEvent(seamEventName);
+        }
     }
 
     public void rejectTask(Task task) throws ClientException {
@@ -152,7 +156,8 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             rejectTask(task, userComment);
             setComment(null);
         } else {
-            facesMessages.add(StatusMessage.Severity.ERROR,
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.enterComment"));
         }
@@ -160,9 +165,11 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     }
 
     public void rejectTask(Task task, String comment) throws ClientException {
-        taskService.rejectTask(documentManager,
+        String seamEventName = taskService.rejectTask(documentManager,
                 (NuxeoPrincipal) documentManager.getPrincipal(), task, comment);
-        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_REJECTED);
+        if (seamEventName != null) {
+            Events.instance().raiseEvent(seamEventName);
+        }
     }
 
     @Override

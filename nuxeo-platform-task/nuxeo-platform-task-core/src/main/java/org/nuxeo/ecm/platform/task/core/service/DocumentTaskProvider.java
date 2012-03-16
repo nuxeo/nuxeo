@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,17 +15,27 @@
  */
 package org.nuxeo.ecm.platform.task.core.service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskProvider;
 import org.nuxeo.ecm.platform.task.TaskQueryConstant;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
 
 /**
@@ -36,6 +46,8 @@ import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
 public class DocumentTaskProvider implements TaskProvider {
 
     private static final long serialVersionUID = 1L;
+
+    private final static Log log = LogFactory.getLog(DocumentTaskProvider.class);
 
     @Override
     public List<Task> getCurrentTaskInstances(CoreSession coreSession)
@@ -113,4 +125,55 @@ public class DocumentTaskProvider implements TaskProvider {
         return tasks;
     }
 
+    @Override
+    public String endTask(CoreSession coreSession, NuxeoPrincipal principal,
+            Task task, String comment, String eventName, boolean isValidated)
+            throws ClientException {
+
+        // put user comment on the task
+        if (!StringUtils.isEmpty(comment)) {
+            task.addComment(principal.getName(), comment);
+        }
+
+        // end the task, adding boolean marker that task was validated or
+        // rejected
+        task.setVariable(TaskService.VariableName.validated.name(),
+                String.valueOf(isValidated));
+        task.end(coreSession);
+        coreSession.saveDocument(task.getDocument());
+        // notify
+        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        ArrayList<String> notificationRecipients = new ArrayList<String>();
+        notificationRecipients.add(task.getInitiator());
+        notificationRecipients.addAll(task.getActors());
+        eventProperties.put(NotificationConstants.RECIPIENTS_KEY,
+                notificationRecipients);
+        // try to resolve document when notifying
+        DocumentModel document = null;
+        String docId = task.getVariable(TaskService.VariableName.documentId.name());
+        String docRepo = task.getVariable(TaskService.VariableName.documentRepositoryName.name());
+        if (coreSession.getRepositoryName().equals(docRepo)) {
+            try {
+                document = coreSession.getDocument(new IdRef(docId));
+            } catch (Exception e) {
+                log.error(
+                        String.format(
+                                "Could not fetch document with id '%s:%s' for notification",
+                                docRepo, docId), e);
+            }
+        } else {
+            log.error(String.format(
+                    "Could not resolve document for notification: "
+                            + "document is on repository '%s' and given session is on "
+                            + "repository '%s'", docRepo,
+                    coreSession.getRepositoryName()));
+        }
+
+        TaskEventNotificationHelper.notifyEvent(coreSession, document,
+                principal, task, eventName, eventProperties, comment, null);
+
+        String seamEventName = isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED
+                : TaskEventNames.WORKFLOW_TASK_REJECTED;
+        return seamEventName;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ldoguin
+ *     ldoguin, Antoine Taillefer
  */
 package org.nuxeo.ecm.platform.task;
 
@@ -79,4 +79,27 @@ public interface TaskProvider extends Serializable {
     List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
             CoreSession coreSession) throws ClientException;
 
+    /**
+     * Ends the task
+     *
+     * @since 5.6
+     *
+     * @param coreSession the session to use when notifying and resolving of
+     *            referenced document for notification.
+     * @param principal principal used when notifying
+     * @param task the instance to end
+     * @param comment string added to the task comments and used as a
+     *            notification comment
+     * @param eventName the core event name to use when notifying
+     * @param isValidated boolean marker to state if the task was validated or
+     *            rejected
+     * @throws ClientException when trying to end a task without being granted
+     *             the right to do so (see
+     *             {@link #canEndTask(NuxeoPrincipal, Task)}), or when any other
+     *             error occurs
+     * @return the name of the Seam event to raise
+     */
+    String endTask(CoreSession coreSession, NuxeoPrincipal principal,
+            Task task, String comment, String eventName, boolean isValidated)
+            throws ClientException;
 }
