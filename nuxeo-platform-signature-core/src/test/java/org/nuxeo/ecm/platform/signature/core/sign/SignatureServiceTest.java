@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,86 +13,76 @@
  *
  * Contributors:
  *     Wojciech Sulejman
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.signature.core.sign;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.SIGNED_CURRENT;
+import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.SIGNED_OTHER;
+import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.UNSIGNABLE;
+import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.UNSIGNED;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
+import java.io.IOException;
+import java.io.Serializable;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
 import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
-import org.nuxeo.ecm.platform.signature.api.exception.SignException;
-import org.nuxeo.ecm.platform.signature.api.pki.CertService;
-import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
-import org.nuxeo.ecm.platform.signature.api.user.AliasType;
-import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
-import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.SigningDisposition;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
-import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.ecm.platform.signature.core.pki.RootServiceImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfReader;
 
-/**
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
- */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.usermanager.api",
-        "org.nuxeo.ecm.platform.signature.core",
+@RepositoryConfig(user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.api", //
+        "org.nuxeo.runtime.management", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.platform.usermanager.api", //
+        "org.nuxeo.ecm.core.convert.api", //
+        "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+        "org.nuxeo.ecm.platform.convert", //
+        "org.nuxeo.ecm.platform.signature.core", //
         "org.nuxeo.ecm.platform.signature.core.test" })
 public class SignatureServiceTest {
-
-    @Inject
-    protected CertService certService;
-
-    @Inject
-    protected CertService rootService;
 
     @Inject
     protected CUserService cUserService;
@@ -101,229 +91,367 @@ public class SignatureServiceTest {
     protected SignatureService signatureService;
 
     @Inject
+    protected UserManager userManager;
+
+    @Inject
+    protected DirectoryService directoryService;
+
+    @Inject
     protected CoreSession session;
 
-    /**
-     * A test keystore file a user pdfca with pdfcacert and pdfkey entries
-     */
+    private static final String ORIGINAL_PDF = "pdf-tests/original.pdf";
 
-    // mark this true if you want to keep the signed pdf for manual
-    // verification/preview
-    private static final boolean KEEP_SIGNED_PDF = true;
+    private static final String SIGNED_PDF = "pdf-tests/signed.pdf";
 
-    private static final String ROOT_KEY_PASSWORD = "abc";
-
-    private static final String KEYSTORE_PASSWORD = "abc";
-
-    private static final String ROOT_USER_ID = "PDFCA";
+    private static final String HELLO_TXT = "pdf-tests/hello.txt";
 
     private static final String USER_KEY_PASSWORD = "abc";
 
     private static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
 
-    private static final Log log = LogFactory.getLog(SignatureServiceTest.class);
-
-    private File origPdfFile;
-
-    private static final String KEYSTORE_PATH = "test-files/keystore.jks";
-
-    private static DocumentModel user;
-    private static DocumentModel user2;
-
     private static final String DEFAULT_USER_ID = "hSimpson";
 
     private static final String SECOND_USER_ID = "mSimpson";
 
-    // Signing Prerequisite: a user with a certificate needs to be present
-    @Before
-    public void setup() throws Exception {
-        // setup the naming service
+    private File origPdfFile;
 
-//        setUpContextFactory();
-        // pre-populate users & certificates
-        DocumentModel user = getUser();
+    private File signedPdfFile;
+
+    private File helloTxtFile;
+
+    private DocumentModel user;
+
+    private DocumentModel user2;
+
+    /**
+     * Signing Prerequisite: a user with a certificate needs to be present
+     */
+    @Before
+    public void setUp() throws Exception {
+
+        DocumentModel userModel = userManager.getBareUserModel();
+        userModel.setProperty("user", "username", DEFAULT_USER_ID);
+        userModel.setProperty("user", "firstName", "Homer");
+        userModel.setProperty("user", "lastName", "Simpson");
+        userModel.setProperty("user", "email", "hsimpson@springfield.com");
+        userModel.setPathInfo("/", DEFAULT_USER_ID);
+        user = userManager.createUser(userModel);
+
+        userModel = userManager.getBareUserModel();
+        userModel.setProperty("user", "username", SECOND_USER_ID);
+        userModel.setProperty("user", "firstName", "Marge");
+        userModel.setProperty("user", "lastName", "Simpson");
+        userModel.setProperty("user", "email", "msimpson@springfield.com");
+        userModel.setPathInfo("/", SECOND_USER_ID);
+        user2 = userManager.createUser(userModel);
+
         DocumentModel certificate = cUserService.createCertificate(user,
                 USER_KEY_PASSWORD);
         assertNotNull(certificate);
 
-        DocumentModel user2 = getUser2();
         DocumentModel certificate2 = cUserService.createCertificate(user2,
                 USER_KEY_PASSWORD);
         assertNotNull(certificate2);
 
-        origPdfFile = FileUtils.getResourceFileFromContext("pdf-tests/original.pdf");
+        origPdfFile = FileUtils.getResourceFileFromContext(ORIGINAL_PDF);
+        signedPdfFile = FileUtils.getResourceFileFromContext(SIGNED_PDF);
+        helloTxtFile = FileUtils.getResourceFileFromContext(HELLO_TXT);
     }
 
     @After
-    public void cleanup() throws Exception {
+    public void tearDown() throws Exception {
 
         // delete certificates associated with user ids
-        Session sqlSession = getDirectoryService().open(
-                CERTIFICATE_DIRECTORY_NAME);
+        Session sqlSession = directoryService.open(CERTIFICATE_DIRECTORY_NAME);
         sqlSession.deleteEntry(DEFAULT_USER_ID);
         sqlSession.deleteEntry(SECOND_USER_ID);
-        sqlSession.commit();
         sqlSession.close();
 
         // delete users
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        assertNotNull(userManager);
-        if (userManager.getUserModel(DEFAULT_USER_ID) != null) {
-            userManager.deleteUser(DEFAULT_USER_ID);
-        }
-        if (userManager.getUserModel(SECOND_USER_ID) != null) {
-            userManager.deleteUser(SECOND_USER_ID);
-        }
+        userManager.deleteUser(DEFAULT_USER_ID);
+        userManager.deleteUser(SECOND_USER_ID);
     }
 
     @Test
     public void testSignPDF() throws Exception {
-        // first user signed
+        SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
 
-        DocumentModel defaultUser = getUser();
-        DocumentModel secondUser = getUser2();
-
-        File signedFile = signatureService.signPDF(defaultUser,
-                USER_KEY_PASSWORD, "test reason", new FileInputStream(
-                        origPdfFile));
-
-        File fileSignedTwice = null;
+        // first user signs
+        FileBlob origBlob = new FileBlob(origPdfFile);
+        assertEquals(UNSIGNED, ssi.getSigningStatus(origBlob, user));
+        Blob signedBlob = signatureService.signPDF(origBlob, user,
+                USER_KEY_PASSWORD, "test reason");
+        assertNotNull(signedBlob);
+        assertEquals(SIGNED_CURRENT, ssi.getSigningStatus(signedBlob, user));
+        assertEquals(SIGNED_OTHER, ssi.getSigningStatus(signedBlob, user2));
 
         // try for the same user to sign the certificate again
+        Blob signedBlobTwice = null;
         try {
-            fileSignedTwice=signatureService.signPDF(defaultUser, USER_KEY_PASSWORD,
-                    "test reason", new FileInputStream(signedFile));
+            signedBlobTwice = signatureService.signPDF(signedBlob, user,
+                    USER_KEY_PASSWORD, "test reason");
             fail("Should raise AlreadySignedException");
         } catch (AlreadySignedException e) {
             // ok
         }
 
-        // try for the second user to sign the certificate, do not catch the
-        // alreadySignedException here
-        fileSignedTwice=signatureService.signPDF(secondUser, USER_KEY_PASSWORD, "test reason",
-                new FileInputStream(signedFile));
-
-        assertTrue(signedFile.exists());
-        assertTrue(fileSignedTwice.exists());
+        // try for the second user to sign the certificate
+        signedBlobTwice = signatureService.signPDF(signedBlob, user2,
+                USER_KEY_PASSWORD, "test reason");
+        assertNotNull(signedBlobTwice);
+        assertEquals(SIGNED_CURRENT,
+                ssi.getSigningStatus(signedBlobTwice, user));
+        assertEquals(SIGNED_CURRENT,
+                ssi.getSigningStatus(signedBlobTwice, user2));
 
         // test presence of multiple signatures
-        PdfReader reader = new PdfReader(fileSignedTwice.getAbsolutePath());
-        AcroFields af = reader.getAcroFields();
-        ArrayList<String> names = af.getSignatureNames();
-        log.debug("Registered signature names:");
-        for (String signatureName : names) {
-            log.debug(signatureName);
-        }
+        List<String> names = getSignatureNames(signedBlobTwice);
+        assertEquals(2, names.size());
+        assertEquals(Arrays.asList("Signature2", "Signature1"), names);
+    }
 
-        assertTrue(2 == names.size());
-
-        if (KEEP_SIGNED_PDF) {
-            log.info("SIGNED PDF: " + signedFile.getAbsolutePath());
-        } else {
-            signedFile.deleteOnExit();
+    protected List<String> getSignatureNames(Blob blob) throws IOException {
+        PdfReader reader = new PdfReader(blob.getStream());
+        try {
+            @SuppressWarnings("unchecked")
+            List<String> names = reader.getAcroFields().getSignatureNames();
+            return names;
+        } finally {
+            reader.close();
         }
     }
 
     @Test
-    public void testGetPDFCertificates() throws Exception {
+    public void testGetCertificates() throws Exception {
+        SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
+
         // sign the original PDF file
-        File signedFile = signatureService.signPDF(getUser(),
-                USER_KEY_PASSWORD, "test reason", new FileInputStream(
-                        origPdfFile));
-        assertTrue(signedFile.exists());
+        Blob signedBlob = signatureService.signPDF(new FileBlob(origPdfFile),
+                user, USER_KEY_PASSWORD, "test reason");
+        assertNotNull(signedBlob);
         // verify there are certificates in the signed file
-        List<X509Certificate> certificates = signatureService.getPDFCertificates(new FileInputStream(
-                signedFile));
+        List<X509Certificate> certificates = ssi.getCertificates(signedBlob);
         assertTrue(
                 "There has to be at least 1 certificate in a signed document",
                 certificates.size() > 0);
         assertTrue(certificates.get(0).getSubjectDN().toString().contains(
                 "CN=Homer Simpson"));
-        signedFile.deleteOnExit();
     }
 
-    InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
-        File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
-        return new FileInputStream(keystoreFile);
+    @Test
+    public void testGetSigningStatus() throws Exception {
+        Serializable pdfBlob = new FileBlob(origPdfFile, "application/pdf");
+        Serializable signedBlob = new FileBlob(signedPdfFile, "application/pdf");
+        Serializable otherBlob = new StringBlob("foo",
+                "application/octet-stream");
+        DocumentModel doc = session.createDocumentModel("File");
+        StatusWithBlob swb;
+
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(UNSIGNABLE, swb.status);
+        assertNull(swb.path);
+        assertNull(swb.blob);
+
+        // unsigned PDF in main file
+        doc.setPropertyValue("file:content", pdfBlob);
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(UNSIGNED, swb.status);
+        assertEquals("file:content", swb.path);
+        assertEquals(pdfBlob, swb.blob);
+
+        // signed PDF in main file
+        doc.setPropertyValue("file:content", signedBlob);
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(SIGNED_OTHER, swb.status);
+        assertEquals("file:content", swb.path);
+        assertEquals(signedBlob, swb.blob);
+
+        // not PDF in main file
+        doc.setPropertyValue("file:content", otherBlob);
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(UNSIGNED, swb.status);
+        assertEquals("file:content", swb.path);
+        assertEquals(otherBlob, swb.blob);
+
+        // no files attached
+        doc.setPropertyValue("file:content", null);
+        doc.setPropertyValue("files:files", null);
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(UNSIGNABLE, swb.status);
+        assertNull(swb.path);
+        assertNull(swb.blob);
+        doc.setPropertyValue("files:files",
+                (Serializable) Collections.emptyList());
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(UNSIGNABLE, swb.status);
+        assertNull(swb.path);
+        assertNull(swb.blob);
+
+        // unsigned PDF attached
+        List<Map<String, Serializable>> fileList = new ArrayList<Map<String, Serializable>>();
+        fileList.add(Collections.singletonMap("file", pdfBlob));
+        doc.setPropertyValue("files:files", (Serializable) fileList);
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(UNSIGNABLE, swb.status);
+        assertNull(swb.path);
+        assertNull(swb.blob);
+
+        // signed PDF attached second
+        fileList.clear();
+        fileList.add(Collections.singletonMap("file", pdfBlob));
+        fileList.add(Collections.singletonMap("file", signedBlob));
+        doc.setPropertyValue("files:files", (Serializable) fileList);
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(SIGNED_OTHER, swb.status);
+        assertEquals("files:files/1/file", swb.path);
+        assertEquals(signedBlob, swb.blob);
+
+        // and PDF as main file
+        doc.setPropertyValue("file:content", pdfBlob);
+        swb = signatureService.getSigningStatus(doc, null);
+        assertEquals(SIGNED_OTHER, swb.status);
+        assertEquals("files:files/1/file", swb.path);
+        assertEquals(signedBlob, swb.blob);
     }
 
-    protected static Directory getDirectory(String dirName)
-            throws DirectoryException {
-        DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
-        Directory dir = dirServiceImpl.getDirectory(dirName);
-        if (dir instanceof SQLDirectoryProxy) {
-            dir = ((SQLDirectoryProxy) dir).getDirectory();
-        }
-        return dir;
+    @Test
+    public void testSignDocumentReplace() throws Exception {
+        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null,
+                "foo.txt", null);
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) txtBlob);
+
+        Blob signedBlob = signatureService.signDocument(doc, user,
+                USER_KEY_PASSWORD, "test", false, SigningDisposition.REPLACE,
+                null);
+
+        assertEquals("foo.pdf", signedBlob.getFilename());
+        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(signedBlob, doc.getPropertyValue("file:content"));
+        assertEquals(Collections.emptyList(),
+                doc.getPropertyValue("files:files"));
     }
 
-    protected static DirectoryService getDirectoryService()
-            throws ClientException {
-        try {
-            return Framework.getService(DirectoryService.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    @Test
+    public void testSignDocumentAttach() throws Exception {
+        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null,
+                "foo.txt", null);
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) txtBlob);
+
+        Blob signedBlob = signatureService.signDocument(doc, user,
+                USER_KEY_PASSWORD, "test", false, SigningDisposition.ATTACH,
+                null);
+
+        assertEquals("foo.pdf", signedBlob.getFilename());
+        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(txtBlob, doc.getPropertyValue("file:content"));
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+        assertEquals(1, files.size());
+        assertEquals(signedBlob, files.get(0).get("file"));
     }
 
-    protected static UserManager getUserManager() {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        assertNotNull(userManager);
-        return userManager;
+    @Test
+    public void testSignDocumentArchive() throws Exception {
+        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null,
+                "foo.txt", null);
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) txtBlob);
+
+        Blob signedBlob = signatureService.signDocument(doc, user,
+                USER_KEY_PASSWORD, "test", false, SigningDisposition.ARCHIVE,
+                "foo archive.txt");
+
+        assertEquals("foo.pdf", signedBlob.getFilename());
+        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(signedBlob, doc.getPropertyValue("file:content"));
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+        assertEquals(1, files.size());
+        Blob archivedBlob = (Blob) files.get(0).get("file");
+        assertEquals("text/plain", archivedBlob.getMimeType());
+        assertEquals("foo archive.txt", archivedBlob.getFilename());
+        assertEquals("foo archive.txt", files.get(0).get("filename"));
     }
 
-    public DocumentModel getUser() throws Exception {
-        if (user == null) {
-            DocumentModel userModel = getUserManager().getBareUserModel();
-            userModel.setProperty("user", "username", DEFAULT_USER_ID);
-            userModel.setProperty("user", "firstName", "Homer");
-            userModel.setProperty("user", "lastName", "Simpson");
-            userModel.setProperty("user", "email", "hsimpson@springfield.com");
-            userModel.setPathInfo("/", DEFAULT_USER_ID);
-            user = getUserManager().createUser(userModel);
-        }
-        return user;
+    @Test
+    public void testSignPDFDocumentReplace() throws Exception {
+        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null,
+                "foo.pdf", null);
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) pdfBlob);
+
+        Blob signedBlob = signatureService.signDocument(doc, user,
+                USER_KEY_PASSWORD, "test", false, SigningDisposition.REPLACE,
+                null);
+
+        assertEquals("foo.pdf", signedBlob.getFilename());
+        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(signedBlob, doc.getPropertyValue("file:content"));
+        assertEquals(Collections.emptyList(),
+                doc.getPropertyValue("files:files"));
     }
 
-    public DocumentModel getUser2() throws Exception {
-        if (user2 == null) {
-            DocumentModel userModel = getUserManager().getBareUserModel();
-            userModel.setProperty("user", "username", SECOND_USER_ID);
-            userModel.setProperty("user", "firstName", "Marge");
-            userModel.setProperty("user", "lastName", "Simpson");
-            userModel.setProperty("user", "email", "msimpson@springfield.com");
-            userModel.setPathInfo("/", SECOND_USER_ID);
-            user2 = getUserManager().createUser(userModel);
-        }
-        return user2;
+    @Test
+    public void testSignPDFDocumentAttach() throws Exception {
+        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null,
+                "foo.pdf", null);
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) pdfBlob);
+
+        Blob signedBlob = signatureService.signDocument(doc, user,
+                USER_KEY_PASSWORD, "test", false, SigningDisposition.ATTACH,
+                null);
+
+        assertEquals("foo.pdf", signedBlob.getFilename());
+        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(pdfBlob, doc.getPropertyValue("file:content"));
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+        assertEquals(1, files.size());
+        assertEquals(signedBlob, files.get(0).get("file"));
     }
 
-    public UserInfo getUserInfo(String userID) throws Exception {
-        Map<CNField, String> userFields;
-        userFields = new HashMap<CNField, String>();
-        userFields.put(CNField.CN, "Wojciech Sulejman");
-        userFields.put(CNField.C, "US");
-        userFields.put(CNField.OU, "IT");
-        userFields.put(CNField.O, "Nuxeo");
-        userFields.put(CNField.UserID, userID);
-        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
-        UserInfo userInfo = new UserInfo(userFields);
-        return userInfo;
+    @Test
+    public void testSignPDFDocumentArchive() throws Exception {
+        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null,
+                "foo.pdf", null);
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) pdfBlob);
+
+        Blob signedBlob = signatureService.signDocument(doc, user,
+                USER_KEY_PASSWORD, "test", false, SigningDisposition.ARCHIVE,
+                "foo archive.pdf");
+
+        assertEquals("foo.pdf", signedBlob.getFilename());
+        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(signedBlob, doc.getPropertyValue("file:content"));
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+        assertEquals(1, files.size());
+        Blob archivedBlob = (Blob) files.get(0).get("file");
+        assertEquals("application/pdf", archivedBlob.getMimeType());
+        assertEquals("foo archive.pdf", archivedBlob.getFilename());
+        assertEquals("foo archive.pdf", files.get(0).get("filename"));
     }
 
-    public CertService getCertServiceMock() throws Exception {
-        KeyStore rootKeystore = certService.getKeyStore(
-                getKeystoreIS(KEYSTORE_PATH), KEYSTORE_PASSWORD);
-        RootService rootService = new RootServiceImpl();
-        AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
-        rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
-        rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));
-        rootService.setRootKeyPassword(ROOT_KEY_PASSWORD);
-        rootService.setRootKeyStore(rootKeystore);
-        rootService.setRootKeystorePassword(KEYSTORE_PASSWORD);
-        certService.setRootService(rootService);
-        return certService;
+    @Test
+    public void testResignDocument() throws Exception {
+        Blob pdfBlob = new FileBlob(signedPdfFile, "application/pdf", null,
+                "foo.pdf", null);
+        assertEquals(Arrays.asList("Signature1"), getSignatureNames(pdfBlob));
+
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) pdfBlob);
+
+        Blob signedBlob = signatureService.signDocument(doc, user,
+                USER_KEY_PASSWORD, "test", false, SigningDisposition.REPLACE,
+                null);
+
+        assertEquals("foo.pdf", signedBlob.getFilename());
+        assertEquals(Arrays.asList("Signature2", "Signature1"),
+                getSignatureNames(signedBlob));
     }
+
 }

@@ -20,6 +20,10 @@
    <artifactId>nuxeo-platform-signature-api</artifactId>
   </dependency>
   <dependency>
+   <groupId>org.nuxeo.ecm.core</groupId>
+   <artifactId>nuxeo-core-convert-api</artifactId>
+  </dependency>
+  <dependency>
    <groupId>com.lowagie</groupId>
    <artifactId>itext</artifactId>
   </dependency>
@@ -51,8 +55,8 @@
    <scope>test</scope>
   </dependency>
   <dependency>
-   <groupId>hsqldb</groupId>
-   <artifactId>hsqldb</artifactId>
+   <groupId>org.nuxeo.ecm.platform</groupId>
+   <artifactId>nuxeo-platform-convert</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>

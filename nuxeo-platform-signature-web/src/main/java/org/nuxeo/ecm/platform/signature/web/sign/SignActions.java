@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Wojciech Sulejman
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.signature.web.sign;
 
@@ -20,20 +21,18 @@ import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
 import static org.jboss.seam.international.StatusMessage.Severity.WARN;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-import java.text.DateFormat;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
-
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -44,17 +43,16 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
-import org.nuxeo.ecm.platform.signature.api.user.CUserService;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.SigningDisposition;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -62,22 +60,53 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Document signing actions
- *
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 @Name("signActions")
 @Scope(ScopeType.CONVERSATION)
 public class SignActions implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(SignActions.class);
 
-    @In(create = true)
-    protected transient SignatureService signatureService;
+    /**
+     * If this system property is set to "true", then signature will use PDF/A.
+     */
+    public static final String SIGNATURE_USE_PDFA_PROP = "org.nuxeo.ecm.signature.pdfa";
+
+    /**
+     * Signature disposition for PDF files. Can be "replace", "archive" or
+     * "attach".
+     */
+    public static final String SIGNATURE_DISPOSITION_PDF = "org.nuxeo.ecm.signature.disposition.pdf";
+
+    /**
+     * Signature disposition for non-PDF files. Can be "replace", "archive" or
+     * "attach".
+     */
+    public static final String SIGNATURE_DISPOSITION_NOTPDF = "org.nuxeo.ecm.signature.disposition.notpdf";
+
+    public static final String SIGNATURE_ARCHIVE_FILENAME_FORMAT_PROP = "org.nuxeo.ecm.signature.archive.filename.format";
+
+    /** Used with {@link SimpleDateFormat}. */
+    public static final String DEFAULT_ARCHIVE_FORMAT = " ('archive' yyyy-MM-dd HH:mm:ss)";
+
+    protected static final String LABEL_SIGN_DOCUMENT_MISSING = "label.sign.document.missing";
+
+    protected static final String NOTIFICATION_SIGN_PROBLEM = "notification.sign.problem";
+
+    protected static final String NOTIFICATION_SIGN_CERTIFICATE_ACCESS_PROBLEM = "notification.sign.certificate.access.problem";
+
+    protected static final String NOTIFICATION_SIGN_SIGNED = "notification.sign.signed";
+
+    public static final String MIME_TYPE_PDF = "application/pdf";
+
+    public static final String DOCUMENT_SIGNED = "documentSigned";
+
+    public static final String DOCUMENT_SIGNED_COMMENT = "PDF signed";
 
     @In(create = true)
-    protected transient CUserService cUserService;
+    protected transient SignatureService signatureService;
 
     @In(create = true)
     protected transient CertService certService;
@@ -94,11 +123,28 @@ public class SignActions implements Serializable {
     @In(create = true)
     protected transient UserManager userManager;
 
-    public static final String DOCUMENT_SIGNED = "documentSigned";
+    @In(create = true)
+    protected Principal currentUser;
 
-    public static final String CATEGORY = "Document";
+    protected void info(String msg) {
+        facesMessages.add(INFO, getMessage(msg));
+    }
 
-    public static final String DOCUMENT_SIGNED_COMMENT = "PDF signed";
+    protected void warn(String msg) {
+        facesMessages.add(WARN, getMessage(msg));
+    }
+
+    protected void error(String msg) {
+        facesMessages.add(ERROR, getMessage(msg));
+    }
+
+    protected String getMessage(String msg) {
+        return resourcesAccessor.getMessages().get(msg);
+    }
+
+    protected DocumentModel getCurrentUserModel() throws ClientException {
+        return userManager.getUserModel(currentUser.getName());
+    }
 
     /**
      * Signs digitally a PDF blob contained in the current document, modifies
@@ -113,284 +159,112 @@ public class SignActions implements Serializable {
             throws SignException, ClientException {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        if (currentDoc == null) {
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.sign.document.missing"));
+        DocumentModel currentUserModel = getCurrentUserModel();
+        StatusWithBlob swb = signatureService.getSigningStatus(currentDoc,
+                currentUserModel);
+        if (swb.status == StatusWithBlob.UNSIGNABLE) {
+            error(LABEL_SIGN_DOCUMENT_MISSING);
+            return;
         }
 
-        BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
-        Blob originalBlob;
+        Blob originalBlob = currentDoc.getAdapter(BlobHolder.class).getBlob();
+        boolean originalIsPdf = MIME_TYPE_PDF.equals(originalBlob.getMimeType());
+
+        // decide if we want PDF/A
+        boolean pdfa = getPDFA();
+
+        // decide disposition
+        SigningDisposition disposition = getDisposition(originalIsPdf);
+
+        // decide archive filename
+        String filename = originalBlob.getFilename();
+        String archiveFilename = getArchiveFilename(filename);
+
         try {
-            originalBlob = blobHolder.getBlob();
-            if (originalBlob == null) {
-                facesMessages.add(
-                        ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.sign.attachments.missing"));
-            } else {
-
-                if (!originalBlob.getMimeType().equals("application/pdf")) {
-                    facesMessages.add(
-                            ERROR,
-                            resourcesAccessor.getMessages().get(
-                                    "label.sign.pdf.warning"));
-                }
-
-                File signedPdf = signatureService.signPDF(getCurrentUser(),
-                        password, signingReason, originalBlob.getStream());
-                FileBlob signedBlob = new FileBlob(signedPdf);
-
-                archiveOriginal(currentDoc, originalBlob, signedBlob);
-
-                navigationContext.saveCurrentDocument();
-
-                // write to the audit log
-                Map<String, Serializable> properties = new HashMap<String, Serializable>();
-                String comment = DOCUMENT_SIGNED_COMMENT;
-                notifyEvent(DOCUMENT_SIGNED, currentDoc, properties, comment);
-
-                // display a signing message
-                facesMessages.add(
-                        INFO,
-                        signedBlob.getFilename()
-                                + " "
-                                + resourcesAccessor.getMessages().get(
-                                        "notification.sign.signed"));
-            }
+            signatureService.signDocument(currentDoc, currentUserModel,
+                    password, signingReason, pdfa, disposition, archiveFilename);
         } catch (CertException e) {
-            log.error("PDF signing problem: " + e.getMessage(), e);
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "notification.sign.certificate.access.problem"));
+            log.debug("Signing problem: " + e.getMessage(), e);
+            error(NOTIFICATION_SIGN_CERTIFICATE_ACCESS_PROBLEM);
+            return;
         } catch (SignException e) {
-            log.debug("PDF signing problem: " + e.getMessage(), e);
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "notification.sign.problem"));
+            log.debug("Signing problem: " + e.getMessage(), e);
+            error(NOTIFICATION_SIGN_PROBLEM);
             facesMessages.add(ERROR, e.getMessage());
-        } catch (IOException e) {
-            log.error("PDF signing problem: " + e.getMessage(), e);
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "notification.sign.problem"));
-        } catch (ClientException e) {
-            log.error("PDF signing problem: " + e.getMessage(), e);
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "notification.sign.problem"));
-        }
-    }
-
-    /**
-     * NXP-6726 Moves the original blob to the "files" schema for the signedBlob
-     * to become the main file of the document
-     *
-     * @param documentToBeSigned
-     * @param originalBlob
-     * @param signedBlob
-     * @return
-     * @throws ClientException
-     */
-    protected DocumentModel archiveOriginal(DocumentModel signedDoc,
-            Blob originalBlob, Blob signedBlob) throws ClientException {
-
-        // update the signedBlob fields
-        signedBlob.setFilename(originalBlob.getFilename());
-        signedBlob.setEncoding(originalBlob.getEncoding());
-        signedBlob.setMimeType(originalBlob.getMimeType());
-
-        // add the original blob to the file list in the "files" schema
-        // prefix the original file name with user name
-        final Map<String, Object> filesEntry = new HashMap<String, Object>();
-        String userNamePrefix = getCurrentUser().getProperty("user",
-                "firstName")
-                + "_" + getCurrentUser().getProperty("user", "lastName");
-
-        DateFormat localeDateFormat = DateFormat.getDateInstance();
-        String currentDatePrefix = localeDateFormat.format(new Date());
-
-        filesEntry.put("filename",
-                "Previous-name-before-" + userNamePrefix + "-signed-on-"
-                        + currentDatePrefix + "-" + originalBlob.getFilename());
-
-        ListDiff outputFileList = new ListDiff();
-        filesEntry.put("file", originalBlob);
-        outputFileList.add(filesEntry);
-
-        // set the grown list to become new "files" schema
-        signedDoc.setProperty("files", "files", outputFileList);
-
-        // set the main file to the newly signed blob
-        signedDoc.getAdapter(BlobHolder.class).setBlob(signedBlob);
-        return signedDoc;
-    }
-
-    /**
-     * Checks if the current PDF was signed by the current user. Ignores
-     * presence of other signatures.
-     *
-     * @return
-     * @throws SignException
-     * @throws ClientException
-     */
-    public boolean isPDFSignedByCurrentUser() throws SignException,
-            ClientException {
-        return isPDFSigned(true);
-    }
-
-    /**
-     * Checks if the current PDF was signed by anyone (if it contains any
-     * signatures at all)
-     *
-     * @return
-     * @throws SignException
-     * @throws ClientException
-     */
-    public boolean isPDFSigned() throws SignException, ClientException {
-        return isPDFSigned(false);
-    }
-
-    /**
-     * Checks whether a document was already signed with an X509 certificate.
-     *
-     * @return
-     * @throws SignException
-     * @throws ClientException
-     */
-    protected boolean isPDFSigned(boolean checkCurrentUserOnly)
-            throws SignException, ClientException {
-        boolean isSigned = false;
-
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        if (currentDoc == null) {
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.sign.document.missing"));
+            return;
         }
 
-        BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
-        Blob blob = null;
-        blob = blobHolder.getBlob();
-        if (blob == null) {
-            facesMessages.add(WARN,
-                    "Your document does not contain any attachments");
+        // important to save doc now
+        navigationContext.saveCurrentDocument();
+
+        // write to the audit log
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        String comment = DOCUMENT_SIGNED_COMMENT;
+        notifyEvent(DOCUMENT_SIGNED, currentDoc, properties, comment);
+
+        // display a signing message
+        facesMessages.add(INFO, filename + " "
+                + getMessage(NOTIFICATION_SIGN_SIGNED));
+    }
+
+    protected boolean getPDFA() {
+        return BooleanUtils.toBoolean(Framework.getProperty(
+                SIGNATURE_USE_PDFA_PROP, "false"));
+    }
+
+    protected SigningDisposition getDisposition(boolean originalIsPdf) {
+        String disp;
+        if (originalIsPdf) {
+            disp = Framework.getProperty(SIGNATURE_DISPOSITION_PDF,
+                    SigningDisposition.ARCHIVE.name());
         } else {
-            if (blob.getMimeType() == null) {
-                facesMessages.add(
-                        INFO,
-                        resourcesAccessor.getMessages().get(
-                                "label.sign.document.mime"));
-            } else if (!blob.getMimeType().equals("application/pdf")) {
-                facesMessages.add(
-                        ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.sign.pdf.warning"));
-            } else if (blob.getLength() == 0) {
-                facesMessages.add("The file is empty");
-            } else {
-                List<X509Certificate> pdfCertificates;
-                try {
-                    pdfCertificates = signatureService.getPDFCertificates(blob.getStream());
-                } catch (IOException e) {
-                    throw new SignException(e);
-                }
-                if (pdfCertificates.size() > 0) {
-                    if (checkCurrentUserOnly) {
-                        return containsCurrentPrincipal(pdfCertificates);
-                    }
-                    isSigned = true;
-                }
-            }
+            disp = Framework.getProperty(SIGNATURE_DISPOSITION_NOTPDF,
+                    SigningDisposition.ATTACH.name());
         }
-        return isSigned;
-    }
-
-    /**
-     * Checks if extracted certificates contain the current context principal
-     * use the emailAddress as certificate identity field
-     *
-     * @param certificates
-     * @return
-     */
-    protected boolean containsCurrentPrincipal(
-            List<X509Certificate> certificates) throws ClientException {
-        String currentUserEmail = (String) getCurrentUser().getProperty("user",
-                "email");
-        if (currentUserEmail == null || currentUserEmail.length() == 0) {
-            return false;
-        }
-
-        for (X509Certificate certificate : certificates) {
-            String certificateEmail = certService.getCertificateEmail(certificate);
-            if (currentUserEmail.equals(certificateEmail)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns a basic textual description of the certificate contained in the
-     * current document. The information has the following format:
-     * "This document was certified by CN=aaa bbb,OU=IT,O=Nuxeo,C=US. The certificate was issued by E=pdfca@nuxeo.com,C=US,ST=MA,L=Burlington,O=Nuxeo,OU=CA,CN=PDFCA. The certificate is valid till Thu Jan 05 09:31:15 EST 2012"
-     *
-     * @return
-     * @throws SignException
-     * @throws ClientException
-     */
-    public List<String> getPDFCertificateList() throws SignException,
-            ClientException {
-        List<String> pdfCertificateList = new ArrayList<String>();
-
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        if (currentDoc == null) {
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.sign.document.missing"));
-        }
-
-        BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
-        Blob blob = null;
-        blob = blobHolder.getBlob();
-        if (blob == null) {
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.sign.attachments.missing"));
-        } else {
-            if (!blob.getMimeType().equals("application/pdf")) {
-                facesMessages.add(
-                        ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.sign.pdf.warning"));
-            }
-            List<X509Certificate> pdfCertificates;
-            try {
-                pdfCertificates = signatureService.getPDFCertificates(blob.getStream());
-            } catch (IOException e) {
-                throw new SignException(e);
-            }
-            for (X509Certificate certificate : pdfCertificates) {
-                pdfCertificateList.add(getCertificateInfo(certificate));
-            }
-        }
-        return pdfCertificateList;
-    }
-
-    protected EventProducer getEventProducer() throws ClientException {
         try {
-            return Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
+            return Enum.valueOf(SigningDisposition.class, disp.toUpperCase());
+        } catch (RuntimeException e) {
+            log.warn("Invalid signing disposition: " + disp);
+            return SigningDisposition.ATTACH;
         }
+    }
+
+    protected String getArchiveFilename(String filename) {
+        String format = Framework.getProperty(
+                SIGNATURE_ARCHIVE_FILENAME_FORMAT_PROP, DEFAULT_ARCHIVE_FORMAT);
+        return FilenameUtils.getBaseName(filename)
+                + new SimpleDateFormat(format).format(new Date()) + "."
+                + FilenameUtils.getExtension(filename);
+    }
+
+    /**
+     * Gets the signing status for the current document.
+     *
+     * @return the signing status
+     * @throws ClientException
+     */
+    public StatusWithBlob getSigningStatus() throws ClientException {
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        return signatureService.getSigningStatus(currentDoc,
+                getCurrentUserModel());
+    }
+
+    /**
+     * Returns info about the certificates contained in the current document.
+     */
+    public List<X509Certificate> getCertificateList() throws SignException,
+            ClientException {
+
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (currentDoc == null) {
+            error(LABEL_SIGN_DOCUMENT_MISSING);
+            return Collections.emptyList();
+        }
+
+        return signatureService.getCertificates(currentDoc);
+        // certificate.getSubjectDN()
+        // certificate.getIssuerDN()
+        // certificate.getNotAfter()
     }
 
     protected void notifyEvent(String eventId, DocumentModel source,
@@ -406,26 +280,8 @@ public class SignActions implements Serializable {
 
         eventContext.setProperties(properties);
 
-        try {
-            getEventProducer().fireEvent(eventContext.newEvent(eventId));
-        } catch (ClientException e) {
-            log.error("Error firing an audit event", e);
-        }
-    }
-
-    DocumentModel getCurrentUser() throws ClientException {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        Principal currentPrincipal = facesContext.getExternalContext().getUserPrincipal();
-        DocumentModel user = userManager.getUserModel(currentPrincipal.getName());
-        return user;
-    }
-
-    String getCertificateInfo(X509Certificate certificate) {
-        String pdfCertificateInfo = "This certificate belongs to "
-                + certificate.getSubjectDN() + ". It was issued by "
-                + certificate.getIssuerDN() + ". It will expire on "
-                + certificate.getNotAfter();
-        return pdfCertificateInfo;
+        Framework.getLocalService(EventProducer.class).fireEvent(
+                eventContext.newEvent(eventId));
     }
 
 }

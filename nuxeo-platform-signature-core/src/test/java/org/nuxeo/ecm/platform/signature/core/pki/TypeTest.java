@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Wojciech Sulejman
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.signature.core.pki;
@@ -34,40 +35,29 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-/**
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
- */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
         "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
         "org.nuxeo.common", "org.nuxeo.ecm.directory.sql",
@@ -75,13 +65,11 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.signature.core.test" })
 public class TypeTest {
 
-    DocumentModel doc;
-
-    @Inject
-    protected CoreSession session;
-
     @Inject
     protected CertService certService;
+
+    @Inject
+    private DirectoryService directoryService;
 
     private static final String ROOT_KEY_PASSWORD = "abc";
 
@@ -93,13 +81,14 @@ public class TypeTest {
 
     private static final String USER_KEYSTORE_PASSWORD = "abc";
 
-    protected String keystorePath = "test-files/keystore.jks";
+    private static final String KEYSTORE_PATH = "test-files/keystore.jks";
 
     @Before
-    public void setup() throws Exception {
-
+    public void setUp() throws Exception {
+        File keystoreFile = FileUtils.getResourceFileFromContext(KEYSTORE_PATH);
+        InputStream keystoreIS = new FileInputStream(keystoreFile);
         KeyStore rootKeystore = certService.getKeyStore(
-                getKeystoreIS(keystorePath), ROOT_KEYSTORE_PASSWORD);
+                keystoreIS, ROOT_KEYSTORE_PASSWORD);
         RootService rootService = new RootServiceImpl();
         AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
         rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
@@ -114,12 +103,13 @@ public class TypeTest {
     public void savePropertiesToDirectory() throws Exception {
         // create an entry in the directory
         String userID = "testUserID2";
-        Session sqlSession = getDirectoryService().open("certificate");
+        Session sqlSession = directoryService.open("certificate");
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("userid", userID);
 
         // add a keystore to the entry
-        KeyStore keystore = generateUserKeystore(userID);
+        KeyStore keystore = certService.initializeUser(getUserInfo(userID),
+                USER_KEY_PASSWORD);
         ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
         keystore.store(byteOS, USER_KEYSTORE_PASSWORD.toCharArray());
         String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
@@ -127,7 +117,6 @@ public class TypeTest {
 
         DocumentModel entry = sqlSession.createEntry(map);
         assertNotNull(entry);
-        sqlSession.commit();
 
         // retrieve a persisted entry from the directory
         DocumentModel entryFromSession = sqlSession.getEntry(userID);
@@ -142,14 +131,7 @@ public class TypeTest {
         assertTrue(keystore.containsAlias(userAlias.getId(AliasType.KEY)));
 
         sqlSession.deleteEntry(userID);
-        sqlSession.commit();
         sqlSession.close();
-    }
-
-    public KeyStore generateUserKeystore(String userID) throws Exception {
-        KeyStore keystore = certService.initializeUser(getUserInfo(userID),
-                USER_KEY_PASSWORD);
-        return keystore;
     }
 
     public UserInfo getUserInfo(String userID) throws Exception {
@@ -165,48 +147,4 @@ public class TypeTest {
         return userInfo;
     }
 
-    protected static DirectoryService getDirectoryService()
-            throws ClientException {
-        try {
-            return Framework.getService(DirectoryService.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public UserInfo getPDFCAInfo() throws Exception {
-        Map<CNField, String> userFields;
-        userFields = new HashMap<CNField, String>();
-        userFields.put(CNField.CN, "PDFCA");
-        userFields.put(CNField.C, "US");
-        userFields.put(CNField.OU, "CA");
-        userFields.put(CNField.O, "Nuxeo");
-        userFields.put(CNField.UserID, "PDFCA");
-        userFields.put(CNField.Email, "pdfca@nuxeo.com");
-        UserInfo userInfo = new UserInfo(userFields);
-        return userInfo;
-    }
-
-    KeyStore getKeystore(String password) throws Exception {
-        KeyStore keystore = certService.getKeyStore(
-                getKeystoreIS(keystorePath), password);
-        return keystore;
-    }
-
-    InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
-        File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
-        return new FileInputStream(keystoreFile);
-    }
-
-    protected static Directory getDirectory(String dirName)
-            throws DirectoryException {
-        DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
-        Directory dir = dirServiceImpl.getDirectory(dirName);
-        if (dir instanceof SQLDirectoryProxy) {
-            dir = ((SQLDirectoryProxy) dir).getDirectory();
-        }
-        return dir;
-    }
 }
