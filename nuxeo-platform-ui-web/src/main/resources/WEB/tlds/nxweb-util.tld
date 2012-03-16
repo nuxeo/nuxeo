@@ -167,9 +167,6 @@
         <b>WARNING</b> : the variable is only exposed inside the tag: this is a
         different behaviour than the c:set tag that can be closed immediately.
       </p>
-      <p>
-        <b>WARNING bis</b> : the method result should be Serializable.
-      </p>
       ]]>
     </description>
     <attribute>
@@ -226,9 +223,6 @@
       is only exposed inside the tag. Note that this tag will not work as
       expected when used with iteration variables inside a standard table, for
       instance.
-      </p>
-      <p>
-      <b>WARNING</b>: the expression evaluation result should be Serializable.
       </p>
       ]]>
     </description>
