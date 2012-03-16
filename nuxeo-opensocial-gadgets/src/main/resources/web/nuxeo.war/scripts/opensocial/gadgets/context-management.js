@@ -79,8 +79,12 @@ function showContextPathSelector() {
 }
 
 function initContextPathSettingsButton() {
-  var permission = gadgets.nuxeo.isEditable();
-  if(permission) {
+  if (gadgets.nuxeo) {
+    var permission = gadgets.nuxeo.isEditable();
+    if(permission) {
+      _gel("contextButton").style.display = "block";
+    }
+  } else {
     _gel("contextButton").style.display = "block";
   }
 }

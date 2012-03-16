@@ -5,8 +5,7 @@
     author="tdeprat" author_email="tdelprat@nuxeo.com"
     	thumbnail="${clientSideBaseUrl}site/gadgets/userworkspaces/user_workspace.png"
     	screenshot="${clientSideBaseUrl}site/gadgets/userworkspaces/screenshot.png">
-    >
-    <Require feature="nuxeo" />
+    <Optional feature="nuxeo" />
     <Require feature="setprefs"/>
     <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />
