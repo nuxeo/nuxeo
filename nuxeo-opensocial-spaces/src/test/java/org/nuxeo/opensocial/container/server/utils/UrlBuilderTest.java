@@ -43,20 +43,20 @@ public class UrlBuilderTest {
 
     private static final String GADGET_DEF = "http://127.0.0.1:8080/nuxeo/site/gadgets/usw/usw.xml";
     private static final String GADGET_DEF_ENCODED = encode(GADGET_DEF);
-    
+
     private static final String SERVER_BASE = "http://myserver:8080/nuxeo/";
     private static final String SERVER_BASE_ENCODED = encode("http://myserver:8080/nuxeo/");
-    
+
     private static final String expectedShindigUrl = SERVER_BASE + "opensocial/gadgets/ifr?"
             + "container=default&nocache=1&country=ALL&lang=ALL&view=default&"
             + "permission=%5B%5D&mid=0&"
             + "parent=" + SERVER_BASE_ENCODED + "&"
-            + "url=" + GADGET_DEF_ENCODED + "&" 
+            + "url=" + GADGET_DEF_ENCODED + "&"
             + "up_pref1=val%7E1&"
             + "debug=0&"
             + "" // secure token builder disabled
             + "rpctoken=open-social-id1";
-    
+
     @Test
     public void iCanBuildShindigUrl() throws Exception {
         OpenSocialData data = new OpenSocialData();
@@ -70,6 +70,7 @@ public class UrlBuilderTest {
         pref.setActualValue("val~1");
         userPrefs.add(pref);
         data.setUserPrefs(userPrefs);
+        UrlBuilder.containerId = 0;
         String actualShindigUrl = UrlBuilder.buildShindigUrl(data, SERVER_BASE);
         assertEquals(expectedShindigUrl, actualShindigUrl);
     }
@@ -81,5 +82,5 @@ public class UrlBuilderTest {
             return "";
         }
     }
-    
+
 }

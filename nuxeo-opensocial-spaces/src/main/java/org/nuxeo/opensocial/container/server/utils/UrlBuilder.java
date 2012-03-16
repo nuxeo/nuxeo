@@ -61,7 +61,7 @@ public class UrlBuilder {
     private static final String VIEW_VALUE = "default";
 
     private static final String PERMISSION_KEY = "permission";
-    
+
     private static final String PERMISSION_VALUE = "[]";
 
     private static final String PARENT_KEY = "parent";
@@ -78,7 +78,7 @@ public class UrlBuilder {
 
     private static final boolean SHINDIG_DEBUG = ("true".equals(Framework.getProperty("shindig.gadget.debug")));
 
-    private static int containerId = 0;
+    protected static int containerId = 0;
 
     public static String buildShindigUrl(OpenSocialData data, String serverBase)
             throws ClientException {
@@ -106,7 +106,7 @@ public class UrlBuilder {
         }
         // rpctoken=123415
         params.put(RPC_TOKEN, "open-social-" + data.getId());
-        
+
         // http://localhost:8080/nuxeo/opensocial/gadgets/ifr
         String url = URIUtils.getURIPath(serverBase + SERVLET_PATH);
         url = URIUtils.addParametersToURIQuery(url, params);
