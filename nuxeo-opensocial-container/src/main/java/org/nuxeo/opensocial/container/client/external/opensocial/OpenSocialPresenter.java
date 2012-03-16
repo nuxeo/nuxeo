@@ -17,7 +17,6 @@
 
 package org.nuxeo.opensocial.container.client.external.opensocial;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,7 +26,6 @@ import net.customware.gwt.presenter.client.place.PlaceRequest;
 import net.customware.gwt.presenter.client.widget.WidgetDisplay;
 import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.ui.api.HasId;
 import org.nuxeo.opensocial.container.shared.PermissionsConstants;
@@ -47,7 +45,7 @@ public class OpenSocialPresenter extends
     public static final String OS_PERMISSIONS_ATTRIBUTE = "permission";
 
     public static final String OS_PARENT_ATTRIBUTE = "parent";
-    
+
     public interface Display extends WidgetDisplay, HasId {
         void setUrl(String url);
 
@@ -113,8 +111,8 @@ public class OpenSocialPresenter extends
         }
         model.getData().setFrameUrl(
                 changeParam(model.getData().getFrameUrl(),
-                        OS_PERMISSIONS_ATTRIBUTE, 
-                        "[" + permissionsStr.toString() + "]")); 
+                        OS_PERMISSIONS_ATTRIBUTE,
+                        "[" + permissionsStr.toString() + "]"));
     }
 
     public void setView(String view) {
@@ -131,10 +129,48 @@ public class OpenSocialPresenter extends
 
     // Make this method static in order to be easily tested !
     public static String changeParam(String url, String name, String value) {
-        Map<String, String> parameters = new LinkedHashMap<String, String>();
-        parameters.put(name, value);
-        url = URIUtils.addParametersToURIQuery(url, parameters);
+        String paramsString = url.substring(url.indexOf("?"));
+        String[] params = paramsString.split("&");
+        for (String param : params) {
+            if (param.startsWith(name)) {
+                return url.replace(param, name + "=" + escapeQueryReserved(value));
+            }
+        }
         return url;
+    }
+
+    /*
+     * RFC3986 2.2
+     *
+     * reserved = gen-delims / sub-delims
+     *
+     * gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
+     *
+     * sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" /
+     * "="
+     */
+    public static String escapeQueryReserved(String s) {
+        s = s.replace(":", "%3A");
+        s = s.replace("/", "%2F");
+        s = s.replace("?", "%3F");
+        s = s.replace("#", "%23");
+        s = s.replace("[", "%5B");
+        s = s.replace("]", "%5D");
+        s = s.replace("@", "%40");
+        s = s.replace("!", "%21");
+        s = s.replace("$", "%24");
+        s = s.replace("&", "%26");
+        s = s.replace("'", "%27");
+        s = s.replace("(", "%28");
+        s = s.replace(")", "%29");
+        s = s.replace("*", "%2A");
+        s = s.replace("+", "%2B");
+        s = s.replace(",", "%2C");
+        s = s.replace(";", "%3B");
+        s = s.replace("=", "%3D");
+        // query parameter encoding
+        s = s.replace(" ", "+");
+        return s;
     }
 
     protected void setHeight() {

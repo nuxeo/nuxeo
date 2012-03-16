@@ -54,4 +54,28 @@ public class OpenSocialPresenterTest {
                 newOpenSocialUrl);
     }
 
+    @Test
+    public void reservedCharsAreEscaped() {
+        String newOpenSocialUrl = OpenSocialPresenter.changeParam(
+                opensocialUrl, OpenSocialPresenter.OS_PERMISSIONS_ATTRIBUTE, "[foo/ bar]");
+
+        assertEquals(
+                "url?container=test&nocache=test&country=test&lang=fr_fr&view=test&mid=test&parent=test&permission=%5Bfoo%2F+bar%5D&url=test&up_defaultFolder=test&up_0=0&debug=0&st=test&rpctoken=test",
+                newOpenSocialUrl);
+    }
+
+    @Test
+    public void testEscapeQueryReserved() {
+        for (int i = ' '; i < '_'; i++) {
+            String s = OpenSocialPresenter.escapeQueryReserved(String.valueOf((char) i));
+            if (i == ' ') {
+                assertEquals("+", s);
+            } else if (s.length() > 1) {
+                assertEquals("%" + Integer.toHexString(i).toUpperCase(), s);
+            } else {
+                assertEquals(String.valueOf((char) i), s);
+            }
+        }
+    }
+
 }
