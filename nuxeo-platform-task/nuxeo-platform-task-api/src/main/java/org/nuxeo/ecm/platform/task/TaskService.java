@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
- * Contributors:
+ * Contributors: Laurent Doguin, Antoine Taillefer
  */
 package org.nuxeo.ecm.platform.task;
 
@@ -44,8 +44,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * The variable used as process instance variables.
      */
     enum VariableName {
-        documentId, documentRepositoryName, endLifecycleTransition, initiator,
-        document, principal, createdFromTaskService, directive, validated, right;
+        documentId, documentRepositoryName, endLifecycleTransition, initiator, document, principal, createdFromTaskService, directive, validated, right;
     }
 
     /**
@@ -93,9 +92,10 @@ public interface TaskService extends Serializable, TaskProvider {
      * validated.
      *
      * @see #endTask(CoreSession, NuxeoPrincipal, Task, String, String, boolean)
+     * @return the name of the Seam event to raise
      * @throws ClientException
      */
-    void acceptTask(CoreSession coreSession, NuxeoPrincipal principal,
+    String acceptTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment) throws ClientException;
 
     /**
@@ -104,9 +104,10 @@ public interface TaskService extends Serializable, TaskProvider {
      * validated.
      *
      * @see #endTask(CoreSession, NuxeoPrincipal, Task, String, String, boolean)
+     * @return the name of the Seam event to raise
      * @throws ClientException
      */
-    void rejectTask(CoreSession coreSession, NuxeoPrincipal principal,
+    String rejectTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment) throws ClientException;
 
     /**
@@ -118,16 +119,17 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param task the instance to end
      * @param comment string added to the task comments and used as a
      *            notification comment
-     * @param eventName the event name to use when notifying
+     * @param eventName the core event name to use when notifying
      * @param isValidated boolean marker to state if the task was validated or
      *            rejected
      * @throws ClientException when trying to end a task without being granted
      *             the right to do so (see
      *             {@link #canEndTask(NuxeoPrincipal, Task)}), or when any other
      *             error occurs
+     * @return the name of the Seam event to raise
      */
-    void endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task,
-            String comment, String eventName, boolean isValidated)
+    String endTask(CoreSession coreSession, NuxeoPrincipal principal,
+            Task task, String comment, String eventName, boolean isValidated)
             throws ClientException;
 
     /**
@@ -149,18 +151,6 @@ public interface TaskService extends Serializable, TaskProvider {
      * @return the task's target document.
      */
     DocumentModel getTargetDocumentModel(Task ti, CoreSession coreSession)
-            throws ClientException;
-
-    /**
-     * Notify the event producer on the machine the jbpm service is.
-     *
-     * @param name the name of the event
-     * @param comment the comment
-     * @param recipients the recipients property of the event context
-     * @throws ClientException
-     */
-    void notifyEventListeners(String name, String comment, String[] recipients,
-            CoreSession session, NuxeoPrincipal principal, DocumentModel doc)
             throws ClientException;
 
     /**

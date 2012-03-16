@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nicolas Ulrich
+ *     Nicolas Ulrich, Antoine Taillefer
  *
  */
 
@@ -31,6 +31,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @since 5.5
  */
 public interface Task extends Serializable {
+
+    /**
+     * @since 5.6
+     */
+    String TASK_PROVIDER_KEY = "taskProviderId";
 
     DocumentModel getDocument();
 
@@ -86,16 +91,16 @@ public interface Task extends Serializable {
 
     void setAccepted(Boolean accepted) throws ClientException;
 
-    void setVariables(Map<String, String> variables)
-            throws ClientException;
+    void setVariables(Map<String, String> variables) throws ClientException;
 
-    void addComment(String author, String text)
-            throws ClientException;
+    void addComment(String author, String text) throws ClientException;
 
     void cancel(CoreSession coreSession) throws ClientException;
 
     void end(CoreSession coreSession) throws ClientException;
 
-    enum TaskVariableName { needi18n, taskType };
+    enum TaskVariableName {
+        needi18n, taskType
+    };
 
 }

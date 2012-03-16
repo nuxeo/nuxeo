@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Nuxeo
+ *    Nuxeo, Antoine Taillefer
  */
 package org.nuxeo.ecm.plateform.jbpm.core.task;
 
@@ -45,6 +45,10 @@ public class JBPMTaskWrapper implements Task {
 
     private static final long serialVersionUID = 1L;
 
+    protected static Log log = LogFactory.getLog(JBPMTaskWrapper.class);
+
+    public static final String JBPM_TASK_PROVIDER = "jbpmTaskProvider";
+
     private TaskInstance ti;
 
     private String directive;
@@ -55,22 +59,21 @@ public class JBPMTaskWrapper implements Task {
 
     private Boolean validated;
 
-    protected static Log log = LogFactory.getLog(JBPMTaskWrapper.class);
-
     private DocumentModel doc;
 
     public JBPMTaskWrapper(TaskInstance ti) {
         this.ti = ti;
         targetDocId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
         directive = (String) ti.getVariable(JbpmService.TaskVariableName.directive.name());
-        validated = (Boolean) ti.getVariable(JbpmService.TaskVariableName.validated.name());
+        validated = Boolean.valueOf((String) ti.getVariable(JbpmService.TaskVariableName.validated.name()));
         initiator = (String) ti.getVariable(JbpmService.VariableName.initiator.name());
     }
 
     @Override
     public DocumentModel getDocument() {
-        if (doc==null) {
-            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner((String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name())) {
+        if (doc == null) {
+            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
+                    (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name())) {
                 @Override
                 public void run() throws ClientException {
                     doc = session.getDocument(new IdRef(targetDocId));
@@ -80,7 +83,7 @@ public class JBPMTaskWrapper implements Task {
             try {
                 runner.runUnrestricted();
             } catch (ClientException e) {
-               log.error("Error while fetching DocumentModel", e);
+                log.error("Error while fetching DocumentModel", e);
             }
         }
         return doc;
@@ -146,6 +149,9 @@ public class JBPMTaskWrapper implements Task {
 
     @Override
     public String getVariable(String key) throws ClientException {
+        if (Task.TASK_PROVIDER_KEY.equals(key)) {
+            return JBPM_TASK_PROVIDER;
+        }
         return (String) ti.getVariable(key);
     }
 

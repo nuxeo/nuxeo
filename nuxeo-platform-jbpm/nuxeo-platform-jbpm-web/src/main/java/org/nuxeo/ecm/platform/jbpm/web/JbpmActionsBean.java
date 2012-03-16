@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-20012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     Anahide Tchertchian, Antoine Taillefer
  *
  * $Id$
  */
@@ -40,6 +40,7 @@ import javax.faces.event.ActionEvent;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
@@ -53,8 +54,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
@@ -63,6 +62,8 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
+import org.nuxeo.ecm.platform.jbpm.core.helper.AbandonProcessUnrestricted;
+import org.nuxeo.ecm.platform.jbpm.core.helper.EndProcessUnrestricted;
 import org.nuxeo.ecm.platform.jbpm.operations.AddCommentOperation;
 import org.nuxeo.ecm.platform.jbpm.operations.GetRecipientsForTaskOperation;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -643,59 +644,6 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     }
 
-    // helper inner class to do the unrestricted abandon
-    protected class UnrestrictedAbandon extends UnrestrictedSessionRunner {
-
-        private final DocumentRef ref;
-
-        private final Long processId;
-
-        protected UnrestrictedAbandon(DocumentRef ref, Long processId) {
-            super(documentManager);
-            this.ref = ref;
-            this.processId = processId;
-        }
-
-        @Override
-        public void run() throws ClientException {
-            DocumentModel doc = session.getDocument(ref);
-            ACP acp = doc.getACP();
-            acp.removeACL(AbstractJbpmHandlerHelper.getProcessACLName(processId));
-            session.setACP(doc.getRef(), acp, true);
-            session.save();
-        }
-    }
-
-    // helper inner class to do the unrestricted abandon
-    protected class UnrestrictedEndProcess extends UnrestrictedSessionRunner {
-
-        private final DocumentRef ref;
-
-        public Set<String> recipients;
-
-        protected UnrestrictedEndProcess(DocumentRef ref) {
-            super(documentManager);
-            this.ref = ref;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void run() throws ClientException {
-            // end process and tasks
-            List<TaskInstance> tis = jbpmService.getTaskInstances(
-                    session.getDocument(ref), (NuxeoPrincipal) null, null);
-            recipients = new HashSet<String>();
-            for (TaskInstance ti : tis) {
-                String actor = ti.getActorId();
-                recipients.add(actor);
-                Set<PooledActor> pooledActors = ti.getPooledActors();
-                for (PooledActor pa : pooledActors) {
-                    recipients.add(pa.getActorId());
-                }
-            }
-        }
-    }
-
     public String cancelCurrentProcess() throws ClientException {
         ProcessInstance currentProcess = getCurrentProcess();
         if (currentProcess != null) {
@@ -703,14 +651,18 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             Long pid = Long.valueOf(currentProcess.getId());
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
-                UnrestrictedAbandon runner = new UnrestrictedAbandon(
-                        currentDoc.getRef(), pid);
+                AbandonProcessUnrestricted runner = new AbandonProcessUnrestricted(
+                        documentManager, currentDoc.getRef(), pid);
                 runner.runUnrestricted();
             }
 
             // end process and tasks using unrestricted session
-            UnrestrictedEndProcess endProcessRunner = new UnrestrictedEndProcess(
-                    currentDoc.getRef());
+            List<TaskInstance> tis = jbpmService.getTaskInstances(
+                    documentManager.getDocument(currentDoc.getRef()),
+                    (NuxeoPrincipal) null, null);
+
+            EndProcessUnrestricted endProcessRunner = new EndProcessUnrestricted(
+                    documentManager, tis);
             endProcessRunner.runUnrestricted();
 
             jbpmService.deleteProcessInstance(currentUser, pid);
@@ -719,7 +671,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     resourcesAccessor.getMessages().get(
                             "workflowProcessCanceled"));
             notifyEventListeners(JbpmEventNames.WORKFLOW_CANCELED, userComment,
-                    endProcessRunner.recipients.toArray(new String[] {}));
+                    endProcessRunner.getRecipients().toArray(new String[] {}));
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_CANCELED);
             resetCurrentData();
         }
@@ -735,8 +687,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             Long pid = Long.valueOf(currentProcess.getId());
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
-                UnrestrictedAbandon runner = new UnrestrictedAbandon(
-                        currentDoc.getRef(), pid);
+                AbandonProcessUnrestricted runner = new AbandonProcessUnrestricted(
+                        documentManager, currentDoc.getRef(), pid);
                 runner.runUnrestricted();
             }
 
@@ -795,6 +747,9 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         return res;
     }
 
+    @Observer(value = { JbpmEventNames.WORKFLOW_TASK_COMPLETED,
+            JbpmEventNames.WORKFLOW_TASK_REJECTED,
+            JbpmEventNames.WORKFLOW_CANCELED }, create = false)
     public void resetCurrentData() {
         canManageCurrentProcess = null;
         canManageParticipants = null;

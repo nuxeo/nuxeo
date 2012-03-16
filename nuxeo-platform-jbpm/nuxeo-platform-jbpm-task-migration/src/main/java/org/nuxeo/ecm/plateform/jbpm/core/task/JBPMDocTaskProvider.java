@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,26 +12,37 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Nuxeo
+ *    Nuxeo, Antoine Taillefer
  */
 package org.nuxeo.ecm.plateform.jbpm.core.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.JbpmContext;
+import org.jbpm.JbpmException;
+import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
+import org.nuxeo.ecm.platform.jbpm.core.helper.AbandonProcessUnrestricted;
+import org.nuxeo.ecm.platform.jbpm.core.helper.EndProcessUnrestricted;
+import org.nuxeo.ecm.platform.jbpm.operations.AddCommentOperation;
+import org.nuxeo.ecm.platform.jbpm.operations.GetRecipientsForTaskOperation;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskProvider;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -46,6 +57,9 @@ public class JBPMDocTaskProvider implements TaskProvider {
     public static final String PUBLISHER_JBPMTASK_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
 
     public static final String PUBLISHER_TASK_NAME = "org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory";
+
+    /** @since 5.6 */
+    public static final String WORKFLOW_REJECT_TRANSITION = "reject";
 
     private JbpmService jbpmService;
 
@@ -68,7 +82,6 @@ public class JBPMDocTaskProvider implements TaskProvider {
         }
     }
 
-
     @Override
     public List<Task> getCurrentTaskInstances(final CoreSession coreSession)
             throws ClientException {
@@ -84,7 +97,8 @@ public class JBPMDocTaskProvider implements TaskProvider {
                         List<TaskInstance> tis = getJbpmService().getCurrentTaskInstances(
                                 (NuxeoPrincipal) coreSession.getPrincipal(),
                                 null);
-                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(tis, context, coreSession);
+                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(
+                                tis, context, coreSession);
                         try {
                             return (Serializable) migrationRunner.migrate();
                         } catch (ClientException e) {
@@ -111,7 +125,8 @@ public class JBPMDocTaskProvider implements TaskProvider {
                         List<TaskInstance> tis = getJbpmService().getCurrentTaskInstances(
                                 actors, null);
 
-                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(tis, context, coreSession);
+                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(
+                                tis, context, coreSession);
                         try {
                             return (Serializable) migrationRunner.migrate();
                         } catch (ClientException e) {
@@ -138,7 +153,8 @@ public class JBPMDocTaskProvider implements TaskProvider {
 
                         final List<TaskInstance> tis = getJbpmService().getTaskInstances(
                                 dm, user, null);
-                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(tis, context, coreSession);
+                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(
+                                tis, context, coreSession);
                         try {
                             return (Serializable) migrationRunner.migrate();
                         } catch (ClientException e) {
@@ -164,7 +180,8 @@ public class JBPMDocTaskProvider implements TaskProvider {
                             throws NuxeoJbpmException {
                         List<TaskInstance> tis = getJbpmService().getTaskInstances(
                                 dm, actors, null);
-                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(tis, context, coreSession);
+                        TaskMigrationRunner migrationRunner = new TaskMigrationRunner(
+                                tis, context, coreSession);
                         try {
                             return (Serializable) migrationRunner.migrate();
                         } catch (ClientException e) {
@@ -174,6 +191,121 @@ public class JBPMDocTaskProvider implements TaskProvider {
                     }
                 });
         return migratedTasks;
+    }
+
+    public String endTask(CoreSession coreSession, NuxeoPrincipal principal,
+            Task task, String comment, String eventName, boolean isValidated)
+            throws ClientException {
+
+        String seamEventName = null;
+        if (task != null) {
+
+            long taskId = Long.valueOf(task.getId());
+            DocumentModel taskDoc = task.getDocument();
+            String transition = isValidated ? null : WORKFLOW_REJECT_TRANSITION;
+
+            Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
+            taskVariables.put(JbpmService.TaskVariableName.validated.name(),
+                    String.valueOf(isValidated));
+
+            Map<String, Serializable> transientVariables = new HashMap<String, Serializable>();
+            transientVariables.put(JbpmService.VariableName.document.name(),
+                    taskDoc);
+            transientVariables.put(JbpmService.VariableName.principal.name(),
+                    principal);
+
+            try {
+                getJbpmService().endTask(taskId, transition, taskVariables,
+                        null, transientVariables, principal);
+            } catch (JbpmException jbpme) {
+                // Exception caught, means the task could not be ended leaving
+                // the task-node with the given transition.
+                // Canceling current process.
+                log.info(String.format(
+                        "This task cannot be ended leaving the task-node with the transition '%s' => canceling the process.",
+                        transition));
+                return cancelCurrentProcess(coreSession, taskDoc, principal,
+                        comment);
+            }
+
+            if (comment != null && !"".equals(comment)) {
+                AddCommentOperation addCommentOperation = new AddCommentOperation(
+                        taskId, NuxeoPrincipal.PREFIX + principal.getName(),
+                        comment);
+                getJbpmService().executeJbpmOperation(addCommentOperation);
+            }
+
+            coreSession.save(); // process invalidations from handlers' sessions
+
+            Set<String> recipients = getRecipientsFromTask(taskId);
+            notifyEventListeners(eventName, comment,
+                    recipients.toArray(new String[] {}), coreSession,
+                    principal, taskDoc);
+            seamEventName = isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED
+                    : TaskEventNames.WORKFLOW_TASK_REJECTED;
+        }
+        return seamEventName;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Set<String> getRecipientsFromTask(final long taskId)
+            throws NuxeoJbpmException {
+        GetRecipientsForTaskOperation operation = new GetRecipientsForTaskOperation(
+                taskId);
+        return (Set<String>) getJbpmService().executeJbpmOperation(operation);
+
+    }
+
+    protected void notifyEventListeners(String name, String comment,
+            String[] recipients, CoreSession coreSession,
+            NuxeoPrincipal principal, DocumentModel doc) throws ClientException {
+        getJbpmService().notifyEventListeners(name, comment, recipients,
+                coreSession, principal, doc);
+    }
+
+    protected String cancelCurrentProcess(CoreSession coreSession,
+            DocumentModel doc, NuxeoPrincipal principal, String comment)
+            throws ClientException {
+
+        String seamEventName = null;
+        ProcessInstance currentProcess = getCurrentProcess(doc, principal);
+        if (currentProcess != null) {
+            // remove wf acls
+            Long pid = Long.valueOf(currentProcess.getId());
+            if (doc != null) {
+                AbandonProcessUnrestricted runner = new AbandonProcessUnrestricted(
+                        coreSession, doc.getRef(), pid);
+                runner.runUnrestricted();
+            }
+
+            // end process and tasks using unrestricted session
+            List<TaskInstance> tis = getJbpmService().getTaskInstances(
+                    coreSession.getDocument(doc.getRef()),
+                    (NuxeoPrincipal) null, null);
+
+            EndProcessUnrestricted endProcessRunner = new EndProcessUnrestricted(
+                    coreSession, tis);
+            endProcessRunner.runUnrestricted();
+
+            getJbpmService().deleteProcessInstance(principal, pid);
+
+            notifyEventListeners(JbpmEventNames.WORKFLOW_CANCELED, comment,
+                    endProcessRunner.getRecipients().toArray(new String[] {}),
+                    coreSession, principal, doc);
+            seamEventName = JbpmEventNames.WORKFLOW_CANCELED;
+        }
+        return seamEventName;
+    }
+
+    protected ProcessInstance getCurrentProcess(DocumentModel doc,
+            NuxeoPrincipal principal) throws ClientException {
+        ProcessInstance currentProcess = null;
+        List<ProcessInstance> processes = getJbpmService().getProcessInstances(
+                doc, principal, null);
+        if (processes != null && !processes.isEmpty()) {
+            currentProcess = processes.get(0);
+        }
+        return currentProcess;
     }
 
     public JbpmService getJbpmService() {
@@ -211,5 +343,4 @@ public class JBPMDocTaskProvider implements TaskProvider {
         }
         return userManager;
     }
-
 }
