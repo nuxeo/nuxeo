@@ -80,16 +80,21 @@ public class AudioImporter extends AbstractFileImporter {
                 throw new ClientException(e);
             }
 
-            docModel = documentManager.createDocumentModel(AUDIO_TYPE);
+            String docType = getDocType();
+            if (docType == null) {
+                docType = AUDIO_TYPE;
+            }
+
+            docModel = documentManager.createDocumentModel(docType);
             // update known attributes, format is: schema, attribute, value
             docModel.setProperty("dublincore", "title", title);
             docModel.setProperty("file", "content", content);
             docModel.setProperty("file", "filename", filename);
 
             // updating icon
-            Type docType = typeService.getType(AUDIO_TYPE);
-            if (docType != null) {
-                String iconPath = docType.getIcon();
+            Type type = typeService.getType(docType);
+            if (type != null) {
+                String iconPath = type.getIcon();
                 docModel.setProperty("common", "icon", iconPath);
             }
             docModel.setPathInfo(path, pss.generatePathSegment(docModel));
