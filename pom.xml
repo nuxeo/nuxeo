@@ -44,6 +44,7 @@
     <nuxeo.categorization.version>5.6-SNAPSHOT</nuxeo.categorization.version>
     <nuxeo.rendition.version>5.6-SNAPSHOT</nuxeo.rendition.version>
     <nuxeo.replication.version>5.6-SNAPSHOT</nuxeo.replication.version>
+    <nuxeo.activity.version>5.6-SNAPSHOT</nuxeo.activity.version>
     <nuxeo.sc.version>5.6-SNAPSHOT</nuxeo.sc.version>
     <nuxeo.birt.version>5.6-SNAPSHOT</nuxeo.birt.version>
     <nuxeo.suggestbox.version>5.6-SNAPSHOT</nuxeo.suggestbox.version>
@@ -91,6 +92,7 @@
     <module>nuxeo-platform-replication</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-birt</module>
+    <module>nuxeo-activity</module>
     <module>nuxeo-social-collaboration</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
@@ -585,12 +587,14 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Social Collaboration -->
+      <!-- Activity -->
       <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
+        <groupId>org.nuxeo.activity</groupId>
         <artifactId>nuxeo-activity</artifactId>
-        <version>${nuxeo.sc.version}</version>
+        <version>${nuxeo.activity.version}</version>
       </dependency>
+
+      <!-- Social Collaboration -->
       <dependency>
         <groupId>org.nuxeo.ecm.social</groupId>
         <artifactId>nuxeo-social-workspace-core</artifactId>
