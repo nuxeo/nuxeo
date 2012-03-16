@@ -49,7 +49,6 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .note_content_block span, .note_content_block div, .note_content_block p { font-size: 1.05em; line-height: 170% }
 .note_content_block i, .note_content_block cite, .note_content_block em, .note_content_block var, .note_content_block dfn { font-style: italic }
 .note_content_block div, .note_content_block p { padding: .2em 0 .9em }
-.note_content_block img { max-height: 150px; max-width: 200px }
 .note_content_block h1, .note_content_block h2, .note_content_block h3, .note_content_block h4, .note_content_block h5, .note_content_block h6 { font-weight: bold; line-height: normal; margin: 0 }
 .note_content_block h1 { font-size: 2em; padding: .5em 0 .8em }
 .note_content_block h2 { font-size: 1.6em; padding: .6em 0 .4em }

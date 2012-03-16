@@ -20,6 +20,7 @@ author: lkemen@nuxeo.com
 .summary_div_2 { clear: both }
 
 .summary_div_0 img { max-height: 50em; max-width: 100% }
+.summary_div_0 .note_content_block { margin: auto; max-width: 65em }
 
 .contentViewTitle { float: left; line-height: normal; margin: 1em 1em 1em 0 }
 
@@ -147,4 +148,3 @@ h3.summaryTitle {
   color: "gray.dark (__FLAVOR__ color)";
   font-weight: bold;
   padding: .4em .3em .3em 2.1em }
-	
