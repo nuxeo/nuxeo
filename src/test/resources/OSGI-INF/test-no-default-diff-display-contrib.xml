@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.diff.service.DiffDisplayService.contrib.test.noDefaultContrib">
+
+  <require>
+    org.nuxeo.ecm.diff.service.DiffDisplayService.contrib
+  </require>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffDisplay">
+
+    <!-- Remove Document diffDisplay -->
+    <diffDisplay type="Document" enabled="false" />
+
+  </extension>
+
+</component>

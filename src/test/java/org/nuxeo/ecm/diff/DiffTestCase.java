@@ -23,6 +23,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
+import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.ecm.diff.model.SchemaDiff;
 import org.nuxeo.ecm.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
@@ -30,7 +31,7 @@ import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 
 /**
  * Super class for diff test cases.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class DiffTestCase extends TestCase {
@@ -39,7 +40,7 @@ public class DiffTestCase extends TestCase {
 
     /**
      * Checks a null schema diff: docDiff holds no diff for schema.
-     * 
+     *
      * @param docDiff the doc diff
      * @param schema the schema
      * @return the schema diff
@@ -53,7 +54,7 @@ public class DiffTestCase extends TestCase {
 
     /**
      * Checks a schema diff.
-     * 
+     *
      * @param docDiff the doc diff
      * @param schema the schema
      * @param expectedFieldCount the expected field count
@@ -72,7 +73,7 @@ public class DiffTestCase extends TestCase {
 
     /**
      * Check identical field.
-     * 
+     *
      * @param fieldDiff the field diff
      */
     protected final void checkIdenticalField(PropertyDiff fieldDiff) {
@@ -82,7 +83,7 @@ public class DiffTestCase extends TestCase {
 
     /**
      * Checks a simple field diff.
-     * 
+     *
      * @param fieldDiff the field diff
      * @param expectedPropertyType the expected property type
      * @param expectedDifferenceType the expected difference type
@@ -114,7 +115,7 @@ public class DiffTestCase extends TestCase {
 
     /**
      * Check simple field diff.
-     * 
+     *
      * @param fieldDiff the field diff
      * @param expectedPropertyType the expected property type
      * @param expectedLeftValue the expected left value
@@ -129,9 +130,33 @@ public class DiffTestCase extends TestCase {
                 DifferenceType.different, expectedLeftValue, expectedRightValue);
     }
 
+    // TODO: should use BlobPropertyDiff?
+    protected final SimplePropertyDiff checkContentFieldDiff(
+            PropertyDiff fieldDiff) {
+
+        assertNotNull("Field diff should not be null", fieldDiff);
+        assertEquals("Wrong property type", PropertyType.CONTENT,
+                fieldDiff.getPropertyType());
+
+        assertTrue("Wrong PropertyDiff implementation",
+                fieldDiff instanceof ComplexPropertyDiff);
+        ComplexPropertyDiff complexFieldDiff = (ComplexPropertyDiff) fieldDiff;
+
+        PropertyDiff dataDiff = complexFieldDiff.getDiff("data");
+        assertTrue("Wrong PropertyDiff implementation",
+                dataDiff instanceof SimplePropertyDiff);
+
+        SimplePropertyDiff simpleDataDiff = (SimplePropertyDiff) dataDiff;
+        assertTrue(!simpleDataDiff.getLeftValue().equals(
+                simpleDataDiff.getRightValue()));
+
+        return simpleDataDiff;
+
+    }
+
     /**
      * Checks a list field diff.
-     * 
+     *
      * @param field the field
      * @param expectedListFieldDiff the expected list field diff
      * @return the property diff
@@ -152,7 +177,7 @@ public class DiffTestCase extends TestCase {
 
     /**
      * Checks a complex field diff.
-     * 
+     *
      * @param field the field
      * @param expectedComplexFieldDiff the expected complex field diff
      * @return the property diff

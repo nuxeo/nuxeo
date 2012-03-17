@@ -29,6 +29,7 @@ import org.nuxeo.ecm.diff.xmlexport.DocumentXMLExporter;
  * Handles a diff between two documents.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public interface DocumentDiffService extends Serializable {
 

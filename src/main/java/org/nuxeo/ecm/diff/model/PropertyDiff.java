@@ -19,9 +19,8 @@ package org.nuxeo.ecm.diff.model;
 import java.io.Serializable;
 
 /**
- * <p>
- * Representation of a property (or field) diff.
- * 
+ * Representation of a property (field) diff. TODO: implement BlobPropertyDiff?
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class PropertyDiff implements Serializable {
@@ -32,7 +31,7 @@ public class PropertyDiff implements Serializable {
 
     /**
      * Checks if is simple type.
-     * 
+     *
      * @return true, if is simple type
      */
     public boolean isSimpleType() {
@@ -41,7 +40,7 @@ public class PropertyDiff implements Serializable {
 
     /**
      * Checks if is list type.
-     * 
+     *
      * @return true, if is list type
      */
     public boolean isListType() {
@@ -50,7 +49,7 @@ public class PropertyDiff implements Serializable {
 
     /**
      * Checks if is scalar list type.
-     * 
+     *
      * @return true, if is scalar list type
      */
     public boolean isScalarListType() {
@@ -59,7 +58,7 @@ public class PropertyDiff implements Serializable {
 
     /**
      * Checks if is complex list type.
-     * 
+     *
      * @return true, if is complex list type
      */
     public boolean isComplexListType() {
@@ -68,7 +67,7 @@ public class PropertyDiff implements Serializable {
 
     /**
      * Checks if is complex type.
-     * 
+     *
      * @return true, if is complex type
      */
     public boolean isComplexType() {
@@ -77,7 +76,7 @@ public class PropertyDiff implements Serializable {
 
     /**
      * Checks if is content type.
-     * 
+     *
      * @return true, if is content type
      */
     public boolean isContentType() {

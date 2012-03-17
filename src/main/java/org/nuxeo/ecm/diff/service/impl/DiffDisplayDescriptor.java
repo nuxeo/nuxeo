@@ -14,7 +14,7 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.diff.service;
+package org.nuxeo.ecm.diff.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,33 +24,44 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Complex items descriptor.
+ * Diff display descriptor.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
-@XObject("complexItems")
-public class ComplexItemsDescriptor {
+@XObject("diffDisplay")
+public class DiffDisplayDescriptor {
 
-    @XNode("@property")
-    public String property;
+    @XNode("@type")
+    public String type;
 
-    @XNodeList(value = "item", type = ArrayList.class, componentType = String.class)
-    public List<String> items = new ArrayList<String>();
+    @XNode("@enabled")
+    public boolean enabled = true;
 
-    public String getProperty() {
-        return property;
+    @XNodeList(value = "diffBlocks/diffBlock", type = ArrayList.class, componentType = DiffBlockReferenceDescriptor.class)
+    public List<DiffBlockReferenceDescriptor> diffBlocks = new ArrayList<DiffBlockReferenceDescriptor>();
+
+    public String getType() {
+        return type;
     }
 
-    public void setProperty(String property) {
-        this.property = property;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public List<String> getItems() {
-        return items;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setItems(List<String> items) {
-        this.items = items;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
+    public List<DiffBlockReferenceDescriptor> getDiffBlocks() {
+        return diffBlocks;
+    }
+
+    public void setDiffBlocks(List<DiffBlockReferenceDescriptor> diffBlocks) {
+        this.diffBlocks = diffBlocks;
+    }
 }

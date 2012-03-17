@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.widgets.contrib.test">
+
+  <require>
+    org.nuxeo.ecm.diff.widgets.contrib
+  </require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <!-- Specific widgets binded to property names -->
+    <widget name="dublincore:modified" type="datetime">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.modified</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormater()}</property>
+      </properties>
+    </widget>
+
+    <widget name="simpletypes:htmlText" type="richtext_with_mimetype">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.simpletypes.htmlText</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="view">
+        <property name="translatedHtml">
+          #{noteActions.translateImageLinks(field_0)}
+        </property>
+        <property name="cssClass">note_content_block</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>

@@ -19,7 +19,7 @@ package org.nuxeo.ecm.diff.model;
 /**
  * Property type constants: string, boolean, integer, scalarList, complex,
  * complexList, ...
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public final class PropertyType {
@@ -48,6 +48,8 @@ public final class PropertyType {
 
     public static final String COMPLEX_LIST = "complexList";
 
+    public static final String CONTENT_LIST = "contentList";
+
     /**
      * Avoid instantiating a new property type.
      */
@@ -56,7 +58,7 @@ public final class PropertyType {
 
     /**
      * Checks if is simple type.
-     * 
+     *
      * @param propertyType the property type
      * @return true, if is simple type
      */
@@ -67,19 +69,20 @@ public final class PropertyType {
 
     /**
      * Checks if is list type.
-     * 
+     *
      * @param propertyType the property type
      * @return true, if is list type
      */
     public static boolean isListType(String propertyType) {
 
         return SCALAR_LIST.equals(propertyType)
-                || COMPLEX_LIST.equals(propertyType);
+                || COMPLEX_LIST.equals(propertyType)
+                || CONTENT_LIST.equals(propertyType);
     }
 
     /**
      * Checks if is scalar list type.
-     * 
+     *
      * @param propertyType the property type
      * @return true, if is scalar list type
      */
@@ -90,7 +93,7 @@ public final class PropertyType {
 
     /**
      * Checks if is complex list type.
-     * 
+     *
      * @param propertyType the property type
      * @return true, if is complex list type
      */
@@ -100,8 +103,19 @@ public final class PropertyType {
     }
 
     /**
+     * Checks if is content list type.
+     *
+     * @param propertyType the property type
+     * @return true, if is content list type
+     */
+    public static boolean isContentListType(String propertyType) {
+
+        return CONTENT_LIST.equals(propertyType);
+    }
+
+    /**
      * Checks if is complex type.
-     * 
+     *
      * @param propertyType the property type
      * @return true, if is complex type
      */
@@ -112,7 +126,7 @@ public final class PropertyType {
 
     /**
      * Checks if is content type.
-     * 
+     *
      * @param propertyType the property type
      * @return true, if is content type
      */

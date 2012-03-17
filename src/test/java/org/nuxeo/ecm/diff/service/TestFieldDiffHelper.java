@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Tests the FieldDiffHelper class.
+ * Tests the {@link FieldDiffHelper}.
  * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */

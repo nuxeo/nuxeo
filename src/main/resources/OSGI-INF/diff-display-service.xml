@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.service.DiffDisplayService">
+
+  <documentation>
+    This service provides an extension point to manage
+    document diff display.
+
+    @author
+    Antoine Taillefer
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.diff.service.impl.DiffDisplayServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.diff.service.DiffDisplayService" />
+  </service>
+
+  <extension-point name="diffDisplay">
+    <documentation>
+
+      <pre>
+        A diffDisplay contribution defines which diffBlocks will be
+        displayed in the document diff view for a given document type.
+        The order matters.
+
+        If the 2 diffed documents have the same type,
+        the diffDisplay matching this type is used, otherwise or if such
+        a diffDisplay does not exist, the diffDisplay with the Document
+        type is used.
+        If it does not exist a message is displayed to let
+        the user know that no diffDisplay has been defined.
+      </pre>
+
+      <code>
+        <diffDisplay type="Document">
+          <diffBlocks>
+            <diffBlock name="header" />
+            <diffBlock name="dublincore" />
+          </diffBlocks>
+        </diffDisplay>
+        <diffDisplay type="Note" enabled="false" />
+      </code>
+
+    </documentation>
+    <object class="org.nuxeo.ecm.diff.service.impl.DiffDisplayDescriptor" />
+  </extension-point>
+
+  <extension-point name="diffBlock">
+    <documentation>
+
+      <pre>
+        A diffBlock contribution defines which fields will be
+        displayed in the diff display block.
+        The order matters.
+
+        For
+        complex types, items can be
+        defined to specifiy which sub-fields
+        must be displayed and in which order.
+      </pre>
+
+      <code>
+        <diffBlock name="header" label="label.diffBlock.header">
+          <fields>
+            <field schema="dublincore" name="title" />
+            <field schema="dublincore" name="description" />
+          </fields>
+        </diffBlock>
+        <diffBlock name="files" label="label.diffBlock.files">
+          <fields>
+            <field schema="files" name="files">
+              <items>
+                <item>filename</item>
+                <item>file</item>
+              </items>
+            </field>
+          </fields>
+        </diffBlock>
+      </code>
+
+    </documentation>
+    <object class="org.nuxeo.ecm.diff.service.impl.DiffBlockDescriptor" />
+  </extension-point>
+
+</component>
