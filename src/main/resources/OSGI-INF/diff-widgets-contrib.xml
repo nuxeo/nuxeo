@@ -98,7 +98,6 @@
       </categories>
       <properties mode="any">
         <property name="display">inline</property>
-        <property name="hideSubLabels">true</property>
         <property name="displayAllItems">false</property>
         <property name="displayItemIndexes">true</property>
         <property name="template">
