@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * TODO: refactor as a service + use xpath for fetching doc property values.
  * Helper to get complex property names and values, and list property values.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public final class ComplexPropertyHelper {
@@ -91,7 +91,15 @@ public final class ComplexPropertyHelper {
                     field.getName().getLocalName()));
         }
 
-        return ((ListType) fieldType).getField();
+        Field listFieldItem = ((ListType) fieldType).getField();
+        if (listFieldItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Field [%s] is a list type but has no field defining the elements stored by this list.",
+                            field.getName().getLocalName()));
+        }
+
+        return listFieldItem;
     }
 
     public static String getFieldType(Field field) throws ClientException {

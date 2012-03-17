@@ -743,12 +743,14 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             for (String complexFieldItemName : complexFieldItemNames) {
                 Field complexFieldItem = ComplexPropertyHelper.getComplexFieldItem(
                         field, complexFieldItemName);
-                subWidgetDefs[subWidgetIndex] = getWidgetDefinition(
-                        getSubPropertyFullName(propertyName,
-                                complexFieldItemName),
-                        ComplexPropertyHelper.getFieldType(complexFieldItem),
-                        complexFieldItem, null);
-                subWidgetIndex++;
+                if (complexFieldItem != null) {
+                    subWidgetDefs[subWidgetIndex] = getWidgetDefinition(
+                            getSubPropertyFullName(propertyName,
+                                    complexFieldItemName),
+                            ComplexPropertyHelper.getFieldType(complexFieldItem),
+                            complexFieldItem, null);
+                    subWidgetIndex++;
+                }
             }
         }
         return subWidgetDefs;
