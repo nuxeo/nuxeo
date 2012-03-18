@@ -125,7 +125,7 @@ public class diff_match_patch {
      * Find the differences between two texts. Run a faster, slightly less
      * optimal diff. This method allows the 'checklines' of diff_main() to be
      * optional. Most of the time checklines is wanted, so default to true.
-     * 
+     *
      * @param text1 Old string to be diffed.
      * @param text2 New string to be diffed.
      * @return Linked List of Diff objects.
@@ -136,7 +136,7 @@ public class diff_match_patch {
 
     /**
      * Find the differences between two texts.
-     * 
+     *
      * @param text1 Old string to be diffed.
      * @param text2 New string to be diffed.
      * @param checklines Speedup flag. If false, then don't run a line-level
@@ -160,7 +160,7 @@ public class diff_match_patch {
     /**
      * Find the differences between two texts. Simplifies the problem by
      * stripping any common prefix or suffix off the texts before diffing.
-     * 
+     *
      * @param text1 Old string to be diffed.
      * @param text2 New string to be diffed.
      * @param checklines Speedup flag. If false, then don't run a line-level
@@ -217,7 +217,7 @@ public class diff_match_patch {
     /**
      * Find the differences between two texts. Assumes that the texts do not
      * have any common prefix or suffix.
-     * 
+     *
      * @param text1 Old string to be diffed.
      * @param text2 New string to be diffed.
      * @param checklines Speedup flag. If false, then don't run a line-level
@@ -299,7 +299,7 @@ public class diff_match_patch {
     /**
      * Do a quick line-level diff on both strings, then rediff the parts for
      * greater accuracy. This speedup can produce non-minimal diffs.
-     * 
+     *
      * @param text1 Old string to be diffed.
      * @param text2 New string to be diffed.
      * @param deadline Time when the diff should be complete by.
@@ -370,7 +370,7 @@ public class diff_match_patch {
      * Find the 'middle snake' of a diff, split the problem in two and return
      * the recursively constructed diff. See Myers 1986 paper: An O(ND)
      * Difference Algorithm and Its Variations.
-     * 
+     *
      * @param text1 Old string to be diffed.
      * @param text2 New string to be diffed.
      * @param deadline Time at which to bail if not yet complete.
@@ -499,7 +499,7 @@ public class diff_match_patch {
     /**
      * Given the location of the 'middle snake', split the diff in two parts and
      * recurse.
-     * 
+     *
      * @param text1 Old string to be diffed.
      * @param text2 New string to be diffed.
      * @param x Index of split point in text1.
@@ -525,7 +525,7 @@ public class diff_match_patch {
     /**
      * Split two texts into a list of strings. Reduce the texts to a string of
      * hashes where each Unicode character represents one line.
-     * 
+     *
      * @param text1 First string.
      * @param text2 Second string.
      * @return An object containing the encoded text1, the encoded text2 and the
@@ -550,7 +550,7 @@ public class diff_match_patch {
     /**
      * Split a text into a list of strings. Reduce the texts to a string of
      * hashes where each Unicode character represents one line.
-     * 
+     *
      * @param text String to encode.
      * @param lineArray List of unique strings.
      * @param lineHash Map of strings to indices.
@@ -587,7 +587,7 @@ public class diff_match_patch {
     /**
      * Rehydrate the text in a diff from a string of line hashes to real lines
      * of text.
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      * @param lineArray List of unique strings.
      */
@@ -605,7 +605,7 @@ public class diff_match_patch {
 
     /**
      * Determine the common prefix of two strings
-     * 
+     *
      * @param text1 First string.
      * @param text2 Second string.
      * @return The number of characters common to the start of each string.
@@ -623,7 +623,7 @@ public class diff_match_patch {
 
     /**
      * Determine the common suffix of two strings
-     * 
+     *
      * @param text1 First string.
      * @param text2 Second string.
      * @return The number of characters common to the end of each string.
@@ -643,7 +643,7 @@ public class diff_match_patch {
 
     /**
      * Determine if the suffix of one string is the prefix of another.
-     * 
+     *
      * @param text1 First string.
      * @param text2 Second string.
      * @return The number of characters common to the end of the first string
@@ -693,7 +693,7 @@ public class diff_match_patch {
     /**
      * Do the two texts share a substring which is at least half the length of
      * the longer text? This speedup can produce non-minimal diffs.
-     * 
+     *
      * @param text1 First string.
      * @param text2 Second string.
      * @return Five element String array, containing the prefix of text1, the
@@ -742,7 +742,7 @@ public class diff_match_patch {
     /**
      * Does a substring of shorttext exist within longtext such that the
      * substring is at least half the length of longtext?
-     * 
+     *
      * @param longtext Longer string.
      * @param shorttext Shorter string.
      * @param i Start index of quarter length substring within longtext.
@@ -782,7 +782,7 @@ public class diff_match_patch {
     /**
      * Reduce the number of edits by eliminating semantically trivial
      * equalities.
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      */
     public void diff_cleanupSemantic(LinkedList<Diff> diffs) {
@@ -945,7 +945,7 @@ public class diff_match_patch {
      * Look for single edits surrounded on both sides by equalities which can be
      * shifted sideways to align the edit to a word boundary. e.g: The c<ins>at
      * c</ins>ame. -> The <ins>cat </ins>came.
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      */
     public void diff_cleanupSemanticLossless(LinkedList<Diff> diffs) {
@@ -1036,7 +1036,7 @@ public class diff_match_patch {
      * Given two strings, compute a score representing whether the internal
      * boundary falls on logical boundaries. Scores range from 6 (best) to 0
      * (worst).
-     * 
+     *
      * @param one First string.
      * @param two Second string.
      * @return The score.
@@ -1094,7 +1094,7 @@ public class diff_match_patch {
     /**
      * Reduce the number of edits by eliminating operationally trivial
      * equalities.
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      */
     public void diff_cleanupEfficiency(LinkedList<Diff> diffs) {
@@ -1210,7 +1210,7 @@ public class diff_match_patch {
     /**
      * Reorder and merge like edit sections. Merge equalities. Any edit section
      * can move as long as it doesn't cross an equality.
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      */
     public void diff_cleanupMerge(LinkedList<Diff> diffs) {
@@ -1367,7 +1367,7 @@ public class diff_match_patch {
     /**
      * loc is a location in text1, compute and return the equivalent location in
      * text2. e.g. "The cat" vs "The big cat", 1->1, 5->8
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      * @param loc Location within text1.
      * @return Location within text2.
@@ -1405,13 +1405,14 @@ public class diff_match_patch {
 
     /**
      * Convert a Diff list into a pretty HTML report.
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      * @return HTML representation.
      */
     public String diff_prettyHtml(LinkedList<Diff> diffs) {
         StringBuilder html = new StringBuilder();
         for (Diff aDiff : diffs) {
+
             String text = aDiff.text.replace("&", "&amp;").replace("<", "&lt;").replace(
                     ">", "&gt;").replace("\n", "&para;<br>");
             switch (aDiff.operation) {
@@ -1433,7 +1434,7 @@ public class diff_match_patch {
 
     /**
      * Compute and return the source text (all equalities and deletions).
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      * @return Source text.
      */
@@ -1449,7 +1450,7 @@ public class diff_match_patch {
 
     /**
      * Compute and return the destination text (all equalities and insertions).
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      * @return Destination text.
      */
@@ -1466,7 +1467,7 @@ public class diff_match_patch {
     /**
      * Compute the Levenshtein distance; the number of inserted, deleted or
      * substituted characters.
-     * 
+     *
      * @param diffs LinkedList of Diff objects.
      * @return Number of changes.
      */
@@ -1499,7 +1500,7 @@ public class diff_match_patch {
      * required to transform text1 into text2. E.g. =3\t-2\t+ing -> Keep 3
      * chars, delete 2 chars, insert 'ing'. Operations are tab-separated.
      * Inserted text is escaped using %xx notation.
-     * 
+     *
      * @param diffs Array of Diff objects.
      * @return Delta text.
      */
@@ -1537,7 +1538,7 @@ public class diff_match_patch {
     /**
      * Given the original text1, and an encoded string which describes the
      * operations required to transform text1 into text2, compute the full diff.
-     * 
+     *
      * @param text1 Source string for the diff.
      * @param delta Delta text.
      * @return Array of Diff objects or null if invalid.
@@ -1621,7 +1622,7 @@ public class diff_match_patch {
     /**
      * Locate the best instance of 'pattern' in 'text' near 'loc'. Returns -1 if
      * no match found.
-     * 
+     *
      * @param text The text to search.
      * @param pattern The pattern to search for.
      * @param loc The location to search around.
@@ -1654,7 +1655,7 @@ public class diff_match_patch {
     /**
      * Locate the best instance of 'pattern' in 'text' near 'loc' using the
      * Bitap algorithm. Returns -1 if no match found.
-     * 
+     *
      * @param text The text to search.
      * @param pattern The pattern to search for.
      * @param loc The location to search around.
@@ -1764,7 +1765,7 @@ public class diff_match_patch {
 
     /**
      * Compute and return the score for a match with e errors and x location.
-     * 
+     *
      * @param e Number of errors in match.
      * @param x Location of match.
      * @param loc Expected location of match.
@@ -1783,7 +1784,7 @@ public class diff_match_patch {
 
     /**
      * Initialise the alphabet for the Bitap algorithm.
-     * 
+     *
      * @param pattern The text to encode.
      * @return Hash of character locations.
      */
@@ -1806,7 +1807,7 @@ public class diff_match_patch {
     /**
      * Increase the context until it is unique, but don't let the pattern expand
      * beyond Match_MaxBits.
-     * 
+     *
      * @param patch The patch to grow.
      * @param text Source text.
      */
@@ -1857,7 +1858,7 @@ public class diff_match_patch {
     /**
      * Compute a list of patches to turn text1 into text2. A set of diffs will
      * be computed.
-     * 
+     *
      * @param text1 Old text.
      * @param text2 New text.
      * @return LinkedList of Patch objects.
@@ -1878,7 +1879,7 @@ public class diff_match_patch {
     /**
      * Compute a list of patches to turn text1 into text2. text1 will be derived
      * from the provided diffs.
-     * 
+     *
      * @param diffs Array of Diff objects for text1 to text2.
      * @return LinkedList of Patch objects.
      */
@@ -1894,7 +1895,7 @@ public class diff_match_patch {
     /**
      * Compute a list of patches to turn text1 into text2. text2 is ignored,
      * diffs are the delta between text1 and text2.
-     * 
+     *
      * @param text1 Old text
      * @param text2 Ignored.
      * @param diffs Array of Diff objects for text1 to text2.
@@ -1909,7 +1910,7 @@ public class diff_match_patch {
     /**
      * Compute a list of patches to turn text1 into text2. text2 is not
      * provided, diffs are the delta between text1 and text2.
-     * 
+     *
      * @param text1 Old text.
      * @param diffs Array of Diff objects for text1 to text2.
      * @return LinkedList of Patch objects.
@@ -2001,7 +2002,7 @@ public class diff_match_patch {
 
     /**
      * Given an array of patches, return another array that is identical.
-     * 
+     *
      * @param patches Array of Patch objects.
      * @return Array of Patch objects.
      */
@@ -2025,7 +2026,7 @@ public class diff_match_patch {
     /**
      * Merge a set of patches onto the text. Return a patched text, as well as
      * an array of true/false values indicating which patches were applied.
-     * 
+     *
      * @param patches Array of Patch objects
      * @param text Old text.
      * @return Two element Object array, containing the new text and an array of
@@ -2151,7 +2152,7 @@ public class diff_match_patch {
     /**
      * Add some padding on text start and end so that edges can match something.
      * Intended to be called only from within patch_apply.
-     * 
+     *
      * @param patches Array of Patch objects.
      * @return The padding string added to each side.
      */
@@ -2214,7 +2215,7 @@ public class diff_match_patch {
      * Look through the patches and break up any which are longer than the
      * maximum limit of the match algorithm. Intended to be called only from
      * within patch_apply.
-     * 
+     *
      * @param patches LinkedList of Patch objects.
      */
     public void patch_splitMax(LinkedList<Patch> patches) {
@@ -2321,7 +2322,7 @@ public class diff_match_patch {
 
     /**
      * Take a list of patches and return a textual representation.
-     * 
+     *
      * @param patches List of Patch objects.
      * @return Text representation of patches.
      */
@@ -2336,7 +2337,7 @@ public class diff_match_patch {
     /**
      * Parse a textual representation of patches and return a List of Patch
      * objects.
-     * 
+     *
      * @param textline Text representation of patches.
      * @return List of Patch objects.
      * @throws IllegalArgumentException If invalid input.
@@ -2445,7 +2446,7 @@ public class diff_match_patch {
 
         /**
          * Constructor. Initializes the diff with the provided values.
-         * 
+         *
          * @param operation One of INSERT, DELETE or EQUAL.
          * @param text The text being applied.
          */
@@ -2457,7 +2458,7 @@ public class diff_match_patch {
 
         /**
          * Display a human-readable version of this Diff.
-         * 
+         *
          * @return text version.
          */
         public String toString() {
@@ -2468,7 +2469,7 @@ public class diff_match_patch {
         /**
          * Create a numeric hash value for a Diff. This function is not used by
          * DMP.
-         * 
+         *
          * @return Hash value.
          */
         @Override
@@ -2481,7 +2482,7 @@ public class diff_match_patch {
 
         /**
          * Is this Diff equivalent to another Diff?
-         * 
+         *
          * @param obj Another Diff to compare against.
          * @return true or false.
          */
@@ -2535,7 +2536,7 @@ public class diff_match_patch {
         /**
          * Emmulate GNU diff's format. Header: @@ -382,8 +481,9 @@ Indicies are
          * printed as 1-based, not 0-based.
-         * 
+         *
          * @return The GNU diff string.
          */
         public String toString() {
@@ -2590,9 +2591,9 @@ public class diff_match_patch {
      * case-sensitive. Thus "%3f" would not be unescaped. But this is ok because
      * it is only called with the output of URLEncoder.encode which returns
      * uppercase hex.
-     * 
+     *
      * Example: "%3F" -> "?", "%24" -> "$", etc.
-     * 
+     *
      * @param str The string to escape.
      * @return The escaped string.
      */

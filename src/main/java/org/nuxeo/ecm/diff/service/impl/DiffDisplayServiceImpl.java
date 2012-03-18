@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.QName;
+import org.nuxeo.ecm.diff.differs.diff_match_patch;
+import org.nuxeo.ecm.diff.differs.diff_match_patch.Diff;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
@@ -45,6 +48,7 @@ import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffDisplayBlockImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
+import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.diff.web.ComplexPropertyHelper;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -357,6 +361,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             (Serializable) rightDoc.getProperty(schemaName,
                                     fieldName), fieldDiff, isDisplayAllItems,
                             isDisplayItemIndexes);
+
+                    String detailedDiffDisplay = null;
+                    if (PropertyType.isSimpleType(fieldDiff.getPropertyType())) {
+                        SimplePropertyDiff simpleFieldDiff = ((SimplePropertyDiff) fieldDiff);
+                        String simpleLeftValue = simpleFieldDiff.getLeftValue();
+                        String simpleRightValue = simpleFieldDiff.getRightValue();
+                        if (simpleLeftValue != null && simpleRightValue != null) {
+                            detailedDiffDisplay = getDetailedDiffDisplay(
+                                    simpleLeftValue, simpleRightValue);
+                        }
+                    }
                     // Left
                     Map<String, Serializable> leftSchemaMap = leftValue.get(schemaName);
                     if (leftSchemaMap == null) {
@@ -378,7 +393,15 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     putFilenameDiffDisplay(schemaName, fieldName,
                             rightSchemaMap, rightFieldDiffDisplay);
 
-                    // TODO: manage detailedDiff if needed
+                    // TODO: manage better detailedDiff if needed
+                    // Detailed diff
+                    Map<String, Serializable> detailedDiffSchemaMap = detailedDiffValue.get(schemaName);
+                    if (detailedDiffSchemaMap == null) {
+                        detailedDiffSchemaMap = new HashMap<String, Serializable>();
+                        detailedDiffValue.put(schemaName, detailedDiffSchemaMap);
+                    }
+                    detailedDiffSchemaMap.put(fieldName, detailedDiffDisplay);
+
                 }
             }
         }
@@ -597,6 +620,15 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             }
             return (Serializable) listFieldDiffDisplay;
         }
+    }
+
+    protected final String getDetailedDiffDisplay(String leftValue,
+            String rightValue) {
+
+        diff_match_patch dmp = new diff_match_patch();
+
+        LinkedList<Diff> diffs = dmp.diff_main(leftValue, rightValue);
+        return dmp.diff_prettyHtml(diffs);
     }
 
     protected final WidgetDefinition getWidgetDefinition(String propertyName,

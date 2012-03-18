@@ -16,17 +16,30 @@
     .italic {font-style: italic;}
     */
     
-    table.diffHeader {width: 100%; margin-bottom: 10px;}
-    .diffHeader a.docLink, .diffHeader a.docLink:link, .diffHeader a.docLink:hover {color: #000000;}
-    .docDiffResult .dataInput {width: 100%;}
-    .docDiffResult .labelColumn {width: 16%; text-align: left;}
-    .docDiffResult .fieldColumn {width: 42%;}
-    .docDiffResult .dataInput td {padding: 0.4em 0.3em;}
-    .docDiffResult .dataInput td.labelColumn {padding-right: 20px;}
+    #diffHeader {margin-bottom: 0.5em; padding: 0 0.5em 0.5em 0.5em;}
+    #diffHeader .dataInput {margin-top: 0;}
+    #diffHeader h2 {padding: 0;}
+    #diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover {color: #000000;}
+    
+    .docDiffResult .foldableBox .boxBody {padding: 0.5em;}
+    .docDiffResult .dataInput, .detailedDiffPanel .dataInput {width: 100%;}
+    
+    .docDiffResult .dataInput td, .detailedDiffPanel .dataInput td {padding: 0.4em 0.3em;}
+    .docDiffResult .dataInput td.labelColumn, .detailedDiffPanel .dataInput td.labelColumn {width: 18%; padding-right: 20px; text-align: left;}
+    .docDiffResult .dataInput td.fieldColumn {width: 36%;}
+    .docDiffResult .dataInput td.detailedDiffColumn {width: 10%;}
+    .detailedDiffPanel .dataInput td.fieldColumn {width: 82%;}
+    
+        
     /*.docDiffResult .dataInput .diffDisplayTable {width: 100%;}*/
     .docDiffResult .dataInput .diffDisplayTable th, .docDiffResult .dataInput .diffDisplayTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
     .docDiffResult .dataInput .diffDisplayTable th {background-color:  #EEEFF0; text-align: center; font-weight: bold;}
     .docDiffResult .note_content_block {border:none; margin: 0; padding: 0;}
+    
+    /*.rich-mp-content-table {min-width: 400px;}*/
+    
+    .detailedDiffPanel .dr-mpnl-pnl-b {font-size: inherit;}
+    .detailedDiffPanel del {text-decoration: line-through;}
     
   </style>
   
@@ -42,25 +55,30 @@
 
     <h:form id="document_diff">
   
-      <table class="diffHeader">
-        <tr>
-          <td class="labelColumn">
-            <h2>
-              <h:outputText value="#{messages['document.diff.title']}" />
-            </h2>
-          </td>
-          <td class="fieldColumn">
-            <ui:include src="/incl/diff/doc_title_link.xhtml">
-              <ui:param name="doc" value="#{leftDoc}" />
-            </ui:include>
-          </td>
-          <td class="fieldColumn">
-            <ui:include src="/incl/diff/doc_title_link.xhtml">
-              <ui:param name="doc" value="#{rightDoc}" />
-            </ui:include>
-          </td>
-        </tr>
-      </table>
+      <div id="diffHeader">
+        <table class="dataInput">
+          <tr>
+            <td class="labelColumn">
+              <h2>
+                <h:outputText value="#{messages['document.diff.title']}" />
+              </h2>
+            </td>
+            <td class="fieldColumn">
+              <ui:include src="/incl/diff/doc_title_link.xhtml">
+                <ui:param name="doc" value="#{leftDoc}" />
+              </ui:include>
+            </td>
+            <td class="fieldColumn">
+              <ui:include src="/incl/diff/doc_title_link.xhtml">
+                <ui:param name="doc" value="#{rightDoc}" />
+              </ui:include>
+            </td>
+            <td class="detailedDiffColumn">
+              <!--<h2>Détail</h2>-->
+            </td>
+          </tr>
+        </table>
+      </div>
     
       <c:if test="#{empty defaultDiffDisplayBlocks}">
         <h3>

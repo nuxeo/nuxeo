@@ -2,9 +2,11 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="#{layout.id}">
 
   <table class="dataInput">
@@ -54,6 +56,23 @@
               <nxu:set var="rightValue" value="#{value.rightValue}" cache="true">
                 <nxl:widget widget="#{widget}" value="#{rightValue}" />
               </nxu:set>
+            </td>
+            <td class="detailedDiffColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
+              <c:if test="#{widget.type == 'text' or widget.type == 'richtext_with_mimetype'}">
+                <nxu:set var="fieldName" value="#{fn:replace(widget.fieldDefinitions[0].fieldName, ':', '_')}" cache="true">
+                  <nxu:set var="indexOfUnderscore" value="#{fn:indexOf(fieldName, '_')}" cache="true">
+                    <nxu:set var="detailedDiffValue" value="#{value.detailedDiffValue}" cache="true">
+                      <ui:include src="/incl/diff/doc_diff_detail.xhtml" >
+                        <ui:param name="modalPanelIdPrefix" value="detailedDiff"/>
+                        <ui:param name="fieldName" value="#{fieldName}"/>
+                        <ui:param name="detailedDiffValue"
+                          value="#{detailedDiffValue[fn:substring(fieldName, 0, indexOfUnderscore)][fn:substring(fieldName, indexOfUnderscore + 1, fieldName.length())]}"/>
+                      </ui:include>                      
+                    </nxu:set>
+                  </nxu:set>
+                  <a href="javascript:Richfaces.showModalPanel('detailedDiff_#{fieldName}');">Detail</a>
+                </nxu:set>
+              </c:if>
             </td>
           </nxl:layoutRowWidget>
         </tr>
