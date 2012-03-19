@@ -69,9 +69,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-video</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-video</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-platform-video</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-video.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-video.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-video</url>
   </scm>
 
 </project>
