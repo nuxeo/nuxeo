@@ -98,6 +98,7 @@ public class TestClassLoaderInstrumentation {
 
 
     @Test
+    @Ignore
     public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException {
         URL firstURL = jarBuilder.buildFirst();
         URL otherURL = jarBuilder.buildOther();
