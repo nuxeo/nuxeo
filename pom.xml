@@ -414,11 +414,9 @@
   </dependencyManagement>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution
-    </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-distribution.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-distribution.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-distribution</url>
   </scm>
 
   <repositories>
