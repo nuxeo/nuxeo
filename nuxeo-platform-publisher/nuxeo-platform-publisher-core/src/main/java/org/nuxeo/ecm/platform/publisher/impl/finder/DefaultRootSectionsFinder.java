@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
  * <li>unrestricted fetch of Sections
  * <li>filtering according to user rights
  * </ul>
- * 
+ *
  * @author tiry
  */
 public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
@@ -63,10 +63,8 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
         // SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain'
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot'
         // )
-        String pathForQuery = path.replaceAll("'", "\\\\'");
         String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH "
-                + NXQLQueryBuilder.prepareStringLiteral(pathForQuery, true,
-                        true) + " and (";
+                + NXQLQueryBuilder.prepareStringLiteral(path, true, true) + " and (";
 
         int i = 0;
         for (String type : getSectionTypes()) {
