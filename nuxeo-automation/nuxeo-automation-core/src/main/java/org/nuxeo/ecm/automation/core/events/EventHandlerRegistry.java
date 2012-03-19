@@ -180,17 +180,16 @@ public class EventHandlerRegistry {
 
         EventContext ectx = event.getContext();
         OperationContext ctx = null;
-        if (ectx instanceof DocumentEventContext) {
-            ctx = new OperationContext(ectx.getCoreSession());
-            ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
-        } else { // not a document event .. the chain must begin with void
-            // operation - session is not available.
-            ctx = new OperationContext();
-        }
-        ctx.put("Event", event);
-        ctx.setCommit(saveSession); // avoid reentrant events
-
         for (EventHandler handler : handlers) {
+            if (ectx instanceof DocumentEventContext) {
+                ctx = new OperationContext(ectx.getCoreSession());
+                ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
+            } else { // not a document event .. the chain must begin with void
+                // operation - session is not available.
+                ctx = new OperationContext();
+            }
+            ctx.put("Event", event);
+            ctx.setCommit(saveSession); // avoid reentrant events
             try {
                 if (handler.isEnabled(ctx, ectx)) { // TODO this will save the
                     // session at each
