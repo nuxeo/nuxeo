@@ -46,6 +46,8 @@ import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
+import org.nuxeo.osgi.SystemBundle;
+import org.nuxeo.osgi.SystemBundleFile;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
@@ -216,8 +218,11 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
             throw e;
         }
         osgi = new OSGiAdapter(workingDir);
+        BundleFile bf = new SystemBundleFile(workingDir);
         bundleLoader = new StandaloneBundleLoader(osgi,
                 NXRuntimeTestCase.class.getClassLoader());
+        SystemBundle systemBundle = new SystemBundle(osgi, bf, bundleLoader.getSharedClassLoader().getLoader());
+        osgi.setSystemBundle(systemBundle);
         Thread.currentThread().setContextClassLoader(
                 bundleLoader.getSharedClassLoader().getLoader());
 
