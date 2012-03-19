@@ -35,10 +35,9 @@
   </modules>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-runtime</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-runtime
-    </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-runtime</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-runtime.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-runtime.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-runtime</url>
   </scm>
 
   <repositories>
