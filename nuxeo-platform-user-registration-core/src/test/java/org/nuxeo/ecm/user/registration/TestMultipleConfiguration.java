@@ -42,6 +42,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
         RegistrationRules rules = userRegistrationService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
         assertFalse(rules.allowUserCreation());
+
         rules = userRegistrationService.getRegistrationRules("test");
         assertTrue(rules.allowUserCreation());
     }

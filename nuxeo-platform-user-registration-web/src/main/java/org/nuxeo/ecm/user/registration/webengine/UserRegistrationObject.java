@@ -17,6 +17,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
@@ -38,7 +39,7 @@ public class UserRegistrationObject extends ModuleRoot {
     @GET
     @Path("validate/{requestId}")
     public Object validateTrialForm(@PathParam("requestId")
-    String requestId) {
+    String requestId) throws Exception {
         UserRegistrationService usr = Framework.getLocalService(UserRegistrationService.class);
         String redirectUrl = ctx.getServerURL() + "/" + BaseURL.getWebAppName();
         try {
@@ -66,8 +67,8 @@ public class UserRegistrationObject extends ModuleRoot {
 
         protected String documentUrl;
 
-        public DocumentUrlFinder(String docId) {
-            super(ctx.getCoreSession());
+        public DocumentUrlFinder(String docId) throws Exception {
+            super(Framework.getService(RepositoryManager.class).getDefaultRepository().getName());
             this.docId = docId;
         }
 

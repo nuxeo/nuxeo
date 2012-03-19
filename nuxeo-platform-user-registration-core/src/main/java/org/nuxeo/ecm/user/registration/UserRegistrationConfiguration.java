@@ -73,6 +73,12 @@ public class UserRegistrationConfiguration {
     @XNode("validationRelUrl")
     private String validationRelUrl;
 
+    @XNode("invitationLayout")
+    private String invitationLayout = "user_invitation_info";
+
+    @XNode("listingContentView")
+    private String listingLocalContentView = "local_user_requests_view";
+
     public String getRequestDocType() {
         return requestDocType;
     }
@@ -149,6 +155,22 @@ public class UserRegistrationConfiguration {
         this.remove = remove;
     }
 
+    public String getInvitationLayout() {
+        return invitationLayout;
+    }
+
+    public void setInvitationLayout(String invitationLayout) {
+        this.invitationLayout = invitationLayout;
+    }
+
+    public String getListingLocalContentView() {
+        return listingLocalContentView;
+    }
+
+    public void setListingLocalContentView(String listingLocalContentView) {
+        this.listingLocalContentView = listingLocalContentView;
+    }
+
     public void mergeWith(UserRegistrationConfiguration other) {
         if (!StringUtils.isEmpty(other.requestDocType)) {
             this.requestDocType = other.requestDocType;
@@ -200,6 +222,14 @@ public class UserRegistrationConfiguration {
 
         if (!StringUtils.isEmpty(other.validationRelUrl)) {
             this.validationRelUrl = other.validationRelUrl;
+        }
+        
+        if (!StringUtils.isEmpty(other.invitationLayout)) {
+            this.invitationLayout = other.invitationLayout;
+        }
+
+        if (!StringUtils.isEmpty(other.listingLocalContentView)) {
+            this.listingLocalContentView = other.listingLocalContentView;
         }
     }
 }

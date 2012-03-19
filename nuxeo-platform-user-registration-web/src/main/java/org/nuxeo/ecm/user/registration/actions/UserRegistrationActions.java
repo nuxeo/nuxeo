@@ -110,7 +110,15 @@ public class UserRegistrationActions implements Serializable {
 
     public String getValidationBaseUrl(String name) throws ClientException {
         return BaseURL.getBaseURL()
-                + userRegistrationService.getConfiguration().getValidationRelUrl();
+                + userRegistrationService.getConfiguration(name).getValidationRelUrl();
+    }
+
+    public String getInvitationLayout(String name) {
+        return userRegistrationService.getConfiguration(name).getInvitationLayout();
+    }
+
+    public String getListingLocalContentView(String name) {
+        return userRegistrationService.getConfiguration(name).getListingLocalContentView();
     }
 
     public String getValidationBaseUrl() throws ClientException {
@@ -256,13 +264,13 @@ public class UserRegistrationActions implements Serializable {
         return new HashMap<String, Serializable>();
     }
 
-    @Observer({EventNames.DOCUMENT_CHANGED})
+    @Observer({ EventNames.DOCUMENT_CHANGED })
     public void resetPojos() {
         userinfo = new UserRegistrationInfo();
         docinfo = new DocumentRegistrationInfo();
     }
 
-    @Observer({REQUESTS_DOCUMENT_LIST_CHANGED})
+    @Observer({ REQUESTS_DOCUMENT_LIST_CHANGED })
     public void refreshContentViewCache() {
         contentViewActions.refreshOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
         contentViewActions.resetPageProviderOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);

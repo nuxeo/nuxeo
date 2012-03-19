@@ -2,6 +2,7 @@
 
 Hello ${registration.userinfo.firstName} ${registration.userinfo.lastName}, <br />
 <br />
+You have been invited to access Nuxeo.
 <br />
 
 Link: <A href="${info['validationBaseURL']}${registration.id}"> access </A> .

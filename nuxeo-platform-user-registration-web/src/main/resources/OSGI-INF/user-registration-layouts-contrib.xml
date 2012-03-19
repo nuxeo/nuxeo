@@ -106,7 +106,7 @@
       </columns>
     </layout>
 
-    <layout name="user_registration_userinfo">
+    <layout name="user_invitation_info">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
@@ -123,14 +123,6 @@
         <row>
           <widget>user_request_lastName</widget>
         </row>
-      </rows>
-    </layout>
-
-    <layout name="user_registration_docinfo">
-      <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
-      </templates>
-      <rows>
         <row>
           <widget>doc_request_permission</widget>
         </row>
@@ -146,10 +138,10 @@
           <widget>request_config_allowUserCreation</widget>
         </row>
         <row>
-          <widget>request_config_allowDirectValidationForExistingUser</widget>
+          <widget>request_config_forceRight</widget>
         </row>
         <row>
-          <widget>request_config_forceRight</widget>
+          <widget>request_config_allowDirectValidationForExistingUser</widget>
         </row>
         <row>
           <widget>request_config_displayLocalRegistration</widget>

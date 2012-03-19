@@ -10,9 +10,7 @@
   <h:form enctype="multipart/form-data" id="workspace_requests_create">
 
     <ui:insert name="create_registration_layouts">
-      <nxl:layout name="user_registration_userinfo" mode="edit"
-              value="#{userRegistrationActions}" />
-      <nxl:layout name="user_registration_docinfo" mode="edit"
+      <nxl:layout name="#{userRegistrationActions.getInvitationLayout(configurationName)}" mode="edit"
               value="#{userRegistrationActions}" />
     </ui:insert>
 
