@@ -138,4 +138,11 @@ public interface BundleFile {
      */
     Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException;
 
+    /**
+     * Close underlying file resources
+     *      *
+     * @since 5.6
+     */
+    void close(OSGiAdapter osgi) throws IOException;
+
 }

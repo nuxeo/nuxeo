@@ -17,6 +17,11 @@
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+
 
     <dependency>
       <groupId>org.osgi</groupId>
@@ -40,6 +45,14 @@
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
+
 
 </project>

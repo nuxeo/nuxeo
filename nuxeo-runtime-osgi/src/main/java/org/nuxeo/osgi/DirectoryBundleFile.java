@@ -246,4 +246,9 @@ public class DirectoryBundleFile implements BundleFile {
         }
     }
 
+    @Override
+    public void close(OSGiAdapter osgi) throws IOException {
+        return;
+    }
+
 }

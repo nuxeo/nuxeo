@@ -286,6 +286,11 @@ public class BundleImpl implements Bundle {
     @Override
     public void uninstall() throws BundleException {
         osgi.uninstall(this);
+        try {
+            file.close(osgi);
+        } catch (IOException e) {
+            throw new BundleException("Cannot close underlying file resources " + symbolicName, e);
+        }
     }
 
     @Override

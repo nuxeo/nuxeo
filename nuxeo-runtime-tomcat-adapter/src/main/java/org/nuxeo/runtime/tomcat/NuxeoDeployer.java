@@ -28,6 +28,8 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.ContainerBase;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 
+import sun.misc.ClassLoaderUtil;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -108,6 +110,7 @@ public class NuxeoDeployer implements LifecycleListener {
                         null,
                         new Object[] { new String[] { homeDir.getAbsolutePath() } });
                 System.out.println("# Preprocessing done.");
+                ClassLoaderUtil.releaseLoader(cl);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to handle event", e);

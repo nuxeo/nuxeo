@@ -32,6 +32,7 @@ import org.jboss.deployment.DeploymentInfo;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleManifestReader;
+import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.Constants;
 
 /**
@@ -126,6 +127,11 @@ public class JBossBundleFile implements BundleFile {
     @Override
     public boolean isJar() {
         return !di.isDirectory && !di.isXML && !di.isScript;
+    }
+
+    @Override
+    public void close(OSGiAdapter osgi) throws IOException {
+        return;
     }
 
 }

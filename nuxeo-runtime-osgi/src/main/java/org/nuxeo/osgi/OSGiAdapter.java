@@ -31,6 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.osgi.services.PackageAdminImpl;
+import org.nuxeo.osgi.util.jar.JarFileCloser;
+import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
@@ -75,6 +77,8 @@ public class OSGiAdapter {
     protected Properties properties;
 
     protected SystemBundle systemBundle;
+
+    protected JarFileCloser jarFileCloser;
 
     public OSGiAdapter(File workingDir) {
         this(workingDir, new File(System.getProperty(
@@ -159,6 +163,7 @@ public class OSGiAdapter {
         bundleListeners = null;
         serviceListeners = null;
         properties = null;
+        jarFileCloser = null;
     }
 
     public long getBundleId(String symbolicName) {
@@ -224,6 +229,10 @@ public class OSGiAdapter {
     public void fireFrameworkEvent(FrameworkEvent event) {
         log.debug("Firing FrameworkEvent on " + frameworkListeners.size()
                 + " listeners");
+        if (event.getType() == FrameworkEvent.STARTED) {
+            jarFileCloser = new JarFileCloser(Framework.getResourceLoader(),
+                    systemBundle.loader);
+        }
         Object[] listeners = frameworkListeners.getListeners();
         for (Object listener : listeners) {
             log.debug("Start execution of " + listener.getClass() + " listener");
@@ -256,4 +265,11 @@ public class OSGiAdapter {
         return systemBundle;
     }
 
+    /**
+     * helper for closing jar files during bundle uninstall
+     * @since 5.6
+     */
+    public JarFileCloser getJarFileCloser() {
+        return jarFileCloser;
+    }
 }

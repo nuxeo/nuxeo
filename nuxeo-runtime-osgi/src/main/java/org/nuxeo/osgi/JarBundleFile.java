@@ -54,7 +54,7 @@ public class JarBundleFile implements BundleFile {
 
     private static final Log log = LogFactory.getLog(JarBundleFile.class);
 
-    protected final JarFile jarFile;
+    protected JarFile jarFile;
 
     protected String urlBase;
 
@@ -301,13 +301,6 @@ public class JarBundleFile implements BundleFile {
         return getLocation();
     }
 
-    @Override
-    protected void finalize() throws IOException {
-        if (jarFile != null) {
-            jarFile.close();
-        }
-    }
-
     protected final URL getEntryUrl(String name) throws MalformedURLException {
         return new URL(urlBase + name);
     }
@@ -332,6 +325,18 @@ public class JarBundleFile implements BundleFile {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    @Override
+    public void close(OSGiAdapter osgi) throws IOException {
+        if (jarFile == null) {
+            return;
+        }
+        try {
+            osgi.getJarFileCloser().close(jarFile);
+        } finally {
+            jarFile = null;
         }
     }
 
