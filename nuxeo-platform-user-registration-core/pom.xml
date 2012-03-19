@@ -88,9 +88,4 @@
     </repository>
   </repositories>
 
-  <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-user-registration</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-user-registration</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-platform-user-registration</url>
-  </scm>
 </project>

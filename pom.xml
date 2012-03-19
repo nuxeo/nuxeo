@@ -12,10 +12,6 @@
   <description>Nuxeo User Registration Parent POM</description>
   <packaging>pom</packaging>
 
-  <properties>
-    <user.registration.version>5.6-SNAPSHOT</user.registration.version>
-  </properties>
-
   <modules>
     <module>nuxeo-platform-user-registration-core</module>
     <module>nuxeo-platform-user-registration-web</module>
@@ -45,8 +41,8 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-user-registration</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-user-registration</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-platform-user-registration</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-user-registration.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-user-registration.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-user-registration</url>
   </scm>
 </project>
