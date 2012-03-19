@@ -59,6 +59,7 @@
       <resource>jquery.tools.focusfirst.js</resource>
       <resource>jquery.hotkeys.js</resource>
       <resource>sarissa-ie-workaround.js</resource>
+      <resource>static-styles.css</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -103,6 +104,10 @@
 
   <!-- resources -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+
+    <resource name="static-styles.css">
+      <path>css/static-styles.css</path>
+    </resource>
 
     <resource name="screen.css">
       <path>css/screen.css</path>
