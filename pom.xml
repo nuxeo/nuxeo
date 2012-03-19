@@ -45,9 +45,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-user-center</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-user-center</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-user-center</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-user-center.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-user-center.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-user-center</url>
   </scm>
 
 </project>
