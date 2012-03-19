@@ -159,7 +159,8 @@ public class Gadgets extends ModuleRoot {
 
         List<String> secureTokens = new ArrayList<String>();
         for (String gadgetSpecUrl : gadgetSpecUrls) {
-            secureTokens.add(SecureTokenBuilder.getSecureToken(principalName, principalName, gadgetSpecUrl));
+            secureTokens.add(SecureTokenBuilder.getSecureToken(principalName,
+                    principalName, gadgetSpecUrl, true)); // encode
         }
 
         return StringUtils.join(secureTokens, ",");

@@ -33,7 +33,7 @@ public class SecureTokenBuilder {
     private static final Log log = LogFactory.getLog(SecureTokenBuilder.class);
 
     public static String getSecureToken(String viewer, String owner,
-            String gadgetUrl) throws Exception {
+            String gadgetUrl, boolean encode) throws Exception {
         OpenSocialService svc = Framework.getService(OpenSocialService.class);
         String container = "default";
         String domain = "localhost";
@@ -43,7 +43,7 @@ public class SecureTokenBuilder {
                     + " choices but we don't know how to pick the correct configuration!");
         }
         return getSecureToken(viewer, owner, gadgetUrl,
-                svc.getSigningStateKeyBytes(), container, domain);
+                svc.getSigningStateKeyBytes(), container, domain, encode);
     }
 
     /**
@@ -57,14 +57,17 @@ public class SecureTokenBuilder {
      */
 
     public static String getSecureToken(String viewer, String owner,
-            String gadgetUrl, byte[] key, String container, String domain)
-            throws Exception {
+            String gadgetUrl, byte[] key, String container, String domain,
+            boolean encode) throws Exception {
         BlobCrypterSecurityToken st = new BlobCrypterSecurityToken(
                 new BasicBlobCrypter(key), container, domain);
         st.setViewerId(viewer);
         st.setOwnerId(owner);
         st.setAppUrl(gadgetUrl);
-
-        return Utf8UrlCoder.encode(st.encrypt());
+        String token = st.encrypt();
+        if (encode) {
+            token = Utf8UrlCoder.encode(token);
+        }
+        return token;
     }
 }

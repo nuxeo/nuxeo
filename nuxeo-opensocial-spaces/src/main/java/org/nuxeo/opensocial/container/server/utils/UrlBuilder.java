@@ -131,7 +131,7 @@ public class UrlBuilder {
     private static String getSecurityToken(OpenSocialData data, String url)
             throws Exception {
         return SecureTokenBuilder.getSecureToken(data.getViewer(),
-                data.getOwner(), url);
+                data.getOwner(), url, false);
     }
 
     /**
