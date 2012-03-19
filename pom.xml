@@ -45,11 +45,9 @@
   </dependencies>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-jsf</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-jsf
-    </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-jsf</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-jsf.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-jsf.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-jsf</url>
   </scm>
 
   <repositories>
