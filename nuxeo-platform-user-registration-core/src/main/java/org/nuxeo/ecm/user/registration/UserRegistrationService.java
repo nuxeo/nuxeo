@@ -19,6 +19,7 @@ package org.nuxeo.ecm.user.registration;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -130,7 +131,6 @@ public interface UserRegistrationService {
     UserRegistrationConfiguration getConfiguration(String name);
 
     /**
-     * 
      * @since 5.6
      */
     UserRegistrationConfiguration getConfiguration(DocumentModel requestDoc);
@@ -142,8 +142,8 @@ public interface UserRegistrationService {
      * @param session
      * @return
      */
-    DocumentModel getRegistrationRulesDocument(CoreSession session)
-            throws ClientException;
+    DocumentModel getRegistrationRulesDocument(CoreSession session,
+            String configurationName) throws ClientException;
 
     /**
      * Stores a resgitration request like submitRegistrationRequest with
@@ -165,4 +165,9 @@ public interface UserRegistrationService {
      */
     RegistrationRules getRegistrationRules(String configurationName)
             throws ClientException;
+
+    /**
+     * List all registered onfiguration name
+     */
+    Set<String> getConfigurationsName();
 }

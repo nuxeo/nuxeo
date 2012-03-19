@@ -62,8 +62,6 @@ public class UserRegistrationActions implements Serializable {
 
     protected DocumentRegistrationInfo docinfo = new DocumentRegistrationInfo();
 
-    protected DocumentModel currentConfiguration;
-
     public static final String REQUEST_DOCUMENT_LIST = "CURRENT_USER_REQUESTS";
 
     public static final String REQUESTS_DOCUMENT_LIST_CHANGED = "requestDocumentsChanged";
@@ -151,31 +149,6 @@ public class UserRegistrationActions implements Serializable {
             canDelete &= isDocumentDeletable(doc);
         }
         return canDelete;
-    }
-
-    public DocumentModel getConfigurationDocument() throws ClientException {
-        if (currentConfiguration == null) {
-            currentConfiguration = userRegistrationService.getRegistrationRulesDocument(documentManager);
-        }
-        return currentConfiguration;
-    }
-
-    public void saveConfiguration() {
-        try {
-            documentManager.saveDocument(currentConfiguration);
-            currentConfiguration = null;
-            facesMessages.add(
-                    INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.save.configuration.registration"));
-        } catch (ClientException e) {
-            log.warn("Unable to save configuration document: " + e.getMessage());
-            log.info(e);
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.unable.save.configuration.registration"));
-        }
     }
 
     protected boolean isDocumentDeletable(DocumentModel doc) {
@@ -283,14 +256,13 @@ public class UserRegistrationActions implements Serializable {
         return new HashMap<String, Serializable>();
     }
 
-    @Observer({ EventNames.DOCUMENT_CHANGED })
+    @Observer({EventNames.DOCUMENT_CHANGED})
     public void resetPojos() {
         userinfo = new UserRegistrationInfo();
         docinfo = new DocumentRegistrationInfo();
-        currentConfiguration = null;
     }
 
-    @Observer({ REQUESTS_DOCUMENT_LIST_CHANGED })
+    @Observer({REQUESTS_DOCUMENT_LIST_CHANGED})
     public void refreshContentViewCache() {
         contentViewActions.refreshOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
         contentViewActions.resetPageProviderOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);

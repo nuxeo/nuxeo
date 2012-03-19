@@ -23,7 +23,7 @@
     </action>
 
     <action id="UserRegistrationRequestsCreate"
-            link="/incl/userregistration/requests_create.xhtml"
+            link="/incl/userregistration/default_requests_create.xhtml"
             order="220" label="tab.userregistration.requests.create">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>only_for_manager</filter-id>

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -642,13 +643,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModel getRegistrationRulesDocument(CoreSession session)
-            throws ClientException {
-        return null; // To change body of implemented methods use File |
-                     // Settings | File Templates.
-    }
-
-    @Override
     public UserRegistrationConfiguration getConfiguration(String name) {
         if (!configurations.containsKey(name)) {
             throw new ClientRuntimeException(
@@ -724,5 +718,10 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 userManager.deleteUser(userName);
             }
         }
+    }
+
+    @Override
+    public Set<String> getConfigurationsName() {
+        return configurations.keySet();
     }
 }

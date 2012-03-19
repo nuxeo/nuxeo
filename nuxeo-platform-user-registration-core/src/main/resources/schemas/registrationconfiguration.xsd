@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://nuxeo.org/schemas/registration"
-    >
+           targetNamespace="http://nuxeo.org/schemas/registration">
 
   <xs:element name="name" type="xs:string"/>
   <xs:element name="allowUserCreation" type="xs:boolean" default="true"/>
