@@ -209,9 +209,8 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
         // SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain'
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot'
         // )
-        String pathForQuery = path.replaceAll("'", "\\\\'");
-        String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH '"
-                + NXQLQueryBuilder.prepareStringLiteral(pathForQuery, true, true) + "' and (";
+        String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH "
+                + NXQLQueryBuilder.prepareStringLiteral(path, true, true) + " and (";
 
         int i = 0;
         for (String type : sectionTypes) {
