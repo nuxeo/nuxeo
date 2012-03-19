@@ -284,7 +284,7 @@ BEGIN
   FOR i IN ids.FIRST .. ids.LAST LOOP
     id := ids(i);
     SELECT ancestors INTO a FROM ancestors WHERE hierarchy_id = id;
-    FOR j IN a.FIRST .. a.LAST LOOP
+    FOR j IN 1 .. a.count LOOP
       PIPE ROW(a(j));
     END LOOP;
   END LOOP;
