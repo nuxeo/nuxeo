@@ -85,11 +85,9 @@
   </dependencies>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-services</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-services
-    </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-services</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-services.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-services.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-services</url>
   </scm>
 
   <repositories>
