@@ -39,11 +39,9 @@
   </modules>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-core</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-core
-    </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-core</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-core.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-core.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-core</url>
   </scm>
 
   <repositories>
