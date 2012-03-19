@@ -48,9 +48,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-login</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-login</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-platform-login</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-login.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-login.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-login</url>
   </scm>
 
 </project>
