@@ -3576,4 +3576,40 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 + "/node5/node6/node7/node8/node9", nodes.get(1).getPath());
     }
 
+    public void testPathOptimizationsActivation() throws Exception {
+        repository.close();
+        // open a repository without path optimization
+        RepositoryDescriptor descriptor = newDescriptor(-1, false);
+        descriptor.pathOptimizationsEnabled = false;
+        repository = new RepositoryImpl(descriptor);
+        Session session = repository.getConnection();
+        PartialList<Serializable> res;
+        Node root = session.getRootNode();
+        List<Serializable> ids = new ArrayList<Serializable>();
+        Node node = session.addChildNode(root, "r1", null, "TestDoc", false);
+        for (int i = 0; i < 4; i++) {
+            node = session.addChildNode(node, "node" + i, null, "TestDoc",
+                    false);
+        }
+        ids.add(node.getId()); // keep the latest
+        session.save();
+        List<Node> nodes = session.getNodesByIds(ids);
+        assertEquals(1, nodes.size());
+        String sql = "SELECT * FROM TestDoc WHERE ecm:path STARTSWITH '/r1'";
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(4, res.list.size());
+
+        // reopen repository with path optimization to populate the ancestors
+        // table
+        repository.close();
+        descriptor.pathOptimizationsEnabled = true;
+        repository = new RepositoryImpl(descriptor);
+        session = repository.getConnection();
+        // this query will use nx_ancestors to bulk load the path
+        nodes = session.getNodesByIds(ids);
+        assertEquals(1, nodes.size());
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(4, res.list.size());
+    }
+
 }
