@@ -58,9 +58,9 @@
   </build>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-webengine.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-webengine.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-webengine</url>
   </scm>
 
   <repositories>
