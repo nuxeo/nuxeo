@@ -17,5 +17,12 @@ errors that should not be there.
 Install
 -------
 
-Setup properties in a file called "build.properties" according to your needs
-and run "ant deploy" to deploy on a jboss with nuxeo installed.
+Put generated jar nuxeo-platform-error-web to your nxserver/bundles
+directory and start the server.
+
+Launch selenium tests
+---------------------
+
+Run:
+
+    $ mvn clean install -Pitest

@@ -1,0 +1,21 @@
+<project name="selenium-tests" xmlns:nx="urn:nuxeo-build"
+  xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="suites" value="suite" />
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss"
+    description="prepare all ressources for test">
+    <copy todir="${nuxeo.nxserver}/bundles/">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-error-web:${maven.project.version}:jar" />
+    </copy>
+  </target>
+
+</project>
