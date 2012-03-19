@@ -60,9 +60,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-error-web</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-error-web</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-platform-error-web</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-error-web.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-error-web.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-error-web</url>
   </scm>
 
 </project>
