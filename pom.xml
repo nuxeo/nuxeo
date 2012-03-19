@@ -98,9 +98,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-opensocial</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-opensocial</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-opensocial</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-opensocial.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-opensocial.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-opensocial</url>
   </scm>
 
 </project>
