@@ -11,7 +11,7 @@
   <artifactId>nuxeo-platform-imaging-parent</artifactId>
   <name>Nuxeo Platform Imaging parent</name>
   <packaging>pom</packaging>
-  <description>Nuxeo Platform Imaging provides picture managment
+  <description>Nuxeo Platform Imaging provides picture management
                to Nuxeo Web Platform and RCP. It offers minor picture transformation
                like rotation or resizing.</description>
 
@@ -28,24 +28,18 @@
     <developer>
       <name>Laurent Doguin</name>
       <email>ldoguin@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
+      <organization>Nuxeo SA</organization>
     </developer>
     <developer>
       <name>Bogdan Stefanescu</name>
       <email>bs@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
+      <organization>Nuxeo SA</organization>
     </developer>
     <developer>
       <name>Max Stepanov</name>
       <email>mstepanov@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
+      <organization>Nuxeo SA</organization>
     </developer>
   </developers>
-
-  <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-imaging</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-imaging</developerConnection>
-    <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_platform-imaging</url>
-  </scm>
 
 </project>

@@ -75,24 +75,18 @@
     <developer>
       <name>Thierry Delprat</name>
       <email>tdelprat@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
+      <organization>Nuxeo SA</organization>
     </developer>
     <developer>
       <name>Alexandre Russel</name>
       <email>arussel@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
+      <organization>Nuxeo SA</organization>
     </developer>
     <developer>
       <name>Thomas Roger</name>
       <email>troger@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
+      <organization>Nuxeo SA</organization>
     </developer>
   </developers>
-
-  <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-preview</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-preview</developerConnection>
-    <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_platform_preview</url>
-  </scm>
 
 </project>
