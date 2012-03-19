@@ -208,8 +208,8 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
     protected String buildQuery(String path) {
         // SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain'
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot' )
-        String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH '"
-                + NXQLQueryBuilder.prepareStringLiteral(path, true, true) + "' and (";
+        String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH "
+                + NXQLQueryBuilder.prepareStringLiteral(path, true, true) + " and (";
 
         int i = 0;
         for (String type : sectionTypes) {
