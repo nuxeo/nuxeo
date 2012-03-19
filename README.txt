@@ -12,9 +12,8 @@ Selenium tests also ensure that all standard widget types are working ok.
 Install
 =======
 
-Setup properties in a file called "build.properties" according to you needs
-and run "ant deploy" to deploy on a JBoss with nuxeo installed.
-
+Put generated jar nuxeo-platform-forms-layout-demo to your
+nxserver/bundles directory and start the server.
 
 Development
 ===========
@@ -29,3 +28,9 @@ To add a new widget type to the application, you need to:
   reference it in the MANIFEST
 - configure the widget type in OSGI-INF/layout-demo-contrib.xml
  
+Launch selenium tests
+---------------------
+
+Run:
+
+    $ mvn clean install -Pitest
