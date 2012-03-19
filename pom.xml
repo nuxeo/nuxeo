@@ -15,11 +15,9 @@
   <description>Nuxeo Addons parent POM</description>
 
   <scm>
-    <connection>scm:hg:https://hg.nuxeo.org/addons</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/addons
-    </developerConnection>
-    <url>https://hg.nuxeo.org/addons</url>
+    <connection>scm:git:git://github.com/nuxeo/addons.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/addons.git</developerConnection>
+    <url>https://github.com/nuxeo/addons</url>
   </scm>
 
   <properties>
