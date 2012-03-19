@@ -43,8 +43,8 @@
   </repositories>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-apidoc-server</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-apidoc-server</developerConnection>
-    <url>http://hg.nuxeo.org/addons/nuxeo-apidoc-server</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-apidoc-server.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-apidoc-server.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-apidoc-server</url>
   </scm>
 </project>
