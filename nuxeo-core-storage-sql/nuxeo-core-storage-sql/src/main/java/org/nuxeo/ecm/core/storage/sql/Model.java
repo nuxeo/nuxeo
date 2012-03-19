@@ -1164,7 +1164,9 @@ public class Model {
                 }
                 mixinSchemas.add(schema.getName());
                 String fragmentName = initTypeModel(schema);
-                addMixinFragment(mixin, fragmentName);
+                if (fragmentName != null) {
+                    addMixinFragment(mixin, fragmentName);
+                }
                 // collection fragments too
                 Set<String> cols = typeCollectionFragments.get(schema.getName());
                 if (cols != null) {

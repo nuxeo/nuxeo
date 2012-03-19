@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -236,6 +237,13 @@ public interface RowMapper {
             this.id = node.getId();
             this.primaryType = node.getPrimaryType();
             this.mixinTypes = node.getMixinTypes();
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(id=" + id + ",primaryType="
+                    + primaryType + ",mixinTypes="
+                    + Arrays.toString(mixinTypes) + ")";
         }
     }
 

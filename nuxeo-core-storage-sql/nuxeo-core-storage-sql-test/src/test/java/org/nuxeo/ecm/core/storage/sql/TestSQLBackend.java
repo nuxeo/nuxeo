@@ -2070,6 +2070,23 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(Arrays.asList("bar", "gee"), Arrays.asList(p2.getValue()));
     }
 
+    // copy of a facet that holds only a complex list
+    public void testMixinCopyComplexList() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.addMixinType("Templated");
+        Node t = session.addChildNode(node, "template", Long.valueOf(0), "template", true);
+        t.setSimpleProperty("templateId", "123");
+        session.save();
+
+        // copy the doc
+        Node copy = session.copy(node, root, "foo2");
+        Node tcopy = session.getChildNode(copy, "template", true);
+        SimpleProperty p = tcopy.getSimpleProperty("templateId");
+        assertEquals("123", p.getValue());
+    }
+
     public void testMixinCopyDeep() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
