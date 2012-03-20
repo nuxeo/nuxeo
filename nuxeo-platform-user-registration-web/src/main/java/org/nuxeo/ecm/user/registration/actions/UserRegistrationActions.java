@@ -261,7 +261,15 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected Map<String, Serializable> getAdditionalsParameters() {
-        return new HashMap<String, Serializable>();
+        Map<String, Serializable> additionalsInfo = new HashMap<String, Serializable>();
+        try {
+            additionalsInfo.put("documentTitle",
+                    navigationContext.getCurrentDocument().getTitle());
+        } catch (ClientException e) {
+            // log it silently as it will break anything
+            log.debug(e, e);
+        }
+        return additionalsInfo;
     }
 
     @Observer({ EventNames.DOCUMENT_CHANGED })

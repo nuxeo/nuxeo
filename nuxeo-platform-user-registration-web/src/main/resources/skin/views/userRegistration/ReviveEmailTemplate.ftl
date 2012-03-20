@@ -2,20 +2,15 @@
 <body>
 Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}, <br />
 <br />
+
+<p>It appears that you did not validate your invitation to ${registrationDoc.docinfo.documentTitle}<p>
+<p>Click on the following link to validate your invitation:</p>
+<A href="${validationBaseURL}${registrationDoc.id}"> Validate my invitation </A> .
 <br />
 
-Link: <A href="${validationBaseURL}${registrationDoc.id}"> access </A> .
-<br />(${validationBaseURL}${registrationDoc.id}).
-
 <br /><br />
-After that :
-<br /><br />
-
+<p>Here are your login information:</p>
 <p>Login:  ${registrationDoc.userinfo.login}</p>
 
-<p>Password: ${registrationDoc.userinfo.password}</p>
-
-<p>Please, update your password after your first login.</p>
-<br />
 </body>
 </html>

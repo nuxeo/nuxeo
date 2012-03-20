@@ -259,7 +259,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
             String validationMethod = (String) doc.getPropertyValue("registration:validationMethod");
 
             // XXX test Validation Method
-
             sendValidationEmail(additionnalInfo, doc);
 
             doc.setPropertyValue("registration:accepted", true);
@@ -388,10 +387,14 @@ public class UserRegistrationComponent extends DefaultComponent implements
             DocumentModel registrationDoc) throws ClientException {
 
         String emailAdress = (String) registrationDoc.getPropertyValue(EMAIL_FIELD);
+        boolean userAlreadyExists = null != Framework.getLocalService(
+                UserManager.class).getPrincipal(
+                (String) registrationDoc.getPropertyValue(USERNAME_FIELD));
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.put("registration", registrationDoc);
         input.put("info", (Serializable) additionnalInfo);
+        input.put("userAlreadyExists", userAlreadyExists);
         StringWriter writer = new StringWriter();
 
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
@@ -471,7 +474,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
     public void acceptRegistrationRequest(String requestId,
             Map<String, Serializable> additionnalInfo) throws ClientException,
             UserRegistrationException {
-
         RegistrationAcceptor acceptor = new RegistrationAcceptor(requestId,
                 additionnalInfo);
         acceptor.runUnrestricted();

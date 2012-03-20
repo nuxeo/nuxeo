@@ -1,27 +1,27 @@
 <html>
-
+<body>
 Hello ${registration.userinfo.firstName} ${registration.userinfo.lastName}, <br />
 <br />
-You have been invited to access Nuxeo.
+You have been invited to access ${registration.docinfo.documentTitle}.
 <br />
 
-Link: <A href="${info['validationBaseURL']}${registration.id}"> access </A> .
-<br />(${info['validationBaseURL']}${registration.id}).
+<p>Click on the following link to validate your invitation:</p>
+<br/>
+<a href="${info['validationBaseURL']}${registration.id}">Validate my invitation</a>
 
 <br /><br />
-After that :
-<br /><br />
-
+<p>Here are your login information:</p>
 <p>Login:  ${registration.userinfo.login}</p>
-
-<p>Password: ${registration.userinfo.password}</p>
-
-<p>Document-id: ${registration.docinfo.documentId}</p>
-
-<p>Permission: ${registration.docinfo.permission}</p>
+<p>Password:
+<#if userAlreadyExists>.
+You know your password.
+<#else>
+${registration.userinfo.password}
+</#if>
+</p>
 <br />
 
 <p>Please, update your password after your first login.</p>
 <br />
-
+</body>
 </html>
