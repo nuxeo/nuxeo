@@ -400,14 +400,19 @@
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>newMiniMessageForm:newMiniMessageText</td>
-	<td>Leela's first mini message!</td>
+	<td>waitForElementPresent</td>
+	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
+	<td>selectFrame</td>
+	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
 	<td></td>
-	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>newMiniMessageText</td>
+	<td>Leela's first mini message!</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -415,41 +420,31 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
+	<td>waitForTextPresent</td>
 	<td>Leela's first mini message!</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>newMiniMessageForm:newMiniMessageText</td>
+	<td>newMiniMessageText</td>
 	<td>Leela's second mini message!</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>click</td>
 	<td>//p[@class='newMiniMessageActions']/input</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
+	<td>waitForTextPresent</td>
 	<td>Leela's second mini message!</td>
 	<td></td>
 </tr>
 <!-- check that bender sees the mini messages -->
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>
@@ -486,7 +481,17 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>waitForElementPresent</td>
+	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
 	<td>leela</td>
 	<td></td>
 </tr>
@@ -503,13 +508,8 @@
 <!-- bender adds a new mini message, he should see it also -->
 <tr>
 	<td>type</td>
-	<td>newMiniMessageForm:newMiniMessageText</td>
+	<td>newMiniMessageText</td>
 	<td>Bender's first mini message!</td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
 </tr>
 <tr>
 	<td>click</td>
@@ -517,16 +517,16 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
+	<td>waitForTextPresent</td>
 	<td>Bender's first mini message!</td>
 	<td></td>
 </tr>
 <!-- check that the mini messages are displayed on leela's profile -->
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Network</td>
@@ -644,18 +644,23 @@
 	<td></td>
 </tr>
 <tr>
+	<td>waitForElementPresent</td>
+	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+	<td></td>
+</tr>
+<tr>
 	<td>verifyTextPresent</td>
 	<td>Bender's first mini message!</td>
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>click</td>
-	<td>//form[@id=&quot;mini_messages&quot;]/table/tbody/tr/td/div/div[3]/a</td>
+	<td>//div[@id=&quot;miniMessagesContainer&quot;]/div/div/div/a</td>
 	<td></td>
 </tr>
 <tr>
@@ -664,21 +669,16 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Mini message deleted</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
+	<td>waitForTextNotPresent</td>
 	<td>Bender's first mini message!</td>
 	<td></td>
 </tr>
 <!-- remove users -->
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>
