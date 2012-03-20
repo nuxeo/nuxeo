@@ -52,7 +52,13 @@
     <diffBlock name="fileAndFiles" label="label.diffBlock.fileAndFiles">
       <fields>
         <field schema="file" name="content" />
-        <field schema="files" name="files" />
+        <field schema="files" name="files">
+          <items>
+            <!-- Display the file only, not the filename which is managed 
+              by the file widget type -->
+            <item>file</item>
+          </items>
+        </field>
       </fields>
     </diffBlock>
 

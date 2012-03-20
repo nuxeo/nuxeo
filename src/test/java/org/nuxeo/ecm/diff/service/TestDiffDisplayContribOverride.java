@@ -197,7 +197,9 @@ public class TestDiffDisplayContribOverride extends TestCase {
 
         fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("file", "content"));
-        fields.add(new DiffFieldDefinitionImpl("files", "files"));
+        items = new ArrayList<String>();
+        items.add("file");
+        fields.add(new DiffFieldDefinitionImpl("files", "files", items));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
                 "fileAndFiles", null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
