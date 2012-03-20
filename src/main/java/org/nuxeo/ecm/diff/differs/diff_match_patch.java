@@ -1414,7 +1414,7 @@ public class diff_match_patch {
         for (Diff aDiff : diffs) {
 
             String text = aDiff.text.replace("&", "&amp;").replace("<", "&lt;").replace(
-                    ">", "&gt;").replace("\n", "&para;<br>");
+                    ">", "&gt;").replace("\n", "<br>");
             switch (aDiff.operation) {
             case INSERT:
                 html.append("<ins style=\"background:#e6ffe6;\">").append(text).append(
