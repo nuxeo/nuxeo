@@ -71,7 +71,6 @@
           <fields>
             <field schema="files" name="files">
               <items>
-                <item>filename</item>
                 <item>file</item>
               </items>
             </field>
