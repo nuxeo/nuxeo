@@ -5,12 +5,6 @@
   xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/"
   >
 
-<!--
-  <xs:element name="templateId" type="xs:string"/>
-  <xs:element name="templateData" type="xs:string"/>
-  <xs:element name="useMainContentAsTemplate" type="xs:boolean"/>
- -->
-  <xs:element name="toto" type="xs:string"/>
   <xs:element name="bindings" type="nxts:templates"/>
 
   <xs:complexType name="template">
