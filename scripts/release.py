@@ -260,13 +260,13 @@ class Release(object):
         if os.path.isfile(os.path.join(self.tmpdir, offline_name,
                         "setupWizardDownloads", "packages.xml")):
             online_name = "nuxeo-cap-%s-tomcat-online" % version
-            os.rename(os.path.join(self.tmpdir, offline_name,
+            shutil.move(os.path.join(self.tmpdir, offline_name,
                                        "setupWizardDownloads", "packages.xml"),
                       os.path.join(self.archive_dir, "packages.xml"))
             # Remove Marketplace packages
             shutil.rmtree(os.path.join(self.tmpdir, offline_name,
                                        "setupWizardDownloads"))
-            os.rename(os.path.join(self.tmpdir, offline_name),
+            shutil.move(os.path.join(self.tmpdir, offline_name),
                       os.path.join(self.tmpdir, online_name))
             make_zip(os.path.join(self.archive_dir, online_name + ".zip"),
                                 os.path.join(self.tmpdir, online_name),
@@ -325,11 +325,11 @@ class Release(object):
         os.chdir(os.path.join(self.tmpdir, new_name))
         ls = os.listdir(os.curdir)
         if len(ls) == 1:
-            os.rename(ls[0], new_name)
+            shutil.move(ls[0], new_name)
         else:
             os.mkdir(new_name)
             for file in ls:
-                os.rename(file, os.path.join(new_name, file))
+                shutil.move(file, os.path.join(new_name, file))
 
         files = os.listdir(os.path.join(new_name, "bin"))
         for filename in (fnmatch.filter(files, "*ctl") +
