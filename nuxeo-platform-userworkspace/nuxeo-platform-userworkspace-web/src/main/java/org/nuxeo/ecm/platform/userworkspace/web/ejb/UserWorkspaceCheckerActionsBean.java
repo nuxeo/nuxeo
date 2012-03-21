@@ -59,7 +59,7 @@ public class UserWorkspaceCheckerActionsBean implements Serializable {
 
     @Factory(value = "isUserWorkspace", scope = EVENT)
     public Boolean computeIsUserWorkspace() {
-        if (isUserWorkspace == null) {
+        if (isUserWorkspace == null && navigationContext.getCurrentDocument() != null) {
             isUserWorkspace = navigationContext.getCurrentDocument().getPathAsString().contains(
                     UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         }
