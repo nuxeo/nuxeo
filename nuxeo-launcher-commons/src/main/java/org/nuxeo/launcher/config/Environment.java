@@ -19,12 +19,13 @@
 
 package org.nuxeo.launcher.config;
 
-
 /**
  * Constants duplicated from {@link org.nuxeo.common.Environment}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated use org.nuxeo.common.Environment
  */
+@Deprecated
 public class Environment {
 
     private Environment() {
@@ -69,7 +70,7 @@ public class Environment {
     public static final String OPENSOCIAL_GADGETS_PORT = "opensocial.gadgets.port";
 
     public static final String OPENSOCIAL_GADGETS_PATH = "opensocial.gadgets.path";
-    
+
     // proxy
     public static final String NUXEO_HTTP_PROXY_HOST = "nuxeo.http.proxy.host";
 

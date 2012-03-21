@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo connect standalone
+Bundle-SymbolicName: org.nuxeo.connect.standalone;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+
+

@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>5.6-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-connect-standalone</artifactId>
+  <name>Nuxeo Connect standalone client</name>
+  <description>Standalone client for Nuxeo connect features (i.e. package management)</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.connect</groupId>
+      <artifactId>nuxeo-connect-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
+
+    <!-- for command guards -->
+    <dependency>
+      <groupId>commons-jexl</groupId>
+      <artifactId>commons-jexl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+
+    <!-- scope test -->
+    <!-- <dependency> -->
+    <!-- <groupId>org.nuxeo.runtime</groupId> -->
+    <!-- <artifactId>nuxeo-runtime-test</artifactId> -->
+    <!-- <scope>test</scope> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>org.nuxeo.ecm.platform</groupId> -->
+    <!-- <artifactId>nuxeo-connect-client-wrapper</artifactId> -->
+    <!-- <scope>test</scope> -->
+    <!-- </dependency> -->
+  </dependencies>
+
+</project>
