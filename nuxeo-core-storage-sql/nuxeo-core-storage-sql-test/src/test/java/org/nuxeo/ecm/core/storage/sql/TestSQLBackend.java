@@ -1951,6 +1951,26 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    /*
+     * This used to crash SQL Server 2008 R2 (NXP-6143). It works on SQL Server
+     * 2005.
+     */
+    public void testFulltextCrashingSQLServer2008() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "testdoc", null, "TestDoc",
+                false);
+        node.setSimpleProperty("tst:title", "mytitle");
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        PartialList<Serializable> res;
+        res = session.query(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'mytitle' AND tst:title = 'mytitle'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
     public void testFulltextCustomParser() throws Exception {
         // custom fulltext config
         repository.close();
