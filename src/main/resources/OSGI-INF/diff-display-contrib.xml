@@ -15,7 +15,6 @@
       <diffBlocks>
         <diffBlock name="heading" />
         <diffBlock name="dublincore" />
-        <diffBlock name="file" />
         <diffBlock name="files" />
       </diffBlocks>
     </diffDisplay>
@@ -59,14 +58,9 @@
       </fields>
     </diffBlock>
 
-    <diffBlock name="file" label="label.diffBlock.file">
-      <fields>
-        <field schema="file" name="content" />
-      </fields>
-    </diffBlock>
-
     <diffBlock name="files" label="label.diffBlock.files">
       <fields>
+        <field schema="file" name="content" />
         <field schema="files" name="files">
           <items>
             <!-- Display the file only, not the filename which is managed 

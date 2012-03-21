@@ -22,7 +22,7 @@
       <diffBlocks>
         <diffBlock name="heading" />
         <diffBlock name="dublincore" />
-        <diffBlock name="fileAndFiles" />
+        <diffBlock name="files" />
         <diffBlock name="simpleTypes" />
         <diffBlock name="complexTypesAndListOfLists" />
       </diffBlocks>
@@ -45,20 +45,6 @@
         <field schema="dublincore" name="lastContributor" />
         <field schema="dublincore" name="contributors" />
         <field schema="dublincore" name="subjects" />
-      </fields>
-    </diffBlock>
-
-    <!-- fileAndFiles diffBlock -->
-    <diffBlock name="fileAndFiles" label="label.diffBlock.fileAndFiles">
-      <fields>
-        <field schema="file" name="content" />
-        <field schema="files" name="files">
-          <items>
-            <!-- Display the file only, not the filename which is managed 
-              by the file widget type -->
-            <item>file</item>
-          </items>
-        </field>
       </fields>
     </diffBlock>
 

@@ -570,7 +570,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 // Put item index if wanted
                 if (isDisplayItemIndexes) {
                     listItemDiffDisplay.put(
-                            DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD, index);
+                            DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD, index + 1);
                 }
                 // Only put value if index is in list range
                 if (index < listProperty.size()) {
@@ -665,8 +665,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             wDef.setTranslated(true);
 
             // TODO: set props ?
+        }
 
-            // ------------- Set subwidgets -----------------//
+        // Set subwidgets if not already set
+        if (!isSubWidgets(wDef)) {
             if (PropertyType.isListType(propertyType)
                     || (PropertyType.isComplexType(propertyType) && !PropertyType.isContentType(propertyType))) {
 
@@ -712,6 +714,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         wDef.setFieldDefinitions(fieldDefinitions);
 
         return wDef;
+    }
+
+    protected final boolean isSubWidgets(WidgetDefinition wDef) {
+
+        WidgetDefinition[] subWidgetDefs = wDef.getSubWidgetDefinitions();
+        return subWidgetDefs != null && subWidgetDefs.length > 0;
     }
 
     protected final WidgetDefinition[] getSubWidgetDefinitions(

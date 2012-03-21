@@ -135,6 +135,34 @@
       </properties>
     </widget>
 
+    <widget name="file:content" type="file">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.summary.download.file</label>
+      </labels>
+      <translated>true</translated>
+    </widget>
+
+    <widget name="files:files" type="list">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.summary.download.attachments</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="display">inline</property>
+        <property name="displayAllItems">false</property>
+        <property name="displayItemIndexes">true</property>
+        <property name="template">
+          /widgets/list_diff_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
   </extension>
 
 </component>

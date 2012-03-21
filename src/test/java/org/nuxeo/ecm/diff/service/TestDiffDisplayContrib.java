@@ -89,7 +89,6 @@ public class TestDiffDisplayContrib extends TestCase {
         expectedDiffDisplay = new ArrayList<String>();
         expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
-        expectedDiffDisplay.add("file");
         expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
@@ -114,10 +113,9 @@ public class TestDiffDisplayContrib extends TestCase {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(5, contribs.size());
+        assertEquals(4, contribs.size());
         assertTrue(contribs.containsKey("heading"));
         assertTrue(contribs.containsKey("dublincore"));
-        assertTrue(contribs.containsKey("file"));
         assertTrue(contribs.containsKey("files"));
         assertTrue(contribs.containsKey("note"));
 
@@ -165,21 +163,12 @@ public class TestDiffDisplayContrib extends TestCase {
                 null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
-        // Check file diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("file");
-        assertNotNull(diffBlockDefinition);
-
-        fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("file", "content"));
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("file", null,
-                fields);
-        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
-
         // Check files diffDisplay contrib
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("files");
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl("file", "content"));
         List<String> items = new ArrayList<String>();
         items.add("file");
         fields.add(new DiffFieldDefinitionImpl("files", "files", items));
