@@ -44,14 +44,12 @@ public class AuthenticationPluginDescriptor implements Serializable {
     @XNode("loginModulePlugin")
     String loginModulePlugin;
 
-    @XNode("needStartingURLSaving")
-    boolean needStartingURLSaving;
+    private Boolean needStartingURLSaving;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<String, String>();
 
-    @XNode("stateful")
-    boolean stateful = true;
+    private Boolean stateful;
 
     public Class<NuxeoAuthenticationPlugin> getClassName() {
         return className;
@@ -86,23 +84,31 @@ public class AuthenticationPluginDescriptor implements Serializable {
     }
 
     public boolean getNeedStartingURLSaving() {
-        return needStartingURLSaving;
+        if (needStartingURLSaving != null) {
+            return needStartingURLSaving;
+        }
+        return false;
     }
 
     public boolean getStateful() {
-        return stateful;
+        if (stateful != null) {
+            return stateful;
+        }
+        return Boolean.valueOf(getNeedStartingURLSaving());
     }
 
     public void setClassName(Class<NuxeoAuthenticationPlugin> className) {
         this.className = className;
     }
 
+    @XNode("needStartingURLSaving")
     public void setNeedStartingURLSaving(boolean needStartingURLSaving) {
-        this.needStartingURLSaving = needStartingURLSaving;
+        this.needStartingURLSaving = Boolean.valueOf(needStartingURLSaving);
     }
 
+    @XNode("stateful")
     public void setStateful(boolean stateful) {
-        this.stateful = stateful;
+        this.stateful = Boolean.valueOf(stateful);
     }
 
 }
