@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.impl.xml.XmlWriter;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
 import org.nuxeo.connect.update.util.PackageBuilder;

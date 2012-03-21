@@ -26,7 +26,7 @@ import java.net.URLDecoder;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.nuxeo.connect.update.impl.xml.XmlWriter;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.launcher.config.ConfigurationGenerator;

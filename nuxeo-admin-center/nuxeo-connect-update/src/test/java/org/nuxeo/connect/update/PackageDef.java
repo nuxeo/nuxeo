@@ -21,9 +21,9 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
+import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

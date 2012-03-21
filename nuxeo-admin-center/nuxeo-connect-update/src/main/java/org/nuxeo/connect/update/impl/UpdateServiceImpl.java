@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.XValueFactory;
@@ -36,37 +37,40 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.Version;
-import org.nuxeo.connect.update.impl.task.commands.Append;
-import org.nuxeo.connect.update.impl.task.commands.Command;
-import org.nuxeo.connect.update.impl.task.commands.Config;
-import org.nuxeo.connect.update.impl.task.commands.Copy;
-import org.nuxeo.connect.update.impl.task.commands.Delete;
-import org.nuxeo.connect.update.impl.task.commands.Deploy;
-import org.nuxeo.connect.update.impl.task.commands.DeployConfig;
-import org.nuxeo.connect.update.impl.task.commands.Flush;
-import org.nuxeo.connect.update.impl.task.commands.FlushCoreCache;
-import org.nuxeo.connect.update.impl.task.commands.FlushJaasCache;
-import org.nuxeo.connect.update.impl.task.commands.Install;
-import org.nuxeo.connect.update.impl.task.commands.LoadJar;
-import org.nuxeo.connect.update.impl.task.commands.ParameterizedCopy;
-import org.nuxeo.connect.update.impl.task.commands.ReloadProperties;
-import org.nuxeo.connect.update.impl.task.commands.UnAppend;
-import org.nuxeo.connect.update.impl.task.commands.Undeploy;
-import org.nuxeo.connect.update.impl.task.commands.UndeployConfig;
-import org.nuxeo.connect.update.impl.task.commands.Uninstall;
-import org.nuxeo.connect.update.impl.task.commands.UnloadJar;
-import org.nuxeo.connect.update.impl.task.update.Rollback;
-import org.nuxeo.connect.update.impl.task.update.Update;
-import org.nuxeo.connect.update.impl.xml.FormsDefinition;
-import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.model.PackageDefinition;
+import org.nuxeo.connect.update.standalone.PackagePersistence;
+import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
+import org.nuxeo.connect.update.standalone.task.commands.Append;
+import org.nuxeo.connect.update.standalone.task.commands.Command;
+import org.nuxeo.connect.update.standalone.task.commands.Config;
+import org.nuxeo.connect.update.standalone.task.commands.Copy;
+import org.nuxeo.connect.update.standalone.task.commands.Delete;
+import org.nuxeo.connect.update.standalone.task.commands.Deploy;
+import org.nuxeo.connect.update.standalone.task.commands.DeployConfig;
+import org.nuxeo.connect.update.standalone.task.commands.Flush;
+import org.nuxeo.connect.update.standalone.task.commands.FlushCoreCache;
+import org.nuxeo.connect.update.standalone.task.commands.FlushJaasCache;
+import org.nuxeo.connect.update.standalone.task.commands.Install;
+import org.nuxeo.connect.update.standalone.task.commands.LoadJar;
+import org.nuxeo.connect.update.standalone.task.commands.ParameterizedCopy;
+import org.nuxeo.connect.update.standalone.task.commands.ReloadProperties;
+import org.nuxeo.connect.update.standalone.task.commands.UnAppend;
+import org.nuxeo.connect.update.standalone.task.commands.Undeploy;
+import org.nuxeo.connect.update.standalone.task.commands.UndeployConfig;
+import org.nuxeo.connect.update.standalone.task.commands.Uninstall;
+import org.nuxeo.connect.update.standalone.task.commands.UnloadJar;
+import org.nuxeo.connect.update.standalone.task.update.Rollback;
+import org.nuxeo.connect.update.standalone.task.update.Update;
+import org.nuxeo.connect.update.xml.FormsDefinition;
+import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
-public class UpdateServiceImpl implements PackageUpdateService {
+public class UpdateServiceImpl extends StandaloneUpdateService implements
+        PackageUpdateService {
 
     protected static XMap xmap;
 
@@ -79,7 +83,8 @@ public class UpdateServiceImpl implements PackageUpdateService {
     }
 
     public UpdateServiceImpl() throws IOException {
-        persistence = new PackagePersistence();
+        super(Environment.getDefault());
+        persistence = new PackagePersistence(this);
         commands = new HashMap<String, Class<? extends Command>>();
     }
 

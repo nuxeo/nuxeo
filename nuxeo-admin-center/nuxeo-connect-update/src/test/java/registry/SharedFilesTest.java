@@ -25,9 +25,9 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.PackageDef;
 import org.nuxeo.connect.update.PackageTestCase;
-import org.nuxeo.connect.update.impl.task.update.UpdateManager;
-import org.nuxeo.connect.update.impl.xml.XmlWriter;
+import org.nuxeo.connect.update.standalone.task.update.UpdateManager;
 import org.nuxeo.connect.update.util.PackageBuilder;
+import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
  * We have two packages pkg1 and pkg2:
@@ -35,21 +35,21 @@ import org.nuxeo.connect.update.util.PackageBuilder;
  * <li>pkg1 is installing 2 files: shared and lib1.jar in bundles dir.
  * <li>pkg2 is installing 2 files: shared and lib2.jar in bundles dir.
  * </ul>
- * 
+ *
  * First we install pkg1, the pkg2 => expect pkg2 is not really copying the
  * shared but it updates the shared.files registry adding a new reference to
  * that jar. (we will use different content for these files to be able to track
  * the file that was really copied) Also, we expect that lin1.jar and lib2.jar
  * was copied.
- * 
+ *
  * Then we uninstall pkg1 and we expect that lib1.jar is not removed (and the
  * jar is the one installed by pkg1). But lib1.jar must be removed. Then we
  * uninstall pkg2 and we expect all the 3 files were removed.
- * 
+ *
  * @since 5.5
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class SharedFilesTest extends PackageTestCase {
 
@@ -124,7 +124,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
     /**
      * Here a downgrade is made - by default downgrade is not allowed see
      * {@link #ensurePkg21WithDowngrade()}
-     * 
+     *
      * @throws Exception
      */
     public void ensurePkg21() throws Exception {

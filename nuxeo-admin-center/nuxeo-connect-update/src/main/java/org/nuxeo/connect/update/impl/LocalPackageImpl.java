@@ -33,14 +33,15 @@ import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
-import org.nuxeo.connect.update.impl.task.InstallTask;
-import org.nuxeo.connect.update.impl.task.UninstallTask;
-import org.nuxeo.connect.update.impl.xml.FormsDefinition;
-import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
-import org.nuxeo.connect.update.impl.xml.TaskDefinitionImpl;
 import org.nuxeo.connect.update.model.Form;
 import org.nuxeo.connect.update.model.TaskDefinition;
+import org.nuxeo.connect.update.standalone.LocalPackageData;
+import org.nuxeo.connect.update.standalone.task.InstallTask;
+import org.nuxeo.connect.update.standalone.task.UninstallTask;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.connect.update.xml.FormsDefinition;
+import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
+import org.nuxeo.connect.update.xml.TaskDefinitionImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

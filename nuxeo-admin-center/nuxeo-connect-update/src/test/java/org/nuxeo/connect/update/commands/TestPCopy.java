@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.connect.update.impl.xml.XmlWriter;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 

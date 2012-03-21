@@ -19,10 +19,10 @@ package org.nuxeo.connect.update.commands;
 import java.io.ByteArrayInputStream;
 
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.impl.task.commands.ReloadProperties;
-import org.nuxeo.connect.update.impl.xml.XmlWriter;
+import org.nuxeo.connect.update.standalone.task.commands.ReloadProperties;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.nuxeo.runtime.api.Framework;
 
 /**

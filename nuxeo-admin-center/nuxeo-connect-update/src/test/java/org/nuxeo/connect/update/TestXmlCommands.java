@@ -20,9 +20,9 @@ import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
-import org.nuxeo.connect.update.impl.task.CommandsTask;
-import org.nuxeo.connect.update.impl.task.InstallTask;
-import org.nuxeo.connect.update.impl.task.UninstallTask;
+import org.nuxeo.connect.update.standalone.task.CommandsTask;
+import org.nuxeo.connect.update.standalone.task.InstallTask;
+import org.nuxeo.connect.update.standalone.task.UninstallTask;
 import org.nuxeo.connect.update.util.PackageBuilder;
 
 /**
