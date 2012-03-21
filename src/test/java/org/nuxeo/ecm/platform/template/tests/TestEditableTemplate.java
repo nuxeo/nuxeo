@@ -95,7 +95,7 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
 
         // detach the doc
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        doc = tps.detachTemplateBasedDocument(doc, true);
+        doc = tps.detachTemplateBasedDocument(doc, TEMPLATE_NAME, true);
 
         // change template config
         DocumentModel sourceDoc = source.getAdaptedDoc();
