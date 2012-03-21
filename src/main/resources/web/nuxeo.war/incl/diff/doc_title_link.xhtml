@@ -16,6 +16,12 @@
       <h:outputText value="#{nxd:titleOrId(doc)}" />
     </span>
   </nxd:restDocumentLink>
+  <c:if test="#{doc.version}">
+    <span class="italic">
+      (<h:outputText value="#{messages['label.version']}" />
+      <h:outputText value=" #{documentManager.getVersionLabel(doc)}" />)
+    </span>
+  </c:if>
   <nxd:restDocumentLink document="#{doc}"
     newConversation="true" target="_blank">
     <nxu:graphicImage value="/icons/external.gif"
@@ -23,12 +29,6 @@
       alt="#{messages['permalink.newTab']}"
       title="#{messages['permalink.newTab']}" />
   </nxd:restDocumentLink>  
-  <c:if test="#{doc.version}">
-    <span class="italic">
-      (<h:outputText value="#{messages['label.version']}" />
-      <h:outputText value=" #{documentManager.getVersionLabel(doc)}" />)
-    </span>
-  </c:if>
 </h2>
   
 </f:subview>

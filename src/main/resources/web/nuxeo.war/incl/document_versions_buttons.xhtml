@@ -3,7 +3,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
 
         <h:commandButton value="#{messages['command.restore']}"
           class="button"
@@ -18,13 +19,12 @@
 
         <h:outputText value=" "/>
 
-        <nxu:methodResult name="removable"
-          value="#{versionedActions.canRemoveArchivedVersion(versionItem)}">
-          <h:commandButton class="button" rendered="#{removable}"
+        <c:if test="#{versionedActions.canRemoveArchivedVersion(versionItem)}">
+          <h:commandButton class="button"
             value="#{messages['command.removeArchivedVersion']}"
             action="#{versionedActions.removeArchivedVersion(versionItem)}" />
-        </nxu:methodResult>
-        
+        </c:if>
+                
         <h:outputText value=" "/>
         
         <h:commandButton value="#{messages['command.versions.diffCurrent']}"

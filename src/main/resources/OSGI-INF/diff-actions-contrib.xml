@@ -4,10 +4,18 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="CURRENT_SELECTION_DIFF" link="#{diffActions.prepareCurrentSelectionDiff}"
-      label="command.clipboard.diff" order="100">
+    <action id="CURRENT_DOCUMENT_SELECTION_DIFF"
+      link="#{diffActions.prepareCurrentDocumentSelectionDiff}" label="command.clipboard.diff"
+      order="100">
       <category>CURRENT_SELECTION_LIST</category>
-      <filter-id>canDiffCurrentSelection</filter-id>
+      <filter-id>canDiffCurrentDocumentSelection</filter-id>
+    </action>
+
+    <action id="CURRENT_VERSION_SELECTION_DIFF"
+      link="#{diffActions.prepareCurrentVersionSelectionDiff}" label="command.clipboard.diff"
+      order="100">
+      <category>CURRENT_VERSION_SELECTION_LIST</category>
+      <filter-id>canDiffCurrentVersionSelection</filter-id>
     </action>
 
   </extension>
@@ -15,9 +23,16 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 
-    <filter id="canDiffCurrentSelection">
+    <filter id="canDiffCurrentDocumentSelection">
       <rule grant="true">
-        <condition>#{diffActions.canDiffCurrentSelection}
+        <condition>#{diffActions.canDiffCurrentDocumentSelection}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="canDiffCurrentVersionSelection">
+      <rule grant="true">
+        <condition>#{diffActions.canDiffCurrentVersionSelection}
         </condition>
       </rule>
     </filter>

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.diff.documentsLists.VersionDocumentsListsConstants;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
@@ -43,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles document diff actions.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @Name("diffActions")
@@ -68,45 +69,88 @@ public class DiffActionsBean implements Serializable {
     protected DocumentModel rightDoc;
 
     /**
-     * Checks if the diff action is available for the current document selection
-     * working list.
-     * <p>
-     * Condition: the working list has exactly 2 documents.
-     * 
-     * @return true if can copy
+     * Checks if the diff action is available for the
+     * {@link DocumentsListsManager#CURRENT_DOCUMENT_SELECTION} working list.
+     *
+     * @return true if can diff the current document selection
      */
-    public boolean getCanDiffCurrentSelection() {
+    public boolean getCanDiffCurrentDocumentSelection() {
 
-        List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
-        return currentSelectionWorkingList != null
-                && currentSelectionWorkingList.size() == 2;
-
+        return getCanDiffWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
     /**
-     * Prepares a diff of the current selection.
-     * 
+     * Checks if the diff action is available for the
+     * {@link VersionDocumentsListsConstants#CURRENT_VERSION_SELECTION} working
+     * list.
+     *
+     * @return true if can diff the current version selection
+     */
+    public boolean getCanDiffCurrentVersionSelection() {
+
+        return getCanDiffWorkingList(VersionDocumentsListsConstants.CURRENT_VERSION_SELECTION);
+    }
+
+    /**
+     * Checks if the diff action is available for the {@code listName} working
+     * list.
+     * <p>
+     * Condition: the working list has exactly 2 documents.
+     *
+     * @param listName the list name
+     * @return true if can diff the {@code listName} working list
+     */
+    public boolean getCanDiffWorkingList(String listName) {
+
+        List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(listName);
+        return currentSelectionWorkingList != null
+                && currentSelectionWorkingList.size() == 2;
+    }
+
+    /**
+     * Prepares a diff of the current document selection.
+     *
      * @return the view id
      * @throws ClientException the client exception
      */
-    public String prepareCurrentSelectionDiff() throws ClientException {
+    public String prepareCurrentDocumentSelectionDiff() throws ClientException {
 
-        List<DocumentModel> currentSelectionWorkingList = getCurrentSelectionWorkingList();
+        return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+    }
 
-        leftDoc = currentSelectionWorkingList.get(0);
-        rightDoc = currentSelectionWorkingList.get(1);
+    /**
+     * Prepares a diff of the current version selection.
+     *
+     * @return the view id
+     * @throws ClientException the client exception
+     */
+    public String prepareCurrentVersionSelectionDiff() throws ClientException {
 
-        refresh();
+        return prepareWorkingListDiff(VersionDocumentsListsConstants.CURRENT_VERSION_SELECTION);
+    }
 
-        return DOC_DIFF_VIEW;
+    /**
+     * Prepares a diff of the {@code listName} working list.
+     *
+     * @return the view id
+     * @throws ClientException the client exception
+     */
+    public String prepareWorkingListDiff(String listName)
+            throws ClientException {
 
+        List<DocumentModel> workingList = getWorkingList(listName);
+
+        leftDoc = workingList.get(0);
+        rightDoc = workingList.get(1);
+
+        return refresh();
     }
 
     /**
      * Prepares a diff of the selected version with the live doc.
-     * 
+     *
      * @param version the version
-     * @return the string
+     * @return the view id
      * @throws ClientException the client exception
      */
     public String prepareCurrentVersionDiff(VersionModel selectedVersion)
@@ -129,25 +173,28 @@ public class DiffActionsBean implements Serializable {
         rightDoc = docVersion;
 
         return DOC_DIFF_VIEW;
-
     }
 
     /**
      * Refreshes the diff between leftDoc and rightDoc.
-     * 
+     *
+     * @return the view id
      * @throws ClientException the client exception
      */
-    public void refresh() throws ClientException {
+    public String refresh() throws ClientException {
 
         // Fetch docs from repository
-        leftDoc = documentManager.getDocument(leftDoc.getRef());
-        rightDoc = documentManager.getDocument(rightDoc.getRef());
+        if (isDocumentDiffAvailable()) {
+            leftDoc = documentManager.getDocument(leftDoc.getRef());
+            rightDoc = documentManager.getDocument(rightDoc.getRef());
+        }
 
+        return DOC_DIFF_VIEW;
     }
 
     /**
      * Checks if document diff is available.
-     * 
+     *
      * @return true, if is document diff available
      */
     public boolean isDocumentDiffAvailable() {
@@ -156,7 +203,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the document diff.
-     * 
+     *
      * @return the document diff between leftDoc and rightDoc if leftDoc and
      *         rightDoc aren't null, else null
      * @throws ClientException the client exception
@@ -173,31 +220,32 @@ public class DiffActionsBean implements Serializable {
                 leftDoc, rightDoc);
         return getDiffDisplayService().getDiffDisplayBlocks(docDiff, leftDoc,
                 rightDoc);
-
     }
 
     /**
-     * Gets the current selection working list.
-     * 
-     * @return the current selection working list
+     * Gets the {@code listName} working list.
+     *
+     * @return the {@code listName} working list
      * @throws ClientException the client exception
      */
-    protected final List<DocumentModel> getCurrentSelectionWorkingList()
+    protected final List<DocumentModel> getWorkingList(String listName)
             throws ClientException {
 
-        List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(listName);
 
         if (currentSelectionWorkingList == null
                 || currentSelectionWorkingList.size() != 2) {
             throw new ClientException(
-                    "Cannot make a diff of the current selection: need to have exactly 2 documents in the working list");
+                    String.format(
+                            "Cannot make a diff of the %s working list: need to have exactly 2 documents in the working list.",
+                            listName));
         }
         return currentSelectionWorkingList;
     }
 
     /**
      * Gets the document diff service.
-     * 
+     *
      * @return the document diff service
      * @throws ClientException if cannot get the document diff service
      */
@@ -215,12 +263,11 @@ public class DiffActionsBean implements Serializable {
             throw new ClientException("DocumentDiffService is null.");
         }
         return documentDiffService;
-
     }
 
     /**
      * Gets the diff display service.
-     * 
+     *
      * @return the diff display service
      * @throws ClientException the client exception
      */
@@ -238,7 +285,6 @@ public class DiffActionsBean implements Serializable {
             throw new ClientException("DiffDisplayService is null.");
         }
         return diffDisplayService;
-
     }
 
     public DocumentModel getLeftDoc() {
@@ -256,5 +302,4 @@ public class DiffActionsBean implements Serializable {
     public void setRightDoc(DocumentModel rightDoc) {
         this.rightDoc = rightDoc;
     }
-
 }

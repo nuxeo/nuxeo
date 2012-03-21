@@ -12,4 +12,5 @@ Nuxeo-Component: OSGI-INF/document-xml-export-service.xml,
  OSGI-INF/diff-actions-contrib.xml,
  OSGI-INF/diff-display-service.xml,
  OSGI-INF/diff-display-contrib.xml,
- OSGI-INF/diff-widgets-contrib.xml
+ OSGI-INF/diff-widgets-contrib.xml,
+ OSGI-INF/version-documentslists-contrib.xml
