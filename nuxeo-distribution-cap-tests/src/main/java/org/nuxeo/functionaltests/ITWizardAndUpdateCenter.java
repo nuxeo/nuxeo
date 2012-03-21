@@ -65,7 +65,6 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         return osName.toLowerCase().contains("windows");
     }
 
-    //@Test
     public void runWizardAndRestart() throws Exception {
 
         // **********************
@@ -240,7 +239,6 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     }
 
-    //@Test
     public void loopOnIframe() throws Exception {
 
         // **********************
@@ -319,7 +317,6 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     }
 
-    //@Test
     public void installPackageAndRestart() throws Exception {
 
         // login
@@ -373,7 +370,6 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     }
 
-    //@Test
     public void verifyPackageInstallation() throws Exception {
 
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
@@ -388,7 +384,6 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     }
 
-    //@Test
     public void studioPackageInstallAndUninstall() throws Exception {
         // XXX todo
     }
