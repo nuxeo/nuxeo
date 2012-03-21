@@ -62,7 +62,8 @@ public class CacheCGTaskActivator implements BundleActivator, FrameworkListener 
         if (!GCTask.GCEnabled) {
             GCTask.GCEnabled = true;
             log.debug("CasheCGTaskActivator activated starting GC thread");
-            gcThread = new Thread(new GCTask());
+            gcThread = new Thread(new GCTask(), "Nuxeo-Convert-GC");
+            gcThread.setDaemon(true);
             gcThread.start();
             log.debug("GC Thread started");
         } else {
