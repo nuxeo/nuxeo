@@ -64,9 +64,11 @@ import org.artofsolving.jodconverter.process.WindowsProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.json.JSONException;
 import org.json.XML;
+import org.nuxeo.common.Environment;
+import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -655,6 +657,8 @@ public abstract class NuxeoLauncher {
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgReset();
             launcher.printXMLOutput();
+        } else if ("mp-test".equalsIgnoreCase(launcher.command)) {
+            commandSucceeded = launcher.pkgTest();
         } else {
             printLongHelp();
             commandSucceeded = false;
@@ -1038,6 +1042,32 @@ public abstract class NuxeoLauncher {
             errorValue = 1;
         }
         return errorValue == 0;
+    }
+
+    private boolean pkgTest() {
+        try {
+            Environment env = new Environment(
+                    configurationGenerator.getRuntimeHome());
+            env.init();
+            env.setData(new File(
+                    configurationGenerator.getUserConfig().getProperty(
+                            Environment.NUXEO_DATA_DIR)));
+            env.setLog(new File(
+                    configurationGenerator.getUserConfig().getProperty(
+                            Environment.NUXEO_LOG_DIR)));
+            env.setTemp(new File(
+                    configurationGenerator.getUserConfig().getProperty(
+                            Environment.NUXEO_TMP_DIR)));
+            StandaloneUpdateService svc = new StandaloneUpdateService(env);
+            List<LocalPackage> pkgs = svc.getPackages();
+            for (LocalPackage pkg : pkgs) {
+                System.out.println(pkg.getName());
+            }
+            return true;
+        } catch (Exception e) {
+            log.error(e);
+            return false;
+        }
     }
 
     private void doPendingCommand(boolean doExecute, String cmd, String param) {
