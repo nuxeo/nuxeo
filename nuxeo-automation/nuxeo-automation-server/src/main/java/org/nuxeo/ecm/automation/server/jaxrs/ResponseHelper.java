@@ -41,7 +41,7 @@ public class ResponseHelper {
 
     public static Response blob(Blob blob) {
         String type = blob.getMimeType();
-        if (type == null) {
+        if (type == null || "???".equals(type)) {
             type = MediaType.APPLICATION_OCTET_STREAM;
         }
         return Response.ok(blob).type(type).header("Content-Disposition",
