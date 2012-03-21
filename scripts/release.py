@@ -325,7 +325,8 @@ class Release(object):
         os.chdir(os.path.join(self.tmpdir, new_name))
         ls = os.listdir(os.curdir)
         if len(ls) == 1:
-            shutil.move(ls[0], new_name)
+            if ls[0] != new_name:
+                shutil.move(ls[0], new_name)
         else:
             os.mkdir(new_name)
             for file in ls:
