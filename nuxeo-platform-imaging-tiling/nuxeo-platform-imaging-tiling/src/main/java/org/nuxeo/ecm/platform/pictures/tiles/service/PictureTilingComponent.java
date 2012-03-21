@@ -92,7 +92,8 @@ public class PictureTilingComponent extends DefaultComponent implements
         if (!GCTask.GCEnabled) {
             GCTask.GCEnabled = true;
             log.debug("PictureTilingComponent activated starting GC thread");
-            gcThread = new Thread(new GCTask());
+            gcThread = new Thread(new GCTask(), "Nuxeo-Tiling-GC");
+            gcThread.setDaemon(true);
             gcThread.start();
             log.debug("GC Thread started");
         } else {
