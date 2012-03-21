@@ -46,9 +46,9 @@ import org.nuxeo.ecm.platform.template.processors.BidirectionalTemplateProcessor
 /**
  * WordXML implementation of the {@link BidirectionalTemplateProcessor}. Uses
  * Raw XML parsing : legacy code for now.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
         implements BidirectionalTemplateProcessor {
@@ -59,14 +59,14 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
     public static final String TEMPLATE_TYPE = "wordXMLTemplate";
 
     @SuppressWarnings("rawtypes")
-    public Blob renderTemplate(TemplateBasedDocument templateDocument)
-            throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateDocument,
+            String templateName) throws Exception {
 
         File workingDir = getWorkingDir();
 
-        Blob blob = templateDocument.getTemplateBlob();
+        Blob blob = templateDocument.getTemplateBlob(templateName);
         String fileName = blob.getFilename();
-        List<TemplateInput> params = templateDocument.getParams();
+        List<TemplateInput> params = templateDocument.getParams(templateName);
         File sourceZipFile = File.createTempFile("WordXMLTemplate", ".zip");
         blob.transferTo(sourceZipFile);
 
@@ -205,9 +205,10 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
 
     @SuppressWarnings("rawtypes")
     public DocumentModel updateDocumentFromBlob(
-            TemplateBasedDocument templateDocument) throws Exception {
+            TemplateBasedDocument templateDocument, String templateName)
+            throws Exception {
 
-        Blob blob = templateDocument.getTemplateBlob();
+        Blob blob = templateDocument.getTemplateBlob(templateName);
 
         String xmlContent = readPropertyFile(blob.getStream());
 
@@ -220,7 +221,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
         List nodes = xmlDoc.getRootElement().elements();
 
         DocumentModel adaptedDoc = templateDocument.getAdaptedDoc();
-        List<TemplateInput> params = templateDocument.getParams();
+        List<TemplateInput> params = templateDocument.getParams(templateName);
 
         for (Object node : nodes) {
             DefaultElement elem = (DefaultElement) node;
@@ -254,7 +255,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
                 }
             }
         }
-        adaptedDoc = templateDocument.saveParams(params, false);
+        adaptedDoc = templateDocument.saveParams(templateName, params, false);
         return adaptedDoc;
     }
 

@@ -79,6 +79,8 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.ecm.platform.template.manager:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
 
+    protected static final String TEMPLATE_NAME = "mytestTemplate";
+
     @Inject
     protected CoreSession session;
 
@@ -103,6 +105,7 @@ public class TestRenditionPublication {
         Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("DocumentsAttributes.odt");
         templateDoc.setProperty("file", "content", fileBlob);
+        templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
 
         templateDoc = session.createDocument(templateDoc);
 
@@ -139,14 +142,15 @@ public class TestRenditionPublication {
         TemplateBasedDocument templateBased = templateBasedDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
 
-        templateBased.getSourceTemplate().setTargetRenditioName(null, true);
+        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(
+                null, true);
 
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
         // no blob, no rendition binding => no rendition at all
         assertEquals(0, defs.size());
 
-        templateBased.getSourceTemplate().setTargetRenditioName("delivery",
-                true);
+        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(
+                "delivery", true);
         defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
         // no blob, delivery rendition binding => 1 rendition
         assertEquals(1, defs.size());

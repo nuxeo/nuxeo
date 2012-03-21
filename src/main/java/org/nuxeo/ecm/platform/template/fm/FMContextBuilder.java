@@ -44,7 +44,7 @@ public class FMContextBuilder {
         DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
 
         ContextFunctions functions = new ContextFunctions(doc, nuxeoWrapper);
-        
+
         CoreSession session = doc.getCoreSession();
 
         // doc infos
@@ -55,15 +55,15 @@ public class FMContextBuilder {
         ctx.put("fn", functions);
         ctx.put("Fn", functions);
         ctx.put("fonctions", functions);
-        
+
         // user info
         ctx.put("username", session.getPrincipal().getName());
         ctx.put("principal", session.getPrincipal());
 
         // add audit context info
-        DocumentHistoryReader historyReader = Framework.getLocalService(DocumentHistoryReader.class); 
+        DocumentHistoryReader historyReader = Framework.getLocalService(DocumentHistoryReader.class);
         List<LogEntry> auditEntries = null;
-        if (historyReader != null) {            
+        if (historyReader != null) {
             auditEntries = historyReader.getDocumentHistory(doc, 0, 1000);
         } else {
             if (Framework.isTestModeSet() && testAuditEntries != null) {
@@ -74,9 +74,11 @@ public class FMContextBuilder {
         }
         if (auditEntries != null) {
             try {
-                auditEntries = preprocessAuditEntries(auditEntries, session, "en");
+                auditEntries = preprocessAuditEntries(auditEntries, session,
+                        "en");
             } catch (Throwable e) {
-                log.warn("Unable to preprocess Audit entries : " + e.getMessage());
+                log.warn("Unable to preprocess Audit entries : "
+                        + e.getMessage());
             }
             ctx.put("auditEntries", nuxeoWrapper.wrap(auditEntries));
         }
@@ -109,10 +111,11 @@ public class FMContextBuilder {
     }
 
     public static Map<String, Object> build(
-            TemplateBasedDocument templateBasedDocument) throws Exception {
+            TemplateBasedDocument templateBasedDocument, String templateName)
+            throws Exception {
 
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        List<TemplateInput> params = templateBasedDocument.getParams();
+        List<TemplateInput> params = templateBasedDocument.getParams(templateName);
 
         Map<String, Object> context = build(doc);
         DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);

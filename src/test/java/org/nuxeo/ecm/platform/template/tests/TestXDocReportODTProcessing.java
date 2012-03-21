@@ -22,12 +22,12 @@ public class TestXDocReportODTProcessing extends SimpleTemplateDocTestCase {
 
         List<TemplateInput> params = getTestParams();
 
-        testDoc = adapter.saveParams(params, true);
+        testDoc = adapter.saveParams(TEMPLATE_NAME, params, true);
         session.save();
 
         XDocReportProcessor processor = new XDocReportProcessor();
 
-        Blob newBlob = processor.renderTemplate(adapter);
+        Blob newBlob = processor.renderTemplate(adapter, TEMPLATE_NAME);
 
         // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 

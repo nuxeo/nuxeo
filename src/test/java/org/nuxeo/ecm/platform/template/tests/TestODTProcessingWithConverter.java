@@ -36,6 +36,8 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
 
     protected OOoManagerService oooManagerService;
 
+    protected static final String TEMPLATE_NAME = "mytestTemplate";
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -96,6 +98,7 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("Container.odt");
         templateDoc.setProperty("file", "content", fileBlob);
+        templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
 
         templateDoc = session.createDocument(templateDoc);
 
@@ -170,8 +173,8 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         assertNotNull(templateBased);
 
         // render
-        testDoc = templateBased.initializeFromTemplate(true);
-        Blob blob = templateBased.renderWithTemplate();
+        testDoc = templateBased.initializeFromTemplate(TEMPLATE_NAME, true);
+        Blob blob = templateBased.renderWithTemplate(TEMPLATE_NAME);
         assertNotNull(blob);
 
         assertEquals("MyTestNote2.pdf", blob.getFilename());

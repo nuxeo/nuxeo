@@ -21,10 +21,10 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
 
         List<TemplateInput> params = getTestParams();
 
-        testDoc = adapter.saveParams(params, true);
+        testDoc = adapter.saveParams(TEMPLATE_NAME, params, true);
         session.save();
 
-        Blob newBlob = adapter.renderAndStoreAsAttachment(true);
+        Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
         // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 

@@ -16,6 +16,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
+import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBinding;
+import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBindings;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -154,44 +156,47 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     }
 
     protected String buildTemplateSearchQuery(String targetType) {
-        StringBuffer sb = new StringBuffer("select * from TemplateSource where ecm:currentLifeCycleState != 'deleted'");
-        if (targetType!=null) {
-            sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType + "')");
-        }        
+        StringBuffer sb = new StringBuffer(
+                "select * from TemplateSource where ecm:currentLifeCycleState != 'deleted'");
+        if (targetType != null) {
+            sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType
+                    + "')");
+        }
         return sb.toString();
     }
-    
+
     public List<DocumentModel> getAvailableTemplateDocs(CoreSession session,
             String targetType) throws ClientException {
 
         String query = buildTemplateSearchQuery(targetType);
-        
+
         return session.query(query);
     }
 
-    
-    protected  <T> List<T> wrap(List<DocumentModel> docs, Class<T> adapter) {        
-        List<T> result = new ArrayList<T>();        
+    protected <T> List<T> wrap(List<DocumentModel> docs, Class<T> adapter) {
+        List<T> result = new ArrayList<T>();
         for (DocumentModel doc : docs) {
             T adapted = doc.getAdapter(adapter);
-            if (adapted!=null) {
+            if (adapted != null) {
                 result.add(adapted);
             }
-        }        
+        }
         return result;
     }
-    
-    public List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType) throws ClientException {
-        
+
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(
+            CoreSession session, String targetType) throws ClientException {
+
         String query = buildTemplateSearchQuery(targetType);
-        query = query + " AND tmpl:useAsMainContent=1";        
-        List<DocumentModel> docs = session.query(query);        
+        query = query + " AND tmpl:useAsMainContent=1";
+        List<DocumentModel> docs = session.query(query);
         return wrap(docs, TemplateSourceDocument.class);
     }
-    
+
     public List<TemplateSourceDocument> getAvailableTemplates(
             CoreSession session, String targetType) throws ClientException {
-        List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);        
+        List<DocumentModel> filtredResult = getAvailableTemplateDocs(session,
+                targetType);
         return wrap(filtredResult, TemplateSourceDocument.class);
     }
 
@@ -199,8 +204,10 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(
             DocumentModel source) throws ClientException {
 
-        StringBuffer sb = new StringBuffer("select * from Document where ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND ");
-        sb.append(TemplateBasedDocumentAdapterImpl.TEMPLATE_ID_PROP);
+        StringBuffer sb = new StringBuffer(
+                "select * from Document where ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND ");
+        sb.append(TemplateBindings.BINDING_PROP_NAME + "/*/"
+                + TemplateBinding.TEMPLATE_ID_KEY);
         sb.append(" = '");
         sb.append(source.getId());
         sb.append("'");
@@ -209,7 +216,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         List<TemplateBasedDocument> result = new ArrayList<TemplateBasedDocument>();
         for (DocumentModel doc : docs) {
             TemplateBasedDocument templateBasedDocument = doc.getAdapter(TemplateBasedDocument.class);
-            if (templateBasedDocument!=null) {
+            if (templateBasedDocument != null) {
                 result.add(templateBasedDocument);
             }
         }
@@ -221,15 +228,16 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     }
 
     public Map<String, String> getTypeMapping() {
-        if (type2Template==null) {
+        if (type2Template == null) {
             synchronized (this) {
-                if (type2Template==null) {
+                if (type2Template == null) {
                     type2Template = new ConcurrentHashMap<String, String>();
                     TemplateMappingFetcher fetcher = new TemplateMappingFetcher();
                     try {
                         fetcher.runUnrestricted();
                     } catch (ClientException e) {
-                        log.error("Unable to fetch templates 2 types mapping", e);
+                        log.error("Unable to fetch templates 2 types mapping",
+                                e);
                     }
                     type2Template.putAll(fetcher.getMapping());
                 }
@@ -240,7 +248,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
 
     public void registerTypeMapping(DocumentModel doc) throws ClientException {
         TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
-        if (tmpl!=null) {
+        if (tmpl != null) {
             Map<String, String> mapping = getTypeMapping();
             // unbind previous mapping
             List<String> boundTypes = new ArrayList<String>();
@@ -255,27 +263,43 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             // rebind types (with override)
             for (String type : tmpl.getForcedTypes()) {
                 String uidToClean = mapping.get(type);
-                if (uidToClean!=null) {
-                    new TemplateMappingRemover(doc.getCoreSession(), uidToClean, type).runUnrestricted();
+                if (uidToClean != null) {
+                    new TemplateMappingRemover(doc.getCoreSession(),
+                            uidToClean, type).runUnrestricted();
                 }
                 mapping.put(type, doc.getId());
             }
         }
     }
 
-
-    public DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc, boolean save) throws ClientException {
+    public DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc,
+            DocumentModel sourceTemplateDoc, boolean save)
+            throws ClientException {
         targetDoc.addFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
         TemplateBasedDocument tmplBased = targetDoc.getAdapter(TemplateBasedDocument.class);
         // bind the template
         return tmplBased.setTemplate(sourceTemplateDoc, save);
     }
-    
-    public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, boolean save) throws ClientException {
-        targetDoc.removeFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
-        if (save) {
-            targetDoc.getCoreSession().saveDocument(targetDoc);
-        }        
+
+    public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc,
+            String templateName, boolean save) throws ClientException {
+        TemplateBasedDocument tbd = targetDoc.getAdapter(TemplateBasedDocument.class);
+        if (tbd != null) {
+            if (!tbd.getTemplateNames().contains(templateName)) {
+                return targetDoc;
+            }
+            if (tbd.getTemplateNames().size() == 1) {
+                // remove the whole facet since there is no more binding
+                targetDoc.removeFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
+                if (save) {
+                    targetDoc = targetDoc.getCoreSession().saveDocument(
+                            targetDoc);
+                }
+            } else {
+                // only remove the binding
+                targetDoc = tbd.removeTemplateBinding(templateName, true);
+            }
+        }
         return targetDoc;
     }
 

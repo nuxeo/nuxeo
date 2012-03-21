@@ -28,17 +28,21 @@ public interface TemplateProcessorService {
     List<TemplateSourceDocument> getAvailableTemplates(CoreSession session,
             String targetType) throws ClientException;
 
-    List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType) throws ClientException;
-    
-    List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) throws ClientException;
+    List<TemplateSourceDocument> getAvailableOfficeTemplates(
+            CoreSession session, String targetType) throws ClientException;
+
+    List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(
+            DocumentModel source) throws ClientException;
 
     Map<String, String> getTypeMapping();
 
     void registerTypeMapping(DocumentModel doc) throws ClientException;
 
-    DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc, boolean save) throws ClientException;
-    
-    DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, boolean save) throws ClientException;
-    
-    
+    DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc,
+            DocumentModel sourceTemplateDoc, boolean save)
+            throws ClientException;
+
+    DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc,
+            String templateName, boolean save) throws ClientException;
+
 }

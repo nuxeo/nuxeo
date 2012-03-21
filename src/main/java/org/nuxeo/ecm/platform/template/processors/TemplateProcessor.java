@@ -26,14 +26,15 @@ import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 
 /**
  * Interface used to drive rendition of the {@link TemplateBasedDocument}
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public interface TemplateProcessor {
 
-    public Blob renderTemplate(TemplateBasedDocument templateDocument)
-            throws Exception;
+    public Blob renderTemplate(TemplateBasedDocument templateDocument,
+            String templateName) throws Exception;
 
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception;
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
+            throws Exception;
 }

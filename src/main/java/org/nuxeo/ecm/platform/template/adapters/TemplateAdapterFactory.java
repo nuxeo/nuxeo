@@ -18,6 +18,9 @@
 
 package org.nuxeo.ecm.platform.template.adapters;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
@@ -29,11 +32,13 @@ import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocumentAda
  * Pluggable {@link DocumentAdapterFactory} used to return the right
  * {@link TemplateBasedDocument} or {@link TemplateSourceDocument}
  * implementation according to given {@link DocumentModel}.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class TemplateAdapterFactory implements DocumentAdapterFactory {
+
+    protected static final Log log = LogFactory.getLog(TemplateAdapterFactory.class);
 
     @SuppressWarnings("rawtypes")
     public Object getAdapter(DocumentModel doc, Class adapterClass) {
@@ -41,7 +46,14 @@ public class TemplateAdapterFactory implements DocumentAdapterFactory {
         if (adapterClass.getSimpleName().equals(
                 TemplateBasedDocument.class.getSimpleName())) {
             if (doc.hasFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET)) {
-                return new TemplateBasedDocumentAdapterImpl(doc);
+                try {
+                    return new TemplateBasedDocumentAdapterImpl(doc);
+                } catch (ClientException e) {
+                    log.error(
+                            "Unable to create TemplateBasedDocumentAdapterImpl",
+                            e);
+                    return null;
+                }
             } else {
                 return null;
             }

@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.template.TemplateInput;
+import org.nuxeo.ecm.platform.template.XMLSerializer;
 import org.nuxeo.ecm.platform.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
@@ -45,6 +46,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         implements Serializable, TemplateSourceDocument {
 
     public static final String TEMPLATE_DATA_PROP = "tmpl:templateData";
+
+    public static final String TEMPLATE_NAME_PROP = "tmpl:templateName";
 
     public static final String TEMPLATE_TYPE_PROP = "tmpl:templateType";
 
@@ -78,6 +81,47 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     protected String getTemplateParamsXPath() {
         return TEMPLATE_DATA_PROP;
+    }
+
+    public List<TemplateInput> getParams() throws ClientException {
+        String dataPath = getTemplateParamsXPath();
+
+        if (adaptedDoc.getPropertyValue(dataPath) == null) {
+            return new ArrayList<TemplateInput>();
+        }
+        String xml = adaptedDoc.getPropertyValue(dataPath).toString();
+
+        try {
+            return XMLSerializer.readFromXml(xml);
+        } catch (Exception e) {
+            log.error("Unable to parse parameters", e);
+            return new ArrayList<TemplateInput>();
+        }
+    }
+
+    public boolean hasEditableParams() throws ClientException {
+        for (TemplateInput param : getParams()) {
+            if (!param.isReadOnly()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public DocumentModel saveParams(List<TemplateInput> params, boolean save)
+            throws Exception {
+        String dataPath = getTemplateParamsXPath();
+        String xml = XMLSerializer.serialize(params);
+        adaptedDoc.setPropertyValue(dataPath, xml);
+        if (save) {
+            doSave();
+        }
+        return adaptedDoc;
+    }
+
+    protected TemplateProcessor getTemplateProcessor() {
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        return tps.getProcessor(getTemplateType());
     }
 
     public String getParamsAsString() throws PropertyException, ClientException {
@@ -327,7 +371,17 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     }
 
     public String getName() {
-        return getAdaptedDoc().getName();
+        try {
+            String name = (String) getAdaptedDoc().getPropertyValue(
+                    TEMPLATE_NAME_PROP);
+            if (name == null) {
+                name = getAdaptedDoc().getTitle();
+            }
+            return name;
+        } catch (Exception e) {
+            log.error("Error while getting output format", e);
+            return null;
+        }
     }
 
     public String getFileName() throws ClientException {

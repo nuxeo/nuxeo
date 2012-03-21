@@ -9,7 +9,10 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
 
+  <xs:element name="templateName" type="xs:string"/>
+
   <xs:element name="applicableTypes" type="nxs:typesList"/>
+
   <xs:element name="forcedTypes" type="nxs:typesList"/>
 
   <xs:element name="templateType" type="xs:string"/>

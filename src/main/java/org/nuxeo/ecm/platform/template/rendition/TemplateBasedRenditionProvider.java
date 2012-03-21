@@ -21,11 +21,9 @@ public class TemplateBasedRenditionProvider implements RenditionProvider {
         TemplateBasedDocument tbd = doc.getAdapter(TemplateBasedDocument.class);
         if (tbd != null) {
             try {
-                // check is some template has been bound to a rendition
-                if (def.getName().equals(
-                        tbd.getSourceTemplate().getTargetRenditionName())) {
-                    return true;
-                }
+                // check if some template has been bound to a rendition
+                String template = tbd.getTemplateNameForRendition(def.getName());
+                return template == null ? false : true;
             } catch (Exception e) {
                 log.error("Error while testing Rendition Availability", e);
                 return false;
@@ -40,7 +38,8 @@ public class TemplateBasedRenditionProvider implements RenditionProvider {
 
         TemplateBasedDocument tbd = doc.getAdapter(TemplateBasedDocument.class);
         try {
-            Blob rendered = tbd.renderWithTemplate();
+            String template = tbd.getTemplateNameForRendition(definition.getName());
+            Blob rendered = tbd.renderWithTemplate(template);
             List<Blob> blobs = new ArrayList<Blob>();
             blobs.add(rendered);
             return blobs;

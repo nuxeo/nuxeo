@@ -53,14 +53,15 @@ import org.nuxeo.ecm.platform.template.processors.TemplateProcessor;
 
 /**
  * {@link TemplateProcessor} for ODT based templates.
- *
- * Using JODReports but also custom ODT hacks.
- * May be migrated to pure ODT + Custom Freemarker soon.
- *
+ * 
+ * Using JODReports but also custom ODT hacks. May be migrated to pure ODT +
+ * Custom Freemarker soon.
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
-public class JODReportTemplateProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
+public class JODReportTemplateProcessor extends AbstractTemplateProcessor
+        implements TemplateProcessor {
 
     public static final String TEMPLATE_TYPE = "JODTemplate";
 
@@ -79,22 +80,23 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
         }
 
         // add includes
-        //params.addAll(IncludeManager.getIncludes(xmlContent));
+        // params.addAll(IncludeManager.getIncludes(xmlContent));
 
         return params;
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
-            throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
+            String templateName) throws Exception {
 
         OOoArchiveModifier modifier = new OOoArchiveModifier();
 
-        Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob();
-        if (templateBasedDocument.getSourceTemplateDoc()!=null) {
-            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc().getAdapter(TemplateSourceDocument.class).getTemplateBlob();
+        Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob(templateName);
+        if (templateBasedDocument.getSourceTemplateDoc(templateName) != null) {
+            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc(
+                    templateName).getAdapter(TemplateSourceDocument.class).getTemplateBlob();
         }
-        List<TemplateInput> params = templateBasedDocument.getParams();
+        List<TemplateInput> params = templateBasedDocument.getParams(templateName);
 
         // init Jod template from the template DocumentModel Blob
         DocumentTemplateFactory documentTemplateFactory = new DocumentTemplateFactory();
@@ -112,39 +114,38 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
             if (param.isSourceValue()) {
                 Property property = null;
                 try {
-                    property = templateBasedDocument.getAdaptedDoc().getProperty(param.getSource());
+                    property = templateBasedDocument.getAdaptedDoc().getProperty(
+                            param.getSource());
                 } catch (Throwable e) {
                     log.warn("Unable to ready property " + param.getSource(), e);
                 }
-                if (property!=null) {
+                if (property != null) {
                     Serializable value = property.getValue();
-                    if (value!=null) {
+                    if (value != null) {
                         if (Blob.class.isAssignableFrom(value.getClass())) {
                             Blob blob = (Blob) value;
-                            if (param.getType()==InputType.PictureProperty) {
-                                if (blob.getMimeType()==null || "".equals(blob.getMimeType().trim())) {
+                            if (param.getType() == InputType.PictureProperty) {
+                                if (blob.getMimeType() == null
+                                        || "".equals(blob.getMimeType().trim())) {
                                     blob.setMimeType("image/jpeg");
                                 }
                                 context.put(param.getName(), blob);
                                 blobsToInsert.add((Blob) value);
                             }
                         } else {
-                            context.put(param.getName(), nuxeoWrapper.wrap(property));
+                            context.put(param.getName(),
+                                    nuxeoWrapper.wrap(property));
                         }
-                    }
-                    else {
+                    } else {
                         // no available value, try to find a default one ...
                         Type pType = property.getType();
                         if (pType.getName().equals(BooleanType.ID)) {
                             context.put(param.getName(), new Boolean(false));
-                        }
-                        else if (pType.getName().equals(DateType.ID)) {
+                        } else if (pType.getName().equals(DateType.ID)) {
                             context.put(param.getName(), new Date());
-                        }
-                        else if (pType.getName().equals(StringType.ID)) {
+                        } else if (pType.getName().equals(StringType.ID)) {
                             context.put(param.getName(), "");
-                        }
-                        else if (pType.getName().equals(StringType.ID)) {
+                        } else if (pType.getName().equals(StringType.ID)) {
                             context.put(param.getName(), "");
                         } else {
                             context.put(param.getName(), new Object());
@@ -152,12 +153,12 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
                     }
                 }
             } else {
-                if( InputType.StringValue.equals(param.getType())) {
-                    context.put(param.getName(),param.getStringValue());
-                } else if( InputType.BooleanValue.equals(param.getType())) {
-                    context.put(param.getName(),param.getBooleanValue());
-                } else if( InputType.DateValue.equals(param.getType())) {
-                    context.put(param.getName(),param.getDateValue());
+                if (InputType.StringValue.equals(param.getType())) {
+                    context.put(param.getName(), param.getStringValue());
+                } else if (InputType.BooleanValue.equals(param.getType())) {
+                    context.put(param.getName(), param.getBooleanValue());
+                } else if (InputType.DateValue.equals(param.getType())) {
+                    context.put(param.getName(), param.getDateValue());
                 }
             }
         }
@@ -176,8 +177,9 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
 
         Blob newBlob = new FileBlob(generated);
         newBlob.setMimeType("application/vnd.oasis.opendocument.text");
-        if (templateBasedDocument.getTemplateBlob()!=null) {
-            newBlob.setFilename(templateBasedDocument.getTemplateBlob().getFilename());
+        if (templateBasedDocument.getTemplateBlob(templateName) != null) {
+            newBlob.setFilename(templateBasedDocument.getTemplateBlob(
+                    templateName).getFilename());
         } else {
             newBlob.setFilename(sourceTemplateBlob.getFilename());
         }
@@ -188,18 +190,17 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
         return newBlob;
     }
 
-
     public String readXMLContent(Blob blob) throws Exception {
         ZipInputStream zIn = new ZipInputStream(blob.getStream());
         ZipEntry zipEntry = zIn.getNextEntry();
-        String xmlContent=null;
-        while (zipEntry!=null) {
+        String xmlContent = null;
+        while (zipEntry != null) {
             if (zipEntry.getName().equals("content.xml")) {
                 StringBuilder sb = new StringBuilder();
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int read;
                 while ((read = zIn.read(buffer)) != -1) {
-                        sb.append(new String(buffer, 0, read));
+                    sb.append(new String(buffer, 0, read));
                 }
                 xmlContent = sb.toString();
                 break;
@@ -208,6 +209,6 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
         }
         zIn.close();
         return xmlContent;
- }
+    }
 
 }

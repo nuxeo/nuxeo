@@ -69,15 +69,6 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         return OOO_TEMPLATE_TYPE;
     }
 
-    protected String getTemplateFormat(TemplateBasedDocument templateDocument) {
-        try {
-            return getTemplateFormat(templateDocument.getTemplateBlob());
-        } catch (Exception e) {
-            log.error("Unable to read Blob to determine Template format", e);
-            return OOO_TEMPLATE_TYPE;
-        }
-    }
-
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob)
             throws Exception {
@@ -105,10 +96,11 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
-            throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
+            String templateName) throws Exception {
 
-        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument,
+                templateName);
 
         // load the template
         IXDocReport report = XDocReportRegistry.getRegistry().loadReport(
@@ -116,7 +108,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                 false);
 
         // manage parameters
-        List<TemplateInput> params = templateBasedDocument.getParams();
+        List<TemplateInput> params = templateBasedDocument.getParams(templateName);
         FieldsMetadata metadata = new FieldsMetadata();
         for (TemplateInput param : params) {
             if (param.getType() == InputType.PictureProperty) {

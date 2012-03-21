@@ -36,16 +36,20 @@
 
       <ui:include src="/incl/message_banner.xhtml"/>
 
+      <h3>
+      <h:outputText value="#{messages['title.template.associate']}" />
+      </h3>
+
       <h:form enctype="multipart/form-data" id="document_template_associate">
 
-      <h:selectOneMenu value="#{templateActions.templateIdToAssociate}">
-        <nxu:selectItems var="doc" value="#{templateActions.getAvailableTemplates(currentDocument.type)}"
+      <h:selectOneMenu value="#{templateBasedActions.templateIdToAssociate}">
+        <nxu:selectItems var="doc" value="#{templateBasedActions.getBindableTemplatesForDocument()}"
           itemValue="#{doc.id}"
-          itemLabel="#{doc.title}" />
+          itemLabel="#{doc.title} (#{doc.name})" />
       </h:selectOneMenu>
 
-      <h:commandButton class="button" value="#{messages['command.associateTemplate']}"
-          action="#{templateActions.associateDocumentToTemplate}" id="button_save" />
+      <h:commandButton class="button" value="#{messages['command.template.associate']}"
+          action="#{templateBasedActions.associateDocumentToTemplate}" id="button_save" />
       </h:form>
 
 <script>

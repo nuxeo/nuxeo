@@ -31,41 +31,59 @@ import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
  * Template. This Document can be associated with a
  * {@link TemplateSourceDocument} that provides the rendering template as well
  * as the default inputs used for rendering.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public interface TemplateBasedDocument {
 
     public DocumentModel setTemplate(DocumentModel template, boolean save)
             throws PropertyException, ClientException;
 
-    public TemplateSourceDocument getSourceTemplate() throws Exception;
+    public TemplateSourceDocument getSourceTemplate(String templateName)
+            throws Exception;
 
-    public DocumentModel getSourceTemplateDoc() throws Exception;
+    public DocumentModel getSourceTemplateDoc(String templateName)
+            throws Exception;
 
-    public String getTemplateType();
+    public List<TemplateSourceDocument> getSourceTemplates();
 
-    public DocumentModel initializeFromTemplate(boolean save) throws Exception;
+    public String getTemplateType(String templateName);
 
-    public Blob renderAndStoreAsAttachment(boolean save) throws Exception;
+    public DocumentModel initializeFromTemplate(String templateName,
+            boolean save) throws Exception;
+
+    public Blob renderAndStoreAsAttachment(String templateName, boolean save)
+            throws Exception;
 
     public boolean isBidirectional();
 
-    public Blob renderWithTemplate() throws Exception;
+    public Blob renderWithTemplate(String templateName) throws Exception;
 
-    public DocumentModel updateDocumentModelFromBlob(boolean save)
-            throws Exception;
+    /*
+     * public DocumentModel updateDocumentModelFromBlob(boolean save) throws
+     * Exception;
+     */
 
-    public List<TemplateInput> getParams() throws PropertyException,
-            ClientException;
+    public boolean hasParams(String templateName) throws ClientException;
 
-    public DocumentModel saveParams(List<TemplateInput> params, boolean save)
-            throws Exception;
+    public List<TemplateInput> getParams(String templateName)
+            throws ClientException;
+
+    public DocumentModel saveParams(String templateName,
+            List<TemplateInput> params, boolean save) throws Exception;
 
     public DocumentModel getAdaptedDoc();
 
-    public Blob getTemplateBlob() throws Exception;
+    public Blob getTemplateBlob(String templateName) throws Exception;
 
-    public boolean hasEditableParams() throws ClientException;
+    public boolean hasEditableParams(String templateName)
+            throws ClientException;
+
+    String getTemplateNameForRendition(String renditionName);
+
+    public List<String> getTemplateNames();
+
+    public DocumentModel removeTemplateBinding(String templateName, boolean save)
+            throws ClientException;
 }

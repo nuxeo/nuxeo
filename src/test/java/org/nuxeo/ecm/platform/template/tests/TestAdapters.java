@@ -52,10 +52,10 @@ public class TestAdapters extends SQLRepositoryTestCase {
         template = session.createDocument(template);
 
         // test the adapter
-        TemplateSourceDocument templateAdapter = template.getAdapter(TemplateSourceDocument.class);
-        assertNotNull(templateAdapter);
+        TemplateSourceDocument templateSource = template.getAdapter(TemplateSourceDocument.class);
+        assertNotNull(templateSource);
 
-        Blob blob = templateAdapter.getTemplateBlob();
+        Blob blob = templateSource.getTemplateBlob();
         assertNotNull(blob);
         assertEquals("hello.docx", blob.getFilename());
 
@@ -63,13 +63,13 @@ public class TestAdapters extends SQLRepositoryTestCase {
         TemplateInput input1 = new TemplateInput("field1", "Value1");
         input1.setDesciption("Some description");
 
-        templateAdapter.addInput(input1);
-        assertNotNull(templateAdapter.getAdaptedDoc().getPropertyValue(
+        templateSource.addInput(input1);
+        assertNotNull(templateSource.getAdaptedDoc().getPropertyValue(
                 "tmpl:templateData"));
-        assertEquals(1, templateAdapter.getParams().size());
-        assertNotNull(templateAdapter.getParamsAsString());
+        assertEquals(1, templateSource.getParams().size());
+        assertNotNull(templateSource.getParamsAsString());
 
-        template = templateAdapter.save();
+        template = templateSource.save();
 
         session.save();
 
@@ -84,11 +84,16 @@ public class TestAdapters extends SQLRepositoryTestCase {
         assertNotNull(adapter);
 
         // associated to template
-        testDoc = adapter.setTemplate(templateAdapter.getAdaptedDoc(), true);
-        testDoc = adapter.initializeFromTemplate(true);
+        testDoc = adapter.setTemplate(templateSource.getAdaptedDoc(), true);
+        List<String> templateNames = adapter.getTemplateNames();
+        assertNotNull(templateNames);
+        assertEquals(1, templateNames.size());
+        assertEquals(templateSource.getName(), templateNames.get(0));
+
+        testDoc = adapter.initializeFromTemplate(templateSource.getName(), true);
 
         // check fields
-        List<TemplateInput> copiedParams = adapter.getParams();
+        List<TemplateInput> copiedParams = adapter.getParams(templateSource.getName());
         assertNotNull(copiedParams);
         assertEquals(1, copiedParams.size());
         assertEquals("field1", copiedParams.get(0).getName());
@@ -96,9 +101,32 @@ public class TestAdapters extends SQLRepositoryTestCase {
 
         // check update
         copiedParams.get(0).setStringValue("newValue");
-        adapter.saveParams(copiedParams, true);
-        copiedParams = adapter.getParams();
+        adapter.saveParams(templateSource.getName(), copiedParams, true);
+        copiedParams = adapter.getParams(templateSource.getName());
         assertEquals("newValue", copiedParams.get(0).getStringValue());
+
+        // create a second template doc
+        DocumentModel template2 = session.createDocumentModel(
+                root.getPathAsString(), "template2", "TemplateSource");
+        template2.setProperty("dublincore", "title", "MyTemplate2");
+        file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
+        assertNotNull(file);
+        fileBlob = new FileBlob(file);
+        fileBlob.setFilename("hello.odt");
+        template2.setProperty("file", "content", fileBlob);
+        template2 = session.createDocument(template2);
+
+        // test the adapter
+        TemplateSourceDocument templateSource2 = template2.getAdapter(TemplateSourceDocument.class);
+        assertNotNull(templateSource2);
+
+        // associated to template
+        testDoc = adapter.setTemplate(templateSource2.getAdaptedDoc(), true);
+        templateNames = adapter.getTemplateNames();
+        assertNotNull(templateNames);
+        assertEquals(2, templateNames.size());
+        assertTrue(templateNames.contains(templateSource.getName()));
+        assertTrue(templateNames.contains(templateSource2.getName()));
 
     }
 

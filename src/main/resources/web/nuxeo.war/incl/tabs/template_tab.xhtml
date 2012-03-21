@@ -17,6 +17,9 @@
     <h3>
        <h:outputText value="Template parameters" />
     </h3>
-    <ui:include src="/incl/tabs/templates/params_editor.xhtml" />
+    <ui:include src="/incl/tabs/templates/params_editor.xhtml">
+     <ui:param name="targetTemplate" value="null" />
+     <ui:param name="bean" value="#{templateActions}" />
+    </ui:include>
 
 </div>

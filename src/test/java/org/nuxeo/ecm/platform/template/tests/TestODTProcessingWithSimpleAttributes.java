@@ -11,15 +11,15 @@ import org.nuxeo.ecm.platform.template.processors.xdocreport.ZipXmlHelper;
 
 public class TestODTProcessingWithSimpleAttributes extends
         SimpleTemplateDocTestCase {
-    
+
     public void testDocumentsAttributes() throws Exception {
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        Blob newBlob = adapter.renderAndStoreAsAttachment(true);
+        Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
-        //System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
+        // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob,
                 ZipXmlHelper.OOO_MAIN_FILE);
@@ -29,7 +29,7 @@ public class TestODTProcessingWithSimpleAttributes extends
         assertTrue(xmlContent.contains("Subject 3"));
         assertTrue(xmlContent.contains("MyTestDoc"));
         assertTrue(xmlContent.contains("Administrator"));
-        
+
         newBlob.transferTo(new File("/tmp/test.odt"));
 
     }

@@ -17,7 +17,7 @@ public class TestDOCXProcessingWithSimpleAttributes extends
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        Blob newBlob = adapter.renderAndStoreAsAttachment(true);
+        Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
         // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 

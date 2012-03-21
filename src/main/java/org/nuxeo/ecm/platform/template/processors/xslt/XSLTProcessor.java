@@ -24,26 +24,28 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements
         TemplateProcessor {
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
-            throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
+            String templateName) throws Exception {
 
-        BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(BlobHolder.class);
-        if (bh==null) {
+        BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(
+                BlobHolder.class);
+        if (bh == null) {
             return null;
         }
-        
+
         Blob xmlContent = bh.getBlob();
-        if (xmlContent==null) {
+        if (xmlContent == null) {
             return null;
         }
-                
-        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument);
-                
+
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument,
+                templateName);
+
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer = tFactory.newTransformer(new StreamSource(
                 sourceTemplateBlob.getStream()));
         transformer.setErrorListener(new ErrorListener() {
-                        
+
             @Override
             public void warning(TransformerException exception)
                     throws TransformerException {
@@ -63,23 +65,23 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements
             }
         });
         transformer.setURIResolver(null);
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
+
         transformer.transform(new StreamSource(xmlContent.getStream()),
                 new StreamResult(out));
-                
+
         Blob result = new ByteArrayBlob(out.toByteArray(), "text/xml");
         String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
         result.setFilename(targetFileName + ".xml");
-        
+
         return result;
-        
+
     }
 
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {        
+            throws Exception {
         return new ArrayList<TemplateInput>();
     }
 

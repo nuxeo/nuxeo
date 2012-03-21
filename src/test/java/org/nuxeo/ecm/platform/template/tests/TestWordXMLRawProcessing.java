@@ -18,6 +18,8 @@ import org.nuxeo.ecm.platform.template.processors.docx.WordXMLRawTemplateProcess
 
 public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
+    protected static final String TEMPLATE_NAME = "mytestTemplate";
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -63,19 +65,29 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
     protected TemplateBasedDocument setupTestDocs() throws Exception {
 
         DocumentModel root = session.getRootDocument();
+
+        DocumentModel templateDoc = session.createDocumentModel(
+                root.getPathAsString(), "templatedDoc", "TemplateSource");
+        templateDoc.setProperty("dublincore", "title", "MyTemplate");
+        templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
+        File file = FileUtils.getResourceFileFromContext("data/sample templatet.docx");
+        Blob fileBlob = new FileBlob(file);
+        templateDoc.setProperty("file", "content", fileBlob);
+        templateDoc = session.createDocument(templateDoc);
+
         DocumentModel testDoc = session.createDocumentModel(
                 root.getPathAsString(), "templatedDoc", "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
-
-        File file = FileUtils.getResourceFileFromContext("data/sample templatet.docx");
-        Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("sample templatet.docx");
-        testDoc.setProperty("file", "content", fileBlob);
+        // testDoc.setProperty("file", "content", fileBlob);
         testDoc.setProperty("dublincore", "description", "some description");
         testDoc = session.createDocument(testDoc);
 
         TemplateBasedDocument adapter = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(adapter);
+
+        // associate doc and template
+        adapter.setTemplate(templateDoc, true);
 
         return adapter;
     }
@@ -87,12 +99,12 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
         assertNotNull(testDoc);
         List<TemplateInput> params = getTestParams();
 
-        testDoc = adapter.saveParams(params, true);
+        testDoc = adapter.saveParams(TEMPLATE_NAME, params, true);
         session.save();
 
         WordXMLRawTemplateProcessor processor = new WordXMLRawTemplateProcessor();
 
-        Blob newBlob = processor.renderTemplate(adapter);
+        Blob newBlob = processor.renderTemplate(adapter, TEMPLATE_NAME);
 
         String xmlContent = processor.readPropertyFile(newBlob.getStream());
 

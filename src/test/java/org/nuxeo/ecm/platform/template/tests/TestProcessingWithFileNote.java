@@ -29,6 +29,8 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
 
     private DocumentModel testDoc;
 
+    protected static final String TEMPLATE_NAME = "mytestTemplate";
+
     private static final Log log = LogFactory.getLog(TestProcessingWithFileNote.class);
 
     @Override
@@ -71,7 +73,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("Container.odt");
         templateDoc.setProperty("file", "content", fileBlob);
-
+        templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
         templateDoc = session.createDocument(templateDoc);
 
         // create the note
@@ -148,8 +150,8 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         // templateBased.setTemplate(templateDoc, true);
 
         // render
-        testDoc = templateBased.initializeFromTemplate(true);
-        Blob blob = templateBased.renderWithTemplate();
+        testDoc = templateBased.initializeFromTemplate(TEMPLATE_NAME, true);
+        Blob blob = templateBased.renderWithTemplate(TEMPLATE_NAME);
         assertNotNull(blob);
 
         assertEquals("MyTestNote2.odt", blob.getFilename());

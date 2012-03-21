@@ -7,31 +7,33 @@
     xmlns:nxu="http://nuxeo.org/nxweb/util"
     xmlns:c="http://java.sun.com/jstl/core">
 
-            <script src="/nuxeo/scripts/template-edit-param.js"></script>
-            <h:form enctype="multipart/form-data" id="params_edit">
-                <nxu:repeat var="param" value="#{templateActions.templateEditableInputs}">
-                    <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
-                </nxu:repeat>
+  <script src="/nuxeo/scripts/template-edit-param.js"></script>
+  <h:form enctype="multipart/form-data" id="params_edit">
+      <nxu:repeat var="param" value="#{bean.templateEditableInputs}">
+          <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
+      </nxu:repeat>
 
-                <c:if test="#{templateActions.canUpdateTemplateInputs()}">
-                  <p class="buttonsGadget">
-                    <h:commandButton type="submit" class="button" value="#{messages['command.save']}"
-                        action="#{templateActions.saveTemplateInputs}" id="button_save"/>
-                    <h:commandButton class="button" value="#{messages['command.cancel']}"
-                        action="#{navigationContext.goBack()}" immediate="true"/>
-                  </p>
-                </c:if>
-            </h:form>
+      <c:if test="#{bean.canUpdateTemplateInputs(targetTemplate)}">
 
-        <c:if test="#{templateActions.canAddTemplateInputs()}">
-            <h:form enctype="multipart/form-data" id="addTemplateField">
+        <c:if test="#{bean.canAddTemplateInputs()}">
+           <script>
+             function showNewParameterPanel(event) {
+               var link = jQuery(event.target);
+               link.next().fadeIn();
+               link.fadeOut();
+               return false;
+             }
+           </script>
 
-                <p>
-                Name : <h:inputText value="#{templateActions.newInput.name}"></h:inputText>
-                </p>
-                <p>
-                Type :
-                <h:selectOneMenu  value="#{templateActions.newInput.typeAsString}">
+            <A href="#" onclick="return showNewParameterPanel(event)"> Add a new Parameter </A>
+            <table border="0" style="display:none">
+            <tr>
+            <td class="fieldColumn">
+                            Name <h:inputText value="#{bean.newInput.name}"></h:inputText>
+            </td>
+            <td class="fieldColumn">
+                Type
+                <h:selectOneMenu  value="#{bean.newInput.typeAsString}">
                     <f:selectItem itemLabel="String value" itemValue="String"/>
                     <f:selectItem itemLabel="Boolean value" itemValue="Boolean"/>
                     <f:selectItem itemLabel="Date value" itemValue="Date"/>
@@ -39,11 +41,24 @@
                     <f:selectItem itemLabel="Picture property binding" itemValue="picture"/>
                     <f:selectItem itemLabel="Include" itemValue="content"/>
                 </h:selectOneMenu>
-                </p>
-                <p class="buttonsGadget">
+            </td>
+            <td class="fieldColumn">
+                <span class="buttonsGadget">
                     <h:commandButton type="submit" class="button" value="#{messages['command.add']}"
-                        action="#{templateActions.addTemplateInput}" id="button_add" />
-                </p>
-            </h:form>
+                        action="#{bean.addTemplateInput}" id="button_add" />
+                </span>
+            </td>
+            </tr>
+            </table>
         </c:if>
+
+                  <p class="buttonsGadget">
+                    <h:commandButton type="submit" class="button" value="#{messages['command.save']}"
+                        action="#{bean.saveTemplateInputs}" id="button_save"/>
+                    <h:commandButton class="button" value="#{messages['command.cancel']}"
+                        action="#{navigationContext.goBack()}" immediate="true"/>
+                  </p>
+                </c:if>
+            </h:form>
+
 </div>

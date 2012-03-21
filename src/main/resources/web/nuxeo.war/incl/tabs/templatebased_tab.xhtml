@@ -11,42 +11,108 @@
     xmlns:nxd="http://nuxeo.org/nxweb/document">
 
     <h3>
-       <h:outputText value="Associated Template" />
+       <h:outputText value="#{messages['label.associated.templates']}" />
     </h3>
-   <c:set var="templateDoc" value="#{templateActions.resolveTemplateById(currentDocument.templatesupport.templateId)}" />
-    <c:if test="#{templateDoc!=null}">
-      <nxd:restDocumentLink document="#{templateDoc}">
-        #{nxd:titleOrId(templateDoc)}
-      </nxd:restDocumentLink>
-    </c:if>
-    <c:if test="#{templateDoc==null}">
-    Broken Template : <h:outputText value="#{currentDocument.templatesupport.templateId}"/>
-    </c:if>
 
-    <h3>
-       <h:outputText value="Template parameters" />
-    </h3>
-    <ui:include src="/incl/tabs/templates/params_editor.xhtml" />
+   <c:set var="templates" value="#{currentTemplateBasedDocument.getSourceTemplates()}" />
 
-    <h3>
-       <h:outputText value="Template actions" />
-    </h3>
-        <h:form enctype="multipart/form-data" id="applyTemplate">
-            <p class="buttonsGadget">
-              <c:if test="#{templateActions.canRenderTemplate()}">
-                    <h:commandButton type="submit" class="button" value="Apply to file"
-                        action="#{templateActions.updateBlob}" id="button_applyFile" />
-                    <c:if test="#{templateActions.canReverseTemplate()}">
-                      <h:commandButton type="submit" class="button" value="Read from file (update Document)"
-                        action="#{templateActions.updateDocumentFromBlob}" id="button_readFile" />
-                    </c:if>
-              </c:if>
-              <c:if test="#{templateActions.canResetParameters()}">
-                    <h:commandButton type="submit" class="button" value="Reset parameters"
-                        action="#{templateActions.resetParameters}" id="button_resetParams" />
-              </c:if>
-                    <h:commandButton type="submit" class="button" value="Detach template"
-                        action="#{templateActions.detachTemplate}" id="button_detach" />
-            </p>
-        </h:form>
+   <table>
+   <nxu:repeat var="template" value="#{templates}">
+    <tr>
+      <td> <nxd:restDocumentLink document="#{template.adaptedDoc}">
+            #{template.name}
+          </nxd:restDocumentLink>
+      </td>
+
+         <c:if test="#{template.name == templateBasedActions.getEditableTemplateName()}">
+         <td>
+             <ui:include src="/incl/tabs/templates/params_editor.xhtml">
+              <ui:param name="targetTemplate" value="#{template.name}" />
+              <ui:param name="bean" value="#{templateBasedActions}" />
+             </ui:include>
+             <h:form enctype="multipart/form-data" id="editParamsForm">
+                    <p class="buttonsGadget">
+                        <h:commandButton type="submit" class="button" value="Cancel"
+                            action="#{templateBasedActions.setEditableTemplateName(null)}" />
+                    </p>
+             </h:form>
+
+         </td>
+         <td></td>
+         </c:if>
+         <c:if test="#{template.name != templateBasedActions.getEditableTemplateName()}">
+         <td>
+            <c:if test="#{currentTemplateBasedDocument.hasParams(template.name)}">
+            <A href="#" onclick="jQuery(event.target).hide().next().fadeIn('slow'); return false;"> <h:outputText value="#{messages['label.template.parameters']}"/> </A>
+            <span style="display:none;">
+             <table>
+                <tr>
+                <td>
+                <nxu:repeat value="#{currentTemplateBasedDocument.getParams(template.name)}" var="templateInput">
+                 <span> #{templateInput.toString()} </span><br/>
+               </nxu:repeat>
+               </td>
+               <td>
+                <h:form enctype="multipart/form-data">
+                    <p class="buttonsGadget">
+                        <h:commandButton type="submit" class="button" value="Edit"
+                            action="#{templateBasedActions.setEditableTemplateName(template.name)}" />
+                    </p>
+                </h:form>
+               </td>
+               </tr>
+            </table>
+            </span>
+            </c:if>
+            <c:if test="#{!currentTemplateBasedDocument.hasParams(template.name)}">
+                <h:outputText value="#{messages['label.template.noparameters']}"/>
+            </c:if>
+          </td>
+          <td>
+            <h:form enctype="multipart/form-data">
+                <p class="buttonsGadget">
+                        <h:commandButton type="submit" class="button" value="#{messages['command.template.render']}"
+                            action="#{templateBasedActions.render(template.name)}" id="button_render" />
+                  <c:if test="#{templateBasedActions.canRenderAndStore(template.name)}">
+                        <h:commandButton type="submit" class="button" value="#{messages['command.template.renderAndStore']}"
+                            action="#{templateBasedActions.renderAndStore(template.name)}" id="button_applyFile" />
+                  </c:if>
+                  <c:if test="#{templateBasedActions.canResetParameters(template.name)}">
+                        <h:commandButton type="submit" class="button" value="#{messages['command.template.resetParams']}"
+                            action="#{templateBasedActions.resetParameters(template.name)}" id="button_resetParams" />
+                  </c:if>
+                        <h:commandButton type="submit" class="button" value="#{messages['command.template.detach']}"
+                            action="#{templateBasedActions.detachTemplate(template.name)}" id="button_detach" />
+                </p>
+            </h:form>
+          </td>
+
+         </c:if>
+
+     </tr>
+   </nxu:repeat>
+   </table>
+
+   <c:if test="#{templateBasedActions.canBindNewTemplate()}">
+     <A href="#" onclick="jQuery(event.target).hide().next().fadeIn('slow'); return false;"> <h:outputText value="#{messages['label.template.add']}"/> </A>
+     <div style="display:none">
+     <h:form>
+       <table>
+           <tr>
+             <td class="labelColumn"><h:outputText value="#{messages['label.template.select']}"/>
+             </td>
+             <td class="fieldColumn">
+                   <h:selectOneMenu value="#{templateBasedActions.templateIdToAssociate}">
+                    <nxu:selectItems var="doc" value="#{templateBasedActions.getBindableTemplatesForDocument()}"
+                      itemValue="#{doc.id}"
+                      itemLabel="#{doc.title} (#{doc.name})" />
+                   </h:selectOneMenu>
+                <h:commandButton class="button" value="#{messages['command.template.associate']}"
+                    action="#{templateBasedActions.associateDocumentToTemplate}" id="button_save" />
+             </td>
+          </tr>
+       </table>
+     </h:form>
+   </div>
+  </c:if>
 </div>

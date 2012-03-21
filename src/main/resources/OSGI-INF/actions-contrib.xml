@@ -13,14 +13,16 @@
       <filter-id>is_creating_template</filter-id>
     </action>
 
+<!--
     <action id="CREATE_DOCUMENT_TEMPLATE_INSTANCE" link="#{templateActions.createFromTemplate}"
       order="0" label="command.create">
       <category>CREATE_DOCUMENT_FORM</category>
       <filter-id>is_creating_template_instance</filter-id>
     </action>
+ -->
 
     <action id="TAB_TEMPLATE_PARAMS" link="/incl/tabs/template_tab.xhtml"
-      enabled="true" label="Template parameters" order="55">
+      enabled="true" label="tab.template.parameters" order="55">
       <category>VIEW_ACTION_LIST</category>
       <filter id="view_template_params">
         <rule grant="true">
@@ -31,7 +33,7 @@
     </action>
 
     <action id="TAB_TEMPLATEBASED_PARAMS" link="/incl/tabs/templatebased_tab.xhtml"
-      enabled="true" label="Associated Template" order="55">
+      enabled="true" label="tab.template.associated" order="55">
       <category>VIEW_ACTION_LIST</category>
       <filter id="view_templatebased_params">
         <rule grant="true">
@@ -40,6 +42,7 @@
       </filter>
     </action>
 
+<!--
     <action id="renderTemplate" link="#{templateActions.render}" order="40" label="label.render"
       icon="/icons/doctemplate.png">
       <category>DOCUMENT_UPPER_ACTION</category>
@@ -49,8 +52,9 @@
         </rule>
       </filter>
     </action>
+ -->
 
-    <action id="associateTemplate" link="associateTemplate" order="40" label="label.template.associate"
+    <action id="associateTemplate" link="associateTemplate" order="40" label="action.template.associate"
       icon="/icons/doctemplate.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter id="canAssociateTemplate">

@@ -16,10 +16,13 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 
 public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
 
     protected abstract Blob getTemplateBlob();
+
+    protected static final String TEMPLATE_NAME = "mytestTemplate";
 
     @Override
     public void setUp() throws Exception {
@@ -52,9 +55,14 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         DocumentModel templateDoc = session.createDocumentModel(
                 root.getPathAsString(), "templatedDoc", "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
+        templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
         Blob fileBlob = getTemplateBlob();
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc = session.createDocument(templateDoc);
+
+        TemplateSourceDocument templateSource = templateDoc.getAdapter(TemplateSourceDocument.class);
+        assertNotNull(templateSource);
+        assertEquals(TEMPLATE_NAME, templateSource.getName());
 
         // now create a template based doc
         DocumentModel testDoc = session.createDocumentModel(
@@ -80,7 +88,6 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         blob1.put("filename", "android.jpg");
         blobs.add(blob1);
         testDoc.setPropertyValue("files:files", (Serializable) blobs);
-
 
         testDoc = session.createDocument(testDoc);
 

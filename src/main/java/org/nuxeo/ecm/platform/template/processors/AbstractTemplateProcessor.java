@@ -28,9 +28,9 @@ import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
 
 /**
  * Common code between the implementations of {@link TemplateProcessor}
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public abstract class AbstractTemplateProcessor implements TemplateProcessor {
 
@@ -49,14 +49,12 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
         return workingDir;
     }
 
-    protected Blob getSourceTemplateBlob(TemplateBasedDocument templateBasedDocument) throws Exception {
-        Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob();
-        
-        /*if (templateBasedDocument.getSourceTemplateDoc() != null) {
-            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc().getAdapter(
-                    TemplateSourceDocument.class).getTemplateBlob();
-        }*/
+    protected Blob getSourceTemplateBlob(
+            TemplateBasedDocument templateBasedDocument, String templateName)
+            throws Exception {
+        Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob(templateName);
+
         return sourceTemplateBlob;
     }
-    
+
 }

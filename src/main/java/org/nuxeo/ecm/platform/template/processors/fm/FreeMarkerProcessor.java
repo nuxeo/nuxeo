@@ -34,28 +34,31 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument)
-            throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
+            String templateName) throws Exception {
 
-        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument,
+                templateName);
 
-        String fmTemplateKey = "main" + System.currentTimeMillis();        
-/*        if (sourceTemplateBlob instanceof SQLBlob) {
-            fmTemplateKey = fmTemplateKey + ((SQLBlob) sourceTemplateBlob).getBinary().getDigest();
-        } else {
-            fmTemplateKey = fmTemplateKey + System.currentTimeMillis();
-        }*/
-        
+        String fmTemplateKey = "main" + System.currentTimeMillis();
+        /*
+         * if (sourceTemplateBlob instanceof SQLBlob) { fmTemplateKey =
+         * fmTemplateKey + ((SQLBlob)
+         * sourceTemplateBlob).getBinary().getDigest(); } else { fmTemplateKey =
+         * fmTemplateKey + System.currentTimeMillis(); }
+         */
+
         String ftl = sourceTemplateBlob.getString();
-                
+
         loader.putTemplate(fmTemplateKey, ftl);
 
-        Map<String, Object> ctx = FMContextBuilder.build(templateBasedDocument);
+        Map<String, Object> ctx = FMContextBuilder.build(templateBasedDocument,
+                templateName);
         StringWriter writer = new StringWriter();
         getEngine().render(fmTemplateKey, ctx, writer);
 
         Blob result = new StringBlob(writer.toString());
-        
+
         result.setMimeType("text/html");
         String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
         result.setFilename(targetFileName + ".html");

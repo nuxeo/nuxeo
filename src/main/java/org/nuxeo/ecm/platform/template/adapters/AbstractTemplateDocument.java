@@ -55,39 +55,10 @@ public abstract class AbstractTemplateDocument implements Serializable {
         if (adaptedDoc == null) {
             return null;
         }
-        return CoreInstance.getInstance().getSession(adaptedDoc.getSessionId());
+        return adaptedDoc.getCoreSession();
     }
 
     public DocumentModel getAdaptedDoc() {
-        return adaptedDoc;
-    }
-
-    protected abstract String getTemplateParamsXPath();
-
-    public List<TemplateInput> getParams() throws ClientException {
-        String dataPath = getTemplateParamsXPath();
-
-        if (adaptedDoc.getPropertyValue(dataPath) == null) {
-            return new ArrayList<TemplateInput>();
-        }
-        String xml = adaptedDoc.getPropertyValue(dataPath).toString();
-
-        try {
-            return XMLSerializer.readFromXml(xml);
-        } catch (Exception e) {
-            log.error("Unable to parse parameters", e);
-            return new ArrayList<TemplateInput>();
-        }
-    }
-
-    public DocumentModel saveParams(List<TemplateInput> params, boolean save)
-            throws Exception {
-        String dataPath = getTemplateParamsXPath();
-        String xml = XMLSerializer.serialize(params);
-        adaptedDoc.setPropertyValue(dataPath, xml);
-        if (save) {
-            doSave();
-        }
         return adaptedDoc;
     }
 
@@ -96,23 +67,7 @@ public abstract class AbstractTemplateDocument implements Serializable {
     }
 
     public DocumentModel save() throws ClientException {
-        return getSession().saveDocument(adaptedDoc);
+        doSave();
+        return adaptedDoc;
     }
-
-    public abstract String getTemplateType();
-
-    protected TemplateProcessor getTemplateProcessor() {
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        return tps.getProcessor(getTemplateType());
-    }
-
-    public boolean hasEditableParams() throws ClientException {
-        for (TemplateInput param : getParams()) {
-            if (!param.isReadOnly()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

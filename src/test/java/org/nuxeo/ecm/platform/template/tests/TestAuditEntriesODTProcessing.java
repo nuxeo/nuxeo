@@ -37,13 +37,13 @@ public class TestAuditEntriesODTProcessing extends SimpleTemplateDocTestCase {
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        TemplateSourceDocument template = adapter.getSourceTemplate();
+        TemplateSourceDocument template = adapter.getSourceTemplate(TEMPLATE_NAME);
         assertNotNull(template);
 
         List<TemplateInput> params = template.getParams();
         assertEquals(0, params.size());
 
-        Blob rendered = adapter.renderWithTemplate();
+        Blob rendered = adapter.renderWithTemplate(TEMPLATE_NAME);
         assertNotNull(rendered);
 
         String xmlContent = ZipXmlHelper.readXMLContent(rendered,

@@ -19,7 +19,7 @@ public class TemplateRestHelper extends AbstractRenditionRestHelper {
 
         TemplateBasedDocument template = doc.getAdapter(TemplateBasedDocument.class);
         if (template != null) {
-            return template.renderWithTemplate();
+            return template.renderWithTemplate(renditionName);
         }
         return null;
     }
