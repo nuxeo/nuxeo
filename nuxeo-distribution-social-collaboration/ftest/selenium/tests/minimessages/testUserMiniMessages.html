@@ -12,812 +12,812 @@
 <tr><td rowspan="1" colspan="3">Test User Mini Messages</td></tr>
 </thead><tbody>
 <tr>
-	<td>setTimeout</td>
-	<td>120000</td>
-	<td></td>
+  <td>setTimeout</td>
+  <td>120000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium testUserMiniMessages</td>
-	<td></td>
+  <td>open</td>
+  <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium testUserMiniMessages</td>
+  <td></td>
 </tr>
 <!-- create 2 users leela and bender -->
 <tr>
-	<td>open</td>
-	<td>logout</td>
-	<td></td>
+  <td>open</td>
+  <td>logout</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>username</td>
-	<td>Administrator</td>
+  <td>type</td>
+  <td>username</td>
+  <td>Administrator</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>password</td>
-	<td>Administrator</td>
+  <td>type</td>
+  <td>password</td>
+  <td>Administrator</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>Submit</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Administrator</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>Administrator</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Admin Center</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Admin Center</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Users &amp; groups</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Users &amp; groups</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Create a new user</td>
-	<td></td>
+  <td>click</td>
+  <td>link=Create a new user</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>3000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
-	<td>bender</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
+  <td>bender</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_email&quot;]</td>
-	<td>bender@nuxeo.com</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_email&quot;]</td>
+  <td>bender@nuxeo.com</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstPassword&quot;]</td>
-	<td>bender1</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstPassword&quot;]</td>
+  <td>bender1</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
-	<td>bender1</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
+  <td>bender1</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td></td>
+  <td>type</td>
+  <td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td>members</td>
+  <td>typeKeys</td>
+  <td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+  <td>members</td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Members group</td>
+  <td>verifyElementPresent</td>
+  <td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+  <td>Members group</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
+  <td>click</td>
+  <td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='createUserView:createUser:button_save']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='createUserView:createUser:button_save']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>User created</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>User created</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Users &amp; groups</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Users &amp; groups</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Create a new user</td>
-	<td></td>
+  <td>click</td>
+  <td>link=Create a new user</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>3000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
-	<td>leela</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_username&quot;]</td>
+  <td>leela</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_email&quot;]</td>
-	<td>leela@nuxeo.com</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_email&quot;]</td>
+  <td>leela@nuxeo.com</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstPassword&quot;]</td>
-	<td>leela1</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_firstPassword&quot;]</td>
+  <td>leela1</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
-	<td>leela1</td>
+  <td>type</td>
+  <td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
+  <td>leela1</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td></td>
+  <td>type</td>
+  <td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td>members</td>
+  <td>typeKeys</td>
+  <td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+  <td>members</td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Members group</td>
+  <td>verifyElementPresent</td>
+  <td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+  <td>Members group</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
+  <td>click</td>
+  <td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='createUserView:createUser:button_save']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='createUserView:createUser:button_save']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <!-- add a friend relation between bender and leela -->
 <tr>
-	<td>open</td>
-	<td>logout</td>
-	<td></td>
+  <td>open</td>
+  <td>logout</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>username</td>
-	<td>bender</td>
+  <td>type</td>
+  <td>username</td>
+  <td>bender</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>password</td>
-	<td>bender1</td>
+  <td>type</td>
+  <td>password</td>
+  <td>bender1</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>Submit</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>bender</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>bender</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Home</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Home</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Network</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Network</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='relationshipNetworkView:searchForm:clearButton']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='relationshipNetworkView:searchForm:clearButton']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='relationshipNetworkView:searchForm:searchText']</td>
-	<td>leela</td>
+  <td>type</td>
+  <td>//input[@id='relationshipNetworkView:searchForm:searchText']</td>
+  <td>leela</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='relationshipNetworkView:searchForm:searchButton']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='relationshipNetworkView:searchForm:searchButton']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=leela</td>
-	<td></td>
+  <td>verifyElementPresent</td>
+  <td>link=leela</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=leela</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=leela</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>selectFrame</td>
-	<td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>selectFrame</td>
+  <td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>No mini message to display.</td>
-	<td></td>
+  <td>waitForTextPresent</td>
+  <td>No mini message to display.</td>
+  <td></td>
 </tr>
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
+  <td>selectWindow</td>
+  <td>null</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//tbody[@id='viewUserView:viewUser:nxl_summary_user_profile_layout:nxl_user_relationship:nxw_user_relationship_add:nxw_user_relationship_add_add_relationship:tbody_element']/tr/td/input</td>
-	<td></td>
+  <td>click</td>
+  <td>//tbody[@id='viewUserView:viewUser:nxl_summary_user_profile_layout:nxl_user_relationship:nxw_user_relationship_add:nxw_user_relationship_add_add_relationship:tbody_element']/tr/td/input</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <!-- leela adds some mini messages -->
 <tr>
-	<td>open</td>
-	<td>logout</td>
-	<td></td>
+  <td>open</td>
+  <td>logout</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>username</td>
-	<td>leela</td>
+  <td>type</td>
+  <td>username</td>
+  <td>leela</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>password</td>
-	<td>leela1</td>
+  <td>type</td>
+  <td>password</td>
+  <td>leela1</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>Submit</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>leela</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>leela</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Home</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Home</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Mini Messages</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Mini Messages</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>selectFrame</td>
-	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>selectFrame</td>
+  <td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>newMiniMessageText</td>
-	<td>Leela's first mini message!</td>
+  <td>type</td>
+  <td>newMiniMessageText</td>
+  <td>Leela's first mini message!</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//p[@class='newMiniMessageActions']/input</td>
-	<td></td>
+  <td>click</td>
+  <td>//p[@class='newMiniMessageActions']/input</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>Leela's first mini message!</td>
-	<td></td>
+  <td>waitForTextPresent</td>
+  <td>Leela's first mini message!</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>newMiniMessageText</td>
-	<td>Leela's second mini message!</td>
+  <td>type</td>
+  <td>newMiniMessageText</td>
+  <td>Leela's second mini message!</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//p[@class='newMiniMessageActions']/input</td>
-	<td></td>
+  <td>click</td>
+  <td>//p[@class='newMiniMessageActions']/input</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>Leela's second mini message!</td>
-	<td></td>
+  <td>waitForTextPresent</td>
+  <td>Leela's second mini message!</td>
+  <td></td>
 </tr>
 <!-- check that bender sees the mini messages -->
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
+  <td>selectWindow</td>
+  <td>null</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Log out</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>username</td>
-	<td>bender</td>
+  <td>type</td>
+  <td>username</td>
+  <td>bender</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>password</td>
-	<td>bender1</td>
+  <td>type</td>
+  <td>password</td>
+  <td>bender1</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>Submit</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>bender</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>bender</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>Link=Home</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>Link=Home</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Mini Messages</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Mini Messages</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>selectFrame</td>
-	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>selectFrame</td>
+  <td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>leela</td>
-	<td></td>
+  <td>waitForTextPresent</td>
+  <td>leela</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Leela's first mini message!</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>Leela's first mini message!</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Leela's second mini message!</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>Leela's second mini message!</td>
+  <td></td>
 </tr>
 <!-- bender adds a new mini message, he should see it also -->
 <tr>
-	<td>type</td>
-	<td>newMiniMessageText</td>
-	<td>Bender's first mini message!</td>
+  <td>type</td>
+  <td>newMiniMessageText</td>
+  <td>Bender's first mini message!</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//p[@class='newMiniMessageActions']/input</td>
-	<td></td>
+  <td>click</td>
+  <td>//p[@class='newMiniMessageActions']/input</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>Bender's first mini message!</td>
-	<td></td>
+  <td>waitForTextPresent</td>
+  <td>Bender's first mini message!</td>
+  <td></td>
 </tr>
 <!-- check that the mini messages are displayed on leela's profile -->
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
+  <td>selectWindow</td>
+  <td>null</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Network</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Network</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='relationshipNetworkView:searchForm:clearButton']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='relationshipNetworkView:searchForm:clearButton']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='relationshipNetworkView:searchForm:searchText']</td>
-	<td>leela</td>
+  <td>type</td>
+  <td>//input[@id='relationshipNetworkView:searchForm:searchText']</td>
+  <td>leela</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='relationshipNetworkView:searchForm:searchButton']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='relationshipNetworkView:searchForm:searchButton']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=leela</td>
-	<td></td>
+  <td>verifyElementPresent</td>
+  <td>link=leela</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=leela</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=leela</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>selectFrame</td>
-	<td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>selectFrame</td>
+  <td>//div[@class='gadgets-gadget-chrome gadgets gadget-user-mini-messages fullWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>Leela's first mini message!</td>
-	<td></td>
+  <td>waitForTextPresent</td>
+  <td>Leela's first mini message!</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Leela's second mini message!</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>Leela's second mini message!</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>Bender's first mini message!</td>
-	<td></td>
+  <td>verifyTextNotPresent</td>
+  <td>Bender's first mini message!</td>
+  <td></td>
 </tr>
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
+  <td>selectWindow</td>
+  <td>null</td>
+  <td></td>
 </tr>
 <!-- bender removes his mini message -->
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Log out</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>username</td>
-	<td>bender</td>
+  <td>type</td>
+  <td>username</td>
+  <td>bender</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>password</td>
-	<td>bender1</td>
+  <td>type</td>
+  <td>password</td>
+  <td>bender1</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>Submit</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>bender</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>bender</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Home</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Home</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Mini Messages</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Mini Messages</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>selectFrame</td>
-	<td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
-	<td></td>
+  <td>selectFrame</td>
+  <td>//div[@class='gadgets gadget-user-mini-messages threeQuarterWidth']/div[2]/iframe</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Bender's first mini message!</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>Bender's first mini message!</td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//div[@id=&quot;miniMessagesContainer&quot;]/div/div/div/a</td>
-	<td></td>
+  <td>click</td>
+  <td>//div[@id=&quot;miniMessagesContainer&quot;]/div/div/div/a</td>
+  <td></td>
 </tr>
 <tr>
-	<td>assertConfirmation</td>
-	<td>Delete mini message?</td>
-	<td></td>
+  <td>assertConfirmation</td>
+  <td>Delete mini message?</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextNotPresent</td>
-	<td>Bender's first mini message!</td>
-	<td></td>
+  <td>waitForTextNotPresent</td>
+  <td>Bender's first mini message!</td>
+  <td></td>
 </tr>
 <!-- remove users -->
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
+  <td>selectWindow</td>
+  <td>null</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Log out</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>username</td>
-	<td>Administrator</td>
+  <td>type</td>
+  <td>username</td>
+  <td>Administrator</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>password</td>
-	<td>Administrator</td>
+  <td>type</td>
+  <td>password</td>
+  <td>Administrator</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>Submit</td>
+  <td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Administrator</td>
-	<td></td>
+  <td>verifyTextPresent</td>
+  <td>Administrator</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Admin Center</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Admin Center</td>
+  <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Users &amp; groups</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Users &amp; groups</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='usersListingView:searchForm:searchText']</td>
-	<td>leela</td>
+  <td>type</td>
+  <td>//input[@id='usersListingView:searchForm:searchText']</td>
+  <td>leela</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='usersListingView:searchForm:searchButton']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='usersListingView:searchForm:searchButton']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>xpath=id('usersListingView:users_listing')/x:table[1]/x:tbody[1]/x:tr[1]/x:td[1]/x:div[1]/x:a[1]</td>
-	<td></td>
+  <td>click</td>
+  <td>xpath=id('usersListingView:users_listing')/x:table[1]/x:tbody[1]/x:tr[1]/x:td[1]/x:div[1]/x:a[1]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Delete</td>
-	<td></td>
+  <td>click</td>
+  <td>link=Delete</td>
+  <td></td>
 </tr>
 <tr>
-	<td>assertConfirmation</td>
-	<td>Delete user?</td>
-	<td></td>
+  <td>assertConfirmation</td>
+  <td>Delete user?</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>No user matching the entered criteria</td>
-	<td>10000</td>
+  <td>waitForTextPresent</td>
+  <td>No user matching the entered criteria</td>
+  <td>10000</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='usersListingView:searchForm:searchText']</td>
-	<td>bender</td>
+  <td>type</td>
+  <td>//input[@id='usersListingView:searchForm:searchText']</td>
+  <td>bender</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@id='usersListingView:searchForm:searchButton']</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id='usersListingView:searchForm:searchButton']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>xpath=id('usersListingView:users_listing')/x:table[1]/x:tbody[1]/x:tr[1]/x:td[1]/x:div[1]/x:a[1]</td>
-	<td></td>
+  <td>click</td>
+  <td>xpath=id('usersListingView:users_listing')/x:table[1]/x:tbody[1]/x:tr[1]/x:td[1]/x:div[1]/x:a[1]</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Delete</td>
-	<td></td>
+  <td>click</td>
+  <td>link=Delete</td>
+  <td></td>
 </tr>
 <tr>
-	<td>assertConfirmation</td>
-	<td>Delete user?</td>
-	<td></td>
+  <td>assertConfirmation</td>
+  <td>Delete user?</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>No user matching the entered criteria</td>
-	<td>10000</td>
+  <td>waitForTextPresent</td>
+  <td>No user matching the entered criteria</td>
+  <td>10000</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
+  <td>clickAndWait</td>
+  <td>link=Log out</td>
+  <td></td>
 </tr>
 </tbody>
 </table>
