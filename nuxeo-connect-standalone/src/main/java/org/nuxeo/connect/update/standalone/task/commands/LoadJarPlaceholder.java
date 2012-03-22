@@ -21,9 +21,9 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
@@ -35,17 +35,17 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class UndeployConfig extends AbstractCommand {
+public class LoadJarPlaceholder extends AbstractCommand {
 
-    public static final String ID = "undeploy-config";
+    public static final String ID = "load-jar";
 
     protected File file;
 
-    public UndeployConfig() {
+    public LoadJarPlaceholder() {
         super(ID);
     }
 
-    public UndeployConfig(File file) {
+    public LoadJarPlaceholder(File file) {
         super(ID);
         this.file = file;
     }
@@ -59,13 +59,8 @@ public class UndeployConfig extends AbstractCommand {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getRuntime().getContext().undeploy(file.toURI().toURL());
-        } catch (Exception e) {
-            throw new PackageException("Failed to undeploy configuration file "
-                    + file, e);
-        }
-        return new Deploy(file);
+        // standalone mode: nothing to do
+        return new UnloadJarPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {

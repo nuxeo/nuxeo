@@ -16,55 +16,70 @@
  */
 package org.nuxeo.connect.update.standalone.task.commands;
 
+import java.io.File;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Flush any cache held by the core. This should be used when document types are
- * installed or removed.
+ * Install bundle, flush any application cache and perform Nuxeo preprocessing
+ * on the bundle.
  * <p>
- * The inverse of this command is itself.
+ * The inverse of this command is Undeploy.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class FlushCoreCache extends PostInstallCommand {
+public class DeployPlaceholder extends AbstractCommand {
 
-    public static final String ID = "flush-core";
+    public static final String ID = "deploy";
 
-    public FlushCoreCache() {
+    protected File file;
+
+    public DeployPlaceholder() {
         super(ID);
+    }
+
+    public DeployPlaceholder(File file) {
+        super(ID);
+        this.file = file;
     }
 
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
+        // nothing to do
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).reloadRepository();
-        } catch (Exception e) {
-            throw new PackageException("Failed to reload repository", e);
+        if (!file.isFile()) {
+            // avoid throwing errors - this may happen at uninstall for broken
+            // packages
+            return null;
         }
-        return new FlushCoreCache();
+        // standalone mode: nothing to do
+        return new UndeployPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {
+        String v = element.getAttribute("file");
+        if (v.length() > 0) {
+            file = new File(v);
+            guardVars.put("file", file);
+        }
     }
 
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
+        if (file != null) {
+            writer.attr("file", file.getAbsolutePath());
+        }
         writer.end();
     }
-
 }

@@ -21,30 +21,31 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
  * Install bundle, flush any application cache and perform Nuxeo preprocessing
  * on the bundle.
- * <p>
+ *
  * The inverse of this command is Undeploy.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public class DeployConfig extends AbstractCommand {
+public class UndeployConfigPlaceholder extends AbstractCommand {
 
-    public static final String ID = "deploy-config";
+    public static final String ID = "undeploy-config";
 
     protected File file;
 
-    public DeployConfig() {
+    public UndeployConfigPlaceholder() {
         super(ID);
     }
 
-    public DeployConfig(File file) {
+    public UndeployConfigPlaceholder(File file) {
         super(ID);
         this.file = file;
     }
@@ -52,19 +53,15 @@ public class DeployConfig extends AbstractCommand {
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
+        // nothing to do
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getRuntime().getContext().deploy(file.toURI().toURL());
-        } catch (Exception e) {
-            throw new PackageException("Failed to deploy configuration file "
-                    + file, e);
-        }
-        return new Undeploy(file);
+        // standalone mode: nothing to do
+        // XXX why not DeployConfigPlaceholder ?
+        return new DeployPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {

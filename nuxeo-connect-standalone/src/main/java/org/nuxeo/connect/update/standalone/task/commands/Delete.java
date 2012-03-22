@@ -22,9 +22,10 @@ import java.util.Map;
 import org.nuxeo.common.utils.FileRef;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**

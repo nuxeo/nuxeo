@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -59,7 +58,7 @@ public class PackagePersistence {
 
     protected Map<String, Integer> states;
 
-    private PackageUpdateService pus;
+    private PackageUpdateService service;
 
     public PackagePersistence(PackageUpdateService pus) throws IOException {
         // check if we should use a custom dataDir - useful for offline update
@@ -74,8 +73,7 @@ public class PackagePersistence {
         store.mkdirs();
         temp = new File(root, "tmp");
         temp.mkdirs();
-        this.pus = pus;
-        states = new LinkedHashMap<String, Integer>();
+        this.service = pus;
         states = loadStates();
     }
 
@@ -111,7 +109,7 @@ public class PackagePersistence {
         return result;
     }
 
-    protected void writeStates(Map<String, Integer> states) throws IOException {
+    protected void writeStates() throws IOException {
         StringBuilder buf = new StringBuilder();
         for (Map.Entry<String, Integer> entry : states.entrySet()) {
             buf.append(entry.getKey()).append('=').append(
@@ -124,7 +122,7 @@ public class PackagePersistence {
     public LocalPackage getPackage(String id) throws PackageException {
         File file = new File(store, id);
         if (file.isDirectory()) {
-            return new LocalPackageImpl(file, getState(id));
+            return new LocalPackageImpl(file, getState(id), service);
         }
         return null;
     }
@@ -153,7 +151,7 @@ public class PackagePersistence {
 
     protected LocalPackage addPackageFromDir(File file) throws PackageException {
         LocalPackageImpl pkg = new LocalPackageImpl(file,
-                PackageState.DOWNLOADED);
+                PackageState.DOWNLOADED, service);
         File dir = new File(store, pkg.getId());
         if (dir.exists()) {
             if (pkg.getId().endsWith("-0.0.0-SNAPSHOT")) {
@@ -228,7 +226,8 @@ public class PackagePersistence {
         if (list != null) {
             List<LocalPackage> pkgs = new ArrayList<LocalPackage>(list.length);
             for (File file : list) {
-                pkgs.add(new LocalPackageImpl(file, getState(file.getName())));
+                pkgs.add(new LocalPackageImpl(file, getState(file.getName()),
+                        service));
             }
             return pkgs;
         }
@@ -238,7 +237,7 @@ public class PackagePersistence {
     public synchronized void removePackage(String id) throws PackageException {
         states.remove(id);
         try {
-            writeStates(states);
+            writeStates();
         } catch (IOException e) {
             throw new PackageException("Failed to write package states", e);
         }
@@ -252,7 +251,7 @@ public class PackagePersistence {
             throws PackageException {
         states.put(id, state);
         try {
-            writeStates(states);
+            writeStates();
         } catch (IOException e) {
             throw new PackageException("Failed to write package states", e);
         }
@@ -264,7 +263,7 @@ public class PackagePersistence {
             states.put(key, PackageState.DOWNLOADED);
         }
         try {
-            writeStates(states);
+            writeStates();
         } catch (IOException e) {
             throw new PackageException("Failed to write package states", e);
         }

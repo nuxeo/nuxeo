@@ -29,6 +29,10 @@ import org.nuxeo.connect.update.PackageUpdateService;
  */
 public class UninstallTask extends CommandsTask {
 
+    public UninstallTask(PackageUpdateService pus) {
+        super(pus);
+    }
+
     @Override
     protected File getCommandsFile() throws PackageException {
         return pkg.getUninstallFile();
@@ -41,20 +45,22 @@ public class UninstallTask extends CommandsTask {
 
     @Override
     protected void rollbackDone() throws PackageException {
-        PackageUpdateService service = Framework.getLocalService(PackageUpdateService.class);
         service.setPackageState(pkg, PackageState.STARTED);
     }
 
     @Override
     protected void taskDone() throws PackageException {
-        PackageUpdateService service = Framework.getLocalService(PackageUpdateService.class);
         service.setPackageState(pkg, PackageState.DOWNLOADED);
     }
 
     @Override
     protected void doRun(Map<String, String> params) throws PackageException {
         super.doRun(params);
-        // reload components declared in 'reload' file
-        InstallTask.reloadComponents(getPackage());
+        // no reload of components in standalone mode
+    }
+
+    @Override
+    protected void flush() throws PackageException {
+        // standalone mode: nothing to do
     }
 }

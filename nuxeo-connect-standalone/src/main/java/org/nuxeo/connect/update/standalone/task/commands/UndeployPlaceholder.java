@@ -21,10 +21,9 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
@@ -36,17 +35,17 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Undeploy extends AbstractCommand {
+public class UndeployPlaceholder extends AbstractCommand {
 
     public static final String ID = "undeploy";
 
     protected File file;
 
-    public Undeploy() {
+    public UndeployPlaceholder() {
         super(ID);
     }
 
-    public Undeploy(File file) {
+    public UndeployPlaceholder(File file) {
         super(ID);
         this.file = file;
     }
@@ -54,25 +53,20 @@ public class Undeploy extends AbstractCommand {
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
+        // nothing to do
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            if (!file.isFile()) {
-                // avoid throwing errors - this may happen at uninstall for broken packages
-                return null;
-            }
-            new Uninstall(file).doRun(task, prefs);
-            // TODO is this really needed - anyway a complete flush is made
-            // after an install/uninstall - see CommandsTask.doRun
-            Framework.getLocalService(ReloadService.class).reloadRepository();
-        } catch (Exception e) {
-            throw new PackageException("Failed to undeploy bundle " + file, e);
+        if (!file.isFile()) {
+            // avoid throwing errors - this may happen at uninstall for
+            // broken packages
+            return null;
         }
-        return new Deploy(file);
+        new UninstallPlaceholder(file).doRun(task, prefs);
+        // standalone mode: nothing to do
+        return new DeployPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;

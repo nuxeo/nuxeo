@@ -115,7 +115,7 @@ public abstract class AbstractTask implements Task {
      */
     protected final Map<String, String> env;
 
-    protected AbstractTask() {
+    protected AbstractTask(PackageUpdateService pus) {
         env = new HashMap<String, String>();
         Environment nxenv = Environment.getDefault();
         File serverHome = nxenv.getServerHome();
@@ -144,9 +144,9 @@ public abstract class AbstractTask implements Task {
                 new File(serverHome, "templates").getAbsolutePath());
         env.put(ENV_TIMESTAMP,
                 new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
-        this.service = Framework.getLocalService(PackageUpdateService.class);
         updateMgr = new UpdateManager(serverHome, new File(
                 service.getDataDir(), "registry.xml"));
+        service = pus;
     }
 
     public abstract boolean isInstallTask();
@@ -226,7 +226,6 @@ public abstract class AbstractTask implements Task {
 
     public synchronized void run(Map<String, String> params)
             throws PackageException {
-        PackageUpdateService service = Framework.getLocalService(PackageUpdateService.class);
         if (isInstallTask()) {
             LocalPackage oldpkg = service.getActivePackage(pkg.getName());
             if (oldpkg != null) {
@@ -302,8 +301,7 @@ public abstract class AbstractTask implements Task {
 
     protected LocalPackage validateInstall(ValidationStatus status)
             throws PackageException {
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-        LocalPackage oldpkg = pus.getActivePackage(pkg.getName());
+        LocalPackage oldpkg = service.getActivePackage(pkg.getName());
         if (oldpkg != null) {
             if (oldpkg.getState() == PackageState.INSTALLING) {
                 status.addWarning("A package with the same name: "

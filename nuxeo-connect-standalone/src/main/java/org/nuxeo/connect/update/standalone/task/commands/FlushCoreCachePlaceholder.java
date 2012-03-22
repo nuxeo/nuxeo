@@ -20,10 +20,9 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
@@ -34,29 +33,25 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class FlushJaasCache extends PostInstallCommand {
+public class FlushCoreCachePlaceholder extends PostInstallCommand {
 
-    public static final String ID = "flush-jaas";
+    public static final String ID = "flush-core";
 
-    public FlushJaasCache() {
+    public FlushCoreCachePlaceholder() {
         super(ID);
     }
 
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
+        // nothing to do
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).flushJaasCache();
-        } catch (Exception e) {
-            throw new PackageException("Failed to reload repository", e);
-        }
-        return new FlushJaasCache();
+        // standalone mode: nothing to do
+        return new FlushCoreCachePlaceholder();
     }
 
     public void readFrom(Element element) throws PackageException {
@@ -66,4 +61,5 @@ public class FlushJaasCache extends PostInstallCommand {
         writer.start(ID);
         writer.end();
     }
+
 }

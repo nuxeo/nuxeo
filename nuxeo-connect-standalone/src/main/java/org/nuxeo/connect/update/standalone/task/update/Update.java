@@ -26,11 +26,11 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.standalone.task.AbstractTask;
 import org.nuxeo.connect.update.standalone.task.commands.AbstractCommand;
-import org.nuxeo.connect.update.standalone.task.commands.Command;
 import org.nuxeo.connect.update.standalone.task.commands.CompositeCommand;
 import org.nuxeo.connect.update.standalone.task.update.JarUtils.Match;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**

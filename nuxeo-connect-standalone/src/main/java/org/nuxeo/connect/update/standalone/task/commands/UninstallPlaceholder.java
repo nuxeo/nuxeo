@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,51 +16,68 @@
  */
 package org.nuxeo.connect.update.standalone.task.commands;
 
+import java.io.File;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Flush all nuxeo caches.
+ * Un-Deploy an OSGi bundle from the running platform. The bundle is specified
+ * using the absolute bundle file path. The inverse of this command is the
+ * Deploy command.
+ *
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ReloadProperties extends PostInstallCommand {
+public class UninstallPlaceholder extends AbstractCommand {
 
-    public static final String ID = "reload-properties";
+    public static final String ID = "uninstall";
 
-    public ReloadProperties() {
+    protected File file;
+
+    public UninstallPlaceholder() {
         super(ID);
+    }
+
+    public UninstallPlaceholder(File file) {
+        super(ID);
+        this.file = file;
     }
 
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
+        if (file == null) {
+            status.addError("Invalid uninstall syntax: No file specified");
+        }
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getRuntime().reloadProperties();
-        } catch (Exception e) {
-            throw new PackageException("Failed to reload properties", e);
-        }
-        return new ReloadProperties();
+        // standalone mode: nothing to do
+        return new InstallPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {
+        String v = element.getAttribute("file");
+        if (v.length() > 0) {
+            file = new File(v);
+            guardVars.put("file", file);
+        }
     }
 
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
+        if (file != null) {
+            writer.attr("file", file.getAbsolutePath());
+        }
         writer.end();
     }
 }

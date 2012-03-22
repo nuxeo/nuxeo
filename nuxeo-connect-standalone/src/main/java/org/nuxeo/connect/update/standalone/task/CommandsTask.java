@@ -33,8 +33,8 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.standalone.task.commands.Command;
-import org.nuxeo.connect.update.standalone.task.commands.Flush;
+import org.nuxeo.connect.update.task.Command;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,11 +53,12 @@ public abstract class CommandsTask extends AbstractTask {
      * The log is generated in the inverse order of commands to ensure last
      * command is rollbacked first.
      */
-    protected final LinkedList<Command> log;
+    protected final LinkedList<Command> commandLog;
 
-    protected CommandsTask() {
+    protected CommandsTask(PackageUpdateService pus) {
+        super(pus);
         commands = new ArrayList<Command>();
-        log = new LinkedList<Command>();
+        commandLog = new LinkedList<Command>();
     }
 
     /**
@@ -97,7 +98,7 @@ public abstract class CommandsTask extends AbstractTask {
      * Gets the command log. These are the commands ran so far.
      */
     public List<Command> getCommandLog() {
-        return log;
+        return commandLog;
     }
 
     /**
@@ -116,23 +117,25 @@ public abstract class CommandsTask extends AbstractTask {
             Command rollbackCmd = cmd.run(this, params);
             if (rollbackCmd != null) {
                 if (rollbackCmd.isPostInstall()) {
-                    log.add(rollbackCmd);
+                    commandLog.add(rollbackCmd);
                 } else {
-                    log.addFirst(rollbackCmd);
+                    commandLog.addFirst(rollbackCmd);
                 }
             }
         }
-        // TODO: force a flush?
-        try {
-            Flush.flush();
-        } catch (Exception e) {
-            throw new PackageException("cache flushing failed", e);
-        }
+        // XXX: force a flush?
+        flush();
     }
 
+    /**
+     * @throws PackageException
+     * @since 5.6
+     */
+    protected abstract void flush() throws PackageException;
+
     protected void doRollback() throws PackageException {
-        while (!log.isEmpty()) {
-            log.removeFirst().run(this, null);
+        while (!commandLog.isEmpty()) {
+            commandLog.removeFirst().run(this, null);
         }
     }
 
@@ -148,7 +151,7 @@ public abstract class CommandsTask extends AbstractTask {
         XmlWriter writer = new XmlWriter();
         writer.start("uninstall");
         writer.startContent();
-        for (Command cmd : log) {
+        for (Command cmd : commandLog) {
             cmd.writeTo(writer);
         }
         writer.end("uninstall");
@@ -170,7 +173,6 @@ public abstract class CommandsTask extends AbstractTask {
     }
 
     public void readLog(Reader reader) throws PackageException {
-        UpdateServiceImpl reg = (UpdateServiceImpl) Framework.getLocalService(PackageUpdateService.class);
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -182,7 +184,7 @@ public abstract class CommandsTask extends AbstractTask {
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
                     String id = node.getNodeName();
-                    Command cmd = reg.getCommand(id);
+                    Command cmd = service.getCommand(id);
                     if (cmd == null) { // may be the name of an embedded class
                         try {
                             cmd = (Command) pkg.getData().loadClass(id).getConstructor().newInstance();

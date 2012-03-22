@@ -24,17 +24,17 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.standalone.task.AbstractTask;
 import org.nuxeo.connect.update.standalone.task.commands.AbstractCommand;
-import org.nuxeo.connect.update.standalone.task.commands.Command;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * 
+ *
  * @since 5.5
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Rollback extends AbstractCommand {
 

@@ -16,71 +16,49 @@
  */
 package org.nuxeo.connect.update.standalone.task.commands;
 
-import java.io.File;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Install bundle, flush any application cache and perform Nuxeo preprocessing
- * on the bundle.
- * 
- * The inverse of this command is Undeploy.
- * 
+ * Flush any cache held by the core. This should be used when document types are
+ * installed or removed.
+ * <p>
+ * The inverse of this command is itself.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
-public class LoadJar extends AbstractCommand {
+public class FlushJaasCachePlaceholder extends PostInstallCommand {
 
-    public static final String ID = "load-jar";
+    public static final String ID = "flush-jaas";
 
-    protected File file;
-
-    public LoadJar() {
+    public FlushJaasCachePlaceholder() {
         super(ID);
-    }
-
-    public LoadJar(File file) {
-        super(ID);
-        this.file = file;
     }
 
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
+        // nothing to do
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).addJar(file);
-        } catch (Exception e) {
-            throw new PackageException("Failed to load JAR " + file, e);
-        }
-        return new UnloadJar(file);
+        // standalone mode: nothing to do
+        return new FlushJaasCachePlaceholder();
     }
 
     public void readFrom(Element element) throws PackageException {
-        String v = element.getAttribute("file");
-        if (v.length() > 0) {
-            file = new File(v);
-            guardVars.put("file", file);
-        }
     }
 
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
-        if (file != null) {
-            writer.attr("file", file.getAbsolutePath());
-        }
         writer.end();
     }
 }

@@ -21,29 +21,30 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Install bundle, flush any application cache and perform Nuxeo preprocessing
- * on the bundle.
- *
- * The inverse of this command is Undeploy.
+ * Deploy an OSGi bundle into the running platform. The bundle is specified
+ * using the absolute bundle file path. The inverse of this command is the
+ * Undeploy command.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class UnloadJar extends AbstractCommand {
+public class InstallPlaceholder extends AbstractCommand {
 
-    public static final String ID = "unload-jar";
+    public static final String ID = "install";
 
     protected File file;
 
-    public UnloadJar() {
+    public InstallPlaceholder() {
         super(ID);
     }
 
-    public UnloadJar(File file) {
+    public InstallPlaceholder(File file) {
         super(ID);
         this.file = file;
     }
@@ -51,18 +52,16 @@ public class UnloadJar extends AbstractCommand {
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
+        if (file == null) {
+            status.addError("Invalid install syntax: No file specified");
+        }
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).removeJar(file);
-        } catch (Exception e) {
-            throw new PackageException("Failed to load JAR " + file, e);
-        }
-        return new LoadJar(file);
+        // standalone mode: nothing to do
+        return new UninstallPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {

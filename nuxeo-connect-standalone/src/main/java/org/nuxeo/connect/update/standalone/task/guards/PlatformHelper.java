@@ -17,6 +17,7 @@
 package org.nuxeo.connect.update.standalone.task.guards;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * This class can be used to check if the current platform match a given
@@ -33,8 +34,12 @@ public class PlatformHelper {
     protected final String version;
 
     public PlatformHelper() {
-        name = Framework.getProperty("org.nuxeo.ecm.product.name");
-        version = Framework.getProperty("org.nuxeo.ecm.product.version");
+        ConfigurationGenerator cg = new ConfigurationGenerator();
+        cg.init();
+        name = cg.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_PRODUCT_NAME);
+        version = cg.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_PRODUCT_VERSION);
     }
 
     public String getName() {

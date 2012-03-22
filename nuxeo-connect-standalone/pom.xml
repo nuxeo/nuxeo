@@ -42,16 +42,21 @@
     </dependency>
 
     <!-- scope test -->
-    <!-- <dependency> -->
-    <!-- <groupId>org.nuxeo.runtime</groupId> -->
-    <!-- <artifactId>nuxeo-runtime-test</artifactId> -->
-    <!-- <scope>test</scope> -->
-    <!-- </dependency> -->
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- <dependency> -->
     <!-- <groupId>org.nuxeo.ecm.platform</groupId> -->
     <!-- <artifactId>nuxeo-connect-client-wrapper</artifactId> -->
     <!-- <scope>test</scope> -->
     <!-- </dependency> -->
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

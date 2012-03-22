@@ -133,19 +133,23 @@ public class ConfigurationGenerator {
 
     public static final String INSTALL_AFTER_RESTART = "installAfterRestart.log";
 
-    private static final String PARAM_DB_DRIVER = "nuxeo.db.driver";
+    public static final String PARAM_DB_DRIVER = "nuxeo.db.driver";
 
-    private static final String PARAM_DB_JDBC_URL = "nuxeo.db.jdbc.url";
+    public static final String PARAM_DB_JDBC_URL = "nuxeo.db.jdbc.url";
 
-    private static final String PARAM_DB_HOST = "nuxeo.db.host";
+    public static final String PARAM_DB_HOST = "nuxeo.db.host";
 
-    private static final String PARAM_DB_PORT = "nuxeo.db.port";
+    public static final String PARAM_DB_PORT = "nuxeo.db.port";
 
-    private static final String PARAM_DB_NAME = "nuxeo.db.name";
+    public static final String PARAM_DB_NAME = "nuxeo.db.name";
 
-    private static final String PARAM_DB_USER = "nuxeo.db.user";
+    public static final String PARAM_DB_USER = "nuxeo.db.user";
 
-    private static final String PARAM_DB_PWD = "nuxeo.db.password";
+    public static final String PARAM_DB_PWD = "nuxeo.db.password";
+
+    public static final String PARAM_PRODUCT_NAME = "org.nuxeo.ecm.product.name";
+
+    public static final String PARAM_PRODUCT_VERSION = "org.nuxeo.ecm.product.version";
 
     private final File nuxeoHome;
 
@@ -619,7 +623,8 @@ public class ConfigurationGenerator {
                     }
                     // Load configuration from chosen templates
                     defaultConfig.load(new FileInputStream(chosenTemplateConf));
-                    String templateInfo = "Include template: " + chosenTemplate.getPath();
+                    String templateInfo = "Include template: "
+                            + chosenTemplate.getPath();
                     if (quiet) {
                         log.debug(templateInfo);
                     } else {

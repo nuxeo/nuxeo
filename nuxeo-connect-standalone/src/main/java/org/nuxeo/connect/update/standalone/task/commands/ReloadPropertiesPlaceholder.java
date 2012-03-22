@@ -20,46 +20,36 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
  * Flush all nuxeo caches.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public class Flush extends PostInstallCommand {
+public class ReloadPropertiesPlaceholder extends PostInstallCommand {
 
-    public static final String ID = "flush";
+    public static final String ID = "reload-properties";
 
-    public Flush() {
+    public ReloadPropertiesPlaceholder() {
         super(ID);
     }
 
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        // do nothing
-    }
-
-    public static void flush() throws Exception {
-        Framework.getRuntime().reloadProperties();
-        ReloadService deployer = Framework.getLocalService(ReloadService.class);
-        deployer.flush();
+        // nothing to do
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            flush();
-        } catch (Exception e) {
-            throw new PackageException("Failed to reload repository", e);
-        }
-        return new Flush();
+        // standalone mode: nothing to do
+        return new ReloadPropertiesPlaceholder();
     }
 
     public void readFrom(Element element) throws PackageException {
@@ -69,5 +59,4 @@ public class Flush extends PostInstallCommand {
         writer.start(ID);
         writer.end();
     }
-
 }

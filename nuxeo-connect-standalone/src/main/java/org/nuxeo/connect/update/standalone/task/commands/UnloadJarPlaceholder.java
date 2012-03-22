@@ -20,34 +20,32 @@ import java.io.File;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.connect.update.PackageUpdateComponent;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Deploy an OSGi bundle into the running platform. The bundle is specified
- * using the absolute bundle file path. The inverse of this command is the
- * Undeploy command.
+ * Install bundle, flush any application cache and perform Nuxeo preprocessing
+ * on the bundle.
+ *
+ * The inverse of this command is Undeploy.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Install extends AbstractCommand {
+public class UnloadJarPlaceholder extends AbstractCommand {
 
-    public static final String ID = "install";
+    public static final String ID = "unload-jar";
 
     protected File file;
 
-    public Install() {
+    public UnloadJarPlaceholder() {
         super(ID);
     }
 
-    public Install(File file) {
+    public UnloadJarPlaceholder(File file) {
         super(ID);
         this.file = file;
     }
@@ -55,26 +53,14 @@ public class Install extends AbstractCommand {
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        if (file == null) {
-            status.addError("Invalid install syntax: No file specified");
-        }
+        // nothing to do
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        BundleContext ctx = PackageUpdateComponent.getContext().getBundle().getBundleContext();
-        try {
-            Bundle bundle = ctx.installBundle(file.getAbsolutePath());
-            if (bundle.getState() == Bundle.UNINSTALLED) {
-                ctx.installBundle(file.getAbsolutePath());
-            }
-            bundle.start();
-        } catch (BundleException e) {
-            throw new PackageException("Failed to install bundle "
-                    + file.getName());
-        }
-        return new Uninstall(file);
+        // standalone mode: nothing to do
+        return new LoadJarPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {

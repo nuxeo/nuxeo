@@ -39,26 +39,26 @@ import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.standalone.task.commands.Append;
-import org.nuxeo.connect.update.standalone.task.commands.Command;
 import org.nuxeo.connect.update.standalone.task.commands.Config;
 import org.nuxeo.connect.update.standalone.task.commands.Copy;
 import org.nuxeo.connect.update.standalone.task.commands.Delete;
-import org.nuxeo.connect.update.standalone.task.commands.Deploy;
-import org.nuxeo.connect.update.standalone.task.commands.DeployConfig;
-import org.nuxeo.connect.update.standalone.task.commands.Flush;
-import org.nuxeo.connect.update.standalone.task.commands.FlushCoreCache;
-import org.nuxeo.connect.update.standalone.task.commands.FlushJaasCache;
-import org.nuxeo.connect.update.standalone.task.commands.Install;
-import org.nuxeo.connect.update.standalone.task.commands.LoadJar;
+import org.nuxeo.connect.update.standalone.task.commands.DeployPlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.DeployConfigPlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.FlushPlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.FlushCoreCachePlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.FlushJaasCachePlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.InstallPlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.LoadJarPlaceholder;
 import org.nuxeo.connect.update.standalone.task.commands.ParameterizedCopy;
-import org.nuxeo.connect.update.standalone.task.commands.ReloadProperties;
+import org.nuxeo.connect.update.standalone.task.commands.ReloadPropertiesPlaceholder;
 import org.nuxeo.connect.update.standalone.task.commands.UnAppend;
-import org.nuxeo.connect.update.standalone.task.commands.Undeploy;
-import org.nuxeo.connect.update.standalone.task.commands.UndeployConfig;
-import org.nuxeo.connect.update.standalone.task.commands.Uninstall;
-import org.nuxeo.connect.update.standalone.task.commands.UnloadJar;
+import org.nuxeo.connect.update.standalone.task.commands.UndeployPlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.UndeployConfigPlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.UninstallPlaceholder;
+import org.nuxeo.connect.update.standalone.task.commands.UnloadJarPlaceholder;
 import org.nuxeo.connect.update.standalone.task.update.Rollback;
 import org.nuxeo.connect.update.standalone.task.update.Update;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 
@@ -159,18 +159,18 @@ public class StandaloneUpdateService implements PackageUpdateService {
         addCommand(UnAppend.ID, UnAppend.class);
         addCommand(ParameterizedCopy.ID, ParameterizedCopy.class);
         addCommand(Delete.ID, Delete.class);
-        addCommand(Install.ID, Install.class);
-        addCommand(Uninstall.ID, Uninstall.class);
-        addCommand(FlushCoreCache.ID, FlushCoreCache.class);
-        addCommand(FlushJaasCache.ID, FlushJaasCache.class);
-        addCommand(Flush.ID, Flush.class);
-        addCommand(ReloadProperties.ID, ReloadProperties.class);
-        addCommand(Deploy.ID, Deploy.class);
-        addCommand(Undeploy.ID, Undeploy.class);
-        addCommand(DeployConfig.ID, DeployConfig.class);
-        addCommand(UndeployConfig.ID, UndeployConfig.class);
-        addCommand(LoadJar.ID, LoadJar.class);
-        addCommand(UnloadJar.ID, UnloadJar.class);
+        addCommand(InstallPlaceholder.ID, InstallPlaceholder.class);
+        addCommand(UninstallPlaceholder.ID, UninstallPlaceholder.class);
+        addCommand(FlushCoreCachePlaceholder.ID, FlushCoreCachePlaceholder.class);
+        addCommand(FlushJaasCachePlaceholder.ID, FlushJaasCachePlaceholder.class);
+        addCommand(FlushPlaceholder.ID, FlushPlaceholder.class);
+        addCommand(ReloadPropertiesPlaceholder.ID, ReloadPropertiesPlaceholder.class);
+        addCommand(DeployPlaceholder.ID, DeployPlaceholder.class);
+        addCommand(UndeployPlaceholder.ID, UndeployPlaceholder.class);
+        addCommand(DeployConfigPlaceholder.ID, DeployConfigPlaceholder.class);
+        addCommand(UndeployConfigPlaceholder.ID, UndeployConfigPlaceholder.class);
+        addCommand(LoadJarPlaceholder.ID, LoadJarPlaceholder.class);
+        addCommand(UnloadJarPlaceholder.ID, UnloadJarPlaceholder.class);
         addCommand(Config.ID, Config.class);
         addCommand(Update.ID, Update.class);
         addCommand(Rollback.ID, Rollback.class);
@@ -187,6 +187,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
         xmap = null;
     }
 
+    @Override
     public Command getCommand(String id) throws PackageException {
         Class<? extends Command> type = commands.get(id);
         if (type != null) {

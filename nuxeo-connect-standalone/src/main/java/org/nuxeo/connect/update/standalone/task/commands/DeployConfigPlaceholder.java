@@ -21,10 +21,9 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
@@ -35,17 +34,17 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class Deploy extends AbstractCommand {
+public class DeployConfigPlaceholder extends AbstractCommand {
 
-    public static final String ID = "deploy";
+    public static final String ID = "deploy-config";
 
     protected File file;
 
-    public Deploy() {
+    public DeployConfigPlaceholder() {
         super(ID);
     }
 
-    public Deploy(File file) {
+    public DeployConfigPlaceholder(File file) {
         super(ID);
         this.file = file;
     }
@@ -59,18 +58,9 @@ public class Deploy extends AbstractCommand {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        if (!file.isFile()) {
-            // avoid throwing errors - this may happen at uninstall for broken packages
-            return null;
-        }
-        ReloadService srv = Framework.getLocalService(ReloadService.class);
-        try {
-            srv.deployBundle(file, true);
-            srv.flush();    
-        } catch (Exception e) {
-            throw new PackageException("Failed to deploy bundle " + file, e);
-        }
-        return new Undeploy(file);
+        // standalone mode: nothing to do
+        // XXX why not UndeployConfigPlaceholder ?
+        return new UndeployPlaceholder(file);
     }
 
     public void readFrom(Element element) throws PackageException {

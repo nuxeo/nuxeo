@@ -30,6 +30,7 @@ import org.nuxeo.connect.update.PackageData;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
@@ -56,13 +57,17 @@ public class LocalPackageImpl implements LocalPackage {
 
     protected PackageDefinitionImpl def;
 
-    public LocalPackageImpl(File file, int state) throws PackageException {
-        this(null, file, state);
+    private PackageUpdateService service;
+
+    public LocalPackageImpl(File file, int state, PackageUpdateService pus)
+            throws PackageException {
+        this(null, file, state, pus);
     }
 
-    public LocalPackageImpl(ClassLoader parent, File file, int state)
-            throws PackageException {
+    public LocalPackageImpl(ClassLoader parent, File file, int state,
+            PackageUpdateService pus) throws PackageException {
         this.state = state;
+        this.service = pus;
         XMap xmap = StandaloneUpdateService.getXmap();
         if (xmap == null) { // for tests
             xmap = StandaloneUpdateService.createXmap();
@@ -206,7 +211,8 @@ public class LocalPackageImpl implements LocalPackage {
     protected Task getTask(TaskDefinition tdef) throws PackageException {
         Task task = null;
         try {
-            task = (Task) data.loadClass(tdef.getType()).getConstructor().newInstance();
+            task = (Task) data.loadClass(tdef.getType()).getConstructor(
+                    PackageUpdateService.class).newInstance(service);
         } catch (Exception e) {
             throw new PackageException("Could not instantiate custom task "
                     + tdef.getType() + " for package " + getId(), e);
