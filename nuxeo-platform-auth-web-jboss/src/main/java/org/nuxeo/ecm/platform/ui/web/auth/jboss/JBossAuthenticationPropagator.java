@@ -33,9 +33,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagat
 public class JBossAuthenticationPropagator implements
         NuxeoAuthenticationPropagator {
 
-
     @SuppressWarnings("unchecked")
-    public void propagateUserIdentificationInformation(
+    public CleanupCallback propagateUserIdentificationInformation(
             CachableUserIdentificationInfo cachableUserIdent) {
         // JBoss specific implementation
 
@@ -61,6 +60,19 @@ public class JBossAuthenticationPropagator implements
                 return null;
             }
         });
+        return new CleanupCallback() {
+            public void cleanup() {
+              AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                            
+                  SecurityAssociation.popSubjectContext();
+                            
+                  return null;
+                            
+              } });
+                
+            }
+        };
     }
 
 }
