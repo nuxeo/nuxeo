@@ -24,6 +24,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -432,6 +433,17 @@ public abstract class AbstractTest {
         }
         link.click();
         return asPage(pageClass);
+    }
+
+    /**
+     * Navigate to a specified url
+     *
+     * @param urlString url
+     * @throws MalformedURLException
+     */
+    public void navToUrl(String urlString) throws MalformedURLException {
+        URL url = new URL(urlString);
+        driver.navigate().to(url);
     }
 
     /**

@@ -41,6 +41,10 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.4";
 
+    private static final String STUDIO_PACKAGE_ID_FIRST = "junit4tester-SANDBOX-0.0.1";
+
+    private static final String STUDIO_PACKAGE_ID_SECOND = "junit4tester-SANDBOX-0.0.2";
+
     private static final String SMTP_SERVER_HOST = "someSMTPServer.com";
 
     private static final String SMTP_SERVER_PORT = "27";
@@ -382,10 +386,90 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         WebElement bundle = findElementWithTimeout(By.xpath("//td[text()='org.nuxeo.ecm.platform.audit.web.access']"));
         assertNotNull(bundle);
 
+        // Need to make HeaderLinksSubPage#logout work and use it
+        navToUrl("http://localhost:8080/nuxeo/logout");
     }
 
     public void studioPackageInstallAndUninstall() throws Exception {
-        // XXX todo
+
+        //Login
+        DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
+        AdminCenterBasePage adminHome = home.getAdminCenter();
+        assertNotNull(adminHome);
+
+        // Go to Update Center
+        ConnectHomePage connectHome = adminHome.getConnectHomePage();
+        assertNotNull(connectHome);
+        assertEquals("Connect registration OK", connectHome.getConnectStatus());
+        SystemHomePage systemPage = connectHome.getSystemHomePage();
+        UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
+        updateCenterHome = updateCenterHome.getPackagesFromNuxeoMarketPlace();
+
+        // Go to Studio Packages
+        updateCenterHome = updateCenterHome.getPackagesFromNuxeoStudio();
+
+        // Get listing in IFrame
+        PackageListingPage packageListing = updateCenterHome.getPackageListingPage();
+
+        // Download Packages
+        WebElement link = packageListing.download(STUDIO_PACKAGE_ID_FIRST);
+        assertNotNull(link);
+        link = packageListing.download(STUDIO_PACKAGE_ID_SECOND);
+        assertNotNull(link);
+
+        // Start first bundle installation
+        PackageInstallationScreen installScreen = packageListing.getInstallationScreen(STUDIO_PACKAGE_ID_FIRST);
+        assertNotNull(installScreen);
+        packageListing = installScreen.start();
+        assertNotNull(packageListing);
+        WebElement packageLink = packageListing.getPackageLink(STUDIO_PACKAGE_ID_FIRST);
+        assertNotNull(packageLink);
+
+        // Start second bundle installation
+        installScreen = packageListing.getInstallationScreen(STUDIO_PACKAGE_ID_SECOND);
+        assertNotNull(installScreen);
+        packageListing = installScreen.start();
+        assertNotNull(packageListing);
+        packageLink = packageListing.getPackageLink(STUDIO_PACKAGE_ID_SECOND);
+        assertNotNull(packageLink);
+
+        // Restart application for uninstall test for windows
+        updateCenterHome = packageListing.exit();
+        SystemHomePage systemHome = updateCenterHome.getSystemHomePage();
+        systemHome.restart();
+    }
+
+    public void verifyPackageUndeployProcessUnderWindows() throws Exception {
+
+        // Login
+        DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
+        AdminCenterBasePage adminHome = home.getAdminCenter();
+        assertNotNull(adminHome);
+
+        // Go to Update Center
+        ConnectHomePage connectHome = adminHome.getConnectHomePage();
+        assertNotNull(connectHome);
+        assertEquals("Connect registration OK", connectHome.getConnectStatus());
+        SystemHomePage systemPage = connectHome.getSystemHomePage();
+        UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
+        updateCenterHome = updateCenterHome.getPackagesFromNuxeoMarketPlace();
+
+        // Go to Studio Packages
+        updateCenterHome = updateCenterHome.getPackagesFromNuxeoStudio();
+
+        // Get listing in IFrame
+        PackageListingPage packageListing = updateCenterHome.getPackageListingPage();
+
+        // Reinstall first package for undeploying the second
+        PackageInstallationScreen installScreen = packageListing.getInstallationScreen(STUDIO_PACKAGE_ID_FIRST);
+        assertNotNull(installScreen);
+        packageListing = installScreen.start();
+        assertNotNull(packageListing);
+        WebElement packageLink = packageListing.getPackageLink(STUDIO_PACKAGE_ID_FIRST);
+        assertNotNull(packageLink);
+
+        // Need to make HeaderLinksSubPage#logout work and use it
+        navToUrl("http://localhost:8080/nuxeo/logout");
     }
 
 
@@ -397,5 +481,10 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         installPackageAndRestart();
 
         verifyPackageInstallation();
+
+        studioPackageInstallAndUninstall();
+
+        verifyPackageUndeployProcessUnderWindows();
+
     }
 }

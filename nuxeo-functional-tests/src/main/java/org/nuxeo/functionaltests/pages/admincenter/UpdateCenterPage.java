@@ -29,6 +29,10 @@ public class UpdateCenterPage extends AdminCenterBasePage {
     @FindBy(linkText = "Packages from Nuxeo Marketplace")
     WebElement packagesFromNuxeoMarketPlaceLink;
 
+    @Required
+    @FindBy(linkText = "Nuxeo Studio")
+    WebElement packagesFromNuxeoStudioLink;
+
     public UpdateCenterPage(WebDriver driver) {
         super(driver);
     }
@@ -53,6 +57,11 @@ public class UpdateCenterPage extends AdminCenterBasePage {
     public UpdateCenterPage getPackagesFromNuxeoMarketPlace() {
 
         packagesFromNuxeoMarketPlaceLink.click();
+        return asPage(UpdateCenterPage.class);
+    }
+
+    public UpdateCenterPage getPackagesFromNuxeoStudio() {
+        packagesFromNuxeoStudioLink.click();
         return asPage(UpdateCenterPage.class);
     }
 
