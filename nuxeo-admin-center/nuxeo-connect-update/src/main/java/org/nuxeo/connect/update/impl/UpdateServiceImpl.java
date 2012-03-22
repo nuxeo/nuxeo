@@ -37,30 +37,30 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.Version;
+import org.nuxeo.connect.update.impl.task.commands.Deploy;
+import org.nuxeo.connect.update.impl.task.commands.DeployConfig;
+import org.nuxeo.connect.update.impl.task.commands.Flush;
+import org.nuxeo.connect.update.impl.task.commands.FlushCoreCache;
+import org.nuxeo.connect.update.impl.task.commands.FlushJaasCache;
+import org.nuxeo.connect.update.impl.task.commands.Install;
+import org.nuxeo.connect.update.impl.task.commands.LoadJar;
+import org.nuxeo.connect.update.impl.task.commands.ReloadProperties;
+import org.nuxeo.connect.update.impl.task.commands.Undeploy;
+import org.nuxeo.connect.update.impl.task.commands.UndeployConfig;
+import org.nuxeo.connect.update.impl.task.commands.Uninstall;
+import org.nuxeo.connect.update.impl.task.commands.UnloadJar;
 import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.standalone.PackagePersistence;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.connect.update.standalone.task.commands.Append;
-import org.nuxeo.connect.update.standalone.task.commands.Command;
 import org.nuxeo.connect.update.standalone.task.commands.Config;
 import org.nuxeo.connect.update.standalone.task.commands.Copy;
 import org.nuxeo.connect.update.standalone.task.commands.Delete;
-import org.nuxeo.connect.update.standalone.task.commands.Deploy;
-import org.nuxeo.connect.update.standalone.task.commands.DeployConfig;
-import org.nuxeo.connect.update.standalone.task.commands.Flush;
-import org.nuxeo.connect.update.standalone.task.commands.FlushCoreCache;
-import org.nuxeo.connect.update.standalone.task.commands.FlushJaasCache;
-import org.nuxeo.connect.update.standalone.task.commands.Install;
-import org.nuxeo.connect.update.standalone.task.commands.LoadJar;
 import org.nuxeo.connect.update.standalone.task.commands.ParameterizedCopy;
-import org.nuxeo.connect.update.standalone.task.commands.ReloadProperties;
 import org.nuxeo.connect.update.standalone.task.commands.UnAppend;
-import org.nuxeo.connect.update.standalone.task.commands.Undeploy;
-import org.nuxeo.connect.update.standalone.task.commands.UndeployConfig;
-import org.nuxeo.connect.update.standalone.task.commands.Uninstall;
-import org.nuxeo.connect.update.standalone.task.commands.UnloadJar;
 import org.nuxeo.connect.update.standalone.task.update.Rollback;
 import org.nuxeo.connect.update.standalone.task.update.Update;
+import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.runtime.reload.NuxeoRestart;
@@ -71,16 +71,6 @@ import org.nuxeo.runtime.reload.NuxeoRestart;
  */
 public class UpdateServiceImpl extends StandaloneUpdateService implements
         PackageUpdateService {
-
-    protected static XMap xmap;
-
-    protected PackagePersistence persistence;
-
-    protected Map<String, Class<? extends Command>> commands;
-
-    public static XMap getXmap() {
-        return xmap;
-    }
 
     public UpdateServiceImpl() throws IOException {
         super(Environment.getDefault());

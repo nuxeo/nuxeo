@@ -86,7 +86,10 @@ import org.nuxeo.runtime.api.Framework;
  * <li>log4j
  * </ul>
  *
+ * @deprecated since 5.6; use StandaloneUpdateService
+ *
  */
+@Deprecated
 public class LocalPackageManager {
 
     static final MessageInfoLogger log = new MessageInfoLogger();

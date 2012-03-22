@@ -19,7 +19,7 @@ package org.nuxeo.connect.update.commands;
 import java.io.ByteArrayInputStream;
 
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.standalone.task.commands.ReloadProperties;
+import org.nuxeo.connect.update.standalone.task.commands.ReloadPropertiesPlaceholder;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
@@ -44,7 +44,7 @@ public class TestReloadProperties extends AbstractCommandTest {
         writer.attr("file", "${package.root}/test.properties");
         writer.attr("todir", "${env.config}");
         writer.end();
-        writer.start(ReloadProperties.ID);
+        writer.start(ReloadPropertiesPlaceholder.ID);
         writer.end();
     }
 
