@@ -19,70 +19,51 @@ package org.nuxeo.ecm.diff.web;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.platform.query.api.PageSelection;
 
 /**
- * Entry wrapping selection information for given {@link VersionModel} entry.
+ * Entry wrapping selection information for a given {@link VersionModel} entry.
  *
  * @author Antoine Taillefer
  */
-public class VersionModelSelection implements VersionModel {
+public class VersionModelSelection extends PageSelection<VersionModel>
+        implements VersionModel {
 
     private static final long serialVersionUID = -6540885573328906786L;
 
-    protected boolean selected;
-
-    protected VersionModel versionModel;
-
     public VersionModelSelection(VersionModel versionModel, boolean selected) {
-        this.versionModel = versionModel;
-        this.selected = selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public VersionModel getVersionModel() {
-        return versionModel;
-    }
-
-    public void setVersionModel(VersionModel versionModel) {
-        this.versionModel = versionModel;
+        super(versionModel, selected);
     }
 
     public String getId() {
-        return versionModel.getId();
+        return data.getId();
     }
 
     public void setId(String id) {
-        versionModel.setId(id);
+        data.setId(id);
     }
 
     public Calendar getCreated() {
-        return versionModel.getCreated();
+        return data.getCreated();
     }
 
     public void setCreated(Calendar created) {
-        versionModel.setCreated(created);
+        data.setCreated(created);
     }
 
     public String getDescription() {
-        return versionModel.getDescription();
+        return data.getDescription();
     }
 
     public void setDescription(String description) {
-        versionModel.setDescription(description);
+        data.setDescription(description);
     }
 
     public String getLabel() {
-        return versionModel.getLabel();
+        return data.getLabel();
     }
 
     public void setLabel(String label) {
-        versionModel.setLabel(label);
+        data.setLabel(label);
     }
 }
