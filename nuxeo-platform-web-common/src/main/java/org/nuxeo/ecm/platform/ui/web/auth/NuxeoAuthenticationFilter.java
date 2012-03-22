@@ -343,6 +343,11 @@ public class NuxeoAuthenticationFilter implements Filter {
             ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
 
+        if (bypassAuth((HttpServletRequest)request)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String tokenPage = getRequestedPage(request);
         if (tokenPage.equals(NXAuthConstants.SWITCH_USER_PAGE)) {
             boolean result = switchUser(request, response, chain);
