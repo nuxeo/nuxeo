@@ -71,22 +71,21 @@
           <td>
             <h:form enctype="multipart/form-data">
                 <p class="buttonsGadget">
-                        <h:commandButton type="submit" class="button" value="#{messages['command.template.render']}"
+                        <h:commandLink type="submit" class="button" value="#{messages['command.template.render']}"
                             action="#{templateBasedActions.render(template.name)}" id="button_render" />
                   <c:if test="#{templateBasedActions.canRenderAndStore(template.name)}">
-                        <h:commandButton type="submit" class="button" value="#{messages['command.template.renderAndStore']}"
+                        <h:commandLink type="submit" class="button" value="#{messages['command.template.renderAndStore']}"
                             action="#{templateBasedActions.renderAndStore(template.name)}" id="button_applyFile" />
                   </c:if>
                   <c:if test="#{templateBasedActions.canResetParameters(template.name)}">
-                        <h:commandButton type="submit" class="button" value="#{messages['command.template.resetParams']}"
+                        <h:commandLink type="submit" class="button" value="#{messages['command.template.resetParams']}"
                             action="#{templateBasedActions.resetParameters(template.name)}" id="button_resetParams" />
                   </c:if>
-                        <h:commandButton type="submit" class="button" value="#{messages['command.template.detach']}"
+                        <h:commandLink type="submit" class="button" value="#{messages['command.template.detach']}"
                             action="#{templateBasedActions.detachTemplate(template.name)}" id="button_detach" />
                 </p>
             </h:form>
           </td>
-
          </c:if>
 
      </tr>

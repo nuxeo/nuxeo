@@ -108,6 +108,11 @@
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
+      <artifactId>fr.opensagres.xdocreport.document.ods</artifactId>
+      <version>${xdocreport.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
       <version>${xdocreport.version}</version>
     </dependency>

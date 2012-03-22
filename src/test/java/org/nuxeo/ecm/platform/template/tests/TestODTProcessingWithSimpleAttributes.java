@@ -30,7 +30,7 @@ public class TestODTProcessingWithSimpleAttributes extends
         assertTrue(xmlContent.contains("MyTestDoc"));
         assertTrue(xmlContent.contains("Administrator"));
 
-        newBlob.transferTo(new File("/tmp/test.odt"));
+        // newBlob.transferTo(new File("/tmp/test.odt"));
 
     }
 
