@@ -1,4 +1,4 @@
-package org.nuxeo.runtime.tomcat.adapter.tests;
+package org.nuxeo.runtime.osgi.util.jar.tests;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.osgi.util.jar.JarFileCloser;
-import org.nuxeo.runtime.tomcat.adapter.tests.metaindex.BuildMetaIndex;
+import org.nuxeo.runtime.osgi.util.jar.index.BuildMetaIndex;
 
 import sun.misc.MetaIndex;
 
@@ -98,13 +98,12 @@ public class TestClassLoaderInstrumentation {
 
 
     @Test
-    @Ignore
     public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException {
         URL firstURL = jarBuilder.buildFirst();
         URL otherURL = jarBuilder.buildOther();
         URL[] jarURLs = new URL[] { firstURL, otherURL };
         URLClassLoader ucl = new URLClassLoader(jarURLs, null);
-        assertThat(ucl.loadClass(TestClassLoaderInstrumentation.class.getName()), notNullValue());
+        assertThat(ucl.loadClass(JarBuilder.First.class.getName()), notNullValue());
         JarFile jarFile = new JarFile(jarURLs[1].getFile());
         jarFile.getManifest();
         new JarFileCloser(new URLClassLoader(new URL[] {}), ucl).close(jarFile);

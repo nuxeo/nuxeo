@@ -1,4 +1,4 @@
-package org.nuxeo.runtime.tomcat.adapter.tests.metaindex;
+package org.nuxeo.runtime.osgi.util.jar.index;
 
 enum JarFileKind {
 

@@ -1,4 +1,4 @@
-package org.nuxeo.runtime.tomcat.adapter.tests.metaindex;
+package org.nuxeo.runtime.osgi.util.jar.index;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 
 /*
  * JarMetaIndex associates the jar file with a set of what so called

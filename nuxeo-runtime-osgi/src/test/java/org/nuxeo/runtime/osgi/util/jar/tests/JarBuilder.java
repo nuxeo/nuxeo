@@ -1,6 +1,7 @@
-package org.nuxeo.runtime.tomcat.adapter.tests;
+package org.nuxeo.runtime.osgi.util.jar.tests;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -34,14 +36,59 @@ import java.util.zip.ZipEntry;
  */
 public class JarBuilder {
 
+    public static class First {
+
+    }
+
+    public static class Other {
+
+    }
+
+    protected final File bindir;
+
+    protected File pkgdir = getResourceFile(null, JarBuilder.class.getPackage().getName().split("\\."));
+
     public JarBuilder() throws IOException {
         super();
+        bindir = locateBinaries();
     }
-    
+
+    protected File locateBinaries() {
+
+        String classpath = System.getProperty("java.class.path");
+
+        StringTokenizer tokenizer = new StringTokenizer(classpath, ":");
+
+        while (tokenizer.hasMoreElements()) {
+            File bindir = new File(tokenizer.nextToken());
+            if (!bindir.isDirectory()) {
+                continue;
+            }
+            if(new File(bindir, pkgdir.getPath()).exists()) {
+                return bindir;
+            }
+        }
+
+        throw new IllegalStateException("cannot locate binaries");
+    }
+
+    protected static File getResourceFile(File dir, String... path) {
+        File file = dir;
+        for (String name:path) {
+            file = new File(file, name);
+        }
+        return file;
+    }
+
+    protected static File getClassFile(File dir, Class<?> clazz) {
+        File pkg = getResourceFile(dir, clazz.getPackage().getName().split("\\."));
+        return new File(pkg, clazz.getSimpleName() + ".class");
+    }
+
     ArrayList<File> builtFiles = new ArrayList<File>();
 
     File rootFile = createRootFile();
-    
+
     protected static File createRootFile() throws IOException {
         File tempdir = File.createTempFile("bundles", ".lib");
         tempdir.delete();
@@ -51,16 +98,15 @@ public class JarBuilder {
     public File getRootFile() {
         return rootFile;
     }
-    
+
     public URL buildFirst() throws FileNotFoundException, IOException {
         File file = File.createTempFile("test", ".jar", rootFile);
         builtFiles.add(file);
         JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
         try {
-            writeEntry(output, "META-INF/MANIFEST.MF");
             writeEntry(output,
-                    "org/nuxeo/runtime/tomcat/adapter/tests/JarBuilder.class");
-            writeEntry(output, "first.marker");
+                    new File(pkgdir, "JarBuilder$First.class"));
+            writeEntry(output, new File("first.marker"));
         } finally {
             output.close();
         }
@@ -71,20 +117,18 @@ public class JarBuilder {
         File file = File.createTempFile("test", ".jar", rootFile);
         JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
         try {
-            writeEntry(output, "META-INF/MANIFEST.MF");
-            writeEntry(output,
-                    "org/nuxeo/runtime/tomcat/adapter/tests/TestClassLoaderInstrumentation.class");
-            writeEntry(output, "other.marker");
+            writeEntry(output, new File(pkgdir, "JarBuilder$Other.class"));
+            writeEntry(output, new File("other.marker"));
         } finally {
             output.close();
         }
         return file.toURI().toURL();
     }
 
-    protected void writeEntry(JarOutputStream output, String path)
+    protected void writeEntry(JarOutputStream output, File file)
             throws IOException {
-        output.putNextEntry(new ZipEntry(path));
-        InputStream input = getClass().getResourceAsStream("/"+path);
+        output.putNextEntry(new ZipEntry(file.getPath()));
+        InputStream input = new FileInputStream(new File(bindir, file.getPath()));
         try {
             while (input.available() > 0) {
                 output.write(input.read());

@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.nuxeo.runtime.tomcat.adapter.tests.metaindex;
+package org.nuxeo.runtime.osgi.util.jar.index;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -32,6 +32,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+
 
 /**
  * Constructs a meta-index of the specified jar files. The meta-index contains
