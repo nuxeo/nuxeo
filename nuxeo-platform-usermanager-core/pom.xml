@@ -7,6 +7,8 @@
     <version>5.4.2-HF10</version>
   </parent>
 
+  <version>5.4.2-HF10-NXP-9092</version>
+
   <artifactId>nuxeo-platform-usermanager-core</artifactId>
   <name>Nuxeo User Manager - Core</name>
   <description>
