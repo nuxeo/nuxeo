@@ -24,10 +24,20 @@ import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 public interface NuxeoAuthenticationPropagator {
 
     /**
+     * Cleanup callback called when the filter return
+     *
+     * @since 5.6
+     */
+    interface CleanupCallback {
+        void cleanup();
+    }
+
+    /**
      * Propagates userIdentification information from the web context to the ejb context.
      *
      * @param cachableUserIdent
+     * @return cleanup callback, can be null if no cleanup needed
      */
-    void propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent);
+    CleanupCallback propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent);
 
 }

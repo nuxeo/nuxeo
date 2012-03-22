@@ -320,12 +320,13 @@ public class PluggableAuthenticationService extends DefaultComponent {
         return cbhFactory.createCallbackHandler(userIdent);
     }
 
-    public void propagateUserIdentificationInformation(
+    public NuxeoAuthenticationPropagator.CleanupCallback propagateUserIdentificationInformation(
             CachableUserIdentificationInfo cachableUserIdent) {
         if (propagator != null) {
-            propagator
+            return propagator
                     .propagateUserIdentificationInformation(cachableUserIdent);
         }
+        return null;
     }
 
     public List<NuxeoAuthenticationPlugin> getPluginChain() {
