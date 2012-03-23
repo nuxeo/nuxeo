@@ -25,6 +25,11 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-connect-standalone</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.shell</groupId>
         <artifactId>nuxeo-shell</artifactId>
         <version>${nuxeo.shell.version}</version>
@@ -36,6 +41,10 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-launcher-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-connect-standalone</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.shell</groupId>
