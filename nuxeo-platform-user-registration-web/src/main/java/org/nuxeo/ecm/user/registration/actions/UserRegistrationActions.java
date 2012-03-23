@@ -197,8 +197,8 @@ public class UserRegistrationActions implements Serializable {
 
         String[] emails = multipleEmails.split(MULTIPLE_EMAILS_SEPARATOR);
         for (String email : emails) {
-            userinfo.setLogin(email);
-            userinfo.setEmail(email);
+            userinfo.setLogin(email.trim());
+            userinfo.setEmail(email.trim());
 
             log.debug("Request email: " + email + " with multiple invitation.");
             doSubmitUserRegistration(configurationName);

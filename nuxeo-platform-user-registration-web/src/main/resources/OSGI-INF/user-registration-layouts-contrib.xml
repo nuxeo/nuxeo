@@ -297,7 +297,7 @@
       </properties>
     </widget>
 
-    <widget name="multiple_request_emails" type="text">
+    <widget name="multiple_request_emails" type="textarea">
       <labels>
         <label mode="any">label.request.multiple.emails</label>
       </labels>
@@ -325,7 +325,7 @@
       </properties>
     </widget>
 
-    <widget name="user_request_comment" type="text">
+    <widget name="user_request_comment" type="textarea">
       <labels>
         <label mode="any">label.request.comment</label>
       </labels>
@@ -345,7 +345,7 @@
         <label mode="any">command.userrequest.accept</label>
       </labels>
       <widgetModes>
-        <mode value="edit">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
+        <mode value="any">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
       </widgetModes>
       <fields>
         <field>data</field>
@@ -360,7 +360,7 @@
         <label mode="any">command.userrequest.reject</label>
       </labels>
       <widgetModes>
-        <mode value="edit">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
+        <mode value="any">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
       </widgetModes>
       <fields>
         <field>data</field>
