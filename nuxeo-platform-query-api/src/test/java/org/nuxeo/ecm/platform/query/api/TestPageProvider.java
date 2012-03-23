@@ -18,12 +18,12 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestPageProvider extends TestCase {
+public class TestPageProvider extends NXRuntimeTestCase {
 
     public void testPageProvider() {
         PageProvider<MockPagedListItem> provider = new MockPageProvider(5, 13);
