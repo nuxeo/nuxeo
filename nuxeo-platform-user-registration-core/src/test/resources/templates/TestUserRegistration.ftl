@@ -1,5 +1,5 @@
 <html>
 
-Dummy ${registration.userinfo.firstName} ${registration.userinfo.lastName}, <br />
+Dummy ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}, <br />
 
 </html>

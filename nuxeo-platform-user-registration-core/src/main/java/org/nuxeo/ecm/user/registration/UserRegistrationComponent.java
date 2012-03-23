@@ -38,6 +38,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
@@ -387,14 +388,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
             DocumentModel registrationDoc) throws ClientException {
 
         String emailAdress = (String) registrationDoc.getPropertyValue(EMAIL_FIELD);
-        boolean userAlreadyExists = null != Framework.getLocalService(
-                UserManager.class).getPrincipal(
-                (String) registrationDoc.getPropertyValue(USERNAME_FIELD));
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
-        input.put("registration", registrationDoc);
+        input.put(REGISTRATION_DATA_DOC, registrationDoc);
         input.put("info", (Serializable) additionnalInfo);
-        input.put("userAlreadyExists", userAlreadyExists);
+        input.put("userAlreadyExists",
+                checkUserFromRegistrationExistence(registrationDoc));
         StringWriter writer = new StringWriter();
 
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
@@ -407,9 +406,10 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
         String body = writer.getBuffer().toString();
         String title = configuration.getValidationEmailTitle();
+        String copyTo = (String) registrationDoc.getPropertyValue("registration:copyTo");
         if (!Framework.isTestModeSet()) {
             try {
-                generateMail(emailAdress, title, body);
+                generateMail(emailAdress, copyTo, title, body);
             } catch (Exception e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
@@ -419,17 +419,26 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     }
 
-    protected void generateMail(String address, String title, String content)
-            throws Exception {
+    protected boolean checkUserFromRegistrationExistence(
+            DocumentModel registrationDoc) throws ClientException {
+        return null != Framework.getLocalService(UserManager.class).getPrincipal(
+                (String) registrationDoc.getPropertyValue(USERNAME_FIELD));
+    }
+
+    protected void generateMail(String destination, String copy, String title,
+            String content) throws Exception {
 
         InitialContext ic = new InitialContext();
         Session session = (Session) ic.lookup(getJavaMailJndiName());
 
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
-        Object to = address;
         msg.setRecipients(Message.RecipientType.TO,
-                InternetAddress.parse((String) to, false));
+                InternetAddress.parse((String) destination, false));
+        if (!StringUtils.isBlank(copy)) {
+            msg.addRecipient(Message.RecipientType.CC, new InternetAddress(
+                    copy, false));
+        }
 
         msg.setSubject(title, "UTF-8");
         msg.setSentDate(new Date());
@@ -522,7 +531,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         String title = configuration.getValidationEmailTitle();
         if (!Framework.isTestModeSet()) {
             try {
-                generateMail(emailAdress, title, body);
+                generateMail(emailAdress, null, title, body);
             } catch (Exception e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
@@ -675,9 +684,11 @@ public class UserRegistrationComponent extends DefaultComponent implements
             throws ClientException {
         StringWriter writer = new StringWriter();
         Map<String, Object> input = new HashMap<String, Object>();
-        input.putAll(additionalInfos);
-        input.put("validationBaseURL", BaseURL.getBaseURL()
+        additionalInfos.put("validationBaseURL", BaseURL.getBaseURL()
                 + getConfiguration().getValidationRelUrl());
+        input.putAll(additionalInfos);
+        input.put("userAlreadyExists",
+                checkUserFromRegistrationExistence(registrationDoc));
         input.put(REGISTRATION_DATA_DOC, registrationDoc);
 
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
@@ -694,7 +705,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
         if (!Framework.isTestModeSet()) {
             try {
-                generateMail(emailAdress, title, body);
+                generateMail(emailAdress, null, title, body);
             } catch (Exception e) {
                 throw new ClientException("Error while sending mail : ", e);
             }

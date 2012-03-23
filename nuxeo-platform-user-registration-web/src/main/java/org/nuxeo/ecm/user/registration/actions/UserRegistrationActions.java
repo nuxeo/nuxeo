@@ -39,6 +39,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -58,13 +59,21 @@ public class UserRegistrationActions implements Serializable {
 
     private static Log log = LogFactory.getLog(UserRegistrationActions.class);
 
-    protected UserRegistrationInfo userinfo = new UserRegistrationInfo();
-
-    protected DocumentRegistrationInfo docinfo = new DocumentRegistrationInfo();
+    public static final String MULTIPLE_EMAILS_SEPARATOR = ";";
 
     public static final String REQUEST_DOCUMENT_LIST = "CURRENT_USER_REQUESTS";
 
     public static final String REQUESTS_DOCUMENT_LIST_CHANGED = "requestDocumentsChanged";
+
+    protected UserRegistrationInfo userinfo = new UserRegistrationInfo();
+
+    protected DocumentRegistrationInfo docinfo = new DocumentRegistrationInfo();
+
+    protected String multipleEmails;
+
+    protected String comment;
+
+    protected boolean copyOwner = false;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -95,6 +104,22 @@ public class UserRegistrationActions implements Serializable {
         return docinfo;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public boolean isCopyOwner() {
+        return copyOwner;
+    }
+
+    public void setCopyOwner(boolean copyOwner) {
+        this.copyOwner = copyOwner;
+    }
+
     // Tweak to use same widgets between listing and forms
     public UserRegistrationActions getData() {
         return this;
@@ -119,6 +144,14 @@ public class UserRegistrationActions implements Serializable {
 
     public String getListingLocalContentView(String name) {
         return userRegistrationService.getConfiguration(name).getListingLocalContentView();
+    }
+
+    public String getMultipleEmails() {
+        return multipleEmails;
+    }
+
+    public void setMultipleEmails(String multipleEmails) {
+        this.multipleEmails = multipleEmails;
     }
 
     public String getValidationBaseUrl() throws ClientException {
@@ -148,6 +181,29 @@ public class UserRegistrationActions implements Serializable {
     public void submitUserRegistration(String configurationName) {
         docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
         doSubmitUserRegistration(configurationName);
+        resetPojos();
+        Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+    }
+
+    public void submitMultipleUserRegistration(String configurationName) {
+        if (StringUtils.isBlank(multipleEmails)) {
+            facesMessages.add(
+                    ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.registration.multiple.empty"));
+            return;
+        }
+        docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
+
+        String[] emails = multipleEmails.split(MULTIPLE_EMAILS_SEPARATOR);
+        for (String email : emails) {
+            userinfo.setLogin(email);
+            userinfo.setEmail(email);
+
+            log.debug("Request email: " + email + " with multiple invitation.");
+            doSubmitUserRegistration(configurationName);
+        }
+        resetPojos();
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
@@ -249,7 +305,6 @@ public class UserRegistrationActions implements Serializable {
                     INFO,
                     resourcesAccessor.getMessages().get(
                             "label.user.invited.success"));
-            resetPojos();
         } catch (ClientException e) {
             log.info("Unable to register user: " + e.getMessage());
             log.debug(e, e);
@@ -265,6 +320,8 @@ public class UserRegistrationActions implements Serializable {
         try {
             additionalsInfo.put("documentTitle",
                     navigationContext.getCurrentDocument().getTitle());
+            additionalsInfo.put("registration:copyTo", ((NuxeoPrincipal)documentManager.getPrincipal()).getEmail());
+            additionalsInfo.put("registration:comment", comment);
         } catch (ClientException e) {
             // log it silently as it will break anything
             log.debug(e, e);
@@ -276,6 +333,9 @@ public class UserRegistrationActions implements Serializable {
     public void resetPojos() {
         userinfo = new UserRegistrationInfo();
         docinfo = new DocumentRegistrationInfo();
+        multipleEmails = "";
+        copyOwner = false;
+        comment = "";
     }
 
     @Observer({ REQUESTS_DOCUMENT_LIST_CHANGED })

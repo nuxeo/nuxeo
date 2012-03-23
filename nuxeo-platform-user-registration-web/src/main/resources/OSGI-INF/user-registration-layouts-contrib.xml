@@ -106,6 +106,26 @@
       </columns>
     </layout>
 
+    <layout name="multiple_user_invitation_info">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>multiple_request_emails</widget>
+        </row>
+        <row>
+          <widget>doc_request_permission</widget>
+        </row>
+        <row>
+          <widget>user_request_comment</widget>
+        </row>
+        <row>
+          <widget>user_request_copy_owner</widget>
+        </row>
+      </rows>
+    </layout>
+
     <layout name="user_invitation_info">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -125,6 +145,12 @@
         </row>
         <row>
           <widget>doc_request_permission</widget>
+        </row>
+        <row>
+          <widget>user_request_comment</widget>
+        </row>
+        <row>
+          <widget>user_request_copy_owner</widget>
         </row>
       </rows>
     </layout>
@@ -271,10 +297,56 @@
       </properties>
     </widget>
 
+    <widget name="multiple_request_emails" type="text">
+      <labels>
+        <label mode="any">label.request.multiple.emails</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.request.help.multiple.emails</label>
+      </helpLabels>
+      <fields>
+        <field>data.multipleEmails</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_copy_owner" type="checkbox">
+      <labels>
+        <label mode="any">label.request.copyOwner</label>
+      </labels>
+      <fields>
+        <field>data.copyOwner</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_comment" type="text">
+      <labels>
+        <label mode="any">label.request.comment</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.request.help.comment</label>
+      </helpLabels>
+      <fields>
+        <field>data.comment</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
     <widget name="user_request_accept" type="template">
       <labels>
         <label mode="any">command.userrequest.accept</label>
       </labels>
+      <widgetModes>
+        <mode value="edit">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
+      </widgetModes>
       <fields>
         <field>data</field>
       </fields>
@@ -287,6 +359,9 @@
       <labels>
         <label mode="any">command.userrequest.reject</label>
       </labels>
+      <widgetModes>
+        <mode value="edit">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
+      </widgetModes>
       <fields>
         <field>data</field>
       </fields>

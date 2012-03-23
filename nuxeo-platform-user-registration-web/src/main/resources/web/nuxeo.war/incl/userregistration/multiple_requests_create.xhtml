@@ -1,0 +1,15 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <h:form enctype="multipart/form-data" id="workspace_requests_create">
+
+    <nxl:layout name="multiple_user_invitation_info" mode="edit"
+            value="#{userRegistrationActions}" />
+
+    <p class="buttonsGadget">
+      <h:commandButton type="submit" value="#{messages['command.request.create.multi.user']}"
+              styleClass="button"
+              action="#{userRegistrationActions.submitMultipleUserRegistration('default_registration')}" />
+    </p>
+  </h:form>
+</div>
