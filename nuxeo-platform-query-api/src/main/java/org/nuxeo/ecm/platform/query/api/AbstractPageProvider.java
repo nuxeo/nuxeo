@@ -26,6 +26,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Basic implementation for a {@link PageProvider}
@@ -42,7 +43,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected long pageSize = 0;
 
-    protected long maxPageSize = DEFAULT_MAX_PAGE_SIZE;
+    protected long maxPageSize = getDefaultMaxPageSize();
 
     protected long resultsCount = UNKNOWN_SIZE;
 
@@ -655,7 +656,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         long pageSize = getPageSize();
         long maxPageSize = getMaxPageSize();
         if (maxPageSize < 0) {
-            maxPageSize = DEFAULT_MAX_PAGE_SIZE;
+            maxPageSize = getDefaultMaxPageSize();
         }
         if (pageSize <= 0) {
             return maxPageSize;
@@ -690,6 +691,19 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      */
     public int getMaxNumberOfEmptyPages() {
         return 1;
+    }
+
+    protected long getDefaultMaxPageSize() {
+        String customDefaultMaxPageSize = Framework.getProperty("org.nuxeo.ecm.platform.query.api.PageProvider.customDefaultMaxPageSize");
+        if (customDefaultMaxPageSize == null) {
+            return DEFAULT_MAX_PAGE_SIZE;
+        }
+        try {
+            return Long.parseLong(customDefaultMaxPageSize);
+        } catch (NumberFormatException e) {
+            log.warn("No valid custom max page size defined (\"org.nuxeo.ecm.platform.query.api.PageProvider.customDefaultMaxPageSize\"): Should be a long value.");
+        }
+        return DEFAULT_MAX_PAGE_SIZE;
     }
 
 }
