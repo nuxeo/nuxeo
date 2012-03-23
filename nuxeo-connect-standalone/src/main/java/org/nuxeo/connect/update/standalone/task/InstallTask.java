@@ -30,7 +30,7 @@ import org.nuxeo.connect.update.PackageUpdateService;
  */
 public class InstallTask extends CommandsTask {
 
-    protected InstallTask(PackageUpdateService pus) {
+    public InstallTask(PackageUpdateService pus) {
         super(pus);
     }
 

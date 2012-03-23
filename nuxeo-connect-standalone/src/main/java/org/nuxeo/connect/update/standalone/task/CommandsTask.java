@@ -55,7 +55,7 @@ public abstract class CommandsTask extends AbstractTask {
      */
     protected final LinkedList<Command> commandLog;
 
-    protected CommandsTask(PackageUpdateService pus) {
+    public CommandsTask(PackageUpdateService pus) {
         super(pus);
         commands = new ArrayList<Command>();
         commandLog = new LinkedList<Command>();

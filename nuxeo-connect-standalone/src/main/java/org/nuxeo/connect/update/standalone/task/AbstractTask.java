@@ -115,7 +115,8 @@ public abstract class AbstractTask implements Task {
      */
     protected final Map<String, String> env;
 
-    protected AbstractTask(PackageUpdateService pus) {
+    public AbstractTask(PackageUpdateService pus) {
+        service = pus;
         env = new HashMap<String, String>();
         Environment nxenv = Environment.getDefault();
         File serverHome = nxenv.getServerHome();
@@ -146,7 +147,6 @@ public abstract class AbstractTask implements Task {
                 new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
         updateMgr = new UpdateManager(serverHome, new File(
                 service.getDataDir(), "registry.xml"));
-        service = pus;
     }
 
     public abstract boolean isInstallTask();
