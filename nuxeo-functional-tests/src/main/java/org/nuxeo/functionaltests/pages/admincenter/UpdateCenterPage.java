@@ -57,11 +57,13 @@ public class UpdateCenterPage extends AdminCenterBasePage {
     public UpdateCenterPage getPackagesFromNuxeoMarketPlace() {
 
         packagesFromNuxeoMarketPlaceLink.click();
+        Thread.sleep(1000);
         return asPage(UpdateCenterPage.class);
     }
 
     public UpdateCenterPage getPackagesFromNuxeoStudio() {
         packagesFromNuxeoStudioLink.click();
+        Thread.sleep(1000);
         return asPage(UpdateCenterPage.class);
     }
 
