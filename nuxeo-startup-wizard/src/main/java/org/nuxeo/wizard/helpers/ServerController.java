@@ -73,7 +73,8 @@ public class ServerController {
             if (log.isDebugEnabled()) {
                 log.debug("Restart command: " + StringUtils.join(cmd, " "));
             }
-            p1 = Runtime.getRuntime().exec(cmd);
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            p1 = pb.start();
         } catch (IOException e) {
             log.error("Unable to restart server", e);
             return false;
