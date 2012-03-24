@@ -102,23 +102,24 @@ if [ -r "$NUXEO_CONF" ]; then
     value="$(echo $confline | cut -d= -f2-)"
     if [[ "$key" == "nuxeo.log.dir" ]]; then
       read -r LOG_DIR <<< $value
-    fi
-    if [[ "$key" == "nuxeo.pid.dir" ]]; then
+    elif [[ "$key" == "nuxeo.pid.dir" ]]; then
       read -r PID_DIR <<< $value
-    fi
-    if [[ "$key" == "nuxeo.data.dir" ]]; then
+    elif [[ "$key" == "nuxeo.data.dir" ]]; then
       read -r DATA_DIR <<< $value
-    fi
-    if [[ "$key" == "nuxeo.tmp.dir" ]]; then
+    elif [[ "$key" == "nuxeo.tmp.dir" ]]; then
       read -r TMP_DIR <<< $value
-    fi
-    if [[ "$key" == "nuxeo.bind.address" ]]; then
+    elif [[ "$key" == "nuxeo.bind.address" ]]; then
       read -r BIND_ADDRESS <<< $value
-    fi
-    if [[ "$key" == *.* ]]; then
+    elif [[ "$key" == *.* ]]; then
       continue
+    else
+      value=${value/nuxeo.log.dir/LOG_DIR}
+      value=${value/nuxeo.pid.dir/PID_DIR}
+      value=${value/nuxeo.data.dir/DATA_DIR}
+      value=${value/nuxeo.tmp.dir/TMP_DIR}
+      value=${value/nuxeo.bind.address/BIND_ADDRESS}
+      eval "$key=\"$value\""
     fi
-    eval "$key=\"$value\""
   done < $NUXEO_CONF
 fi
 # Setup NUXEO_HOME
