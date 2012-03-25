@@ -154,6 +154,22 @@ if "%1" == "nogui" (
   goto GUI_NO
 ) else if "%1" == "gui" (
   goto GUI_YES
+) else if "%1" == "--gui=false" (
+  goto GUI_DONE
+) else if "%1" == "--gui=true" (
+  goto GUI_DONE
+) else if "%1" == "--gui" (
+  if "%2" == "false" (
+    SHIFT
+    goto GUI_NO
+  ) else if "%2" == "true" (
+    SHIFT
+    goto GUI_YES
+  ) else (
+    SHIFT
+    set GUI_OPTION=--gui=true
+    goto GUI_DONE
+  )
 ) else goto ADD_GUI
 :GUI_NO
 SHIFT
