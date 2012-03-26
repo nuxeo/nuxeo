@@ -68,6 +68,8 @@ public class DiffActionsBean implements Serializable {
 
     protected DocumentModel rightDoc;
 
+    protected boolean isVersionDiff = false;
+
     /**
      * Checks if the diff action is available for the
      * {@link DocumentsListsManager#CURRENT_DOCUMENT_SELECTION} working list.
@@ -115,6 +117,7 @@ public class DiffActionsBean implements Serializable {
      */
     public String prepareCurrentDocumentSelectionDiff() throws ClientException {
 
+        isVersionDiff = false;
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
@@ -126,6 +129,7 @@ public class DiffActionsBean implements Serializable {
      */
     public String prepareCurrentVersionSelectionDiff() throws ClientException {
 
+        isVersionDiff = true;
         return prepareWorkingListDiff(VersionDocumentsListsConstants.CURRENT_VERSION_SELECTION);
     }
 
@@ -155,6 +159,8 @@ public class DiffActionsBean implements Serializable {
      */
     public String prepareCurrentVersionDiff(VersionModel selectedVersion)
             throws ClientException {
+
+        isVersionDiff = true;
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
@@ -301,5 +307,13 @@ public class DiffActionsBean implements Serializable {
 
     public void setRightDoc(DocumentModel rightDoc) {
         this.rightDoc = rightDoc;
+    }
+
+    public boolean isVersionDiff() {
+        return isVersionDiff;
+    }
+
+    public void setVersionDiff(boolean isVersionDiff) {
+        this.isVersionDiff = isVersionDiff;
     }
 }

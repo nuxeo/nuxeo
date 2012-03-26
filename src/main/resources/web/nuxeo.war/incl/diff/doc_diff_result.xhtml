@@ -74,7 +74,12 @@
               </ui:include>
             </td>
             <td class="detailedDiffColumn">
-              <!--<h2>Détail</h2>-->
+              <c:if test="#{diffActions.versionDiff}">
+                <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT_HISTORY"
+                  subTab="TAB_VERSIONS" styleClass="docLink">
+                  <h:outputText value="#{messages['document.diff.backToVersions']}" />
+                </nxd:restDocumentLink>
+              </c:if>
             </td>
           </tr>
         </table>
