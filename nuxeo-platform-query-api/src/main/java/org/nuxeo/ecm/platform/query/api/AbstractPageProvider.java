@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -592,16 +593,20 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     protected long getDefaultMaxPageSize() {
-        String customDefaultMaxPageSize = Framework.getProperty("org.nuxeo.ecm.platform.query.api.PageProvider.customDefaultMaxPageSize");
-        if (customDefaultMaxPageSize == null) {
-            return DEFAULT_MAX_PAGE_SIZE;
+        long res = DEFAULT_MAX_PAGE_SIZE;
+        if (Framework.isInitialized()) {
+            String maxPageSize = Framework.getProperty(DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP);
+            if (!StringUtils.isBlank(maxPageSize)) {
+                try {
+                    res = Long.parseLong(maxPageSize.trim());
+                } catch (NumberFormatException e) {
+                    log.warn(String.format(
+                            "Invalid max page size defined for property "
+                                    + "\"%s\": %s (waiting for a long value)",
+                            DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, maxPageSize));
+                }
+            }
         }
-        try {
-            return Long.parseLong(customDefaultMaxPageSize);
-        } catch (NumberFormatException e) {
-            log.warn("No valid custom max page size defined (\"org.nuxeo.ecm.platform.query.api.PageProvider.customDefaultMaxPageSize\"): Should be a long value.");
-        }
-        return DEFAULT_MAX_PAGE_SIZE;
+        return res;
     }
-
 }
