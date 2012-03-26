@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  */
 public interface PageProvider<T> extends Serializable {
 
-    public static final String DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP = "org.nuxeo.ecm.platform.query.api.PageProvider.defaultMaxPageSize";
+    public static final String DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP = "nuxeo.pageprovider.default-max-page-size";
 
     /**
      * Constant to express that the total number of result elements is unknown.
