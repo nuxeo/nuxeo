@@ -18,6 +18,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.user.registration.RegistrationRules;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -63,6 +64,10 @@ public class UserRegistrationConfigurationActions implements Serializable {
         selectedConfigurationDocument = null;
     }
 
+    public RegistrationRules getRules(String configurationName) throws ClientException {
+        return userRegistrationService.getRegistrationRules(configurationName);
+    }
+    
     public DocumentModel getConfigurationDocument() throws ClientException {
         if (selectedConfigurationDocument == null) {
             selectedConfigurationDocument = userRegistrationService.getRegistrationRulesDocument(

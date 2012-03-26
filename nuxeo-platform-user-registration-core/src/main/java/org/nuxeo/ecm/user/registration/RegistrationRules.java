@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -25,6 +26,9 @@ public class RegistrationRules {
 
     public static final String FIELD_CONFIGURATION_NAME = SCHEMA_REGISTRATION_RULES
             + ":" + "name";
+
+    public static final String FIELD_DISPLAY_LOCAL_TAB = SCHEMA_REGISTRATION_RULES
+            + ":" + "displayLocalRegistrationTab";
 
     protected DocumentModel requestContainer;
 
@@ -63,5 +67,20 @@ public class RegistrationRules {
                     + e.getMessage());
             return false;
         }
+    }
+
+    public boolean isDisplayLocalTab() {
+        try {
+            return (Boolean) requestContainer.getPropertyValue(FIELD_DISPLAY_LOCAL_TAB);
+        } catch (ClientException e) {
+            log.warn("Unable to fetch display local tab flag using default value: "
+                    + e.getMessage());
+            return true;
+        }
+    }
+
+    public boolean allowDirectValidationForNonExistingUser() {
+        return Boolean.parseBoolean(Framework.getProperty(
+                "nuxeo.user.registration.force.validation.non.existing", "false"));
     }
 }

@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
@@ -353,7 +354,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             EventContext evContext = sendEvent(session, registrationDoc,
                     UserRegistrationService.REGISTRATION_VALIDATED_EVENT);
 
-            registrationDoc.detach(sessionIsAlreadyUnrestricted);
+            ((DocumentModelImpl) registrationDoc).detach(sessionIsAlreadyUnrestricted);
             registrationData.put(REGISTRATION_DATA_DOC, registrationDoc);
             registrationData.put(REGISTRATION_DATA_USER,
                     evContext.getProperty("registeredUser"));
@@ -473,8 +474,15 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 UserManager.class).getPrincipal(userInfo.getLogin());
         // Directly accept registration if the configuration allow it and the
         // user already exists
-        if (autoAccept
-                || (userAlreadyExists && getRegistrationRules(configurationName).allowDirectValidationForExistingUser())) {
+        RegistrationRules registrationRules = getRegistrationRules(configurationName);
+        boolean byPassAdminValidation = autoAccept;
+        byPassAdminValidation |= userAlreadyExists
+                && registrationRules.allowDirectValidationForExistingUser();
+        byPassAdminValidation |= registrationRules.allowDirectValidationForExistingUser()
+                && registrationRules.allowDirectValidationForNonExistingUser();
+        if (byPassAdminValidation) {
+            additionnalInfo.put("validationBaseURL", BaseURL.getBaseURL()
+                    + getConfiguration(configurationName).getValidationRelUrl());
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
         return registrationUuid;
@@ -618,7 +626,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         @Override
         public void run() throws ClientException {
             doc = getOrCreateRootDocument(session, configurationName);
-            doc.detach(true);
+            ((DocumentModelImpl) doc).detach(true);
         }
 
         public DocumentModel getDoc() {
@@ -685,7 +693,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         StringWriter writer = new StringWriter();
         Map<String, Object> input = new HashMap<String, Object>();
         additionalInfos.put("validationBaseURL", BaseURL.getBaseURL()
-                + getConfiguration().getValidationRelUrl());
+                + getConfiguration(registrationDoc).getValidationRelUrl());
         input.putAll(additionalInfos);
         input.put("userAlreadyExists",
                 checkUserFromRegistrationExistence(registrationDoc));
