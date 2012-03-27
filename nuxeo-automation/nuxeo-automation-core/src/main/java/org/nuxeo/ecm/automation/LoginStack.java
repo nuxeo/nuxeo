@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -57,6 +57,10 @@ public class LoginStack {
             if (originalSession != null) {
                 entry.session = Framework.getService(RepositoryManager.class).getRepository(
                         originalSession.getRepositoryName()).open();
+                currentSession = entry.session;
+            } else {
+                entry.session = Framework.getService(RepositoryManager.class).getRepository(
+                        Framework.getService(RepositoryManager.class).getDefaultRepository().getName()).open();
                 currentSession = entry.session;
             }
             stack.add(entry);
