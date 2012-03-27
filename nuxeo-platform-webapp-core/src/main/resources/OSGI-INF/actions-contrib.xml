@@ -140,7 +140,7 @@
     </action>
 
     <action id="sendEmail" link="send_email" order="17"
-      label="action.email.document" icon="/icons/mail.gif">
+      label="action.email.document" icon="/icons/mail.gif" type="button">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
     </action>
