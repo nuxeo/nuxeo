@@ -144,6 +144,12 @@ public class ActionContributionHandler extends
             dest.setHelp(tooltip);
         }
 
+        // ui action type
+        String type = source.getType();
+        if (type != null && !type.equals(dest.getType())) {
+            dest.setType(type);
+        }
+
         // order
         int newOrder = source.getOrder();
         if (newOrder > 0 && newOrder != dest.getOrder()) {

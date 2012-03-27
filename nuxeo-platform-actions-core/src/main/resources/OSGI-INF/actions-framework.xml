@@ -136,6 +136,14 @@
       - immediate: an optional boolean (available since 5.4.2) that makes it
       possible to call command actions without validating the enclosing form.
 
+      - type: the UI type action (available since 5.6)
+
+      UI Type properties WIP :
+
+      - name:
+
+      - property:
+
       It is important to understand that an action does *not* define the way it
       will be rendered: this is left to pages, templates and other components
       displaying it. Most of the time, actions will be rendered as command links
@@ -145,20 +153,23 @@
 
       <code>
         <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml"
-          enabled="true" label="action.view.rights" icon="/icons/file.gif">
+          enabled="true" label="action.view.rights" icon="/icons/file.gif" type="fancybox">
           <category>VIEW_ACTION_LIST</category>
           <filter-id>rights</filter-id>
+          <properties name="fancybox">
+            <property name="url">/incl/fancybox.xhtml</property>
+          </properties>
         </action>
 
         <action id="newFile" link="create_file" enabled="true"
-          label="action.new.file" icon="/icons/action_add_file.gif">
+          label="action.new.file" icon="/icons/action_add_file.gif" type="button">
           <category>SUBVIEW_UPPER_LIST</category>
           <filter-id>create</filter-id>
         </action>
 
         <action id="newSection"
           link="#{documentActions.createDocument('Section')}" enabled="true"
-          label="command.create.section" icon="/icons/action_add.gif">
+          label="command.create.section" icon="/icons/action_add.gif" type="icon">
           <category>SUBVIEW_UPPER_LIST</category>
           <filter id="newSection">
             <rule grant="true">
