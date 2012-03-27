@@ -58,6 +58,10 @@ public class LoginStack {
                 entry.session = Framework.getService(RepositoryManager.class).getRepository(
                         originalSession.getRepositoryName()).open();
                 currentSession = entry.session;
+            } else {
+                entry.session = Framework.getService(RepositoryManager.class).getRepository(
+                        Framework.getService(RepositoryManager.class).getDefaultRepository().getName()).open();
+                currentSession = entry.session;
             }
             stack.add(entry);
         } catch (Exception e) {
