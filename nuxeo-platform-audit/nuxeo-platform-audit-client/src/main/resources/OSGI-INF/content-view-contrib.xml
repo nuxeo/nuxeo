@@ -30,7 +30,7 @@
             <field schema="basicauditsearch" name="principalName" />
           </predicate>
         </whereClause>
-        <parameter>#{currentDocument}</parameter>
+        <parameter>#{currentDocument.id}</parameter>
         <sort column="log.eventDate" ascending="false" />
         <pageSize>10</pageSize>
         <maxPageSize>1000</maxPageSize>
