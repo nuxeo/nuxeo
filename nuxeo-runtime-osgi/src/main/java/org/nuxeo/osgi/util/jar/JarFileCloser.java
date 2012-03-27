@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 
+import org.nuxeo.runtime.api.Framework;
+
 
 /**
  *
@@ -35,8 +37,6 @@ import java.util.jar.JarFile;
  */
 public class JarFileCloser {
 
-    protected URLClassLoaderCloser sharedResourcesCloser;
-
     protected URLClassLoaderCloser applicationCloser;
 
     protected Map<URLClassLoader,URLClassLoaderCloser> urlClassLoderClosers =
@@ -46,7 +46,6 @@ public class JarFileCloser {
 
 
     public JarFileCloser(URLClassLoader resourcesCL, ClassLoader appCL)  {
-        sharedResourcesCloser = new URLClassLoaderCloser(resourcesCL);
         if (appCL instanceof URLClassLoader) {
             applicationCloser = new URLClassLoaderCloser((URLClassLoader)appCL);
         }
@@ -57,6 +56,7 @@ public class JarFileCloser {
     public  void close(JarFile file) throws IOException {
        file.close();
        URL location = new File(file.getName()).toURI().toURL();
+       URLClassLoaderCloser sharedResourcesCloser = new URLClassLoaderCloser(Framework.getResourceLoader());
        if (sharedResourcesCloser.close(location) == false) {
            if (applicationCloser != null) {
                applicationCloser.close(location);
