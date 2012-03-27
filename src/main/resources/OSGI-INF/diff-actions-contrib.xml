@@ -18,6 +18,13 @@
       <filter-id>canDiffCurrentVersionSelection</filter-id>
     </action>
 
+    <action id="CURRENT_DEFAULT_SELECTION_DIFF"
+      link="#{diffActions.prepareCurrentDefaultSelectionDiff}" label="command.clipboard.diff"
+      icon="/icons/action_diff.png" order="100">
+      <category>DEFAULT_LIST</category>
+      <filter-id>canDiffCurrentDefaultSelection</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -33,6 +40,13 @@
     <filter id="canDiffCurrentVersionSelection">
       <rule grant="true">
         <condition>#{diffActions.canDiffCurrentVersionSelection}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="canDiffCurrentDefaultSelection">
+      <rule grant="true">
+        <condition>#{diffActions.canDiffCurrentDefaultSelection}
         </condition>
       </rule>
     </filter>

@@ -55,14 +55,14 @@ public class DiffActionsBean implements Serializable {
 
     private static final String DOC_DIFF_VIEW = "view_doc_diff";
 
-    @In(create = true)
-    protected transient DocumentsListsManager documentsListsManager;
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
 
-    @In(create = true, required = false)
-    protected transient CoreSession documentManager;
+    @In(create = true)
+    protected transient DocumentsListsManager documentsListsManager;
 
     protected DocumentModel leftDoc;
 
@@ -91,6 +91,17 @@ public class DiffActionsBean implements Serializable {
     public boolean getCanDiffCurrentVersionSelection() {
 
         return getCanDiffWorkingList(VersionDocumentsListsConstants.CURRENT_VERSION_SELECTION);
+    }
+
+    /**
+     * Checks if the diff action is available for the
+     * {@link DocumentsListsManager#DEFAULT_WORKING_LIST} working list.
+     *
+     * @return true if can diff the current default working list selection
+     */
+    public boolean getCanDiffCurrentDefaultSelection() {
+
+        return getCanDiffWorkingList(DocumentsListsManager.DEFAULT_WORKING_LIST);
     }
 
     /**
@@ -131,6 +142,18 @@ public class DiffActionsBean implements Serializable {
 
         isVersionDiff = true;
         return prepareWorkingListDiff(VersionDocumentsListsConstants.CURRENT_VERSION_SELECTION);
+    }
+
+    /**
+     * Prepares a diff of the current default selection.
+     *
+     * @return the view id
+     * @throws ClientException the client exception
+     */
+    public String prepareCurrentDefaultSelectionDiff() throws ClientException {
+
+        isVersionDiff = false;
+        return prepareWorkingListDiff(DocumentsListsManager.DEFAULT_WORKING_LIST);
     }
 
     /**
