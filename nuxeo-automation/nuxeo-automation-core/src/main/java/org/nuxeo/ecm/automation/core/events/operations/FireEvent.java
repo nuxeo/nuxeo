@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -19,6 +19,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -52,6 +53,11 @@ public class FireEvent {
             sendDocumentEvent((DocumentModel) input);
         } else if (input instanceof DocumentRef) {
             sendDocumentEvent(session.getDocument((DocumentRef) input));
+        } else if (input instanceof DocumentModelList){
+            DocumentModelList docs = (DocumentModelList) input;
+            for (DocumentModel documentModel : docs) {
+                sendDocumentEvent(documentModel);
+            }
         } else {
             sendUnknownEvent(input);
         }
