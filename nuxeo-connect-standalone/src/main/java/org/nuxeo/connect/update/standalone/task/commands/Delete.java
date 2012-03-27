@@ -19,6 +19,10 @@ package org.nuxeo.connect.update.standalone.task.commands;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Element;
+
 import org.nuxeo.common.utils.FileRef;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
@@ -26,7 +30,6 @@ import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
 import org.nuxeo.connect.update.xml.XmlWriter;
-import org.w3c.dom.Element;
 
 /**
  * The delete command. This command takes 2 arguments: the file path to delete
@@ -38,6 +41,8 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Delete extends AbstractCommand {
+
+    protected static final Log log = LogFactory.getLog(Delete.class);
 
     public static final String ID = "delete";
 
@@ -83,7 +88,10 @@ public class Delete extends AbstractCommand {
                 if (onExit) {
                     file.deleteOnExit();
                 } else {
-                    file.delete();
+                    if (!file.delete()) {
+                        throw new PackageException("Cannot delete "
+                                + file.getName());
+                    }
                 }
                 return new Copy(bak, file, md5, false, onExit);
             } else {
@@ -91,7 +99,7 @@ public class Delete extends AbstractCommand {
             }
         } catch (Exception e) {
             throw new PackageException(
-                    "Failed to create backup when deleting: " + file.getName());
+                    "Failed to create backup when deleting: " + file.getName(), e);
         }
     }
 
