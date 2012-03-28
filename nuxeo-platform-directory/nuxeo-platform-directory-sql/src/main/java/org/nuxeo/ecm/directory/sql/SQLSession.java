@@ -905,7 +905,9 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public void close() throws DirectoryException {
         try {
-            sqlConnection.close();
+            if (!sqlConnection.isClosed()) {
+                sqlConnection.close();
+            }
         } catch (SQLException e) {
             throw new DirectoryException("close failed", e);
         } finally {
