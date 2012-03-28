@@ -5,7 +5,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core">
 
-<table>
+<table class="dataOutput">
   <tr>
     <td>
     <h:outputText value="#{messages['label.oauth.keyName']}" />
@@ -19,7 +19,7 @@
     <h:outputText value="#{messages['label.oauth.certificate']}" />
     </td>
     <td>
-    <div style="border-width:1px;border-style:solid;border-color:grey;padding:5px"><pre>
+    <div class="field"><pre>
     <h:outputText value="#{oauthServerKeyActions.publicCertificate}" /></pre>
     </div>
     </td>
