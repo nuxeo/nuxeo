@@ -367,7 +367,7 @@
 
       <widget name="id" type="text">
         <labels>
-          <label mode="any">Name</label>
+          <label mode="any">label.externalGadgetLayoutAdmin.name</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -376,7 +376,7 @@
       </widget>
       <widget name="label" type="text">
         <labels>
-          <label mode="any">Label</label>
+          <label mode="any">label.externalGadgetLayoutAdmin.label</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -385,7 +385,7 @@
       </widget>
       <widget name="enabled" type="template">
         <labels>
-          <label mode="any">Enabled</label>
+          <label mode="any">label.externalGadgetLayoutAdmin.enabled</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -400,7 +400,7 @@
       </widget>
       <widget name="category" type="text">
         <labels>
-          <label mode="any">Category</label>
+          <label mode="any">label.externalGadgetLayoutAdmin.category</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -409,7 +409,7 @@
       </widget>
       <widget name="url" type="text">
         <labels>
-          <label mode="any">Gadget URL</label>
+          <label mode="any">label.externalGadgetLayoutAdmin.gadgeturl</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -419,7 +419,7 @@
 
       <widget name="iconUrl" type="text">
         <labels>
-          <label mode="any">Icon URL</label>
+          <label mode="any">label.externalGadgetLayoutAdmin.iconurl</label>
         </labels>
         <translated>true</translated>
         <fields>
