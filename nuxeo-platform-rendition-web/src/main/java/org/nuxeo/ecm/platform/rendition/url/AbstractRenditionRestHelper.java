@@ -73,6 +73,7 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
                         && rendered.getMimeType().startsWith("text/")) {
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
                     // add inline download flag
+                    request.setAttribute("inline", "true");
                 }
                 ComponentUtils.download(context, rendered,
                         rendered.getFilename());
