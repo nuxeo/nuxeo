@@ -13,6 +13,34 @@
   <artifactId>nuxeo-multi-tenant</artifactId>
   <name>nuxeo-multi-tenant</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-impl</artifactId>
+    </dependency>
+  </dependencies>
+
   <repositories>
     <repository>
       <id>public</id>

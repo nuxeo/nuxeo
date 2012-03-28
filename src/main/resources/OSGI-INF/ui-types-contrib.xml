@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<component name="org.nuxeo.ecm.multi.tenant.types">
+<component name="org.nuxeo.ecm.multi.tenant.ui.types">
 
-<require>org.nuxeo.ecm.platform.types</require>
+  <require>org.nuxeo.ecm.platform.types</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
+
     <type id="Domain">
       <label>Domain</label>
       <icon>/icons/domain.gif</icon>
@@ -26,6 +27,10 @@
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
+      <layouts mode="create">
+        <layout>heading</layout>
+        <layout>tenant_configuration</layout>
+      </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dublincore</layout>
@@ -39,6 +44,7 @@
         </contentView>
       </contentViews>
     </type>
-        
+
   </extension>
+
 </component>

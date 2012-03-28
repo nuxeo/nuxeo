@@ -1,0 +1,32 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+  <h:form>
+    <table class="dataOutput">
+      <tbody>
+        <tr>
+          <td>
+            #{messages['label.multi.tenant.domain.isolation']}
+          </td>
+          <td>
+            <c:if test="#{multiTenantActions.tenantIsolationEnabled}">
+              <h:commandButton value="#{messages['label.local.configuration.disable']}"
+                action="#{multiTenantActions.disableTenantIsolation()}"
+                styleClass="button" />
+            </c:if>
+            <c:if test="#{not multiTenantActions.tenantIsolationEnabled}">
+              <h:commandButton value="#{messages['label.local.configuration.enable']}"
+                action="#{multiTenantActions.enableTenantIsolation()}"
+                styleClass="button" />
+            </c:if>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </h:form>
+
+</div>
