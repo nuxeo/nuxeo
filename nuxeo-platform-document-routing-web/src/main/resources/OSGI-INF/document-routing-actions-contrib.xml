@@ -62,7 +62,7 @@
     </action>
 
     <action id="SAVE_SELECTED_ROUTE_AS_NEW_INSTANCE"
-      link="#{routingActions.saveSelectedRouteAsNewInstance()}" order="10"
+      link="#{routingActions.saveSelectedRouteAsNewInstance()}" order="50"
       label="label.document.routing.saveAsNew">
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canDuplicateRouteInstance">
