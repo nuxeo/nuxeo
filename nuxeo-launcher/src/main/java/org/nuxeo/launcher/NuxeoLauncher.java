@@ -66,7 +66,11 @@ import org.json.JSONException;
 import org.json.XML;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.connect.update.PackageState;
+import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
+import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
@@ -130,8 +134,6 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_NUXEO_URL = "nuxeo.url";
 
-    private static final String PKG_MANAGER_CLASS = "org.nuxeo.ecm.admin.offline.update.LocalPackageManager";
-
     private static final long STREAM_MAX_WAIT = 3000;
 
     private static final String PACK_JBOSS_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackZip";
@@ -140,7 +142,7 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
 
-    protected ConfigurationGenerator configurationGenerator;
+    protected static ConfigurationGenerator configurationGenerator;
 
     public final ConfigurationGenerator getConfigurationGenerator() {
         return configurationGenerator;
@@ -159,7 +161,7 @@ public abstract class NuxeoLauncher {
 
     private ShutdownThread shutdownHook;
 
-    protected String[] params;
+    protected static String[] params;
 
     protected String command;
 
@@ -194,6 +196,8 @@ public abstract class NuxeoLauncher {
 
     private static boolean jsonOutput = false;
 
+    private static StandaloneUpdateService service = null;
+
     /**
      * @since 5.5
      * @return true if quiet mode is active
@@ -222,6 +226,26 @@ public abstract class NuxeoLauncher {
             guis = new HashMap<String, NuxeoLauncherGUI>();
         }
         guis.put(configurationGenerator.getNuxeoConf().toString(), gui);
+    }
+
+    protected StandaloneUpdateService getUpdateService() throws IOException, PackageException {
+        if (service == null) {
+            Environment env = new Environment(
+                    configurationGenerator.getRuntimeHome());
+            env.init();
+            env.setData(new File(
+                    configurationGenerator.getUserConfig().getProperty(
+                            Environment.NUXEO_DATA_DIR)));
+            env.setLog(new File(
+                    configurationGenerator.getUserConfig().getProperty(
+                            Environment.NUXEO_LOG_DIR)));
+            env.setTemp(new File(
+                    configurationGenerator.getUserConfig().getProperty(
+                            Environment.NUXEO_TMP_DIR)));
+            service = new StandaloneUpdateService(env);
+            service.initialize();
+        }
+        return service;
     }
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
@@ -643,16 +667,27 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.pkgList();
             launcher.printXMLOutput();
         } else if ("mp-add".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.pkgAdd();
+            for (String param : params) {
+                commandSucceeded = commandSucceeded && launcher.pkgAdd(param);
+            }
             launcher.printXMLOutput();
         } else if ("mp-install".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.pkgInstall();
+            if (configurationGenerator.isInstallInProgress()) {
+                launcher.executePending(true);
+            }
+            for (String param : params) {
+                commandSucceeded = commandSucceeded && launcher.pkgInstall(param);
+            }
             launcher.printXMLOutput();
         } else if ("mp-uninstall".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.pkgUninstall();
+            for (String param : params) {
+                commandSucceeded = commandSucceeded && launcher.pkgUninstall(param);
+            }
             launcher.printXMLOutput();
         } else if ("mp-remove".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.pkgRemove();
+            for (String param : params) {
+                commandSucceeded = commandSucceeded && launcher.pkgRemove(param);
+            }
             launcher.printXMLOutput();
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgReset();
@@ -980,88 +1015,39 @@ public abstract class NuxeoLauncher {
     }
 
     private boolean pkgList() {
-        callPackageManager(CommandInfo.CMD_LIST, null);
-        return errorValue == 0;
-    }
-
-    private boolean pkgReset() {
-        callPackageManager(CommandInfo.CMD_RESET, null);
-        return errorValue == 0;
-    }
-
-    private boolean pkgUninstall() {
-        for (String param : params) {
-            callPackageManager(CommandInfo.CMD_UNINSTALL, param);
-            if (errorValue != 0) {
-                log.error("Error processing 'uninstall' for: " + param);
-                break;
-            }
-        }
-        return errorValue == 0;
-    }
-
-    private boolean pkgRemove() {
-        for (String param : params) {
-            callPackageManager(CommandInfo.CMD_REMOVE, param);
-            if (errorValue != 0) {
-                log.error("Error processing 'remove' for: " + param);
-                break;
-            }
-        }
-        return errorValue == 0;
-    }
-
-    private boolean pkgAdd() {
-        for (String param : params) {
-            callPackageManager(CommandInfo.CMD_ADD, param);
-            if (errorValue != 0) {
-                log.error("Error processing 'add' for: " + param);
-                break;
-            }
-        }
-        return errorValue == 0;
-    }
-
-    private boolean pkgInstall() {
-        boolean didSomething = false;
-        if (configurationGenerator.isInstallInProgress()) {
-            didSomething = executePending(true);
-        }
-        if (params.length > 0) {
-            for (String param : params) {
-                callPackageManager(CommandInfo.CMD_INSTALL, param);
-                if (errorValue != 0) {
-                    log.error("Error processing 'install' for: " + param);
-                    break;
-                }
-                didSomething = true;
-            }
-        }
-        if (!didSomething) {
-            log.error("No package to install.");
-            errorValue = 1;
-        }
-        return errorValue == 0;
-    }
-
-    private boolean pkgTest() {
         try {
-            Environment env = new Environment(
-                    configurationGenerator.getRuntimeHome());
-            env.init();
-            env.setData(new File(
-                    configurationGenerator.getUserConfig().getProperty(
-                            Environment.NUXEO_DATA_DIR)));
-            env.setLog(new File(
-                    configurationGenerator.getUserConfig().getProperty(
-                            Environment.NUXEO_LOG_DIR)));
-            env.setTemp(new File(
-                    configurationGenerator.getUserConfig().getProperty(
-                            Environment.NUXEO_TMP_DIR)));
-            StandaloneUpdateService svc = new StandaloneUpdateService(env);
-            List<LocalPackage> pkgs = svc.getPackages();
-            for (LocalPackage pkg : pkgs) {
-                System.out.println(pkg.getName());
+            StandaloneUpdateService pus = getUpdateService();
+            List<LocalPackage> localPackages = pus.getPackages();
+            if (localPackages.isEmpty()) {
+                log.info("No local package.");
+            } else {
+                log.info("Local packages:");
+                for (LocalPackage localPackage : localPackages) {
+                    String packageDescription;
+                    switch (localPackage.getState()) {
+                    case PackageState.DOWNLOADING:
+                        packageDescription = "downloading...";
+                        break;
+                    case PackageState.DOWNLOADED:
+                        packageDescription = "downloaded";
+                        break;
+                    case PackageState.INSTALLING:
+                        packageDescription = "installing...";
+                        break;
+                    case PackageState.INSTALLED:
+                        packageDescription = "installed";
+                        break;
+                    case PackageState.STARTED:
+                        packageDescription = "started";
+                        break;
+                    default:
+                        packageDescription = "unknown";
+                        break;
+                    }
+                    packageDescription += "\t" + localPackage.getName() + " (id: "
+                            + localPackage.getId() + ")";
+                    log.info(packageDescription);
+                }
             }
             return true;
         } catch (Exception e) {
@@ -1070,19 +1056,156 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    private void doPendingCommand(boolean doExecute, String cmd, String param) {
-        if (doExecute) {
-            callPackageManager(cmd, param);
-        } else {
-            if (xmlOutput) {
-                CommandInfo cmdInfo = new CommandInfo();
-                cmdInfo.name = cmd;
-                cmdInfo.param = param;
-                cmdInfo.pending = true;
-                cset.commands.add(cmdInfo);
-            } else {
-                log.info("Pending action: " + cmd + " " + param);
+    protected void performTask(Task task) throws PackageException {
+        ValidationStatus status = task.validate();
+        if (status.hasErrors()) {
+            errorValue = 3;
+            throw new PackageException("Failed to validate package "
+                    + task.getPackage().getId() + " -> " + status.getErrors());
+        }
+        if (status.hasWarnings()) {
+            log.warn("Got warnings on package validation "
+                    + task.getPackage().getId() + " -> " + status.getWarnings());
+        }
+        task.run(null);
+    }
+
+    private boolean pkgReset() {
+        try {
+            StandaloneUpdateService pus = getUpdateService();
+            pus.reset();
+            log.info("Packages reset done: All packages were marked as DOWNLOADED");
+            return true;
+        } catch (Exception e) {
+            log.error(e);
+            return false;
+        }
+    }
+
+    private boolean pkgUninstall(String pkgId) {
+        try {
+            StandaloneUpdateService pus = getUpdateService();
+            LocalPackage pkg = pus.getPackage(pkgId);
+            if (pkg == null) {
+                throw new PackageException("Package not found: " + pkgId);
             }
+            log.info("Uninstalling " + pkgId);
+            Task uninstallTask = pkg.getUninstallTask();
+            try {
+                performTask(uninstallTask);
+            } catch (PackageException e) {
+                uninstallTask.rollback();
+                throw e;
+            }
+        } catch (Exception e) {
+            log.error("Failed to uninstall package: " + pkgId, e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean pkgRemove(String pkgId) {
+        try {
+            StandaloneUpdateService pus = getUpdateService();
+            LocalPackage pkg = pus.getPackage(pkgId);
+            if (pkg == null) {
+                throw new PackageException("Package not found: " + pkgId);
+            }
+            if ((pkg.getState() == PackageState.STARTED)
+                    || (pkg.getState() == PackageState.INSTALLED)) {
+                pkgUninstall(pkgId);
+                // Refresh state
+                pkg = pus.getPackage(pkgId);
+            }
+            if (pkg.getState() != PackageState.DOWNLOADED) {
+                throw new PackageException(
+                        "Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
+            }
+            log.info("Removing " + pkgId);
+            pus.removePackage(pkgId);
+        } catch (Exception e) {
+            log.error("Failed to remove package: " + pkgId, e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean pkgAdd(String packageFileName) {
+        try {
+            StandaloneUpdateService pus = getUpdateService();
+            if (packageFileName.startsWith("file:")) {
+                packageFileName = packageFileName.substring(5);
+            }
+            log.info("Adding " + packageFileName);
+            LocalPackage pkg = pus.addPackage(new File(packageFileName));
+        } catch (Exception e) {
+            log.error("Failed to add package: " + packageFileName, e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean pkgInstall(String pkgId) {
+        try {
+            StandaloneUpdateService pus = getUpdateService();
+            LocalPackage pkg = pus.getPackage(pkgId);
+            if (pkg == null) {
+                throw new PackageException("Package not found: " + pkgId);
+            }
+            log.info("Installing " + pkgId);
+            Task installTask = pkg.getInstallTask();
+            try {
+                performTask(installTask);
+            } catch (PackageException e) {
+                installTask.rollback();
+                throw e;
+            }
+        } catch (Exception e) {
+            log.error("Failed to install package: " + pkgId, e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean pkgTest() {
+        try {
+            StandaloneUpdateService pus = getUpdateService();
+            List<LocalPackage> localPackages = pus.getPackages();
+            if (localPackages.isEmpty()) {
+                log.info("No local package.");
+            } else {
+                log.info("Local packages:");
+                for (LocalPackage localPackage : localPackages) {
+                    String packageDescription;
+                    switch (localPackage.getState()) {
+                    case PackageState.DOWNLOADING:
+                        packageDescription = "downloading...";
+                        break;
+                    case PackageState.DOWNLOADED:
+                        packageDescription = "downloaded";
+                        break;
+                    case PackageState.INSTALLING:
+                        packageDescription = "installing...";
+                        break;
+                    case PackageState.INSTALLED:
+                        packageDescription = "installed";
+                        break;
+                    case PackageState.STARTED:
+                        packageDescription = "started";
+                        break;
+                    default:
+                        packageDescription = "unknown";
+                        break;
+                    }
+                    packageDescription += "\t" + localPackage.getName() + " (id: "
+                            + localPackage.getId() + ")";
+                    log.info(packageDescription);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            log.error(e);
+            return false;
         }
     }
 
@@ -1103,24 +1226,39 @@ public abstract class NuxeoLauncher {
                 String[] split = line.split("\\s+", 2);
                 if (split.length == 2) {
                     if (split[0].equals(CommandInfo.CMD_INSTALL)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_INSTALL,
-                                split[1]);
+                        if (doExecute) {
+                            pkgInstall(split[1]);
+                        } else {
+                            log.info("Pending action: install " + split[1]);
+                        }
                     } else if (split[0].equals(CommandInfo.CMD_ADD)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_ADD,
-                                split[1]);
+                        if (doExecute) {
+                            pkgAdd(split[1]);
+                        } else {
+                            log.info("Pending action: add " + split[1]);
+                        }
                     } else if (split[0].equals(CommandInfo.CMD_UNINSTALL)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_UNINSTALL,
-                                split[1]);
+                        if (doExecute) {
+                            pkgUninstall(split[1]);
+                        } else {
+                            log.info("Pending action: uninstall " + split[1]);
+                        }
                     } else if (split[0].equals(CommandInfo.CMD_REMOVE)) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_REMOVE,
-                                split[1]);
+                        if (doExecute) {
+                            pkgRemove(split[1]);
+                        } else {
+                            log.info("Pending action: remove " + split[1]);
+                        }
                     } else {
                         errorValue = 1;
                     }
                 } else if (split.length == 1) {
                     if (line.length() > 0 && !line.startsWith("#")) {
-                        doPendingCommand(doExecute, CommandInfo.CMD_INSTALL,
-                                line);
+                        if (doExecute) {
+                            pkgInstall(line);
+                        } else {
+                            log.info("Pending action: install " + line);
+                        }
                     }
                 }
                 if (errorValue != 0) {
@@ -1141,118 +1279,6 @@ public abstract class NuxeoLauncher {
             log.error(e.getMessage());
         }
         return errorValue == 0;
-
-    }
-
-    /**
-     * @since 5.6
-     * @param pkgParams Parameters passed to the package manager
-     * @throws IOException
-     * @throws InterruptedException
-     */
-
-    protected void callPackageManager(String pkgCommand, String pkgParam) {
-        try {
-            if (!CommandInfo.CMD_LIST.equals(pkgCommand)) {
-                checkNoRunningServer();
-            }
-            List<String> cmdOutput = new ArrayList<String>();
-            List<String> cmdError = new ArrayList<String>();
-            List<String> startCommand = new ArrayList<String>();
-            startCommand.add(getJavaExecutable().getPath());
-            startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
-            startCommand.add("-cp");
-            File tmpDir = File.createTempFile("install", null);
-            startCommand.add(getInstallClassPath(tmpDir));
-            startCommand.addAll(getNuxeoProperties());
-            startCommand.add("-D" + Environment.NUXEO_RUNTIME_HOME + "="
-                    + configurationGenerator.getRuntimeHome().getPath());
-            startCommand.add(PKG_MANAGER_CLASS);
-            startCommand.add("--workdir=" + tmpDir.getPath());
-            startCommand.add(pkgCommand);
-            if (pkgParam != null) {
-                startCommand.add(pkgParam);
-            }
-            ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
-            pb.directory(configurationGenerator.getNuxeoHome());
-            log.debug("Package manager command: " + pb.command());
-            Process process = pb.start();
-            ArrayList<ThreadedStreamGobbler> sgArray = captureProcessStreams(
-                    process, cmdOutput, cmdError);
-            Thread.sleep(100);
-            int exitCode = process.waitFor();
-            waitForProcessStreams(sgArray);
-            // Clean up temporary framework in case LocalPackageManager didn't
-            if (tmpDir.isFile()) {
-                FileUtils.deleteQuietly(tmpDir);
-            }
-            handleProcessManagerOutput(pkgCommand, exitCode, cmdOutput,
-                    cmdError);
-        } catch (IOException e) {
-            errorValue = 1;
-            log.error("Could not start process", e);
-        } catch (InterruptedException e) {
-            errorValue = 1;
-            log.error("Process interrupted", e);
-        } catch (IllegalStateException e) {
-            errorValue = 1;
-            log.error(
-                    "The server must not be running while managing marketplace packages",
-                    e);
-        }
-    }
-
-    /**
-     * @since 5.6
-     */
-    protected void handleProcessManagerOutput(String pkgCommand, int exitCode,
-            List<String> cmdOutput, List<String> cmdError) {
-        StringBuilder outputBuilder = new StringBuilder();
-        for (String outLine : cmdOutput) {
-            outputBuilder.append(outLine);
-            outputBuilder.append("\n");
-        }
-        String outputString = outputBuilder.toString();
-        StringBuilder errorBuilder = new StringBuilder();
-        for (String errLine : cmdError) {
-            errorBuilder.append(errLine);
-            errorBuilder.append("\n");
-        }
-        String errorString = errorBuilder.toString();
-        // Check that LocalPackageManager didn't output anything on stderr
-        if (!errorString.trim().equals("")) {
-            log.error("Unexpected error output from LocalPackageManager:");
-            log.error(errorString);
-            return;
-        }
-        // Try to deserialize LocalPackageManager output
-        try {
-            StringReader outputReader = new StringReader(outputString);
-            JAXBContext jaxbContext = JAXBContext.newInstance(
-                    CommandInfo.class, PackageInfo.class, MessageInfo.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            CommandInfo pkgRun = (CommandInfo) unmarshaller.unmarshal(outputReader);
-            if (xmlOutput) {
-                pkgRun.exitCode = exitCode;
-                cset.commands.add(pkgRun);
-            } else {
-                for (MessageInfo msg : pkgRun.messages) {
-                    if (msg.level == MessageInfo.LOG_LEVEL.DEBUG) {
-                        log.debug(msg.message);
-                    } else if (msg.level == MessageInfo.LOG_LEVEL.INFO) {
-                        log.info(msg.message);
-                    } else if (msg.level == MessageInfo.LOG_LEVEL.WARN) {
-                        log.warn(msg.message);
-                    } else {
-                        log.error(msg.message);
-                    }
-                }
-            }
-        } catch (JAXBException e) {
-            log.error(String.format(
-                    "Unexpected non-XML output from LocalPackageManager (%s):\n%s",
-                    e.getMessage(), outputString));
-        }
 
     }
 
