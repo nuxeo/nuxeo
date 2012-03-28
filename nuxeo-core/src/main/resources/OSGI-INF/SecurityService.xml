@@ -59,12 +59,12 @@
       permission:
       <code>
         <permission name="Read">
-          <include name="Browse" />
-          <include name="ReadVersion" />
-          <include name="ReadProperties" />
-          <include name="ReadChildren" />
-          <include name="ReadLifeCycle" />
-          <include name="ReviewParticipant" />
+          <include>Browse</include>
+          <include>ReadVersion</include>
+          <include>ReadProperties</include>
+          <include>ReadChildren</include>
+          <include>ReadLifeCycle</include>
+          <include>ReviewParticipant</include>
         </permission>
       </code>
 
@@ -81,8 +81,8 @@
         <permission name="CustomPerm" />
 
         <permission name="Read">
-          <include name="CustomPerm" />
-          <remove name="ReviewParticipant" />
+          <include>CustomPerm</include>
+          <remove>ReviewParticipant</remove>
         </permission>
       </code>
 
@@ -95,7 +95,7 @@
           <!-- The Version permission is deprecated
             since it's name is ambiguous, use
             ReadPermission instead -->
-          <alias name="Version" />
+          <alias>Version</alias>
         </permission>
       </code>
 
