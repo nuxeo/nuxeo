@@ -22,6 +22,7 @@ package org.nuxeo.osgi;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,8 +66,6 @@ public class OSGiAdapter {
     protected ListenerList bundleListeners;
 
     protected ListenerList serviceListeners;
-
-    protected Map<String, Bundle> bundles;
 
     protected Map<String, ServiceRegistration> services;
 

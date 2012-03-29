@@ -76,7 +76,7 @@ public class PackageAdminImpl implements PackageAdmin {
 
     @Override
     public Bundle[] getFragments(Bundle bundle) {
-        throw new UnsupportedOperationException("Not implemented");
+        return  osgi.getRegistry().getFragments(bundle.getSymbolicName());
     }
 
     @Override

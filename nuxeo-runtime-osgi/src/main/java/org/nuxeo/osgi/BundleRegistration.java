@@ -30,50 +30,40 @@ import java.util.Set;
  */
 public class BundleRegistration {
 
-    BundleImpl bundle;
+    protected final BundleImpl bundle;
 
     // XXX: explain why these three variables are lazily instantiated.
-    Set<String> dependsOn;
-    Set<String> dependsOnMe;
-    Set<String> waitingFor;
+    protected final Set<String> dependsOn = new HashSet<String>();
+    protected final Set<String> dependsOnMe = new HashSet<String>();
+    protected final Set<String> waitingFor = new HashSet<String>();
+    protected final Set<String> extendsMe = new HashSet<String>();
 
     public BundleRegistration(BundleImpl bundle) {
         this.bundle = bundle;
     }
 
+    public void addFragment(String name) {
+        extendsMe.add(name);
+    }
+
     public void addDependency(String name) {
-        if (dependsOn == null) {
-            dependsOn = new HashSet<String>();
-        }
         dependsOn.add(name);
     }
 
     public void addDependent(String name) {
-        if (dependsOnMe == null) {
-            dependsOnMe = new HashSet<String>();
-        }
         dependsOnMe.add(name);
     }
 
     public void addUnresolvedDependency(String name) {
-        if (waitingFor == null) {
-            waitingFor = new HashSet<String>();
-        }
         waitingFor.add(name);
     }
 
     public void removeUnresolvedDependency(String name) {
-        if (waitingFor == null) {
-            return;
-        }
         waitingFor.remove(name);
-        if (waitingFor.isEmpty()) {
-            waitingFor = null;
-        }
     }
 
     public boolean hasUnresolvedDependencies() {
-        return waitingFor != null && !waitingFor.isEmpty();
+        return !waitingFor.isEmpty();
     }
 
 }

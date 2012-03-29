@@ -144,6 +144,10 @@ public final class BundleManifestReader {
         if (val != null) {
             headers.put(Constants.REQUIRE_BUNDLE, val);
         }
+        val = attrs.getValue(Constants.FRAGMENT_HOST);
+        if (val != null) {
+            headers.put(Constants.FRAGMENT_HOST, val);
+        }
         // Nuxeo headers
         for (String key : CUSTOM_HEADERS) {
             val = attrs.getValue(key);
