@@ -19,10 +19,15 @@
   - foldableBoxLabel: the label displayed as the title of the foldable box,
   - helpLabel: the help label for the local configuration handled by this layout,
     displayed as a tooltip
+  - elementsToReRender: a list of elements to rerender after enabling or
+    disabling this local configuration
 </c:if>
 
 <c:set var="layoutTemplateToInclude"
   value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/default_layout_template.xhmtl')}" />
+
+<c:set var="elementsToReRender"
+  value="#{nxu:test(!empty layoutProperty_elementsToReRender, layoutProperty_elementsToReRender, 'local_configuration_#{layout.id}_panel')}" />
 
   <a4j:outputPanel layout="block" id="local_configuration_#{layout.id}_panel">
 
@@ -57,12 +62,12 @@
 
           <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
             <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
-              immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{not hasLocalConfigurationFacet}"
+              immediate="true" reRender="#{elementsToReRender}" rendered="#{not hasLocalConfigurationFacet}"
               styleClass="action" id="#{layout.id}_enable">
               <h:outputText value="#{messages['label.local.configuration.enable']}"/>
             </a4j:commandLink>
             <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
-              immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{hasLocalConfigurationFacet}"
+              immediate="true" reRender="#{elementsToReRender}" rendered="#{hasLocalConfigurationFacet}"
               styleClass="action" id="#{layout.id}_disable">
               <h:outputText value="#{messages['label.local.configuration.disable']}"/>
             </a4j:commandLink>
