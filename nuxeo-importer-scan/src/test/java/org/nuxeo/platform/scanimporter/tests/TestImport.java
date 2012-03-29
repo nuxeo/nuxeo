@@ -41,6 +41,7 @@ public class TestImport extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/core-type-test-contrib.xml");
         openSession();
 
         deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
@@ -99,6 +100,41 @@ public class TestImport extends SQLRepositoryTestCase {
         assertEquals("This is a test.", ((Blob)doc.getPropertyValue("file:content")).getString());
 
         assertFalse(new File(testPath + "/descriptor.xml").exists());
+    }
+
+    public void testDocTypeMappingInImport() throws Exception {
+
+        String testPath = deployTestFiles("test4");
+        File xmlFile = new File(testPath + "/descriptor.xml");
+        assertTrue(xmlFile.exists());
+
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib4.xml");
+
+
+        ScannedFileImporter importer = new ScannedFileImporter();
+
+        ImporterConfig config = new ImporterConfig();
+        config.setTargetPath("/");
+        config.setNbThreads(1);
+        config.setBatchSize(10);
+        config.setUseXMLMapping(true);
+
+        importer.doImport(new File(testPath), config);
+
+        session.save();
+
+        DocumentModelList alldocs = session
+                .query("select * from Picture order by ecm:path");
+
+        for (DocumentModel doc : alldocs) {
+            log.info("imported : " + doc.getPathAsString() + "-"
+                    + doc.getType());
+        }
+
+        assertEquals(1, alldocs.size());
+
+        DocumentModel doc = alldocs.get(0);
+        assertEquals(doc.getType(), "Picture");
     }
 
 }

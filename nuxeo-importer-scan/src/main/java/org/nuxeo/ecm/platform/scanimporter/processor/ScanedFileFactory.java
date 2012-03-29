@@ -104,6 +104,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
         if (bh instanceof ScanFileBlobHolder) {
             ScanFileBlobHolder scanBH = (ScanFileBlobHolder) bh;
             docType = scanBH.getTargetType();
+            setLeafType(docType);
         }
         DocumentModel doc = defaultCreateLeafNode(session, parent, node);
 
