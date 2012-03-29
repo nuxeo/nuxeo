@@ -38,6 +38,16 @@
       <category>TAB_CONTENT_HISTORY_sub_tab</category>
       <filter-id>versionable</filter-id>
     </action>
+    
+    <!-- version actions -->
+    
+    <action id="CURRENT_VERSION_SELECTION_DELETE"
+      link="#{versionedActions.removeSelectedArchivedVersions}" label="command.removeSelectedArchivedVersions"
+      confirm="if( !confirmDeleteDocuments() ) return false;" order="10">
+      <category>CURRENT_VERSION_SELECTION_LIST</category>
+      <filter-id>canDeleteCurrentVersionSelection</filter-id>
+    </action>
+    
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -74,6 +84,13 @@
       </rule>
       <rule grant="false">
         <facet>Immutable</facet>
+      </rule>
+    </filter>
+    
+    <filter id="canDeleteCurrentVersionSelection">
+      <rule grant="true">
+        <condition>#{versionedActions.canRemoveSelectedArchivedVersions}
+        </condition>
       </rule>
     </filter>
 
