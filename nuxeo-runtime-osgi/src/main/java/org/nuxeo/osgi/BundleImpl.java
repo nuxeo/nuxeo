@@ -24,11 +24,14 @@ package org.nuxeo.osgi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.jar.Manifest;
 
+import org.nuxeo.osgi.util.CompoundEnumeration;
+import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -37,6 +40,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -156,10 +160,45 @@ public class BundleImpl implements Bundle {
         return file.getEntry(name);
     }
 
+    public static PackageAdmin getPackageAdmin() {
+        BundleContext sysctx = Framework.getRuntime().getContext().getBundle().getBundleContext();
+        ServiceReference ref = sysctx.getServiceReference(PackageAdmin.class.getName());
+        return (PackageAdmin) sysctx.getService(ref);
+    }
+
+
+    protected static class CompoundEnumerationBuilder {
+
+        protected final ArrayList<Enumeration<URL>> collected =
+                new ArrayList<Enumeration<URL>>();
+
+        public CompoundEnumerationBuilder add(Enumeration<URL> e) {
+            collected.add(e);
+            return this;
+        }
+
+        public Enumeration<URL> build() {
+            return new CompoundEnumeration<URL>(collected.toArray(new Enumeration[collected.size()]));
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public Enumeration<URL> findEntries(String path, String filePattern,
             boolean recurse) {
-        return file.findEntries(path, filePattern, recurse);
+        Enumeration<URL> hostEntries = file.findEntries(path, filePattern, recurse);
+        Bundle[] fragments = osgi.getRegistry().getFragments(symbolicName);
+        if (fragments.length == 0) {
+            return hostEntries;
+        }
+        CompoundEnumerationBuilder builder = new CompoundEnumerationBuilder().add(hostEntries);
+        
+        for (Bundle fragment:fragments) {
+            Enumeration<URL> fragmentEntries = fragment.findEntries(path, filePattern, recurse);
+            builder.add(fragmentEntries);
+        }
+        return builder.build();
     }
 
     @Override

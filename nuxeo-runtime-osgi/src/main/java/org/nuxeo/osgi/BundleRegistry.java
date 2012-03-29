@@ -20,17 +20,18 @@
 
 package org.nuxeo.osgi;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -68,6 +69,20 @@ public class BundleRegistry {
         return reg == null ? null : reg.bundle;
     }
 
+    /**
+     *
+     * @since 5.6
+     */
+    public synchronized BundleImpl[] getFragments(String symbolicName) {
+        BundleRegistration reg = bundles.get(symbolicName);
+
+        ArrayList<BundleImpl> fragments = new ArrayList<BundleImpl>();
+        for (String id:reg.extendsMe) {
+            fragments.add(getBundle(id));
+        }
+        return fragments.toArray(new BundleImpl[fragments.size()]);
+    }
+
     public synchronized BundleImpl[] getInstalledBundles() {
         BundleImpl[] bundles = new BundleImpl[this.bundles.size()];
         int i = 0;
@@ -99,28 +114,17 @@ public class BundleRegistry {
     }
 
     private void register(BundleRegistration reg) throws BundleException {
-        String str = null;
-        // (FIXME) disable MANIFEST requirements temporarily
-        // String str = (String)
-        // reg.bundle.getHeaders().get(Constants.REQUIRE_BUNDLE);
-        if (str != null) {
-            String name = reg.bundle.getSymbolicName();
-            StringTokenizer tokenizer = new StringTokenizer(str.trim(),
-                    ", \t\n\r\f");
-            while (tokenizer.hasMoreTokens()) {
-                String token = tokenizer.nextToken();
-                // remove require properties if any
-                int p = token.indexOf(';');
-                if (p > -1) {
-                    token = token.substring(0, p).trim();
-                }
-                BundleRegistration depReg = bundles.get(token);
-                if (depReg != null) { // required dependency resolved
-                    depReg.addDependent(name);
-                } else { // required dependency unresolved
-                    reg.addUnresolvedDependency(token);
-                }
-                reg.addDependency(token);
+        String hostBundleId = (String)reg.bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        if (hostBundleId != null) {
+            int p = hostBundleId.indexOf(';');
+            if (p > -1) { // remove version or other extra information if any
+                hostBundleId = hostBundleId.substring(0, p);
+            }
+            BundleRegistration host = bundles.get(hostBundleId);
+            if (host != null) {
+                host.addFragment(reg.bundle.getSymbolicName());
+            } else {
+                reg.addUnresolvedDependency(hostBundleId);
             }
         }
         if (reg.hasUnresolvedDependencies()) {
@@ -136,15 +140,12 @@ public class BundleRegistry {
         bundles.remove(reg.bundle.getSymbolicName());
         bundlesById.remove(reg.bundle.getBundleId());
         reg.bundle.setUninstalled();
-        if (reg.dependsOnMe != null) {
-            for (String depOnMe : reg.dependsOnMe) {
-                BundleRegistration depReg = bundles.get(depOnMe);
-                if (depReg != null) { // set to unresolved
-                    depReg.bundle.setUnResolved();
-                }
+        for (String depOnMe : reg.dependsOnMe) {
+            BundleRegistration depReg = bundles.get(depOnMe);
+            if (depReg != null) { // set to unresolved
+                depReg.bundle.setUnResolved();
             }
         }
-        reg.bundle = null;
     }
 
     protected void doPostpone(BundleRegistration reg) {
