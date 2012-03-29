@@ -29,6 +29,9 @@ import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,6 +40,13 @@ import org.osgi.framework.Bundle;
 public class WebEngineModuleFactory {
 
     public static Log log = LogFactory.getLog(WebEngineModuleFactory.class);
+
+    public static Bundle[] getFragments(Bundle bundle) {
+        BundleContext sysContext = Framework.getRuntime().getContext().getBundle().getBundleContext();
+        ServiceReference ref = sysContext.getServiceReference(PackageAdmin.class.getName());
+        PackageAdmin admin = (PackageAdmin)sysContext.getService(ref);
+        return admin.getFragments(bundle);
+    }
 
     public static WebEngineModule getApplication(WebEngineModule app, Bundle bundle, Map<String,String> attrs) throws Exception {
         WebEngine engine = Framework.getLocalService(WebEngine.class);
@@ -49,6 +59,32 @@ public class WebEngineModuleFactory {
         }
         // register the web engine
 
+
+        File moduleDir = locateModuleDir(bundle, engine, explode);
+
+        if (engine.isDevMode() && moduleDir != null) {
+            engine.getWebLoader().addClassPathElement(moduleDir);
+            app = (WebEngineModule)engine.loadClass(app.getClass().getName()).newInstance();
+        }
+
+        app.init(engine, bundle, new File(moduleDir, "module.xml"), attrs);
+
+        app.cfg.directory = moduleDir;
+
+        Bundle[] fragments = getFragments(bundle);
+        for (Bundle fragment:fragments) {
+            File fragmentDir = locateModuleDir(fragment, engine, explode);
+            app.cfg.fragmentDirectories.add(fragmentDir);
+        }
+        engine.addApplication(app);
+
+        log.info("Deployed web module found in bundle: " + bundle.getSymbolicName());
+
+        return app;
+    }
+
+    private static File locateModuleDir(Bundle bundle, WebEngine engine,
+            boolean explode) throws IOException {
         File moduleDir = null;
         File bundleFile = Framework.getRuntime().getBundleFile(bundle);
         if (explode) { // this will also add the exploded directory to WebEngine
@@ -57,17 +93,7 @@ public class WebEngineModuleFactory {
         } else if (bundleFile.isDirectory()) {
             moduleDir = bundleFile;
         }
-
-        if (engine.isDevMode() && moduleDir != null) {
-            engine.getWebLoader().addClassPathElement(moduleDir);
-            app = (WebEngineModule)engine.loadClass(app.getClass().getName()).newInstance();
-        }
-        app.init(engine, bundle, moduleDir, attrs);
-        engine.addApplication(app);
-
-        log.info("Deployed web module found in bundle: " + bundle.getSymbolicName());
-
-        return app;
+        return moduleDir;
     }
 
 
