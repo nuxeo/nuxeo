@@ -229,7 +229,8 @@ public abstract class NuxeoLauncher {
         guis.put(configurationGenerator.getNuxeoConf().toString(), gui);
     }
 
-    protected StandaloneUpdateService getUpdateService() throws IOException, PackageException {
+    protected StandaloneUpdateService getUpdateService() throws IOException,
+            PackageException {
         if (service == null) {
             Environment env = new Environment(
                     configurationGenerator.getRuntimeHome());
@@ -284,7 +285,7 @@ public abstract class NuxeoLauncher {
     /**
      * Do not directly call this method without a call to
      * {@link #checkNoRunningServer()}
-     *
+     * 
      * @see #doStart()
      * @throws IOException In case of issue with process.
      * @throws InterruptedException If any thread has interrupted the current
@@ -319,9 +320,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Gets the java options with Nuxeo properties substituted.
-     *
+     * 
      * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
-     *
+     * 
      * @return the java options string.
      */
     protected String getJavaOptsProperty() {
@@ -344,7 +345,7 @@ public abstract class NuxeoLauncher {
      * Check if some server is already running (from another thread) and throw a
      * Runtime exception if it finds one. That method will work where
      * {@link #isRunning()} won't.
-     *
+     * 
      * @throws IllegalThreadStateException Thrown if a server is already
      *             running.
      */
@@ -386,29 +387,11 @@ public abstract class NuxeoLauncher {
         return sgArray;
     }
 
-    /**
-     * Reads a process' stdout and stderr into string lists
-     *
-     * @since 5.6
-     */
-    public ArrayList<ThreadedStreamGobbler> captureProcessStreams(
-            Process process, List<String> cmdOutput, List<String> cmdError) {
-        ArrayList<ThreadedStreamGobbler> sgArray = new ArrayList<ThreadedStreamGobbler>();
-        ThreadedStreamGobbler inputSG, errorSG;
-        inputSG = new ThreadedStreamGobbler(process.getInputStream(), cmdOutput);
-        errorSG = new ThreadedStreamGobbler(process.getErrorStream(), cmdError);
-        inputSG.start();
-        errorSG.start();
-        sgArray.add(inputSG);
-        sgArray.add(errorSG);
-        return sgArray;
-    }
-
     protected abstract String getServerPrint();
 
     /**
      * Will wrap, if necessary, the command within a Shell command
-     *
+     * 
      * @param roughCommand Java command which will be run
      * @return wrapped command depending on the OS
      */
@@ -670,7 +653,8 @@ public abstract class NuxeoLauncher {
             launcher.printXMLOutput();
         } else if ("mp-add".equalsIgnoreCase(launcher.command)) {
             for (String param : params) {
-                commandSucceeded = commandSucceeded && (launcher.pkgAdd(param) != null);
+                commandSucceeded = commandSucceeded
+                        && (launcher.pkgAdd(param) != null);
             }
             launcher.printXMLOutput();
         } else if ("mp-install".equalsIgnoreCase(launcher.command)) {
@@ -678,17 +662,20 @@ public abstract class NuxeoLauncher {
                 launcher.executePending(true);
             }
             for (String param : params) {
-                commandSucceeded = commandSucceeded && (launcher.pkgInstall(param) != null);
+                commandSucceeded = commandSucceeded
+                        && (launcher.pkgInstall(param) != null);
             }
             launcher.printXMLOutput();
         } else if ("mp-uninstall".equalsIgnoreCase(launcher.command)) {
             for (String param : params) {
-                commandSucceeded = commandSucceeded && (launcher.pkgUninstall(param) != null);
+                commandSucceeded = commandSucceeded
+                        && (launcher.pkgUninstall(param) != null);
             }
             launcher.printXMLOutput();
         } else if ("mp-remove".equalsIgnoreCase(launcher.command)) {
             for (String param : params) {
-                commandSucceeded = commandSucceeded && (launcher.pkgRemove(param) != null);
+                commandSucceeded = commandSucceeded
+                        && (launcher.pkgRemove(param) != null);
             }
             launcher.printXMLOutput();
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
@@ -808,7 +795,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Call {@link #doStart(boolean)} with false as parameter.
-     *
+     * 
      * @see #doStart(boolean)
      * @return true if the server started successfully
      */
@@ -820,9 +807,9 @@ public abstract class NuxeoLauncher {
      * Whereas {@link #doStart()} considers the server as started when the
      * process is running, {@link #doStartAndWait()} waits for effective start
      * by watching the logs
-     *
+     * 
      * @param logProcessOutput Must process output stream must be logged or not.
-     *
+     * 
      * @return true if the server started successfully
      */
     public boolean doStartAndWait(boolean logProcessOutput) {
@@ -914,7 +901,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Must be called after {@link #getStartupSummary()}
-     *
+     * 
      * @since 5.5
      * @return last detected status of running Nuxeo server
      */
@@ -938,7 +925,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Starts the server in background.
-     *
+     * 
      * @return true if server successfully started
      */
     public boolean doStart(boolean logProcessOutput) {
@@ -1047,8 +1034,8 @@ public abstract class NuxeoLauncher {
                         packageDescription = "unknown";
                         break;
                     }
-                    packageDescription += "\t" + localPackage.getName() + " (id: "
-                            + localPackage.getId() + ")";
+                    packageDescription += "\t" + localPackage.getName()
+                            + " (id: " + localPackage.getId() + ")";
                     log.info(packageDescription);
                 }
             }
@@ -1183,12 +1170,13 @@ public abstract class NuxeoLauncher {
             // Validate filename exists relative to current or NUXEO_HOME dir
             File fileToAdd = new File(packageFileName);
             if (!fileToAdd.exists()) {
-                fileToAdd = new File(
-                    configurationGenerator.getNuxeoHome(), packageFileName);
+                fileToAdd = new File(configurationGenerator.getNuxeoHome(),
+                        packageFileName);
                 if (!fileToAdd.exists()) {
-                    throw new FileNotFoundException("Cannot find " +
-                        packageFileName + " relative to current directory " +
-                        "or to NUXEO_HOME");
+                    throw new FileNotFoundException("Cannot find "
+                            + packageFileName
+                            + " relative to current directory "
+                            + "or to NUXEO_HOME");
                 }
             }
             log.info("Adding " + packageFileName);
@@ -1301,7 +1289,8 @@ public abstract class NuxeoLauncher {
                                 cmdInfo.pending = true;
                                 cset.commands.add(cmdInfo);
                             } else {
-                                log.info("Pending action: uninstall " + split[1]);
+                                log.info("Pending action: uninstall "
+                                        + split[1]);
                             }
                         }
                     } else if (split[0].equals(CommandInfo.CMD_REMOVE)) {
@@ -1394,9 +1383,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stop stream gobblers contained in the given ArrayList
-     *
+     * 
      * @throws InterruptedException
-     *
+     * 
      * @since 5.5
      * @see #logProcessStreams(Process, boolean)
      */
@@ -1408,65 +1397,6 @@ public abstract class NuxeoLauncher {
                 streamGobbler.interrupt();
             }
         }
-    }
-
-    /**
-     * Copy required JARs into temporary directory and return it as classpath
-     *
-     * @param tmpDir temporary directory hosting classpath
-     * @throws IOException If temporary directory could not be created.
-     */
-    protected String getInstallClassPath(File tmpDir) throws IOException {
-        String cp = ".";
-        FileUtils.forceDelete(tmpDir);
-        tmpDir.mkdirs();
-        File baseDir = new File(configurationGenerator.getRuntimeHome(),
-                "bundles");
-        String[] filenames = new String[] { "nuxeo-runtime-osgi",
-                "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
-                "nuxeo-connect-client", "nuxeo-connect-offline-update",
-                "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload",
-                "nuxeo-launcher-commons" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
-        filenames = new String[] { "commons-io", "commons-jexl", "groovy-all",
-                "osgi-core", "xercesImpl", "commons-collections" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        baseDir = configurationGenerator.getServerConfigurator().getServerLibDir();
-        filenames = new String[] { "commons-lang", "commons-logging", "log4j" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        baseDir = new File(configurationGenerator.getNuxeoHome(), "bin");
-        filenames = new String[] { "nuxeo-launcher" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        return cp;
-    }
-
-    /**
-     * Build a temporary classpath directory, copying inside filenames from
-     * baseDir
-     *
-     * @param tmpDir temporary target directory
-     * @param classpath classpath including filenames with their new location in
-     *            tmpDir
-     * @param baseDir base directory where to look for filenames
-     * @param filenames filenames' patterns (must end with "-[0-9].*\\.jar)
-     * @return completed classpath
-     * @throws IOException in case of copy error
-     */
-    protected String getTempClassPath(File tmpDir, String classpath,
-            File baseDir, String[] filenames) throws IOException {
-        File targetDir = new File(tmpDir, baseDir.getName());
-        targetDir.mkdirs();
-        for (final String filePattern : filenames) {
-            File[] files = getFilename(baseDir, filePattern);
-            for (File file : files) {
-                FileUtils.copyFileToDirectory(file, targetDir);
-                File classPathEntry = new File(targetDir, file.getName());
-                classpath += System.getProperty("path.separator")
-                        + classPathEntry.getPath();
-            }
-        }
-        return classpath;
     }
 
     /**
@@ -1527,7 +1457,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stops the server.
-     *
+     * 
      * Will try to call specific class for a clean stop, retry
      * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
      * between each try, then kill the process if still running.
@@ -1637,7 +1567,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Configure the server after checking installation
-     *
+     * 
      * @throws ConfigurationException If an installation error is detected or if
      *             configuration fails
      */
@@ -1661,7 +1591,7 @@ public abstract class NuxeoLauncher {
      * Return process status (running or not) as String, depending on OS
      * capability to manage processes. Set status value following
      * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
-     *
+     * 
      * @see #status
      */
     public String status() {
@@ -1742,7 +1672,7 @@ public abstract class NuxeoLauncher {
     /**
      * Sets from program arguments the launcher command and additional
      * parameters.
-     *
+     * 
      * @param cmdLine Program arguments; may be used by launcher implementation.
      *            Must not be null or empty.
      */
@@ -1856,7 +1786,7 @@ public abstract class NuxeoLauncher {
      * Work best with current nuxeoProcess. If nuxeoProcess is null or has
      * exited, then will try to get process ID (so, result in that case depends
      * on OS capabilities).
-     *
+     * 
      * @return true if current process is running or if a running PID is found
      */
     public boolean isRunning() {
