@@ -3,32 +3,23 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxh="http://nuxeo.org/nxweb/html">
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
         <h:commandButton value="#{messages['command.restore']}"
           class="button"
-          action="#{versionedActions.restoreToVersion(versionItem)}"
+          action="#{versionedActions.restoreToVersion(versionItemSelection.data)}"
           disabled="#{!versionedActions.canRestore}" />
 
         <h:outputText value=" "/>
 
         <h:commandButton value="#{messages['command.viewArchivedVersion']}"
           class="button"
-          action="#{versionedActions.viewArchivedVersion(versionItem)}" />
+          action="#{versionedActions.viewArchivedVersion(versionItemSelection.data)}" />
 
         <h:outputText value=" "/>
 
-        <c:if test="#{versionedActions.canRemoveArchivedVersion(versionItem)}">
-          <h:commandButton class="button"
-            value="#{messages['command.removeArchivedVersion']}"
-            action="#{versionedActions.removeArchivedVersion(versionItem)}" />
-        </c:if>
-                
-        <h:outputText value=" "/>
-        
         <h:commandButton value="#{messages['command.versions.diffCurrent']}"
           class="button"
-          action="#{diffActions.prepareCurrentVersionDiff(versionItem)}" />
+          action="#{diffActions.prepareCurrentVersionDiff(versionItemSelection.data)}" />
 
 </div>

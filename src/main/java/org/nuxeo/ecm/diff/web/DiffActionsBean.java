@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.diff.documentsLists.VersionDocumentsListsConstants;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
@@ -90,7 +89,7 @@ public class DiffActionsBean implements Serializable {
      */
     public boolean getCanDiffCurrentVersionSelection() {
 
-        return getCanDiffWorkingList(VersionDocumentsListsConstants.CURRENT_VERSION_SELECTION);
+        return getCanDiffWorkingList(DocumentsListsManager.CURRENT_VERSION_SELECTION);
     }
 
     /**
@@ -141,7 +140,7 @@ public class DiffActionsBean implements Serializable {
     public String prepareCurrentVersionSelectionDiff() throws ClientException {
 
         isVersionDiff = true;
-        return prepareWorkingListDiff(VersionDocumentsListsConstants.CURRENT_VERSION_SELECTION);
+        return prepareWorkingListDiff(DocumentsListsManager.CURRENT_VERSION_SELECTION);
     }
 
     /**
