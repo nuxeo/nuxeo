@@ -46,6 +46,7 @@
         <property name="foldableBoxLabel">label.local.configuration.search</property>
         <property name="localConfigurationFacet">SearchLocalConfiguration</property>
         <property name="helpLabel">label.local.configuration.search.info</property>
+        <property name="elementsToReRender">local_configuration_panel</property>
       </properties>
       <rows>
         <row>

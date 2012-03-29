@@ -70,6 +70,9 @@
         <property name="helpLabel">
           label.local.configuration.theme.info
         </property>
+        <property name="elementsToReRender">
+          local_configuration_panel
+        </property>
       </properties>
       <rows>
         <row>
