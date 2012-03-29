@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
+import org.apache.commons.io.FileUtils;
+
 import org.junit.Test;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
@@ -78,9 +80,14 @@ public class TestPackageBuildAndParse {
         File tmpDir = new File(tmpDirPath);
         tmpDir.mkdirs();
         ZipUtils.unzip(zipFile, tmpDir);
-        // TODO JC: check environment
-        PackageUpdateService srv = new StandaloneUpdateService(
-                Environment.getDefault());
+        File tmpHome = File.createTempFile("tmphome", null);
+        FileUtils.forceDelete(tmpHome);
+        tmpHome.mkdirs();
+        File tmpData = new File(tmpHome, "data");
+        tmpData.mkdirs();
+        Environment env = new Environment(tmpHome);
+        env.setData(tmpData);
+        PackageUpdateService srv = new StandaloneUpdateService(env);
         LocalPackage pkg = new LocalPackageImpl(tmpDir, 0, srv);
         assertEquals(termsAndConditions, pkg.getTermsAndConditionsContent());
         assertEquals("nuxeo-automation", pkg.getName());
@@ -90,6 +97,8 @@ public class TestPackageBuildAndParse {
         assertTrue(pkg.requireTermsAndConditionsAcceptance());
         assertTrue(pkg.isSupported());
         assertTrue(pkg.supportsHotReload());
+        FileUtils.deleteQuietly(tmpData);
+        FileUtils.deleteQuietly(tmpHome);
     }
 
 }
