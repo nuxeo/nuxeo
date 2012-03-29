@@ -100,6 +100,7 @@ public class TestImport extends SQLRepositoryTestCase {
         assertEquals("This is a test.", ((Blob)doc.getPropertyValue("file:content")).getString());
 
         assertFalse(new File(testPath + "/descriptor.xml").exists());
+        closeSession();
     }
 
     public void testDocTypeMappingInImport() throws Exception {
@@ -135,6 +136,7 @@ public class TestImport extends SQLRepositoryTestCase {
 
         DocumentModel doc = alldocs.get(0);
         assertEquals(doc.getType(), "Picture");
+        closeSession();
     }
 
 }
