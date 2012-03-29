@@ -299,6 +299,32 @@ get_pgconf() {
     PGDB="true"
 }
 
+
+log_pgstat_reset() {
+    get_pgconf
+    [ -z $PGDB ] && return
+    PGPASSWORD=$DBPWD psql $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT <<EOF &> /dev/null
+SELECT pg_stat_statements_reset();
+\q
+EOF
+}
+
+
+log_pgstat_collect() {
+    get_pgconf
+    [ -z $PGDB ] && return
+    file=$1
+    PGPASSWORD=$DBPWD psql $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT <<EOF &> /dev/null
+    \o $file
+SELECT count(1) AS uniq_queries, round(sum(total_time)*1000)/1000 AS sum_total_time, sum(calls) AS sum_calls FROM pg_stat_statements;
+SELECT round(total_time*1000)/1000 AS total_time, calls, round(total_time/calls*1000)/1000 AS avg, query FROM pg_stat_statements ORDER BY total_time DESC LIMIT 50;
+SELECT round(total_time*1000)/1000 AS total_time, calls, round(total_time/calls*1000)/1000 AS avg, query FROM pg_stat_statements ORDER BY calls DESC LIMIT 50;
+\o
+\q
+EOF
+}
+
+
 log_pgstat() {
     get_pgconf
     [ -z $PGDB ] && return
@@ -396,7 +422,7 @@ start() {
     # pg stats
     rm -f $LOG_DIR/pgstat-*.txt
     log_pgstat $LOG_DIR/pgstat-start.txt
-
+    log_pgstat_reset
     # cpu by thread
     rm -f $LOG_DIR/thread-usage-*.html
     if checkalive; then
@@ -427,6 +453,7 @@ stop() {
         LC_ALL=C sar -Ap -f $SAR_DATA > $SAR_LOG
         [ $? ] && rm -f $SAR_DATA
         log_misc $LOG_DIR/misc-end.txt
+	log_pgstat_collect $LOG_DIR/pgstat-statements.txt
         log_pgstat $LOG_DIR/pgstat-end.txt
 
         if [ -e $HERE/twiddle.sh ]; then
