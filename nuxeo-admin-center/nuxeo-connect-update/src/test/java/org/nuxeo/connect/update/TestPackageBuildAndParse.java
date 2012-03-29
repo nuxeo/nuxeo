@@ -18,7 +18,7 @@ import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestPackageBuildAndParse {
+public class TestPackageBuildAndParse extends PackageTestCase {
 
     @Test
     public void testBuildAndParse() throws Exception {
@@ -78,8 +78,7 @@ public class TestPackageBuildAndParse {
         File tmpDir = new File(tmpDirPath);
         tmpDir.mkdirs();
         ZipUtils.unzip(zipFile, tmpDir);
-        PackageUpdateService srv = Framework.getLocalService(PackageUpdateService.class);
-        LocalPackage pkg = new LocalPackageImpl(tmpDir, 0, srv);
+        LocalPackage pkg = new LocalPackageImpl(tmpDir, 0, service);
         assertEquals(termsAndConditions, pkg.getTermsAndConditionsContent());
         assertEquals("nuxeo-automation", pkg.getName());
         assertEquals("Nuxeo", pkg.getVendor());
