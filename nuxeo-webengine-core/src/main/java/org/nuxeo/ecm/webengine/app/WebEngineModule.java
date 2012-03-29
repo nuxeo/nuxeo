@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,9 +60,9 @@ public class WebEngineModule extends Application implements ApplicationFactory {
 
     protected ModuleConfiguration cfg;
 
-    void init(WebEngine engine, Bundle bundle, File moduleDir, Map<String,String> attrs) throws Exception {
+    void init(WebEngine engine, Bundle bundle, File configuration, Map<String,String> attrs) throws Exception {
         this.bundle = bundle;
-        loadModuleConfigurationFile(engine, new File(moduleDir, "module.xml"));
+        loadModuleConfigurationFile(engine, configuration);
         if (attrs != null) {
             String v = attrs.get("name");
             if (v != null) {
@@ -79,7 +80,6 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         if (cfg.name == null) {
             throw new IllegalStateException("No name given for web module in bundle "+bundle.getSymbolicName());
         }
-        cfg.directory = moduleDir;
         initTypes(bundle, attrs.get("package"), engine);
     }
 

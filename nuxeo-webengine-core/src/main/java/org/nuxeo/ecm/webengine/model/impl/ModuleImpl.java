@@ -359,6 +359,12 @@ public class ModuleImpl implements Module {
             if (skin.isDirectory()) {
                 dirStack.addDirectory(skin);
             }
+            for (File fragmentDir:configuration.fragmentDirectories) {
+                File fragmentSkin = getSkinDir(fragmentDir);
+                if (fragmentSkin.isDirectory()) {
+                    dirStack.addDirectory(fragmentSkin);
+                }
+            }
             if (superModule != null) {
                 DirectoryStack ds = superModule.dirStack;
                 if (ds != null) {
