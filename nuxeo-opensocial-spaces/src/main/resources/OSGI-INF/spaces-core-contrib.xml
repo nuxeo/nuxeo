@@ -102,4 +102,16 @@
       <facet name="HiddenInNavigation" />
     </doctype>
   </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+      point="types">
+      <types>
+        <type name="Gadget">default</type>
+        <type name="Space">default</type>
+        <type name="WCOpenSocial">default</type>
+        <type name="WCHtml">default</type>
+        <type name="WCPicture">default</type>
+        <type name="Unit">default</type>
+      </types>
+  </extension>
 </component>
