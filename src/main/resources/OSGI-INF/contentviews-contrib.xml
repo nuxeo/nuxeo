@@ -54,7 +54,7 @@
       <cacheKey>#{currentDocument.id}</cacheKey>
 
       <resultLayouts>
-        <layout name="event_listing" title="history_listing"
+        <layout name="tenant_event_listing" title="history_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" />
       </resultLayouts>
