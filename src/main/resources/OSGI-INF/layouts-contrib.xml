@@ -138,13 +138,6 @@
           <widget>email</widget>
         </row>
         <row>
-          <widget>tenantId</widget>
-        </row>
-        <!-- hack because the selectOneMenu widget display nothing in 'view' mode  -->
-        <row>
-          <widget>tenantIdView</widget>
-        </row>
-        <row>
           <widget>firstPassword</widget>
         </row>
         <row>
@@ -152,6 +145,13 @@
         </row>
         <row>
           <widget>passwordMatcher</widget>
+        </row>
+        <row>
+          <widget>tenantId</widget>
+        </row>
+        <!-- hack because the selectOneMenu widget display nothing in 'view' mode  -->
+        <row>
+          <widget>tenantIdView</widget>
         </row>
         <row>
           <widget>groups</widget>
@@ -273,6 +273,7 @@
         </fields>
         <widgetModes>
           <mode value="editPassword">hidden</mode>
+          <mode value="create">hidden</mode>
           <mode value="edit">hidden</mode>
           <mode value="view">#{nxu:test(multiTenantActions.isTenantIsolationEnabled(),
             'view', 'hidden')}</mode>
