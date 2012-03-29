@@ -42,9 +42,9 @@ public class WebEngineModuleFactory {
     public static Log log = LogFactory.getLog(WebEngineModuleFactory.class);
 
     public static Bundle[] getFragments(Bundle bundle) {
-        BundleContext sysContext = Framework.getRuntime().getContext().getBundle().getBundleContext();
-        ServiceReference ref = sysContext.getServiceReference(PackageAdmin.class.getName());
-        PackageAdmin admin = (PackageAdmin)sysContext.getService(ref);
+        BundleContext context = bundle.getBundleContext();
+        ServiceReference ref = context.getServiceReference(PackageAdmin.class.getName());
+        PackageAdmin admin = (PackageAdmin)context.getService(ref);
         return admin.getFragments(bundle);
     }
 
