@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Nuxeo
+ *     Antoine Taillefer
  */
 
 package org.nuxeo.ecm.webapp.documentsLists;
@@ -64,19 +63,38 @@ public class ConversationDocumentsListsManager extends
         }
     }
 
-    // Event listener
+    // Event listeners
     @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create = false)
     public void refreshLists(DocumentModel selectedDocument) {
+
+        refreshLists(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                selectedDocument);
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
+    public void refreshListsOnDocumentSelectionChanged(
+            DocumentModel selectedDocument) {
+
+        refreshLists(EventNames.DOCUMENT_SELECTION_CHANGED, selectedDocument);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void refreshLists(String eventName, DocumentModel selectedDocument) {
 
         if (lastDocumentRef != null
                 && lastDocumentRef.equals(selectedDocument.getRef())) {
             return;
         }
 
-        if (!documentsLists_events.containsKey(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED)) {
+        if (!documentsLists_events.containsKey(eventName)) {
             return;
         }
-        for (String listName : documentsLists_events.get(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED)) {
+        for (String listName : documentsLists_events.get(eventName)) {
 
             List<DocumentModel> docList = documentsLists.get(listName);
             if (!docList.isEmpty()) {
