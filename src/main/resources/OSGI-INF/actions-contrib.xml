@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.multi.tenant.actions">
 
   <require>org.nuxeo.ecm.platform.actions</require>
+  <require>org.nuxeo.ecm.platform.audit.web</require>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
@@ -17,6 +18,10 @@
 
     <!-- Hide Manage tab for tenants -->
     <action id="TAB_MANAGE">
+      <filter-id>denyForTenantConfig</filter-id>
+    </action>
+
+    <action id="TAB_CONTENT_HISTORY">
       <filter-id>denyForTenantConfig</filter-id>
     </action>
 
