@@ -7,6 +7,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
@@ -136,6 +137,8 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.waitForAsyncCompletion();
         closeSession();
         super.tearDown();
     }

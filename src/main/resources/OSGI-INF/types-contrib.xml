@@ -8,11 +8,11 @@
     point="types">
 
     <type id="TemplateSource" coretype="TemplateSource">
-      <label>Template document</label>
+      <label>Document template</label>
       <icon>/icons/sourcetemplate.png</icon>
       <bigIcon>/icons/sourcetemplate_100.png</bigIcon>
       <default-view>view_documents</default-view>
-      <category>Templates</category>
+      <category>SimpleDocument</category>
      <layouts mode="create">
        <layout>heading</layout>
        <layout>templateOptionsWizard</layout>
@@ -27,43 +27,23 @@
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>templateOptions</layout>
+        <!-- <layout>templateOptions</layout>  -->
         <layout>fileWithoutTemplate</layout>
       </layouts>
     </type>
 
-<!--
-    <type id="TemplateBasedFile" coretype="TemplateBasedFile">
-      <label>Template based file</label>
-      <icon>/icons/doctemplate.png</icon>
-      <bigIcon>/icons/doctemplate_100.png</bigIcon>
-      <default-view>view_documents</default-view>
-      <category>Templates</category>
-     <layouts mode="create">
-       <layout>heading</layout>
-       <layout>templateChooser</layout>
-      </layouts>
-      <layouts mode="view">
-        <layout>heading</layout>
-        <layout>file</layout>
-        <layout>templateChooser</layout>
-      </layouts>
-      <layouts mode="edit">
-        <layout>heading</layout>
-        <layout>templateChooser</layout>
-      </layouts>
-    </type>
- -->
-
      <type id="Folder" coretype="Folder">
       <subtypes>
-<!--         <type>TemplateBasedFile</type> -->
         <type>TemplateSource</type>
       </subtypes>
     </type>
     <type id="Workspace" coretype="Workspace">
-      <subtypes>s
-<!--         <type>TemplateBasedFile</type> -->
+      <subtypes>
+        <type>TemplateSource</type>
+      </subtypes>
+    </type>
+    <type id="TemplateRoot">
+      <subtypes>
         <type>TemplateSource</type>
       </subtypes>
     </type>

@@ -7,19 +7,76 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:nxl="http://nuxeo.org/nxforms/layout"
     xmlns:nxu="http://nuxeo.org/nxweb/util"
-    xmlns:c="http://java.sun.com/jstl/core">
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+<script>
+ function toggleConfig() {
+   jQuery('#templateOptionPanel').fadeToggle();
+   jQuery('.templateOptionToggleLink').toggle();
+   return false;
+ }
+ function toggleParams() {
+   jQuery('#templateParamsPanel').fadeToggle();
+   jQuery('.templateParamsToggleLink').toggle();
+   return false;
+ }
+</script>
 
     <h3>
-       <h:outputText value="Template config" />
+       <h:outputText value="#{messages['label.template.config.title']}" />
+       <A class="templateOptionToggleLink" href="#" onclick="return toggleConfig();"> &gt;&gt; </A>
+       <A class="templateOptionToggleLink" style="display:none" href="#" onclick="return toggleConfig();"> &lt;&lt; </A>
     </h3>
-    <nxl:layout name="templateOptions" mode="view" value="#{currentDocument}" />
+    <div id="templateOptionPanel" style="display:none">
+    <nxl:layout name="toggaledTemplateOptions" mode="edit" value="#{currentDocument}" />
+    </div>
 
     <h3>
-       <h:outputText value="Template parameters" />
+       <h:outputText value="#{messages['label.template.params.title']}" />
+       <A class="templateParamsToggleLink" href="#" onclick="return toggleParams();"> &gt;&gt; </A>
+       <A class="templateParamsToggleLink" style="display:none" href="#" onclick="return toggleParams();"> &lt;&lt; </A>
     </h3>
-    <ui:include src="/incl/tabs/templates/params_editor.xhtml">
-     <ui:param name="targetTemplate" value="null" />
-     <ui:param name="bean" value="#{templateActions}" />
-    </ui:include>
+    <div id="templateParamsPanel" style="display:none">
+      <ui:include src="/incl/tabs/templates/params_editor.xhtml">
+       <ui:param name="targetTemplate" value="null" />
+       <ui:param name="bean" value="#{templateActions}" />
+      </ui:include>
+    </div>
+
+<h:form>
+<h:panelGroup id="templateUsageListingPanel">
+    <h3> <h:outputText value="#{messages['label.template.usage.title']}" />
+    <c:if test="#{templateActions.showUsageListing}">
+      <a4j:commandLink
+        action="#{templateActions.setShowUsageListing(false)}"
+        immediate="true"
+        reRender="templateUsageListingPanel"
+        eventsQueue="templateUsageQueue">
+        &lt;&lt;
+      </a4j:commandLink>
+    </c:if>
+    <c:if test="#{!templateActions.showUsageListing}">
+      <a4j:commandLink
+        action="#{templateActions.setShowUsageListing(true)}"
+        immediate="true"
+        reRender="templateUsageListingPanel"
+        eventsQueue="templateUsageQueue">
+        &gt;&gt;
+      </a4j:commandLink>
+    </c:if>
+    </h3>
+    <c:if test="#{templateActions.showUsageListing}">
+      <a4j:outputPanel id="templateUsageListing">
+        <nxu:set var="contentViewName" value="TEMPLATE_USAGE">
+          <ui:decorate template="/incl/content_view.xhtml">
+            <ui:define name="content_view_title" />
+            <ui:define name="content_view_syndication_buttons" />
+          </ui:decorate>
+        </nxu:set>
+       </a4j:outputPanel>
+    </c:if>
+</h:panelGroup>
+</h:form>
 
 </div>

@@ -73,7 +73,8 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements
 
         Blob result = new ByteArrayBlob(out.toByteArray(), "text/xml");
         String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
-        result.setFilename(targetFileName + ".xml");
+        // result.setFilename(targetFileName + ".xml");
+        result.setFilename(targetFileName + ".html");
 
         return result;
 

@@ -9,6 +9,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.processors.xdocreport.ZipXmlHelper;
@@ -47,8 +48,11 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.waitForAsyncCompletion();
         closeSession();
+        super.tearDown();
     }
 
     protected Blob getODTTemplateBlob() {
@@ -78,6 +82,8 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
         odtTemplateDoc.setProperty("file", "content", fileBlob);
         odtTemplateDoc = session.createDocument(odtTemplateDoc);
 
+        session.save();
+
         // create FTL template
         ftlTemplateDoc = session.createDocumentModel(root.getPathAsString(),
                 "ftlTemplatedDoc", "TemplateSource");
@@ -86,6 +92,8 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
         fileBlob = getFTLTemplateBlob();
         ftlTemplateDoc.setProperty("file", "content", fileBlob);
         ftlTemplateDoc = session.createDocument(ftlTemplateDoc);
+
+        session.save();
 
         // now create simple doc
         testDoc = session.createDocumentModel(root.getPathAsString(),

@@ -54,6 +54,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         fileBlob.setFilename("testDoc.odt");
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc = session.createDocument(templateDoc);
+        session.save();
 
         TemplateSourceDocument result = templateDoc.getAdapter(TemplateSourceDocument.class);
         assertNotNull(result);
@@ -70,6 +71,9 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertTrue(t1.getForcedTypes().contains("Note"));
 
         session.save();
+
+        // wait for Async listener to run !
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
@@ -124,6 +128,8 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
                 root.getPathAsString(), "myTestFile", "File");
         simpleFile = session.createDocument(simpleFile);
 
+        session.save();
+
         // verify that template has been associated
         TemplateBasedDocument templatizedFile = simpleFile.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templatizedFile);
@@ -155,6 +161,8 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
                 root.getPathAsString(), "myTestFile", "Note");
         simpleNote = session.createDocument(simpleNote);
 
+        session.save();
+
         // verify that not template is associated
         assertNull(simpleNote.getAdapter(TemplateBasedDocument.class));
 
@@ -168,10 +176,11 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.waitForAsyncCompletion();
         closeSession();
+        super.tearDown();
     }
 
 }

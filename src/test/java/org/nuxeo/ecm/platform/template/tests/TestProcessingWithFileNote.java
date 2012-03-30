@@ -13,6 +13,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.ContentInputType;
 import org.nuxeo.ecm.platform.template.InputType;
@@ -107,8 +108,11 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.waitForAsyncCompletion();
         closeSession();
+        super.tearDown();
     }
 
     public void testNoteWithMasterTemplate() throws Exception {

@@ -98,6 +98,8 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
     public void reset() {
         templateInputs = null;
         templateEditableInputs = null;
+        editableTemplateName = null;
+        templateIdToAssociate = null;
     }
 
     public List<TemplateInput> getTemplateEditableInputs() throws Exception {

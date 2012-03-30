@@ -2,6 +2,7 @@ package org.nuxeo.ecm.webapp.templates;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.mvel2.optimizers.impl.refl.nodes.ArrayLength;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
@@ -141,6 +144,30 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(currentDocument);
     }
 
+    public String removeTemplateInput(String name) throws Exception {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+
+        TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
+        if (template != null) {
+
+            Iterator<TemplateInput> it = templateEditableInputs.listIterator();
+            while (it.hasNext()) {
+                TemplateInput input = it.next();
+                if (input.getName().equals(name)) {
+                    it.remove();
+                    break;
+                }
+            }
+
+            currentDocument = template.saveParams(templateEditableInputs, true);
+            newInput = null;
+            templateEditableInputs = null;
+            return navigationContext.navigateToDocument(currentDocument);
+        } else {
+            return null;
+        }
+    }
+
     public Collection<Type> getAllTypes() {
         return typeManager.getTypes();
     }
@@ -162,6 +189,33 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
         return Framework.getLocalService(TemplateProcessorService.class).getRegistredTemplateProcessors();
+    }
+
+    public List<String> getTemplateAndVersionsUUIDs() throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+
+        TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
+        if (template != null) {
+            List<String> uuids = new ArrayList<String>();
+            uuids.add(currentDocument.getId());
+
+            for (DocumentModel version : documentManager.getVersions(currentDocument.getRef())) {
+                uuids.add(version.getId());
+            }
+            return uuids;
+        }
+
+        return new ArrayList<String>();
+    }
+
+    protected boolean showUsageListing = false;
+
+    public boolean isShowUsageListing() {
+        return showUsageListing;
+    }
+
+    public void setShowUsageListing(boolean showUsageListing) {
+        this.showUsageListing = showUsageListing;
     }
 
 }

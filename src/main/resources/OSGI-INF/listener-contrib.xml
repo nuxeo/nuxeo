@@ -8,6 +8,11 @@
       class="org.nuxeo.ecm.platform.template.listeners.TemplateInitListener">
     </listener>
 
+    <listener name="documenttemplate-deletionguard" async="false"
+      postCommit="false" priority="500"
+      class="org.nuxeo.ecm.platform.template.listeners.TemplateDeletionGuard">
+    </listener>
+
     <listener name="documenttemplate-type-binding" async="true" priority="500"
       class="org.nuxeo.ecm.platform.template.listeners.TemplateTypeBindingListener">
     </listener>

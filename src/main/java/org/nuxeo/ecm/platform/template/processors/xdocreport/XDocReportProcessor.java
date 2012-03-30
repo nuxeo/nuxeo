@@ -1,7 +1,9 @@
 package org.nuxeo.ecm.platform.template.processors.xdocreport;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.ecm.platform.template.ContentInputType;
@@ -160,7 +163,18 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                     } else {
                         Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(
                                 param.getSource());
-                        context.put(param.getName(), propValue);
+                        if (propValue instanceof String) {
+                            String stringContent = (String) propValue;
+                            context.put(param.getName(), stringContent);
+                            MimetypeRegistry mtr = Framework.getLocalService(MimetypeRegistry.class);
+                            InputStream in = new ByteArrayInputStream(
+                                    stringContent.getBytes());
+                            if (mtr != null
+                                    && "text/html".equals(mtr.getMimetypeFromStream(in))) {
+                                metadata.addFieldAsTextStyling(param.getName(),
+                                        SyntaxKind.Html);
+                            }
+                        }
                     }
                 }
                 Property property = null;
@@ -190,8 +204,8 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                                 }
                             } else {
                                 if (param.isAutoLoop()) {
-                                    // XXX do the same on all children
-                                    // properties !
+                                    // should do the same on all children
+                                    // properties ?
                                     metadata.addFieldAsList(param.getName());
                                 }
                                 context.put(param.getName(),
@@ -207,10 +221,13 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
                             context.put(param.getName(), new Date());
                         } else if (pType.getName().equals(StringType.ID)) {
                             context.put(param.getName(), "");
-                        } else if (pType.getName().equals(StringType.ID)) {
+                        } else if (pType.getName().equals(InputType.Content)) {
                             context.put(param.getName(), "");
+                        } else if (pType.getName().equals(
+                                InputType.PictureProperty)) {
+                            // NOP
                         } else {
-                            context.put(param.getName(), new Object());
+                            context.put(param.getName(), "!NOVALUE!");
                         }
                     }
                 }

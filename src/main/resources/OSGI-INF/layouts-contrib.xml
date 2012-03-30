@@ -51,7 +51,7 @@
 
       <widget name="template" type="template">
         <labels>
-          <label mode="any">Template</label>
+          <label mode="any">label.template.template</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -76,7 +76,7 @@
       </rows>
       <widget name="linkedTemplateBasedDocs" type="template">
         <labels>
-          <label mode="any">Documents bound to this template</label>
+          <label mode="any">label.template.linkedTemplateBasedDocs</label>
         </labels>
         <translated>true</translated>
         <properties mode="any">
@@ -99,7 +99,7 @@
       </rows>
       <widget name="paramsAsString" type="template">
         <labels>
-          <label mode="any">Parameters</label>
+          <label mode="any">label.template.parameters</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -113,7 +113,7 @@
       </widget>
       <widget name="rawXMLparams" type="textarea">
         <labels>
-          <label mode="any">Parameters</label>
+          <label mode="any">label.template.parameters</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -191,6 +191,31 @@
       </widget>
     </layout>
 
+    <layout name="toggaledTemplateOptions">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+     <rows>
+      <row>
+        <widget>toggle</widget>
+      </row>
+     </rows>
+      <widget name="toggle" type="toggableLayoutWithForms">
+        <labels>
+          <label mode="any"> </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <properties mode="any">
+          <property name="initialLayoutName">templateOptions</property>
+          <property name="toggledLayoutName">templateOptions</property>
+          <property name="canToggleMode">true</property>
+        </properties>
+      </widget>
+    </layout>
+
     <layout name="templateOptions">
       <templates>
         <template mode="create">/layouts/hiddable_layout_template.xhtml
@@ -220,7 +245,7 @@
       </rows>
       <widget name="rendition" type="template">
         <labels>
-          <label mode="any">Rendition</label>
+          <label mode="any">label.template.rendition</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -234,7 +259,7 @@
       </widget>
       <widget name="allowOverride" type="checkbox">
         <labels>
-          <label mode="any">Allow parameters override</label>
+          <label mode="any">label.template.override</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -243,8 +268,7 @@
       </widget>
       <widget name="useAsMainContent" type="checkbox">
         <labels>
-          <label mode="any">Use template file as main content if possible
-          </label>
+          <label mode="any">label.template.useAsMainContent</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -253,7 +277,7 @@
       </widget>
       <widget name="converter" type="template">
         <labels>
-          <label mode="any">Rendering output format</label>
+          <label mode="any">label.template.outputFormat</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -267,7 +291,7 @@
       </widget>
       <widget name="targetTypes" type="template">
         <labels>
-          <label mode="any">Supported Document type</label>
+          <label mode="any">label.template.targetTypes</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -281,7 +305,7 @@
       </widget>
       <widget name="processorSelector" type="template">
         <labels>
-          <label mode="any">Template processor</label>
+          <label mode="any">label.template.processor</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -295,8 +319,7 @@
       </widget>
       <widget name="forcedTypes" type="template">
         <labels>
-          <label mode="any">Document types automatically associated to
-            template</label>
+          <label mode="any">label.template.forcedTypes</label>
         </labels>
         <translated>true</translated>
         <fields>

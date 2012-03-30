@@ -12,11 +12,13 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.InputType;
 import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.ecm.platform.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.runtime.api.Framework;
 
 public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
 
@@ -124,8 +126,11 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.waitForAsyncCompletion();
         closeSession();
+        super.tearDown();
     }
 
 }

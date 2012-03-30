@@ -246,17 +246,19 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return type2Template;
     }
 
-    public void registerTypeMapping(DocumentModel doc) throws ClientException {
+    public synchronized void registerTypeMapping(DocumentModel doc)
+            throws ClientException {
         TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
         if (tmpl != null) {
             Map<String, String> mapping = getTypeMapping();
-            // unbind previous mapping
+            // check existing mapping for this docId
             List<String> boundTypes = new ArrayList<String>();
             for (String type : mapping.keySet()) {
                 if (doc.getId().equals(mapping.get(type))) {
                     boundTypes.add(type);
                 }
             }
+            // unbind previous mapping for this docId
             for (String type : boundTypes) {
                 mapping.remove(type);
             }

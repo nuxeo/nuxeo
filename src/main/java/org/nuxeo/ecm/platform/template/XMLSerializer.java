@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
@@ -36,11 +38,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * {@link TemplateInput} parameters are stored in the {@link DocumentModel} as a
  * single String Property via XML Serialization. This class contains the
  * Serialization/Deserialization logic.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class XMLSerializer {
+
+    protected static final Log log = LogFactory.getLog(XMLSerializer.class);
 
     public static final String XML_NAMESPACE = "http://www.nuxeo.org/DocumentTemplate";
 
@@ -70,16 +74,16 @@ public class XMLSerializer {
 
             InputType type = input.getType();
             if (type == null) {
-                System.out.println(input.getName() + " is null");
+                log.warn(input.getName() + " is null");
             }
             field.addAttribute("type", type.getValue());
 
             if (input.isReadOnly()) {
-                field.addAttribute("readonly","true");
+                field.addAttribute("readonly", "true");
             }
 
             if (input.isAutoLoop()) {
-                field.addAttribute("autoloop","true");
+                field.addAttribute("autoloop", "true");
             }
 
             if (InputType.StringValue.equals(type)) {
@@ -132,11 +136,11 @@ public class XMLSerializer {
                 param.setSource(elem.attributeValue("source"));
             }
 
-            if (elem.attribute("readonly")!=null) {
+            if (elem.attribute("readonly") != null) {
                 param.setReadOnly(Boolean.parseBoolean(elem.attributeValue("readonly")));
             }
 
-            if (elem.attribute("autoloop")!=null) {
+            if (elem.attribute("autoloop") != null) {
                 param.setAutoLoop(Boolean.parseBoolean(elem.attributeValue("autoloop")));
             }
 

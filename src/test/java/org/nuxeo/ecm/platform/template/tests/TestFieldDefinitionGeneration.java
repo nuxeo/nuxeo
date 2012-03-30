@@ -1,7 +1,9 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.template.processors.xdocreport.FieldDefinitionGenerator;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestFieldDefinitionGeneration extends SQLRepositoryTestCase {
 
@@ -13,15 +15,16 @@ public class TestFieldDefinitionGeneration extends SQLRepositoryTestCase {
         openSession();
     }
 
-
-    public void testGeneration() throws Exception {        
+    public void testGeneration() throws Exception {
         FieldDefinitionGenerator.generate(session.getRootDocument());
     }
-    
-    @Override
-    public void tearDown() {
-        closeSession();
-    }
 
+    @Override
+    public void tearDown() throws Exception {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.waitForAsyncCompletion();
+        closeSession();
+        super.tearDown();
+    }
 
 }

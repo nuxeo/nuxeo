@@ -21,7 +21,7 @@
       styleClass="#{widget.properties['styleClass']}"
       required="#{widget.properties['required']}"
       id="#{widget.id}">
-       <f:selectItem  itemLabel="label.rendition.none" itemValue="none" />
+       <f:selectItem  itemLabel="#{messages['label.rendition.none']}" itemValue="none" />
        <nxu:selectItems var="rend" value="#{templateActions.getRenditions()}"
         itemValue="#{rend.name}"
         itemLabel="#{messages[rend.label]}" />

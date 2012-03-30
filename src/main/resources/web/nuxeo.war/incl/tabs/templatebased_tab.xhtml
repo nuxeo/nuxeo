@@ -73,10 +73,6 @@
                 <p class="buttonsGadget">
                         <h:commandLink type="submit" class="button" value="#{messages['command.template.render']}"
                             action="#{templateBasedActions.render(template.name)}" id="button_render" />
-                  <c:if test="#{templateBasedActions.canRenderAndStore(template.name)}">
-                        <h:commandLink type="submit" class="button" value="#{messages['command.template.renderAndStore']}"
-                            action="#{templateBasedActions.renderAndStore(template.name)}" id="button_applyFile" />
-                  </c:if>
                   <c:if test="#{templateBasedActions.canResetParameters(template.name)}">
                         <h:commandLink type="submit" class="button" value="#{messages['command.template.resetParams']}"
                             action="#{templateBasedActions.resetParameters(template.name)}" id="button_resetParams" />
