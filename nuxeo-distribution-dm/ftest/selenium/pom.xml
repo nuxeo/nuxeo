@@ -77,6 +77,9 @@
       <id>jboss</id>
     </profile>
     <profile>
+      <id>jbossear</id>
+    </profile>
+    <profile>
       <id>pgsql</id>
     </profile>
     <profile>
