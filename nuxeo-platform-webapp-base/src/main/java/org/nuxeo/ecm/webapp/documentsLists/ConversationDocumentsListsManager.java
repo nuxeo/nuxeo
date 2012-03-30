@@ -67,8 +67,10 @@ public class ConversationDocumentsListsManager extends
     @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create = false)
     public void refreshLists(DocumentModel selectedDocument) {
 
-        refreshLists(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                selectedDocument);
+        if (selectedDocument != null) {
+            refreshLists(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                    selectedDocument);
+        }
     }
 
     /**
@@ -78,7 +80,10 @@ public class ConversationDocumentsListsManager extends
     public void refreshListsOnDocumentSelectionChanged(
             DocumentModel selectedDocument) {
 
-        refreshLists(EventNames.DOCUMENT_SELECTION_CHANGED, selectedDocument);
+        if (selectedDocument != null) {
+            refreshLists(EventNames.DOCUMENT_SELECTION_CHANGED,
+                    selectedDocument);
+        }
     }
 
     /**
