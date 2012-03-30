@@ -52,6 +52,8 @@ public class DigestLoginPlugin extends BaseLoginModule {
 
     protected static final String CNONCE = "cnonce";
 
+    protected static final String PASSWORD_FIELD = "passwordField";
+
     @Override
     public Boolean initLoginModule() {
         return Boolean.TRUE;
@@ -128,8 +130,10 @@ public class DigestLoginPlugin extends BaseLoginModule {
         try {
             String schema = directoryService.getDirectorySchema(dirName);
             DocumentModel entry = dir.getEntry(username, true);
+            String passwordField = (parameters.containsKey(PASSWORD_FIELD)) ? parameters.get(PASSWORD_FIELD)
+                    : dir.getPasswordField();
             return entry == null ? null : (String) entry.getProperty(schema,
-                    dir.getPasswordField());
+                    passwordField);
         } finally {
             dir.close();
         }
