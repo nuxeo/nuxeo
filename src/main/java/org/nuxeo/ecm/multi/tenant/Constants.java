@@ -37,8 +37,8 @@ public class Constants {
     public static final String TENANT_ADMINISTRATORS_PROPERTY = TENANT_CONFIG_SCHEMA
             + ":administrators";
 
-    // tenant-tenantid_members
-    // tenant-tenantid_administrators
+    // tenant-tenantid_tenantMembers
+    // tenant-tenantid_tenantAdministrators
     public static final String TENANT_GROUP_PREFIX = "tenant-";
 
     public static final String TENANT_MEMBERS_GROUP_SUFFIX = "_tenantMembers";
