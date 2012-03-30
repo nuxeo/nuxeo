@@ -284,4 +284,12 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.type = type;
     }
 
+    public Map<String, ActionPropertiesDescriptor> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, ActionPropertiesDescriptor> properties) {
+        this.properties = properties;
+    }
+
 }
