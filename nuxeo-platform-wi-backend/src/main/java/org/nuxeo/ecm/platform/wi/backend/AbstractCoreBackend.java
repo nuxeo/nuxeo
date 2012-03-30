@@ -17,6 +17,9 @@
  */
 package org.nuxeo.ecm.platform.wi.backend;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,15 +52,13 @@ public abstract class AbstractCoreBackend implements Backend {
     @Override
     public CoreSession getSession(boolean synchronize) throws ClientException {
         try {
-
             if (session == null) {
-                RepositoryManager rm;
-                rm = Framework.getService(RepositoryManager.class);
-                session = rm.getDefaultRepository().open();
+                session = Framework.getService(CoreSession.class);
+                String repoURI = Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
+                session.connect(repoURI, new HashMap<String,Serializable>());
             } else {
                 session.save();
             }
-
         } catch (Exception e) {
             throw new ClientException("Error while getting session", e);
         }
