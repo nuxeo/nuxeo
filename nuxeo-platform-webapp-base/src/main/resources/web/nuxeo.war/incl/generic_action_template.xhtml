@@ -13,7 +13,7 @@ Parameters:
 </c:if> <c:choose>
 
     <c:when test="#{action.type == 'button'}">
-      <nxh:commandButton action="#{action.link}"
+      <nxh:commandButton action="#{action.getLink()}"
         onclick="#{action.confirm}" id="#{action.id}"
         value="#{messages[action.label]}" styleClass="button">
         <ui:insert name="inside_action" />
@@ -21,7 +21,7 @@ Parameters:
     </c:when>
 
     <c:when test="#{action.type == 'command_link'}">
-      <nxh:commandLink action="#{action.link}"
+      <nxh:commandLink action="#{action.getLink()}"
         onclick="#{action.confirm}" id="#{action.id}"
         value="#{messages[action.label]}">
         <ui:insert name="inside_action" />
@@ -38,13 +38,13 @@ Parameters:
  -->
 
     <c:when test="#{action.type == 'bare_link'}">
-      <a target="_blank" href="#{action.link}"><img
+      <a target="_blank" href="#{action.getLink()}"><img
         src="#{action.icon}" /> <h:outputText
           value="#{messages[action.label]}" styleClass="boldLabel" /> </a>
     </c:when>
 
     <c:when test="#{action.type == 'icon'}">
-      <nxh:commandLink action="#{action.link}" id="#{action.id}"
+      <nxh:commandLink action="#{action.getLink()}" id="#{action.id}"
         onclick="#{action.confirm}">
         <h:graphicImage value="#{action.icon}"
           rendered="#{not empty action.icon}"
@@ -54,30 +54,30 @@ Parameters:
       </nxh:commandLink>
     </c:when>
 
-<!-- WIP
     <c:when test="#{action.getType() == 'fancybox'}">
-      <nxh:commandLink action="#{action.getLink()}" id="#{action.id}">
-        <h:graphicImage value="#{action.icon}"
-          rendered="#{not empty action.icon}"
-          title="#{messages[action.label]}"
-          alt="#{messages[action.label]}" styleClass="smallIcon" />
+      <a4j:form id="#{action.id}_form" ajaxSubmit="true"
+        styleClass="action_bar">
+        <a4j:commandLink value="#{messages[action.label]}"
+          id="#{action.id}_link" ajaxSingle="true"
+          ignoreDupResponses="true" requestDelay="100"
+          onclick="showFancyBox('##{action.id}_box');">
+          <h:graphicImage value="#{action.icon}"
+            rendered="#{not empty action.icon}"
+            title="#{messages[action.label]}"
+            alt="#{messages[action.label]}" styleClass="smallIcon" />
+        </a4j:commandLink>
         <ui:insert name="inside_action" />
-      </nxh:commandLink>
-      <script>
-            showFancyBox('##{action.label}_box');
-            jQuery('##{action.label}').focusFirst();
-          </script>
+      </a4j:form>
       <div style="display: none;">
-        <div id="#{action.label}_box">
-          <ui:include src="#{action.getProperties.get(url)}" />
+        <div id="#{action.id}_box">
+          <ui:include src="../#{action.properties.fancybox.properties.url}" />
         </div>
       </div>
     </c:when>
- -->
 
     <!-- Return an icon + command link if type is null -->
     <c:otherwise>
-      <nxh:commandLink action="#{action.link}" id="#{action.id}"
+      <nxh:commandLink action="#{action.getLink()}" id="#{action.id}"
         onclick="#{action.confirm}">
         <h:graphicImage value="#{action.icon}"
           rendered="#{not empty action.icon}"
