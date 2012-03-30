@@ -69,11 +69,11 @@
 
   <target name="prepare-tomcat">
     <unzip dest="${outdir}">
-      <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:6.0.20:zip"
+      <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:6.0.35:zip"
                             classifier="light" />
     </unzip>
     <move todir="${tomcat}">
-      <fileset dir="${outdir}/apache-tomcat-6.0.20" />
+      <fileset dir="${outdir}/apache-tomcat-6.0.35" />
     </move>
     <unzip dest="${tomcat}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
