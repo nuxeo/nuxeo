@@ -114,6 +114,7 @@
     <nuxeo.distribution.tools.version>1.11.1-SNAPSHOT</nuxeo.distribution.tools.version>
     <nuxeo.ftest.version>1.7.1-SNAPSHOT</nuxeo.ftest.version>
 
+    <tomcat.version>6.0.35</tomcat.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.4.0</gwt.version>
@@ -3117,7 +3118,7 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>catalina</artifactId>
         <scope>provided</scope>
-        <version>6.0.20</version>
+        <version>${tomcat.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.tomcat</groupId>
@@ -3137,7 +3138,7 @@
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>juli</artifactId>
-        <version>6.0.20</version>
+        <version>${tomcat.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.tomcat</groupId>
@@ -3149,7 +3150,7 @@
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>coyote</artifactId>
-        <version>6.0.20</version>
+        <version>${tomcat.version}</version>
         <scope>provided</scope>
       </dependency>
 
