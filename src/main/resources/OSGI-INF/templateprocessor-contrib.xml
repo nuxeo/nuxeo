@@ -51,11 +51,22 @@
 
     <documentation>XSLT template processor</documentation>
 
-    <templateProcessor name="XSLTProcessor" label="Raw XSLT Processot" default="false" class="org.nuxeo.ecm.platform.template.processors.xslt.XSLTProcessor">
+    <templateProcessor name="XSLTProcessor" label="Raw XSLT Processor" default="false" class="org.nuxeo.ecm.platform.template.processors.xslt.XSLTProcessor">
       <supportedMimeType>text/xml</supportedMimeType>
       <supportedExtension>xml</supportedExtension>
       <supportedExtension>xsl</supportedExtension>
       <supportedExtension>xslt</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>JXLS template processor</documentation>
+
+    <templateProcessor name="JXLSProcessor" label="JXLS Processor" default="false" class="org.nuxeo.ecm.platform.template.processors.jxls.JXLSTemplateProcessor">
+      <supportedMimeType>application/vnd.ms-excel</supportedMimeType>
+      <supportedExtension>xls</supportedExtension>
     </templateProcessor>
 
   </extension>
