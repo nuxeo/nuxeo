@@ -20,7 +20,7 @@ Parameters:
       </nxh:commandButton>
     </c:when>
 
-    <c:when test="#{action.type == 'command_link'}">
+    <c:when test="#{action.type == 'link'}">
       <nxh:commandLink action="#{action.getLink()}"
         onclick="#{action.confirm}" id="#{action.id}"
         value="#{messages[action.label]}">
@@ -35,7 +35,19 @@ Parameters:
         <h:outputText value="#{messages[subTab.label]}" />
       </nxd:restDocumentLink>
     </c:when>
- -->
+    -->
+
+    <c:when test="#{action.type == 'link_icon_text'}">
+      <nxh:commandLink action="#{action.link}" id="#{action.id}"
+        onclick="#{action.confirm}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}" styleClass="smallIcon" />
+        <h:outputText value=" #{messages[action.label]}" />
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:when>
 
     <c:when test="#{action.type == 'bare_link'}">
       <a target="_blank" href="#{action.getLink()}"><img
@@ -43,7 +55,7 @@ Parameters:
           value="#{messages[action.label]}" styleClass="boldLabel" /> </a>
     </c:when>
 
-    <c:when test="#{action.type == 'icon'}">
+    <c:when test="#{action.type == 'link_icon'}">
       <nxh:commandLink action="#{action.getLink()}" id="#{action.id}"
         onclick="#{action.confirm}">
         <h:graphicImage value="#{action.icon}"
@@ -70,12 +82,13 @@ Parameters:
       </a4j:form>
       <div style="display: none;">
         <div id="#{action.id}_box">
-          <ui:include src="../#{action.properties.fancybox.properties.url}" />
+          <ui:include
+            src="../#{action.properties.fancybox.properties.url}" />
         </div>
       </div>
     </c:when>
 
-    <!-- Return an icon + command link if type is null -->
+    <!-- Return an icon + text link if type is null -->
     <c:otherwise>
       <nxh:commandLink action="#{action.getLink()}" id="#{action.id}"
         onclick="#{action.confirm}">
