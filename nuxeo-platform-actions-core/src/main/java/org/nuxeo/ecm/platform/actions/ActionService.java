@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -190,6 +191,9 @@ public class ActionService extends DefaultComponent implements ActionManager {
             } else {
                 filters.addContribution((DefaultActionFilter) contribution);
             }
+        } else if ("typeCompatibility".equals(extensionPoint)) {
+            actions.getRegistry().getTypeCategoryRelations().add(
+                    (TypeCompatibility) contribution);
         }
     }
 

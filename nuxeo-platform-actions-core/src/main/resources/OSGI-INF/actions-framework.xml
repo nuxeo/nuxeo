@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.platform.actions.ActionService">
   <documentation>
     The action service provides extension points for pluggable actions and
-    filters.
+    filters and manage UI type action compatibility (since 5.6)
 
     Actions are commands that can be accessed and triggered from the site pages.
     Their visibility is adapted to the current user and site possibilities using
@@ -188,4 +188,47 @@
     <object class="org.nuxeo.ecm.platform.actions.Action" />
   </extension-point>
 
+  <extension-point name="typeCompatibility">
+    <documentation>
+      Action compatibility type (since 5.6) defining the UI type action
+      from deprecated action category:
+
+      - category: category action
+
+      - type:
+      UI action type
+
+      Examples:
+
+      <code>
+        <typeCompatibility id="iconType" type="link_icon">
+          <category>DOCUMENT_UPPER_ACTION</category>
+          <category>DOCUMENT_HEADER_ACTIONS_LIST</category>
+        </typeCompatibility>
+        <typeCompatibility id="iconTextType" type="link_icon_text">
+          <category>DEFAULT_LIST</category>
+          <category>CLIPBOARD_LIST</category>
+        </typeCompatibility>
+        <typeCompatibility id="buttonType" type="button">
+          <category>CURRENT_SELECTION_COPY</category>
+          <category>CLIPBOARD_PASTE</category>
+          <category>CURRENT_SELECTION_ADDTOLIST</category>
+          <category>CURRENT_SELECTION_TRASH</category>
+          <category>CREATE_DOCUMENT_FORM</category>
+          <category>EDIT_DOCUMENT_FORM</category>
+        </typeCompatibility>
+        <typeCompatibility id="linkType" type="link">
+          <category>USER_SERVICES</category>
+          <category>USER_MENU_ACTIONS</category>
+        </typeCompatibility>
+        <typeCompatibility id="bareType" type="bare_link">
+          <category>DOCUMENT_HEADER_ACTIONS_LIST_HREF</category>
+          <category>USER_MENU_ACTIONS</category>
+        </typeCompatibility>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.actions.TypeCompatibility" />
+  </extension-point>
 </component>
