@@ -74,6 +74,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     // stream content with non-ASCII characters
     public static final String STREAM_CONTENT = "Caf\u00e9 Diem\none\0two";
 
+    public static final String NOT_NULL = "CONSTRAINT_NOT_NULL";
+
     protected Session session;
 
     protected String rootFolderId;
