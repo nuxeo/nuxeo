@@ -29,6 +29,20 @@
       <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
     </action>
 
+    <!-- Contextual tools buttons contrib NXP-9039 -->
+    <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}" order="1"
+      label="command.lock" icon="" type="icon">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+    </action>
+    <action id="DOCUMENT_UNLOCK" link="#{lockActions.unlockCurrentDocument}" order="1"
+      label="command.unlock" icon="" type="icon">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
