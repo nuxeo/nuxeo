@@ -14,8 +14,9 @@ package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
-import org.jmock.Mock;
+import org.jmock.Expectations;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -41,17 +42,21 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
-    protected DatabaseMetaData getDatabaseMetaData() {
-        Mock m = mock(DatabaseMetaData.class);
-        m.stubs().method("storesUpperCaseIdentifiers").will(returnValue(false));
-        m.stubs().method("getDatabaseProductName").will(returnValue("Dummy"));
-        return (DatabaseMetaData) m.proxy();
+    protected DatabaseMetaData getDatabaseMetaData() throws SQLException {
+        final DatabaseMetaData m = mock(DatabaseMetaData.class);
+        checking (new Expectations() {{
+            oneOf (m).storesUpperCaseIdentifiers(); will(returnValue(false));
+            oneOf (m).getDatabaseProductName(); will(returnValue("Dummy"));
+        }});
+        return m;
     }
 
-    protected Connection getConnection() {
-        Mock m = mock(Connection.class);
-        m.stubs().method("getMetaData").will(returnValue(metadata));
-        return (Connection) m.proxy();
+    protected Connection getConnection() throws SQLException {
+        final Connection m = mock(Connection.class);
+        checking (new Expectations() {{
+            oneOf (m).getMetaData(); will(returnValue(metadata));
+        }});
+        return m;
     }
 
     protected static class DialectDummy extends DialectH2 {

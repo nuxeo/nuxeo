@@ -19,8 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.integration.junit3.MockObjectTestCase;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.model.Document;
@@ -111,7 +110,7 @@ public class TestCoreEvent extends MockObjectTestCase {
     // :FIXME:
     public void testCoreEventWithInfo() {
         String eventId = "someEvent";
-        Document source = (Document) new Mock(Document.class).proxy();
+        Document source = (Document) mock(Document.class);
 
         Map<String, Serializable> info = new HashMap<String, Serializable>();
         info.put("destination", "xxx");

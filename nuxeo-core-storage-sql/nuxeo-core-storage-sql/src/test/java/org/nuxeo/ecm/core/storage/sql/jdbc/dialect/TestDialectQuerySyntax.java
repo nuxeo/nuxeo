@@ -14,9 +14,10 @@ package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Expectations;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
@@ -34,25 +35,32 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     public Dialect dialect;
 
     @Override
-    public void setUp() {
+    public void setUp() throws SQLException {
         metadata = getDatabaseMetaData();
         // binaryManager = null;
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
-    public DatabaseMetaData getDatabaseMetaData() {
-        Mock m = mock(DatabaseMetaData.class);
-        m.stubs().method("storesUpperCaseIdentifiers").will(returnValue(false));
-        m.stubs().method("getDatabaseMajorVersion").will(returnValue(9));
-        m.stubs().method("getDatabaseMinorVersion").will(returnValue(0));
-        m.stubs().method("getColumns").will(returnValue(getEmptyResultSet()));
-        return (DatabaseMetaData) m.proxy();
+    public DatabaseMetaData getDatabaseMetaData() throws SQLException {
+        final DatabaseMetaData m = mock(DatabaseMetaData.class);
+        checking(new Expectations() {{
+            allowing (m).storesUpperCaseIdentifiers(); will(returnValue(false));
+            allowing (m).getDatabaseMajorVersion(); will(returnValue(9));
+            allowing (m).getDatabaseMinorVersion(); will(returnValue(0));
+            allowing (m).getColumns(with(any(String.class)),
+                                 with(any(String.class)),
+                                 with(any(String.class)),
+                                 with(any(String.class))); will(returnValue(getEmptyResultSet()));
+        }});
+        return m;
     }
 
-    public ResultSet getEmptyResultSet() {
-        Mock m = mock(ResultSet.class);
-        m.stubs().method("next").will(returnValue(false));
-        return (ResultSet) m.proxy();
+    public ResultSet getEmptyResultSet() throws SQLException {
+        final ResultSet m = mock(ResultSet.class);
+        checking(new Expectations() {{
+            allowing (m).next(); will(returnValue(false));
+        }});
+        return m;
     }
 
     protected void assertFulltextException(String query) {

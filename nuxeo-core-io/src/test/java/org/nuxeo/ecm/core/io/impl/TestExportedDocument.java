@@ -20,8 +20,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import org.jmock.Expectations;
 import org.dom4j.io.XMLWriter;
-import org.jmock.Mock;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -37,31 +37,32 @@ public class TestExportedDocument extends NXRuntimeTestCase {
 
     public void testExportedDocument() throws Exception {
 
-        Mock documentModelMock = mock(DocumentModel.class);
-        documentModelMock.expects(atLeastOnce()).method("getId").will(
-                returnValue("My id"));
-        documentModelMock.expects(atLeastOnce()).method("getType").will(
-                returnValue("My type"));
-        documentModelMock.expects(atLeastOnce()).method("getRef").will(
-                returnValue(new IdRef("My id")));
-        documentModelMock.expects(atLeastOnce()).method("getName").will(
-                returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method(
-                "getCurrentLifeCycleState").will(returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getLifeCyclePolicy").will(
-                returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getACP").will(
-                returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getSchemas").will(
-                returnValue(new String[0]));
-        documentModelMock.expects(atLeastOnce()).method("getRepositoryName").will(
-                returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getPath").will(
-                returnValue(new Path("my-path")));
-        documentModelMock.expects(atLeastOnce()).method("getPathAsString").will(
-                returnValue("/my/path/"));
+        final DocumentModel model = mock(DocumentModel.class);
+        checking(new Expectations() {{
+            atLeast(1).of (model).getId();
+            will(returnValue("My id"));
+            atLeast(1).of (model).getType();
+            will(returnValue("My type"));
+            atLeast(1).of (model).getRef();
+            will(returnValue(new IdRef("My id")));
+            atLeast(1).of (model).getName();
+            will(returnValue(null));
+            atLeast(1).of (model).getCurrentLifeCycleState();
+            will(returnValue(null));
+            atLeast(1).of (model).getLifeCyclePolicy();
+            will(returnValue(null));
+            atLeast(1).of (model).getACP();
+            will(returnValue(null));
+            atLeast(1).of (model).getSchemas();
+            will(returnValue(new String[0]));
+            atLeast(1).of (model).getRepositoryName();
+            will(returnValue(null));
+            atLeast(1).of (model).getPath();
+            will(returnValue(new Path("my-path")));
+            atLeast(1).of (model).getPathAsString();
+            will(returnValue("/my/path/"));
+        }});
 
-        DocumentModel model = (DocumentModel) documentModelMock.proxy();
         ExportedDocument exportedDoc = new ExportedDocumentImpl(model);
 
         assertEquals("My id", exportedDoc.getId());

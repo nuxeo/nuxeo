@@ -25,8 +25,8 @@
     </dependency>
 
     <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit3</artifactId>
       <scope>compile</scope>
     </dependency>
 
