@@ -31,7 +31,7 @@ public class TestImportContentTemplateFactory extends SQLRepositoryTestCase {
         assertNull(null);
     }
 
-    /* XXX/ Temporarilty disabled : breaks the build
+
     protected ContentTemplateService service;
 
     @Override
@@ -114,6 +114,5 @@ public class TestImportContentTemplateFactory extends SQLRepositoryTestCase {
         assertNotNull(helloDoc);
         assertEquals(helloDoc.getType(), "File");
     }
-    */
 
 }
