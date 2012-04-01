@@ -16,15 +16,26 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
 import org.jmock.Expectations;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;;
+
+import org.junit.runner.RunWith;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
-public class TestDialectQuerySyntax extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class TestDialectQuerySyntax {
+
+    Mockery jmcontext = new JUnit4Mockery();
 
     public DatabaseMetaData metadata;
 
@@ -34,7 +45,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
 
     public Dialect dialect;
 
-    @Override
+    @Before
     public void setUp() throws SQLException {
         metadata = getDatabaseMetaData();
         // binaryManager = null;
@@ -42,8 +53,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     }
 
     public DatabaseMetaData getDatabaseMetaData() throws SQLException {
-        final DatabaseMetaData m = mock(DatabaseMetaData.class);
-        checking(new Expectations() {{
+        final DatabaseMetaData m = jmcontext.mock(DatabaseMetaData.class);
+        jmcontext.checking(new Expectations() {{
             allowing (m).storesUpperCaseIdentifiers(); will(returnValue(false));
             allowing (m).getDatabaseMajorVersion(); will(returnValue(9));
             allowing (m).getDatabaseMinorVersion(); will(returnValue(0));
@@ -56,8 +67,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     }
 
     public ResultSet getEmptyResultSet() throws SQLException {
-        final ResultSet m = mock(ResultSet.class);
-        checking(new Expectations() {{
+        final ResultSet m = jmcontext.mock(ResultSet.class);
+        jmcontext.checking(new Expectations() {{
             allowing (m).next(); will(returnValue(false));
         }});
         return m;
@@ -141,6 +152,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertEquals(expected, buf.toString());
     }
 
+    @Test
     public void testAnalyzeFulltextQuery() throws Exception {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
 
@@ -226,6 +238,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertEquals(expected, dialect.getDialectFulltextQuery(query));
     }
 
+    @Test
     public void testH2() throws Exception {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
@@ -252,6 +265,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("(foo AND bar*)", "foo bar*");
     }
 
+    @Test
     public void testPostgreSQLPhraseBreak() throws Exception {
         dialect = new DialectPostgreSQL(metadata, binaryManager,
                 repositoryDescriptor);
@@ -266,6 +280,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertPGPhraseBreak("foo", "foo OR -\"bar baz\"");
     }
 
+    @Test
     public void testPostgreSQLToplevelAndedWordRemoval() throws Exception {
         dialect = new DialectPostgreSQL(metadata, binaryManager,
                 repositoryDescriptor);
@@ -282,6 +297,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertPGRemoveToplevelAndedWord(null, "foo OR -\"bar baz\"");
     }
 
+    @Test
     public void testPostgreSQLLikeSql() throws Exception {
         dialect = new DialectPostgreSQL(metadata, binaryManager,
                 repositoryDescriptor);
@@ -303,6 +319,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertPGLikeSql("?? LIKE '% foo %'", "foo OR -\"bar baz\"");
     }
 
+    @Test
     public void testPostgreSQL() throws Exception {
         dialect = new DialectPostgreSQL(metadata, binaryManager,
                 repositoryDescriptor);
@@ -342,6 +359,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
                 "\"foo bar*\"");
     }
 
+    @Test
     public void testMySQL() throws Exception {
         dialect = new DialectMySQL(metadata, binaryManager,
                 repositoryDescriptor);
@@ -369,6 +387,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("(+foo +bar*)", "foo bar*");
     }
 
+    @Test
     public void testOracle() throws Exception {
         dialect = new DialectOracle(metadata, binaryManager,
                 repositoryDescriptor);
@@ -401,6 +420,7 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         assertDialectFT("{word} {and}", "\"word and\"");
     }
 
+    @Test
     public void testSQLServer() throws Exception {
         dialect = new DialectSQLServer(metadata, binaryManager,
                 repositoryDescriptor);

@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -26,19 +31,20 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class TestDocumentAdapter extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testFileAdapters() throws Exception {
         DocumentModel file = session.createDocumentModel("File");
         file.setPathInfo("/", "TestFile");
@@ -89,6 +95,7 @@ public class TestDocumentAdapter extends SQLRepositoryTestCase {
         assertNull(file.getPropertyValue("file:filename"));
     }
 
+    @Test
     public void testNoteAdapters() throws Exception {
         DocumentModel note = session.createDocumentModel("Note");
         note.setPathInfo("/", "TestNote");
@@ -130,6 +137,7 @@ public class TestDocumentAdapter extends SQLRepositoryTestCase {
         assertNull(b);
     }
 
+    @Test
     public void testFolderAdapters() throws Exception {
         DocumentModel folder = session.createDocumentModel("Folder");
         folder.setPathInfo("/", "TestFolder");

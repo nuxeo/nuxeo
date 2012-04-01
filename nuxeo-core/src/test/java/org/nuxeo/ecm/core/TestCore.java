@@ -14,6 +14,11 @@
 
 package org.nuxeo.ecm.core;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -28,7 +33,7 @@ public class TestCore extends NXRuntimeTestCase {
 
     private SchemaManager typeManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle(CoreUTConstants.SCHEMA_BUNDLE);
@@ -38,12 +43,13 @@ public class TestCore extends NXRuntimeTestCase {
         typeManager = NXSchema.getSchemaManager();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
         typeManager = null;
     }
 
+    @Test
     public void testRepositoryManager() {
         try {
             Repository repo = NXCore.getRepository("improbable name");
@@ -55,6 +61,7 @@ public class TestCore extends NXRuntimeTestCase {
 
     // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
+    // @Test
     public void xxxtestDocTypes() {
         assertEquals(3, typeManager.getDocumentTypesCount());
 
@@ -68,6 +75,7 @@ public class TestCore extends NXRuntimeTestCase {
 
     // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
+    // @Test
     public void xxxtestSchemaRegistry() {
         Schema[] schemas = typeManager.getSchemas();
         // Default schemas registry is empty
@@ -76,6 +84,7 @@ public class TestCore extends NXRuntimeTestCase {
 
     // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
+    // @Test
     public void xxxtestTypeRegistry() {
         Type[] types = typeManager.getTypes();
         // Default types registry has 2 types

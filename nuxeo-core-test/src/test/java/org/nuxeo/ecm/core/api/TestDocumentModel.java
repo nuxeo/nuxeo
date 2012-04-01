@@ -16,17 +16,22 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class TestDocumentModel extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -35,6 +40,7 @@ public class TestDocumentModel extends SQLRepositoryTestCase {
     /**
      * Tests on a DocumentModel that hasn't been created in the session yet.
      */
+    @Test
     public void testDocumentModelNotYetCreated() throws ClientException {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         assertTrue(doc.isCheckedOut());
@@ -42,6 +48,7 @@ public class TestDocumentModel extends SQLRepositoryTestCase {
         doc.refresh();
     }
 
+    @Test
     public void testContextDataOfCreatedDocument() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc.putContextData("key", "value");
@@ -49,6 +56,7 @@ public class TestDocumentModel extends SQLRepositoryTestCase {
         assertEquals(doc.getContextData("key"), "value");
     }
 
+    @Test
     public void testDetachAttach() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);

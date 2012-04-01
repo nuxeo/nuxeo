@@ -25,6 +25,11 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -54,7 +59,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
 
     protected ServerVCS serverVCS;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         repoName = CLIENT_REPO_NAME;
         super.setUp();
@@ -93,7 +98,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         return descriptor;
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeRepository();
         serverVCS.interrupt();
@@ -220,6 +225,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         }
     }
 
+    @Test
     public void testClientServerInvalidations() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -261,6 +267,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
     }
 
     // this test is similar to clustering tests
+    @Test
     public void testTwoClientsInvalidations() throws Exception {
         repoName = CLIENT_REPO_NAME_2;
         repository2 = newRepository(-1, false);
@@ -313,6 +320,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         return prop;
     }
 
+    @Test
     public void testSerializeRepoBinaries() throws Exception {
         BinaryManager binMgr = ((RepositoryImpl) repository).binaryManager;
         StringBlob blob = new StringBlob("dummy");
@@ -332,6 +340,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         assertEquals(unmarshalledString, originalString);
     }
 
+    @Test
     public void testSerializeDisconnectedBinaries() throws Exception {
         File file = File.createTempFile("nuxeo-test-", ".blob");
         file.deleteOnExit();

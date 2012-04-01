@@ -17,6 +17,10 @@ package org.nuxeo.ecm.core.event.test;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
@@ -28,12 +32,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestEventListenerContrib extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
+    @Test
     public void testMerge() throws Exception {
         URL url = EventListenerTest.class.getClassLoader().getResource(
         "test-listeners.xml");

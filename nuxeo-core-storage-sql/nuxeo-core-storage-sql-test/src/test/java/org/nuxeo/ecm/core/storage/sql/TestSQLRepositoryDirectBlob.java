@@ -23,6 +23,11 @@ import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,11 +41,15 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
  */
 public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 
+    public TestSQLRepositoryDirectBlob() {
+        super();
+    }
+
     public TestSQLRepositoryDirectBlob(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
@@ -48,7 +57,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         session.cancel();
         closeSession();
@@ -77,7 +86,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
     }
 
     // ----- Nuxeo application -----
-
+    @Test
     public void testDirectBlob() throws Exception {
         DocumentModel folder = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
@@ -129,6 +138,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testBinarySerialization() throws Exception {
         DocumentModel folder = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),

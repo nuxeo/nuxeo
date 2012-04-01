@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.api;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.schema.FacetNames;
 

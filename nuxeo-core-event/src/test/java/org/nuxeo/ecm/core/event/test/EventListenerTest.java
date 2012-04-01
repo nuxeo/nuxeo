@@ -18,6 +18,10 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.rmi.dgc.VMID;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -34,12 +38,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class EventListenerTest extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
+    @Test
     public void testFlags() {
         EventImpl event = new EventImpl("test", null);
         assertTrue(event.isPublic());
@@ -104,6 +109,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertFalse(event.isCommitEvent());
     }
 
+    @Test
     public void testEventCreation() {
         EventContextImpl ctx = new EventContextImpl();
         Event event = ctx.newEvent("test");
@@ -117,6 +123,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertEquals(Event.FLAG_COMMIT | Event.FLAG_INLINE, event.getFlags());
     }
 
+    @Test
     public void testTimestamp() {
         long tm = System.currentTimeMillis();
         EventContextImpl ctx = new EventContextImpl();
@@ -129,6 +136,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
      */
     public static int SCRIPT_CNT = 0;
 
+    @Test
     public void testScripts() throws Exception {
         URL url = EventListenerTest.class.getClassLoader().getResource(
                 "test-listeners.xml");
@@ -154,7 +162,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertEquals(2, SCRIPT_CNT);
     }
 
-
+    @Test
     public void testRemoteForwarding() throws Exception {
         VMID vmid1 = EventServiceImpl.VMID; // the source vmid
         // generate another different vmid that will be used as the target host VMID

@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.core.version.test;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.Constants;
@@ -33,14 +38,14 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
     protected VersioningComponent service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         service = (VersioningComponent) Framework.getService(VersioningService.class);
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -84,6 +89,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         assertEquals(expected, service.getVersionLabel(doc));
     }
 
+    @Test
     public void testStandardVersioning() throws Exception {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
@@ -197,6 +203,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("deprecation")
+    @Test
     public void testOldNuxeoVersioning() throws Exception {
         deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-versioningservice-contrib.xml");

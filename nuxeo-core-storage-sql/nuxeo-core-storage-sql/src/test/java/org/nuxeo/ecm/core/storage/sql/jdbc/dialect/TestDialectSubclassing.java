@@ -17,6 +17,10 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import org.jmock.Expectations;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -33,7 +37,7 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
 
     protected RepositoryDescriptor repositoryDescriptor;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         metadata = getDatabaseMetaData();
@@ -43,8 +47,8 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
     }
 
     protected DatabaseMetaData getDatabaseMetaData() throws SQLException {
-        final DatabaseMetaData m = mock(DatabaseMetaData.class);
-        checking (new Expectations() {{
+        final DatabaseMetaData m = jmcontext.mock(DatabaseMetaData.class);
+        jmcontext.checking (new Expectations() {{
             oneOf (m).storesUpperCaseIdentifiers(); will(returnValue(false));
             oneOf (m).getDatabaseProductName(); will(returnValue("Dummy"));
         }});
@@ -52,8 +56,8 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
     }
 
     protected Connection getConnection() throws SQLException {
-        final Connection m = mock(Connection.class);
-        checking (new Expectations() {{
+        final Connection m = jmcontext.mock(Connection.class);
+        jmcontext.checking (new Expectations() {{
             oneOf (m).getMetaData(); will(returnValue(metadata));
         }});
         return m;
@@ -68,6 +72,7 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testDialectSubclassing() throws Exception {
         Framework.getProperties().put(Dialect.DIALECT_CLASS,
                 DialectDummy.class.getName());
@@ -76,6 +81,7 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
         assertEquals(DialectDummy.class, dialect.getClass());
     }
 
+    @Test
     public void testDialectSubclassingSpecific() throws Exception {
         Framework.getProperties().put(Dialect.DIALECT_CLASS + ".Dummy",
                 DialectDummy.class.getName());

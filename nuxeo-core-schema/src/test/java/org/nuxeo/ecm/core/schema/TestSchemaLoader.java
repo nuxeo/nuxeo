@@ -19,6 +19,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Constraint;
@@ -40,7 +44,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     private XSDLoader reader;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -59,6 +63,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     // FIXME: this tests makes too string assumptions on how the fields will be
     // ordered when we iterate over them (fails under Java 6)
+    // @Test
     public void XXXtestXSDReader() throws Exception {
         URL url = getResource("schema/schema.xsd");
 
@@ -98,6 +103,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals("personInfo", field.getType().getName());
     }
 
+    @Test
     public void testContribs() throws Exception {
         deployContrib("org.nuxeo.ecm.core.schema.tests",
                 "CoreTestExtensions.xml");
@@ -127,6 +133,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testSequence() throws Exception {
         URL url = getResource("schema/testList.xsd");
         assertNotNull(url);
@@ -146,6 +153,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testList() throws Exception {
         URL url = getResource("schema/testList.xsd");
         assertNotNull(url);
@@ -165,6 +173,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals("tata", defaultValue.get(2));
     }
 
+    @Test
     public void testComplexSchema() throws Exception {
         URL url = getResource("schema/policy.xsd");
         assertNotNull(url);
@@ -188,6 +197,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertNotNull(ct.getField("RULE"));
     }
 
+    @Test
     public void testRestriction() throws Exception {
         URL url = getResource("schema/testrestriction.xsd");
         assertNotNull(url);

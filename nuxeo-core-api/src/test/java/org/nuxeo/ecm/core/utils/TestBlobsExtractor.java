@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -31,11 +35,15 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestBlobsExtractor extends NXRuntimeTestCase {
 
+    public TestBlobsExtractor() {
+        super();
+    }
+
     public TestBlobsExtractor(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -43,6 +51,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
                 "OSGI-INF/test-blobsextractor-types-contrib.xml");
     }
 
+    @Test
     public void test() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
 
@@ -82,6 +91,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         assertTrue(blobs.contains(blob3));
     }
 
+    @Test
     public void testWithRepositoryConfiguration() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
 

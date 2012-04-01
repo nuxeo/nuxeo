@@ -18,6 +18,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
@@ -34,11 +38,15 @@ public class TestExternalBlob extends NXRuntimeTestCase {
 
     public static String TEMP_DIRECTORY_NAME = "testExternalBlobDir";
 
+    public TestExternalBlob() {
+        super();
+    }
+
     public TestExternalBlob(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -82,6 +90,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
                 tempFile.getName());
     }
 
+    @Test
     public void testExternalBlobAdapter() throws Exception {
         BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
         assertNotNull(service);
@@ -104,6 +113,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertEquals(file.getName(), (blob).getFilename());
     }
 
+    @Test
     public void testExternalBlobDocumentProperty() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
@@ -123,6 +133,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     }
 
     // this time only set the uri
+    @Test
     public void testExternalBlobDocumentProperty2() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
@@ -140,6 +151,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     }
 
     // test update of blob properties
+    @Test
     public void testExternalBlobDocumentPropertyUpdate() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();

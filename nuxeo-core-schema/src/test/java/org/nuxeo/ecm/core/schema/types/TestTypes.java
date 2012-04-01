@@ -17,6 +17,10 @@ package org.nuxeo.ecm.core.schema.types;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -29,14 +33,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestTypes extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
     }
 
     // ANY type
-
+    @Test
     public void testAnyType() throws TypeException {
         Type type = AnyType.INSTANCE;
 
@@ -56,7 +60,7 @@ public class TestTypes extends NXRuntimeTestCase {
     }
 
     // Primitive types
-
+    @Test
     public void testStringType() throws TypeException {
         SimpleType type = StringType.INSTANCE;
 
@@ -77,6 +81,7 @@ public class TestTypes extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings({"SimplifiableJUnitAssertion", "AssertEqualsBetweenInconvertibleTypes"})
+    @Test
     public void testBooleanType() throws TypeException {
         SimpleType type = BooleanType.INSTANCE;
 
@@ -105,6 +110,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(true, type.decode("true"));
     }
 
+    @Test
     public void testIntegerType() throws TypeException {
         SimpleType type = IntegerType.INSTANCE;
 
@@ -130,6 +136,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(0, type.decode("0"));
     }
 
+    @Test
     public void testDoubleType() throws TypeException {
         SimpleType type = DoubleType.INSTANCE;
 
@@ -157,6 +164,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(3.14, type.decode("3.14"));
     }
 
+    @Test
     public void testLongType() throws TypeException {
         SimpleType type = LongType.INSTANCE;
 
@@ -182,6 +190,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(0L, type.decode("0"));
     }
 
+    @Test
     public void testDateType() throws TypeException {
         SimpleType type = DateType.INSTANCE;
 
@@ -203,7 +212,7 @@ public class TestTypes extends NXRuntimeTestCase {
     }
 
     // Custom types
-
+    @Test
     public void testListType() throws TypeException {
         ListType type = new ListTypeImpl(SchemaNames.BUILTIN,  "list type",  AnyType.INSTANCE);
 
@@ -227,6 +236,7 @@ public class TestTypes extends NXRuntimeTestCase {
         //TODO: add tests for collections once this is implemented
     }
 
+    @Test
     public void testCompositeType() {
         CompositeTypeImpl type = new CompositeTypeImpl(
                 (CompositeType) null, SchemaNames.BUILTIN,  "composite type", null);
@@ -249,6 +259,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.getFields().isEmpty());
     }
 
+    @Test
     public void testSchema() {
         String name = "name";
         String uri = "uri";

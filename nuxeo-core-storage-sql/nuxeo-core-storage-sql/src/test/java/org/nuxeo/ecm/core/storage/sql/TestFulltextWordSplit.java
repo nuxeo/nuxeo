@@ -18,6 +18,9 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.ArrayList;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -30,6 +33,7 @@ public class TestFulltextWordSplit extends NXRuntimeTestCase {
         assertEquals(expected, StringUtils.join(parser.strings, "|"));
     }
 
+    @Test
     public void testDefaultParser() throws Exception {
         check("abc", "abc");
         check("abc|def", "abc def");

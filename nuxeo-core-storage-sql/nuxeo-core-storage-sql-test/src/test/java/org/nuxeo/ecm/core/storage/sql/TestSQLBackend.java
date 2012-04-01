@@ -39,6 +39,10 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.XidImpl;
@@ -58,13 +62,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-backend-core-types-contrib.xml");
     }
 
+    @Test
     public void testRootNode() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -83,6 +88,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.close();
     }
 
+    @Test
     public void testSchemaWithLongName() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-schema-longname.xml");
@@ -94,6 +100,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return ((SessionImpl) session).context.hierNonComplex.hardMap.size();
     }
 
+    @Test
     public void testChildren() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -162,6 +169,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, getChildrenHardSize(session));
     }
 
+    @Test
     public void testChildrenRemoval() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -188,6 +196,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    @Test
     public void testChildrenRemoval2() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -198,6 +207,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save(); // important for the test
     }
 
+    @Test
     public void testChildrenRemoval3() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -209,6 +219,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save(); // important for the test
     }
 
+    @Test
     public void testRecursiveRemoval() throws Exception {
         int depth = DatabaseHelper.DATABASE.getRecursiveRemovalDepthLimit();
         if (depth == 0) {
@@ -238,6 +249,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     // same as above but without opening a new session
+    @Test
     public void testRecursiveRemoval2() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -260,6 +272,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -329,6 +342,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // session.save();
     }
 
+    @Test
     public void testBasicsUpgrade() throws Exception {
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         try {
@@ -338,6 +352,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testBigText() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -369,6 +384,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(bigtext, readtexts[0]);
     }
 
+    @Test
     public void testPropertiesSameName() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -388,6 +404,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    @Test
     public void testBinary() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -432,6 +449,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return new String(bytes, "ISO-8859-1");
     }
 
+    @Test
     public void testBinaryGC() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -510,6 +528,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return gc.getStatus();
     }
 
+    @Test
     public void testACLs() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -569,6 +588,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testConcurrentNameCreation() throws Exception {
         // two docs with same name (possible at this low level)
         Session session1 = repository.getConnection();
@@ -618,6 +638,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("glop", title2.getString());
     }
 
+    @Test
     public void testCrossSessionChildrenInvalidationAdd() throws Exception {
         // in first session, create base folder
         Session session1 = repository.getConnection();
@@ -642,6 +663,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNotNull(doc2);
     }
 
+    @Test
     public void testCrossSessionChildrenInvalidationRemove() throws Exception {
         // in first session, create base folder and doc
         Session session1 = repository.getConnection();
@@ -671,6 +693,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNull(session2.getNodeById(doc1.getId()));
     }
 
+    @Test
     public void testCrossSessionChildrenInvalidationMove() throws Exception {
         // in first session, create base folders and doc
         Session session1 = repository.getConnection();
@@ -705,6 +728,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, childrenb2.size());
     }
 
+    @Test
     public void testCrossSessionChildrenInvalidationCopy() throws Exception {
         // in first session, create base folders and doc
         Session session1 = repository.getConnection();
@@ -739,6 +763,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, childrenb2.size());
     }
 
+    @Test
     public void testCrossSessionVersionsInvalidationAdd() throws Exception {
         // in first session, create base folder
         Session session1 = repository.getConnection();
@@ -761,6 +786,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, session2.getVersions(id).size());
     }
 
+    @Test
     public void testCrossSessionVersionsInvalidationRemove() throws Exception {
         // in first session, create base folder and version
         Session session1 = repository.getConnection();
@@ -783,6 +809,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, session2.getVersions(id).size());
     }
 
+    @Test
     public void testCrossSessionProxiesInvalidationAdd() throws Exception {
         // in first session, create base stuff
         Session session1 = repository.getConnection();
@@ -808,6 +835,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, session2.getProxies(ver1, null).size()); // by target
     }
 
+    @Test
     public void testCrossSessionProxiesInvalidationRemove() throws Exception {
         // in first session, create base stuff
         Session session1 = repository.getConnection();
@@ -837,6 +865,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, session2.getProxies(ver1, null).size()); // by target
     }
 
+    @Test
     public void testCrossSessionACLInvalidation() throws Exception {
         // init repo and root ACL
         Session session1 = repository.getConnection();
@@ -862,6 +891,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         prop2.getValue();
     }
 
+    @Test
     public void testClustering() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -947,6 +977,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("glop", title2.getString());
     }
 
+    @Test
     public void testRollback() throws Exception {
         Session session = repository.getConnection();
         XAResource xaresource = ((SessionImpl) session).getXAResource();
@@ -984,6 +1015,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
     }
 
+    @Test
     public void testSaveOnCommit() throws Exception {
         Session session = repository.getConnection(); // init
         session.save();
@@ -1025,6 +1057,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return names;
     }
 
+    @Test
     public void testOrdered() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1061,6 +1094,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(Arrays.asList("c", "b", "e", "a", "d"), getNames(children));
     }
 
+    @Test
     public void testMove() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1114,6 +1148,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     /*
      * Test that lots of moves don't break internal datastructures.
      */
+    @Test
     public void testMoveMany() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1262,6 +1297,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testCopy() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1339,6 +1375,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    @Test
     public void testVersioning() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1426,6 +1463,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.checkIn(nodea, "hop", null);
     }
 
+    @Test
     public void testVersionFetching() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1463,6 +1501,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // session.copy(ver1, null, "bar"); not possible right now
     }
 
+    @Test
     public void testVersionCopy() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1495,6 +1534,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNull(vercop.getSimpleProperty("ecm:isCheckedIn").getValue());
     }
 
+    @Test
     public void testProxies() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1554,6 +1594,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, proxies.size());
     }
 
+    @Test
     public void testProxyFetching() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1616,6 +1657,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(3, list.size()); // selection properly updated
     }
 
+    @Test
     public void testProxyDeepRemoval() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1656,6 +1698,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, list.size());
     }
 
+    @Test
     public void testProxyDeepCopy() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1698,6 +1741,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return set;
     }
 
+    @Test
     public void testDelete() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1716,6 +1760,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    @Test
     public void testBulkUpdates() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1770,6 +1815,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    @Test
     public void testBulkFetch() throws Exception {
         Session session = repository.getConnection();
 
@@ -1839,6 +1885,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("Read", acls[0].permission);
     }
 
+    @Test
     public void testBulkFetchProxies() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1867,6 +1914,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // check logs by hand to see that data fragments are bulk fetched
     }
 
+    @Test
     public void testBulkFetchMany() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1894,6 +1942,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testFulltext() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1955,6 +2004,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
      * This used to crash SQL Server 2008 R2 (NXP-6143). It works on SQL Server
      * 2005.
      */
+    @Test
     public void testFulltextCrashingSQLServer2008() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1971,6 +2021,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
     public void testFulltextCustomParser() throws Exception {
         // custom fulltext config
         repository.close();
@@ -2014,6 +2065,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(oneDoc, res.list);
     }
 
+    @Test
     public void testFulltextDisabled() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2041,6 +2093,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testFulltextUpgrade() throws Exception {
         if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
             System.out.println("Skipping multi-fulltext test for unsupported database: "
@@ -2094,6 +2147,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
     public void testFulltextPrefix() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2159,6 +2213,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testFulltextCompatibilityPostgreSQL() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2195,6 +2250,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
     public void testFulltextSpuriousCharacters() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2214,6 +2270,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
     public void testRelation() throws Exception {
         PartialList<Serializable> res;
 
@@ -2250,6 +2307,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
     public void testTagsUpgrade() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2332,6 +2390,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return (String) node.getSimpleProperty(Model.VERSION_LABEL_PROP).getValue();
     }
 
+    @Test
     public void testVersionsUpgrade() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2380,6 +2439,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testLastContributorUpgrade() throws StorageException {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2413,6 +2473,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testMixinAPI() throws Exception {
         PartialList<Serializable> res;
         Session session = repository.getConnection();
@@ -2487,6 +2548,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, node.getMixinTypes().length);
     }
 
+    @Test
     public void testMixinIncludedInPrimaryType() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2512,6 +2574,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     }
 
+    @Test
     public void testMixinAddRemove() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2547,6 +2610,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     // mixin on doc with same schema in primary type does no harm
+    @Test
     public void testMixinAddRemove2() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2565,6 +2629,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    @Test
     public void testMixinWithSamePropertyName() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2580,6 +2645,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("gee", node.getSimpleProperty("age:title").getValue());
     }
 
+    @Test
     public void testMixinCopy() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2599,6 +2665,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     // copy of a facet that holds only a complex list
+    @Test
     public void testMixinCopyComplexList() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2615,6 +2682,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("123", p.getValue());
     }
 
+    @Test
     public void testMixinCopyDeep() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2640,6 +2708,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(Arrays.asList("bar", "gee"), Arrays.asList(p2.getValue()));
     }
 
+    @Test
     public void testMixinFulltext() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2655,6 +2724,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
     public void testMixinQueryContent() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2669,6 +2739,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
     public void testLocking() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -2702,11 +2773,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNull(lock);
     }
 
+    @Test
     public void testLockingParallel() throws Throwable {
         Serializable nodeId = createNode();
         runParallelLocking(nodeId, repository, repository);
     }
 
+    @Test
     public void testLockingParallelClustered() throws Throwable {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2864,6 +2937,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
     public void testLocksUpgrade() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2898,6 +2972,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNull(lock);
     }
 
+    @Test
     public void testJDBCConnectionPropagatorLeak() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2927,6 +3002,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return propagator.connections.size();
     }
 
+    @Test
     public void testCacheInvalidationsPropagatorLeak() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -2954,6 +3030,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return propagator.queues.size();
     }
 
+    @Test
     public void testClusterInvalidationsPropagatorLeak() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -3056,6 +3133,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     protected static String SELECT_TITLE_WHERE = "SELECT tst:title"
             + FROM_WHERE;
 
+    @Test
     public void testQueryComplexMakeDoc() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -3088,6 +3166,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         it.close();
     }
 
+    @Test
     public void testQueryComplexWhere() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -3222,6 +3301,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(oneDoc, res.list);
     }
 
+    @Test
     public void testQueryComplexReturned() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -3278,6 +3358,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     }
 
+    @Test
     public void testQueryComplexListElement() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -3363,6 +3444,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         it.close();
     }
 
+    @Test
     public void testQueryComplexOrderBy() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -3457,6 +3539,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         it.close();
     }
 
+    @Test
     public void testQueryComplexOrderByProxies() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -3475,6 +3558,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(oneDoc, res.list);
     }
 
+    @Test
     public void testQueryComplexOr() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -3561,6 +3645,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(4, res.list.size());
     }
 
+    @Test
     public void testPath() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -3584,6 +3669,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("/foo/moo", nodes.get(1).getPath());
     }
 
+    @Test
     public void testPathCached() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -3607,6 +3693,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, jdbc.executeCount);
     }
 
+    @Test
     public void testPathDeep() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -3632,6 +3719,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 + "/node5/node6/node7/node8/node9", nodes.get(1).getPath());
     }
 
+    @Test
     public void testPathOptimizationsActivation() throws Exception {
         repository.close();
         // open a repository without path optimization

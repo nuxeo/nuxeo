@@ -33,6 +33,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -65,13 +69,14 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
         }
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
     }
 
+    @Test
     public void testDefault() throws Exception {
         PathSegmentService service = Framework.getService(PathSegmentService.class);
         assertNotNull(service);
@@ -79,6 +84,7 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
         assertEquals("My Document", service.generatePathSegment(doc));
     }
 
+    @Test
     public void testContrib() throws Exception {
         deployContrib("org.nuxeo.ecm.core.api.tests",
                 "OSGI-INF/test-pathsegment-contrib.xml");
@@ -88,6 +94,7 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
         assertEquals("my-document", service.generatePathSegment(doc));
     }
 
+    @Test
     public void testContribOverride() throws Exception {
         PathSegmentService service = Framework.getService(PathSegmentService.class);
         deployContrib("org.nuxeo.ecm.core.api.tests",

@@ -14,6 +14,10 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -24,7 +28,7 @@ public class TestTypeService extends NXRuntimeTestCase {
 
     private TypeService ts;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -32,6 +36,7 @@ public class TestTypeService extends NXRuntimeTestCase {
                 TypeService.NAME);
     }
 
+    @Test
     public void testTypeService() {
         assertNull(ts.getConfiguration());
         assertNotNull(ts.getSchemaLoader());

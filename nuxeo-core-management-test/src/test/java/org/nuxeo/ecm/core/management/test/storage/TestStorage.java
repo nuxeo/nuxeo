@@ -17,11 +17,15 @@
 
 package org.nuxeo.ecm.core.management.test.storage;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.management.test.CoreManagementTestCase;
 import org.nuxeo.ecm.core.management.test.FakeDocumentStoreHandler;
 
 public class TestStorage extends CoreManagementTestCase {
 
+    @Test
     public void testRegistration() {
         assertNotNull("handler is not contributed",
                 FakeDocumentStoreHandler.testInstance);

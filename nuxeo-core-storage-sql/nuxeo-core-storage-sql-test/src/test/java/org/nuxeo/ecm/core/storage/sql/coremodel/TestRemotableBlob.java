@@ -19,6 +19,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -39,6 +42,7 @@ public class TestRemotableBlob extends NXRuntimeTestCase {
         return new SQLBlob(binary, "test.txt", "text/plain", "UTF-8", "abc");
     }
 
+    @Test
     public void testSerialization() throws Exception {
         SQLBlob blob = createSQLBlob();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

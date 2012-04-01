@@ -21,6 +21,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collections;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -28,13 +32,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDocumentModel extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
     }
 
     @SuppressWarnings({"ObjectEqualsNull", "SimplifiableJUnitAssertion"})
+    @Test
     public void testDocumentModelImpl() throws Exception {
         DocumentModel model = new DocumentModelImpl("my type");
 
@@ -80,6 +85,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertNotNull(model.toString());
     }
 
+    @Test
     public void testSerialize() throws IOException, ClassNotFoundException {
         DocumentModelImpl original = new DocumentModelImpl("my type");
         original.setPrefetch(new Prefetch());

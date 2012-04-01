@@ -25,6 +25,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
@@ -46,11 +51,15 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     DocumentModel doc;
 
+    public TestSQLRepositoryProperties() {
+        super();
+    }
+
     public TestSQLRepositoryProperties(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -80,7 +89,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -97,12 +106,14 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2467
+    @Test
     public void testCreationWithDefaultPrefetch() throws Exception {
         DocumentModel doc = session.createDocumentModel("TestDocumentWithDefaultPrefetch");
         doc.setPathInfo("/", "docwithDefaultPrefetch");
         session.createDocument(doc);
     }
 
+    @Test
     public void testStringArray() throws Exception {
         assertNotNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { "foo", "bar" };
@@ -113,6 +124,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2454
+    @Test
     public void testDateArray() throws Exception {
         assertNotNull(doc.getPropertyValue("tp:dateArray"));
         Calendar cal = Calendar.getInstance();
@@ -126,6 +138,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2454
+    @Test
     public void testIntArray() throws Exception {
         assertNotNull(doc.getPropertyValue("tp:intArray"));
         Long[] values = { 1L, 2L, 3L };
@@ -136,6 +149,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
                 (Object[]) doc.getPropertyValue("tp:intArray")));
     }
 
+    @Test
     public void testComplexList() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);
@@ -158,6 +172,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-912
+    @Test
     public void testNewBlob() throws Exception {
         // simple
         Object value = null;
@@ -181,6 +196,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2468
+    @Test
     public void testBlobListValue() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
@@ -200,6 +216,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2301
+    @Test
     public void testSubBlobValue() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileComplexList") instanceof List);
@@ -228,6 +245,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(actualBlob instanceof Blob);
     }
 
+    @Test
     public void testComplexPropertyChain() throws Exception {
         Property p = doc.getProperty("tp:complexChain");
         assertTrue(p.getValue() instanceof Map);
@@ -248,6 +266,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals("test2", p.getValue("string"));
     }
 
+    @Test
     public void testComplexPropertySubValue() throws Exception {
         doc.setPropertyValue("tp:complex/string", "test");
         doc = session.saveDocument(doc);
@@ -282,6 +301,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertFalse(prop.isScalar());
     }
 
+    @Test
     public void testExternalBlobDocumentProperty() throws Exception {
         File file = createTempFile();
         HashMap<String, String> map = new HashMap<String, String>();
@@ -303,6 +323,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // this time only set the uri
+    @Test
     public void testExternalBlobDocumentProperty2() throws Exception {
         File file = createTempFile();
         String uri = String.format("fs:%s", file.getName());
@@ -320,6 +341,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2468
+    @Test
     public void testExternalBlobListValue() throws Exception {
         // not null on list
         String propName = "tp:externalFileList";
@@ -351,6 +373,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2301
+    @Test
     public void testSubExternalBlobValue() throws Exception {
         String propName = "tp:externalFileComplexList";
         // not null on list
@@ -389,6 +412,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals(uri, doc.getPropertyValue(propName + "/0/blob/uri"));
     }
 
+    @Test
     public void testSaveComplexTwice() throws Exception {
         testComplexList();
         doc.setPropertyValue("tp:stringArray", new String[] {}); // dirty dp
@@ -397,6 +421,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // not many tests, logs have to be looked at to confirm behavior
+    @Test
     public void testUpdateMinimalChanges() throws Exception {
         // populate some properties
         testStringArray();
@@ -414,6 +439,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // toplevel complex list
+    @Test
     public void testXPath1() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         List<Object> files = new ArrayList<Object>(2);
@@ -426,6 +452,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // other complex list
+    @Test
     public void testXPath2() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
         HashMap<String, Object> attachedFile = new HashMap<String, Object>();
@@ -447,6 +474,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         return ComplexTypeImpl.canonicalXPath(xpath);
     }
 
+    @Test
     public void testCanonicalizeXPath() throws Exception {
         assertEquals("foo", canonXPath("foo"));
         assertEquals("foo", canonXPath("/foo"));
@@ -465,6 +493,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
                 canonXPath("foo/gee[0]/bar/baz[*]/moo"));
     }
 
+    @Test
     public void testPrefetchDefault() throws Exception {
         doc = session.createDocument(session.createDocumentModel("/", "doc2",
                 "TestDocumentWithDefaultPrefetch"));
@@ -503,6 +532,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals("myicon", doc.getProperty("common", "icon"));
     }
 
+    @Test
     public void testPrefetchComplexProperty() throws Exception {
         doc = session.createDocumentModel("/", "doc2", "MyDocType");
 
@@ -528,6 +558,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertFalse(doc.isPrefetched("book:author/pJob"));
     }
 
+    @Test
     public void testRestriction() throws Exception {
         doc = session.createDocumentModel("/", "doc2", "Restriction");
         doc.setPropertyValue("restr:shortstring", "foo");

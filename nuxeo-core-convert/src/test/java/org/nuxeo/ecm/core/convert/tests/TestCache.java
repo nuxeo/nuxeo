@@ -15,6 +15,10 @@ package org.nuxeo.ecm.core.convert.tests;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -30,7 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestCache extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -39,6 +43,7 @@ public class TestCache extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-enabled.xml");
     }
 
+    @Test
     public void testCache() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib3.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);

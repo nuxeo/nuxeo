@@ -20,18 +20,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestFacetFilter extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
     }
 
+    @Test
     public void test() {
         Set<String> facets = new HashSet<String>();
         facets.add("A");
@@ -63,6 +68,7 @@ public class TestFacetFilter extends NXRuntimeTestCase {
         assertFalse(new FacetFilter(required, excluded).accept(model));
     }
 
+    @Test
     public void testAnd() {
         FacetFilter f1, f2;
 

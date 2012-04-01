@@ -29,6 +29,10 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -67,7 +71,7 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
             new Class<?>[] { CoreSession.class },
             new CoreSessionInvocationHandler());
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
@@ -107,6 +111,7 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
         return in.readObject();
     }
 
+    @Test
     public void testBundleSerialization() throws Exception {
         EventBundle srcEventBundle = createTestEventBundle();
         SerializableEventBundle srcJmsEventBundle = new SerializableEventBundle(srcEventBundle);

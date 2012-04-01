@@ -19,6 +19,9 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -28,6 +31,7 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
 
     private static final String CONTENT_MD5 = "d25ea4f4642073b7f218024d397dbaef";
 
+    @Test
     public void testDefaultBinaryManager() throws Exception {
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
         binaryManager.initialize(new RepositoryDescriptor());

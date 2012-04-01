@@ -18,6 +18,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -58,7 +62,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         super.setUp();
@@ -76,7 +80,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
                 database.getDeploymentContrib());
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         super.tearDown();

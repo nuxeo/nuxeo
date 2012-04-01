@@ -13,6 +13,9 @@
 
 package org.nuxeo.ecm.core.event;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -28,6 +31,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestEventContext extends NXRuntimeTestCase {
 
+    @Test
     public void testEventContext() {
         EventContextImpl ctx = new EventContextImpl("arg1", "arg2");
         CoreSession cs = new LocalSession();

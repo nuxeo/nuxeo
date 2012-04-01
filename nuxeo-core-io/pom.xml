@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
       <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit3</artifactId>
+      <artifactId>jmock-junit4</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

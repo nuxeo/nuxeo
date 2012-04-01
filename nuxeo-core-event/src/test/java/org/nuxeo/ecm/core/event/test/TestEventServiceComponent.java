@@ -16,6 +16,10 @@ package org.nuxeo.ecm.core.event.test;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -29,13 +33,14 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
 
     protected int initialThreadCount;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         initialThreadCount = Thread.activeCount();
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
+    @Test
     public void testDisablingListener() throws Exception {
         URL url = EventListenerTest.class.getClassLoader().getResource(
                 "test-disabling-listeners1.xml");
@@ -64,6 +69,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
      * Test that when the event service component is deactivated, the threads of
      * the async event executor are shut down.
      */
+    @Test
     public void testAsyncEventExecutorShutdown() throws Exception {
         // send an async event to make sure the async event executor spawned
         // some threads

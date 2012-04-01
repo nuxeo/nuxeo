@@ -14,6 +14,10 @@ package org.nuxeo.ecm.core.convert.tests;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -29,7 +33,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -37,11 +41,13 @@ public class TestService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.convert");
     }
 
+    @Test
     public void testServiceRegistration() {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         assertNotNull(cs);
     }
 
+    @Test
     public void testServiceContrib() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests",
                 "OSGI-INF/converters-test-contrib1.xml");
@@ -59,6 +65,7 @@ public class TestService extends NXRuntimeTestCase {
         assertTrue(desc1.getSourceMimeTypes().contains("text/xml"));
     }
 
+    @Test
     public void testConverterLookup() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests",
                 "OSGI-INF/converters-test-contrib1.xml");
@@ -115,6 +122,7 @@ public class TestService extends NXRuntimeTestCase {
         assertTrue(isChain);
     }
 
+    @Test
     public void testAvailability() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests",
                 "OSGI-INF/converters-test-contrib2.xml");
@@ -195,6 +203,7 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(notAvailable);
     }
 
+    @Test
     public void testServiceConfig() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests",
                 "OSGI-INF/convert-service-config-test.xml");

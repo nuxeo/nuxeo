@@ -21,6 +21,10 @@ package org.nuxeo.ecm.core.convert.plugins.tests;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -37,7 +41,7 @@ public class TestMailConverter extends BaseConverterTest {
 
     protected ConversionService cs;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         cs = Framework.getLocalService(ConversionService.class);
@@ -49,6 +53,7 @@ public class TestMailConverter extends BaseConverterTest {
         return new FileBlob(file);
     }
 
+    @Test
     public void testTextEmailTransformation() throws Exception {
         BlobHolder bh;
         if (isWindows()) {
@@ -86,6 +91,7 @@ public class TestMailConverter extends BaseConverterTest {
         return txt1.equals(txt2);
     }
 
+    @Test
     public void testTextAndHtmlEmailTransformation() throws Exception {
         BlobHolder bh;
         if (isWindows()) {
@@ -117,6 +123,7 @@ public class TestMailConverter extends BaseConverterTest {
         assertTrue(FileUtils.areFilesContentEquals(expected.trim(), actual.trim()));
     }
 
+    @Test
     public void testOnlyHtmlEmailTransformation() throws Exception {
         BlobHolder bh;
         if (isWindows()) {

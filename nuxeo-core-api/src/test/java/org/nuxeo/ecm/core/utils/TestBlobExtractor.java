@@ -18,6 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -35,7 +39,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
 
     static final Log log = LogFactory.getLog(TestBlobExtractor.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -44,6 +48,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         typeMgr = getTypeManager();
     }
 
+    @Test
     public void testCaching() throws Exception {
 
         BlobsExtractor bec = new BlobsExtractor();
@@ -70,6 +75,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals("/files/*/file", paths.get("blobinlist").get(0));
     }
 
+    @Test
     public void testGetBlobsFromDocumentModelNoBlob() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -81,6 +87,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals(0, blobProperties.size());
     }
 
+    @Test
     public void testGetBlobsFromDocumentModelSimpleBlob() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -99,6 +106,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals("test.pdf", blob.getFilename());
     }
 
+    @Test
     public void testGetBlobsFromDocumentModelSimpleBlobWithoutPrefix() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -116,6 +124,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals("test.pdf", blob.getFilename());
     }
 
+    @Test
     public void testGetBlobsFromBlobInList() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -155,6 +164,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals("test2.pdf", blob.getFilename());
     }
 
+    @Test
     public void testGetBlobsFromTwoSchemas() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -185,6 +195,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         fail();
     }
 
+    @Test
     public void testGetTwoBlobsFromOneSchema() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 

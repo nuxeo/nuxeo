@@ -19,16 +19,21 @@
 
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestConverters extends BaseConverterTest {
 
+    @Test
     public void testHTMLConverter() throws Exception {
         doTestTextConverter("text/html", "html2text", "hello.html");
     }
 
+    @Test
     public void testHTMLConverterWithEncoding() throws Exception {
 
         String srcMimeType = "text/html";
@@ -52,14 +57,17 @@ public class TestConverters extends BaseConverterTest {
         // System.out.println(result.getBlob().getString());
     }
 
+    @Test
     public void testXMLConverter() throws Exception {
         doTestTextConverter("text/xml", "xml2text", "hello.xml");
     }
 
+    @Test
     public void testXlConverter() throws Exception {
         doTestTextConverter("application/vnd.ms-excel", "xl2text", "hello.xls");
     }
 
+    @Test
     public void testOOWriterConverter() throws Exception {
         doTestTextConverter("application/vnd.sun.xml.writer", "oo2text", "hello.sxw");
         String textContent = doTestTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "hello.odt");
@@ -69,24 +77,29 @@ public class TestConverters extends BaseConverterTest {
         assertTrue(textContent.contains("d\u00e9j\u00e0"));
     }
 
+    @Test
     public void testOOWriterArabicConverter() throws Exception {
         doTestArabicTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "wikipedia-internet-ar.odt");
     }
 
+    @Test
     public void testHTMLArabicConverter() throws Exception {
         doTestArabicTextConverter("text/html", "html2text", "wikipedia-internet-ar.html");
     }
 
+    @Test
     public void testOOCalcConverter() throws Exception {
         doTestTextConverter("application/vnd.sun.xml.calc", "oo2text", "hello.sxc");
         doTestTextConverter("application/vnd.oasis.opendocument.spreadsheet", "oo2text", "hello.ods");
     }
 
+    @Test
     public void testOOPrezConverter() throws Exception {
         doTestTextConverter("application/vnd.sun.xml.impress", "oo2text", "hello.sxi");
         doTestTextConverter("application/vnd.oasis.opendocument.presentation", "oo2text", "hello.odp");
     }
 
+    @Test
     public void testPDFConverter() throws Exception {
         String textContent = doTestTextConverter("application/pdf", "pdf2text", "hello.pdf");
         assertTrue(textContent.contains(" first "));
@@ -95,11 +108,13 @@ public class TestConverters extends BaseConverterTest {
         assertTrue(textContent.contains("d\u00e9j\u00e0"));
     }
 
+    @Test
     public void testPDFArabicConverter() throws Exception {
         doTestArabicTextConverter("application/pdf", "pdf2text",
                 "wikipedia-internet-ar.pdf");
     }
 
+    @Test
     public void testAnyToTextConverter() throws Exception {
         doTestAny2TextConverter("text/html", "any2text", "hello.html");
         doTestAny2TextConverter("text/xml", "any2text", "hello.xml");

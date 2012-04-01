@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -36,12 +39,14 @@ public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
 
     public static final String NEW_TITLE = "new title";
 
+    @Test
     public void testUnrestrictedPropertySetter() throws Exception {
         session = openSessionAs("bob");
         seeDocCreatedByUnrestricted(session);
         closeSession();
     }
 
+    @Test
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
         session = openSessionAs("Administrator");
         unrestrictedSeesDocCreatedBefore(session);

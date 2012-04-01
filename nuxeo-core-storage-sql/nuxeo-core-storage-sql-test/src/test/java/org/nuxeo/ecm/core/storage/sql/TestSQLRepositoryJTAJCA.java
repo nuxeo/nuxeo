@@ -12,6 +12,9 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.AppenderSkeleton;
@@ -39,6 +42,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      * Test that connection sharing allows use of several sessions at the same
      * time.
      */
+    @Test
     public void testSessionSharing() throws Exception {
         if (!hasPoolingConfig()) {
             return;
@@ -66,6 +70,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     /**
      * Test that a commit implicitly does a save.
      */
+    @Test
     public void testSaveOnCommit() throws Exception {
         if (!hasPoolingConfig()) {
             return;
@@ -104,6 +109,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     /**
      * Test that the TransactionalCoreSessionWrapper does its job.
      */
+    @Test
     public void testRollbackOnException() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             // no pooling conf available
@@ -157,6 +163,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testAfterCompletion() {
         EventService eventService = Framework.getLocalService(EventService.class);
         HelperEventTransactionListener listener = new HelperEventTransactionListener();
@@ -201,6 +208,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testAccessWithoutTx() throws ClientException {
         TransactionHelper.commitOrRollbackTransaction();
         TxWarnChecker checker = new TxWarnChecker();

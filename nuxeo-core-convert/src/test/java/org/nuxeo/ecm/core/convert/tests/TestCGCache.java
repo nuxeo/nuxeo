@@ -15,6 +15,10 @@ package org.nuxeo.ecm.core.convert.tests;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -32,7 +36,7 @@ public class TestCGCache extends NXRuntimeTestCase {
 
     ConversionService cs;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -42,7 +46,7 @@ public class TestCGCache extends NXRuntimeTestCase {
         cs = Framework.getLocalService(ConversionService.class);
     }
 
-
+    @Test
     public void testCGTask() throws Exception {
         int noRuns = ConversionCacheGCManager.getGCRuns();
         Converter cv = deployConverter();

@@ -12,6 +12,9 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,6 +49,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         NuxeoContainer.install(tmconfig, cmconfig);
     }
 
+    @Test
     public void testOpenAllConnections() throws Exception {
         if (!hasPoolingConfig()) {
             return;
@@ -69,6 +73,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         assertNull(threadException);
     }
 
+    @Test
     public void testOpenMoreConnectionsThanMax() throws Exception {
         if (!hasPoolingConfig()) {
             return;

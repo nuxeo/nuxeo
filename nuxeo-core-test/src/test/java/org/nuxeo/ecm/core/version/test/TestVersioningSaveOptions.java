@@ -20,6 +20,11 @@ package org.nuxeo.ecm.core.version.test;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -30,18 +35,19 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestVersioningSaveOptions extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testTypeSaveOptions() throws Exception {
         VersioningService vService = Framework.getLocalService(VersioningService.class);
         assertNotNull(vService);

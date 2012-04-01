@@ -17,6 +17,11 @@
  */
 package org.nuxeo.ecm.core.version.test;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
@@ -28,7 +33,7 @@ public class TestVersioningDocumentAdapter extends SQLRepositoryTestCase {
 
     protected VersioningService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
@@ -36,12 +41,13 @@ public class TestVersioningDocumentAdapter extends SQLRepositoryTestCase {
         assertNotNull(service);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testVersionLabel() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "testfile1",
                 "File");

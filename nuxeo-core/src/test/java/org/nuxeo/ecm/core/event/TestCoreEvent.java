@@ -19,7 +19,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.model.Document;
@@ -29,11 +36,15 @@ import org.nuxeo.ecm.core.model.Document;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestCoreEvent extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class TestCoreEvent {
     private static final String COMMENT = "comment";
 
     private static final String CATEGORY = "category";
 
+    protected Mockery jmcontext = new JUnit4Mockery();
+
+    @Test
     public void testCoreEventVarious() {
         String eventId = "someEvent";
         String source = "someDummySource";
@@ -73,6 +84,7 @@ public class TestCoreEvent extends MockObjectTestCase {
     }
 
     // ::FIXME:
+    @Test
     public void testCoreEventWithMockDocument() {
         String eventId = "someEvent";
         Map<String, Serializable> info = null;
@@ -86,6 +98,7 @@ public class TestCoreEvent extends MockObjectTestCase {
     }
 
     // ::FIXME:
+    @Test
     public void testCoreEventWithInfoMap() {
         String eventId = "someEvent";
 
@@ -102,15 +115,17 @@ public class TestCoreEvent extends MockObjectTestCase {
         assertNull(coreEvent.getSource());
     }
 
+    @Test
     public void testDateInitialisationNoData() {
         CoreEvent coreEvent = new CoreEventImpl(null, null, null, null, null, null);
         assertNotNull(coreEvent.getDate());
     }
 
     // :FIXME:
+    @Test
     public void testCoreEventWithInfo() {
         String eventId = "someEvent";
-        Document source = (Document) mock(Document.class);
+        Document source = (Document) jmcontext.mock(Document.class);
 
         Map<String, Serializable> info = new HashMap<String, Serializable>();
         info.put("destination", "xxx");

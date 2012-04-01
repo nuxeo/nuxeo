@@ -17,6 +17,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,7 +43,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 
 public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
@@ -46,7 +51,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         session.cancel();
         closeSession();
@@ -61,6 +66,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DatabaseHelper.DATABASE.maybeSleepToNextSecond();
     }
 
+    @Test
     public void testCreateVersionsManyTimes() throws Exception {
         for (int i = 0; i < 10; i++) {
             createVersions(i);
@@ -75,6 +81,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         createTrioVersions(file);
     }
 
+    @Test
     public void testRemoveSingleDocVersion() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
@@ -102,6 +109,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     // Creates 3 versions and removes the first.
+    @Test
     public void testRemoveFirstDocVersion() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
@@ -124,6 +132,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     // Creates 3 versions and removes the second.
+    @Test
     public void testRemoveMiddleDocVersion() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
@@ -146,6 +155,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     // Creates 3 versions and removes the last.
+    @Test
     public void testRemoveLastDocVersion() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
@@ -208,6 +218,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(labels.length, versionsRefs.size());
     }
 
+    @Test
     public void testCheckInCheckOut() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "file#789", "File");
         assertTrue(doc.isCheckedOut());
@@ -237,6 +248,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertTrue(doc.isCheckedOut());
     }
 
+    @Test
     public void testRestoreToVersion() throws Exception {
         String name2 = "file#456";
         DocumentModel doc = new DocumentModelImpl("/", name2, "File");
@@ -277,6 +289,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("second name", pr);
     }
 
+    @Test
     public void testRestoreInvalidations() throws Exception {
         // open second session to receive invalidations
         CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
@@ -316,6 +329,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         closeSession(session2);
     }
 
+    @Test
     public void testGetDocumentWithVersion() throws Exception {
         String name2 = "file#248";
         DocumentModel childFile = new DocumentModelImpl("/", name2, "File");
@@ -352,7 +366,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     // security on versions, see TestLocalAPIWithCustomVersioning
-
+    @Test
     public void testVersionSecurity() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         folder = session.createDocument(folder);
@@ -403,6 +417,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testVersionLifecycle() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
@@ -429,6 +444,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("approved", ver.getCurrentLifeCycleState());
     }
 
+    @Test
     public void testTransitionProxy() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
@@ -449,6 +465,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("deleted", proxy.getCurrentLifeCycleState());
     }
 
+    @Test
     public void testCopy() throws ClientException {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
@@ -477,6 +494,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(versionSeriesId, proxyCopy.getVersionSeriesId());
     }
 
+    @Test
     public void testPublishing() throws ClientException {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
@@ -510,6 +528,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("file", lastVersionDocument.getName());
     }
 
+    @Test
     public void testPublishingAfterVersionDelete() throws ClientException {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
@@ -559,6 +578,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("file", lastVersionDocument.getName());
     }
 
+    @Test
     public void testPublishingAfterCopy() throws ClientException {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
@@ -597,6 +617,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("fileCopied", lastVersionDocument.getName());
     }
 
+    @Test
     public void testCmisProperties() throws Exception {
 
         /*
@@ -762,6 +783,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(doc.getId(), session.getWorkingCopy(ver.getRef()).getId());
     }
 
+    @Test
     public void testSaveRestoredVersionWithVersionAutoIncrement() throws ClientException {
             // check-in version 1.0, 2.0 and restore version 1.0
              DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");

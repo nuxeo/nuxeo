@@ -19,6 +19,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.CoreUTConstants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -32,7 +36,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
 
     private LifeCycleService lifeCycleService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib(CoreUTConstants.CORE_BUNDLE,
@@ -47,6 +51,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     /**
      * Tests the life cycles registration.
      */
+    @Test
     public void testLifeCycleRegistration() throws LifeCycleException {
         Collection<LifeCycle> lcs = lifeCycleService.getLifeCycles();
         assertEquals(1, lcs.size());
@@ -131,6 +136,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertEquals(4, lifeCycleDefinitions.size());
     }
 
+    @Test
     public void testLifeCycle() {
         LifeCycle lifeCycle = lifeCycleService.getLifeCycleByName("default");
 
@@ -173,6 +179,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testLifeCycleTypesMappingRegistration() {
         Map<String, String> mapping = lifeCycleService.getTypesMapping();
         assertEquals(2, mapping.size());
@@ -184,6 +191,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertEquals("default", mapping.get("Folder"));
     }
 
+    @Test
     public void testLifeCycleTypesMappingAPI() {
         Collection<String> types = lifeCycleService.getTypesFor("default");
         assertEquals(2, types.size());
@@ -191,6 +199,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertTrue(types.contains("Folder"));
     }
 
+    @Test
     public void testTypeLifeCycleMapping() {
         String lifeCycleName = lifeCycleService.getLifeCycleNameFor("File");
         assertEquals("default", lifeCycleName);
@@ -201,6 +210,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertTrue(noRecursion.isEmpty());
     }
 
+    @Test
     public void testLifeCycleReverse() throws Exception {
 
         deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,

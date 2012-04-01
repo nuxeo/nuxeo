@@ -21,6 +21,10 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,7 +37,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestBlobHolder extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -42,6 +46,7 @@ public class TestBlobHolder extends NXRuntimeTestCase {
                 "OSGI-INF/test-blobholder-contrib.xml");
     }
 
+    @Test
     public void testBlobHolderFactoryContribution() {
         DocumentModel doc = new DocumentModelImpl("TestType");
         BlobHolder bh = doc.getAdapter(BlobHolder.class);

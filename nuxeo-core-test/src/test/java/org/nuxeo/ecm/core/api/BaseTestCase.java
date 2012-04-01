@@ -23,6 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -34,14 +38,14 @@ public abstract class BaseTestCase extends SQLRepositoryTestCase {
 
     protected DocumentModel root;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
         root = getRootDocument();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         cleanUp(getRootDocument().getRef());
         closeSession();

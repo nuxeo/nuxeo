@@ -31,7 +31,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -57,11 +60,15 @@ import org.nuxeo.ecm.core.security.SecurityService;
  */
 public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
 
+    public TestSQLRepositorySecurity() {
+        super();
+    }
+
     public TestSQLRepositorySecurity(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
@@ -71,7 +78,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         // session.cancel();
         closeSession();
@@ -132,6 +139,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testSecurity() throws ClientException {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
@@ -249,7 +257,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
                 folder3 = new DocumentModelImpl(folder.getPathAsString(),
                         "folder#3", "Folder");
                 folder3 = anonSession.createDocument(folder3);
-                Assert.fail();
+                fail();
             } catch (Exception e) {
 
             }
@@ -258,6 +266,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testACLEscaping() throws ClientException {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
@@ -290,6 +299,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         assertEquals("A_x1234_", acl.get(4).getUsername());
     }
 
+    @Test
     public void testGetParentDocuments() throws ClientException {
 
         setPermissionToAnonymous(EVERYTHING);
@@ -338,6 +348,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         closeSession(testSession);
     }
 
+    @Test
     public void testACPInheritance() throws Exception {
         DocumentModel root = new DocumentModelImpl("/", "testACPInheritance",
                 "Folder");
@@ -376,7 +387,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     }
 
     // copied from TestAPI in nuxeo-core-facade
-
+    @Test
     public void testPermissionChecks() throws Throwable {
 
         CoreSession joeReaderSession = null;
@@ -536,6 +547,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         assertTrue(permissions.contains("Everything"));
     }
 
+    @Test
     public void testReadAclSecurity() throws ClientException {
         // Check that all permissions that contain Browse enable to list a
         // document using aclOptimization

@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -29,14 +34,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -47,6 +52,7 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
      */
     public static int SCRIPT_CNT = 0;
 
+    @Test
     public void testScripts() throws Exception {
         deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-PostCommitListeners.xml");

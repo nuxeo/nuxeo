@@ -12,6 +12,10 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -28,7 +32,7 @@ public class TestMediaType extends NXRuntimeTestCase{
 
     protected SchemaManager typeMgr;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -45,6 +49,7 @@ public class TestMediaType extends NXRuntimeTestCase{
      }
 
     // shema name != prefix name
+    @Test
     public void testDifferentPrefix()  throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "mediaDoc", "Media");
         doc.setPropertyValue("media:title", "Media Title");
@@ -61,6 +66,7 @@ public class TestMediaType extends NXRuntimeTestCase{
     }
 
     // shema name = prefix name
+    @Test
     public void testSamePrefix()  throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "mediaDoc", "SameMedia");
         doc.setPropertyValue("sameMedia:title", "Media Title");

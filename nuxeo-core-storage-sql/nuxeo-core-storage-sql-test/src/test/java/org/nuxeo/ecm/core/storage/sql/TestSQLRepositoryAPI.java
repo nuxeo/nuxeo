@@ -28,6 +28,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
@@ -80,11 +85,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
+    public TestSQLRepositoryAPI() {
+        super();
+    }
+
     public TestSQLRepositoryAPI(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
@@ -92,13 +101,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         session.cancel();
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testBasics() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel child = new DocumentModelImpl("/", "domain", "MyDocType");
@@ -129,6 +139,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(cal, modified);
     }
 
+    @Test
     public void testLists() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel child = new DocumentModelImpl("/", "domain", "MyDocType");
@@ -170,6 +181,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("c", "d"), participants);
     }
 
+    @Test
     public void testPathWithExtraSlash() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
@@ -182,6 +194,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(0, children.size());
     }
 
+    @Test
     public void testComplexType() throws Exception {
         // boiler plate to handle the asynchronous full-text indexing of blob
         // content in a deterministic way
@@ -325,6 +338,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(0, results.size());
     }
 
+    @Test
     public void testComplexTypeOrdering() throws Exception {
         if (database instanceof DatabaseOracle) {
             // Oracle has problems opening and closing many connections in a
@@ -408,6 +422,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testMarkDirty() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
@@ -436,6 +451,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("c", "d"), participants);
     }
 
+    @Test
     public void testMarkDirtyForList() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
         Map<String, Object> attachedFile = new HashMap<String, Object>();
@@ -513,6 +529,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         return rets;
     }
 
+    @Test
     public void testGetRootDocument() throws ClientException {
         DocumentModel root = session.getRootDocument();
         assertNotNull(root);
@@ -522,6 +539,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings({ "SimplifiableJUnitAssertion" })
+    @Test
     public void testDocumentReferenceEqualitySameInstance()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -529,6 +547,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(root.getRef().equals(root.getRef()));
     }
 
+    @Test
     public void testCancel() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -541,6 +560,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // assertFalse(session.exists(childFolder.getRef()));
     }
 
+    @Test
     public void testCreateDomainDocumentRefDocumentModel()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -554,6 +574,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name, childFolder.getName());
     }
 
+    @Test
     public void testCreateFolderDocumentRefDocumentModel()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -567,6 +588,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name, childFolder.getName());
     }
 
+    @Test
     public void testCreateFileDocumentRefDocumentModel() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -580,6 +602,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name, childFile.getName());
     }
 
+    @Test
     public void testCreateFolderDocumentRefDocumentModelArray()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -601,6 +624,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildFolders.get(1).getName());
     }
 
+    @Test
     public void testCreateFileDocumentRefDocumentModelArray()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -622,12 +646,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildFiles.get(1).getName());
     }
 
+    @Test
     public void testExists() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         assertTrue(session.exists(root.getRef()));
     }
 
+    @Test
     public void testGetChild() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -668,6 +694,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, retrievedChild.getName());
     }
 
+    @Test
     public void testGetChildrenDocumentRef() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -676,6 +703,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(0, docs.size());
     }
 
+    @Test
     public void testGetChildrenDocumentRef2() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -684,6 +712,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(docs.hasNext());
     }
 
+    @Test
     public void testGetFileChildrenDocumentRefString() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -720,6 +749,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFileChildrenDocumentRefString2() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -759,6 +789,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", doc.getType());
     }
 
+    @Test
     public void testGetFolderChildrenDocumentRefString() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -795,6 +826,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("Folder", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFolderChildrenDocumentRefString2()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -835,6 +867,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("Folder", doc.getType());
     }
 
+    @Test
     public void testGetChildrenDocumentRefStringFilter() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -873,6 +906,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     // FIXME: same as testGetChildrenDocumentRefStringFilter. Remove?
+    @Test
     public void testGetChildrenDocumentRefStringFilter2()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -916,6 +950,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      *
      * @throws ClientException
      */
+    @Test
     public void testGetChildrenInFolderWithSearch() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -944,6 +979,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testGetDocumentDocumentRef() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1039,6 +1075,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 returnedDocument.getProperty("file", "filename"));
     }
 
+    @Test
     public void testGetFilesDocumentRef() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1074,6 +1111,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFilesDocumentRef2() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1112,11 +1150,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", doc.getType());
     }
 
+    // @Test
     // public void testGetFilesDocumentRefFilterSorter() {
     // not used at the moment
     //
     // }
 
+    @Test
     public void testGetFoldersDocumentRef() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1152,6 +1192,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("Folder", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFoldersDocumentRef2() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1190,10 +1231,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("Folder", doc.getType());
     }
 
+    // @Test
     // public void testGetFoldersDocumentRefFilterSorter() {
     // not used at the moment
     // }
 
+    @Test
     public void testGetParentDocument() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1219,6 +1262,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(root.getPathAsString(), shouldBeRoot.getPathAsString());
     }
 
+    @Test
     public void testHasChildren() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1226,6 +1270,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.hasChildren(root.getRef()));
     }
 
+    @Test
     public void testRemoveChildren() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1251,6 +1296,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
     }
 
+    @Test
     public void testRemoveDocument() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1415,6 +1461,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.removeDocument(docModel.getRef());
     }
 
+    @Test
     public void testRemoveDocuments() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1447,6 +1494,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      * case where some documents are actually children of other ones from the
      * list
      */
+    @Test
     public void testRemoveDocumentsWithDeps() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1508,6 +1556,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      * Same as testRemoveDocumentWithDeps with a different given ordering of
      * documents to delete
      */
+    @Test
     public void testRemoveDocumentsWithDeps2() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1566,6 +1615,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.exists(returnedChildDocs.get(4).getRef()));
     }
 
+    @Test
     public void testRemoveDocumentTreeWithSecurity() throws Exception {
         ACP acp;
         ACL acl;
@@ -1616,6 +1666,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(1, dml.size());
     }
 
+    @Test
     public void testSave() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1636,6 +1687,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(session.exists(childFile.getRef()));
     }
 
+    @Test
     public void testSaveFolder() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1658,6 +1710,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 childFolder.getProperty("dublincore", "description"));
     }
 
+    @Test
     public void testSaveFile() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1685,6 +1738,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("filename1", retrievedFile.getProperty("file", "filename"));
     }
 
+    @Test
     public void testSaveDocuments() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1707,6 +1761,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(session.exists(childFile.getRef()));
     }
 
+    @Test
     public void testGetDataModel() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1743,6 +1798,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("second name", dm.getData("filename"));
     }
 
+    @Test
     public void testDocumentReferenceEqualityDifferentInstances()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -1786,6 +1842,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(root.getRef(), retrievedChild.getParentRef());
     }
 
+    @Test
     public void testDocumentReferenceNonEqualityDifferentInstances()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -1820,6 +1877,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 retrievedChild.getParentRef()));
     }
 
+    @Test
     public void testFolderFacet() throws Exception {
         DocumentModel child1 = new DocumentModelImpl("/", "file1", "File");
         DocumentModel child2 = new DocumentModelImpl("/", "fold1", "Folder");
@@ -1831,6 +1889,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(returnedChildFiles.get(2).isFolder());
     }
 
+    @Test
     public void testFacetAPI() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc = session.createDocument(doc);
@@ -1948,6 +2007,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(baseFacets, doc.getFacets());
     }
 
+    @Test
     public void testFacetIncludedInPrimaryType() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "DocWithAge");
         doc.setPropertyValue("age:age", "123");
@@ -1967,6 +2027,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(doc.removeFacet("Aged"));
     }
 
+    @Test
     public void testFacetAddRemove() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc = session.createDocument(doc);
@@ -1999,6 +2060,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     // mixin on doc with same schema in primary type does no harm
+    @Test
     public void testFacetAddRemove2() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "DocWithAge");
         doc.setPropertyValue("age:age", "123");
@@ -2012,6 +2074,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("123", doc.getPropertyValue("age:age"));
     }
 
+    @Test
     public void testFacetWithSamePropertyName() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc.setPropertyValue("dc:title", "bar");
@@ -2032,6 +2095,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("gee", doc.getPropertyValue("age:title"));
     }
 
+    @Test
     public void testFacetCopy() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc.addFacet("Aged");
@@ -2046,6 +2110,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("123", copy.getPropertyValue("age:age"));
     }
 
+    @Test
     public void testFacetFulltext() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc.addFacet("Aged");
@@ -2058,6 +2123,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(1, list.size());
     }
 
+    @Test
     public void testFacetQueryContent() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc.addFacet("Aged");
@@ -2069,6 +2135,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(1, list.size());
     }
 
+    @Test
     public void testLifeCycleAPI() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
@@ -2099,6 +2166,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 session.getCurrentLifeCycleState(childFile.getRef()));
     }
 
+    @Test
     public void testDataModelLifeCycleAPI() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
@@ -2122,6 +2190,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(allowedStateTransitions.contains("backToProject"));
     }
 
+    @Test
     public void testCopy() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
@@ -2196,6 +2265,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.cancel();
     }
 
+    @Test
     public void testCopyProxyAsDocument() throws Exception {
         // create a folder tree
         DocumentModel root = session.getRootDocument();
@@ -2240,6 +2310,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.cancel();
     }
 
+    @Test
     public void testCopyVersionable() throws Exception {
         DocumentModel note = new DocumentModelImpl("/", "note", "Note");
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
@@ -2276,6 +2347,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.cancel();
     }
 
+    @Test
     public void testCopyFolderOfVersionable() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
@@ -2314,6 +2386,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.cancel();
     }
 
+    @Test
     public void testMove() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
@@ -2400,6 +2473,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(list.contains("b"));
     }
 
+    @Test
     public void testBlob() throws Exception {
         DocumentModel root = session.getRootDocument();
 
@@ -2436,6 +2510,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(Arrays.equals(content, blob.getByteArray()));
     }
 
+    @Test
     public void testRetrieveSamePropertyInAncestors() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
@@ -2510,6 +2585,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
          */
     }
 
+    @Test
     public void testGetSourceId() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -2533,6 +2609,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // assertFalse(childFile.getId().equals(childFile.getSourceId()));
     }
 
+    @Test
     public void testGetRepositoryName() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -2591,6 +2668,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // assertEquals(2, proxies.size());
     }
 
+    @Test
     public void testCreateDocumentModel() throws ClientException {
         // first method: only the typename
         DocumentModel docModel = session.createDocumentModel("File");
@@ -2618,6 +2696,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings({ "unchecked" })
+    @Test
     public void testCopyContent() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2673,6 +2752,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     // ----- copied from TestLocalAPI -----
     // ------------------------------------
 
+    @Test
     public void testPropertyModel() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2716,6 +2796,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNull(p.getValue());
     }
 
+    @Test
     public void testOrdering() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),
@@ -2754,6 +2835,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, children.get(1).getName());
     }
 
+    @Test
     public void testPropertyXPath() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),
@@ -2773,6 +2855,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("rawtypes")
+    @Test
     public void testComplexList() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2828,6 +2911,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
          */
     }
 
+    @Test
     public void testDataModel() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2886,6 +2970,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
          */
     }
 
+    @Test
     public void testGetChildrenRefs() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2906,6 +2991,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testProxyChildren() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc1 = new DocumentModelImpl(root.getPathAsString(),
@@ -2945,6 +3031,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         return bytes;
     }
 
+    @Test
     public void testBlob2() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2967,6 +3054,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
     }
 
+    @Test
     public void testProxy() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -3049,6 +3137,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(ver.getVersionLabel(), proxy3.getVersionLabel());
     }
 
+    @Test
     public void testProxyLive() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -3091,6 +3180,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("the title again", doc.getProperty("dublincore", "title"));
     }
 
+    @Test
     public void testUpdatePublishedDocument() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -3125,6 +3215,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(proxy.getId(), proxy2.getId());
     }
 
+    @Test
     public void testImport() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         folder.setProperty("dublincore", "title", "the title");
@@ -3246,6 +3337,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      * Check that lifecycle and dc:issued can be updated on a version. (Fields
      * defined in SQLSimpleProperty.VERSION_WRITABLE_PROPS).
      */
+    @Test
     public void testVersionUpdatableFields() throws Exception {
         Calendar cal1 = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
                 56);
@@ -3297,6 +3389,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      * are not fired on a DocumentModel where the {@code isImmutable()} returns
      * {@code true}.
      */
+    @Test
     public void testDoNotFireBeforeUpdateEventsOnVersion() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listeners-contrib.xml");
@@ -3326,6 +3419,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testInvalidationEvents() throws Exception {
         Event event;
         Boolean local;
@@ -3377,6 +3471,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(0, set.size());
     }
 
+    @Test
     public void testPlacelessDocument() throws Exception {
         DocumentModel doc = new DocumentModelImpl((String) null, "mydoc",
                 "MyDocType");
@@ -3410,6 +3505,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testRelation() throws Exception {
         DocumentModel rel = session.createDocumentModel(null, "myrel",
                 "Relation");
@@ -3440,6 +3536,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      * DocumentModel name and provoke a rename. And that PREVIOUS_DOCUMENT_MODEL
      * received by the event holds the correct info.
      */
+    @Test
     public void testBeforeModificationListenerRename() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listener-beforemod-contrib.xml");
@@ -3459,6 +3556,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("t1", DummyBeforeModificationListener.previousTitle);
     }
 
+    @Test
     public void testObsoleteType() throws Throwable {
         DocumentRef rootRef = session.getRootDocument().getRef();
         DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");

@@ -14,6 +14,11 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -22,7 +27,7 @@ import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 
 public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         super.setUp();
@@ -34,7 +39,7 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         database.setUp();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -118,6 +123,7 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testFulltextOnlyNoteFile() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             return;
@@ -157,6 +163,7 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testFulltextNoteFileExcluded() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             return;
@@ -195,6 +202,7 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testFulltextMixedConfig() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             return;

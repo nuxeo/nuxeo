@@ -13,6 +13,10 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
@@ -67,13 +71,14 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         }
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql",
                 "OSGI-INF/querymaker-service.xml");
     }
 
+    @Test
     public void testBasic() throws Exception {
         QueryMakerService queryMakerService = Framework.getService(QueryMakerService.class);
         QueryMakerDescriptor d;

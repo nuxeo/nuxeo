@@ -30,6 +30,11 @@ import java.util.TimeZone;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -64,7 +69,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(SQLRepositoryTestCase.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
@@ -74,7 +79,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -191,7 +196,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     // from TestAPI
-
+    @Test
     public void testQueryBasic() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -270,6 +275,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size());
     }
 
+    @Test
     public void testQueryBasic2() throws Exception {
         createDocs();
         DocumentModelList dml;
@@ -298,6 +304,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(6, dml.size());
     }
 
+    @Test
     public void testQueryWithType() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -318,6 +325,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testQueryMultiple() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -359,6 +367,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(2, dml.size());
     }
 
+    @Test
     public void testQueryNegativeMultiple() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -375,6 +384,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size()); // 1 note
     }
 
+    @Test
     public void testQueryAfterEdit() throws Exception {
         DocumentModel root = session.getRootDocument();
 
@@ -426,6 +436,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.removeDocument(docModel.getRef());
     }
 
+    @Test
     public void testOrderBy() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -452,6 +463,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
                 dml.get(0).getPropertyValue("dc:description"));
     }
 
+    @Test
     public void testOrderBySeveralColumns() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -476,6 +488,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals("testfile1", dml.get(1).getName());
     }
 
+    @Test
     public void testOrderBySameColumns() throws Exception {
         if (database instanceof DatabaseSQLServer) {
             // SQL Server cannot ORDER BY foo, foo
@@ -503,6 +516,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals("testfile1", dml.get(1).getName());
     }
 
+    @Test
     public void testOrderByPath() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -536,6 +550,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals("/testfolder2", dml.get(1).getPathAsString());
     }
 
+    @Test
     public void testOrderByPos() throws Exception {
         DocumentModelList dml;
 
@@ -589,6 +604,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(file3.getId(), dml.iterator().next().getId());
     }
 
+    @Test
     public void testBatching() throws Exception {
         doBatching(true);
     }
@@ -658,6 +674,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     // from TestSQLWithPath
+    @Test
     public void testEcmPathEqual() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -677,6 +694,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(6, dml.size());
     }
 
+    @Test
     public void testStartsWith() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -708,6 +726,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testStartsWithMove() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -731,6 +750,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(0, dml.size());
     }
 
+    @Test
     public void testStartsWithNonPath() throws Exception {
         String sql;
         createDocs();
@@ -757,6 +777,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(0, session.query(sql).size());
     }
 
+    @Test
     public void testReindexEditedDocument() throws Exception {
         String sql = "SELECT * FROM document WHERE dc:title LIKE 'testfile1_Ti%'";
         DocumentModelList dml;
@@ -798,6 +819,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size());
     }
 
+    @Test
     public void testTimestamp() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -813,6 +835,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     // old-style date comparisons (actually using timestamps)
+    @Test
     public void testDateOld() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -859,6 +882,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     // new-style date comparisons (casting to native DATE type)
+    @Test
     public void testDateNew() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -916,6 +940,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
     }
 
+    @Test
     public void testDateBad() throws Exception {
         String sql;
         createDocs();
@@ -954,7 +979,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     // other tests
-
+    @Test
     public void testBoolean() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -992,6 +1017,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size());
     }
 
+    @Test
     public void testQueryWithSecurity() throws Exception {
         createDocs();
         DocumentModel root = session.getRootDocument();
@@ -1016,6 +1042,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     // same with queryAndFetch
+    @Test
     public void testQueryWithSecurity2() throws Exception {
         createDocs();
         DocumentModel root = session.getRootDocument();
@@ -1041,6 +1068,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         res.close();
     }
 
+    @Test
     public void testQueryWithSecurityAndFulltext() throws Exception {
         createDocs();
         closeSession();
@@ -1051,10 +1079,12 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // we don't care about the answer, just that the query executes
     }
 
+    @Test
     public void testSecurityManagerBasic() throws Exception {
         doTestSecurityManager("OSGI-INF/security-policy-contrib.xml");
     }
 
+    @Test
     public void testSecurityManagerWithTransformer() throws Exception {
         doTestSecurityManager("OSGI-INF/security-policy2-contrib.xml");
     }
@@ -1134,6 +1164,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testQueryWithProxies() throws Exception {
         createDocs();
         DocumentModel proxy = publishDoc();
@@ -1199,6 +1230,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, docId, proxyId, versionId);
     }
 
+    @Test
     public void testQueryPaging() throws Exception {
         createDocs();
         DocumentModelList whole = session.query("SELECT * FROM Document ORDER BY dc:modified, ecm:uuid");
@@ -1215,6 +1247,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(whole.get(1).getId(), secondPage.get(0).getId());
     }
 
+    @Test
     public void testQuerySpecialFields() throws Exception {
         // ecm:isProxy and ecm:isCheckedInVersion are already tested in
         // testQueryWithProxies
@@ -1362,6 +1395,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // ecm:fulltext tested below
     }
 
+    @Test
     public void testEmptyLifecycle() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -1391,6 +1425,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         database.sleepForFulltext();
     }
 
+    @Test
     public void testFulltext() throws Exception {
         createDocs();
         sleepForFulltext();
@@ -1478,6 +1513,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, file1.getId());
     }
 
+    @Test
     public void testFulltextProxy() throws Exception {
         createDocs();
         sleepForFulltext();
@@ -1520,6 +1556,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertTrue(dml.isEmpty());
     }
 
+    @Test
     public void testFulltextExpressionSyntax() throws Exception {
         createDocs();
         sleepForFulltext();
@@ -1633,6 +1670,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     // don't use small words, they are eliminated by some fulltext engines
+    @Test
     public void testFulltextExpressionPhrase() throws Exception {
         String query;
 
@@ -1678,6 +1716,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, session.query(query).size());
     }
 
+    @Test
     public void testFulltextSecondary() throws Exception {
         if (!database.supportsMultipleFulltextIndexes()) {
             System.out.println("Skipping multi-fulltext test for unsupported database: "
@@ -1727,6 +1766,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, file2.getId());
     }
 
+    @Test
     public void testFulltextBlob() throws Exception {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
@@ -1775,6 +1815,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertNull(mgr);
     }
 
+    @Test
     public void testFullTextCopy() throws Exception {
         createDocs();
         String query;
@@ -1803,6 +1844,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, file1.getId(), copy.getId());
     }
 
+    @Test
     public void testOrderByAndDistinct() throws Exception {
         createDocs();
 
@@ -1829,6 +1871,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, file1.getId());
     }
 
+    @Test
     public void testQueryIterable() throws Exception {
         createDocs();
 
@@ -1887,6 +1930,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         res.close();
     }
 
+    @Test
     public void testQueryIterableWithTransformer() throws Exception {
         createDocs();
         IterableQueryResult res;
@@ -1904,6 +1948,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         res.close();
     }
 
+    @Test
     public void testQueryComplexTypeFiles() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
         List<Object> files = new LinkedList<Object>();
@@ -1922,6 +1967,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // and returning an empty query, cf SQLQueryResult.getDocumentModels
     }
 
+    @Test
     public void testSelectColumns() throws Exception {
         String query;
         IterableQueryResult res;
@@ -1972,6 +2018,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         res.close();
     }
 
+    @Test
     public void testSelectColumnsSameName() throws Exception {
         String query;
         IterableQueryResult res;
@@ -2011,6 +2058,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         res.close();
     }
 
+    @Test
     public void testSelectColumnsDistinct() throws Exception {
         String query;
         IterableQueryResult res;
@@ -2059,6 +2107,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         return new SimpleDateFormat("'TIMESTAMP' ''yyyy-MM-dd HH:mm:ss.SSS''").format(date);
     }
 
+    @Test
     public void testEqualsTimeWithMilliseconds() throws Exception {
         Date currentDate = setupDocTest();
         String testQuery = String.format(
@@ -2068,6 +2117,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, docs.size());
     }
 
+    @Test
     public void testLTTimeWithMilliseconds() throws Exception {
         Date currentDate = setupDocTest();
         // add a second to be sure that the document is found
@@ -2079,6 +2129,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, docs.size());
     }
 
+    @Test
     public void testQueryIsNull() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -2106,6 +2157,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(2, dml.size());
     }
 
+    @Test
     public void testMultilineQuery() throws Exception {
         DocumentModelList dml;
         createDocs();

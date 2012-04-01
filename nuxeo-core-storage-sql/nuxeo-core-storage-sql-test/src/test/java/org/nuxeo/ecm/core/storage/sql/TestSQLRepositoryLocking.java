@@ -13,6 +13,10 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -39,7 +43,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         return true;
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         if (!useTX()) {
@@ -60,6 +64,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
     }
 
     @SuppressWarnings("deprecation")
+    @Test
     public void testLocking() throws Exception {
         if (!hasPoolingConfig()) {
             return;
@@ -108,6 +113,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         assertFalse(doc.isLocked());
     }
 
+    @Test
     public void testLockingBeforeSave() throws Exception {
         if (!hasPoolingConfig()) {
             return;
@@ -128,6 +134,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
     // check we don't have a SQL-level locking error due to the lock manager
     // connection reading a row that was written but not yet committed by the
     // main connection
+    @Test
     public void testGetLockAfterCreate() throws Exception {
         if (!hasPoolingConfig()) {
             return;
@@ -152,6 +159,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
 
     protected volatile boolean locked;
 
+    @Test
     public void testLockingWithMultipleThreads() throws Exception {
         if (!hasPoolingConfig()) {
             return;

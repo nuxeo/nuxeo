@@ -12,6 +12,10 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,7 +29,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  */
 public class TestSQLBackendScrambling extends SQLBackendTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
@@ -42,6 +46,7 @@ public class TestSQLBackendScrambling extends SQLBackendTestCase {
         return descriptor;
     }
 
+    @Test
     public void testBinaryScrambling() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();

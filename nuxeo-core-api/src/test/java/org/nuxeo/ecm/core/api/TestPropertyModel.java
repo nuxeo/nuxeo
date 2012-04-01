@@ -29,6 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
@@ -173,7 +177,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         }
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -269,6 +273,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
                 resource);
     }
 
+    @Test
     public void testPath() throws Exception {
         String path = dp.get("file").get("fileName").getPath();
         assertEquals("/book:file/fileName", path);
@@ -279,6 +284,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertEquals("/book:authors/author[0]/name/firstName", path);
     }
 
+    @Test
     public void testPropertyAccess() throws Exception {
         // test complex property access
         Property prop = dp.get("title");
@@ -367,6 +373,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertEquals(prop.resolvePath("/book:title"), dp.get("title"));
     }
 
+    @Test
     public void testPropertyValueAccess() throws Exception {
         // test setters
         Property prop = dp.get("title");
@@ -408,6 +415,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
                 dp.resolvePath("authors/author[1]/name/lastName").getValue());
     }
 
+    @Test
     public void testReadOnlyValue() throws Exception {
         Property prop = dp.resolvePath("file/fileName/extension");
         try {
@@ -419,6 +427,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testFlags() throws Exception {
         dp.setValue("file/fileName/extension", "ejb");
         assertTrue(dp.get("file").isDirty());
@@ -432,6 +441,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertFalse(dp.get("file").get("fileName").get("extension").isPhantom());
     }
 
+    @Test
     public void testDefaultFactories() throws Exception {
         Book book = new Book();
         Author author = new Author();
@@ -459,6 +469,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
      * Compatibility test - this should be removed when ListDiff will be no more
      * used in nuxeo.
      */
+    @Test
     public void testListDiffCompatibility() throws Exception {
         Book book = new Book();
         book.authors = new ArrayList<Author>();
@@ -499,6 +510,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
      * Compatibility test - this should be removed when ListDiff will be no more
      * used in nuxeo.
      */
+    @Test
     public void testListDiffCompatibilityForScalarList() throws Exception {
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");
         dp.get("references").init(references);
@@ -518,6 +530,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertEquals(arrayList("b", "a", "d", "g", "e", "f"), list);
     }
 
+    @Test
     public void testScalarList() throws Exception {
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");
         dp.get("references").init(references);
@@ -544,6 +557,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         // assertEquals(emptyList, prop.getValue());
     }
 
+    @Test
     public void testBlob() throws Exception {
         Book book = new Book();
         BlobFile file = new BlobFile();
@@ -573,6 +587,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         // assertEquals("LATIN2", pblob.getValue("encoding"));
     }
 
+    @Test
     public void testSerialization() throws Exception {
         Book book = new Book();
         BlobFile file = new BlobFile();
@@ -614,6 +629,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testDirtyChildren() throws Exception {
         Iterator<Property> it = dp.getDirtyChildren();
         assertFalse(it.hasNext());
@@ -668,6 +684,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testInit() throws Exception {
         Book book = new Book();
         Author author = new Author();
@@ -719,6 +736,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertEquals(2, dp.get("references").size());
     }
 
+    @Test
     public void testExport() throws Exception {
         Book book = new Book();
         Author author = new Author();

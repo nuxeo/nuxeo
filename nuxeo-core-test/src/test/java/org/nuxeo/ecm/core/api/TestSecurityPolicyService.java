@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -98,6 +101,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         closeSession(session);
     }
 
+    @Test
     public void testNewSecurityPolicy() throws Exception {
         // "user" schema
         deployContrib(CORE_TEST_TESTS_BUNDLE, "test-CoreExtensions.xml");
@@ -116,6 +120,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("deprecation")
+    @Test
     public void testLockSecurityPolicy() throws Exception {
         // create document
         CoreSession session = openSessionAs(ADMINISTRATOR);

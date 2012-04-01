@@ -20,6 +20,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jmock.Expectations;
 import org.dom4j.io.XMLWriter;
 import org.nuxeo.common.utils.Path;
@@ -35,10 +38,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestExportedDocument extends NXRuntimeTestCase {
 
+    @Test
     public void testExportedDocument() throws Exception {
 
-        final DocumentModel model = mock(DocumentModel.class);
-        checking(new Expectations() {{
+        final DocumentModel model = jmcontext.mock(DocumentModel.class);
+        jmcontext.checking(new Expectations() {{
             atLeast(1).of (model).getId();
             will(returnValue("My id"));
             atLeast(1).of (model).getType();

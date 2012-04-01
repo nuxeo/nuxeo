@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -68,7 +73,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         }
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         setEventAsyncPoolSizes();
         startIndexation = new CountDownLatch(1);
@@ -77,7 +82,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         docsAreNotIndexed();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         startIndexation.countDown();
         restoreEventAsyncPoolSizes();
@@ -163,6 +168,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         assertEquals(0, indexedDocs().size());
     }
 
+    @Test
     public void testBinariesAreIndexed() throws Exception {
         assertEquals(1, requestedDocs().size());
         assertEquals(0, indexedDocs().size());
@@ -173,6 +179,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         assertEquals(1, indexedDocs().size());
     }
 
+    @Test
     public void testCopiesAreIndexed() throws Exception {
         assertEquals(1, requestedDocs().size());
         assertEquals(0, indexedDocs().size());
@@ -203,6 +210,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         assertEquals(1, indexedDocs().size());
     }
 
+    @Test
     public void testVersionsAreIndexed() throws Exception {
         assertEquals(1, requestedDocs().size());
         assertEquals(0, indexedDocs().size());

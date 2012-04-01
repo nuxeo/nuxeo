@@ -22,6 +22,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -47,7 +52,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
 
     protected Principal principal;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
@@ -55,7 +60,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
         principal = session.getPrincipal();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -73,6 +78,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testBase() throws Exception {
         createDocuments();
         assertTrue(trashService.folderAllowsDelete(fold));
@@ -103,6 +109,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
         assertEquals(above.getPathAsString(), fold.getId(), above.getId());
     }
 
+    @Test
     public void testTrashPurgeUndelete() throws Exception {
         createDocuments();
         trashService.trashDocuments(Arrays.asList(fold, doc1));
@@ -135,6 +142,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
         assertEquals("project", fold.getCurrentLifeCycleState());
     }
 
+    @Test
     public void testUndeleteChildren() throws Exception {
         createDocuments();
         trashService.trashDocuments(Collections.singletonList(fold));

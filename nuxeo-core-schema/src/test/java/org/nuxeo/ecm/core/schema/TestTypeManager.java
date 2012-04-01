@@ -16,6 +16,11 @@ package org.nuxeo.ecm.core.schema;
 
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
@@ -25,14 +30,14 @@ public class TestTypeManager extends NXRuntimeTestCase {
 
     SchemaManagerImpl typeManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         typeManager = (SchemaManagerImpl) getTypeManager();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         typeManager = null;
         super.tearDown();
@@ -47,7 +52,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
         return Framework.getService(SchemaManager.class);
     }
 
-
+    @Test
     public void testTrivialTypeManager() {
         Type[] types = typeManager.getTypes();
         assertNotNull(types);
@@ -66,6 +71,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
         assertEquals(0, typeManager.getSchemasCount());
     }
 
+    @Test
     public void testFacetsCache() {
         // avoid WARN, register facets
         typeManager.registerFacet(new FacetDescriptor("parent1", null));
@@ -119,6 +125,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
         assertTrue(tff.contains("Parent"));
     }
 
+    @Test
     public void testInheritanceCache() {
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;
@@ -164,6 +171,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
     /*
      * Check that registering a child type before the parent works.
      */
+    @Test
     public void testFacetsCacheReversedRegistration() {
         // avoid WARN, register facets
         typeManager.registerFacet(new FacetDescriptor("parent1", null));
@@ -198,6 +206,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
         assertTrue(tff.contains("Child"));
     }
 
+    @Test
     public void testInheritanceCacheReversedRegistration() {
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;

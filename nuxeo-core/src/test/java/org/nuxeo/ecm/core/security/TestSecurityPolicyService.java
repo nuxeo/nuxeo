@@ -25,6 +25,11 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Document;
@@ -46,7 +51,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     private SecurityPolicyService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib(CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
@@ -57,12 +62,13 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
         service = null;
     }
 
+    @Test
     public void testPolicies() throws Exception {
         String permission = WRITE;
         String[] permissions = { WRITE };
@@ -89,6 +95,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 permission, permissions, null));
     }
 
+    @Test
     public void testCheckOutPolicy() throws Exception {
         String permission = WRITE;
         String[] permissions = { WRITE, WRITE_PROPERTIES };

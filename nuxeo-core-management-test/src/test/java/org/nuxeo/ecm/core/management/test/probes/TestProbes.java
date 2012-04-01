@@ -19,6 +19,11 @@ package org.nuxeo.ecm.core.management.test.probes;
 
 import java.util.Collection;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe;
@@ -27,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestProbes extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
@@ -37,12 +42,13 @@ public class TestProbes extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testServiceLookup() {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
@@ -50,6 +56,7 @@ public class TestProbes extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testService() {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
