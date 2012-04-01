@@ -24,6 +24,9 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
+import org.junit.Before;
+import org.junit.After;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -49,7 +52,7 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -62,7 +65,7 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
         publisherService = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         Framework.getRuntime().stop();
         super.tearDown();

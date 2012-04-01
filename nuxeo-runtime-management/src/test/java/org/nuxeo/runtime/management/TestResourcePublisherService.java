@@ -25,16 +25,22 @@ import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 
 public class TestResourcePublisherService extends ManagementTestCase {
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
+    @Test
     public void testRegisteredService() throws Exception {
         assertNotNull(Framework.getService(ResourcePublisher.class));
     }
 
+    @Test
     public void testRegisterResource() {
         publisherService.registerResource("dummy", "org.nuxeo:name=dummy",
                 DummyMBean.class, new DummyService());
@@ -44,6 +50,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
         assertEquals(1, registeredNames.size());
     }
 
+//    @Test
 //    public void testRegisterFactory() throws Exception {
 //        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
 //                DummyFactory.class);
@@ -53,6 +60,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
 //        assertEquals(registeredNames.size(), 1);
 //    }
 
+    @Test
     public void testServerLocator() throws Exception {
         MBeanServer testServer = MBeanServerFactory.createMBeanServer("test");
         ObjectName testName = new ObjectName("test:test=test");
@@ -64,6 +72,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
         assertTrue(locatedServer.isRegistered(testName));
     }
 
+    @Test
     public void testXMLConfiguration() throws Exception {
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-service.xml");
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-contrib.xml");

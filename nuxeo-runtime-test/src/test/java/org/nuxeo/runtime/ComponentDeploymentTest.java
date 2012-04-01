@@ -21,6 +21,10 @@
 
 package org.nuxeo.runtime;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -33,13 +37,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class ComponentDeploymentTest extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
     }
 
+    @Test
     public void testContributions() {
         RuntimeService runtime = Framework.getRuntime();
         ComponentManager mgr = runtime.getComponentManager();

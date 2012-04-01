@@ -14,10 +14,12 @@
 
 package org.nuxeo.runtime.model;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestComponentName extends TestCase {
+public class TestComponentName {
 
+    @Test
     public void test() {
         ComponentName cn1 = new ComponentName("foo:bar");
         ComponentName cn2 = new ComponentName("foo", "bar");

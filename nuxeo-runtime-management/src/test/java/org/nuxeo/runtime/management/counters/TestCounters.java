@@ -5,10 +5,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -24,7 +24,7 @@ public class TestCounters {
     public void verifyServiceBinding() {
 
         CounterManager cm = Framework.getLocalService(CounterManager.class);
-        Assert.assertNotNull(cm);
+        assertNotNull(cm);
     }
 
     protected class CounterCaller implements Runnable {
@@ -79,7 +79,7 @@ public class TestCounters {
 
         String snapshot2 = getCountersSnapshot();
 
-        Assert.assertEquals(snapshot, snapshot2);
+        assertEquals(snapshot, snapshot2);
 
         cm.enableCounters();
 
@@ -87,7 +87,7 @@ public class TestCounters {
 
         String snapshot3 = getCountersSnapshot();
 
-        Assert.assertFalse(snapshot3.equals(snapshot));
+        assertFalse(snapshot3.equals(snapshot));
 
     }
 
@@ -110,21 +110,21 @@ public class TestCounters {
         CounterHelper.increaseCounter(myCounter); //3
 
         CounterHistoryStack history = cm.getCounterHistory(myCounter);
-        Assert.assertNotNull(history);
+        assertNotNull(history);
 
         System.out.println(history.toString());
-        Assert.assertEquals(3, history.get(0)[1]);
-        Assert.assertEquals(2, history.get(5)[1]);
-        Assert.assertEquals(1, history.get(8)[1]);
+        assertEquals(3, history.get(0)[1]);
+        assertEquals(2, history.get(5)[1]);
+        assertEquals(1, history.get(8)[1]);
 
         CounterHelper.setCounterValue(myCounter,0);
         for (int i= 0; i< 60; i++) {
             CounterHelper.increaseCounter(myCounter);
         }
 
-        Assert.assertEquals(50, history.getAsList().size());
-        Assert.assertEquals(60, history.get(0)[1]);
-        Assert.assertEquals(11, history.get(49)[1]);
+        assertEquals(50, history.getAsList().size());
+        assertEquals(60, history.get(0)[1]);
+        assertEquals(11, history.get(49)[1]);
 
         //System.out.println(history.toString());
 

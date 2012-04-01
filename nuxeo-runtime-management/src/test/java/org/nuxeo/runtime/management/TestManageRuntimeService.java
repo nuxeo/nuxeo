@@ -21,12 +21,16 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestManageRuntimeService extends NXRuntimeTestCase {
 
     private final RuntimeServiceMBeanAdapter adapterUnderTest = new RuntimeServiceMBeanAdapter();
 
+    @Test
     public void testPrint() {
         Set<String> resolvedComponents = adapterUnderTest.getResolvedComponents();
         assertNotNull(resolvedComponents);

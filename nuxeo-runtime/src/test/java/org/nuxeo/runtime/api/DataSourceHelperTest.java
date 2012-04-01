@@ -13,9 +13,11 @@
 
 package org.nuxeo.runtime.api;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class DataSourceHelperTest extends TestCase {
+public class DataSourceHelperTest {
 
     protected final String nonPrefixedName = "nxsqldirectory";
 
@@ -25,10 +27,9 @@ public class DataSourceHelperTest extends TestCase {
 
     protected final String jettyPrefixedName = "jdbc/nxsqldirectory";
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         setPrefix(null);
-        super.tearDown();
     }
 
     protected static void setPrefix(String prefix) {
@@ -39,6 +40,7 @@ public class DataSourceHelperTest extends TestCase {
         return DataSourceHelper.getDataSourceJNDIName(partialName);
     }
 
+    @Test
     public void testStandardLookups() {
         setPrefix("java:comp/env/jdbc");
         assertEquals(standardPrefixedName, getDS(nonPrefixedName));
@@ -47,6 +49,7 @@ public class DataSourceHelperTest extends TestCase {
         assertEquals(standardPrefixedName, getDS(jettyPrefixedName));
     }
 
+    @Test
     public void testJBossLookups() {
         setPrefix("java:");
         assertEquals(jBossPrefixedName, getDS(nonPrefixedName));
@@ -55,6 +58,7 @@ public class DataSourceHelperTest extends TestCase {
         assertEquals(jBossPrefixedName, getDS(jettyPrefixedName));
     }
 
+    @Test
     public void testJettyLookups() {
         setPrefix("jdbc");
         assertEquals(jettyPrefixedName, getDS(nonPrefixedName));

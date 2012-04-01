@@ -23,28 +23,35 @@ package org.nuxeo.runtime;
 
 import java.net.URL;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 
 public class TestTestFramework extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         runtime = Framework.getRuntime();
         assertNotNull(runtime);
     }
 
+    @Test
     public void testInitialize() {
         assertNotNull(runtime.getHome());
     }
 
+    @Test
     public void testSetProperty() {
         runtime.getProperties().put("toto", "titi");
         assertEquals("titi", runtime.getProperty("toto"));
     }
 
+    @Test
     public void testLookupBundleUrl() throws Exception {
 
         urls = new URL[] {
@@ -59,6 +66,7 @@ public class TestTestFramework extends NXRuntimeTestCase {
         assertEquals(urls[4], lookupBundleUrl("nuxeo-common"));
     }
 
+    @Test
     public void testIsVersionSuffix() {
         assertTrue(isVersionSuffix(""));
         assertTrue(isVersionSuffix("-1.4-SNAPSHOT"));

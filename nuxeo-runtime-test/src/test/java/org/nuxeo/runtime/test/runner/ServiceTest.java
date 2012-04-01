@@ -18,10 +18,10 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.services.event.EventService;
 
 import com.google.inject.Inject;
@@ -34,8 +34,9 @@ import com.google.inject.Inject;
 public class ServiceTest {
 
     @Inject EventService eventService;
-    @Test public void testService() {
-        Assert.assertNotNull(eventService);
+    @Test
+    public void testService() {
+        assertNotNull(eventService);
     }
 
 }

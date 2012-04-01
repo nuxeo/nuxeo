@@ -19,18 +19,20 @@ package org.nuxeo.runtime.management;
 import javax.management.MBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class TestMBeanInfoFactory extends TestCase {
+public class TestMBeanInfoFactory {
 
     protected final ModelMBeanInfoFactory factoryUnderTest =
             new ModelMBeanInfoFactory();
 
+    @Test
     public void testInterfaceProperty() {
         ModelMBeanInfo ifaceInfo =
                 factoryUnderTest.getModelMBeanInfo(DummyMBean.class);

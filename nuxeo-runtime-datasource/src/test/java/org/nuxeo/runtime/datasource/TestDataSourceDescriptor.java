@@ -25,11 +25,12 @@ import java.util.Map;
 import javax.naming.RefAddr;
 import javax.naming.Reference;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.xmap.XMap;
 
-public class TestDataSourceDescriptor extends TestCase {
+public class TestDataSourceDescriptor {
 
     protected static DataSourceDescriptor load(String resource)
             throws Exception {
@@ -40,6 +41,7 @@ public class TestDataSourceDescriptor extends TestCase {
         return (DataSourceDescriptor) xmap.load(url);
     }
 
+    @Test
     public void testDataSourceDescriptor() throws Exception {
         DataSourceDescriptor descr = load("test-datasource-descriptor.xml");
         assertEquals("foo", descr.name);

@@ -21,6 +21,9 @@
 
 package org.nuxeo.runtime;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
@@ -32,12 +35,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestEventService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "ListenerExtension.xml");
     }
 
+    @Test
     public void testSend() {
         EventService es = (EventService) Framework.getRuntime().getComponent(EventService.NAME);
         Event event = new Event("repository", "theId", this, null);

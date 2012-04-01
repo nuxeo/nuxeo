@@ -19,13 +19,14 @@ package org.nuxeo.runtime.jboss.deployer;
 import java.io.File;
 import java.net.URL;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestHelpers extends TestCase {
+public class TestHelpers {
 
     public static void assertPathEquals(String expected, String actual) throws Exception {
         if (File.separatorChar == '\\') { // windows
@@ -49,6 +50,7 @@ public class TestHelpers extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testFileConvertor() throws Exception {
         URL url;
         url = new URL("file:/foo/bar");

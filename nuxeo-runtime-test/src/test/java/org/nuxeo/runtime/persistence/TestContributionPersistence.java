@@ -18,6 +18,10 @@
  */
 package org.nuxeo.runtime.persistence;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.DummyContribution;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.persistence.Contribution;
@@ -35,7 +39,7 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
 
     protected ContributionPersistenceManager mgr;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
@@ -45,6 +49,7 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
         mgr = Framework.getLocalService(ContributionPersistenceManager.class);
     }
 
+    @Test
     public void test1() throws Exception {
         assertTrue(mgr.getContributions().isEmpty());
         // contribute something (an event listener)

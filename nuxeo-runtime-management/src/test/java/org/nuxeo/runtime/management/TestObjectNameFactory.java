@@ -18,28 +18,33 @@ package org.nuxeo.runtime.management;
 
 import javax.management.ObjectName;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author matic
  */
-public class TestObjectNameFactory extends TestCase {
+public class TestObjectNameFactory {
 
+    @Test
     public void testSimpleForm() {
         ObjectName name = ObjectNameFactory.getObjectName("simple");
         assertEquals("org.nuxeo:name=simple,type=service", name.getCanonicalName());
     }
 
+    @Test
     public void testAvaForm() {
         ObjectName name = ObjectNameFactory.getObjectName("name=value");
         assertEquals("org.nuxeo:name=value", name.getCanonicalName());
     }
 
+    @Test
     public void testFullForm() {
         ObjectName name = ObjectNameFactory.getObjectName("foo:name=value");
         assertEquals("foo:name=value", name.getCanonicalName());
     }
 
+    @Test
     public void testShortName() {
         ObjectName name = ObjectNameFactory.getObjectName("foo:name=value,type=service,info=metric");
         String shortName = ObjectNameFactory.formatShortName(name);

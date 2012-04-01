@@ -24,6 +24,11 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -41,7 +46,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     /** Property used in the datasource URL. */
     private static final String PROP_NAME = "ds.test.home";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -53,12 +58,13 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.runtime.datasource");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         NuxeoContainer.uninstallNaming();
         super.tearDown();
     }
 
+    @Test
     public void testJNDIName() throws Exception {
         assertEquals("java:comp/env/jdbc/foo",
                 DataSourceHelper.getDataSourceJNDIName("foo"));
@@ -76,18 +82,21 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         conn.close();
     }
 
+    @Test
     public void testNonXANoTM() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/datasource-contrib.xml");
         checkDataSourceOk();
     }
 
+    @Test
     public void testNonXA() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/datasource-contrib.xml");
         checkDataSourceOk();
     }
 
+    @Test
     public void testXANoTM() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/xadatasource-contrib.xml");
@@ -102,6 +111,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testXA() throws Exception {
         NuxeoContainer.install(new TransactionManagerConfiguration(),
                 new ConnectionManagerConfiguration());

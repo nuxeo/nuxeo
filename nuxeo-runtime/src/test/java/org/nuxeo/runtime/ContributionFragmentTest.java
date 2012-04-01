@@ -22,14 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ContributionFragmentTest extends TestCase {
+public class ContributionFragmentTest {
 
     static class MyContrib {
         protected String id;
@@ -105,6 +106,7 @@ public class ContributionFragmentTest extends TestCase {
         return Arrays.asList(args);
     }
 
+    @Test
     public void testRegistry() throws Exception {
         MyRegistry reg = new MyRegistry();
         MyContrib c1 = new MyContrib("c1");

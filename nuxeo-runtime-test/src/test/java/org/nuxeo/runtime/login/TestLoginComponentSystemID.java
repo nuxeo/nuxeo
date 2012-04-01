@@ -20,6 +20,9 @@ package org.nuxeo.runtime.login;
 
 import java.security.Principal;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -28,6 +31,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestLoginComponentSystemID extends NXRuntimeTestCase {
 
+    @Test
     public void testSystemIDEquals() {
         Principal user1 = new LoginComponent.SystemID(
                 LoginComponent.SYSTEM_USERNAME);

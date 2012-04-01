@@ -19,16 +19,18 @@ package org.nuxeo.runtime.management;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public class TestMatchAccessorName extends TestCase {
+public class TestMatchAccessorName {
 
     private static final Pattern fixAttributePattern = Pattern.compile("(get|set|is)(.*)");
 
+    @Test
     public void testMatchGet() {
         Matcher matcher = fixAttributePattern.matcher("getSomething");
         assertTrue(matcher.matches());

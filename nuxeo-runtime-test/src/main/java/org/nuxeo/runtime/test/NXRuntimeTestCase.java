@@ -38,7 +38,14 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.runner.RunWith;
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleFile;
@@ -69,8 +76,10 @@ import org.osgi.framework.FrameworkEvent;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // Make sure this class is kept in sync with with RuntimeHarness
-public class NXRuntimeTestCase extends MockObjectTestCase implements
-        RuntimeHarness {
+@RunWith(JMock.class)
+public class NXRuntimeTestCase implements RuntimeHarness {
+
+    protected Mockery jmcontext = new JUnit4Mockery();
 
     static {
         // jul to jcl redirection may pose problems (infinite loops) in some
@@ -112,7 +121,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
     }
 
     public NXRuntimeTestCase(String name) {
-        super(name);
+        //super(name);
     }
 
     @Override
@@ -145,10 +154,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         setUp();
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
-        super.setUp();
+        //super.setUp();
         wipeRuntime();
         initUrls();
         if (urls == null) {
@@ -167,7 +176,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
                 runtimeBundle, null));
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         wipeRuntime();
         if (workingDir != null) {
@@ -179,7 +188,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         readUris = null;
         bundles = null;
         ServiceManager.getInstance().reset();
-        super.tearDown();
+        //super.tearDown();
         if (NuxeoContainer.isInstalled()) {
             throw new Error("Nuxeo container is still installed", NuxeoContainer.getInstallContext());
         }

@@ -21,7 +21,10 @@
 
 package org.nuxeo.runtime;
 
-import junit.framework.AssertionFailedError;
+import java.lang.AssertionError;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -31,6 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class RuntimeInitializationTest extends NXRuntimeTestCase {
 
+    @Test
     public void testContributions() throws Exception {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
@@ -44,7 +48,7 @@ public class RuntimeInitializationTest extends NXRuntimeTestCase {
         try {
             deployContrib("org.nuxeo.runtime.test.tests", "CopyOfMyComp2.xml");
             success = true;
-        } catch (AssertionFailedError e) {
+        } catch (AssertionError e) {
             // OK.
         }
         assertFalse("An exception should have been raised.", success);

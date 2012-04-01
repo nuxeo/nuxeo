@@ -21,13 +21,15 @@ import java.io.IOException;
 
 import org.nuxeo.runtime.management.jvm.HeapDumper;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @since 5.5
  */
-public class TestHeadDumper extends TestCase {
+public class TestHeadDumper {
 
+    @Test
     public void testCanDump() throws IOException {
         HeapDumper dumper = new HeapDumper();
         File file = dumper.dumpHeap();

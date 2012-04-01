@@ -19,6 +19,9 @@ package org.nuxeo.runtime;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -27,12 +30,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class ComponentAliasTest extends NXRuntimeTestCase {
 
+    @Test
     public void testContributions() throws Exception {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp3.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp4.xml");
         check();
     }
 
+    @Test
     public void testContributionsPending() throws Exception {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp4.xml");
         // register the required one last

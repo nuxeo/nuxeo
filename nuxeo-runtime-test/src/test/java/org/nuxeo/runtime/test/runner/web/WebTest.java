@@ -18,11 +18,11 @@
  */
 package org.nuxeo.runtime.test.runner.web;
 
-import junit.framework.Assert;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -41,9 +41,10 @@ public class WebTest {
 
     @Inject protected MyHomePage home;
 
-    @Test public void testSearch() {
+    @Test
+    public void testSearch() {
         SearchResultPage result = home.search("test");
-        Assert.assertNotNull(result.getFirstResult());
+        assertNotNull(result.getFirstResult());
 //        System.out.println(result.getFirstResult());
     }
 

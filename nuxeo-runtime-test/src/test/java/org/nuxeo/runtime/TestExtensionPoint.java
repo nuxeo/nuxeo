@@ -21,19 +21,24 @@
 
 package org.nuxeo.runtime;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class TestExtensionPoint extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "OverridingXPoint.xml");
     }
 
+    @Test
     public void testOverride() {
         ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(
                 ComponentWithXPoint.NAME);

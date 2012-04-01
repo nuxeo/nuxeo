@@ -14,17 +14,20 @@
 
 package org.nuxeo.runtime;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestVersion extends TestCase {
+public class TestVersion {
 
     Version version;
 
-    @Override
+    @Before
     public void setUp() {
         version = new Version(1, 2, 3);
     }
 
+    @Test
     public void testAccessors() {
         assertEquals(1, version.getMajorVersion());
         assertEquals(2, version.getMinorVersion());
@@ -32,6 +35,7 @@ public class TestVersion extends TestCase {
         assertEquals("1.2.3", version.toString());
     }
 
+    @Test
     public void testParseString() {
         version = Version.parseString("0.0.0");
         assertEquals("0.0.0", version.toString());
@@ -42,11 +46,13 @@ public class TestVersion extends TestCase {
     }
 
     @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes"})
+    @Test
     public void testEquals() {
         assertTrue(version.equals(new Version(1, 2, 3)));
         assertFalse(version.equals(""));
     }
 
+    @Test
     public void testIsGreaterThan() {
         assertTrue(version.isGreaterThan(new Version(0, 0, 0)));
         assertTrue(version.isGreaterThan(new Version(0, 0, 1)));
@@ -63,6 +69,7 @@ public class TestVersion extends TestCase {
         assertFalse(version.isGreaterThan(new Version(2, 1, 0)));
     }
 
+    @Test
     public void testIsGreaterOrEqualThan() {
         assertTrue(version.isGreaterOrEqualThan(new Version(0, 0, 0)));
         assertTrue(version.isGreaterOrEqualThan(new Version(0, 0, 1)));
@@ -79,6 +86,7 @@ public class TestVersion extends TestCase {
         assertFalse(version.isGreaterOrEqualThan(new Version(2, 1, 0)));
     }
 
+    @Test
     public void testHashCode() {
         version = new Version(0, 0, 0);
         assertEquals(0, version.hashCode());

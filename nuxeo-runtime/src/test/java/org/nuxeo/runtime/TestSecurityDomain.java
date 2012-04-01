@@ -24,12 +24,14 @@ import java.util.Map;
 
 import javax.security.auth.login.AppConfigurationEntry;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.api.login.SecurityDomain;
 
-public class TestSecurityDomain extends TestCase {
+public class TestSecurityDomain {
 
+    @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
         AppConfigurationEntry.LoginModuleControlFlag flag1 = AppConfigurationEntry.LoginModuleControlFlag.REQUISITE;
         Map<String, Object> opts1 = new HashMap<String, Object>();

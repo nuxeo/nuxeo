@@ -14,24 +14,26 @@ package org.nuxeo.runtime;
 
 import java.io.File;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.SystemLoginRestrictionManager;
 import org.nuxeo.runtime.util.SimpleRuntime;
 
-public class TestSystemLoginRestriction extends TestCase {
+public class TestSystemLoginRestriction {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
         Environment env = new Environment(new File(System.getProperty("java.io.tmpdir")));
         Environment.setDefault(env);
         Framework.initialize(new SimpleRuntime());
     }
 
+    @Test
     public void testRestrictions() {
         SystemLoginRestrictionManager srm = new SystemLoginRestrictionManager();
         assertTrue(srm.isRemoteSystemLoginRestricted());

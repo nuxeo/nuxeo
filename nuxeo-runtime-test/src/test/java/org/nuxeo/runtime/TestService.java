@@ -21,12 +21,16 @@
 
 package org.nuxeo.runtime;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.services.deployment.DeploymentService;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
+    @Test
     public void testServiceLookup() {
         EventService eventComponent = (EventService) runtime.getComponent(EventService.NAME);
         EventService eventService = runtime.getService(EventService.class);
