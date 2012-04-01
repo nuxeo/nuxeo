@@ -23,7 +23,8 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.common.utils.FileUtils;
 
@@ -31,9 +32,10 @@ import org.nuxeo.common.utils.FileUtils;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SerializableInputStreamTest extends TestCase {
+public class SerializableInputStreamTest {
 
     @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
+    @Test
     public void testFileBlobSerialization() throws Exception {
 
         URL url = Thread.currentThread().getContextClassLoader().getResource("test.blob");

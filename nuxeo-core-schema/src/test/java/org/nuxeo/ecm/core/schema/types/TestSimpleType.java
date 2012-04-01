@@ -14,33 +14,39 @@
 
 package org.nuxeo.ecm.core.schema.types;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
-public class TestSimpleType extends TestCase {
+public class TestSimpleType {
 
     SimpleType simpleType;
 
-    @Override
+    @Before
     public void setUp() {
         simpleType = new SimpleTypeImpl(StringType.INSTANCE, SchemaNames.BUILTIN, "type name");
     }
 
-    @Override
+    @After
     public void tearDown() {
         simpleType = null;
     }
 
+    @Test
     public void testIsPrimitive() {
         assertFalse(simpleType.isPrimitive());
     }
 
+    @Test
     public void testIsSimpleType() {
         assertTrue(simpleType.isSimpleType());
     }
 
+    @Test
     public void testValidateNull() throws Exception {
         assertTrue(simpleType.validate(null));
     }

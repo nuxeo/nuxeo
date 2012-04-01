@@ -14,7 +14,8 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.collections.SerializableArrayMap;
 import org.nuxeo.common.utils.SerializableHelper;
@@ -30,23 +31,26 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  *
  */
-public class TestSerialization extends TestCase {
+public class TestSerialization {
 
     public static void check(String query) {
         SQLQuery sql = SQLQueryParser.parse(query);
         assertTrue(SerializableHelper.isSerializable(sql));
     }
 
+    @Test
     public void testQuery1() {
         check("SELECT dc:title, dc:dublincore FROM Document "
                 + "WHERE dc:created > TIMESTAMP '2007-02-03 0:0'");
     }
 
+    @Test
     public void testQuery2() {
         check("SELECT * FROM Document ");
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testSerializableArrayMap() throws Exception {
         SerializableArrayMap<String, Operand> elements = new SerializableArrayMap<String, Operand>();
         elements.put("abc", new StringLiteral("table"));
@@ -57,6 +61,7 @@ public class TestSerialization extends TestCase {
         assertEquals(1, elements2.size());
     }
 
+    @Test
     public void testSelect() throws Exception {
         SelectList elements = new SelectList();
         elements.put("abc", new StringLiteral("table"));
@@ -71,6 +76,7 @@ public class TestSerialization extends TestCase {
         assertEquals(1, elements2.size());
     }
 
+    @Test
     public void testFrom() throws Exception {
         FromList elements = new FromList();
         elements.put("abc", "ABC");
@@ -82,6 +88,7 @@ public class TestSerialization extends TestCase {
         assertEquals(1, elements2.size());
     }
 
+    @Test
     public void testSQLQUery() throws Exception {
 
         String queryString = "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'";

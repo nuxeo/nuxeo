@@ -17,7 +17,10 @@ package org.nuxeo.ecm.core.api.security;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
@@ -26,25 +29,27 @@ import static org.nuxeo.ecm.core.api.security.Access.GRANT;
 import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
-public class TestACP extends TestCase {
+public class TestACP {
 
     private ACP acp;
 
-    @Override
+    @Before
     public void setUp() {
         acp = new ACPImpl();
     }
 
-    @Override
+    @After
     public void tearDown() {
         acp = null;
     }
 
+    @Test
     public void testGetOwners() {
         String[] owners = acp.getOwners();
         assertEquals(0, owners.length);
     }
 
+    @Test
     public void testAddOwners() {
         acp.addOwner("joe");
         String[] owners = acp.getOwners();
@@ -52,17 +57,20 @@ public class TestACP extends TestCase {
         assertEquals("joe", owners[0]);
     }
 
+    @Test
     public void testSetOwners() {
         acp.setOwners(new String[] {});
         String[] owners = acp.getOwners();
         assertEquals(0, owners.length);
     }
 
+    @Test
     public void testGetACLs() {
         ACL[] acls = acp.getACLs();
         assertEquals(0, acls.length);
     }
 
+    @Test
     public void testAddAndRemoveACL() {
         ACL acl1 = new ACLImpl("acl1");
         ACL acl2 = new ACLImpl("acl2");
@@ -93,6 +101,7 @@ public class TestACP extends TestCase {
         assertNull(acp.removeACL("acl1"));
     }
 
+    @Test
     public void testCheckAccess() {
         ACL acl1 = new ACLImpl("acl1");
         ACE ace1 = new ACE("joe", EVERYTHING, true);
@@ -104,6 +113,7 @@ public class TestACP extends TestCase {
         assertSame(UNKNOWN, acp.getAccess("jack", READ));
     }
 
+    @Test
     public void testCheckAccessNullACE() {
         ACL acl1 = new ACLImpl("acl1");
         acl1.add(new ACE());
@@ -116,6 +126,7 @@ public class TestACP extends TestCase {
         assertSame(UNKNOWN, acp.getAccess("jack", READ));
     }
     
+    @Test
     public void testPermissionsAPI() {
         ACL acl = new ACLImpl("acl1");
 
@@ -144,6 +155,7 @@ public class TestACP extends TestCase {
         assertEquals(2, usernames.length);
     }
 
+    @Test
     public void testGetOrCreateAcl() {
         // create ACL with name ACL.LOCAL_ACL
         ACL createdAcl = acp.getOrCreateACL();

@@ -30,7 +30,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.dom4j.io.DocumentSource;
 import org.junit.Test;
@@ -58,7 +59,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = TypedExportedDocumentRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-public class TestTypedExportedDocument extends TestCase {
+public class TestTypedExportedDocument {
 
     /** The Constant transformerFactory. */
     protected static final TransformerFactory transformerFactory = TransformerFactory.newInstance();

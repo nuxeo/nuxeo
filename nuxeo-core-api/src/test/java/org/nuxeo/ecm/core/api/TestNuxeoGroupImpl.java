@@ -19,10 +19,12 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestNuxeoGroupImpl extends TestCase {
+public class TestNuxeoGroupImpl {
 
+    @Test
     public void testConstructor() {
         NuxeoGroup group = new NuxeoGroupImpl("mygroup");
 
@@ -47,6 +49,7 @@ public class TestNuxeoGroupImpl extends TestCase {
     }
 
     @SuppressWarnings({"ObjectEqualsNull"})
+    @Test
     public void testEquals() {
         NuxeoGroup group1 = new NuxeoGroupImpl("mygroup");
         NuxeoGroup group2 = new NuxeoGroupImpl("mygroup");

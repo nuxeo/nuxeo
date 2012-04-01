@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 
@@ -29,7 +30,7 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
  *
  * @author Florent Guillaume
  */
-public class TestQueryVisitor extends TestCase {
+public class TestQueryVisitor {
 
     private static void check(String sql, String expected) {
         PrintVisitor v = new PrintVisitor();
@@ -39,12 +40,13 @@ public class TestQueryVisitor extends TestCase {
         assertEquals(expected, v.toString());
     }
 
+    @Test
     public void testRemoveTZSuffixes() {
         assertEquals("000", removeTzSuffix("000+00:00')"));
         assertEquals("000", removeTzSuffix("000Z')"));
     }
 
-
+    @Test
     public void testVisitor() throws Exception {
         String sql;
         String expected;

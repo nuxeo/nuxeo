@@ -16,12 +16,15 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 import static org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.simpleXPath;
 import static org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.canonicalXPath;
-import junit.framework.TestCase;
 
-public class TestNXQLQueryMaker extends TestCase {
+public class TestNXQLQueryMaker {
 
+    @Test
     public void testCanonicalXPath() throws Exception {
         assertEquals("abc", canonicalXPath("abc"));
         assertEquals("abc/def", canonicalXPath("abc/def"));
@@ -29,6 +32,7 @@ public class TestNXQLQueryMaker extends TestCase {
         assertEquals("abc/5/ghi", canonicalXPath("abc/def[5]/ghi"));
     }
 
+    @Test
     public void testSimpleXPath() throws Exception {
         assertEquals("abc", simpleXPath("abc"));
         assertEquals("abc/def", simpleXPath("abc/def"));

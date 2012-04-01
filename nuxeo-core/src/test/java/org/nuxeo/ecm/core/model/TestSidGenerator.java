@@ -17,12 +17,14 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 
-public class TestSidGenerator extends TestCase {
+public class TestSidGenerator {
 
+    @Test
     public void testGenerator() {
         Set<Long> ids = new HashSet<Long>();
         for (int i = 0; i < 1000; i++) {
@@ -33,6 +35,7 @@ public class TestSidGenerator extends TestCase {
         }
     }
 
+    @Test
     public void testGeneratorReset() throws Exception {
         if (System.getProperty("os.name").startsWith("Windows")) {
             // windows doesn't have enough time granularity for such

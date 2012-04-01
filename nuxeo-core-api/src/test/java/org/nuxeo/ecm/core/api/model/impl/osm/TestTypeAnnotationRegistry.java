@@ -14,22 +14,25 @@
 
 package org.nuxeo.ecm.core.api.model.impl.osm;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
 
-public class TestTypeAnnotationRegistry extends TestCase {
+public class TestTypeAnnotationRegistry {
 
     TypeAnnotationRegistry<String> mgr;
 
-    @Override
+    @Before
     public void setUp() {
         mgr = new TypeAnnotationRegistry<String>();
     }
 
+    @Test
     public void test() {
         mgr.put(Property.class, "prop");
         mgr.put(ComplexProperty.class, "cprop");

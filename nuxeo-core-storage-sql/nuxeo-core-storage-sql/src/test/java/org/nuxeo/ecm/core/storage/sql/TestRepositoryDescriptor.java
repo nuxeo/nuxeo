@@ -16,14 +16,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 
-public class TestRepositoryDescriptor extends TestCase {
+public class TestRepositoryDescriptor {
 
     protected RepositoryDescriptor desc;
 
@@ -32,7 +34,7 @@ public class TestRepositoryDescriptor extends TestCase {
                 resource);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         XMap xmap = new XMap();
         xmap.register(RepositoryDescriptor.class);
@@ -40,6 +42,7 @@ public class TestRepositoryDescriptor extends TestCase {
         desc = (RepositoryDescriptor) xmap.load(getResource("test-repository-descriptor.xml"));
     }
 
+    @Test
     public void testBasic() throws Exception {
         assertEquals("foo", desc.name);
         assertTrue(desc.clusteringEnabled);
@@ -47,6 +50,7 @@ public class TestRepositoryDescriptor extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testFulltext() throws Exception {
         assertEquals("french", desc.fulltextAnalyzer);
         assertEquals("nuxeo", desc.fulltextCatalog);
@@ -90,6 +94,7 @@ public class TestRepositoryDescriptor extends TestCase {
         assertTrue(desc.fulltextIncludedTypes.contains("Note"));
     }
 
+    @Test
     public void testLargeTextFields() throws Exception {
         assertNotNull(desc.schemaFields);
         assertEquals(2, desc.schemaFields.size());
@@ -102,10 +107,12 @@ public class TestRepositoryDescriptor extends TestCase {
         assertEquals("xyz", fd.type);
     }
 
+    @Test
     public void testBinaryStorePath() throws Exception {
         assertEquals("/foo/bar", desc.binaryStorePath);
     }
 
+    @Test
     public void testListenConnect() throws Exception {
         ServerDescriptor s;
         s = desc.listen;

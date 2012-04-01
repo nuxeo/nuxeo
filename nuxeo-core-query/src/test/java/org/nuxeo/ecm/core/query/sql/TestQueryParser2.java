@@ -14,7 +14,8 @@
 
 package org.nuxeo.ecm.core.query.sql;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -28,7 +29,7 @@ import org.nuxeo.ecm.core.query.sql.model.WhereClause;
  * @author DM
  *
  */
-public class TestQueryParser2 extends TestCase {
+public class TestQueryParser2 {
 
     static final String[] CANONICAL_QUERIES = {
             "SELECT * FROM document",
@@ -210,6 +211,7 @@ public class TestQueryParser2 extends TestCase {
      * Tests that good queries (queries from GOOD_QUERIES array) are successfully
      * parsed.
      */
+    @Test
     public void testGoodQueries() {
         int i = 0;
         try {
@@ -226,6 +228,7 @@ public class TestQueryParser2 extends TestCase {
     /**
      * Tests that parsing fail for bad queries (queries fom BAD_QUERIES array).
      */
+    @Test
     public void testBadQueries() {
         for (String badQuery : BAD_QUERIES) {
             try {
@@ -239,6 +242,7 @@ public class TestQueryParser2 extends TestCase {
         }
     }
 
+    @Test
     public void testBadQueriesOld() {
         for (String badQuery : BAD_QUERIES_OLD) {
             try {
@@ -252,6 +256,7 @@ public class TestQueryParser2 extends TestCase {
         }
     }
 
+    @Test
     public void testLocationLiterals() {
         // test double quoted strings
         SQLQuery query = SQLQueryParser
@@ -268,6 +273,7 @@ public class TestQueryParser2 extends TestCase {
     /**
      * Tests equals method on SQLQuery.
      */
+    @Test
     public void testEquals() {
         for (String s : GOOD_QUERIES) {
             SQLQuery query1 = SQLQueryParser.parse(s);
@@ -282,6 +288,7 @@ public class TestQueryParser2 extends TestCase {
      * For non-equality, one must make sure that no two queries are equivalent
      * in the GOOD_QUERIES list (ex: "p != 1" and "p <> 1").
      */
+    @Test
     public void testNotEquals() {
         for (String s1 : GOOD_QUERIES) {
             for (String s2 : GOOD_QUERIES) {
@@ -296,6 +303,7 @@ public class TestQueryParser2 extends TestCase {
         }
     }
 
+    @Test
     public void testToString() {
         for (String s : CANONICAL_QUERIES) {
             SQLQuery query1 = SQLQueryParser.parse(s);

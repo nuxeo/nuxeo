@@ -16,12 +16,14 @@ package org.nuxeo.ecm.core.api;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 
-public class TestNuxeoPrincipal extends TestCase {
+public class TestNuxeoPrincipal {
 
+    @Test
     public void test() {
         NuxeoPrincipal principal = new UserPrincipal("john",
                 new ArrayList<String>(), false, false);
@@ -38,6 +40,7 @@ public class TestNuxeoPrincipal extends TestCase {
         assertEquals("nuxeo", principal.getCompany());
     }
 
+    @Test
     public void testEquals() {
         NuxeoPrincipal john1 = new UserPrincipal("john",
                 new ArrayList<String>(), false, false);

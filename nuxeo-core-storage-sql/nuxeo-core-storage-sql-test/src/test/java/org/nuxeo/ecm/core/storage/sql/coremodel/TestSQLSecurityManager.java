@@ -19,13 +19,15 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Florent Guillaume
  */
-public class TestSQLSecurityManager extends TestCase {
+public class TestSQLSecurityManager {
 
+    @Test
     public void testAclRowsToACP() {
         ACLRow acl1 = new ACLRow(0, "local", true, "Read", "bob", null);
         ACLRow acl2 = new ACLRow(1, "wf", false, "Write", "steve", null);
@@ -64,6 +66,7 @@ public class TestSQLSecurityManager extends TestCase {
         assertEquals("pete", ace.getUsername());
     }
 
+    @Test
     public void testAcpToAclRows() {
         ACPImpl acp = new ACPImpl();
         ACL acl = new ACLImpl("local");
@@ -100,6 +103,7 @@ public class TestSQLSecurityManager extends TestCase {
         assertEquals("pete", aclrow.user);
     }
 
+    @Test
     public void testUpdateAclRows() {
         // existing:
         ACLRow acl1 = new ACLRow(0, "local", true, "Read", "bob", null);

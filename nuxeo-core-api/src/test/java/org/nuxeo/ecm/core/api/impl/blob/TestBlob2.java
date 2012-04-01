@@ -24,7 +24,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -34,18 +35,21 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 // XXX: Second blob testcase -> merge it with the other one ?
 @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
-public class TestBlob2 extends TestCase {
+public class TestBlob2 {
 
+    @Test
     public void testStringContentSource() throws Exception {
         Blob blob = new StringBlob("some content", "text/plain", "UTF-8");
         checkBlob(blob);
     }
 
+    @Test
     public void testByteArrayContentSource() throws Exception {
         Blob blob = new ByteArrayBlob("some content".getBytes(), "text/plain", "UTF-8");
         checkBlob(blob);
     }
 
+    @Test
     public void testFileContentSource() throws Exception {
         File file = File.createTempFile("~test_content_source", ".txt");
         file.deleteOnExit();
@@ -59,6 +63,7 @@ public class TestBlob2 extends TestCase {
         file.delete();
     }
 
+    @Test
     public void testURLContentSource() throws Exception {
         File file = File.createTempFile("~test_content_source", ".txt");
         file.deleteOnExit();
@@ -96,6 +101,7 @@ public class TestBlob2 extends TestCase {
         assertEquals("some content", sw.toString());
     }
 
+    @Test
     public void testEncoding() {
         // TODO
     }

@@ -14,10 +14,12 @@
 
 package org.nuxeo.ecm.core.schema;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestNamespace extends TestCase {
+public class TestNamespace {
 
+    @Test
     public void testNameSpace() {
         Namespace ns1 = new Namespace("uri", "prefix");
         Namespace ns2 = new Namespace("uri", "prefix");

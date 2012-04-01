@@ -18,7 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -26,8 +27,9 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.cache.CachableBlobHolder;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 
-public class TestBlobHolderPersistence extends TestCase {
+public class TestBlobHolderPersistence {
 
+    @Test
     public void testPersistence() throws Exception {
         List<Blob> blobs = new ArrayList<Blob>();
         for (int i = 0; i < 10; i++) {

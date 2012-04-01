@@ -14,14 +14,16 @@
 
 package org.nuxeo.ecm.core.api.adapter;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-public class TestAdapter extends TestCase {
+public class TestAdapter {
 
     @SuppressWarnings({"InterfaceNeverImplemented"})
     private interface AnInterface {
     }
 
+    @Test
     public void test() {
         DocumentAdapterService das = new DocumentAdapterService();
         das.activate(null);

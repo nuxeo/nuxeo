@@ -16,10 +16,13 @@ package org.nuxeo.ecm.core.url;
 
 import java.io.IOException;
 import java.net.URL;
-import junit.framework.TestCase;
 
-public class TestUrl extends TestCase {
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
+public class TestUrl {
+
+    @Test
     public void test() throws IOException {
         URL url1 = URLFactory.getURL("http://toto.com/");
         assertEquals("http://toto.com/", url1.toString());

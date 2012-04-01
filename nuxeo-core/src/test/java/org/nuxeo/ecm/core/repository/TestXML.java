@@ -18,14 +18,16 @@ import java.io.ByteArrayInputStream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class TestXML extends TestCase {
+public class TestXML {
 
+    @Test
     public void testToString() throws Exception {
         String xmlInput = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<doc>\n"

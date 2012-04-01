@@ -13,20 +13,22 @@
  */
 package org.nuxeo.ecm.core.query.sql.model;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
  */
-public class TestLiterals extends TestCase {
+public class TestLiterals {
 
+    @Test
     public void testStringLiteral() {
         StringLiteral l;
         l = new StringLiteral("foo");
         assertEquals("'foo'", l.toString());
     }
 
+    @Test
     public void testIntegerLiteral() {
         IntegerLiteral l;
         l = new IntegerLiteral("123");
@@ -35,6 +37,7 @@ public class TestLiterals extends TestCase {
         assertEquals("-123", l.toString());
     }
 
+    @Test
     public void testDoubleLiteral() {
         DoubleLiteral l;
         l = new DoubleLiteral("1.23");
@@ -43,6 +46,7 @@ public class TestLiterals extends TestCase {
         assertEquals("0.2", l.toString());
     }
 
+    @Test
     public void testDateLiteral() {
         DateLiteral d;
         d = new DateLiteral("2007-01-02", true);

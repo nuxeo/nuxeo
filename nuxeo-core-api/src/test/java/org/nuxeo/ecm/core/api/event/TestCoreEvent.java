@@ -14,13 +14,15 @@
 
 package org.nuxeo.ecm.core.api.event;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 
 
-public class TestCoreEvent extends TestCase {
+public class TestCoreEvent {
 
+    @Test
     public void testDefaultConstructor() {
         CoreEvent ev = new CoreEventImpl(null, null, null, null, null, null);
 

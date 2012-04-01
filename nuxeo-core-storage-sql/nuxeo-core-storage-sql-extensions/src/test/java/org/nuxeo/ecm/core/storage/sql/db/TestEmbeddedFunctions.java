@@ -15,12 +15,13 @@ package org.nuxeo.ecm.core.storage.sql.db;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Florent Guillaume
  */
-public class TestEmbeddedFunctions extends TestCase {
+public class TestEmbeddedFunctions {
 
     public static void checkSplit(String string, String... expected) {
         assertEquals(new HashSet<String>(Arrays.asList(expected)),
@@ -32,6 +33,7 @@ public class TestEmbeddedFunctions extends TestCase {
                 EmbeddedFunctions.split(string, sep));
     }
 
+    @Test
     public void testSplit() {
         checkSplit("");
         checkSplit("A", "A");
@@ -43,6 +45,7 @@ public class TestEmbeddedFunctions extends TestCase {
         checkSplit('-', "A-B-C", "A", "B", "C");
     }
 
+    @Test
     public void testParse() {
         assertNull(EmbeddedFunctions.parseWord("gr"));
         assertNull(EmbeddedFunctions.parseWord("are"));
@@ -56,6 +59,7 @@ public class TestEmbeddedFunctions extends TestCase {
                 EmbeddedFunctions.parseFullText(text));
     }
 
+    @Test
     public void testParseFullText() {
         checkParseFullText("brown dog fail fox jump lazy over quick",
                 "The quick brown fox jumps over the lazy dog -- and fails!");

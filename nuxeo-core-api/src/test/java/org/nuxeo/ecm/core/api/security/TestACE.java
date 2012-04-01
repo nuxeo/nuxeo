@@ -14,36 +14,42 @@
 
 package org.nuxeo.ecm.core.api.security;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-
-public class TestACE extends TestCase {
+public class TestACE {
     private ACE ace;
 
-    @Override
+    @Before
     public void setUp() {
         ace = new ACE("bogdan", "write", false);
     }
 
-    @Override
+    @After
     public void tearDown() {
         ace = null;
     }
 
+    @Test
     public void testGetType() {
         assertFalse(ace.isGranted());
         assertTrue(ace.isDenied());
     }
 
+    @Test
     public void testGetPrincipals() {
         assertEquals("bogdan", ace.getUsername());
     }
 
+    @Test
     public void testGetPermissions() {
         assertEquals("write", ace.getPermission());
     }
 
     @SuppressWarnings({"ObjectEqualsNull"})
+    @Test
     public void testEquals() {
         ACE ace2 = new ACE("bogdan", "write", false);
         ACE ace3 = new ACE("raoul", "write", false);
@@ -61,6 +67,7 @@ public class TestACE extends TestCase {
         assertEquals(ace.hashCode(), ace2.hashCode());
     }
 
+    @Test
     public void testToString() {
         assertEquals("bogdan:write:false", ace.toString());
     }

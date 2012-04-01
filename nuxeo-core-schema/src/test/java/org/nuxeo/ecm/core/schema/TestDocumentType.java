@@ -14,10 +14,12 @@
 
 package org.nuxeo.ecm.core.schema;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestDocumentType extends TestCase {
+public class TestDocumentType {
 
+    @Test
     public void testTrivialDocumentType() {
         DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type");
 
@@ -28,6 +30,7 @@ public class TestDocumentType extends TestCase {
         assertFalse(docType.isOrdered());
     }
 
+    @Test
     public void testFileDocumentType() {
         DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type", null,
                 null);
@@ -37,6 +40,7 @@ public class TestDocumentType extends TestCase {
         assertFalse(docType.isOrdered());
     }
 
+    @Test
     public void testFolderDocumentType() {
         DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type", null,
                 new String[]{"Folderish"});
@@ -46,6 +50,7 @@ public class TestDocumentType extends TestCase {
         assertFalse(docType.isOrdered());
     }
 
+    @Test
     public void testOrderedFolderDocumentType() {
         DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type", null,
                 new String[]{"Folderish", "Orderable"});

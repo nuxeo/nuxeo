@@ -16,37 +16,42 @@ package org.nuxeo.ecm.core.api;
 
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 @SuppressWarnings({"EqualsBetweenInconvertibleTypes"})
-public class TestDocumentRef extends TestCase {
+public class TestDocumentRef {
 
     protected PathRef pathref;
     protected IdRef idref;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         pathref = new PathRef("path/to/doc");
         idref = new IdRef("some_uid");
     }
 
+    @Test
     public void testHashCode() {
         assertNotNull(pathref.hashCode());
         assertNotNull(idref.hashCode());
     }
 
+    @Test
     public void testType() {
         assertEquals(DocumentRef.PATH, pathref.type());
         assertEquals(DocumentRef.ID, idref.type());
     }
 
+    @Test
     public void testReference() {
         assertEquals("path/to/doc", pathref.reference());
         assertEquals("some_uid", idref.reference());
     }
 
     @SuppressWarnings({"SimplifiableJUnitAssertion"})
+    @Test
     public void testEqualsObject() {
         assertTrue(idref.equals(idref));
         assertTrue(pathref.equals(pathref));
@@ -103,6 +108,7 @@ public class TestDocumentRef extends TestCase {
         assertTrue(server1PathRefLocation.hashCode() != server2PathRefLocation.hashCode());
     }
 
+    @Test
     public void testToString() {
         assertEquals("path/to/doc", pathref.toString());
         assertEquals("some_uid", idref.toString());

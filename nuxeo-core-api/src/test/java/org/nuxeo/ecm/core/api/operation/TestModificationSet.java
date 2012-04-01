@@ -16,17 +16,19 @@ package org.nuxeo.ecm.core.api.operation;
 
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 
-public class TestModificationSet extends TestCase {
+public class TestModificationSet {
 
     ModificationSet set;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         set = new ModificationSet();
     }
 
@@ -39,6 +41,7 @@ public class TestModificationSet extends TestCase {
         return null;
     }
 
+    @Test
     public void test() {
         set.add(new IdRef("a"), Modification.CREATE);
         set.add(new IdRef("b"), Modification.REMOVE);

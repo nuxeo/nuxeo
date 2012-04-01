@@ -14,10 +14,12 @@
 
 package org.nuxeo.ecm.core.schema.types;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestQName extends TestCase {
+public class TestQName {
 
+    @Test
     public void testQName() {
         QName qname = new QName("local name", "prefix");
 
@@ -52,6 +54,7 @@ public class TestQName extends TestCase {
         assertEquals(qname5, qname6);
     }
 
+    @Test
     public void testQNameValueOfWithPrefix() {
         QName qname = new QName("local name", "prefix");
 
@@ -62,6 +65,7 @@ public class TestQName extends TestCase {
         assertEquals(qname, qname2);
     }
 
+    @Test
     public void testQNameValueOfWithNoPrefix() {
         QName qname = new QName("local name");
 

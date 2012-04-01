@@ -14,10 +14,13 @@
 
 package org.nuxeo.ecm.core.api;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 // Nothing much to test actually.
-public class TestListDiff extends TestCase {
+public class TestListDiff {
+
+    @Test
     public void test() {
         ListDiff list = new ListDiff();
 

@@ -14,17 +14,19 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Florent Guillaume
  */
-public class TestParseProperties extends TestCase {
+public class TestParseProperties {
 
     public static Map<String, String> parse(String expr) {
         return ManagedConnectionFactoryImpl.parseProperties(expr);
     }
 
+    @Test
     public void test() throws Exception {
         Map<String, String> props = new HashMap<String, String>();
         assertEquals(props, parse(""));

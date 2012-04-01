@@ -11,10 +11,10 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -42,8 +42,8 @@ public class DocumentPropertyTest {
         doc.setPropertyValue("file:content", blob);
         doc = session.createDocument(doc);
         doc = session.getDocument(doc.getRef());
-        Assert.assertEquals("myfile", doc.getPropertyValue("file:content/name"));
-        Assert.assertEquals("mydigest",
+        assertEquals("myfile", doc.getPropertyValue("file:content/name"));
+        assertEquals("mydigest",
                 doc.getPropertyValue("file:content/digest"));
     }
 

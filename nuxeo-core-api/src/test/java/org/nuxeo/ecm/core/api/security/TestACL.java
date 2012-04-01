@@ -14,27 +14,32 @@
 
 package org.nuxeo.ecm.core.api.security;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 
-public class TestACL extends TestCase {
+public class TestACL {
     private ACL acl;
 
-    @Override
+    @Before
     public void setUp() {
         acl = new ACLImpl("test acl");
     }
 
-    @Override
+    @After
     public void tearDown() {
         acl = null;
     }
 
+    @Test
     public void testGetName() {
         assertEquals("test acl", acl.getName());
     }
 
+    @Test
     public void testAddingACEs() {
         assertEquals(0, acl.getACEs().length);
         acl.add(new ACE("bogdan", "write", false));
