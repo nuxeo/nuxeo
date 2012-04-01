@@ -26,18 +26,21 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestStringUtils extends TestCase {
+public class TestStringUtils {
 
+    @Test
     public void testToAscii() throws UnsupportedEncodingException {
         String s = "h\u00E9h\u00E9";
         assertEquals("hehe", StringUtils.toAscii(s));
     }
 
+    @Test
     public void testSplit() {
         String str;
         String[] ar;
@@ -69,6 +72,7 @@ public class TestStringUtils extends TestCase {
                 new String[] { "", "", "a", "b", "c", "d", "", "" }, ar));
     }
 
+    @Test
     public void testJoin() {
         String[] ar;
 
@@ -108,6 +112,7 @@ public class TestStringUtils extends TestCase {
         assertEquals("abcd", StringUtils.join(li));
     }
 
+    @Test
     public void testTodHex() {
         assertEquals("", StringUtils.toHex(""));
         assertEquals("746F746F", StringUtils.toHex("toto"));

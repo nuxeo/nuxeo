@@ -21,11 +21,14 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 import org.nuxeo.common.utils.i18n.Labeler;
 
-public class TestLabeler extends TestCase {
+public class TestLabeler {
 
+    @Test
     public void testMakeLabel() {
         String prefix = "some.prefix";
         Labeler l = new Labeler(prefix);

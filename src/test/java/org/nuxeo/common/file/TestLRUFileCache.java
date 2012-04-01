@@ -21,23 +21,26 @@ package org.nuxeo.common.file;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.FileUtils;
 
-public class TestLRUFileCache extends TestCase {
+public class TestLRUFileCache {
 
     public File dir;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         dir = File.createTempFile("nxtestlrufilecache.", "");
         dir.delete();
         dir.mkdir();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         FileUtils.deleteTree(dir);
     }
@@ -50,6 +53,7 @@ public class TestLRUFileCache extends TestCase {
         return size;
     }
 
+    @Test
     public void testLRUFileCache() throws Exception {
         LRUFileCache cache = new LRUFileCache(dir, 100);
         assertEquals(0, cache.getSize());
@@ -113,6 +117,7 @@ public class TestLRUFileCache extends TestCase {
         assertEquals(0, getDirSize());
     }
 
+    @Test
     public void testLRUFileCachePrematureRemoval() throws Exception {
         LRUFileCache cache = new LRUFileCache(dir, 100);
 

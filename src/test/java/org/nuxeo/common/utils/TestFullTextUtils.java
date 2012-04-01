@@ -22,10 +22,12 @@ package org.nuxeo.common.utils;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestFullTextUtils extends TestCase {
+public class TestFullTextUtils {
 
+    @Test
     public void testParse() {
         assertNull(FullTextUtils.parseWord("gr", false));
         assertNull(FullTextUtils.parseWord("are", false));
@@ -42,6 +44,7 @@ public class TestFullTextUtils extends TestCase {
                 FullTextUtils.parseFullText(text, true));
     }
 
+    @Test
     public void testParseFullText() throws Exception {
         checkParseFullText("brown dog fail fox jump lazy over quick",
                 "The quick brown fox jumps over the lazy dog -- and fails!");

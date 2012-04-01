@@ -27,10 +27,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestZipUtils extends TestCase {
+public class TestZipUtils {
 
+    @Test
     public void testGetZipContentByFile() throws Exception {
         String path = "test-data/hello.odt";
         File sourceFile = FileUtils.getResourceFileFromContext(path);
@@ -61,6 +63,7 @@ public class TestZipUtils extends TestCase {
         assertEquals("Mimetype file length", 39, bytes.length);
     }
 
+    @Test
     public void testGetZipContentByByStream() throws Exception {
         String path = "test-data/hello.odt";
         File sourceFile = FileUtils.getResourceFileFromContext(path);
@@ -96,6 +99,7 @@ public class TestZipUtils extends TestCase {
         assertEquals("Mimetype file length", 39, bytes.length);
     }
 
+    @Test
     public void testGetZipContentBytByURL() throws Exception {
         String path = "test-data/hello.odt";
         File sourceFile = FileUtils.getResourceFileFromContext(path);

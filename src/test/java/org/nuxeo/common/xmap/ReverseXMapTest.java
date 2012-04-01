@@ -24,10 +24,12 @@ package org.nuxeo.common.xmap;
 import java.io.File;
 import java.net.URL;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class ReverseXMapTest extends TestCase{
+public class ReverseXMapTest {
 
+    @Test
     public void testReverse() throws Exception {
         XMap xmap = new XMap();
         xmap.register(Author.class);

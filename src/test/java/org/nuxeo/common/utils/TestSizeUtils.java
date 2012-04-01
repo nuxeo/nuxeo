@@ -18,14 +18,16 @@
  */
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-public class TestSizeUtils extends TestCase {
+public class TestSizeUtils {
 
     public long parse(String string) {
         return SizeUtils.parseSizeInBytes(string);
     }
 
+    @Test
     public void testParseSize() throws Exception {
         assertEquals(0, parse("0"));
         assertEquals(1, parse("1"));

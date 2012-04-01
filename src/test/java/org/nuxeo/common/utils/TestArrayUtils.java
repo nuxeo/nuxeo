@@ -23,10 +23,12 @@ package org.nuxeo.common.utils;
 
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
-public class TestArrayUtils extends TestCase {
+public class TestArrayUtils {
 
+    @Test
     public void testArraysJoinSimple1() {
         String[] a1 = { "a", "b", "c" };
         String[] a2 = { "a", "b", "d" };
@@ -38,6 +40,7 @@ public class TestArrayUtils extends TestCase {
         assertTrue(Arrays.equals(expected, result));
     }
 
+    @Test
     public void testArraysJoinSimple2() {
         String[] a1 = { "a", "b", "c" };
         String[] a2 = { "a", "b", "d" };
@@ -50,6 +53,7 @@ public class TestArrayUtils extends TestCase {
         assertTrue(Arrays.equals(expected, result));
     }
 
+    @Test
     public void testArraysJoinSimple3() {
         String[] a1 = { "a", "b", "c" };
         String[] a2 = { "x", "y", "z" };
@@ -62,6 +66,7 @@ public class TestArrayUtils extends TestCase {
         assertTrue(Arrays.equals(expected, result));
     }
 
+    @Test
     public void testArraysJoinSimple4() {
         String[] a1 = {};
         String[] a2 = { "b", "y", "z" };
@@ -74,6 +79,7 @@ public class TestArrayUtils extends TestCase {
         assertTrue(Arrays.equals(expected, result));
     }
 
+    @Test
     public void testArraysJoinSimple5() {
         String[] a1 = { "b", "y", "z" };
         String[] a2 = {};
@@ -86,6 +92,7 @@ public class TestArrayUtils extends TestCase {
         assertTrue(Arrays.equals(expected, result));
     }
 
+    @Test
     public void testArraysMerge() {
         String[] a1 = { "b", "y", "z" };
         String[] a2 = {};
@@ -98,6 +105,7 @@ public class TestArrayUtils extends TestCase {
         assertTrue(Arrays.equals(expected, result));
     }
 
+    @Test
     public void testArraysMerge2() {
         String[] a1 = {};
         String[] a2 = { "b", "y", "z" };
@@ -110,6 +118,7 @@ public class TestArrayUtils extends TestCase {
         assertTrue(Arrays.equals(expected, result));
     }
 
+    @Test
     public void testArraysMerge3() {
         String[] a1 = {};
         String[] a2 = {};

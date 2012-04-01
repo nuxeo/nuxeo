@@ -21,38 +21,44 @@
 
 package org.nuxeo.common.collections;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-public class TestScopedMap extends TestCase {
+public class TestScopedMap {
 
+    @Test
     public void testGetScopedValueWithScope() {
         ScopedMap map = new ScopedMap();
         map.put("default/foo", "bar");
         assertEquals("bar", map.getScopedValue(ScopeType.DEFAULT, "foo"));
     }
 
+    @Test
     public void testGetScopedValue() {
         ScopedMap map = new ScopedMap();
         map.put("default/foo", "bar");
         assertEquals("bar", map.getScopedValue("foo"));
     }
 
+    @Test
     public void testPutScopedValueWithScope() {
         ScopedMap map = new ScopedMap();
         map.putScopedValue(ScopeType.REQUEST, "foo", "bar");
         assertEquals("bar", map.get("request/foo"));
     }
 
+    @Test
     public void testPutScopedValue() {
         ScopedMap map = new ScopedMap();
         map.putScopedValue("foo", "bar");
         assertEquals("bar", map.get("default/foo"));
     }
 
+    @Test
     public void testClearScope() {
         ScopedMap map = new ScopedMap();
         map.putScopedValue(ScopeType.REQUEST, "foo1", "bar1");

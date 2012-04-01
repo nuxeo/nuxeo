@@ -21,11 +21,12 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.Assert;
 
-public class TestPattern extends TestCase {
+public class TestPattern {
 
+    @Test
     public void testFileNamePattern() {
 
         FileNamePattern pattern;
@@ -148,6 +149,7 @@ public class TestPattern extends TestCase {
 
     }
 
+    @Test
     public void testFilePathPattern() {
         FilePathPattern pattern = new FilePathPattern("a/b/c/d");
         Assert.assertTrue(pattern.match("a/b/c/d"));
@@ -174,6 +176,7 @@ public class TestPattern extends TestCase {
         Assert.assertFalse(pattern.match("a/b/c/d"));
     }
 
+    @Test
     public void testIndexOf() {
         Assert.assertEquals(0, FileNamePattern.indexOf("abc".toCharArray(), "a".toCharArray(), 0));
         Assert.assertEquals(1, FileNamePattern.indexOf("abc".toCharArray(), "b".toCharArray(), 0));
@@ -202,7 +205,7 @@ public class TestPattern extends TestCase {
         Assert.assertEquals(2, FileNamePattern.indexOf("abc.txt".toCharArray(), "?.txt".toCharArray(), 0));
     }
 
-
+    @Test
     public void testContainsAt() {
         Assert.assertTrue(FileNamePattern.containsAt("abc".toCharArray(), 0, "a".toCharArray()));
         Assert.assertTrue(FileNamePattern.containsAt("abc".toCharArray(), 1, "b".toCharArray()));

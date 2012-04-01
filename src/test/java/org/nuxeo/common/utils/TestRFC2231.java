@@ -21,13 +21,15 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Florent Guillaume
  */
-public class TestRFC2231 extends TestCase {
+public class TestRFC2231 {
 
+    @Test
     public void testEncodeWithPercent() {
         StringBuilder buf = new StringBuilder();
         RFC2231.percentEscape(buf, "foo");
@@ -43,6 +45,7 @@ public class TestRFC2231 extends TestCase {
                 buf.toString());
     }
 
+    @Test
     public void testEncodeContentDisposition() throws Exception {
         assertEquals("inline; filename*=UTF-8''caf%C3%A9;",
                 RFC2231.encodeContentDisposition("caf\u00e9", true, "Firefox"));

@@ -21,13 +21,15 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author sfermigier
  */
-public class TestPath extends TestCase {
+public class TestPath {
 
+    @Test
     public void test() {
         Path path = new Path("/a/b/c/d");
 
@@ -56,6 +58,7 @@ public class TestPath extends TestCase {
     }
 
     @SuppressWarnings({"ObjectEqualsNull"})
+    @Test
     public void testEquals() {
         Path path = new Path("/a/b/c/d");
         Path path2 = new Path("/a/b/c/d/");
@@ -81,12 +84,14 @@ public class TestPath extends TestCase {
         assertFalse(path.equals(new Path("/a/b/c/d/e")));
     }
 
+    @Test
     public void testGetFileExtension() {
         assertNull(new Path("/a/b/c/").getFileExtension());
         assertNull(new Path("/a/b/c").getFileExtension());
         assertEquals("doc", new Path("/a/b/c.doc").getFileExtension());
     }
 
+    @Test
     public void testBasic() {
         final Path path = new Path("/a/b/c");
 
@@ -102,6 +107,7 @@ public class TestPath extends TestCase {
         assertEquals(path, Path.createFromAbsolutePath("/a/b/c"));
     }
 
+    @Test
     public void testFileExtension() {
         Path path = new Path("/a/b/c");
         assertNull(path.getFileExtension());
@@ -114,16 +120,19 @@ public class TestPath extends TestCase {
         assertNull(path.getFileExtension());
     }
 
+    @Test
     public void testPathNormalisation() {
         Path path = new Path("////a/./b/../c");
         assertEquals("/a/c", path.toString());
     }
 
+    @Test
     public void testEquality() {
         assertEquals(new Path("/a/b/c"), new Path("/a/b/c"));
         assert !new Path("/a/b/c").equals(new Path("/a/b"));
     }
 
+    @Test
     public void testAppend() {
         Path path1 = new Path("/a/b/c");
         Path path2 = new Path("/d/e/f");

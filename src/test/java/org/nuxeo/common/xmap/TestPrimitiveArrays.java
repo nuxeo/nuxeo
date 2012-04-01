@@ -24,14 +24,16 @@ package org.nuxeo.common.xmap;
 import java.util.Arrays;
 import java.util.Collection;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.collections.PrimitiveArrays;
 
-public class TestPrimitiveArrays extends TestCase {
+public class TestPrimitiveArrays {
     private Collection myColl;
     private Object[] myColl2;
 
+    @Test
     public void testIntegerCase() {
         myColl = Arrays.asList(0, 1);
 
@@ -47,6 +49,7 @@ public class TestPrimitiveArrays extends TestCase {
         assertEquals(Integer.valueOf(1), result1[1]);
     }
 
+    @Test
     public void testLongCase() {
         myColl = Arrays.asList(0L, 1L);
 
@@ -62,19 +65,20 @@ public class TestPrimitiveArrays extends TestCase {
         assertEquals(Long.valueOf(1), result1[1]);
     }
 
+    @Test
     public void testDoubleCase() {
         myColl = Arrays.asList(0.0, 1.0);
 
         double[] result = (double[]) PrimitiveArrays.toPrimitiveArray(myColl, Double.TYPE);
         assertEquals(2, result.length);
-        assertEquals(0.0, result[0]);
-        assertEquals(1.0, result[1]);
+        assertEquals(0.0, result[0], 1e-8);
+        assertEquals(1.0, result[1], 1e-8);
 
         myColl2 = new Double[] { 0.0, 1.0 };
         Double[] result1 = (Double[]) PrimitiveArrays.toObjectArray(myColl2);
         assertEquals(2, result1.length);
-        assertEquals(0.0, result1[0]);
-        assertEquals(1.0, result1[1]);
+        assertEquals(0.0, (double) result1[0], 1e-8);
+        assertEquals(1.0, (double) result1[1], 1e-8);
     }
 
 }

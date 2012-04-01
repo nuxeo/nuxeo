@@ -27,10 +27,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestIdUtils extends TestCase {
+public class TestIdUtils {
 
+    @Test
     public void testGenerateIdAccentsLower() {
         // Testing that the generated strings are free of special characters and
         // lower case.
@@ -43,6 +45,7 @@ public class TestIdUtils extends TestCase {
         assertEquals("C-est-l-ete", IdUtils.generateId(s2, "-", false, 100));
     }
 
+    @Test
     public void testGenerateIdMaxChars() {
         // testing max chars
         String s = "On rails Nuxeooooo 5 is for a loooooooooooooooooooooooooooong time";
@@ -57,12 +60,14 @@ public class TestIdUtils extends TestCase {
         assertTrue(IdUtils.generateId(s, "-", false, maxChars).length() <= maxChars);
     }
 
+    @Test
     public void testGenerateIdAccentsSeparator() {
         String s = "C'est l'\u00E9t\u00E9 !";
         assertEquals("c-est-l-ete", IdUtils.generateId(s, "-", true, 100));
         assertEquals("c_est_l_ete", IdUtils.generateId(s, "_", true, 100));
     }
 
+    @Test
     public void testGenerateIdExamples() {
         Map<String, String> examples = new HashMap<String, String>();
         examples.put("Le ciel est bleu", "Le-ciel-est-bleu");
@@ -79,6 +84,7 @@ public class TestIdUtils extends TestCase {
         }
     }
 
+    @Test
     public void testGeneratePathSegment() {
         String s;
 

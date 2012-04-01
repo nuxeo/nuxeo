@@ -21,13 +21,15 @@
 
 package org.nuxeo.common.collections;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author sfermigier
  */
-public class TestSerializableArrayMap extends TestCase {
+public class TestSerializableArrayMap {
 
+    @Test
     public void test() {
         SerializableArrayMap<String, String> am = new SerializableArrayMap<String, String>();
 
@@ -85,6 +87,7 @@ public class TestSerializableArrayMap extends TestCase {
         assertEquals("2", am2.get("0"));
     }
 
+    @Test
     public void testAdd() {
         ArrayMap<String, String> am = new ArrayMap<String, String>(1);
 

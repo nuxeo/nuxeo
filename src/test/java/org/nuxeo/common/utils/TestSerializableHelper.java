@@ -23,13 +23,15 @@ package org.nuxeo.common.utils;
 
 import java.io.Serializable;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author sfermigier
  */
-public class TestSerializableHelper extends TestCase {
+public class TestSerializableHelper {
 
+    @Test
     public void test() {
         assertTrue(SerializableHelper.isSerializable(new SerializableClass()));
         assertFalse(SerializableHelper.isSerializable(new NonSerializableClass()));
@@ -43,3 +45,4 @@ class SerializableClass implements Serializable {
 
 class NonSerializableClass {
 }
+

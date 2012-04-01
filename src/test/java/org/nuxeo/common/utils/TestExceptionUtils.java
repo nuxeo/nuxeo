@@ -21,11 +21,13 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-public class TestExceptionUtils extends TestCase {
+public class TestExceptionUtils {
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+    @Test
     public void testExceptionCause() {
         Exception e1 = new Exception("root");
         Exception e2 = new Exception("child1", e1);

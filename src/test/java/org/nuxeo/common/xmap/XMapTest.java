@@ -23,14 +23,16 @@ package org.nuxeo.common.xmap;
 
 import java.net.URL;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class XMapTest extends TestCase {
+public class XMapTest {
 
+    @Test
     public void testMapping() throws Exception {
         XMap xmap = new XMap();
         xmap.register(Author.class);

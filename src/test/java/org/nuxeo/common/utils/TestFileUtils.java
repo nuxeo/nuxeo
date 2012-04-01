@@ -27,10 +27,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestFileUtils extends TestCase {
+public class TestFileUtils {
 
+    @Test
     public void testReadFromStreamWithPredefinedData() throws IOException {
         final byte[] data = {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 123, 3,
@@ -45,6 +47,7 @@ public class TestFileUtils extends TestCase {
         assertTrue(Arrays.equals(data, readData));
     }
 
+    @Test
     public void testReadFromStreamWithGeneratedData() throws IOException {
         int n = 10000;
         final byte[] data = new byte[n];
@@ -58,6 +61,7 @@ public class TestFileUtils extends TestCase {
         assertTrue(Arrays.equals(data, readData));
     }
 
+    @Test
     public void testReadFromStreamWithLongGeneratedData() throws IOException {
         int n = 1000000; // 1M
         final byte[] data = new byte[n];
@@ -71,6 +75,7 @@ public class TestFileUtils extends TestCase {
         assertTrue(Arrays.equals(data, readData));
     }
 
+    @Test
     public void testReadFromStreamWithVLongGeneratedData() throws IOException {
         int n = 0xFFFFFF; // 16M
         final byte[] data = new byte[n];
@@ -84,6 +89,7 @@ public class TestFileUtils extends TestCase {
         assertTrue(Arrays.equals(data, readData));
     }
 
+    @Test
     public void testGetRessourceFromUrl() throws IOException {
 
         // testing resources contained in paths with space
@@ -98,7 +104,7 @@ public class TestFileUtils extends TestCase {
         assertNotNull(file);
     }
 
-
+    @Test
     public void testFilePathMethods() {
         String path, testPath;
         if (isWindows()) {
@@ -126,6 +132,7 @@ public class TestFileUtils extends TestCase {
         assertEquals("a", FileUtils.getFileNameNoExt(path));
     }
 
+    @Test
     public void testFileContentEquals() {
         assertTrue(FileUtils.areFilesContentEquals(null, null));
 

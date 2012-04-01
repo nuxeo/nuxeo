@@ -25,12 +25,15 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class TestURLStreamHandlerFactoryInstaller extends TestCase {
+public class TestURLStreamHandlerFactoryInstaller {
 
     public static class TestHandlerFactory implements URLStreamHandlerFactory {
 
@@ -56,8 +59,8 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
     URLStreamHandlerFactory f1;
     URLStreamHandlerFactory f2;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         TestHandlerFactory.invokeCount = 0;
         f1 = new TestHandlerFactory();
         URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f1);
@@ -66,8 +69,8 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
         URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f2);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         URLStreamHandlerFactoryInstaller.uninstallURLStreamHandlerFactory();
     }
 
@@ -81,6 +84,7 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
         return installed;
     }
 
+    @Test
     public void testInstaller() throws Exception {
         assertTrue(checkInstalled());
 
@@ -88,6 +92,7 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
         assertFalse(checkInstalled());
     }
 
+    @Test
     public void testReset() throws Exception {
         new URL("test:pfff"); // create test protocol handler
         assertEquals(1, TestHandlerFactory.invokeCount);
