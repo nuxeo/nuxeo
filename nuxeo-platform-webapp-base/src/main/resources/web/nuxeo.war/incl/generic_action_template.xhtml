@@ -58,18 +58,15 @@ Parameters:
     </c:when>
 
     <c:when test="#{action.getType() == 'fancybox'}">
-      <a4j:form id="#{action.id}_form" ajaxSubmit="true"
-        styleClass="action_bar">
-        <a4j:commandLink id="#{action.id}_link" ajaxSingle="true"
-          ignoreDupResponses="true" requestDelay="100"
-          onclick="showFancyBox('##{action.id}_box');">
-          <h:graphicImage value="#{action.icon}"
-            rendered="#{not empty action.icon}"
-            title="#{messages[action.label]}"
-            alt="#{messages[action.label]}" styleClass="smallIcon" />
-        </a4j:commandLink>
-        <ui:insert name="inside_action" />
-      </a4j:form>
+      <a4j:commandLink id="#{action.id}_link" ajaxSingle="true"
+        ignoreDupResponses="true" requestDelay="100"
+        onclick="showFancyBox('##{action.id}_box');">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}" styleClass="smallIcon" />
+      </a4j:commandLink>
+      <ui:insert name="inside_action" />
       <div style="display: none;">
         <div id="#{action.id}_box">
           <ui:include
