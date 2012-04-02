@@ -28,15 +28,6 @@ Parameters:
       </nxh:commandLink>
     </c:when>
 
-    <!-- WIP
-    <c:when test="#{action.getType() == 'rest_link'}">
-      <nxd:restDocumentLink document="#{currentDocument}"
-        tab="#{webActions.currentTabId}" subTab="#{subTab.id}">
-        <h:outputText value="#{messages[subTab.label]}" />
-      </nxd:restDocumentLink>
-    </c:when>
-    -->
-
     <c:when test="#{action.type == 'link_icon_text'}">
       <nxh:commandLink action="#{action.link}" id="#{action.id}"
         onclick="#{action.confirm}">
