@@ -63,6 +63,7 @@ public class Head {
         if (baseUrl != null) {
             sb.append(String.format("<base href=\"%s\" />", baseUrl));
         }
+        sb.append("<meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\">");
 
         return sb.toString();
     }
