@@ -30,7 +30,7 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
 
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        Map<String, Object> ctx = FMContextBuilder.build(doc);
+        Map<String, Object> ctx = FMContextBuilder.build(doc, false);
 
         JXLSBindingResolver resolver = new JXLSBindingResolver();
 

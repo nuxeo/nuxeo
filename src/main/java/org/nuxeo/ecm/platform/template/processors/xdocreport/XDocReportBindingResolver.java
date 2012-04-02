@@ -6,6 +6,7 @@ import org.nuxeo.ecm.platform.template.processors.AbstractBindingResolver;
 import fr.opensagres.xdocreport.core.document.SyntaxKind;
 import fr.opensagres.xdocreport.document.images.IImageProvider;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
+import freemarker.template.TemplateModelException;
 
 public class XDocReportBindingResolver extends AbstractBindingResolver {
 
@@ -35,8 +36,13 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
     }
 
     @Override
-    protected void handleLoop(String paramName) {
+    protected Object handleLoop(String paramName, Object value) {
         metadata.addFieldAsList(paramName);
-
+        try {
+            return getWrapper().wrap(value);
+        } catch (TemplateModelException e) {
+            return null;
+        }
     }
+
 }

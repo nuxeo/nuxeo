@@ -1,13 +1,19 @@
-package org.nuxeo.ecm.platform.template.processors.jxls;
+package org.nuxeo.ecm.platform.template.processors.fm;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.template.processors.AbstractBindingResolver;
 
-public class JXLSBindingResolver extends AbstractBindingResolver {
+import freemarker.template.TemplateModelException;
+
+public class FMBindingResolver extends AbstractBindingResolver {
 
     @Override
     protected Object handleLoop(String paramName, Object value) {
-        return value;
+        try {
+            return getWrapper().wrap(value);
+        } catch (TemplateModelException e) {
+            return null;
+        }
     }
 
     @Override

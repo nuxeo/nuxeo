@@ -1,11 +1,14 @@
 package org.nuxeo.ecm.platform.template.tests;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.template.TemplateInput;
 import org.nuxeo.ecm.platform.template.adapters.doc.TemplateBasedDocument;
 
 public class TestFMProcessing extends SimpleTemplateDocTestCase {
@@ -14,6 +17,13 @@ public class TestFMProcessing extends SimpleTemplateDocTestCase {
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
+
+        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        TemplateInput input = new TemplateInput("variable1", "YoVar1");
+        params.add(input);
+
+        testDoc = adapter.saveParams(TEMPLATE_NAME, params, true);
+        session.save();
 
         String processorType = adapter.getSourceTemplate(TEMPLATE_NAME).getTemplateType();
         assertEquals("Freemarker", processorType);
@@ -24,6 +34,7 @@ public class TestFMProcessing extends SimpleTemplateDocTestCase {
 
         assertTrue(xmlContent.contains(testDoc.getTitle()));
         assertTrue(xmlContent.contains(testDoc.getId()));
+        assertTrue(xmlContent.contains("YoVar1"));
 
     }
 

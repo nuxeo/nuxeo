@@ -39,6 +39,11 @@ public class FMContextBuilder {
     public static List<LogEntry> testAuditEntries;
 
     public static Map<String, Object> build(DocumentModel doc) throws Exception {
+        return build(doc, true);
+    }
+
+    public static Map<String, Object> build(DocumentModel doc,
+            boolean wrapAuditEntries) throws Exception {
 
         Map<String, Object> ctx = new HashMap<String, Object>();
         DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
@@ -80,7 +85,11 @@ public class FMContextBuilder {
                 log.warn("Unable to preprocess Audit entries : "
                         + e.getMessage());
             }
-            ctx.put("auditEntries", nuxeoWrapper.wrap(auditEntries));
+            if (wrapAuditEntries) {
+                ctx.put("auditEntries", nuxeoWrapper.wrap(auditEntries));
+            } else {
+                ctx.put("auditEntries", auditEntries);
+            }
         }
         return ctx;
     }

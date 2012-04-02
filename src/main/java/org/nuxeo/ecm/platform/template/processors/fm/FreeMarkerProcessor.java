@@ -54,6 +54,11 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
 
         Map<String, Object> ctx = FMContextBuilder.build(templateBasedDocument,
                 templateName);
+
+        FMBindingResolver resolver = new FMBindingResolver();
+        resolver.resolve(templateBasedDocument.getParams(templateName), ctx,
+                templateBasedDocument);
+
         StringWriter writer = new StringWriter();
         getEngine().render(fmTemplateKey, ctx, writer);
 

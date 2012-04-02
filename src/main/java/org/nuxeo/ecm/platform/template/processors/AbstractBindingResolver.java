@@ -29,28 +29,36 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
 
     protected Log log = LogFactory.getLog(XDocReportBindingResolver.class);
 
-    protected abstract void handleLoop(String paramName);
+    protected abstract Object handleLoop(String paramName, Object value);
 
-    protected abstract Object handlePictureField(String paramName, Blob blobValue);
+    protected abstract Object handlePictureField(String paramName,
+            Blob blobValue);
 
     protected abstract void handleBlobField(String paramName, Blob blobValue);
 
     protected abstract void handleHtmlField(String paramName, String htmlValue);
 
+    protected DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(
+            null);
+
     public AbstractBindingResolver() {
         super();
     }
 
+    protected DocumentObjectWrapper getWrapper() {
+        return nuxeoWrapper;
+    }
+
     @Override
-    public void resolve(List<TemplateInput> inputParams, Map<String, Object> context, TemplateBasedDocument templateBasedDocument) {
-    
-        DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
-    
+    public void resolve(List<TemplateInput> inputParams,
+            Map<String, Object> context,
+            TemplateBasedDocument templateBasedDocument) {
+
         for (TemplateInput param : inputParams) {
             try {
                 if (param.isSourceValue()) {
                     if (param.getType() == InputType.Content) {
-    
+
                         if (ContentInputType.HtmlPreview.getValue().equals(
                                 param.getSource())) {
                             HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(
@@ -109,7 +117,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                         Serializable value = property.getValue();
                         if (value != null) {
                             if (param.getType() == InputType.Content) {
-    
+
                             } else {
                                 if (Blob.class.isAssignableFrom(value.getClass())) {
                                     Blob blob = (Blob) value;
@@ -127,10 +135,13 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                     if (param.isAutoLoop()) {
                                         // should do the same on all children
                                         // properties ?
-                                        handleLoop(param.getName());
+                                        Object loopVal = handleLoop(
+                                                param.getName(), property);
+                                        context.put(param.getName(), loopVal);
+                                    } else {
+                                        context.put(param.getName(),
+                                                nuxeoWrapper.wrap(property));
                                     }
-                                    context.put(param.getName(),
-                                            nuxeoWrapper.wrap(property));
                                 }
                             }
                         } else {
