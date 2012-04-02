@@ -31,18 +31,25 @@
 
     <!-- Contextual tools buttons contrib NXP-9039 -->
     <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}" order="1"
-      label="command.lock" icon="" type="icon">
+      label="command.lock" icon="" type="link_icon">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
     </action>
     <action id="DOCUMENT_UNLOCK" link="#{lockActions.unlockCurrentDocument}" order="1"
-      label="command.unlock" icon="" type="icon">
+      label="command.unlock" icon="" type="link_icon">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
     </action>
-
+    <action id="addCurrentDocumentToWorklist"
+      link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
+      order="10" label="help.command.clipboard.addworklist" type="link_icon"
+      icon="/icons/action_add.gif" immediate="true">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
