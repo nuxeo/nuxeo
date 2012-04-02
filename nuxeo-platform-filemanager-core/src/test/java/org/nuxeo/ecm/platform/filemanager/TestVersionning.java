@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -72,33 +73,41 @@ public class TestVersionning {
         ws = coreSession.createDocument(ws);
 
         destWS = ws;
+
+        coreSession.save();
+        waitForAsyncCompletion();
+    }
+
+    protected void waitForAsyncCompletion() {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
     @Test
     public void testVersioning() throws Exception {
         createTestDocuments();
+
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new StringBlob("Something");
         blob.setMimeType("something");
         blob.setFilename("mytest.something");
         DocumentModel doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest.something");
-
+        waitForAsyncCompletion();
         assertEquals("mytest.something", doc.getTitle());
-
         VersioningManager vm = Framework.getLocalService(VersioningManager.class);
         String vl = vm.getVersionLabel(doc);
         assertEquals("0.0", vl);
 
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest.something");
-
+        waitForAsyncCompletion();
         String vl2 = vm.getVersionLabel(doc);
         assertEquals("0.1", vl2);
 
         blob.setFilename("mytest2.something");
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest2.something");
+        waitForAsyncCompletion();
         vl = vm.getVersionLabel(doc);
         assertEquals("0.0", vl);
 
@@ -106,12 +115,14 @@ public class TestVersionning {
         blob.setMimeType("text/plain");
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytxt.txt");
+        waitForAsyncCompletion();
         assertEquals("Note", doc.getType());
         vl = vm.getVersionLabel(doc);
         assertEquals("0.0", vl);
 
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytxt.txt");
+        waitForAsyncCompletion();
         vl = vm.getVersionLabel(doc);
         assertEquals("0.1", vl);
     }
