@@ -8,6 +8,8 @@ import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFA
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -23,6 +25,7 @@ public class TestContainerLocalConfig extends AbstractUserRegistration {
 
         assertTrue(rules.allowUserCreation());
         session.save();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         DocumentModel root = ((UserRegistrationComponent) userRegistrationService).getOrCreateRootDocument(
                 session, DEFAULT_CONFIGURATION_NAME);
