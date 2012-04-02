@@ -16,13 +16,15 @@
  */
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 
-import junit.framework.TestCase;
+public class TestNoteImporter {
 
-public class TestNoteImporter extends TestCase {
-
+    @Test
     public void test() throws Exception {
         Blob blob;
 

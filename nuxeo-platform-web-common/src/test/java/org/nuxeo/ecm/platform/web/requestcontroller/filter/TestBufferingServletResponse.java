@@ -27,7 +27,9 @@ import java.lang.reflect.Proxy;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -35,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 
-public class TestBufferingServletResponse extends TestCase {
+public class TestBufferingServletResponse {
 
     private static final Log log = LogFactory.getLog(TestBufferingServletResponse.class);
 
@@ -43,15 +45,15 @@ public class TestBufferingServletResponse extends TestCase {
 
     protected BufferingHttpServletResponse response;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         bout = new ByteArrayOutputStream();
         ResponseProxy responseProxy = new ResponseProxy(bout);
         HttpServletResponse httpServletResponse = getFakeResponse(responseProxy);
         response = new BufferingHttpServletResponse(httpServletResponse);
     }
 
+    @Test
     public void test() throws Exception {
         BufferingServletOutputStream out = response.getOutputStream();
         out.write('A');
@@ -66,6 +68,7 @@ public class TestBufferingServletResponse extends TestCase {
         assertEquals("ABCDEF", bout.toString());
     }
 
+    @Test
     public void testEmpty() throws Exception {
         BufferingServletOutputStream out = response.getOutputStream();
         assertEquals("", bout.toString());
@@ -78,6 +81,7 @@ public class TestBufferingServletResponse extends TestCase {
         assertEquals("", bout.toString());
     }
 
+    @Test
     public void testWriter() throws Exception {
         PrintWriter w = response.getWriter();
         w.write("abc");
@@ -111,10 +115,12 @@ public class TestBufferingServletResponse extends TestCase {
         assertEquals(initial + buf.toString() + "DEF", bout.toString());
     }
 
+    @Test
     public void testBig() throws Exception {
         doBig("ABC");
     }
 
+    @Test
     public void testBig2() throws Exception {
         // directly switch to file
         doBig(null);

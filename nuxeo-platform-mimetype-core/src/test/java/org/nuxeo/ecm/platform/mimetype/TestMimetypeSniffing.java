@@ -23,6 +23,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -38,7 +43,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
 
     private MimetypeRegistryService mimetypeRegistry;
 
-    @Override
+    @Test
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests",
@@ -46,7 +51,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         mimetypeRegistry = NXMimeType.getMimetypeRegistryService();
     }
 
-    @Override
+    @Test
     public void tearDown() throws Exception {
         mimetypeRegistry = null;
         super.tearDown();
@@ -62,11 +67,13 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         return FileUtils.getResourceFileFromContext("test-data/zeroes");
     }
 
+    @Test
     public void testZeroesDocumentFromFile() throws Exception {
         assertEquals("application/octet-stream",
                 mimetypeRegistry.getMimetypeFromFile(getZeroesDocument()));
     }
 
+    @Test
     public void testZeroesDocumentFromStream() throws Exception {
         InputStream stream = new FileInputStream(getZeroesDocument());
         assertEquals("application/octet-stream",
@@ -77,11 +84,13 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         return FileUtils.getResourceFileFromContext("test-data/hello.txt");
     }
 
+    @Test
     public void testTextDocumentFromFile() throws Exception {
         assertEquals("text/plain",
                 mimetypeRegistry.getMimetypeFromFile(getTextDocument()));
     }
 
+    @Test
     public void testTextDocumentFromStream() throws Exception {
         InputStream stream = new FileInputStream(getTextDocument());
         assertEquals("text/plain",
@@ -92,11 +101,13 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         return FileUtils.getResourceFileFromContext("test-data/hello.doc");
     }
 
+    @Test
     public void testWordDocumentFromFile() throws Exception {
         assertEquals("application/msword",
                 mimetypeRegistry.getMimetypeFromFile(getWordDocument()));
     }
 
+    @Test
     public void testWordDocumentFromStream() throws Exception {
         InputStream stream = new FileInputStream(getWordDocument());
         assertEquals("application/msword",
@@ -138,11 +149,13 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         return getFileFromResource("test-data/hello.zip");
     }
 
+    @Test
     public void testZipDocumentFromFile() throws Exception {
         assertEquals("application/zip",
                 mimetypeRegistry.getMimetypeFromFile(getZipDocument()));
     }
 
+    @Test
     public void testZipDocumentFromStream() throws Exception {
         InputStream stream = new FileInputStream(getZipDocument());
         assertEquals("application/zip",
@@ -166,6 +179,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
     }
 
     // CSV file
+    @Test
     public void testCsvDocument() throws Exception {
         assertEquals("text/csv", mimetypeRegistry.getMimetypeFromExtension("csv"));
         assertEquals("text/csv", mimetypeRegistry
@@ -265,6 +279,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         return getFileFromResource("test-data/simple.xml");
     }
 
+    @Test
     public void testXmlDocumentFromFile() throws Exception {
         assertEquals("text/xml",
                 mimetypeRegistry.getMimetypeFromFile(getXmlDocument()));
@@ -307,6 +322,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
     }
 
     /**
+    @Test
     public void testBigBinFromFile() throws Exception {
 
         long t0 = System.currentTimeMillis();

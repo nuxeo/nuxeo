@@ -22,6 +22,11 @@ package org.nuxeo.ecm.platform.content.template.tests;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -41,7 +46,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
 
     protected ContentTemplateService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -71,12 +76,13 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertNotNull(service);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testServiceFactoryContribs() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
@@ -86,6 +92,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertEquals(2, factories.size());
     }
 
+    @Test
     public void testServiceFactoryBindingContribs() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
@@ -99,6 +106,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
                 factoryBindings.get("Domain").getTemplate().get(0).getId());
     }
 
+    @Test
     public void testServiceFactoryForSecurity() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
@@ -118,6 +126,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertEquals(3, factory.getRootAcl().size());
     }
 
+    @Test
     public void testServiceFactoryForNotifications() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
@@ -161,6 +170,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertEquals("members", groups.get(0));
     }
 
+    @Test
     public void testServiceFactoryInstancesContribs() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
@@ -171,6 +181,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertTrue(factoryInstances.containsKey("Domain"));
     }
 
+    @Test
     public void testRootFactory() throws ClientException {
         // Fake repo init for now
         DocumentModel root = session.getRootDocument();
@@ -209,6 +220,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertEquals("Section", children.get(0).getTitle());
     }
 
+    @Test
     public void testDomainFactory() throws ClientException {
         DocumentModel testDom = session.createDocumentModel("/", "TestDomain",
                 "Domain");
@@ -225,6 +237,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertEquals("Workspaces", children.get(0).getTitle());
     }
 
+    @Test
     public void testWSFactory() throws ClientException {
         // reach first available WSRoot
         DocumentModel root = session.getRootDocument();
@@ -273,6 +286,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testFacetFactories() throws ClientException {
         // reach first available WSRoot
         DocumentModel root = session.getRootDocument();

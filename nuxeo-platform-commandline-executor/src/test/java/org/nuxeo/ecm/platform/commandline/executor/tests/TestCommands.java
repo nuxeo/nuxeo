@@ -23,6 +23,10 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
@@ -39,12 +43,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestCommands extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
     }
 
+    @Test
     public void testCmdParamatersParsing() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);

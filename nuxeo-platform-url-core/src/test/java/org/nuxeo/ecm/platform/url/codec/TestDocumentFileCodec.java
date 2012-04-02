@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.url.codec;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -34,8 +35,9 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-public class TestDocumentFileCodec extends TestCase {
+public class TestDocumentFileCodec {
 
+    @Test
     public void testGetUrlFromDocumentView() {
         DocumentFileCodec codec = new DocumentFileCodec();
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
@@ -50,6 +52,7 @@ public class TestDocumentFileCodec extends TestCase {
     }
 
     // same with spaces in file name
+    @Test
     public void testGetUrlFromDocumentViewEncoding() {
         DocumentFileCodec codec = new DocumentFileCodec();
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
@@ -64,6 +67,7 @@ public class TestDocumentFileCodec extends TestCase {
     }
 
     // same with reserved characters in file name and additional request params
+    @Test
     public void testGetUrlFromDocumentViewWithReservedAndParams() {
         DocumentFileCodec codec = new DocumentFileCodec();
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
@@ -78,6 +82,7 @@ public class TestDocumentFileCodec extends TestCase {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
+    @Test
     public void testGetDocumentViewFromUrl() {
         DocumentFileCodec codec = new DocumentFileCodec();
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt";
@@ -97,6 +102,7 @@ public class TestDocumentFileCodec extends TestCase {
     }
 
     // same with spaces in file name
+    @Test
     public void testGetDocumentViewFromUrlDecoding() {
         DocumentFileCodec codec = new DocumentFileCodec();
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20doc%20%C3%A9.odt";
@@ -117,6 +123,7 @@ public class TestDocumentFileCodec extends TestCase {
     }
 
     // same with reserved characters in file name and params
+    @Test
     public void testGetDocumentViewFromUrlWithReservedAndParams() {
         DocumentFileCodec codec = new DocumentFileCodec();
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20%5Bdoc%5D%3F%20%C3%A9.odt?foo=bar";
@@ -138,6 +145,7 @@ public class TestDocumentFileCodec extends TestCase {
     }
 
     // do the same with filename property path
+    @Test
     public void testGetDocumentViewFromUrlNoViewId() {
         DocumentFileCodec codec = new DocumentFileCodec();
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt?FILENAME_PROPERTY_PATH=file:filename";

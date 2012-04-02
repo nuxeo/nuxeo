@@ -22,6 +22,10 @@ package org.nuxeo.ecm.platform.layout.core.tests;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -40,7 +44,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
 
     private LayoutStore service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
@@ -50,6 +54,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testLayoutRegistration() {
         assertNull(service.getLayoutDefinition("fooCategory", "dublincore"));
 
@@ -127,6 +132,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertEquals("barListItem", list[1]);
     }
 
+    @Test
     public void testComplexLayoutRegistration() {
         LayoutDefinition filesLayout = service.getLayoutDefinition(
                 "testCategory", "files");
@@ -166,6 +172,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertEquals("filename", fieldDefs[0].getFieldName());
     }
 
+    @Test
     public void testLayoutPropertiesRegistration() {
         LayoutDefinition layoutDef = service.getLayoutDefinition(
                 "testCategory", "layoutPropertiesTest");
@@ -185,6 +192,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
                 layoutRow.getProperties("any").get("layoutRowPropName"));
     }
 
+    @Test
     public void testLayoutColumnsRegistration() {
         LayoutDefinition layoutDef = service.getLayoutDefinition(
                 "testCategory", "layoutColumnsTest");

@@ -18,17 +18,19 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
+import static org.junit.Assert.*;
 /**
  * @author Anahide Tchertchian
  */
-public class TestPageProvider extends TestCase {
+public class TestPageProvider {
 
+    @Test
     public void testPageProvider() {
         checkStandardPageProvider(new MockPageProvider(5, 13, true), true);
     }
 
+    @Test
     public void testPageProviderNoResultsCount() {
         checkStandardPageProvider(new MockPageProvider(5, 13, false), false);
     }
@@ -226,11 +228,13 @@ public class TestPageProvider extends TestCase {
         }
     }
 
+    @Test
     public void testPageProviderWithPageSizeSameThanResultSize() {
         checkPageProviderWithPageSizeSameThanResultSize(new MockPageProvider(5,
                 10, true), true);
     }
 
+    @Test
     public void testPageProviderWithPageSizeSameThanResultSizeNoResultsCount() {
         checkPageProviderWithPageSizeSameThanResultSize(new MockPageProvider(5,
                 10, false), false);
@@ -275,11 +279,13 @@ public class TestPageProvider extends TestCase {
         assertEquals(0, provider.getCurrentPageIndex());
     }
 
+    @Test
     public void testPageProviderWithoutPagination() {
         checkPageProviderWithoutPagination(new MockPageProvider(0, 13, true),
                 true);
     }
 
+    @Test
     public void testPageProviderWithoutPaginationNoResultsCount() {
         checkPageProviderWithoutPagination(new MockPageProvider(0, 13, false),
                 false);
@@ -316,6 +322,7 @@ public class TestPageProvider extends TestCase {
         assertEquals(0, provider.getCurrentPageIndex());
     }
 
+    @Test
     public void testMinMaxPageSize() {
         // only set page size => should fallback on default max page size
         assertEquals(20, getMinMaxPageSize(Long.valueOf(20), null));

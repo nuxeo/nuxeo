@@ -19,12 +19,16 @@
 
 package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class TestDigestComputerListener extends AbstractListener {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.filemanager.api");
@@ -36,6 +40,7 @@ public class TestDigestComputerListener extends AbstractListener {
                 "OSGI-INF/nxfilemanager-digest-contrib.xml");
     }
 
+    @Test
     public void testDigest() throws Exception {
         DocumentModel file = createFileDocument(true);
         Blob blob = (Blob) file.getProperty("file", "content");

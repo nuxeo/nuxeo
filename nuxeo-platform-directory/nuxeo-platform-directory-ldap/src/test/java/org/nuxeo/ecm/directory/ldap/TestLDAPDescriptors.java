@@ -24,6 +24,10 @@ import java.util.Map;
 
 import javax.naming.directory.SearchControls;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -41,7 +45,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
                 resource);
     }
 
-    @Override
+    @Test
     public void setUp() throws Exception {
         super.setUp();
         XMap xmap = new XMap();
@@ -58,15 +62,18 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         server2 = (LDAPServerDescriptor) xmap.load(server2Url);
     }
 
+    @Test
     public void testGetRdnAttribute() {
         assertEquals("uid", directory.getRdnAttribute());
     }
 
+    @Test
     public void testGetCreationBaseDn() {
         assertEquals("ou=people,dc=example,dc=com",
                 directory.getCreationBaseDn());
     }
 
+    @Test
     public void testGetCreationClasses() {
         String[] configuredClasses = directory.getCreationClasses();
         assertEquals(4, configuredClasses.length);
@@ -76,23 +83,28 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         assertEquals("inetOrgPerson", configuredClasses[3]);
     }
 
+    @Test
     public void testGetIdField() {
         assertEquals("uid", directory.getIdField());
     }
 
+    @Test
     public void testGetPasswordFieldName() {
         assertEquals("userPassword", directory.getPasswordField());
     }
 
+    @Test
     public void testGetSchemaName() {
         assertEquals("user", directory.getSchemaName());
     }
 
+    @Test
     public void testGetSearchBaseDn() {
         assertEquals("ou=people,dc=example,dc=com",
                 directory.getSearchBaseDn());
     }
 
+    @Test
     public void testGetSearchClasses() {
         // test data from the directory.xml resource
         String[] configuredClasses = directory.getSearchClasses();
@@ -100,10 +112,12 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         assertEquals("person", configuredClasses[0]);
     }
 
+    @Test
     public void testGetSearchFilter() {
         assertEquals("(&(sn=Aa*)(cn=Aa*))", directory.getSearchFilter());
     }
 
+    @Test
     public void testGetAggregatedSearchFilter() {
         // test aggregation based on data from the directory.xml
         // resource
@@ -130,6 +144,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
                 directory.getAggregatedSearchFilter());
     }
 
+    @Test
     public void testGetSearchScope() throws DirectoryException {
         // testing the value provided in the directory.xml resource
         assertEquals(SearchControls.ONELEVEL_SCOPE,
@@ -153,16 +168,19 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testGetName() {
         assertEquals("directoryName", directory.getName());
         assertEquals("server1Name", server1.getName());
         assertEquals("server2Name", server2.getName());
     }
 
+    @Test
     public void testGetServerName() {
         assertEquals("default", directory.getServerName());
     }
 
+    @Test
     public void testMapper() {
         Map<String, String> fieldMapping = directory.getFieldMapping();
         assertNotNull(fieldMapping);
@@ -171,6 +189,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         assertTrue(fieldMapping.containsKey("company"));
     }
 
+    @Test
     public void testGetLdapUrls() {
         assertEquals("ldap://localhost", server1.getLdapUrls());
         assertEquals("ldap://localhost:389 ldap://server2 ldap://server3",
@@ -183,22 +202,26 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testGetBindDn() {
         assertNull(server1.getBindDn());
         assertEquals("cn=nuxeo5,ou=applications,dc=example,dc=com",
                 server2.getBindDn());
     }
 
+    @Test
     public void testGetBindPassword() {
         assertEquals("", server1.getBindPassword());
         assertEquals("changeme", server2.getBindPassword());
     }
 
+    @Test
     public void testIsPoolingEnabled() {
         assertTrue(server1.isPoolingEnabled());
         assertFalse(server2.isPoolingEnabled());
     }
 
+    @Test
     public void testGetEmptyRefMarker() {
         assertEquals("cn=emptyRef", directory.getEmptyRefMarker());
     }

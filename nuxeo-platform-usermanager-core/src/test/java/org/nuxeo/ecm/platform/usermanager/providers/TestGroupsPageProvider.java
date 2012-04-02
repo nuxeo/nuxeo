@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -24,7 +29,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
 
     protected UserManager userManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
@@ -55,7 +60,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         initGroups();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
@@ -72,6 +77,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         return newGroup;
     }
 
+    @Test
     public void testGroupsPageProviderAllMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
@@ -92,6 +98,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         assertEquals("members", group.getId());
     }
 
+    @Test
     public void testGroupsPageProviderSearchMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,

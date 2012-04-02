@@ -22,6 +22,10 @@ package org.nuxeo.ecm.platform.mimetype.service;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.mimetype.NXMimeType;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -40,7 +44,7 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
     private MimetypeEntry pdfMimeType;
     private ExtensionDescriptor xmlExtension;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests",
@@ -53,10 +57,12 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
         xmlExtension = mimetypeRegistryService.extensionRegistry.get("xml");
     }
 
+    @Test
     public void testComponentRegistration() {
         assertNotNull(mimetypeRegistryService);
     }
 
+    @Test
     public void testPluginsRegistration() {
         assertEquals("application/msword", wordMimeType.getNormalized());
         assertEquals("application/pdf", pdfMimeType.getNormalized());
@@ -65,6 +71,7 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
         assertEquals("text/xml", xmlExtension.getMimetype());
     }
 
+    @Test
     public void testPdfMimetypes() {
         assertEquals("application/pdf", pdfMimeType.getNormalized());
         assertEquals("application", pdfMimeType.getMajor());
@@ -74,16 +81,19 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
         assertFalse(mimetypes.contains("app-whatever-pdf"));
     }
 
+    @Test
     public void testPdfExtensions() {
         List<String> extensions = pdfMimeType.getExtensions();
         assertTrue(extensions.contains("pdf"));
         assertTrue(!extensions.contains("fake"));
     }
 
+    @Test
     public void testPdfBinary() {
         assertTrue(pdfMimeType.isBinary());
     }
 
+    @Test
     public void testPdfOnlineEditable() {
         assertFalse(pdfMimeType.isOnlineEditable());
     }
@@ -93,6 +103,7 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
         assertNotNull(iconPath);
     }
 
+    @Test
     public void testWordMimetypes() {
         assertEquals("application/msword", wordMimeType.getNormalized());
         assertEquals("application", wordMimeType.getMajor());
@@ -102,16 +113,19 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
         assertTrue(mimetypes.contains("application/msword"));
     }
 
+    @Test
     public void testWordExtensions() {
         List<String> extensions = wordMimeType.getExtensions();
         assertEquals(1, extensions.size());
         assertTrue(extensions.contains("doc"));
     }
 
+    @Test
     public void testWordBinary() {
         assertTrue(wordMimeType.isBinary());
     }
 
+    @Test
     public void testWordOnlineEditable() {
         assertTrue(wordMimeType.isOnlineEditable());
     }

@@ -16,11 +16,10 @@
  */
 package org.nuxeo.ecm.platform.htmlsanitizer;
 
-import static org.junit.Assert.assertEquals;
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -146,7 +145,7 @@ public class TestHtmlSanitizerServiceImpl {
         doc4.setPropertyValue("webp:isRichtext", true);
         doc4 = session.createDocument(doc4);
         String webpage4 = (String) doc4.getPropertyValue("webp:content");
-        Assert.assertFalse(WIKI_MARKUP.equals(webpage4));
+        assertFalse(WIKI_MARKUP.equals(webpage4));
         session.save();
     }
 

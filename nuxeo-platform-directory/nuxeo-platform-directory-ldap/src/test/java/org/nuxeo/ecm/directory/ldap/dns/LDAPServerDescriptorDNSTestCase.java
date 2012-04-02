@@ -19,6 +19,10 @@ package org.nuxeo.ecm.directory.ldap.dns;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor;
@@ -73,7 +77,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
 
     private MockDNSService dns;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         dns = new MockDNSService();
@@ -86,6 +90,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testLdapServerDnsParsing() throws Exception {
         List<DNSServiceEntry> actual = dns.resolveLDAPDomainServers("nuxeo.org");
         if (log.isDebugEnabled()) {
@@ -151,6 +156,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testLdapUrlSslSupport() throws Exception {
         LdapURL url = new LdapURL("ldap:///dc=example,dc=com");
         assertFalse(url.useSsl());

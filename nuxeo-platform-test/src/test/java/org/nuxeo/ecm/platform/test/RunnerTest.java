@@ -16,10 +16,10 @@
  */
 package org.nuxeo.ecm.platform.test;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -45,22 +45,25 @@ public class RunnerTest {
     @Inject protected CoreSession session;
     @Inject protected SchemaManager sm;
 
-    @Test public void testLocalResource() {
+    @Test
+    public void testLocalResource() {
        DocumentType dt = sm.getDocumentType("MyFolder");
-       Assert.assertEquals("MyFolder", dt.getName());
+       assertEquals("MyFolder", dt.getName());
     }
 
-//    @Test public void testDatasourceBinding() throws Exception {
+//    @Test
+//    public void testDatasourceBinding() throws Exception {
 //        DataSource ds = (DataSource)new InitialContext().lookup(DataSourceHelper.getDataSourceJNDIName("nxsqldirectory"));
-//        Assert.assertNotNull(ds);
+//        assertNotNull(ds);
 //    }
 
-    @Test public void testServiceInjection() {
-        Assert.assertNotNull(dirs);
+    @Test
+    public void testServiceInjection() {
+        assertNotNull(dirs);
     }
 
     @Test public void testCoreSessionInjection() {
-        Assert.assertNotNull(session);
+        assertNotNull(session);
     }
 
 }

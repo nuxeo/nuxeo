@@ -19,11 +19,14 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 import org.nuxeo.ecm.directory.Directory;
 
 public class TestDescriptorOverride extends SQLDirectoryTestCase {
 
-
+    @Test
     public void testOverride() throws Exception {
         Directory dir = getDirectory("userDirectory");
         SQLDirectory sqlDir = (SQLDirectory) dir;

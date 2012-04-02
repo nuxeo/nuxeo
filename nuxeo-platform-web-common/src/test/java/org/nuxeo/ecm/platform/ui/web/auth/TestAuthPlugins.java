@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -32,7 +36,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
 
     private PluggableAuthenticationService authService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -48,6 +52,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         return authService;
     }
 
+    @Test
     public void testRegister() {
         getAuthService();
         assertNotNull(authService);
@@ -56,6 +61,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         assertEquals("BASIC_AUTH", authService.getAuthChain().get(0));
     }
 
+    @Test
     public void testServiceParameters() {
         getAuthService();
         AuthenticationPluginDescriptor plugin = authService.getDescriptor("FORM_AUTH");
@@ -64,6 +70,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         assertEquals("login.jsp", plugin.getParameters().get("LoginPage"));
     }
 
+    @Test
     public void testDescriptorMerge() throws Exception {
         deployBundle(WEB_BUNDLE_TEST);
         PluggableAuthenticationService service = getAuthService();

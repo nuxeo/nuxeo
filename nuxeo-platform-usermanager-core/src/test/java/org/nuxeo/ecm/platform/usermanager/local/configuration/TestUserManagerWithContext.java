@@ -24,6 +24,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -48,7 +53,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
 
     protected UserService userService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
@@ -79,12 +84,13 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         userManager.multiTenantManagement = umtm;
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 
+    @Test
     public void testGetAdministratorTenanta() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator@tenanta");
         assertNotNull(principal);
@@ -92,8 +98,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         assertFalse(principal.isMemberOf("administrators-tenantb"));
     }
 
-
-
+    @Test
     public void testShouldReturnOnlyUserFromTenantA() throws Exception {
 
         DocumentModelList users = userManager.searchUsers("%%", null);
@@ -108,6 +113,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
                 users.get(0).getPropertyValue("username"));
     }
 
+    @Test
     public void testShouldReturnOnlyGroupsFromTenantA() throws Exception {
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -129,6 +135,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
                 groups.get(0).getPropertyValue("groupname"));
     }
 
+    @Test
     public void testShouldAddPrefixToIdWhenGroupCreated() throws Exception {
 
         DocumentModel fakeDoc = new SimpleDocumentModel();

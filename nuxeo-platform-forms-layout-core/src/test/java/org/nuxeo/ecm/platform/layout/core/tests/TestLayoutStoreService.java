@@ -23,6 +23,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -42,7 +46,7 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
 
     private LayoutStore service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
@@ -52,6 +56,7 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testWidgetType() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests",
                 "layouts-core-test-contrib.xml");

@@ -22,6 +22,10 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.runtime.api.Framework;
@@ -35,17 +39,19 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
     }
 
+    @Test
     public void testServiceExist() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
     }
 
+    @Test
     public void testCmdRegistration() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
@@ -72,6 +78,7 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(cmds.contains("identify"));
     }
 
+    @Test
     public void testCmdAvailable() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
@@ -106,6 +113,7 @@ public class TestService extends NXRuntimeTestCase {
          **/
     }
 
+    @Test
     public void testCmdExecption() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);

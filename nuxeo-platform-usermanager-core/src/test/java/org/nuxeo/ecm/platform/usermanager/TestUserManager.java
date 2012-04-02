@@ -26,6 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -54,7 +59,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     protected UserService userService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
@@ -79,16 +84,18 @@ public class TestUserManager extends NXRuntimeTestCase {
         userManager = userService.getUserManager();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 
+    @Test
     public void testConnect() {
         assertNotNull(userManager);
     }
 
+    @Test
     public void testExistingSetup() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
         List<String> groups = principal.getGroups();
@@ -107,6 +114,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         return newGroup;
     }
 
+    @Test
     public void testGetAnonymous() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("Guest");
         assertNotNull(principal);
@@ -116,6 +124,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertNull(principal.getCompany());
     }
 
+    @Test
     public void testGetAdministrator() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("tehroot");
         assertNotNull(principal);
@@ -129,6 +138,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertNull(principal.getCompany());
     }
 
+    @Test
     public void testGetAdministratorOverride() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-override-config.xml");
@@ -149,6 +159,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertNull(principal.getCompany());
     }
 
+    @Test
     public void testGetVirtualUsers() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("ClassicAdministrator");
         assertNotNull(principal);
@@ -189,6 +200,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertFalse(principal.isMemberOf("group1"));
     }
 
+    @Test
     public void testGetVirtualUsersOverride() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-override-config.xml");
@@ -232,11 +244,13 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertFalse(principal.isMemberOf("group1"));
     }
 
+    @Test
     public void testGetAdministratorGroups() {
         List<String> adminGroups = userManager.getAdministratorsGroups();
         assertEquals(Arrays.asList("administrators"), adminGroups);
     }
 
+    @Test
     public void testGetAdministratorGroupsOverride() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-override-config.xml");
@@ -247,6 +261,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(Arrays.asList("myAdministrators"), adminGroups);
     }
 
+    @Test
     public void testSearchAnonymous() throws Exception {
         DocumentModelList users;
         DocumentModel principal;
@@ -346,6 +361,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testCreatePrincipal() throws Exception {
         deleteTestObjects();
         // force User Directory initialization first - so that the sql script
@@ -390,6 +406,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testCreateGroup() throws Exception {
         deleteTestObjects();
         DocumentModel u1 = getUser("test_u1");
@@ -443,6 +460,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testGetTopLevelGroups() throws Exception {
         deleteTestObjects();
 
@@ -486,6 +504,7 @@ public class TestUserManager extends NXRuntimeTestCase {
      * Test the method getUsersInGroup, making sure it does return only the
      * users of the group (and not the subgroups ones).
      */
+    @Test
     public void testGetUsersInGroup() throws Exception {
         deleteTestObjects();
 
@@ -525,6 +544,7 @@ public class TestUserManager extends NXRuntimeTestCase {
      * Test the method getUsersInGroupAndSubgroups, making sure it does return
      * all the users from a group and its subgroups.
      */
+    @Test
     public void testGetUsersInGroupAndSubgroups() throws Exception {
         deleteTestObjects();
 
@@ -567,6 +587,7 @@ public class TestUserManager extends NXRuntimeTestCase {
      * Test the method getUsersInGroupAndSubgroups making sure it's not going
      * into an infinite loop when a subgroup is also parent of a group.
      */
+    @Test
     public void testGetUsersInGroupAndSubgroupsWithoutInfiniteLoop()
             throws Exception {
         deleteTestObjects();
@@ -603,6 +624,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(expectedUsersInGroup2, usersInGroupAndSubGroups2);
     }
 
+    @Test
     public void testDeletePrincipal() throws Exception {
         deleteTestObjects();
         DocumentModel user = getUser("test_u1");
@@ -621,6 +643,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertTrue(gotException);
     }
 
+    @Test
     public void testDeleteGroup() throws Exception {
         deleteTestObjects();
         DocumentModel group = getGroup("test_g1");
@@ -639,6 +662,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertTrue(gotException);
     }
 
+    @Test
     public void testSearchPrincipals() throws Exception {
         deleteTestObjects();
         userManager.createUser(getUser("test_u1"));
@@ -653,6 +677,7 @@ public class TestUserManager extends NXRuntimeTestCase {
                 || "test_u1".equals(name2) && "test_u2".equals(name1));
     }
 
+    @Test
     public void testSearchUser() throws Exception {
         assertEquals(0, userManager.searchUsers("test").size());
 
@@ -682,6 +707,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(3, userManager.searchGroups("group").size());
     }
 
+    @Test
     public void testUpdatePrincipal() throws Exception {
         deleteTestObjects();
         NuxeoPrincipal u1 = new NuxeoPrincipalImpl("test_u1");
@@ -727,6 +753,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(newU1.getRoles(), u1.getRoles());
     }
 
+    @Test
     public void testUpdateGroup() throws Exception {
         deleteTestObjects();
         // setup group g
@@ -809,6 +836,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Testing the method getUsernamesForPermission for a simple case.
      */
+    @Test
     public void testGetUsernamesForPermission() throws Exception {
         initTestGetUsernamesForPermission();
 
@@ -834,6 +862,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Testing the method getUsernamesForPermission for a simple case.
      */
+    @Test
     public void testGetUsernamesForPermission2() throws Exception {
         initTestGetUsernamesForPermission();
 
@@ -860,6 +889,7 @@ public class TestUserManager extends NXRuntimeTestCase {
      * Same test as before but without the first ace (default value: everyone,
      * everything false).
      */
+    @Test
     public void testGetUsernamesForPermissionWithoutEveryoneEverythingACE()
             throws Exception {
         initTestGetUsernamesForPermission();
@@ -885,6 +915,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Testing getUsernamesForPermission with a user in 2 groups.
      */
+    @Test
     public void testGetUsernamesForPermissionIn2Groups() throws Exception {
         initTestGetUsernamesForPermission();
 
@@ -914,6 +945,7 @@ public class TestUserManager extends NXRuntimeTestCase {
      * Testing getUsernamesForPermission with compound permission. For example,
      * READ_WRITE contains READ.
      */
+    @Test
     public void testGetUsernamesForPermissionWithCompoundPermission()
             throws Exception {
         initTestGetUsernamesForPermission();
@@ -941,6 +973,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Testing getUsernamesForPermission with a ACP having more than one ACL
      */
+    @Test
     public void testGetUsernamesForPermissionWithMultipleACL() throws Exception {
         initTestGetUsernamesForPermission();
 
@@ -969,6 +1002,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Testing getUsernamesForPermission with subgroups.
      */
+    @Test
     public void testGetUsernamesForPermissionWithSubGroups() throws Exception {
         initTestGetUsernamesForPermission();
 

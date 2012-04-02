@@ -23,6 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -41,7 +46,7 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
 
     private PlacefulServiceImpl placefulServiceImpl;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -59,7 +64,7 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         openRepository();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -76,6 +81,7 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         return source;
     }
 
+    @Test
     public void testAnnotations() {
         SubscriptionConfig config = new SubscriptionConfig();
         //DocumentModel source = doCreateDocument();

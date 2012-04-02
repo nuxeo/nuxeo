@@ -20,15 +20,17 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
 import org.wikimodel.wem.WikiParserException;
 
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
-public class TestWiki extends TestCase {
+public class TestWiki {
 
+    @Test
     public void test() throws Exception {
         double s = System.currentTimeMillis();
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test.wiki");
@@ -47,6 +49,7 @@ public class TestWiki extends TestCase {
         // System.out.println(">>>>>>> " + ((System.currentTimeMillis() - s) / 1000));
     }
 
+    @Test
     public void test2() throws IOException, WikiParserException {
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test2.wiki");
         Reader reader = new InputStreamReader(in);
@@ -63,6 +66,7 @@ public class TestWiki extends TestCase {
         // System.out.println(writer.getBuffer());
     }
 
+    @Test
     public void test3() throws Exception {
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test3.wiki");
         Reader reader = new InputStreamReader(in);

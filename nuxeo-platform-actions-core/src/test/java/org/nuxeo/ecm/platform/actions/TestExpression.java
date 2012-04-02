@@ -14,7 +14,8 @@
 
 package org.nuxeo.ecm.platform.actions;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.actions.elcache.Context;
 import org.nuxeo.ecm.platform.actions.elcache.Expression;
@@ -25,8 +26,9 @@ import org.nuxeo.ecm.platform.actions.elcache.JexlExpression;
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  * 
  */
-public class TestExpression extends TestCase {
+public class TestExpression {
 
+    @Test
     public void testBoolean() throws Exception {
         Context ctx = new Context();
         ctx.put("doc", true);
@@ -36,6 +38,7 @@ public class TestExpression extends TestCase {
         assertExpression(ctx, "doc == true", Boolean.FALSE);
     }
 
+    @Test
     public void testExpression() throws Exception {
         Context ctx = new Context();
         ctx.put("number", 1);
@@ -48,6 +51,7 @@ public class TestExpression extends TestCase {
         assertExpression(ctx, "user != 'Me'", Boolean.TRUE);
     }
 
+    @Test
     public void testPropertyAccess() throws Exception {
         Context ctx = new Context();
         ctx.put("object", new FakeObject());

@@ -24,11 +24,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
 
-public class TestDetector extends TestCase {
+public class TestDetector {
 
     private static File getFileFromTestResource(String resource) {
         // retrieves contextually the resource file and decode its path
@@ -37,7 +38,7 @@ public class TestDetector extends TestCase {
     }
 
     /* Test XML binary file */
-
+    @Test
     public void testSnifferXLSMimetype() {
         XlsMimetypeSniffer sniffer = new XlsMimetypeSniffer();
 
@@ -46,6 +47,7 @@ public class TestDetector extends TestCase {
         assertEquals("application/vnd.ms-excel", supportedMimetype[0]);
     }
 
+    @Test
     public void testSnifferXLSDirectGuess() {
         File xlsFile = getFileFromTestResource("test-data/hello.xls");
         XlsMimetypeSniffer sniffer = new XlsMimetypeSniffer();
@@ -55,6 +57,7 @@ public class TestDetector extends TestCase {
         assertTrue(returnedMimetype.length > 0);
     }
 
+    @Test
     public void testSnifferXLSByByteArray() throws IOException {
         File xlsFile = getFileFromTestResource("test-data/hello.xls");
         XlsMimetypeSniffer sniffer = new XlsMimetypeSniffer();
@@ -66,6 +69,7 @@ public class TestDetector extends TestCase {
         assertTrue(returnedByteMimetype.length > 0);
     }
 
+    @Test
     public void testSnifferXLSWrongFile() {
         XlsMimetypeSniffer sniffer = new XlsMimetypeSniffer();
 
@@ -76,7 +80,7 @@ public class TestDetector extends TestCase {
     }
 
     /* Test Msoffice 2003 XML Word & Excel file */
-
+    @Test
     public void testSnifferMsoXMLMimetype() {
         MsoXmlMimetypeSniffer sniffer = new MsoXmlMimetypeSniffer();
 
@@ -86,6 +90,7 @@ public class TestDetector extends TestCase {
         assertEquals("application/msword", supportedMimetypes[1]);
     }
 
+    @Test
     public void testSnifferMsoXMLDirectGuess() {
         MsoXmlMimetypeSniffer sniffer = new MsoXmlMimetypeSniffer();
 
@@ -101,6 +106,7 @@ public class TestDetector extends TestCase {
         assertEquals("application/msword", mimetype[0]);
     }
 
+    @Test
     public void testSnifferMsoXMLByByteArray() throws IOException {
 
         MsoXmlMimetypeSniffer sniffer = new MsoXmlMimetypeSniffer();
@@ -114,6 +120,7 @@ public class TestDetector extends TestCase {
         assertEquals("application/msword", returnedByteMimetype[0]);
     }
 
+    @Test
     public void testSnifferMsoXMLWrongFile() {
         MsoXmlMimetypeSniffer sniffer = new MsoXmlMimetypeSniffer();
 
@@ -124,7 +131,7 @@ public class TestDetector extends TestCase {
     }
 
     /* Test OpenDocument & OOo 1.x */
-
+    @Test
     public void testSnifferODFWrongFile() {
         OOoMimetypeSniffer sniffer = new OOoMimetypeSniffer();
 
@@ -134,6 +141,7 @@ public class TestDetector extends TestCase {
         assertEquals(0, returnedMimetype.length);
     }
 
+    @Test
     public void testSnifferOOoMimetype() {
         OOoMimetypeSniffer sniffer = new OOoMimetypeSniffer();
 
@@ -151,6 +159,7 @@ public class TestDetector extends TestCase {
         assertEquals("application/vnd.sun.xml.impress", supportedMimetype[21]);
     }
 
+    @Test
     public void testSnifferOOoDirectGuess() {
         OOoMimetypeSniffer sniffer = new OOoMimetypeSniffer();
 
@@ -189,6 +198,7 @@ public class TestDetector extends TestCase {
         assertEquals("application/vnd.sun.xml.impress", returnedMimetype[0]);
     }
 
+    @Test
     public void testSnifferOOoByByteArray() throws IOException {
         OOoMimetypeSniffer sniffer = new OOoMimetypeSniffer();
 
@@ -209,7 +219,7 @@ public class TestDetector extends TestCase {
     }
 
     /* Test Powerpoint binary file */
-
+    @Test
     public void testSnifferPPTMimetype() {
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
 
@@ -219,6 +229,7 @@ public class TestDetector extends TestCase {
     }
 
     // TODO: fix and reactivate
+    // @Test
     public void XXXtestSnifferPPTDirectGuess() {
         File pptFile = getFileFromTestResource("test-data/hello.ppt");
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
@@ -229,6 +240,7 @@ public class TestDetector extends TestCase {
     }
 
     // TODO: fix and reactivate
+    // @Test
     public void XXXtestSnifferPPTByByteArray() throws IOException {
         File pptFile = getFileFromTestResource("test-data/hello.ppt");
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
@@ -248,6 +260,7 @@ public class TestDetector extends TestCase {
         assertTrue(returnedByteMimetype.length > 0);
     }
 
+    @Test
     public void testSnifferPPTWrongFile() {
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
 

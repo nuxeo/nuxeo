@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -29,7 +33,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 		return ldifFiles;
 	}
 
-	@Override
+	@Before
 	public void setUp() throws Exception {
 		EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-POSIX.xml";
 		INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS-POSIX.xml";
@@ -38,6 +42,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 	
     @Override
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry2() throws ClientException {
         Session session = getLDAPDirectory("groupDirectory").getSession();
         try {
@@ -88,6 +93,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     }	
 
     @Override
+    @Test
     public void testCreateEntry2() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("groupDirectory").getSession();
@@ -138,6 +144,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     }    
 
     @Override
+    @Test
     public void testUpdateEntry() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("userDirectory").getSession();
@@ -211,6 +218,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     }
 
     @Override
+    @Test
     public void testUpdateEntry2() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("groupDirectory").getSession();
@@ -256,6 +264,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 
     @Override
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry3() throws ClientException {
         if (!HAS_DYNGROUP_SCHEMA) {
             return;
@@ -329,6 +338,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     }
 
     @Override
+    @Test
     public void testGetMandatoryAttributes() throws ClientException {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             LDAPSession session = (LDAPSession) getLDAPDirectory(

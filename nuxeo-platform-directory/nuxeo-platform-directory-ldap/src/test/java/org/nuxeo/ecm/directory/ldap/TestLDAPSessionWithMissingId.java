@@ -29,6 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -46,7 +50,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
 
     protected static final String GROUP_SCHEMANAME = "group";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         // override default defs
@@ -64,6 +68,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     // override tests to get specific use cases
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry() throws Exception {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -155,6 +160,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry2() throws ClientException {
         Session session = getLDAPDirectory("groupDirectory").getSession();
         try {
@@ -234,6 +240,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQuery1() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {

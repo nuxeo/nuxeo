@@ -1,5 +1,9 @@
 package org.nuxeo.ecm.platform.query.api;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -11,7 +15,7 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
 
     String query;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -27,6 +31,7 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
                 "test-pageprovider-contrib.xml");
     }
 
+    @Test
     public void testBuildIsNullQuery() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);

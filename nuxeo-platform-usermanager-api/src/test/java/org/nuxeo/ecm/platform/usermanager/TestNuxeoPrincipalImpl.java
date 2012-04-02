@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -28,7 +32,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -37,6 +41,7 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings({"SimplifiableJUnitAssertion", "ObjectEqualsNull"})
+    @Test
     public void testEquals() throws ClientException {
         NuxeoPrincipalImpl a = new NuxeoPrincipalImpl("foo");
         NuxeoPrincipalImpl b = new NuxeoPrincipalImpl("foo");
@@ -49,6 +54,7 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
         assertFalse(c.equals(null));
     }
 
+    @Test
     public void testHasCode() throws Exception {
         NuxeoPrincipalImpl a = new NuxeoPrincipalImpl("foo");
         NuxeoPrincipalImpl b = new NuxeoPrincipalImpl("foo");

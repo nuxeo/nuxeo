@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -38,7 +42,7 @@ public class TestUserService extends NXRuntimeTestCase {
 
     UserManager userManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.usermanager",
@@ -48,10 +52,12 @@ public class TestUserService extends NXRuntimeTestCase {
         userManager = Framework.getService(UserManager.class);
     }
 
+    @Test
     public void testGetUserManagerFromFramework() {
         assertNotNull(userManager);
     }
 
+    @Test
     public void testConfig() throws Exception {
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertEquals("search_only", userManager.getUserListingMode());
@@ -117,6 +123,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals(props, customMember.getProperties());
     }
 
+    @Test
     public void testOverride() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-userservice-override-config.xml");
@@ -153,6 +160,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertNull(fum.virtualUsers.get("MyCustomMember"));
     }
 
+    @Test
     public void testValidatePassword() throws Exception {
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertTrue(fum.validatePassword(""));
