@@ -60,8 +60,7 @@ Parameters:
     <c:when test="#{action.getType() == 'fancybox'}">
       <a4j:form id="#{action.id}_form" ajaxSubmit="true"
         styleClass="action_bar">
-        <a4j:commandLink value="#{messages[action.label]}"
-          id="#{action.id}_link" ajaxSingle="true"
+        <a4j:commandLink id="#{action.id}_link" ajaxSingle="true"
           ignoreDupResponses="true" requestDelay="100"
           onclick="showFancyBox('##{action.id}_box');">
           <h:graphicImage value="#{action.icon}"
