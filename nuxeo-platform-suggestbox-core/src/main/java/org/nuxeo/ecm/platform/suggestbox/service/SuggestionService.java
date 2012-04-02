@@ -5,12 +5,12 @@ import java.util.List;
 /**
  * Pluggable service to generate user action suggestions based on text input and
  * contextual data.
- * 
+ *
  * This services aims to build more natural user interfaces for search and
  * navigation by trying to interpret and make explicit possible user intents.
- * 
+ *
  * Possible usages of this service:
- * 
+ *
  * <ul>
  * <li>make the top right JSF search box more useful with ajax auto-completion
  * that leads to typed suggestions</li>
@@ -18,7 +18,7 @@ import java.util.List;
  * <li>smart mobile application using a Content Automation operation for
  * suggesting next operations / chains</li>
  * </ul>
- * 
+ *
  * @since 5.5
  * @author ogrisel
  */
@@ -59,7 +59,7 @@ public interface SuggestionService {
      *         runtime. In a JAX-RS environment the outcome could be passed as a
      *         resource path for redirect navigation.
      */
-    public Object handleSelection(Suggestion suggestion,
-            SuggestionContext context) throws SuggestionHandlingException;
+    Object handleSelection(Suggestion suggestion, SuggestionContext context)
+            throws SuggestionHandlingException;
 
 }

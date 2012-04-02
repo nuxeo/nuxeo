@@ -11,15 +11,19 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupDescriptor;
+import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupItemDescriptor;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggestionHandlerDescriptor;
-import org.nuxeo.ecm.platform.suggestbox.service.registries.SuggesterRegistry;
 import org.nuxeo.ecm.platform.suggestbox.service.registries.SuggesterGroupRegistry;
+import org.nuxeo.ecm.platform.suggestbox.service.registries.SuggesterRegistry;
 import org.nuxeo.ecm.platform.suggestbox.service.registries.SuggestionHandlerRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * The Class SuggestionServiceImpl.
+ */
 public class SuggestionServiceImpl extends DefaultComponent implements
         SuggestionService {
 
@@ -42,7 +46,8 @@ public class SuggestionServiceImpl extends DefaultComponent implements
             return suggestions;
         }
 
-        for (String suggesterId : suggesterGroup.getSuggesters()) {
+        for (SuggesterGroupItemDescriptor suggesterGroupItem : suggesterGroup.getSuggesters()) {
+            String suggesterId = suggesterGroupItem.getName();
             SuggesterDescriptor suggesterDescritor = suggesters.getSuggesterDescriptor(suggesterId);
             if (suggesterDescritor == null) {
                 log.warn("No suggester registered with id: " + suggesterId);
@@ -200,4 +205,12 @@ public class SuggestionServiceImpl extends DefaultComponent implements
         }
     }
 
+    /*
+     * Gets the suggester groups registry. Only for test purpose.
+     *
+     * @return the suggester groups
+     */
+    public SuggesterGroupRegistry getSuggesterGroups() {
+        return suggesterGroups;
+    }
 }

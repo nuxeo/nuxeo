@@ -31,7 +31,8 @@ public class SuggesterGroupRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, SuggesterGroupDescriptor contrib,
+    public void contributionUpdated(String id,
+            SuggesterGroupDescriptor contrib,
             SuggesterGroupDescriptor newOrigContrib) {
         suggesterGroupDescriptors.put(id, contrib);
     }
@@ -43,6 +44,11 @@ public class SuggesterGroupRegistry extends
 
     @Override
     public void merge(SuggesterGroupDescriptor src, SuggesterGroupDescriptor dst) {
-        // TODO implement me once incremental descriptor features are implemented
+        try {
+            dst.mergeFrom(src);
+        } catch (Exception e) {
+            // it should be possible to throw a non runtime exception here
+            throw new RuntimeException(e);
+        }
     }
 }
