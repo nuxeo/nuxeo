@@ -50,6 +50,13 @@
       <filter-id>not_folder</filter-id>
       <filter-id>not_anonymous</filter-id>
     </action>
+    <action id="permalinkAction" order="10" label="label.permalink"
+      type="fancybox" icon="/icons/permalink.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <properties name="fancybox">
+        <property name="url">/incl/permalink_box.xhtml</property>
+      </properties>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
