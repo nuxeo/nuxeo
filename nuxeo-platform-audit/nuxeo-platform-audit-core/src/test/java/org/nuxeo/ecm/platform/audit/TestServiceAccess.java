@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
@@ -28,7 +32,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestServiceAccess extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.persistence");
@@ -37,6 +41,7 @@ public class TestServiceAccess extends NXRuntimeTestCase {
         fireFrameworkStarted();
     }
 
+    @Test
     public void testFullAccess() {
         NXAuditEvents fullService = Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(fullService);
@@ -46,6 +51,7 @@ public class TestServiceAccess extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testReadAccess() {
         AuditReader reader = Framework.getLocalService(AuditReader.class);
         assertNotNull(reader);
@@ -55,6 +61,7 @@ public class TestServiceAccess extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testWriteAccess() {
         AuditLogger writer = Framework.getLocalService(AuditLogger.class);
         assertNotNull(writer);

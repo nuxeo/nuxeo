@@ -21,6 +21,11 @@ package org.nuxeo.ecm.platform.ec.notification;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -43,7 +48,7 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
 
     private final EmailHelperMock emailHelperMock = new EmailHelperMock();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openRepository();
@@ -75,7 +80,7 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
         log.info("setup Finnished");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -106,6 +111,7 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
+    @Test
     public void testListener() throws ClientException {
         // EventService eventService =
         // Framework.getLocalService(EventService.class);

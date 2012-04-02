@@ -27,6 +27,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -64,7 +68,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
 
     private Statement st2;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -117,6 +121,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testAdd() {
         assertSame(0L, graph.size());
 
@@ -125,6 +130,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         assertSame(5L, graph.size());
     }
 
+    @Test
     public void testRemove() {
         assertSame(0L, graph.size());
 
@@ -138,6 +144,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         assertSame(2L, graph.size());
     }
 
+    @Test
     public void testGetStatements() {
         List<Statement> stmts = new ArrayList<Statement>();
         assertEquals(stmts, graph.getStatements());
@@ -147,6 +154,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         compareStatements(stmts, statements);
     }
 
+    @Test
     public void testRead() throws Exception {
         InputStream in = new FileInputStream(getTestFile());
         assertSame(0L, graph.size());

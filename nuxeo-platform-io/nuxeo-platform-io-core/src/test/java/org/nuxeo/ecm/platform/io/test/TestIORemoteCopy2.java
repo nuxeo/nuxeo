@@ -24,6 +24,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -77,7 +81,7 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
     protected DocumentRef dstDocId;
     protected String destServerAddress;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
 
         System.setProperty("org.nuxeo.runtime.streaming.isServer", "false");
@@ -209,6 +213,7 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
         //remoteIOManager.exportDocumentsAndResources(out, "default", sources, true, null, null);
     }
 
+    @Test
     public void testCopyDocumentsAndResources() throws Exception {
         prepareLocations2();
 
@@ -288,6 +293,7 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
         assertEquals(2, DummyIOResourceAdapter.backend.size());
     }
 
+    @Test
     public void testExportImport() throws Exception {
 
         log.info("--------------------------------------------- begin");

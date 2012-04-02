@@ -21,6 +21,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -55,7 +60,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
     protected NuxeoPrincipal user4;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -91,12 +96,13 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testSingleTaskWithAccept() throws Exception {
         DocumentModel document = getDocument();
         assertNotNull(document);
@@ -223,6 +229,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
                 task.getVariable(TaskService.VariableName.validated.name()));
     }
 
+    @Test
     public void testMultipleTaskWithReject() throws Exception {
         DocumentModel document = getDocument();
         assertNotNull(document);
@@ -411,6 +418,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
      *
      * @throws Exception the exception
      */
+    @Test
     public void testUserTasks() throws Exception {
 
         DocumentModel document = getDocument();
@@ -574,6 +582,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
      *
      * @throws Exception the exception
      */
+    @Test
     public void testPrefixedUnprefixedActorNames() throws Exception {
 
         DocumentModel document = getDocument();

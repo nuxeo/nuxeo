@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
@@ -26,7 +30,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestAdapterRegistration extends NXRuntimeTestCase{
 
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
@@ -39,7 +43,7 @@ public class TestAdapterRegistration extends NXRuntimeTestCase{
         fireFrameworkStarted();
     }
 
-
+    @Test
     public void testAuditContribution() throws Exception {
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(auditService);

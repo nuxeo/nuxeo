@@ -35,6 +35,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.relations.api.Literal;
@@ -74,7 +79,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     private QNameResource references;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -107,7 +112,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         graph = (CoreGraph) service.getGraph(GRAPH_NAME, session);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -118,6 +123,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
+    @Test
     public void testSetOptions() {
         Map<String, String> options = new HashMap<String, String>();
         options.put(CoreGraph.OPTION_DOCTYPE, "Foo");
@@ -131,23 +137,26 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         graph.setOptions(options);
     }
 
-    public static void assertEquals(int expected, Long actual) {
-        assertEquals(Long.valueOf(expected), actual);
-    }
+    //public static void assertEquals(int expected, Long actual) {
+    //    assertEquals(Long.valueOf(expected), actual);
+    //}
 
+    @Test
     public void testAdd() {
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         graph.add(statements);
-        assertEquals(3, graph.size());
+        assertEquals(3, (double)graph.size(), 1e-8);
     }
 
+    @Test
     public void testAddWithSession() throws Exception {
         useGraphWithSession();
         testAdd();
     }
 
+    @Test
     public void testSubjectResource() {
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         Resource src = new ResourceImpl("urn:foo:1234");
         Statement st = new StatementImpl(src, isBasedOn, doc1);
         graph.add(st);
@@ -155,11 +164,12 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(1, stmts.size());
         assertEquals(st, stmts.get(0));
         graph.remove(Collections.singletonList(st));
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
     }
 
+    @Test
     public void testBlank() {
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         Node src = new BlankImpl();
         Node dst = new BlankImpl("123");
         Statement st = new StatementImpl(src, isBasedOn, dst);
@@ -168,9 +178,10 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(1, stmts.size());
         assertEquals(st, stmts.get(0));
         graph.remove(Collections.singletonList(st));
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
     }
 
+    @Test
     public void testNamespaces() {
         String NS = "http://foo.com/";
         // without namespace
@@ -193,22 +204,25 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertTrue(st.getSubject().isQNameResource());
     }
 
+    @Test
     public void testRemove() {
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         graph.add(statements);
-        assertEquals(3, graph.size());
+        assertEquals(3, (double)graph.size(), 1e-8);
         List<Statement> stmts = new ArrayList<Statement>();
         stmts.add(new StatementImpl(doc2, references, new LiteralImpl(
                 "NXRuntime")));
         graph.remove(stmts);
-        assertEquals(2, graph.size());
+        assertEquals(2, (double)graph.size(), 1e-8);
     }
 
+    @Test
     public void testRemoveWithSession() throws Exception {
         useGraphWithSession();
         testRemove();
     }
 
+    @Test
     public void testStatementProperties() {
         List<Statement> stmts = new ArrayList<Statement>();
         Node p;
@@ -240,6 +254,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals("hi there", ((Literal) p).getValue());
     }
 
+    @Test
     public void testGetStatements() {
         List<Statement> stmts = new ArrayList<Statement>();
         assertEquals(stmts, graph.getStatements());
@@ -249,6 +264,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(statements, stmts);
     }
 
+    @Test
     public void testGetStatementsPattern() {
         List<Statement> expected = new ArrayList<Statement>();
         assertEquals(expected, graph.getStatements());
@@ -298,11 +314,13 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(expected, stmts);
     }
 
+    @Test
     public void testGetStatementsPatternWithSession() throws Exception {
         useGraphWithSession();
         testGetStatementsPattern();
     }
 
+    @Test
     public void testGetSubjects() {
         graph.add(statements);
         List<Node> res;
@@ -322,6 +340,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(docs, new HashSet<Node>(res));
     }
 
+    @Test
     public void testGetPredicates() {
         graph.add(statements);
         List<Node> res;
@@ -340,6 +359,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(both, new HashSet<Node>(res));
     }
 
+    @Test
     public void testGetObject() {
         graph.add(statements);
         List<Node> res;
@@ -363,6 +383,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
                 new HashSet<Node>(res));
     }
 
+    @Test
     public void testHasStatement() {
         graph.add(statements);
         assertFalse(graph.hasStatement(null));
@@ -372,6 +393,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertFalse(graph.hasStatement(new StatementImpl(null, null, doc2)));
     }
 
+    @Test
     public void testHasResource() {
         graph.add(statements);
         assertFalse(graph.hasResource(null));
@@ -382,22 +404,24 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertFalse(graph.hasResource(new ResourceImpl("http://foo")));
     }
 
+    @Test
     public void testSize() {
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         List<Statement> stmts = new ArrayList<Statement>();
         stmts.add(new StatementImpl(doc1, isBasedOn, new LiteralImpl("foo")));
         graph.add(stmts);
-        assertEquals(1, graph.size());
+        assertEquals(1, (double)graph.size(), 1e-8);
         graph.add(statements);
-        assertEquals(4, graph.size());
+        assertEquals(4, (double)graph.size(), 1e-8);
     }
 
+    @Test
     public void testClear() {
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         graph.add(statements);
-        assertEquals(3, graph.size());
+        assertEquals(3, (double)graph.size(), 1e-8);
         graph.clear();
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
     }
 
     public void TODOtestQuery() {
@@ -479,9 +503,9 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     public void TODOtestRead() throws Exception {
         InputStream in = new FileInputStream(getTestFile());
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         graph.read(in, null, null);
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         List<Statement> statements = graph.getStatements();
         Collections.sort(statements);
         // assertSame(statements.size(), this.statements.size());
@@ -492,7 +516,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
     }
 
     public void TODOtestReadPath() {
-        assertEquals(0, graph.size());
+        assertEquals(0, (double)graph.size(), 1e-8);
         graph.read(getTestFile(), null, null);
         assertFalse(graph.size().intValue() == 0);
         List<Statement> statements = graph.getStatements();

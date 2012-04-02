@@ -14,6 +14,9 @@
  */
 package org.nuxeo.ecm.platform.preview.tests.helper;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -32,6 +35,7 @@ public class TestHelper extends NXRuntimeTestCase {
     private static final String targetURL1 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/default/";
     private static final String targetURL2 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/file:content/";
 
+    @Test
     public void testPreviewURLDefault() {
         DocumentModel doc = new DocumentModelImpl(
                 "", "File", uuid, new Path("/"), null, null, null, null, null, null, "default");
@@ -41,6 +45,7 @@ public class TestHelper extends NXRuntimeTestCase {
         assertEquals(targetURL1, previewURL);
     }
 
+    @Test
     public void testPreviewURL() {
         DocumentModel doc = new DocumentModelImpl(
                 "", "File", uuid, new Path("/"), null, null, null, null, null, null, "default");
@@ -50,6 +55,7 @@ public class TestHelper extends NXRuntimeTestCase {
         assertEquals(targetURL2, previewURL);
     }
 
+    @Test
     public void testResolveURLDefault() {
         DocumentRef docRef = PreviewHelper.getDocumentRefFromPreviewURL(targetURL1);
         assertNotNull(docRef);

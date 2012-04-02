@@ -14,6 +14,10 @@
  */
 package org.nuxeo.ecm.platform.preview.tests.service;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.runtime.api.Framework;
@@ -27,18 +31,20 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.platform.preview", "OSGI-INF/preview-adapter-framework.xml");
     }
 
+    @Test
     public void testService() {
         PreviewAdapterManager pam = Framework.getLocalService(PreviewAdapterManager.class);
         assertNotNull(pam);
     }
 
+    @Test
     public void testServiceContrib() throws Exception {
         PreviewAdapterManager pam = Framework.getLocalService(PreviewAdapterManager.class);
         assertNotNull(pam);

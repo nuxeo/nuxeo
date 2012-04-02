@@ -27,6 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -93,7 +98,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private JenaGraph graph;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
@@ -122,7 +127,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         this.graph = (JenaGraph) graph;
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (graph != null) {
             graph.clear();
@@ -172,6 +177,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testIOResourceAdapterEP() throws ClientException {
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
@@ -179,6 +185,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertNotNull(adapter);
     }
 
+    @Test
     public void testExtractResources() throws Exception {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
@@ -197,6 +204,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testExtractResourcesIgnoreExternal() throws Exception {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("ignore-external");
@@ -214,6 +222,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testGetResourcesAsXML() throws Exception {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
@@ -233,6 +242,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         compareGraph("data/exported_statements.xml", actualGraph);
     }
 
+    @Test
     public void testLoadResourcesFromXML() throws Exception {
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
@@ -249,6 +259,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testTranslateResources() throws Exception {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
@@ -272,6 +283,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testTranslateResourcesNoChanges() throws Exception {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
@@ -295,6 +307,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testStoreResources() throws Exception {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");

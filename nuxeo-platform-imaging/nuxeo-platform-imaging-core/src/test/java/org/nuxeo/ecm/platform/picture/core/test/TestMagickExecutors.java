@@ -21,6 +21,10 @@ package org.nuxeo.ecm.platform.picture.core.test;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -32,7 +36,7 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 
 public class TestMagickExecutors extends RepositoryOSGITestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
@@ -40,6 +44,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
                 "OSGI-INF/commandline-imagemagick-contrib.xml");
     }
 
+    @Test
     public void testIdentify() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
@@ -53,6 +58,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         System.out.print(info);
     }
 
+    @Test
     public void testJpegSimplier() throws Exception {
         String outputFile = System.getProperty("java.io.tmpdir")
                 + "/test_small.jpg";
@@ -69,6 +75,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         out.delete();
     }
 
+    @Test
     public void testCropper() throws Exception {
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/test_crop.jpg";
@@ -89,6 +96,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         out.delete();
     }
 
+    @Test
     public void testCropperAndResize() throws Exception {
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/test_crop_resized.jpg";
@@ -109,6 +117,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         out.delete();
     }
 
+    @Test
     public void testConverterWithBmp() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/andy.bmp");
 
@@ -123,6 +132,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         new File(outputFilePath).delete();
     }
 
+    @Test
     public void testConverterWithGif() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/cat.gif");
 

@@ -33,6 +33,10 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -48,7 +52,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -59,6 +63,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
     }
 
+    @Test
     public void testResizeConverter() throws Exception {
 
         String converter = "pictureResize";
@@ -91,6 +96,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testRotate() throws Exception {
 
         String converter = "pictureRotation";
@@ -123,6 +129,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testCrop() throws Exception {
 
         String converter = "pictureCrop";

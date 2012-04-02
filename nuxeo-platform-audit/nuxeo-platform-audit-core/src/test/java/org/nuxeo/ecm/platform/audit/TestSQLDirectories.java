@@ -3,6 +3,11 @@ package org.nuxeo.ecm.platform.audit;
 import java.sql.Connection;
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Directory;
@@ -17,7 +22,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestSQLDirectories extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
@@ -33,7 +38,7 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.audit.tests", "OSGI-INF/test-directories-contrib.xml");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
@@ -66,7 +71,7 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
                 "org.nuxeo.ecm.directory.sql.LocalContextFactory");
     }
 
-
+    @Test
     public void testDirectories() throws Exception {
         Directory eventDir = getDirectory("eventTypes");
         assertNotNull(eventDir);
