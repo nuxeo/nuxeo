@@ -12,12 +12,31 @@
         <nxu:set var="actions"
           value="#{webActions.getActionsList(category)}" cache="true">
           <div class="context_actions">
-            <c:forEach var="action" items="#{actions}">
+            <c:forEach var="action" begin="0" end="4" step="1"
+              items="#{actions}">
               <div>
                 <ui:decorate
                   template="/incl/generic_action_template.xhtml" />
               </div>
             </c:forEach>
+            <!-- Display rollover after 5 actions -->
+            <c:if test="#{actions.size>4}">
+              <ul>
+                <li>More</li>
+                <ul>
+                  <c:forEach var="action" begin="5"
+                    end="#{actions.size-1}" step="1" items="#{actions}">
+                    <li><nxh:commandLink
+                        action="#{action.getLink()}"
+                        immediate="#{action.immediate}"
+                        onclick="#{action.confirm}"
+                        id="contextRollOver_#{action.id}">
+                        <h:outputText value="#{messages[action.label]}" />
+                      </nxh:commandLink></li>
+                  </c:forEach>
+                </ul>
+              </ul>
+            </c:if>
           </div>
         </nxu:set>
       </nxu:set>
