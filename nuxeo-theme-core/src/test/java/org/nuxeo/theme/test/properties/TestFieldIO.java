@@ -18,13 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.test.DummyObject;
 
-public class TestFieldIO extends TestCase {
+public class TestFieldIO {
 
+    @Test
     public void testUpdateStringFieldsFromProperties() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("width", "200px");
@@ -36,6 +38,7 @@ public class TestFieldIO extends TestCase {
         assertEquals("100px", object.height);
     }
 
+    @Test
     public void testUpdateBooleanFieldsFromProperties() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("selected", "true");
@@ -57,6 +60,7 @@ public class TestFieldIO extends TestCase {
         assertFalse(object.booleanClass);
     }
 
+    @Test
     public void testUpdateIntegerFieldsFromProperties() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("maxItems", "2");
@@ -78,6 +82,7 @@ public class TestFieldIO extends TestCase {
         assertTrue(object.integerClass == 3);
     }
 
+    @Test
     public void testUpdateListFieldsFromProperties() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("stringSequence", "1,2,3");

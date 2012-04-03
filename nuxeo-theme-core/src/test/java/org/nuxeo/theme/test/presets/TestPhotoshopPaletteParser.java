@@ -17,12 +17,14 @@ package org.nuxeo.theme.test.presets;
 import java.net.URL;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.presets.PaletteParser;
 
-public class TestPhotoshopPaletteParser extends TestCase {
+public class TestPhotoshopPaletteParser {
 
+    @Test
     public void testAcoV1() {
         URL url = getClass().getClassLoader().getResource(
                 "photoshop-v1-palette.aco");
@@ -46,6 +48,7 @@ public class TestPhotoshopPaletteParser extends TestCase {
         assertEquals("#f90", entries.get(keys[7]));
     }
 
+    @Test
     public void testAcoV2() {
         URL url = getClass().getClassLoader().getResource(
                 "photoshop-v2-palette.aco");

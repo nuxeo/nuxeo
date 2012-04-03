@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.themes;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -23,7 +27,7 @@ import org.nuxeo.theme.themes.ThemeSet;
 
 public class TestThemeSet extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -34,6 +38,7 @@ public class TestThemeSet extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testGetThemeSets() {
         ThemeManager themeManager = Manager.getThemeManager();
         List<ThemeSet> themeSets = themeManager.getThemeSets();
@@ -41,6 +46,7 @@ public class TestThemeSet extends NXRuntimeTestCase {
         assertEquals("galaxy", themeSets.get(0).getName());
     }
 
+    @Test
     public void testGetThemeSetByName() {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeSet themeSet = themeManager.getThemeSetByName("galaxy");

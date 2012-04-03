@@ -20,6 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -39,7 +43,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
     private final String NUXEO_URL_PROPERTY = "http://localhost:8090/nuxeo";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         System.setProperty("nuxeo.url", "http://localhost:8090/nuxeo");
         super.setUp();
@@ -50,6 +54,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "theme-bank-config.xml");
     }
 
+    @Test
     public void testGetRegisteredBanks() throws ThemeException {
         ResourceBank bank = ThemeManager.getResourceBank(BANK_NAME);
         assertEquals(BANK_NAME, bank.getName());
@@ -63,10 +68,12 @@ public class TestResourceBank extends NXRuntimeTestCase {
                 NUXEO_URL_PROPERTY), bankWithNuxeoUrl.getConnectionUrl());
     }
 
+    @Test
     public void testGetBankNames() throws IOException {
         assertEquals(BANK_NAME, BankManager.getBankNames().get(0));
     }
 
+    @Test
     public void testGetCollections() throws IOException {
         assertEquals(COLLECTION_NAME,
                 BankManager.getCollections(BANK_NAME).get(0));
@@ -76,6 +83,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
                 BankManager.getCollections(BANK_NAME).get(0));
     }
 
+    @Test
     public void testGetBankLogoFile() throws IOException {
         if (!isWindows()) {
             assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
@@ -86,6 +94,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testGetImageFile() throws IOException {
         if (!isWindows()) {
             assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
@@ -98,6 +107,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testGetStyleInfo() throws IOException {
         Map styleInfo = (Map) BankManager.getInfo(BANK_NAME, COLLECTION_NAME,
                 "style").get("test.css");
@@ -105,6 +115,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
         assertEquals(styleInfo.get("skin"), true);
     }
 
+    @Test
     public void testGetStylePreviewFile() throws IOException {
         assertEquals("test.png", BankManager.getStylePreviewFile(BANK_NAME,
                 COLLECTION_NAME, "test.css").getName());
@@ -112,6 +123,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
                 BANK_NAME, COLLECTION_NAME, "style-with-preview.css").getName());
     }
 
+    @Test
     public void testGetStylePreviewFileNotFound() throws IOException {
         boolean thrown = false;
         try {
@@ -142,6 +154,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testExportBankCollecton() throws IOException {
         byte[] data = BankManager.exportBankData(BANK_NAME, COLLECTION_NAME);
         ByteArrayInputStream is = new ByteArrayInputStream(data);
@@ -156,6 +169,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
         is.close();
     }
 
+    @Test
     public void testCheckFilePath() {
         assertTrue(BankUtils.checkFilePath("test.css"));
         assertTrue(BankUtils.checkFilePath("/test/test.css"));

@@ -14,13 +14,15 @@
 
 package org.nuxeo.theme.test.formats;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.formats.DefaultFormat;
 import org.nuxeo.theme.formats.Format;
 
-public class TestFormat extends TestCase {
+public class TestFormat {
 
+    @Test
     public void testFormat() {
         Format format = new DefaultFormat();
         format.setUid(1);

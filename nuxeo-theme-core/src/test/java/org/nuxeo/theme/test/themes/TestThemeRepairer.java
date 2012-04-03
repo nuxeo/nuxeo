@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.themes;
 
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
@@ -33,7 +37,7 @@ import org.nuxeo.theme.themes.ThemeRepairer;
 
 public class TestThemeRepairer extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -42,6 +46,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testMissingFormats() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -71,6 +76,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertFalse(themeManager.listFormats().isEmpty());
     }
 
+    @Test
     public void testLayoutProperties() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -123,6 +129,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertEquals("red", styleProperties.get("color"));
     }
 
+    @Test
     public void testStyleProperties() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -167,6 +174,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertEquals("2px solid #000", styleProperties.get("border-bottom"));
     }
 
+    @Test
     public void testCleanupEmptyStylePaths() throws ThemeException,
             NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -197,6 +205,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertTrue(style.getPathsForView("page frame").contains("h2"));
     }
 
+    @Test
     public void testSharedStyles() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -242,6 +251,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
                 style.getPropertiesFor("section frame", "").getProperty("color"));
     }
 
+    @Test
     public void testSharedStylesOnDifferentElementTypes()
             throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();

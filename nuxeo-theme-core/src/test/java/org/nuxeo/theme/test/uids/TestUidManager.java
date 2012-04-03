@@ -14,26 +14,30 @@
 
 package org.nuxeo.theme.test.uids;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.test.IdentifiableObject;
 import org.nuxeo.theme.uids.Identifiable;
 import org.nuxeo.theme.uids.UidManager;
 
-public class TestUidManager extends TestCase {
+public class TestUidManager {
 
     private UidManager uidManager;
 
-    @Override
+    @Before
     public void setUp() {
         uidManager = new UidManager();
     }
 
-    @Override
+    @After
     public void tearDown() {
         uidManager.clear();
     }
 
+    @Test
     public void testRegisterUnregister() {
         Identifiable ob1 = new IdentifiableObject();
         Integer id1 = uidManager.register(ob1);
@@ -43,6 +47,7 @@ public class TestUidManager extends TestCase {
         assertNull(ob1.getUid());
     }
 
+    @Test
     public void testClear() {
         Identifiable ob1 = new IdentifiableObject();
         Integer id1 = uidManager.register(ob1);
@@ -52,6 +57,7 @@ public class TestUidManager extends TestCase {
         assertNull(uidManager.getObjectByUid(id1));
     }
 
+    @Test
     public void testSequence() {
         Integer[] uids1 = new Integer[10];
         Integer[] uids2 = new Integer[10];

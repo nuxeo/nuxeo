@@ -17,6 +17,11 @@ package org.nuxeo.theme.test.html;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.html.HTMLView;
@@ -31,7 +36,7 @@ public class TestHTMLView extends NXRuntimeTestCase {
 
     ViewType viewType;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -49,6 +54,7 @@ public class TestHTMLView extends NXRuntimeTestCase {
         view.setViewType(viewType);
     }
 
+    @Test
     public void test1() {
         info.setUid(1);
         info.setMarkup("<div>content</div>");
@@ -59,7 +65,7 @@ public class TestHTMLView extends NXRuntimeTestCase {
                 result);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         view = null;
         info = null;

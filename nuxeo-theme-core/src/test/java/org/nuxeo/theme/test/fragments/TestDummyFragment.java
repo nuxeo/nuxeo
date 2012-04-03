@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.fragments;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
@@ -21,7 +25,7 @@ import org.nuxeo.theme.perspectives.PerspectiveType;
 
 public class TestDummyFragment extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -31,6 +35,7 @@ public class TestDummyFragment extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
     }
 
+    @Test
     public void testVisibility() {
         Fragment fragment = FragmentFactory.create("dummy fragment");
         PerspectiveType perspective1 = new PerspectiveType("view_mode",

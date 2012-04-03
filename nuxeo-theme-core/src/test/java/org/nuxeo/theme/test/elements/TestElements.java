@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.elements;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -21,7 +25,7 @@ import org.nuxeo.theme.nodes.NodeException;
 
 public class TestElements extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -30,30 +34,35 @@ public class TestElements extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testTheme() {
         Element theme = ElementFactory.create("theme");
         assertEquals("theme", theme.getElementType().getTypeName());
         assertFalse(theme.isLeaf());
     }
 
+    @Test
     public void testPage() {
         Element page = ElementFactory.create("page");
         assertEquals("page", page.getElementType().getTypeName());
         assertFalse(page.isLeaf());
     }
 
+    @Test
     public void testSection() {
         Element section = ElementFactory.create("section");
         assertEquals("section", section.getElementType().getTypeName());
         assertFalse(section.isLeaf());
     }
 
+    @Test
     public void testCell() {
         Element cell = ElementFactory.create("cell");
         assertEquals("cell", cell.getElementType().getTypeName());
         assertFalse(cell.isLeaf());
     }
 
+    @Test
     public void testXPath() throws NodeException {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");

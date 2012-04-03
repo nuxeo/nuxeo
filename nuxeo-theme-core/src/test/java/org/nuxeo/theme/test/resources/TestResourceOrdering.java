@@ -16,13 +16,18 @@ package org.nuxeo.theme.test.resources;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class TestResourceOrdering extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -32,6 +37,7 @@ public class TestResourceOrdering extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "resource-ordering.xml");
     }
 
+    @Test
     public void testResourceOrdering() {
         ThemeManager themeManager = Manager.getThemeManager();
         List<String> ordering = themeManager.getResourceOrdering();

@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.vocabularies;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.vocabularies.VocabularyItem;
@@ -23,7 +27,7 @@ import org.nuxeo.theme.vocabularies.VocabularyManager;
 
 public class TestVocabularies extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -33,6 +37,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "vocabulary-config.xml");
     }
 
+    @Test
     public void testClassVocabulary() {
         VocabularyManager vocabularyManager = Manager.getVocabularyManager();
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as class");
@@ -43,6 +48,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
         assertEquals("label2", items.get(1).getLabel());
     }
 
+    @Test
     public void testResourceVocabulary() {
         VocabularyManager vocabularyManager = Manager.getVocabularyManager();
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as csv resource");

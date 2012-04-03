@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.configuration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.types.TypeFamily;
@@ -22,7 +26,7 @@ import org.nuxeo.theme.views.ViewType;
 
 public class TestViewConfiguration extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -33,6 +37,7 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "view-config.xml");
     }
 
+    @Test
     public void testRegisterView() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
@@ -49,6 +54,7 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
         assertEquals("jsf-facelets", view1.getTemplateEngine());
     }
 
+    @Test
     public void testRegisterViewMerge() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
 

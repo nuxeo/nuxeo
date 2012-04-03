@@ -14,12 +14,16 @@
 
 package org.nuxeo.theme.test.html;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.html.Utils;
 
 public class TestUtils extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -28,24 +32,28 @@ public class TestUtils extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testAddWebLengths() {
         assertEquals("30px", Utils.addWebLengths("10px", "20px"));
         assertEquals("3em", Utils.addWebLengths("1em", "2em"));
         assertNull(Utils.addWebLengths("25%", "2em"));
     }
 
+    @Test
     public void testSubstractWebLengths() {
         assertEquals("30px", Utils.substractWebLengths("40px", "10px"));
         assertEquals("3em", Utils.substractWebLengths("5em", "2em"));
         assertNull(Utils.substractWebLengths("25%", "2em"));
     }
 
+    @Test
     public void testDivideWebLengths() {
         assertEquals("20px", Utils.divideWebLength("40px", 2));
         assertEquals("1em", Utils.divideWebLength("5em", 3));
         assertNull(Utils.divideWebLength("25%", 0));
     }
 
+    @Test
     public void testGetMimeType() {
         assertEquals("image/png", Utils.getImageMimeType("png"));
         assertEquals("image/gif", Utils.getImageMimeType("gif"));

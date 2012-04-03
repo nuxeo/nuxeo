@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.html;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.ResourceType;
@@ -21,7 +25,7 @@ import org.nuxeo.theme.types.TypeFamily;
 
 public class TestResourceExpansion extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -31,6 +35,7 @@ public class TestResourceExpansion extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.html.tests", "resource-expansion.xml");
     }
 
+    @Test
     public void testResourceExpansion() {
         String RESOURCE_NAME = "resource-with-partial-urls.css";
         ResourceType resource = (ResourceType) Manager.getTypeRegistry().lookup(

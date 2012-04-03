@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.configuration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ElementType;
@@ -23,7 +27,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestElementConfiguration extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -33,6 +37,7 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "element-config.xml");
     }
 
+    @Test
     public void testRegisterElement1() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // element 1
@@ -45,6 +50,7 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
                 element1.getClassName());
     }
 
+    @Test
     public void testRegisterElement2() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // element 2

@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.html.filters;
 
 import java.net.URL;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -38,7 +42,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
 
     TypeRegistry typeRegistry;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -73,12 +77,14 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         filter.setFormatType(formatType);
     }
 
+    @Test
     public void testFilter1() {
         info.setMarkup("<div>content</div>");
         filter.process(info, false);
         assertEquals("<div>content</div>", info.getMarkup());
     }
 
+    @Test
     public void testFilter2() {
         info.setMarkup("<div>content</div>");
         format.setProperty("width", "100px");
@@ -87,6 +93,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter3() {
         info.setMarkup("<div>content</div>");
         format.setProperty("width", "50px");
@@ -96,6 +103,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter4() {
         info.setMarkup("<div style=\"color:red;\">content</div>");
         format.setProperty("width", "10px");
@@ -106,6 +114,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter5() {
         info.setMarkup("<div class=\"test\">content</div>");
         format.setProperty("width", "10px");
@@ -116,6 +125,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter6() {
         // Unix line termination \n
         info.setMarkup("<div\n>content\n</div>");
@@ -125,6 +135,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter7() {
         // Win32 line termination \r\n
         info.setMarkup("<div\r\n>content\r\n</div>");
@@ -134,6 +145,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter8() {
         // Mac line termination \r
         info.setMarkup("<div\r>content\r</div>");
@@ -143,6 +155,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter9() {
         info.setMarkup("<div><div style=\"color:red\">content</div></div>");
         format.setProperty("width", "10px");
@@ -153,6 +166,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter10() {
         info.setMarkup("<div style=\"color:red\">"
                 + "<div style=\"color:red\">content</div></div>");
@@ -164,6 +178,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter11() {
         info.setMarkup("<img src=\"/logo.png\" />");
         format.setProperty("width", "10px");

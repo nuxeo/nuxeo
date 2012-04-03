@@ -16,13 +16,15 @@ package org.nuxeo.theme.test.configuration;
 
 import java.net.URL;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
-public class TestPerspectiveConfiguration extends TestCase {
+public class TestPerspectiveConfiguration {
 
+    @Test
     public void testPerspectiveType() throws Exception {
         XMap xmap = new XMap();
         xmap.register(PerspectiveType.class);

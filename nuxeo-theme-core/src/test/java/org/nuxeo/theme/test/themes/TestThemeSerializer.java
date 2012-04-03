@@ -20,6 +20,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
@@ -45,7 +49,7 @@ import org.nuxeo.theme.themes.ThemeSerializer;
 
 public class TestThemeSerializer extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -56,6 +60,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "view-config.xml");
     }
 
+    @Test
     public void testSerializeTheme() throws ThemeException, NodeException,
             ThemeIOException, IOException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");

@@ -14,7 +14,9 @@
 
 package org.nuxeo.theme.test.relations;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DefaultRelate;
@@ -26,15 +28,16 @@ import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationStorage;
 import org.nuxeo.theme.relations.TriadicRelation;
 
-public class TestStorage extends TestCase {
+public class TestStorage {
 
     private RelationStorage storage;
 
-    @Override
+    @Before
     public void setUp() {
         storage = new RelationStorage();
     }
 
+    @Test
     public void testMonadicRelations() {
         Predicate predicate = new DefaultPredicate("_ is white");
         Relate r1 = new DefaultRelate("snow");
@@ -52,6 +55,7 @@ public class TestStorage extends TestCase {
         assertFalse(storage.list().contains(relation));
     }
 
+    @Test
     public void testDyadicRelations() {
         Predicate predicate = new DefaultPredicate("_ loves _");
         Relate r1 = new DefaultRelate("Romeo");
@@ -73,6 +77,7 @@ public class TestStorage extends TestCase {
         assertFalse(storage.list().contains(relation));
     }
 
+    @Test
     public void testTriadicRelations() {
         Predicate predicate = new DefaultPredicate("_ connects _ to _");
         Relate r1 = new DefaultRelate("A");

@@ -17,7 +17,8 @@ package org.nuxeo.theme.test.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,10 +26,11 @@ import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.test.DummyNode;
 
-public class TestNodes extends TestCase {
+public class TestNodes {
 
     private static final Log log = LogFactory.getLog(TestNodes.class);
 
+    @Test
     public void testOrder() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -45,6 +47,7 @@ public class TestNodes extends TestCase {
         assertEquals(0, (int) node2.getOrder());
     }
 
+    @Test
     public void testSetOrderBeyondLimits() throws NodeException {
         Node node0 = new DummyNode();
         try {
@@ -66,6 +69,7 @@ public class TestNodes extends TestCase {
         }
     }
 
+    @Test
     public void testSetParent() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -75,6 +79,7 @@ public class TestNodes extends TestCase {
         assertSame(node1, node0.getParent());
     }
 
+    @Test
     public void testSetParentWithCycle() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -87,6 +92,7 @@ public class TestNodes extends TestCase {
         assertSame(node1, node0.getParent());
     }
 
+    @Test
     public void testChildren() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -99,6 +105,7 @@ public class TestNodes extends TestCase {
         assertNull(node1.getParent());
     }
 
+    @Test
     public void testChildrenWithCycle() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -118,6 +125,7 @@ public class TestNodes extends TestCase {
         assertFalse(node1.hasChildren());
     }
 
+    @Test
     public void testSetChildren() throws NodeException {
         Node container = new DummyNode();
         Node node1 = new DummyNode();
@@ -133,6 +141,7 @@ public class TestNodes extends TestCase {
         assertTrue(container.getChildren().contains(node3));
     }
 
+    @Test
     public void testSetChildrenWithCycle() throws NodeException {
         Node container = new DummyNode();
         Node node1 = new DummyNode();
@@ -151,6 +160,7 @@ public class TestNodes extends TestCase {
         assertFalse(container.hasChildren());
     }
 
+    @Test
     public void testMove() throws NodeException {
         Node container1 = new DummyNode();
         Node container2 = new DummyNode();
@@ -165,6 +175,7 @@ public class TestNodes extends TestCase {
         assertSame(container2, node.getParent());
     }
 
+    @Test
     public void testMoveEdgeCase() throws NodeException {
         Node node = new DummyNode();
         Node container = new DummyNode();
@@ -179,6 +190,7 @@ public class TestNodes extends TestCase {
         assertTrue(node.getChildren().isEmpty());
     }
 
+    @Test
     public void testInsertAfter() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -205,6 +217,7 @@ public class TestNodes extends TestCase {
         assertSame(node2, container.getChildren().get(4));
     }
 
+    @Test
     public void testHasSiblings() throws NodeException {
         Node container = new DummyNode();
         Node node1 = new DummyNode();
@@ -215,6 +228,7 @@ public class TestNodes extends TestCase {
         assertTrue(node2.hasSiblings());
     }
 
+    @Test
     public void testGetNextNode() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -228,6 +242,7 @@ public class TestNodes extends TestCase {
         assertNull(node2.getNextNode());
     }
 
+    @Test
     public void testGetPreviousNode() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -241,6 +256,7 @@ public class TestNodes extends TestCase {
         assertNull(node0.getPreviousNode());
     }
 
+    @Test
     public void testHasChildren() throws NodeException {
         Node node0 = new DummyNode();
         Node container = new DummyNode();
@@ -249,6 +265,7 @@ public class TestNodes extends TestCase {
         assertTrue(container.hasChildren());
     }
 
+    @Test
     public void testIsChildOf() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -282,6 +299,7 @@ public class TestNodes extends TestCase {
         assertFalse(parentOfNode1.isChildOf(node1));
     }
 
+    @Test
     public void testRemoveDescendants() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -305,6 +323,7 @@ public class TestNodes extends TestCase {
         assertNull(node4.getParent());
     }
 
+    @Test
     public void testGetDescendants() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();

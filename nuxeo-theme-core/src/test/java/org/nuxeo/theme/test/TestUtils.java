@@ -16,17 +16,20 @@ package org.nuxeo.theme.test;
 
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.formats.styles.StyleFormat;
 
-public class TestUtils extends TestCase {
+public class TestUtils {
 
+    @Test
     public void testCleanup() {
         assertEquals("a b c", Utils.cleanUp("\n   \t\t a \r\n  \nb  c\t"));
     }
 
+    @Test
     public void testCssToStyle() {
         String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .action .input{color: #ffff01;}"
                 + "ul a {color: #0F0;background-image:url(image.png)} a > b {color: \"green (nuxeo DM color)\"} ul {}";

@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.html.filters;
 
 import java.net.URL;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
@@ -41,7 +45,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
 
     FormatType formatType;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -81,12 +85,14 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
         filter.setFormatType(formatType);
     }
 
+    @Test
     public void testFilter1() {
         info.setMarkup("<div>content</div>");
         filter.process(info, false);
         assertEquals("<div class=\"nxStyle1\">content</div>", info.getMarkup());
     }
 
+    @Test
     public void testFilter2() {
         info.setMarkup("<div style=\"color:red;\">content</div>");
         filter.process(info, false);
@@ -95,6 +101,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter3() {
         info.setMarkup("<div class=\"test\">content</div>");
         filter.process(info, false);
@@ -102,6 +109,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter4() {
         // Unix line termination \n
         info.setMarkup("<div\n>content\n</div>");
@@ -110,6 +118,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter5() {
         // Win32 line termination \r\n
         info.setMarkup("<div\r\n>content\r\n</div>");
@@ -118,6 +127,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter6() {
         // Mac line termination \r
         info.setMarkup("<div\r>content\r</div>");
@@ -126,6 +136,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter7() {
         info.setMarkup("<div><div style=\"color:red\">content</div></div>");
         filter.process(info, false);
@@ -134,6 +145,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter8() {
         info.setMarkup("<div style=\"color:red\"><div style=\"color:red\">content</div></div>");
         filter.process(info, false);
@@ -142,6 +154,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter9() {
         info.setMarkup("<img src=\"/logo.png\" />");
         filter.process(info, false);
@@ -149,12 +162,14 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter10() {
         info.setMarkup("<br />");
         filter.process(info, false);
         assertEquals("<br class=\"nxStyle1\" />", info.getMarkup());
     }
 
+    @Test
     public void testStyleInheritance() throws ThemeException {
         format2 = FormatFactory.create("style");
         format2.setUid(2);

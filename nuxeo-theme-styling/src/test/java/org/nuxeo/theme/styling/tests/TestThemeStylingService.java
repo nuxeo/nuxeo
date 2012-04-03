@@ -22,6 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -54,7 +58,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
     protected ThemeStylingService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.theme.core");
@@ -223,6 +227,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("jquery.addon.js", resources.get(1));
     }
 
+    @Test
     public void testStylesRegistration() throws Exception {
         checkOriginalTheme();
 
@@ -265,6 +270,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         checkOriginalTheme();
     }
 
+    @Test
     public void testFlavorsRegistration() throws Exception {
         checkOriginalTheme();
 
@@ -370,6 +376,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         checkOriginalTheme();
     }
 
+    @Test
     public void testUnregister() throws Exception {
         checkOriginalTheme();
 

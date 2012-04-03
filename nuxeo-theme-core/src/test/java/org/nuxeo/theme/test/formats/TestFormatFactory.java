@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.formats;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFactory;
@@ -21,7 +25,7 @@ import org.nuxeo.theme.themes.ThemeException;
 
 public class TestFormatFactory extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -30,6 +34,7 @@ public class TestFormatFactory extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testCreateFormat() throws ThemeException {
         Format format = FormatFactory.create("widget");
         assertEquals("widget", format.getFormatType().getTypeName());

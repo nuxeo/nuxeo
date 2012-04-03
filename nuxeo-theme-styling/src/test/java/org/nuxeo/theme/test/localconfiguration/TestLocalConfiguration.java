@@ -16,10 +16,11 @@
 
 package org.nuxeo.theme.test.localconfiguration;
 
-import junit.framework.Assert;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -81,9 +82,9 @@ public class TestLocalConfiguration {
         LocalThemeConfig configuration = localConfigurationService.getConfiguration(
                 LocalThemeConfig.class,
                 LocalThemeConfigConstants.THEME_CONFIGURATION_FACET, workspace);
-        Assert.assertNotNull(configuration);
-        Assert.assertEquals("galaxy/default", configuration.computePagePath());
-        Assert.assertEquals("dark", configuration.getFlavor());
+        assertNotNull(configuration);
+        assertEquals("galaxy/default", configuration.computePagePath());
+        assertEquals("dark", configuration.getFlavor());
     }
 
 }

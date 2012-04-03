@@ -17,12 +17,14 @@ package org.nuxeo.theme.test.presets;
 import java.net.URL;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.presets.PaletteParser;
 
-public class TestPropertiesPaletteParser extends TestCase {
+public class TestPropertiesPaletteParser {
 
+    @Test
     public void testParser() {
         URL url = getClass().getClassLoader().getResource(
                 "properties-palette.properties");

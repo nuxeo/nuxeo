@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.html;
 
 import java.io.IOException;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Utils;
@@ -24,7 +28,7 @@ import org.nuxeo.theme.themes.ThemeException;
 
 public class TestJSUtils extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -33,6 +37,7 @@ public class TestJSUtils extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testCompressSource() throws ThemeException, IOException {
         String expected = Utils.readResourceAsString("test1-expected.js");
         String actual = JSUtils.compressSource(Utils.readResourceAsString("test1.js"));

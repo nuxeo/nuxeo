@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.configuration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.engines.EngineType;
@@ -22,7 +26,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestEngineConfiguration extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -32,6 +36,7 @@ public class TestEngineConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "engine-config.xml");
     }
 
+    @Test
     public void testRegisterEngine1() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // engine 1
@@ -43,6 +48,7 @@ public class TestEngineConfiguration extends NXRuntimeTestCase {
                 engine1.getRenderers().get("theme").getFilters().toString());
     }
 
+    @Test
     public void testRegisterEngine2() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // engine 2

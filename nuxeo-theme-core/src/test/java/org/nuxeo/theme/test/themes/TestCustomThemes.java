@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.themes;
 
 import java.io.FilenameFilter;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
@@ -27,7 +31,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestCustomThemes extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -36,6 +40,7 @@ public class TestCustomThemes extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testFileNameFilter() {
         FilenameFilter filter = new CustomThemeNameFilter();
 
@@ -61,6 +66,7 @@ public class TestCustomThemes extends NXRuntimeTestCase {
         assertFalse(filter.accept(null, "dummy.ext"));
     }
 
+    @Test
     public void testUpdateDescriptors() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeManager.updateThemeDescriptors();
@@ -107,6 +113,7 @@ public class TestCustomThemes extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testCreateCustomTheme() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         final String THEME_NAME = "custom";

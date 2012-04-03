@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.presets;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ThemeElement;
@@ -28,7 +32,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestPresetManager extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -37,6 +41,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testExtractPresetName() {
         // Global preset
         assertEquals("green (colors)", PresetManager.extractPresetName(null,
@@ -47,6 +52,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
         assertNull(PresetManager.extractPresetName(null, "\"green\""));
     }
 
+    @Test
     public void testGetPresetByName() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset1 = new PresetType("orange", "#fc0", "colors",
@@ -59,6 +65,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
         assertSame(preset2, PresetManager.getPresetByName("green (colors)"));
     }
 
+    @Test
     public void testGetAllPresets() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         assert PresetManager.getAllPresets().isEmpty();
@@ -74,6 +81,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
         assertEquals(2, allPresets.size());
     }
 
+    @Test
     public void testResolvePresets() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset1 = new PresetType("orange", "#fc0", "colors",
@@ -92,6 +100,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
                 "\"orange (colors)\""));
     }
 
+    @Test
     public void testResolveCustomPresets() {
         ThemeManager themeManager = Manager.getThemeManager();
         TypeRegistry typeRegistry = Manager.getTypeRegistry();

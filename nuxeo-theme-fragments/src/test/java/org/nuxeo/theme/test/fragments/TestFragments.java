@@ -14,15 +14,17 @@
 
 package org.nuxeo.theme.test.fragments;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.TextFragment;
 import org.nuxeo.theme.models.Html;
 import org.nuxeo.theme.models.ModelException;
 
-public class TestFragments extends TestCase {
+public class TestFragments {
 
+    @Test
     public void testTextFragment() throws ModelException {
         Fragment fragment = new TextFragment("Text here");
         assertEquals("Text here", ((Html) fragment.getModel()).getBody());

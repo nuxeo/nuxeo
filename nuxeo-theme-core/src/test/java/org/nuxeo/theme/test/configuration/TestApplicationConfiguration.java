@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.configuration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
@@ -25,7 +29,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestApplicationConfiguration extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -35,6 +39,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "application-config.xml");
     }
 
+    @Test
     public void testRegisterApplication1() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ApplicationType app1a = (ApplicationType) typeRegistry.lookup(
@@ -65,6 +70,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         assertEquals("printable", view3.getEngine());
     }
 
+    @Test
     public void testRegisterApplication2() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ApplicationType app2a = (ApplicationType) typeRegistry.lookup(
@@ -76,6 +82,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         assertTrue(app2a.getViewDefs().isEmpty());
     }
 
+    @Test
     public void testOverrideProperties() throws Exception {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // Override default application settings
@@ -113,6 +120,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         assertEquals("my-theme/default", view4.getTheme());
     }
 
+    @Test
     public void testOverrideProperties2() throws Exception {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // Override default application settings

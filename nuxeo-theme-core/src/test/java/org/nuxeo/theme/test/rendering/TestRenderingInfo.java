@@ -17,6 +17,10 @@ package org.nuxeo.theme.test.rendering;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -26,7 +30,7 @@ import org.nuxeo.theme.test.DummyHtml;
 
 public class TestRenderingInfo extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -38,12 +42,14 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
                 "template-engine-config.xml");
     }
 
+    @Test
     public void testInfoUid() {
         Element page = ElementFactory.create("page");
         RenderingInfo info = new RenderingInfo(page, null);
         assertNotNull(info.getUid());
     }
 
+    @Test
     public void testInfoClone() throws MalformedURLException {
         Element page = ElementFactory.create("page");
         URL themeUrl = new URL(
@@ -71,6 +77,7 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
         assertEquals("", copy.getMarkup());
     }
 
+    @Test
     public void testInfoPool() {
         Element page = ElementFactory.create("page");
         RenderingInfo info = new RenderingInfo(page, null);

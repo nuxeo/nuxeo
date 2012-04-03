@@ -14,11 +14,15 @@
 
 package org.nuxeo.theme.test.configuration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestThemeConfiguration extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -26,6 +30,7 @@ public class TestThemeConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "theme-config.xml");
     }
 
+    @Test
     public void testRegisterTheme() {
         // TODO
     }

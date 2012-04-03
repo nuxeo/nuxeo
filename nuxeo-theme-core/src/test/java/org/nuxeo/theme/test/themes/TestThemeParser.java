@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.themes;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.CellElement;
@@ -33,7 +37,7 @@ import org.nuxeo.theme.themes.ThemeParser;
 
 public class TestThemeParser extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -48,6 +52,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         ThemeParser.registerTheme(themeDef, preload);
     }
 
+    @Test
     public void testParseTheme() {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme1 = themeManager.getThemeByName("theme1");
@@ -79,6 +84,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertEquals("background", preset2.getCategory());
     }
 
+    @Test
     public void testElements() {
         ThemeManager themeManager = Manager.getThemeManager();
         PageElement page1 = themeManager.getPageByPath("theme1/page1");
@@ -99,6 +105,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertEquals("cellClass", cell2.getCssClassName());
     }
 
+    @Test
     public void testWidgets() {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme1 = themeManager.getThemeByName("theme1");
@@ -107,6 +114,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertEquals("utf-8", themeWidget.getProperty("charset"));
     }
 
+    @Test
     public void testThemeStructure() {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme1 = themeManager.getThemeByName("theme1");
@@ -127,6 +135,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertEquals("main", fragment1.getName());
     }
 
+    @Test
     public void testStyles() {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme1 = themeManager.getThemeByName("theme1");
@@ -148,6 +157,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
                 style1));
     }
 
+    @Test
     public void testCommonStyles() {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme1 = themeManager.getThemeByName("theme1");
@@ -163,6 +173,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
                 "background-color"));
     }
 
+    @Test
     public void testCommonStylesWithInheritance() {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme1 = themeManager.getThemeByName("theme1");

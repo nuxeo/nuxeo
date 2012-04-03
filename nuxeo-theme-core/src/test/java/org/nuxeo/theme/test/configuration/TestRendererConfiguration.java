@@ -16,13 +16,15 @@ package org.nuxeo.theme.test.configuration;
 
 import java.net.URL;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.theme.rendering.RendererType;
 
-public class TestRendererConfiguration extends TestCase {
+public class TestRendererConfiguration {
 
+    @Test
     public void testRendererType() throws Exception {
         XMap xmap = new XMap();
         xmap.register(RendererType.class);

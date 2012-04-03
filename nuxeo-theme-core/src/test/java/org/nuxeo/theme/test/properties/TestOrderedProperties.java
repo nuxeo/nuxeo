@@ -19,12 +19,14 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.properties.OrderedProperties;
 
-public class TestOrderedProperties extends TestCase {
+public class TestOrderedProperties {
 
+    @Test
     public void testPut() {
         Properties properties = new OrderedProperties();
         properties.put("1", "1");
@@ -39,6 +41,7 @@ public class TestOrderedProperties extends TestCase {
         assertEquals("4", keys.nextElement());
     }
 
+    @Test
     public void testSetPropertyt() {
         Properties properties = new OrderedProperties();
         properties.setProperty("1", "1");
@@ -53,6 +56,7 @@ public class TestOrderedProperties extends TestCase {
         assertEquals("4", keys.nextElement());
     }
 
+    @Test
     public void testLoad() throws IOException {
         Properties properties = new OrderedProperties();
 

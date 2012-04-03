@@ -14,7 +14,8 @@
 
 package org.nuxeo.theme.test.relations;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DefaultRelate;
@@ -26,8 +27,9 @@ import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationTypeFamily;
 import org.nuxeo.theme.relations.TriadicRelation;
 
-public class TestRelation extends TestCase {
+public class TestRelation {
 
+    @Test
     public void testMonadicRelation() {
         Predicate predicate = new DefaultPredicate("_ is white");
         Relate r1 = new DefaultRelate("snow");
@@ -41,6 +43,7 @@ public class TestRelation extends TestCase {
         assertEquals(r1, relation.getRelate(1));
     }
 
+    @Test
     public void testDyadicRelation() {
         Predicate predicate = new DefaultPredicate("_ loves _");
         Relate r1 = new DefaultRelate("Romeo");
@@ -57,6 +60,7 @@ public class TestRelation extends TestCase {
         assertEquals(r2, relation.getRelate(2));
     }
 
+    @Test
     public void testTriadicRelation() {
         Predicate predicate = new DefaultPredicate("_ connects _ to _");
         Relate r1 = new DefaultRelate("A");

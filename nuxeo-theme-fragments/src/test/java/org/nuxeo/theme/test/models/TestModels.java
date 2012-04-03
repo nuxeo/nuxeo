@@ -14,7 +14,8 @@
 
 package org.nuxeo.theme.test.models;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.models.Html;
 import org.nuxeo.theme.models.Menu;
@@ -22,13 +23,15 @@ import org.nuxeo.theme.models.MenuItem;
 import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.models.Text;
 
-public class TestModels extends TestCase {
+public class TestModels {
 
+    @Test
     public void testText() {
         Text text = new Text("content here");
         assertEquals("content here", text.getBody());
     }
 
+    @Test
     public void testHTML() {
         Html html = new Html("<p>content here</p>");
         assertEquals("<p>content here</p>", html.getBody());

@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.configuration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.presets.PresetType;
@@ -22,7 +26,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestPresetConfiguration extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -32,6 +36,7 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "preset-config.xml");
     }
 
+    @Test
     public void testRegisterPropertiesPalette1() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
@@ -41,6 +46,7 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
         assertEquals("color", preset.getCategory());
     }
 
+    @Test
     public void testRegisterPropertiesPalette2() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,

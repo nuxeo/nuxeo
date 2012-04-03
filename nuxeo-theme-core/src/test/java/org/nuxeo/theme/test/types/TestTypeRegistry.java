@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.types;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.presets.PresetType;
@@ -26,7 +30,7 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
 
     private PresetType preset2;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -39,6 +43,7 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
         preset2 = new PresetType("preset2", "value", "", "category", "", "");
     }
 
+    @Test
     public void testPresetType() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         assertTrue(typeRegistry.getTypes(TypeFamily.PRESET).isEmpty());

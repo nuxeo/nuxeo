@@ -17,6 +17,10 @@ package org.nuxeo.theme.test.html;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.formats.styles.Style;
@@ -26,7 +30,7 @@ import org.nuxeo.theme.themes.ThemeException;
 
 public class TestCSSUtils extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -35,6 +39,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
+    @Test
     public void testStyleToCss() {
         Style style = new StyleFormat();
         style.setUid(1);
@@ -76,6 +81,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testCollectionStyleToCss() {
         Style style = new StyleFormat();
         style.setCollection("some collection");
@@ -93,6 +99,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                 ));
     }
 
+    @Test
     public void testStyleToCssWithCommaSeparatedPaths() {
         Style style = new StyleFormat();
         style.setUid(1);
@@ -128,6 +135,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                 ));
     }
 
+    @Test
     public void testExtractCssColors() {
         assertEquals("#fc0", CSSUtils.extractCssColors("#fc0").get(0));
         assertEquals("#f00", CSSUtils.extractCssColors("#FF0000").get(0));
@@ -137,6 +145,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                 CSSUtils.extractCssColors("rgb( 1, 2, 3 )").get(0));
     }
 
+    @Test
     public void testExtractCssImages() {
         assertEquals("url(image.png)", CSSUtils.extractCssImages(
                 "url(image.png)").get(0));
@@ -152,6 +161,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                 "  url(image1.png)  ").get(0));
     }
 
+    @Test
     public void testReplaceColor() {
         assertEquals("\"orange\"", CSSUtils.replaceColor("#fc0", "#fc0",
                 "\"orange\""));
@@ -163,6 +173,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                 "#ff0", "\"yellow\""));
     }
 
+    @Test
     public void testNamedStyles() {
         Style style1 = new StyleFormat();
         style1.setUid(1);
@@ -177,6 +188,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                         false, false, false));
     }
 
+    @Test
     public void testToCamelCase() {
         assertEquals("camelCase", CSSUtils.toCamelCase("camel case"));
         assertEquals("camelCase", CSSUtils.toCamelCase("CAMEL CASE"));
@@ -187,6 +199,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         assertEquals("", CSSUtils.toCamelCase(""));
     }
 
+    @Test
     public void testToUpperCamelCase() {
         assertEquals("CamelCase", CSSUtils.toUpperCamelCase("camel case"));
         assertEquals("CamelCase", CSSUtils.toUpperCamelCase("CAMEL CASE"));
@@ -196,12 +209,14 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         assertEquals("", CSSUtils.toUpperCamelCase(""));
     }
 
+    @Test
     public void testCompressSource() throws ThemeException, IOException {
         String expected = Utils.readResourceAsString("test1-expected.css");
         String actual = CSSUtils.compressSource(Utils.readResourceAsString("test1.css"));
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testFixPartialUrls() throws IOException {
         String CSS_CONTEXT_PATH = "/nuxeo/css/";
         String source = Utils.readResourceAsString("resource.css");

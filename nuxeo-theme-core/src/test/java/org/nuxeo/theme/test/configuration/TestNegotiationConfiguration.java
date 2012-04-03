@@ -14,6 +14,10 @@
 
 package org.nuxeo.theme.test.configuration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.negotiation.NegotiationType;
@@ -24,7 +28,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestNegotiationConfiguration extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -34,6 +38,7 @@ public class TestNegotiationConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "negotiation-config.xml");
     }
 
+    @Test
     public void testRegisterNegotiation() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // negotiation

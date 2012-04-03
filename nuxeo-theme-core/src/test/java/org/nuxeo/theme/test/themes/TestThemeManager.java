@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
@@ -47,7 +51,7 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestThemeManager extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -67,6 +71,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         return s;
     }
 
+    @Test
     public void testValidateThemeName() {
         assertTrue(ThemeManager.validateThemeName("default"));
         assertTrue(ThemeManager.validateThemeName("default-1"));
@@ -89,6 +94,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(ThemeManager.validateThemeName("-1"));
     }
 
+    @Test
     public void testGetThemeNames() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         assertTrue(ThemeManager.getThemeNames().isEmpty());
@@ -136,6 +142,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.getThemeNames("freemarker").contains("theme4"));
     }
 
+    @Test
     public void testGetPageNames() throws NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         assertTrue(themeManager.getPageNames("default").isEmpty());
@@ -153,12 +160,14 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.getPageNames("default").contains("page2"));
     }
 
+    @Test
     public void testGetThemeNameByUrl() throws MalformedURLException {
         URL themeUrl = new URL(
                 "nxtheme://theme/engine/mode/templateEngine/theme/page/perspective");
         assertEquals("theme", ThemeManager.getThemeNameByUrl(themeUrl));
     }
 
+    @Test
     public void testGetUrlDescription() throws MalformedURLException {
         URL themeUrl = new URL(
                 "nxtheme://theme/engine/mode/templateEngine/theme/page/perspective");
@@ -172,6 +181,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
                 ThemeManager.getUrlDescription(elementUrl));
     }
 
+    @Test
     public void testGetThemeOf() throws NodeException {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
@@ -185,6 +195,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertNull(ThemeManager.getThemeOf(cell));
     }
 
+    @Test
     public void testBelongToSameTheme() throws NodeException {
         Element theme1 = ElementFactory.create("theme");
         Element page11 = ElementFactory.create("page");
@@ -205,6 +216,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(ThemeManager.belongToSameTheme(page12, page22));
     }
 
+    @Test
     public void testDuplicateElement() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         Element element = ElementFactory.create("page");
@@ -228,6 +240,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
                 ElementFormatter.getFormatsFor(duplicate).iterator().next());
     }
 
+    @Test
     public void testDuplicateFragment() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         DummyFragment fragment = (DummyFragment) FragmentFactory.create("dummy fragment");
@@ -270,6 +283,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals("description", duplicatedFormat2.getDescription());
     }
 
+    @Test
     public void testDuplicateWidget() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -285,6 +299,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(duplicate.getFormatType(), widget.getFormatType());
     }
 
+    @Test
     public void testDuplicateLayout() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -298,6 +313,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals("50px", duplicate.getProperty("height"));
     }
 
+    @Test
     public void testDuplicateStyle() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -319,6 +335,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals(properties2, duplicateProperties2);
     }
 
+    @Test
     public void testDuplicateFormatWithAncestors() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -339,6 +356,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(ancestor2, ThemeManager.getAncestorFormatOf(ancestor1));
     }
 
+    @Test
     public void testListFormats() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -354,6 +372,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.listFormats().isEmpty());
     }
 
+    @Test
     public void testRemoveOrphanedFormats() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -400,6 +419,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.listFormats().contains(style3));
     }
 
+    @Test
     public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException,
             ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -414,6 +434,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals(formatsBefore, formatsAfter);
     }
 
+    @Test
     public void testDestroyTestTheme() throws ThemeIOException, ThemeException,
             NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -432,6 +453,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testStyleInheritance() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -508,6 +530,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(style1).isEmpty());
     }
 
+    @Test
     public void testStyleInheritanceCycles() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -536,6 +559,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(ancestor3).isEmpty());
     }
 
+    @Test
     public void testDestroyElement() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -597,6 +621,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(Manager.getUidManager().listUids().isEmpty());
     }
 
+    @Test
     public void testDeletePage() throws ThemeIOException, NodeException,
             ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -614,6 +639,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertNull(themeManager.getPageByPath("theme/page"));
     }
 
+    @Test
     public void testMakeElementUseNamedStyle() throws ThemeException,
             NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -652,6 +678,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(pageStyle));
     }
 
+    @Test
     public void testSetStyleInheritance() throws NodeException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
@@ -708,6 +735,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
                 ancestorStyle));
     }
 
+    @Test
     public void testRemoveInheritanceFrom() throws NodeException,
             ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -734,6 +762,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(descendant3).isEmpty());
     }
 
+    @Test
     public void testRemoveInheritanceTowards() throws NodeException,
             ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -756,6 +785,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(descendant).isEmpty());
     }
 
+    @Test
     public void testRemoveNamedStyles() throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -780,6 +810,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.getNamedStyles(currentThemeName).isEmpty());
     }
 
+    @Test
     public void testStyleDependencySort() throws NodeException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         String currentThemeName = "theme";

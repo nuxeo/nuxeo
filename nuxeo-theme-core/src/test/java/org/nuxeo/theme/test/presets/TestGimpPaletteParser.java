@@ -17,12 +17,14 @@ package org.nuxeo.theme.test.presets;
 import java.net.URL;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.presets.PaletteParser;
 
-public class TestGimpPaletteParser extends TestCase {
+public class TestGimpPaletteParser {
 
+    @Test
     public void testParser() {
         URL url = getClass().getClassLoader().getResource("gimp-palette.gpl");
         Map<String, String> entries = PaletteParser.parse(url);
