@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -98,6 +99,8 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     protected transient DocumentVersioning documentVersioning;
 
     protected transient List<PageSelection<VersionModel>> versionModelList;
+
+    protected String selectedVersionId;
 
     protected String checkedOut;
 
@@ -196,10 +199,30 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Override
+    public String restoreToVersion() throws ClientException {
+        if (getSelectedVersionId() != null) {
+            VersionModel selectedVersion = new VersionModelImpl();
+            selectedVersion.setId(getSelectedVersionId());
+            return restoreToVersion(selectedVersion);
+        }
+        return null;
+    }
+
+    @Override
     public String viewArchivedVersion(VersionModel selectedVersion)
             throws ClientException {
         return navigationContext.navigateToDocument(
                 navigationContext.getCurrentDocument(), selectedVersion);
+    }
+
+    @Override
+    public String viewArchivedVersion() throws ClientException {
+        if (getSelectedVersionId() != null) {
+            VersionModel selectedVersion = new VersionModelImpl();
+            selectedVersion.setId(getSelectedVersionId());
+            return viewArchivedVersion(selectedVersion);
+        }
+        return null;
     }
 
     @Override
@@ -353,6 +376,14 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
                 resourcesAccessor.getMessages().get(
                         "feedback.versioning.versionsRemoved"));
         return null;
+    }
+
+    public String getSelectedVersionId() {
+        return selectedVersionId;
+    }
+
+    public void setSelectedVersionId(String selectedVersionId) {
+        this.selectedVersionId = selectedVersionId;
     }
 
 }

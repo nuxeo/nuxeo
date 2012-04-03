@@ -57,6 +57,17 @@ public interface VersionedActions {
             throws ClientException;
 
     /**
+     * Restores the version which id is returned by
+     * {@link #getSelectedVersionId()}.
+     *
+     * @return the view id
+     * @throws ClientException if cannot fetch the version
+     *
+     * @since 5.6
+     */
+    String restoreToVersion() throws ClientException;
+
+    /**
      * Security check to enable or disable the restore button.
      *
      * @return permission check result
@@ -108,6 +119,17 @@ public interface VersionedActions {
     String viewArchivedVersion(VersionModel selectedVersion)
             throws ClientException;
 
+    /**
+     * Navigates to the version which id is returned by
+     * {@link #getSelectedVersionId()}.
+     *
+     * @return the view id
+     * @throws ClientException if cannot fetch the version
+     *
+     * @since 5.6
+     */
+    String viewArchivedVersion() throws ClientException;
+
     DocumentModel getSourceDocument() throws ClientException;
 
     DocumentModel getSourceDocument(DocumentModel document)
@@ -144,4 +166,18 @@ public interface VersionedActions {
      * @since 5.6
      */
     String removeSelectedArchivedVersions() throws ClientException;
+
+    /**
+     * Gets currently selected version id.
+     *
+     * @since 5.6
+     */
+    String getSelectedVersionId();
+
+    /**
+     * Sets currently selected version id.
+     *
+     * @since 5.6
+     */
+    void setSelectedVersionId(String selectedVersionId);
 }
