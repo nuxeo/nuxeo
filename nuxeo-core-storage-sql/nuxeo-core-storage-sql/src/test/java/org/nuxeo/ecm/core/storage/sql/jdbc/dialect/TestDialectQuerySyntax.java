@@ -55,9 +55,9 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         return (ResultSet) m.proxy();
     }
 
-    protected static void assertFulltextException(String query) {
+    protected void assertFulltextException(String query) {
         try {
-            Dialect.analyzeFulltextQuery(query);
+            dialect.analyzeFulltextQuery(query);
             fail("Query should fail: " + query);
         } catch (QueryMakerException e) {
             // ok
@@ -94,8 +94,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         }
     }
 
-    protected static void assertFulltextQuery(String expected, String query) {
-        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+    protected void assertFulltextQuery(String expected, String query) {
+        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
         if (ft == null) {
             assertNull(expected);
         } else {
@@ -105,17 +105,17 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         }
     }
 
-    protected static void assertPGPhraseBreak(String expected, String query) {
-        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+    protected void assertPGPhraseBreak(String expected, String query) {
+        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
         FulltextQuery broken = DialectPostgreSQL.breakPhrases(ft);
         StringBuilder buf = new StringBuilder();
         dumpFulltextQuery(broken, buf);
         assertEquals(expected, buf.toString());
     }
 
-    protected static void assertPGRemoveToplevelAndedWord(String expected,
+    protected void assertPGRemoveToplevelAndedWord(String expected,
             String query) {
-        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
         FulltextQuery simplified = DialectPostgreSQL.removeToplevelAndedWords(ft);
         if (simplified == null) {
             assertNull(expected);
@@ -126,8 +126,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         }
     }
 
-    protected static void assertPGLikeSql(String expected, String query) {
-        FulltextQuery ft = Dialect.analyzeFulltextQuery(query);
+    protected void assertPGLikeSql(String expected, String query) {
+        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
         StringBuilder buf = new StringBuilder();
         DialectPostgreSQL.generateLikeSql(ft, buf);
         assertEquals(expected, buf.toString());
@@ -222,6 +222,9 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
         assertDialectFT("foo", "foo");
+        assertDialectFT("foo", "foo :");
+        assertDialectFT("foo", "foo :)");
+        assertDialectFT("foo", "foo -+-");
         assertDialectFT("(foo AND bar)", "foo bar");
         assertDialectFT("(foo NOT bar)", "foo -bar");
         assertDialectFT("(bar NOT foo)", "-foo bar");
@@ -242,6 +245,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     }
 
     public void testPostgreSQLPhraseBreak() throws Exception {
+        dialect = new DialectPostgreSQL(metadata, binaryManager,
+                repositoryDescriptor);
         assertPGPhraseBreak("foo", "foo");
         assertPGPhraseBreak("[foo AND bar]", "\"foo bar\"");
         assertPGPhraseBreak("[foo AND bar AND baz]", "\"foo bar\" baz");
@@ -254,6 +259,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     }
 
     public void testPostgreSQLToplevelAndedWordRemoval() throws Exception {
+        dialect = new DialectPostgreSQL(metadata, binaryManager,
+                repositoryDescriptor);
         assertPGRemoveToplevelAndedWord(null, "foo");
         assertPGRemoveToplevelAndedWord(null, "foo bar");
         assertPGRemoveToplevelAndedWord("{foo bar}", "\"foo bar\"");
@@ -268,6 +275,8 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
     }
 
     public void testPostgreSQLLikeSql() throws Exception {
+        dialect = new DialectPostgreSQL(metadata, binaryManager,
+                repositoryDescriptor);
         assertPGLikeSql("?? LIKE '% foo %'", "foo");
         assertPGLikeSql("?? LIKE '% foo %'", "FOO");
         assertPGLikeSql("?? LIKE '% caf\u00e9 %'", "CAF\u00c9");
@@ -291,6 +300,9 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
                 repositoryDescriptor);
         assertDialectFT("", "-foo");
         assertDialectFT("foo", "foo");
+        assertDialectFT("foo", "foo :");
+        assertDialectFT("foo", "foo :)");
+        assertDialectFT("foo", "foo -+-");
         assertDialectFT("(foo & bar)", "foo bar ");
         assertDialectFT("(foo & bar)", "foo & bar"); // compat
         assertDialectFT("(foo & ! bar)", "foo -bar");
@@ -327,6 +339,9 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
                 repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("foo", "foo");
+        assertDialectFT("foo", "foo :");
+        assertDialectFT("foo", "foo :)");
+        assertDialectFT("foo", "foo -+-");
         assertDialectFT("(+foo +bar)", "foo bar");
         assertDialectFT("(+foo -bar)", "foo -bar");
         assertDialectFT("(+bar -foo)", "-foo bar");
@@ -351,6 +366,9 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
                 repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("{foo}", "foo");
+        assertDialectFT("{foo}", "foo :");
+        assertDialectFT("{foo}", "foo :)");
+        assertDialectFT("{foo}", "foo -+-");
         assertDialectFT("{foo_bar}", "foo_bar");
         assertDialectFT("({foo} AND {bar})", "foo bar");
         assertDialectFT("({foo} NOT {bar})", "foo -bar");
@@ -380,6 +398,9 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
                 repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("\"foo\"", "foo");
+        assertDialectFT("\"foo\"", "foo :");
+        assertDialectFT("\"foo\"", "foo :)");
+        assertDialectFT("\"foo\"", "foo -+-");
         assertDialectFT("(\"foo\" AND \"bar\")", "foo bar");
         assertDialectFT("(\"foo\" AND NOT \"bar\")", "foo -bar");
         assertDialectFT("(\"bar\" AND NOT \"foo\")", "-foo bar");
