@@ -64,6 +64,22 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>documentHasBlobAttached</filter-id>
     </action>
+    <action id="subscribesAllDocNotifications"
+      link="#{subscriptionAction.updateAllSubscriptions}"
+      order="4" label="action.user.subscribe" type="link_icon"
+      icon="/icons/contextual_menu/subscribe.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>hasNoSubscription</filter-id>
+      <filter-id>canSubscribed</filter-id>
+    </action>
+    <action id="unsubscribesAllDocNotifications"
+      link="#{subscriptionAction.updateAllSubscriptions}"
+      order="4" label="action.user.unsubscribe" type="link_icon"
+      icon="/icons/contextual_menu/unsubscribe.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribed</filter-id>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -75,6 +91,24 @@
       </rule>
     </filter>
 
+    <filter id="hasSubscriptions">
+      <rule grant="true">
+        <condition>#{subscriptionAction.getSelectedNotifications().size() > 0}</condition>
+      </rule>
+    </filter>
+
+    <filter id="hasNoSubscription">
+      <rule grant="true">
+        <condition>#{subscriptionAction.getSelectedNotifications().size() == 0}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canSubscribed">
+      <rule grant="false">
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+      </rule>
+    </filter>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
