@@ -21,6 +21,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
@@ -35,7 +39,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
     protected ContentViewService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -50,6 +54,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testRegistration() throws Exception {
         assertNull(service.getContentView("foo"));
 
@@ -110,6 +115,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertFalse(header.isTranslateTitle());
     }
 
+    @Test
     public void testOverride() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNotNull(contentView);
@@ -184,6 +190,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertFalse(header.isTranslateTitle());
     }
 
+    @Test
     public void testGetContentViewNames() throws Exception {
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
@@ -221,6 +228,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("QUERY_WITH_SUBCLAUSE", orderedNames.get(5));
     }
 
+    @Test
     public void testGetContentViewHeaders() throws Exception {
         Set<ContentViewHeader> headers = service.getContentViewHeaders();
         assertNotNull(headers);
@@ -248,6 +256,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("QUERY_WITH_SUBCLAUSE", sortedHeaders.get(6).getName());
     }
 
+    @Test
     public void testGetContentViewByFlag() throws Exception {
         Set<String> names = service.getContentViewNames("foo");
         assertNotNull(names);
@@ -296,6 +305,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(0, names.size());
     }
 
+    @Test
     public void testGetContentViewHeadersByFlag() throws Exception {
         Set<ContentViewHeader> headers = service.getContentViewHeaders("foo");
         assertNotNull(headers);

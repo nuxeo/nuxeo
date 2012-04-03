@@ -27,6 +27,11 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -54,7 +59,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     private String dummyParam = UUID.randomUUID().toString();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -104,7 +109,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         createTestDocuments();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         facesContext.relieveCurrent();
@@ -125,6 +130,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQuery() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -137,6 +143,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryReference() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         assertNotNull(contentView);
@@ -229,6 +236,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     // same test but taking XML parameters instead of passing them through API
     // calls
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryWithXMLParameters() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -245,6 +253,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryWithXMLParametersReference() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         assertNotNull(contentView);
@@ -332,6 +341,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryAndFetch() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNotNull(contentView);
@@ -342,6 +352,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryAndFetchReference() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
         assertNotNull(contentView);
@@ -409,6 +420,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryAndFetchWithError() throws Exception {
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
@@ -420,6 +432,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryAndFetchWithErrorReference() throws Exception {
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
@@ -455,6 +468,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryWithSearchDocument() throws Exception {
         if (!database.supportsMultipleFulltextIndexes()) {
             return;
@@ -470,6 +484,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryWithSearchDocumentReference() throws Exception {
         if (!database.supportsMultipleFulltextIndexes()) {
             return;
@@ -545,6 +560,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCoreQueryWithSearchDocumentWithWhereClause()
             throws Exception {
         ContentView contentView = service.getContentView("QUERY_WITH_SUBCLAUSE");

@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -52,7 +55,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     private LayoutStore service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
@@ -64,6 +67,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testWidgetTypeExport() throws Exception {
         WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
                 WebLayoutManager.JSF_CATEGORY, "test");
@@ -82,6 +86,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(expectedString, writtenString);
     }
 
+    @Test
     public void testWidgetTypesExport() throws Exception {
         WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
                 WebLayoutManager.JSF_CATEGORY, "test");
@@ -102,6 +107,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(expectedString, writtenString);
     }
 
+    @Test
     public void testWidgetTypeImport() throws Exception {
         JSONObject json = null;
         InputStream in = new FileInputStream(
