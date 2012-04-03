@@ -33,18 +33,21 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.versioning.VersionedActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles document diff actions.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 @Name("diffActions")
 @Scope(CONVERSATION)
@@ -60,12 +63,17 @@ public class DiffActionsBean implements Serializable {
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient DocumentsListsManager documentsListsManager;
+
+    @In(create = true, required = false)
+    protected transient VersionedActions versionedActions;
 
     protected DocumentModel leftDoc;
 
     protected DocumentModel rightDoc;
+
+    protected String selectedVersionId;
 
     protected boolean isVersionDiff = false;
 
@@ -175,32 +183,36 @@ public class DiffActionsBean implements Serializable {
     /**
      * Prepares a diff of the selected version with the live doc.
      *
-     * @param version the version
      * @return the view id
      * @throws ClientException the client exception
      */
-    public String prepareCurrentVersionDiff(VersionModel selectedVersion)
-            throws ClientException {
+    public String prepareCurrentVersionDiff() throws ClientException {
 
-        isVersionDiff = true;
+        String selectedVersionId = versionedActions.getSelectedVersionId();
+        if (selectedVersionId != null) {
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            if (currentDocument == null) {
+                throw new ClientException(
+                        "Cannot make a diff between selected version and current document since current document is null.");
+            }
 
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument == null) {
-            throw new ClientException(
-                    "Cannot make a diff between selected version and current document since current document is null.");
+            VersionModel selectedVersion = new VersionModelImpl();
+            selectedVersion.setId(selectedVersionId);
+            DocumentModel docVersion = documentManager.getDocumentWithVersion(
+                    currentDocument.getRef(), selectedVersion);
+            if (docVersion == null) {
+                throw new ClientException(
+                        "Cannot make a diff between selected version and current document since selected version document is null.");
+            }
+
+            leftDoc = currentDocument;
+            rightDoc = docVersion;
+
+            isVersionDiff = true;
+
+            return DOC_DIFF_VIEW;
         }
-
-        DocumentModel docVersion = documentManager.getDocumentWithVersion(
-                currentDocument.getRef(), selectedVersion);
-        if (docVersion == null) {
-            throw new ClientException(
-                    "Cannot make a diff between selected version and current document since selected version document is null.");
-        }
-
-        leftDoc = currentDocument;
-        rightDoc = docVersion;
-
-        return DOC_DIFF_VIEW;
+        return null;
     }
 
     /**
