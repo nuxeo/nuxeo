@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
-    <!-- Generic widgets binded to diff property types, see: org.nuxeo.ecm.diff.model.PropertyType -->
+    <!-- Generic widgets: name = diff property type, see: org.nuxeo.ecm.diff.model.PropertyType -->
     <widget name="string" type="text">
       <categories>
         <category>diff</category>
@@ -106,7 +106,7 @@
       </properties>
     </widget>
 
-    <!-- Specific -->
+    <!-- Specific widgets: name = property xpath -->
     <widget name="system:path" type="text">
       <categories>
         <category>diff</category>
@@ -127,6 +127,10 @@
         <label mode="any">label.note.note</label>
       </labels>
       <translated>true</translated>
+      <fields>
+        <field>note:note</field>
+        <field>note:mime_type</field>
+      </fields>
       <properties mode="view">
         <property name="translatedHtml">
           #{noteActions.translateImageLinks(field_0)}
@@ -160,6 +164,21 @@
         <property name="template">
           /widgets/list_diff_widget_template.xhtml
         </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:nature" type="selectOneDirectory">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="directoryName">nature</property>
+        <property name="localize">true</property>
+        <property name="ordering">ordering,label</property>
       </properties>
     </widget>
 
