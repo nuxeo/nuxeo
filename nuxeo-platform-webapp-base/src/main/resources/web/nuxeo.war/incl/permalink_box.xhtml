@@ -8,6 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
   <h:outputText value="#{messages['label.permalink']}" />
-  <h:inputText value="#{nxd:documentUrl(currentDocument)}" readonly="true"
-    onclick="javascript:this.focus();this.select();" />
+  <br />
+  <h:inputText value="#{nxd:documentUrl(currentDocument)}"
+    readonly="true" onclick="javascript:this.focus();this.select();" />
 </div>

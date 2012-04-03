@@ -30,14 +30,14 @@
     </action>
 
     <!-- Contextual tools buttons contrib NXP-9039 -->
-    <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}" order="1"
-      label="command.lock" icon="" type="link_icon">
+    <action id="documentLock" link="#{lockActions.lockCurrentDocument}" order="1"
+      label="command.lock" type="link_icon" icon="/icons/contextual_menu/unlocked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
     </action>
-    <action id="DOCUMENT_UNLOCK" link="#{lockActions.unlockCurrentDocument}" order="1"
-      label="command.unlock" icon="" type="link_icon">
+    <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}" order="1"
+      label="command.unlock" type="link_icon" icon="/icons/contextual_menu/locked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
@@ -51,7 +51,7 @@
       <filter-id>not_anonymous</filter-id>
     </action>
     <action id="permalinkAction" order="2" label="label.permalink"
-      type="fancybox" icon="/icons/permalink.png">
+      type="fancybox" icon="/icons/contextual_menu/share.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties name="fancybox">
         <property name="url">/incl/permalink_box.xhtml</property>
@@ -60,7 +60,7 @@
     <action id="downloadAction"
       link="#{operationActionBean.doOperation('downloadFilesZip')}"
       order="3" label="label.document.download" type="link_icon"
-      icon="/icons/download.png">
+      icon="/icons/contextual_menu/download.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>documentHasBlobAttached</filter-id>
     </action>
