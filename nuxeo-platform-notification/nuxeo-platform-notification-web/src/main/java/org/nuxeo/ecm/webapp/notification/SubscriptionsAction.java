@@ -143,6 +143,27 @@ public class SubscriptionsAction extends InputController implements
         getNotificationsList();
     }
 
+    /**
+     * Manage (un)subscription to all notifications
+     */
+    public void updateAllSubscriptions() throws Exception {
+        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        List<String> userSubscriptions = notificationManager.getSubscriptionsForUserOnDocument(
+                NotificationConstants.USER_PREFIX + principal.getName(),
+                currentDoc.getId());
+        if (userSubscriptions.size() == 0) {
+            notificationManager.addSubscriptions(
+                    NotificationConstants.USER_PREFIX + principal.getName(),
+                    currentDoc, false, principal);
+        } else {
+            notificationManager.removeSubscriptions(
+                    NotificationConstants.USER_PREFIX + principal.getName(),
+                    userSubscriptions, currentDoc.getId());
+        }
+        getNotificationsList();
+    }
+
     @Observer(value=EventNames.DOCUMENT_SELECTION_CHANGED, create=false)
     @BypassInterceptors
     public void invalidateNotificationsSelection() {

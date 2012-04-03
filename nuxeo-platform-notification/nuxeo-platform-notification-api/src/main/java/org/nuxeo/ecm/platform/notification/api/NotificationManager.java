@@ -62,6 +62,19 @@ public interface NotificationManager {
             throws ClientException;
 
     /**
+     * @since 5.6 Called when a user subscribes to all notifications.
+     */
+    void addSubscriptions(String username, DocumentModel doc,
+            Boolean sendConfirmationEmail, NuxeoPrincipal principal)
+            throws ClientException;
+
+    /**
+     * @since 5.6 Called when a user unsubscribes to all notifications.
+     */
+    void removeSubscriptions(String username, List<String> notifications,
+            String docId) throws ClientException;
+
+    /**
      * Called when a user cancels his notification.
      */
     void removeSubscription(String username, String notification,
