@@ -88,7 +88,7 @@ public class DateMatcher {
         matcher = parsingDate(MONTH_DIGIT_ONLY_MATCHER, input);
         if (matcher.find()) {
             int month = Integer.parseInt(matcher.group());
-            if (month > 12) {
+            if (month > 12 || month < 1) {
                 return new DateMatcher(false, true, false, null);
             }
             return new DateMatcher(false, true, false,

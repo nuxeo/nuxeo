@@ -20,6 +20,9 @@ public class TestDateMatcher {
         assertNull(dateMonthsOnlyMoreThan12.getDateSuggestion());
         DateMatcher dateMonthsOnlylessThan1 = DateMatcher.fromInput("0");
         assertNull(dateMonthsOnlylessThan1.getDateSuggestion());
+        // Test '00' (see NXP-9149)
+        DateMatcher dateMonthsOnlyDoubleZero = DateMatcher.fromInput("00");
+        assertNull(dateMonthsOnlyDoubleZero.getDateSuggestion());
 
         DateMatcher dateYearWithMonthOnlylessThan1 = DateMatcher.fromInput("1654-00");
         assertNull(dateYearWithMonthOnlylessThan1.getDateSuggestion());
