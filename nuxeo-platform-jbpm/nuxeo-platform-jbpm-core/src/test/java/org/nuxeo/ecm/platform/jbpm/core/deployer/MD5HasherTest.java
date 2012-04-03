@@ -22,7 +22,9 @@ package org.nuxeo.ecm.platform.jbpm.core.deployer;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -30,7 +32,7 @@ import org.w3c.dom.NodeList;
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
-public class MD5HasherTest extends TestCase {
+public class MD5HasherTest {
 
     private static final String xmlFolder = "xml/";
     private static final String smallXmlFile = xmlFolder + "smallXmlFile.xml";
@@ -39,11 +41,12 @@ public class MD5HasherTest extends TestCase {
 
     private MD5Hasher hasher;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         hasher = new MD5Hasher();
     }
 
+    @Test
     public void testGetDomDocument() throws Exception {
         URL url = getURL(smallXmlFile);
         Document document = hasher.getDomDocument(url);
@@ -55,6 +58,7 @@ public class MD5HasherTest extends TestCase {
         return Thread.currentThread().getContextClassLoader().getResource(path);
     }
 
+    @Test
     public void testTrimDocument() throws Exception {
         Document document = hasher.getDomDocument(getURL(smallCommentedFile));
         NodeList list = document.getChildNodes();
@@ -78,6 +82,7 @@ public class MD5HasherTest extends TestCase {
         assertNode(list, "bar", 0);
     }
 
+    @Test
     public void testGetBytes() throws Exception {
         URL url = getURL(smallXmlFile);
         Document document = hasher.getDomDocument(url);
@@ -85,6 +90,7 @@ public class MD5HasherTest extends TestCase {
         assertNotNull(result);
     }
 
+    @Test
     public void testMD5() throws NoSuchAlgorithmException {
         // taken from: http://en.wikipedia.org/wiki/MD5
         assertEquals("d41d8cd98f00b204e9800998ecf8427e",
@@ -97,6 +103,7 @@ public class MD5HasherTest extends TestCase {
                 hasher.MD5("The quick brown fox jumps over the lazy dog".getBytes()));
     }
 
+    @Test
     public void testGetMD5FromURL() throws Exception {
         assertEquals(hasher.getMD5FromURL(getURL(smallCommentedFile)),
                 hasher.getMD5FromURL(getURL(smallXmlFile)));

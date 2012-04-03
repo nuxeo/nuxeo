@@ -14,10 +14,10 @@ package org.nuxeo.ecm.automation.core.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -68,7 +68,7 @@ public class ResizeTester {
 
         Blob result  = (Blob) service.run(ctx, chain);
 
-        Assert.assertNotNull(result);
+        assertNotNull(result);
         //FileUtils.copyToFile(result.getStream(), new File("/tmp/convert.test"));
     }
 

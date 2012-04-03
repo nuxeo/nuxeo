@@ -21,14 +21,15 @@ package org.nuxeo.ecm.platform.annotations.service;
 
 import java.net.URI;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
-public class DefaultUriResolverTest extends TestCase {
+public class DefaultUriResolverTest {
 
     private static final String baseUrl = "http://myexemple.com/nuxeo/Annotations/";
 
@@ -40,17 +41,20 @@ public class DefaultUriResolverTest extends TestCase {
 
     private final UriResolver resolver = new DefaultUriResolver();
 
+    @Test
     public void testTranslateToGraphUri() throws Exception {
         URI result = resolver.translateToGraphURI(new URI(annotationUrl));
         assertEquals(annotationUrn, result.toString());
     }
 
+    @Test
     public void testTranslateFromGraphUri() throws Exception {
         URI result = resolver.translateFromGraphURI(new URI(annotationUrn),
                 baseUrl);
         assertEquals(annotationUrl, result.toString());
     }
 
+    @Test
     public void testGetBaseUrl() throws Exception {
         assertEquals(baseUrl, resolver.getBaseUrl(new URI(annotationUrl)));
     }

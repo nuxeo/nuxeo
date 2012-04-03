@@ -16,23 +16,20 @@
  */
 package org.nuxeo.ecm.automation.task.test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import junit.framework.Assert;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.junit.runner.RunWith;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -104,7 +101,7 @@ public class TaskAutomationTest {
 
         List<Task> tasks = taskService.getTaskInstances(document,
                 (NuxeoPrincipal) null, coreSession);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskChain");
@@ -133,7 +130,7 @@ public class TaskAutomationTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6, 17, 10, 15);
         calendar.set(Calendar.MILLISECOND,0);
-        Assert.assertEquals(calendar.getTime(), task.getDueDate());
+        assertEquals(calendar.getTime(), task.getDueDate());
         // task status
         assertTrue(task.isOpened());
         assertFalse(task.isCancelled());
@@ -166,7 +163,7 @@ public class TaskAutomationTest {
         assertEquals(0, tasks.size());
 
         // check document metadata
-        Assert.assertNull(document.getPropertyValue("dc:description"));
+        assertNull(document.getPropertyValue("dc:description"));
     }
 
     @Test
@@ -198,7 +195,7 @@ public class TaskAutomationTest {
 
         List<Task> tasks = taskService.getTaskInstances(document,
                 (NuxeoPrincipal) null, coreSession);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskChainWithoutActors");
@@ -215,7 +212,7 @@ public class TaskAutomationTest {
 
         List<Task> tasks = taskService.getTaskInstances(document,
                 (NuxeoPrincipal) null, coreSession);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSeveralTasksChain");
@@ -244,7 +241,7 @@ public class TaskAutomationTest {
                 task1.getVariable(TaskService.VariableName.documentRepositoryName.name()));
         assertEquals(document.getId(),
                 task1.getVariable(TaskService.VariableName.documentId.name()));
-        Assert.assertNull(task1.getVariable(TaskService.VariableName.directive.name()));
+        assertNull(task1.getVariable(TaskService.VariableName.directive.name()));
         assertEquals(
                 "true",
                 task1.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
@@ -287,7 +284,7 @@ public class TaskAutomationTest {
                 task2.getVariable(TaskService.VariableName.documentRepositoryName.name()));
         assertEquals(document.getId(),
                 task2.getVariable(TaskService.VariableName.documentId.name()));
-        Assert.assertNull(task2.getVariable(TaskService.VariableName.directive.name()));
+        assertNull(task2.getVariable(TaskService.VariableName.directive.name()));
         assertEquals(
                 "true",
                 task2.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
@@ -317,7 +314,7 @@ public class TaskAutomationTest {
                 task3.getVariable(TaskService.VariableName.documentRepositoryName.name()));
         assertEquals(document.getId(),
                 task3.getVariable(TaskService.VariableName.documentId.name()));
-        Assert.assertNull(task3.getVariable(TaskService.VariableName.directive.name()));
+        assertNull(task3.getVariable(TaskService.VariableName.directive.name()));
         assertEquals(
                 "true",
                 task3.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
@@ -328,7 +325,7 @@ public class TaskAutomationTest {
         assertEquals(SecurityConstants.ADMINISTRATOR,
                 task3.getInitiator());
         // check document metadata
-        Assert.assertNull(document.getPropertyValue("dc:description"));
+        assertNull(document.getPropertyValue("dc:description"));
     }
 
     @Test
@@ -338,7 +335,7 @@ public class TaskAutomationTest {
 
         List<Task> tasks = taskService.getTaskInstances(document,
                 (NuxeoPrincipal) null, coreSession);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskAndRunOperationChain");

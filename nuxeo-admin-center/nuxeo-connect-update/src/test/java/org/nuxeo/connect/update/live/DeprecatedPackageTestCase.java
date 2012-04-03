@@ -43,3 +43,4 @@ public abstract class DeprecatedPackageTestCase {
     }
 
 }
+

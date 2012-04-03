@@ -22,10 +22,11 @@ package org.nuxeo.connect.download.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.PackageDescriptor;
@@ -44,7 +45,7 @@ public class TestDownloader {
     @Test
     public void testSimpleDownload() throws Exception {
         ConnectDownloadManager cdm = NuxeoConnectClient.getDownloadManager();
-        Assert.assertNotNull(cdm);
+        assertNotNull(cdm);
 
         int nbDownloads = 5;
         int maxLoop = 40;
@@ -62,7 +63,7 @@ public class TestDownloader {
 
         for (PackageDescriptor pkg : pkgToDownload) {
             DownloadingPackage lpkg = cdm.storeDownloadedBundle(pkg);
-            Assert.assertNotNull(lpkg);
+            assertNotNull(lpkg);
             downloads.add(lpkg);
             Thread.sleep(100);
         }

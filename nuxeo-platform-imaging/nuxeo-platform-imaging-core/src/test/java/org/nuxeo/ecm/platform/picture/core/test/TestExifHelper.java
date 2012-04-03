@@ -22,7 +22,10 @@ package org.nuxeo.ecm.platform.picture.core.test;
 import java.util.Arrays;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -35,22 +38,21 @@ import org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils;
  * @author btatar
  *
  */
-public class TestExifHelper extends TestCase {
+public class TestExifHelper {
 
     MistralMetadataUtils service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         service = new MistralMetadataUtils();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
         service = null;
     }
 
+    @Test
     public void testExtractBytes() {
         // ASCII string as an byte array
         byte[] bytes = { 65, 83, 67, 73, 73, 0, 0, 0 };
@@ -60,6 +62,7 @@ public class TestExifHelper extends TestCase {
         assertTrue(Arrays.equals(new byte[] { 65, 83, 67 }, extractedBytes));
     }
 
+    @Test
     public void testDecodeUndefined() {
         byte[] rawBytes = { 65, 83, 67, 73, 73, 0, 0, 0, 66, 65, 66, 65 };
         String decodedString = ExifHelper.decodeUndefined(rawBytes);
@@ -67,6 +70,7 @@ public class TestExifHelper extends TestCase {
         assertNotSame(decodedString, rawString);
     }
 
+    @Test
     public void testUserCommentExifDataType() {
 
         // picture from:

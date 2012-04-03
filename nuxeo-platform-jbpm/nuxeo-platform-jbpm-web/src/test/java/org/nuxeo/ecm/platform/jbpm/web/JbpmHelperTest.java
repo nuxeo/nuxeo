@@ -18,7 +18,8 @@ package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -28,10 +29,11 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 /**
  * @author alexandre
  */
-public class JbpmHelperTest extends TestCase {
+public class JbpmHelperTest {
 
     private final JbpmHelper helper = new JbpmHelper();
 
+    @Test
     public void testIsAssignedToUser() {
         TaskInstance ti = new TaskInstance();
         UserPrincipal principal = new UserPrincipal("linnet", Arrays.asList(
