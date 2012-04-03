@@ -1686,6 +1686,25 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    public void testFulltextSpuriousCharacters() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.setSimpleProperty("tst:title", "hello world");
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        PartialList<Serializable> res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'hello :'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
     public void testRelation() throws Exception {
         PartialList<Serializable> res;
 

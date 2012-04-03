@@ -67,9 +67,9 @@ public class TestDialectQuerySyntax extends TestCase {
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
-    protected static void assertFulltextException(String query) {
+    protected void assertFulltextException(String query) {
         try {
-            Dialect.analyzeFulltextQuery(query);
+            dialect.analyzeFulltextQuery(query);
             fail("Query should fail: " + query);
         } catch (QueryMakerException e) {
             // ok
@@ -106,9 +106,9 @@ public class TestDialectQuerySyntax extends TestCase {
         }
     }
 
-    protected static void assertFulltextQuery(String expected, String query) {
+    protected void assertFulltextQuery(String expected, String query) {
         StringBuilder buf = new StringBuilder();
-        FulltextQuery ftQuery = Dialect.analyzeFulltextQuery(query);
+        FulltextQuery ftQuery = dialect.analyzeFulltextQuery(query);
         if (ftQuery == null) {
             assertNull(expected);
             return;
@@ -207,6 +207,9 @@ public class TestDialectQuerySyntax extends TestCase {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
         assertDialectFT("foo", "foo");
+        assertDialectFT("foo", "foo :");
+        assertDialectFT("foo", "foo :)");
+        assertDialectFT("foo", "foo -+-");
         assertDialectFT("FOO", "FOO");
         assertDialectFT("(foo AND bar)", "foo bar");
         assertDialectFT("(foo NOT bar)", "foo -bar");
@@ -228,6 +231,9 @@ public class TestDialectQuerySyntax extends TestCase {
                 repositoryDescriptor);
         assertDialectFT("", "-foo");
         assertDialectFT("foo", "foo");
+        assertDialectFT("foo", "foo :");
+        assertDialectFT("foo", "foo :)");
+        assertDialectFT("foo", "foo -+-");
         assertDialectFT("(foo & bar)", "foo bar ");
         assertDialectFT("(foo & bar)", "foo & bar"); // compat
         assertDialectFT("(foo & ! bar)", "foo -bar");
@@ -244,6 +250,9 @@ public class TestDialectQuerySyntax extends TestCase {
                 repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("foo", "foo");
+        assertDialectFT("foo", "foo :");
+        assertDialectFT("foo", "foo :)");
+        assertDialectFT("foo", "foo -+-");
         assertDialectFT("(+foo +bar)", "foo bar");
         assertDialectFT("(+foo -bar)", "foo -bar");
         assertDialectFT("(+bar -foo)", "-foo bar");
@@ -264,6 +273,9 @@ public class TestDialectQuerySyntax extends TestCase {
                 repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("{foo}", "foo");
+        assertDialectFT("{foo}", "foo :");
+        assertDialectFT("{foo}", "foo :)");
+        assertDialectFT("{foo}", "foo -+-");
         assertDialectFT("{foo_bar}", "foo_bar");
         assertDialectFT("foo%", "foo*"); // special, not quoted
         assertDialectFT("({foo} AND {bar})", "foo bar");
@@ -291,6 +303,9 @@ public class TestDialectQuerySyntax extends TestCase {
                 repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("foo", "foo");
+        assertDialectFT("foo", "foo :");
+        assertDialectFT("foo", "foo :)");
+        assertDialectFT("foo", "foo -+-");
         assertDialectFT("(foo AND bar)", "foo bar");
         assertDialectFT("(foo AND NOT bar)", "foo -bar");
         assertDialectFT("(bar AND NOT foo)", "-foo bar");

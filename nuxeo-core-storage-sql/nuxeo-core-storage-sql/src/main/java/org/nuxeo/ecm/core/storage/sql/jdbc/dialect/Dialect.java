@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
@@ -471,7 +472,7 @@ public abstract class Dialect {
      * List of terms containing only negative words are suppressed. Otherwise
      * negative words are put at the end of the lists of terms.
      */
-    public static FulltextQuery analyzeFulltextQuery(String query) {
+    public FulltextQuery analyzeFulltextQuery(String query) {
         return new FulltextQueryAnalyzer().analyze(query);
     }
 
@@ -500,11 +501,14 @@ public abstract class Dialect {
             ft.terms = new LinkedList<FulltextQuery>();
             // current sequence of ANDed terms
             boolean wasOr = false;
-            String[] words = StringUtils.split(query, CSPACE, true);
+            String[] words = split(query);
             for (Iterator<String> it = Arrays.asList(words).iterator(); it.hasNext();) {
                 boolean plus = false;
                 boolean minus = false;
                 String word = it.next();
+                if (ignored(word)) {
+                    continue;
+                }
                 if (word.startsWith(PLUS)) {
                     plus = true;
                     word = word.substring(1);
@@ -601,6 +605,21 @@ public abstract class Dialect {
                 ft = ft.terms.get(0);
             }
             return ft;
+        }
+
+        protected static final Pattern SEPARATOR = Pattern.compile("[ ]");
+
+        protected String[] split(String query) {
+            return SEPARATOR.split(query);
+        }
+
+        protected static final Pattern IGNORED = Pattern.compile("\\p{Punct}+");
+
+        protected boolean ignored(String word) {
+            if ("-".equals(word) || "+".equals(word) || word.contains("\"")) {
+                return false; // dealt with later, different error
+            }
+            return IGNORED.matcher(word).matches();
         }
 
         // add current ANDed terms to global OR
