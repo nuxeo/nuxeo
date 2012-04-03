@@ -21,22 +21,24 @@ package org.nuxeo.runtime.contribution;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestContributions extends TestCase {
+public class TestContributions {
 
     protected MyRegistry reg;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         reg = new MyRegistry();
     }
 
+    @Test
     public void test1() {
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
@@ -51,6 +53,7 @@ public class TestContributions extends TestCase {
         // System.out.println(reg);
     }
 
+    @Test
     public void test2() {
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
@@ -71,6 +74,7 @@ public class TestContributions extends TestCase {
         // System.out.println(reg);
     }
 
+    @Test
     public void test3() {
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";

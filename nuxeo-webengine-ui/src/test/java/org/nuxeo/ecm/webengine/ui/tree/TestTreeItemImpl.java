@@ -19,10 +19,12 @@
 
 package org.nuxeo.ecm.webengine.ui.tree;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestTreeItemImpl extends TestCase {
+public class TestTreeItemImpl {
 
+    @Test
     public void testEquals() {
         ContentProvider cp = new FakeContentProvider();
 

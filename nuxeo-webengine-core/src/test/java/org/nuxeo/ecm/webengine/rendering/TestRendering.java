@@ -19,14 +19,18 @@
 
 package org.nuxeo.ecm.webengine.rendering;
 
+import org.junit.Before;
+import org.junit.Ignore;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
+@Ignore
 public class TestRendering extends NXRuntimeTestCase {
 
     DocumentModel site;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 

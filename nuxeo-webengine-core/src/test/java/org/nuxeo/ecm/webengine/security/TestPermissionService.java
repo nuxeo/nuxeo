@@ -21,17 +21,20 @@ package org.nuxeo.ecm.webengine.security;
 
 import java.text.ParseException;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestPermissionService extends TestCase {
+public class TestPermissionService {
 
     PermissionService ptb;
 
-    @Override
+    @Before
     public void setUp() {
         ptb = PermissionService.getInstance();
     }
 
+    @Test
     public void test1() throws ParseException {
         String expr = "a AND b OR c";
         PostfixExpression postfix = new PostfixExpression(expr);
@@ -42,6 +45,7 @@ public class TestPermissionService extends TestCase {
         assertEquals("((PERM[a] AND PERM[b]) OR PERM[c])", root.toString());
     }
 
+    @Test
     public void test2() throws ParseException {
         String expr = "a AND (b OR c)";
         PostfixExpression postfix = new PostfixExpression(expr);
@@ -50,6 +54,7 @@ public class TestPermissionService extends TestCase {
         assertEquals("(PERM[a] AND (PERM[b] OR PERM[c]))", root.toString());
     }
 
+    @Test
     public void test3() throws ParseException {
         String expr = "(a OR b) AND (c OR d)";
         PostfixExpression postfix = new PostfixExpression(expr);
