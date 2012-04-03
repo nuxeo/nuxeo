@@ -21,6 +21,10 @@ package org.nuxeo.ecm.platform.annotations.service;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 import org.nuxeo.runtime.api.Framework;
@@ -36,7 +40,7 @@ public class AnnotationsComponentTest extends NXRuntimeTestCase {
 
     private AnnotationConfigurationService configuration;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -45,6 +49,7 @@ public class AnnotationsComponentTest extends NXRuntimeTestCase {
         deployTestContrib("org.nuxeo.ecm.annotations","test-ann-contrib.xml");
     }
 
+    @Test
     public void testServices() throws Exception {
         service = Framework.getService(AnnotationsService.class);
         assertNotNull(service);

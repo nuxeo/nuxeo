@@ -22,6 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,11 +54,15 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
     DocumentModel doc2Export;
 
+    public TestMashalingWithCore() {
+        super();
+    }
+
     public TestMashalingWithCore(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.io");
@@ -65,7 +74,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         createInitialDocs();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -94,6 +103,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testMarshaling() throws Exception {
         DocumentModelMarshaler marshaler = new CoreIODocumentModelMarshaler();
         String docTitle = (String) doc2Export.getProperty("dublincore", "title");
@@ -116,6 +126,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         assertEquals("SomeDummyContent", blob.getString());
     }
 
+    @Test
     public void testComplexMarshaling() throws ClientException {
         RemotePublisherMarshaler marshaler = new DefaultMarshaler();
         marshaler.setAssociatedCoreSession(session);
@@ -207,6 +218,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testMarshalingWithSource() throws Exception {
         DocumentModelMarshaler marshaler = new CoreIODocumentModelMarshaler();
 

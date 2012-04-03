@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -28,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnnotationsRepositoryServiceTest extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -38,6 +42,7 @@ public class AnnotationsRepositoryServiceTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.url.core");
     }
 
+    @Test
     public void testServices() throws Exception {
         AnnotationsRepositoryService service = Framework.getService(AnnotationsRepositoryService.class);
         assertNotNull(service);

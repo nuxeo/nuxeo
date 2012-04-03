@@ -21,6 +21,9 @@ package org.nuxeo.ecm.platform.annotations.service;
 
 import java.util.ArrayList;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
@@ -38,6 +41,7 @@ public class AnnotatedEventListenerTest extends AbstractRepositoryTestCase {
 
     private static final String HTTP_LOCALHOST_8080_NUXEO = "http://localhost:8080/nuxeo";
 
+    @Test
     public void testEventLister() throws Exception {
 
         DummyDocumentEventListener.resetTest();

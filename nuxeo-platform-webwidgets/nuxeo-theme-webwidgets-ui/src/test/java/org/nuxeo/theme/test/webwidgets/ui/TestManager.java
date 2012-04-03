@@ -21,6 +21,10 @@ package org.nuxeo.theme.test.webwidgets.ui;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.webwidgets.DecorationType;
 import org.nuxeo.theme.webwidgets.Manager;
@@ -30,7 +34,7 @@ import org.nuxeo.theme.webwidgets.WidgetType;
 
 public class TestManager extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
@@ -39,11 +43,13 @@ public class TestManager extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.test.webwidgets.ui", "webwidgets-contrib.xml");
     }
 
+    @Test
     public void testGetProviderNames() {
         assertTrue(Manager.getProviderNames().contains("test"));
         assertEquals(1, Manager.getProviderNames().size());
     }
 
+    @Test
     public void testGetProviderType() {
         ProviderType providerType = Manager.getProviderType("test");
         assertEquals("test", providerType.getName());
@@ -51,11 +57,13 @@ public class TestManager extends NXRuntimeTestCase {
                 providerType.getClassName());
     }
 
+    @Test
     public void testGetDecorationType() {
         DecorationType decorationType = Manager.getDecorationType("test");
         assertEquals("style.css", decorationType.getResources()[0]);
     }
 
+    @Test
     public void testInitializeWidget() {
         WidgetType widgetType = Manager.getWidgetType("test widget");
 
@@ -104,6 +112,7 @@ public class TestManager extends NXRuntimeTestCase {
         assertEquals("2nd", options.get(2).getValue());
     }
 
+    @Test
     public void testGetPanelDecoration() {
         assertEquals("<div>region name</div>", Manager.addPanelDecoration(
                 "test", "view", "region name", "Content here"));

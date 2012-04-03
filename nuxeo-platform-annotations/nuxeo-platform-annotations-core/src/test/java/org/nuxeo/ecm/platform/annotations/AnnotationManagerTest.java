@@ -21,6 +21,10 @@ package org.nuxeo.ecm.platform.annotations;
 
 import java.io.InputStream;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
@@ -38,13 +42,14 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
 
     private final AnnotationManager manager = new AnnotationManager();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
     }
 
+    @Test
     public void testGetPostNewAnnotation() throws AnnotationException {
         assertNotNull(manager);
 
@@ -61,6 +66,7 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
                 annotation.getAnnotates().toString());
     }
 
+    @Test
     public void testReadAnnoteaSpecPost() throws AnnotationException {
         assertNotNull(manager);
 
@@ -72,6 +78,7 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
         assertNotNull(annotation);
     }
 
+    @Test
     public void testGetCreatedAnnotation() throws AnnotationException {
         InputStream is = getClass().getResourceAsStream("/repo-rdf.xml");
         assertNotNull(is);
@@ -83,6 +90,7 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
         assertNotNull(resource);
     }
 
+    @Test
     public void testTranslateAnnotationFromRepo() throws AnnotationException {
         final String baseUrl = "http://myexemple.com/nuxeo/Annotations/";
         UriResolver resolver = new DefaultUriResolver();

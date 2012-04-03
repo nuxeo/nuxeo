@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.forum.workflow;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -40,7 +44,7 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
 
     private NuxeoPrincipal user1;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -66,6 +70,7 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
         openRepository();
     }
 
+    @Test
     public void test() {
         // TODO
     }

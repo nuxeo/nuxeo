@@ -23,6 +23,11 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -57,11 +62,15 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
 
     private DocumentModel webCommentForWebSite;
 
+    public TestWebengineQuerySiteUtils() {
+        super();
+    }
+
     public TestWebengineQuerySiteUtils(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         String bundleFile = "org.nuxeo.ecm.platform.webengine.sites.tests";
 
@@ -80,7 +89,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         initializeTestData();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         session.cancel();
         closeSession();
@@ -162,12 +171,14 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         createWebComments();
     }
 
+    @Test
     public void testQueryAllSites() throws Exception {
         List<DocumentModel> allSites = SiteQueriesCollection.queryAllSites(
                 session, WEBSITE);
         assertEquals(2, allSites.size());
     }
 
+    @Test
     public void testQueryAllSitesByUrl() throws Exception {
         List<DocumentModel> allWorkspaceSitesByUrlList = SiteQueriesCollection.querySitesByUrlAndDocType(
                 session, workspaceSiteUrl, WEBSITE);
@@ -177,6 +188,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         assertEquals(1, allWebSitesByUrlList.size());
     }
 
+    @Test
     public void testQueryLastModifiedWebPages() throws Exception {
         List<DocumentModel> lastWorkspaceSitePages = SiteQueriesCollection.queryLastModifiedPages(
                 session, workspaceSite.getPathAsString(), WEBPAGE, 5);
@@ -186,6 +198,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         assertEquals(1, lastWebSitePages.size());
     }
 
+    @Test
     public void testQueryLastComments() throws Exception {
         List<DocumentModel> lastWorkspaceSiteComments = SiteQueriesCollection.queryLastComments(
                 session, workspaceSite.getPathAsString(), 5, false);

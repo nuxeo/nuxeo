@@ -22,6 +22,11 @@ import java.util.List;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -37,11 +42,15 @@ public class TestServiceWithMultipleDomains extends SQLRepositoryTestCase {
 
     protected DocumentModel doc2Publish;
 
+    public TestServiceWithMultipleDomains() {
+        super();
+    }
+
     public TestServiceWithMultipleDomains(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -76,7 +85,7 @@ public class TestServiceWithMultipleDomains extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         try {
             closeSession();
@@ -118,6 +127,7 @@ public class TestServiceWithMultipleDomains extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testTreeRegistration() throws Exception {
         createInitialDocs("default-domain");
         createInitialDocs("another-default-domain");

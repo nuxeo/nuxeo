@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.jbpm.core;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -30,13 +34,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class JbpmComponentTest extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
     }
 
+    @Test
     public void testServices() throws Exception {
         JbpmService bpManagementService = Framework.getService(JbpmService.class);
         assertNotNull(bpManagementService);

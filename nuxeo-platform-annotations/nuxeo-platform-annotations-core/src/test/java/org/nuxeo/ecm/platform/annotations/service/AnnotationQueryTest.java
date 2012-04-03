@@ -23,6 +23,10 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
@@ -44,7 +48,7 @@ public class AnnotationQueryTest extends RepositoryOSGITestCase {
 
     private final AnnotationManager manager = new AnnotationManager();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -58,6 +62,7 @@ public class AnnotationQueryTest extends RepositoryOSGITestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testgetAnnotationsForURIs() throws AnnotationException {
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);

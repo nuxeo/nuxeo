@@ -17,6 +17,11 @@ package org.nuxeo.theme.test.bank;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.bank.Utils;
@@ -33,7 +38,7 @@ public class TestUtils extends NXRuntimeTestCase {
 
     private final String COLLECTION_NAME = "Test";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
@@ -45,7 +50,7 @@ public class TestUtils extends NXRuntimeTestCase {
         typeRegistry = Manager.getTypeRegistry();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         Manager.getTypeRegistry().clear();
         themeManager.clear();
@@ -55,11 +60,13 @@ public class TestUtils extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testGetCollections() throws IOException {
         final List<String> collections = Utils.getCollections(BANK_NAME);
         assertEquals("Test", collections.get(0));
     }
 
+    @Test
     public void testGetStyleItemsInCollections() throws IOException {
         final List<String> items = Utils.getItemsInCollection(BANK_NAME,
                 COLLECTION_NAME, "style");
@@ -71,6 +78,7 @@ public class TestUtils extends NXRuntimeTestCase {
         assertTrue(items.contains("style-with-preview.css"));
     }
 
+    @Test
     public void testGetPresetItemsInCollections() throws IOException {
         final List<String> items = Utils.getItemsInCollection(BANK_NAME,
                 COLLECTION_NAME, "preset");
@@ -81,6 +89,7 @@ public class TestUtils extends NXRuntimeTestCase {
         assertTrue(items.contains("border"));
     }
 
+    @Test
     public void testGetImageItemsInCollections() throws IOException {
         final List<String> items = Utils.getItemsInCollection(BANK_NAME,
                 COLLECTION_NAME, "image");
@@ -89,6 +98,7 @@ public class TestUtils extends NXRuntimeTestCase {
         assertTrue(items.contains("photo.png"));
     }
 
+    @Test
     public void testListSkinsInCollection() throws IOException {
         final List<String> skins = Utils.listSkinsInCollection(BANK_NAME,
                 COLLECTION_NAME);
@@ -99,15 +109,18 @@ public class TestUtils extends NXRuntimeTestCase {
     }
 
     // JSON
+    @Test
     public void testListCollections() throws IOException {
         assertEquals("[\"Test\"]", Utils.listCollections(BANK_NAME));
     }
 
+    @Test
     public void testListBankSkins() throws IOException {
         final String expected = org.nuxeo.theme.Utils.readResourceAsString("skins.json");
         assertEquals(expected, Utils.listBankSkins(BANK_NAME));
     }
 
+    @Test
     public void testListImages() throws IOException {
         final String listImages = Utils.listImages(BANK_NAME);
         assertTrue(listImages.contains("{\"name\":\"emoticon_smile.png\",\"collection\":\"Test\"}"));

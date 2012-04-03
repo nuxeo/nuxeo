@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -31,12 +35,13 @@ public class AnnotationServiceImplTest extends AbstractAnnotationTest {
 
     private AnnotationsServiceImpl service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         service = new AnnotationsServiceImpl();
     }
 
+    @Test
     public void testAddAnnotation() throws AnnotationException {
         assertNotNull(annotation);
 

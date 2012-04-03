@@ -32,6 +32,11 @@ import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActions;
 import org.nuxeo.ecm.platform.mail.action.MessageAction;
@@ -56,7 +61,7 @@ public class TestMailService extends NXRuntimeTestCase {
     private InternetAddress internetAddress;
     MailService mailService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
 //        Server.start();
         super.setUp();
@@ -67,12 +72,13 @@ public class TestMailService extends NXRuntimeTestCase {
 //        internetAddress = new InternetAddress("alex@localhost");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
         Server.shutdown();
     }
 
+    @Test
     public void testTrueTest() {
         assertTrue(true);
     }
@@ -147,6 +153,7 @@ public class TestMailService extends NXRuntimeTestCase {
         store.close();
     }
 
+    @Test
     public void testServiceRegistration() throws Exception{
         deployBundle("org.nuxeo.ecm.platform.mail");
         MailService mailService = Framework.getLocalService(MailService.class);

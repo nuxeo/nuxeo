@@ -21,6 +21,9 @@ package org.nuxeo.ecm.platform.annotations.repository.service;
 
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
@@ -42,6 +45,7 @@ public class AnnotationsComponentTest extends AbstractRepositoryTestCase {
     private AnnotationsRepositoryConfigurationService repositoryConfiguration;
     private AnnotationsRepositoryService repositoryService;
 
+    @Test
     public void testServices() throws Exception {
         DocumentViewCodecManager viewCodec = Framework.getService(DocumentViewCodecManager.class);
         assertNotNull(viewCodec);

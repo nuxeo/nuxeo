@@ -19,6 +19,11 @@ package org.nuxeo.ecm.platform.publisher.test;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
@@ -26,11 +31,15 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestServiceRegistration extends SQLRepositoryTestCase {
 
+    public TestServiceRegistration() {
+        super();
+    }
+
     public TestServiceRegistration(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -44,22 +53,25 @@ public class TestServiceRegistration extends SQLRepositoryTestCase {
         fireFrameworkStarted();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testMainService() throws Exception {
         PublisherService service = Framework.getLocalService(PublisherService.class);
         assertNotNull(service);
     }
 
+    @Test
     public void testTreeService() throws Exception {
         RemotePublicationTreeManager service = Framework.getLocalService(RemotePublicationTreeManager.class);
         assertNotNull(service);
     }
 
+    @Test
     public void testContrib() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-contrib.xml");

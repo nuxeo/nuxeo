@@ -28,6 +28,11 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.hsqldb.jdbcDriver;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -51,7 +56,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     protected LayoutStore service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         // layout deps
@@ -79,7 +84,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         NuxeoContainer.uninstallNaming();
         super.tearDown();
@@ -100,6 +105,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
                 datasourceAutocommit);
     }
 
+    @Test
     public void testLayoutDefinitionExport() throws Exception {
         LayoutDefinition layoutDef = service.getLayoutDefinition(
                 WebLayoutManager.JSF_CATEGORY, "dublincore");
