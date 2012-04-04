@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.forms.layout.demo.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -33,8 +34,9 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestLayoutDemoURLCodec extends TestCase {
+public class TestLayoutDemoURLCodec {
 
+    @Test
     public void testGetUrlFromDocumentView() {
         LayoutDemoURLCodec codec = new LayoutDemoURLCodec();
         codec.setPrefix("applicationPrefix");
@@ -49,6 +51,7 @@ public class TestLayoutDemoURLCodec extends TestCase {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
+    @Test
     public void testGetDocumentViewFromGetUrl() {
         LayoutDemoURLCodec codec = new LayoutDemoURLCodec();
         codec.setPrefix("applicationPrefix");
@@ -63,6 +66,7 @@ public class TestLayoutDemoURLCodec extends TestCase {
         assertNull(params.get("conversationId"));
     }
 
+    @Test
     public void testGetDocumentViewAndTabsFromGetUrl() {
         LayoutDemoURLCodec codec = new LayoutDemoURLCodec();
         codec.setPrefix("applicationPrefix");
@@ -82,6 +86,7 @@ public class TestLayoutDemoURLCodec extends TestCase {
      * tests that js, img,... resources are not handled by the coded because
      * tab and sub tab ids holds a "." character
      */
+    @Test
     public void testGetDocumentViewFromResourceURL() {
         LayoutDemoURLCodec codec = new LayoutDemoURLCodec();
         codec.setPrefix("applicationPrefix");
@@ -94,6 +99,7 @@ public class TestLayoutDemoURLCodec extends TestCase {
         assertNull(docView);
     }
 
+    @Test
     public void testGetDocumentViewFromPostUrl() {
         LayoutDemoURLCodec codec = new LayoutDemoURLCodec();
         codec.setPrefix("applicationPrefix");

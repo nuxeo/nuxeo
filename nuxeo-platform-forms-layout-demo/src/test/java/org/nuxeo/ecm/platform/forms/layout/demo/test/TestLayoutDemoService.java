@@ -20,6 +20,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoLayout;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
@@ -33,7 +38,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
 
     protected LayoutDemoManager service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -49,7 +54,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         service = null;
 
@@ -61,6 +66,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testRegistration() throws Exception {
         DemoWidgetType textWidget = service.getWidgetType("text");
         assertEquals("text", textWidget.getName());
@@ -115,6 +121,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
                 demoLayouts.get(1).getSourcePath());
     }
 
+    @Test
     public void testGetWidgetTypeByViewId() throws Exception {
         DemoWidgetType textWidget = service.getWidgetTypeByViewId("textWidget");
         assertEquals("text", textWidget.getName());
@@ -122,6 +129,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertEquals("textarea", textareaWidget.getName());
     }
 
+    @Test
     public void testGetWidgetTypesByCategory() throws Exception {
         List<DemoWidgetType> widgets = service.getWidgetTypes("standard");
         assertNotNull(widgets);
