@@ -230,7 +230,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         // TODO: should check for a specific RESTORE permission instead
         return documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
-                SecurityConstants.WRITE_PROPERTIES);
+                SecurityConstants.WRITE_VERSION);
     }
 
     /**
