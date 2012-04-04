@@ -19,6 +19,11 @@ package org.nuxeo.ecm.platform.audio.extension;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -46,7 +51,7 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
                 FileUtils.getResourcePathFromContext("test-data/sample.wav"));
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -64,12 +69,13 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
         fileManagerService = Framework.getService(FileManager.class);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         fileManagerService = null;
         root = null;
     }
 
+    @Test
     public void testAudioType() throws ClientException {
 
         DocumentType audioType = session.getDocumentType(AUDIO_TYPE);
@@ -100,6 +106,7 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
         assertEquals("133", docModelResult.getPropertyValue("aud:duration").toString());
     }
 
+    @Test
     public void testImportAudio() throws Exception {
         File testFile = getTestFile();
         Blob blob = StreamingBlob.createFromFile(testFile, "audio/wav");
