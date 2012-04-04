@@ -18,9 +18,10 @@ package org.nuxeo.ecm.core.opencmis.impl.util;
 
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-public class TestSimpleImageInfo extends TestCase {
+public class TestSimpleImageInfo {
 
     public void check(String name, long length, String mimeType)
             throws Exception {
@@ -32,6 +33,7 @@ public class TestSimpleImageInfo extends TestCase {
         assertEquals(mimeType, info.getMimeType());
     }
 
+    @Test
     public void testSimpleImageInfo() throws Exception {
         check("big_nuxeo_logo.gif", 11426, "image/gif");
         check("big_nuxeo_logo.jpg", 36830, "image/jpeg");

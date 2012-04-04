@@ -17,12 +17,14 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 
-import junit.framework.TestCase;
+public class TestListUtils {
 
-public class TestListUtils extends TestCase {
-
+    @Test
     public void testBatchList() throws Exception {
         List<String> list = Arrays.asList("1", "2", "3", "4", "5", "6");
         BatchedList<String> l;

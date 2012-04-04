@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -84,7 +89,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     protected Map<String, String> repoDetails;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -128,7 +133,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         isAtomPub = this instanceof TestNuxeoSessionAtomPub;
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         tearDownData();
         tearDownCmisSession();
@@ -166,6 +171,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testRoot() {
         Folder root = session.getRootFolder();
         assertNotNull(root);
@@ -185,6 +191,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(Collections.emptyList(), root.getParents());
     }
 
+    @Test
     public void testDefaultProperties() throws Exception {
         Folder root = session.getRootFolder();
         CmisObject child = root.getChildren().iterator().next();
@@ -195,6 +202,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("foo", "gee/moo"), subjects);
     }
 
+    @Test
     public void testPath() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         assertEquals("/testfolder1", folder.getPath());
@@ -206,6 +214,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 doc.getPaths());
     }
 
+    @Test
     public void testParent() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         assertEquals(rootFolderId, folder.getFolderParent().getId());
@@ -219,6 +228,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(folder.getId(), parents.get(0).getId());
     }
 
+    @Test
     public void testCreateObject() {
         Folder root = session.getRootFolder();
         ContentStream contentStream = null;
@@ -252,6 +262,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("bla bla", note.getPropertyValue("note"));
     }
 
+    @Test
     public void testCreateDocumentWithContentStream() throws Exception {
         Folder root = session.getRootFolder();
         ContentStream cs = new ContentStreamImpl(null, "text/plain",
@@ -276,6 +287,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
     }
 
+    @Test
     public void testCreateDocumentThenSetContentStream() throws Exception {
         Folder root = session.getRootFolder();
         OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
@@ -301,6 +313,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
     }
 
+    @Test
     public void testCreateRelationship() throws Exception {
         String id1 = session.getObjectByPath("/testfolder1/testfile1").getId();
         String id2 = session.getObjectByPath("/testfolder1/testfile2").getId();
@@ -334,6 +347,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(id2, rel.getTargetId().getId());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         Document doc;
 
@@ -358,6 +372,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("foo"), doc.getPropertyValue("dc:subjects"));
     }
 
+    @Test
     public void testContentStream() throws Exception {
         Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
 
@@ -405,6 +420,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(null, file.getContentStream());
     }
 
+    @Test
     public void testAllowableActions() throws Exception {
         CmisObject ob;
         AllowableActions aa;
@@ -460,6 +476,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(expected, aa.getAllowableActions());
     }
 
+    @Test
     public void testRenditions() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
         List<Rendition> renditions = ob.getRenditions();
@@ -504,6 +521,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testDeletedInTrash() throws Exception {
         String file5id = repoDetails.get("file5id");
 
@@ -550,6 +568,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         folder.delete(true);
     }
 
+    @Test
     public void testDelete() throws Exception {
         Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         doc.delete(true);
@@ -563,6 +582,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testDeleteTree() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         List<String> failed = folder.deleteTree(true, null, true);
@@ -586,6 +606,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(folder);
     }
 
+    @Test
     public void testCopy() throws Exception {
         if (isAtomPub) {
             // copy not implemented by AtomPub bindings
@@ -607,6 +628,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("other title", copy2.getPropertyValue("dc:title"));
     }
 
+    @Test
     public void testMove() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         Document doc = (Document) session.getObjectByPath("/testfolder2/testfolder3/testfile4");
@@ -627,6 +649,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(docId, doc2.getId());
     }
 
+    @Test
     public void testVersioning() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
@@ -695,6 +718,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
     }
 
+    @Test
     public void testCheckInWithChanges() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
 
@@ -726,6 +750,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("foo-bar", os.toString("UTF-8"));
     }
 
+    @Test
     public void testUserWorkspace() throws ClientException {
         String wsPath = Helper.createUserWorkspace(getCoreSession(),
                 isAtomPub ? USERNAME : "Administrator");

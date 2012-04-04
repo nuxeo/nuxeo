@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Properties;
@@ -34,7 +38,7 @@ import org.nuxeo.ecm.core.opencmis.tests.Helper;
  */
 public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
 
-    @Override
+    @Before
     public void setUpCmisSession() throws Exception {
         boolean objectInfoRequired = true; // for tests
         CallContextImpl context = new CallContextImpl(
@@ -50,7 +54,7 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
         session = new NuxeoSession(getCoreSession(), repository, context);
     }
 
-    @Override
+    @After
     public void tearDownCmisSession() throws Exception {
         session = null;
     }
