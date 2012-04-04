@@ -24,8 +24,11 @@ import java.util.HashSet;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
@@ -152,6 +155,30 @@ public class TestTrashService extends RepositoryOSGITestCase {
         // children done by async BulkLifeCycleChangeListener
         assertEquals("project", doc1.getCurrentLifeCycleState());
         assertEquals("project", doc2.getCurrentLifeCycleState());
+    }
+
+    public void testTrashFolderContainingProxy() throws Exception {
+        createDocuments();
+        DocumentRef versionRef = session.checkIn(doc3.getRef(),
+                VersioningOption.MAJOR, null);
+        DocumentModel version = session.getDocument(versionRef);
+        DocumentModel proxy = session.createProxy(versionRef, fold.getRef());
+        session.save();
+
+        assertEquals("project", fold.getCurrentLifeCycleState());
+        assertEquals("project", proxy.getCurrentLifeCycleState());
+        assertEquals("project", version.getCurrentLifeCycleState());
+
+        // now delete the folder
+        trashService.trashDocuments(Collections.singletonList(fold));
+        waitForEventsDispatched();
+        session.save(); // process async invalidations
+
+        fold.refresh();
+        version.refresh();
+        assertEquals("deleted", fold.getCurrentLifeCycleState());
+        assertEquals("project", version.getCurrentLifeCycleState());
+        assertFalse(session.exists(proxy.getRef()));
     }
 
 }

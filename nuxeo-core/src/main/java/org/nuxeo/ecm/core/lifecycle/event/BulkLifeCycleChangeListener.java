@@ -124,7 +124,8 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                     documentManager.removeDocument(docMod.getRef());
                     removed = true;
                 }
-            } else if (docMod.getAllowedStateTransitions().contains(transition)) {
+            } else if (docMod.getAllowedStateTransitions().contains(transition)
+                    && !docMod.isProxy()) {
                 docMod.followTransition(transition);
             } else {
                 if (targetState.equals(docMod.getCurrentLifeCycleState())) {
