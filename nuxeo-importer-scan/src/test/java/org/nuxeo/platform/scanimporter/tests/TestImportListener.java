@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -17,8 +21,7 @@ public class TestImportListener extends NXRuntimeTestCase {
 
     protected List<File> tmpDirectories = new ArrayList<File>();
 
-
-    @Override
+    @Before
     public void tearDown() throws Exception {
         super.tearDown();
         for (File dir : tmpDirectories) {
@@ -27,6 +30,7 @@ public class TestImportListener extends NXRuntimeTestCase {
             }
         }
     }
+
     protected String deployTestFiles(String name) throws IOException {
 
         File directory = new File(FileUtils.getResourcePathFromContext("data/"
@@ -41,7 +45,7 @@ public class TestImportListener extends NXRuntimeTestCase {
         return dst.getPath() + "/" + name;
     }
 
-
+    @Test
     public void testTrigger() throws Exception {
 
         EventContext ctx= new EventContextImpl(null,null);

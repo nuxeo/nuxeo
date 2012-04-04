@@ -17,9 +17,6 @@
 
 package org.nuxeo.ecm.platform.importer.properties;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -31,8 +28,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
 
-import junit.framework.TestCase;
+public class TestWordGen {
 
-public class TestWordGen extends TestCase {
-
+    @Test
     public void testWordGen() throws Exception {
         long t0 = System.currentTimeMillis();
         RandomTextGenerator gen = new RandomTextGenerator();
@@ -33,7 +35,7 @@ public class TestWordGen extends TestCase {
         System.out.println("prefilling cache ...");
         gen.prefilCache();
         long t2 = System.currentTimeMillis();
-        System.out.println("cache prefil time :" + ((t2 - t1) / 1000) + "s");
+        System.out.println("cache prefill time :" + ((t2 - t1) / 1000) + "s");
 
         int nbFiles = 2000;
         for (int i = 0; i < nbFiles; i++) {
@@ -46,6 +48,7 @@ public class TestWordGen extends TestCase {
         System.out.println(rate + " files/s");
     }
 
+    @Test
     public void testTextGen() throws Exception {
         long t0 = System.currentTimeMillis();
         RandomTextGenerator gen = new RandomTextGenerator();
@@ -54,7 +57,7 @@ public class TestWordGen extends TestCase {
         System.out.println("prefilling cache ...");
         gen.prefilCache();
         long t2 = System.currentTimeMillis();
-        System.out.println("cache prefil time :" + ((t2 - t1) / 1000) + "s");
+        System.out.println("cache prefill time :" + ((t2 - t1) / 1000) + "s");
 
         String txt1000 = gen.getRandomText(1000);
         String txt500 = gen.getRandomText(500);

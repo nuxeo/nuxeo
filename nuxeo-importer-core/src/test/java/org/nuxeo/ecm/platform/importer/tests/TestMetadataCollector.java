@@ -25,11 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
 
-public class TestMetadataCollector extends TestCase {
+public class TestMetadataCollector {
 
     Map<String, String> props1 = new HashMap<String, String>();
 
@@ -39,8 +41,8 @@ public class TestMetadataCollector extends TestCase {
 
     MetadataCollector mc = new MetadataCollector();
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         props1.put("str", "value1");
         props1.put("str0", "value0");
         props1.put("date", "12/06/2007");
@@ -65,6 +67,7 @@ public class TestMetadataCollector extends TestCase {
         mc.addPropertiesFromStrings("/node21/node31", props3);
     }
 
+    @Test
     public void testRead() {
 
         assertEquals("value0", mc.getProperty("/", "str0"));

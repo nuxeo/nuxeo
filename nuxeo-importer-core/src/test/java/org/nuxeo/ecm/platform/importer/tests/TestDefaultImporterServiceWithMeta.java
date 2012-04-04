@@ -2,6 +2,11 @@ package org.nuxeo.ecm.platform.importer.tests;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -15,11 +20,15 @@ public class TestDefaultImporterServiceWithMeta extends SQLRepositoryTestCase {
 
     public static final String IMPORTER_CORE_BUNDLE = "org.nuxeo.ecm.platform.importer.core";
 
+    public TestDefaultImporterServiceWithMeta() {
+        super();
+    }
+
     public TestDefaultImporterServiceWithMeta(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         fireFrameworkStarted();
@@ -36,6 +45,7 @@ public class TestDefaultImporterServiceWithMeta extends SQLRepositoryTestCase {
                 "test-importer-service-contrib.xml");
     }
 
+    @Test
     public void testImporterContribution() throws Exception {
         DefaultImporterService importerService = Framework.getService(DefaultImporterService.class);
         assertNotNull(importerService);
@@ -78,7 +88,7 @@ public class TestDefaultImporterServiceWithMeta extends SQLRepositoryTestCase {
 
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();

@@ -8,6 +8,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.scanimporter.service.ScanFileBlobHolder;
@@ -32,13 +37,13 @@ public class TestParse extends NXRuntimeTestCase {
         return dst.getPath() + "/" + name;
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
         for (File dir : tmpDirectories) {
@@ -48,7 +53,7 @@ public class TestParse extends NXRuntimeTestCase {
         }
     }
 
-
+    @Test
     public void testSimpleParse() throws Exception {
 
         String testPath = deployTestFiles("test1");
@@ -82,6 +87,7 @@ public class TestParse extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testRSParse() throws Exception {
 
         String testPath = deployTestFiles("test2");
@@ -106,6 +112,7 @@ public class TestParse extends NXRuntimeTestCase {
         assertEquals("testFile.txt", bh.getBlob().getFilename());
     }
 
+    @Test
     public void testSimpleDocTypeMapping() throws Exception {
 
         String testPath = deployTestFiles("test4");
@@ -134,6 +141,7 @@ public class TestParse extends NXRuntimeTestCase {
         assertEquals("testFile.txt", bh.getBlob().getFilename());
     }
 
+    @Test
     public void testCustomDocTypeMapping() throws Exception {
 
         String testPath = deployTestFiles("test4");

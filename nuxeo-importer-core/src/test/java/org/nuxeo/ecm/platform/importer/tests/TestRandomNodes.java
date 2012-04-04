@@ -19,14 +19,15 @@ package org.nuxeo.ecm.platform.importer.tests;
 
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
-import junit.framework.TestCase;
-
-public class TestRandomNodes extends TestCase {
+public class TestRandomNodes {
 
     private static final Log log = LogFactory.getLog(TestRandomNodes.class);
 
@@ -34,6 +35,7 @@ public class TestRandomNodes extends TestCase {
 
     protected int nbFolderish = 0;
 
+    @Test
     public void testBrowse() throws Exception {
 
         int target = 500 * 1000;

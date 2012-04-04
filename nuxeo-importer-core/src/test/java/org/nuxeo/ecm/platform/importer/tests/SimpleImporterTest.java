@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.importer.executor.DefaultImporterExecutor;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
@@ -26,11 +31,15 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class SimpleImporterTest extends SQLRepositoryTestCase {
 
+    public SimpleImporterTest() {
+        super();
+    }
+
     public SimpleImporterTest(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -39,31 +48,36 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
         openSession();
     }
 
+
     /*
+     * @Test
+     * @Ignore
      * public void testImport() throws Exception {
      *
-     * String inputPath = "/home/tiry/docs/tests/"; String targetPath =
-     * "/default-domain/workspaces/";
+     *     String inputPath = "/home/tiry/docs/tests/"; String targetPath =
+     *        "/default-domain/workspaces/";
      *
-     * DefaultImporterExecutor executor = new DefaultImporterExecutor(session);
+     *    DefaultImporterExecutor executor = new DefaultImporterExecutor(session);
      *
-     * executor.run(inputPath, targetPath, 5, 5, true);
+     *    executor.run(inputPath, targetPath, 5, 5, true);
      *
-     * long createdDocs = executor.getCreatedDocsCounter();
-     * assertTrue(createdDocs > 0); }
+     *    long createdDocs = executor.getCreatedDocsCounter();
+     *    assertTrue(createdDocs > 0);
+     * }
      */
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testRamdomImport() throws Exception {
 
-        System.out.println("Starting prefil");
+        System.out.println("Starting prefill");
         SourceNode src = RandomTextSourceNode.init(500);
-        System.out.println("prefil done");
+        System.out.println("prefill done");
         String targetPath = "/default-domain/workspaces/";
 
         DefaultImporterExecutor executor = new DefaultImporterExecutor();

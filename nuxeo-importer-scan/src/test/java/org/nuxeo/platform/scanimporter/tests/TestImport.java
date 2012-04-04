@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -35,7 +40,7 @@ public class TestImport extends SQLRepositoryTestCase {
         return dst.getPath() + "/" + name;
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -47,7 +52,7 @@ public class TestImport extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
         for (File dir : tmpDirectories) {
@@ -57,16 +62,14 @@ public class TestImport extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testImport() throws Exception {
-
-
 
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
         deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib3.xml");
-
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -103,6 +106,7 @@ public class TestImport extends SQLRepositoryTestCase {
         closeSession();
     }
 
+    @Test
     public void testDocTypeMappingInImport() throws Exception {
 
         String testPath = deployTestFiles("test4");

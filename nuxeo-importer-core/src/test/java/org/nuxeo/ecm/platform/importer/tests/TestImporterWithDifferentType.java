@@ -16,6 +16,11 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -33,11 +38,15 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
 
+    public TestImporterWithDifferentType() {
+        super();
+    }
+
     public TestImporterWithDifferentType(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -46,12 +55,13 @@ public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testNoteImport() throws Exception {
 
         System.out.println("Starting prefil");

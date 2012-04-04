@@ -1,5 +1,9 @@
 package org.nuxeo.platform.scanimporter.tests;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 import org.nuxeo.ecm.platform.scanimporter.service.ScanFileMappingDescriptor;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent;
@@ -9,17 +13,19 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
     }
 
+    @Test
     public void testServiceLookup() {
         ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
         assertNotNull(sfms);
     }
 
+    @Test
     public void testServiceContrib() throws Exception {
 
         ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
@@ -47,6 +53,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testServiceConfig() throws Exception {
 
         ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
