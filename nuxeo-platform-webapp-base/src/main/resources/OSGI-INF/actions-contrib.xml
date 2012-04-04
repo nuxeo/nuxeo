@@ -42,14 +42,6 @@
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
     </action>
-    <action id="addCurrentDocumentToWorklist"
-      link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
-      order="10" label="help.command.clipboard.addworklist" type="link_icon"
-      icon="/icons/action_add.gif" immediate="true">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>not_folder</filter-id>
-      <filter-id>not_anonymous</filter-id>
-    </action>
     <action id="permalinkAction" order="2" label="label.permalink"
       type="fancybox" icon="/icons/contextual_menu/share.png">
       <category>DOCUMENT_UPPER_ACTION</category>
@@ -80,6 +72,21 @@
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribed</filter-id>
     </action>
+    <action id="addCurrentDocumentToWorklist"
+      link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
+      order="5" label="help.command.clipboard.addworklist" type="link_icon"
+      icon="/icons/action_add.gif" immediate="true">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+    <action id="print"
+      link="#{restHelper.doPrint(themeActions.defaultTheme)}"
+      order="6" label="label.print" icon="/icons/printer.gif">
+      <category>DOCUMENT_UPPER_ACTION</category>
+    </action>
+    <!-- Deactivate Mail -->
+    <action id="sendNotificationEmail" enabled="false"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
