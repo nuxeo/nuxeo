@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -44,7 +48,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -79,6 +83,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         return result;
     }
 
+    @Test
     public void testStoryboardConverter() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
@@ -96,6 +101,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         assertEquals("00580.000-seconds.jpeg", blobs.get(8).getFilename());
     }
 
+    @Test
     public void testScreenshotConverter() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);

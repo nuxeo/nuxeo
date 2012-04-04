@@ -26,6 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +59,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
 
     protected VideoService videoService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -80,12 +85,13 @@ public class TestVideoService extends SQLRepositoryTestCase {
         videoService = Framework.getLocalService(VideoService.class);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testVideoConversion() throws IOException, ClientException {
         Video video = getTestVideo();
         TranscodedVideo transcodedVideo = videoService.convert(video,
@@ -97,7 +103,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
         assertEquals(8.38, transcodedVideo.getDuration(), 0.1);
         assertEquals(768, transcodedVideo.getWidth());
         assertEquals(480, transcodedVideo.getHeight());
-        assertEquals(23.98, transcodedVideo.getFrameRate());
+        assertEquals(23.98, transcodedVideo.getFrameRate(), 0.1);
         assertEquals("matroska,webm", transcodedVideo.getFormat());
     }
 
@@ -121,6 +127,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
         return output;
     }
 
+    @Test
     public void testAsynchronousVideoConversion() throws IOException,
             ClientException, InterruptedException {
         Video video = getTestVideo();

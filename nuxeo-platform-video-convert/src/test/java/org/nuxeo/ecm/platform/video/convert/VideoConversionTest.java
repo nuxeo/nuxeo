@@ -24,6 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +54,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
 
     public static final String DELTA_OGV = "DELTA.ogv";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -87,6 +91,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         return result;
     }
 
+    @Test
     public void testWebMConversion() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
@@ -106,6 +111,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         assertEquals("video/webm", blob.getMimeType());
     }
 
+    @Test
     public void testOggConversion() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
@@ -125,6 +131,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         assertEquals("video/ogg", blob.getMimeType());
     }
 
+    @Test
     public void testMP4Conversion() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);

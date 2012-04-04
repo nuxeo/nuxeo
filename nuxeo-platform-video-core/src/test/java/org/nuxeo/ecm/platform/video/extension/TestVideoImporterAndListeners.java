@@ -26,6 +26,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -78,7 +83,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         return new SimpleBlobHolder(blob);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -109,7 +114,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         fileManagerService = Framework.getService(FileManager.class);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         fileManagerService = null;
         root = null;
@@ -117,6 +122,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testVideoType() throws ClientException {
 
         DocumentType videoType = session.getDocumentType(VIDEO_TYPE);
@@ -156,6 +162,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testImportSmallVideo() throws Exception {
 
         File testFile = getTestFile();
@@ -203,6 +210,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testImportBigVideo() throws Exception {
         CommandAvailability ca = Framework.getService(
                 CommandLineExecutorService.class).getCommandAvailability(
@@ -279,6 +287,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertTrue(docModel.getProperty("picture:views").getValue(List.class).isEmpty());
     }
 
+    @Test
     public void testVideoInfo() throws Exception {
         File testFile = getTestFile();
         Blob blob = StreamingBlob.createFromFile(testFile, "video/mpg");
