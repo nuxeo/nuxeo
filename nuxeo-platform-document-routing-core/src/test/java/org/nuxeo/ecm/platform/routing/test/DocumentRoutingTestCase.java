@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +54,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
 
     public static final String ROUTE1 = "route1";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -86,12 +91,13 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         service = Framework.getService(DocumentRoutingService.class);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testServices() throws Exception {
         assertNotNull(engineService);
         assertNotNull(service);

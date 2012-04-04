@@ -19,6 +19,9 @@ package org.nuxeo.ecm.platform.routing.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,6 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
+    @Test
     public void testAddStepToDraftRoute() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         session.save();
@@ -132,6 +136,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals("step33bis", step.getTitle());
     }
 
+    @Test
     public void testAddSameNamedStepToRunningRoute() throws Exception {
         deployBundle(TEST_BUNDLE);
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
@@ -156,6 +161,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(!"step1".equals(childrens.get(3).getName()));
     }
 
+    @Test
     public void testAddStepToRunningRoute() throws Exception {
         deployBundle(TEST_BUNDLE);
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
@@ -202,6 +208,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(route.isDone());
     }
 
+    @Test
     public void testRemoveStep() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -223,6 +230,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(1, childs.size());
     }
 
+    @Test
     public void testSaveInstanceAsNewModel() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         service.lockDocumentRoute(route, session);
@@ -247,6 +255,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         closeSession(managersSession);
     }
 
+    @Test
     public void testRemoveStepFromLockedRoute() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -302,6 +311,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         closeSession();
     }
 
+    @Test
     public void testCreateNewInstance() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -327,6 +337,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(routeInstance.isDone());
     }
 
+    @Test
     public void testDocumentRouteWithWaitState() throws Exception {
         CounterListener.resetCouner();
         deployBundle(TEST_BUNDLE);
@@ -382,6 +393,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 CounterListener.getCounter());
     }
 
+    @Test
     public void testCancelRoute() throws Exception {
         CounterListener.resetCouner();
         deployBundle(TEST_BUNDLE);
@@ -430,6 +442,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         }
     }
 
+    @Test
     public void testDocumentRouteWithStepBack() throws Exception {
         CounterListener.resetCouner();
         deployBundle(TEST_BUNDLE);
@@ -509,6 +522,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertFalse(routeInstance.canUndoStep(session));
     }
 
+    @Test
     public void testDocumentRouteWithWaitStateAndSecurity() throws Exception {
         // bob create the route and validate it
         CounterListener.resetCouner();
@@ -594,6 +608,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 CounterListener.getCounter());
     }
 
+    @Test
     public void testGetAvailableDocumentRouteModel() throws ClientException {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -602,6 +617,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(1, routes.size());
     }
 
+    @Test
     public void testRouteModel() throws ClientException {
         DocumentModel folder = createDocumentModel(session, "TestFolder",
                 "Folder", "/");
@@ -628,6 +644,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(session.hasPermission(route.getRef(), SecurityConstants.READ));
     }
 
+    @Test
     public void testConditionalFolderContainerModel() throws ClientException {
         DocumentRoute route = createDocumentRouteWithConditionalFolder(session,
                 ROUTE1);
@@ -649,6 +666,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 session.getChildren(branch2.getRef()).get(0).getName());
     }
 
+    @Test
     public void testGetRouteElements() throws ClientException {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -667,6 +685,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(4, elements.get(0).getRouteTable().getTotalChildCount());
     }
 
+    @Test
     public void testExecuteSimpleRouteWithConditionalStep()
             throws ClientException {
         DocumentRoute route = createDocumentRouteWithConditionalFolder(session,
@@ -721,6 +740,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals("canceled", children.get(2).getCurrentLifeCycleState());
     }
 
+    @Test
     public void testExecuteRouteWithWaitStateAndConditionalStep()
             throws Exception {
         deployBundle(TEST_BUNDLE);

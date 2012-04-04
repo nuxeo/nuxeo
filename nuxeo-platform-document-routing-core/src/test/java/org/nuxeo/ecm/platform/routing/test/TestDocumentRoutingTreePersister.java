@@ -20,6 +20,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,12 +40,13 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
 
     protected DocumentRoutingPersister persister;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         persister = new DocumentRoutingTreePersister();
     }
 
+    @Test
     public void testGetOrCreateRootOfDocumentRouteInstanceStructure()
             throws Exception {
         deployBundle(TEST_BUNDLE);
@@ -57,6 +62,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         closeSession(membersSession);
     }
 
+    @Test
     public void testGetParentFolderForDocumentRouteInstance() {
         DocumentModel parent = persister.getParentFolderForDocumentRouteInstance(
                 null, session);
@@ -66,6 +72,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCreateDocumentRouteInstanceFromDocumentRouteModel()
             throws ClientException {
         DocumentModel model = createDocumentRouteModel(session,
@@ -88,6 +95,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         closeSession(managersSession);
     }
 
+    @Test
     public void testSaveDocumentRouteInstanceAsNewModel()
             throws ClientException {
         DocumentModel model = createDocumentRouteModel(session,

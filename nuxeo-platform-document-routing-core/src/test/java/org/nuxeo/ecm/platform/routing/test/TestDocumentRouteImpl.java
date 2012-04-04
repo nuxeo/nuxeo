@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 
 /**
@@ -25,13 +29,14 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 public class TestDocumentRouteImpl extends DocumentRoutingTestCase {
     protected DocumentRoute routeModel;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         routeModel = createDocumentRouteModel(session, ROUTE1, ROOT_PATH).getAdapter(
                 DocumentRoute.class);
     }
 
+    @Test
     public void testMethods() {
         assertNotNull(routeModel);
         assertEquals(ROUTE1, routeModel.getName());
