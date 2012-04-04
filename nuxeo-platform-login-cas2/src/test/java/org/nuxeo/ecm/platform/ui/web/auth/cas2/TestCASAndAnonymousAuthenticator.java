@@ -20,13 +20,17 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
+import java.security.Principal;
+
 import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
-
-import java.security.Principal;
 
 /**
  * @author Benjamin JALON
@@ -37,7 +41,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
 
     protected static final String TICKET_KEY = "ticket";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -48,6 +52,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
                 "OSGI-INF/login-cas-and-anonymous-contrib.xml");
     }
 
+    @Test
     public void testAuthenticatedToCAS() throws Exception {
 
         initRequest();
@@ -64,6 +69,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
                 ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
+    @Test
     public void testNotAuthenticatedToCAS() throws Exception {
         initRequest();
 

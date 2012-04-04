@@ -20,17 +20,22 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.simple;
 
+import java.security.Principal;
+
 import javax.security.auth.login.LoginContext;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 
-import java.security.Principal;
 
 /**
  * @author Benjamin JALON
  */
 public class TestAuthenticator extends AbstractAuthenticator {
 
+    @Test
     public void testAuthentication() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
                 "OSGI-INF/login-yes-contrib.xml");
@@ -47,6 +52,7 @@ public class TestAuthenticator extends AbstractAuthenticator {
         assertEquals("Administrator", ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
+    @Test
     public void testNoAuthentication() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
                 "OSGI-INF/login-no-contrib.xml");

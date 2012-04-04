@@ -20,13 +20,17 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
+import java.security.Principal;
+
 import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
-
-import java.security.Principal;
 
 /**
  * @author Benjamin JALON
@@ -36,7 +40,7 @@ public class TestCASAuthenticator extends AbstractAuthenticator {
     protected static final String CAS_USER = "CasUser";
     protected static final String TICKET_KEY = "ticket";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -47,6 +51,7 @@ public class TestCASAuthenticator extends AbstractAuthenticator {
                 "OSGI-INF/login-cas-contrib.xml");
     }
 
+    @Test
     public void testCASAuthentication() throws Exception {
         initRequest();
         doAuthenticationToCasServer(CAS_USER);

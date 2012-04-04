@@ -25,6 +25,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jboss.seam.mock.MockHttpServletRequest;
 import org.jboss.seam.mock.MockHttpServletResponse;
 import org.jboss.seam.mock.MockHttpSession;
@@ -37,7 +41,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -48,6 +52,7 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
                 "OSGI-INF/mod_sso-descriptor-bundle.xml");
     }
 
+    @Test
     public void testProxyAuthenticationWithoutReplacement() throws Exception {
 
         ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
@@ -76,6 +81,7 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
         assertEquals(username, identity.getUserName());
     }
 
+    @Test
     public void testProxyAuthenticationWithReplacement() throws Exception {
 
         ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
