@@ -42,6 +42,7 @@ import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -49,10 +50,14 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Clock;
 import org.openqa.selenium.support.ui.SystemClock;
+
+import org.browsermob.proxy.ProxyServer;
 
 /**
  * Base functions for all pages.
@@ -73,9 +78,15 @@ public abstract class AbstractTest {
 
     private static final int AJAX_TIMEOUT_SECONDS = 10;
 
+    private static final int PROXY_PORT = 4444;
+
+    private static final String HAR_FILE = "http-headers.json";
+
     protected static RemoteWebDriver driver;
 
     protected static File tmp_firebug_xpi;
+
+    protected static ProxyServer proxyServer = null;
 
     @BeforeClass
     public static void initDriver() throws Exception {
@@ -91,6 +102,7 @@ public abstract class AbstractTest {
     }
 
     protected static void initFirefoxDriver() throws Exception {
+        DesiredCapabilities dc = DesiredCapabilities.firefox();
         FirefoxProfile profile = new FirefoxProfile();
         // Disable native events (makes things break on Windows)
         profile.setEnableNativeEvents(false);
@@ -98,12 +110,17 @@ public abstract class AbstractTest {
         profile.setPreference("general.useragent.locale", "en");
         profile.setPreference("intl.accept_languages", "en");
         addFireBug(profile);
-        driver = new FirefoxDriver(profile);
+        dc.setCapability(FirefoxDriver.PROFILE, profile);
+        startProxy(dc);
+        driver = new FirefoxDriver(dc);
     }
 
     protected static void initChromeDriver() throws Exception {
+        DesiredCapabilities dc = DesiredCapabilities.chrome();
         ChromeOptions options = new ChromeOptions();
-        driver = new ChromeDriver(options);
+        dc.setCapability(ChromeOptions.CAPABILITY, options);
+        startProxy(dc);
+        driver = new ChromeDriver(dc);
     }
 
     @AfterClass
@@ -125,6 +142,11 @@ public abstract class AbstractTest {
         }
 
         removeFireBug();
+        try {
+            stopProxy();
+        } catch (Exception e) {
+            System.err.println("Could not stop proxy: " + e.getMessage());
+        }
     }
 
     /**
@@ -224,6 +246,23 @@ public abstract class AbstractTest {
         if (tmp_firebug_xpi != null) {
             tmp_firebug_xpi.delete();
             tmp_firebug_xpi.getParentFile().delete();
+        }
+    }
+
+    protected static void startProxy(DesiredCapabilities dc) throws Exception {
+        if (Boolean.valueOf(System.getProperty("useProxy", "true"))) {
+            proxyServer = new ProxyServer(PROXY_PORT);
+            proxyServer.start();
+            proxyServer.newHar("webdriver-test");
+            Proxy proxy = proxyServer.seleniumProxy();
+            dc.setCapability(CapabilityType.PROXY, proxy);
+        }
+    }
+
+    protected static void stopProxy() throws Exception {
+        if (proxyServer != null) {
+            proxyServer.getHar().writeTo(new File(HAR_FILE));
+            proxyServer.stop();
         }
     }
 
