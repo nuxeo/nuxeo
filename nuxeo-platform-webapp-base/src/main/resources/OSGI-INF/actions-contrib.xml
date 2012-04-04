@@ -72,9 +72,20 @@
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribed</filter-id>
     </action>
+    <action id="showFancyBoxPreview" order="5" type="fancybox"
+      label="label.document.preview" icon="/icons/contextual_menu/preview.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>view_preview</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties name="fancybox">
+        <property name="url">#{previewActions.getCurrentDocumentPreviewPopupURL()}
+        </property>
+      </properties>
+    </action>
     <action id="addCurrentDocumentToWorklist"
       link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
-      order="5" label="help.command.clipboard.addworklist" type="link_icon"
+      order="6" label="help.command.clipboard.addworklist" type="link_icon"
       icon="/icons/action_add.gif" immediate="true">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
@@ -82,7 +93,7 @@
     </action>
     <action id="print"
       link="#{restHelper.doPrint(themeActions.defaultTheme)}"
-      order="6" label="label.print" icon="/icons/printer.gif">
+      order="7" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
     </action>
     <!-- Deactivate Mail -->
