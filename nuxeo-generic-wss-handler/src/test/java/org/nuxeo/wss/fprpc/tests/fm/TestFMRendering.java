@@ -21,13 +21,15 @@ import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.wss.fm.FreeMarkerRenderer;
 import org.nuxeo.wss.fprpc.FPRPCConts;
 
-public class TestFMRendering extends TestCase {
+public class TestFMRendering {
 
+    @Test
     public void testSimpleRender() throws Exception {
 
         FreeMarkerRenderer renderer = FreeMarkerRenderer.instance();
@@ -49,6 +51,7 @@ public class TestFMRendering extends TestCase {
 
     }
 
+    @Test
     public void testIncludeRender() throws Exception {
 
         FreeMarkerRenderer renderer = FreeMarkerRenderer.instance();
@@ -72,6 +75,7 @@ public class TestFMRendering extends TestCase {
 
     }
 
+    @Test
     public void testInfoRender() throws Exception {
 
         FreeMarkerRenderer renderer = FreeMarkerRenderer.instance();

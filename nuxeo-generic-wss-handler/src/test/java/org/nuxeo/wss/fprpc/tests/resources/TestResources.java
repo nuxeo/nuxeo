@@ -21,7 +21,8 @@ import java.io.InputStream;
 
 import javax.servlet.Filter;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
@@ -29,9 +30,9 @@ import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
 import org.nuxeo.wss.handlers.resources.ResourcesHandler;
 import org.nuxeo.wss.servlet.WSSFilter;
 
-public class TestResources extends TestCase {
+public class TestResources {
 
-
+    @Test
     public void testResourceStream() {
 
         InputStream is = ResourcesHandler.getResourceAsStream("icons/folder.gif");
@@ -48,6 +49,7 @@ public class TestResources extends TestCase {
 
     }
 
+    @Test
     public void testGetResource() throws Exception {
         Filter filter=new WSSFilter();
         filter.init(null);

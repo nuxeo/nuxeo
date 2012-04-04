@@ -22,15 +22,17 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.wss.fprpc.FPRPCCall;
 import org.nuxeo.wss.fprpc.FPRPCRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 
-import junit.framework.TestCase;
+public class TestRequestParsing {
 
-public class TestRequestParsing extends TestCase {
-
+    @Test
     public void testGETParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("SimpleGETRequest.dump");
@@ -51,6 +53,7 @@ public class TestRequestParsing extends TestCase {
         assertEquals("Value2",call.getParameters().get("Parameter2"));
     }
 
+    @Test
     public void testPOSTParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("SimplePOSTRequest.dump");
@@ -72,6 +75,7 @@ public class TestRequestParsing extends TestCase {
 
     }
 
+    @Test
     public void testCAMLParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("SimpleCAMLRequest.dump");
@@ -99,6 +103,7 @@ public class TestRequestParsing extends TestCase {
 
     }
 
+    @Test
     public void testMatching() {
 
         String regexp = "^\\/([^/]*)\\/([^/]*)\\/([^?]*)\\S*$";
@@ -115,6 +120,7 @@ public class TestRequestParsing extends TestCase {
 
     }
 
+    @Test
     public void testVermeerEncodingParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("VermeerEncodedPost.dump");

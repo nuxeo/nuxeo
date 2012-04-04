@@ -19,7 +19,8 @@ package org.nuxeo.wss.fprpc.tests.fakews;
 
 import javax.servlet.Filter;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
@@ -29,8 +30,9 @@ import org.nuxeo.wss.handlers.fakews.FakeWSCmdParser;
 import org.nuxeo.wss.servlet.WSSFilter;
 import org.nuxeo.wss.servlet.WSSRequest;
 
-public class TestFakeWSWebS extends TestCase {
+public class TestFakeWSWebS {
 
+    @Test
     public void testParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("WebUrlFromPageUrl.dump");
@@ -42,7 +44,7 @@ public class TestFakeWSWebS extends TestCase {
         assertEquals("http://vm2k3/MyDocList/Nuxeo%20Annotation%20Service.doc", url);
     }
 
-
+    @Test
     public void testHandling() throws Exception {
 
         Filter filter=new WSSFilter();
@@ -63,6 +65,7 @@ public class TestFakeWSWebS extends TestCase {
 
     }
 
+    @Test
     public void testHandlingGetWebCollection() throws Exception {
 
         Filter filter=new WSSFilter();

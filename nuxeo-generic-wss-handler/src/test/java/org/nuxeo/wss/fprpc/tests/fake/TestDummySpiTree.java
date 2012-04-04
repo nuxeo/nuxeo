@@ -20,13 +20,17 @@ package org.nuxeo.wss.fprpc.tests.fake;
 import java.io.InputStream;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.wss.spi.WSSListItem;
 import org.nuxeo.wss.spi.dummy.DummyMemoryTree;
 
-import junit.framework.TestCase;
+public class TestDummySpiTree {
 
-public class TestDummySpiTree extends TestCase {
-
+    @Test
     public void testTree() throws Exception{
         List<WSSListItem> items;
 

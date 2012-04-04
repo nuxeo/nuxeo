@@ -19,24 +19,26 @@ package org.nuxeo.wss.fprpc.tests.request;
 
 import javax.servlet.Filter;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
 import org.nuxeo.wss.servlet.WSSFilter;
 
-public class TestInfoRequests extends TestCase {
+public class TestInfoRequests {
 
     protected Filter filter;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         filter=new WSSFilter();
         filter.init(null);
     }
 
+    @Test
     public void testVTIInfo() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("VTI-INFO.dump");
@@ -58,7 +60,7 @@ public class TestInfoRequests extends TestCase {
 
     }
 
-
+    @Test
     public void testServerVersion() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("ServerVersion.dump");
@@ -78,6 +80,7 @@ public class TestInfoRequests extends TestCase {
 
     }
 
+    @Test
     public void testOpenService() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("OpenService.dump");
@@ -97,7 +100,7 @@ public class TestInfoRequests extends TestCase {
 
     }
 
-
+    @Test
     public void testHead() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("HeadOwsSrv.dump");

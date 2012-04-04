@@ -21,7 +21,9 @@ import java.io.InputStream;
 
 import javax.servlet.Filter;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
@@ -30,17 +32,17 @@ import org.nuxeo.wss.servlet.WSSFilter;
 import org.nuxeo.wss.spi.WSSListItem;
 import org.nuxeo.wss.spi.dummy.DummyMemoryTree;
 
-public class TestFPRequests extends TestCase {
+public class TestFPRequests {
 
     protected Filter filter;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         filter = new WSSFilter();
         filter.init(null);
     }
 
+    @Test
     public void testPut() throws Exception {
         DummyMemoryTree.resetInstance();
         FakeRequest request = FakeRequestBuilder.buildFromResource("VermeerEncodedPost.dump");

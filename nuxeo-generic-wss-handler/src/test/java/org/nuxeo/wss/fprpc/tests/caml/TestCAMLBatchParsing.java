@@ -20,15 +20,17 @@ package org.nuxeo.wss.fprpc.tests.caml;
 import java.io.InputStream;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.wss.fprpc.CAMLHandler;
 import org.nuxeo.wss.fprpc.FPRPCCall;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-public class TestCAMLBatchParsing extends TestCase {
+public class TestCAMLBatchParsing {
 
+    @Test
     public void testParsing() throws Exception {
 
         InputStream xmlStream = this.getClass().getClassLoader().getResourceAsStream("SimpleCAMLBatch.xml");

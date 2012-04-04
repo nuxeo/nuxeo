@@ -17,14 +17,15 @@
 
 package org.nuxeo.wss.fprpc.tests.xmlconfig;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.wss.servlet.config.FilterBindingConfig;
 import org.nuxeo.wss.servlet.config.FilterBindingResolver;
 
-import junit.framework.TestCase;
+public class TestBindings {
 
-public class TestBindings extends TestCase {
-
-
+    @Test
     public void testBindings() throws Exception {
 
         FilterBindingConfig config = FilterBindingResolver.getBinding("/_vti_inf.html");

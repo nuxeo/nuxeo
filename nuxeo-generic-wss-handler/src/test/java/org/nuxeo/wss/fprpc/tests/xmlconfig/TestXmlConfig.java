@@ -19,14 +19,15 @@ package org.nuxeo.wss.fprpc.tests.xmlconfig;
 
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.wss.servlet.config.FilterBindingConfig;
 import org.nuxeo.wss.servlet.config.XmlConfigHandler;
 
-import junit.framework.TestCase;
+public class TestXmlConfig {
 
-public class TestXmlConfig extends TestCase {
-
-
+    @Test
     public void testParsing() throws Exception {
 
         List<FilterBindingConfig> bindings = XmlConfigHandler.getConfigEntries();

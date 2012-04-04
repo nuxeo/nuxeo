@@ -19,34 +19,35 @@ package org.nuxeo.wss.fprpc.tests.fakews;
 
 import javax.servlet.Filter;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
 import org.nuxeo.wss.servlet.WSSFilter;
 
-import junit.framework.TestCase;
+public class TestFakeLists {
 
-public class TestFakeLists extends TestCase {
+    @Test
+    public void testHandling() throws Exception {
 
+        Filter filter=new WSSFilter();
+        filter.init(null);
 
-     public void testHandling() throws Exception {
+        FakeRequest request = FakeRequestBuilder.buildFromResource("WebUrlFromPageUrl.dump");
+        FakeResponse response = new FakeResponse();
 
-            Filter filter=new WSSFilter();
-            filter.init(null);
+        filter.doFilter(request, response, null);
 
-            FakeRequest request = FakeRequestBuilder.buildFromResource("WebUrlFromPageUrl.dump");
-            FakeResponse response = new FakeResponse();
+        String result= response.getOutput();
 
-            filter.doFilter(request, response, null);
+        //System.out.println(result);
 
-            String result= response.getOutput();
+        String[] lines = result.split("\n");
 
-            //System.out.println(result);
+        assertEquals("<WebUrlFromPageUrlResult>http://localhost/</WebUrlFromPageUrlResult>", lines[4].trim());
 
-            String[] lines = result.split("\n");
-
-            assertEquals("<WebUrlFromPageUrlResult>http://localhost/</WebUrlFromPageUrlResult>", lines[4].trim());
-
-        }
+    }
 
 }

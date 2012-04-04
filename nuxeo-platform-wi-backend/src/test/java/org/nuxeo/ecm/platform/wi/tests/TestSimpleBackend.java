@@ -31,6 +31,10 @@ import org.nuxeo.ecm.platform.wi.backend.wss.WSSBackendFactoryImpl;
 import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +50,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     public static WSSListItemSorter wssListItemSorter = new WSSListItemSorter();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -122,6 +126,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testSimpleBackendBrowse() throws Exception {
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
@@ -189,6 +194,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
                 item.getRelativeFilePath("nuxeo"));
     }
 
+    @Test
     public void testSimpleBackendOperations() throws Exception {
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
@@ -255,6 +261,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
                 trashModel.getCurrentLifeCycleState());
     }
 
+    @Test
     public void testSearchBackendBrowse() throws Exception {
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
@@ -334,6 +341,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals("Ws2", item.getDisplayName());
     }
 
+    @Test
     public void testSearchBackendOperations() throws Exception {
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
