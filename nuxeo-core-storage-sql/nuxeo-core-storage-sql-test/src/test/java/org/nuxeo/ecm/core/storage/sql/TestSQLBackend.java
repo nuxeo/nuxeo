@@ -1700,7 +1700,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         DatabaseHelper.DATABASE.sleepForFulltext();
 
         PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'hello :'",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world :'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
     }
