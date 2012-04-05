@@ -31,6 +31,11 @@
                         immediate="#{action.immediate}"
                         onclick="#{action.confirm}"
                         id="contextRollOver_#{action.id}">
+                        <h:graphicImage value="#{action.icon}"
+                          rendered="#{not empty action.icon}"
+                          title="#{messages[action.label]}"
+                          alt="#{messages[action.label]}"
+                          styleClass="smallIcon" />
                         <h:outputText value="#{messages[action.label]}" />
                       </nxh:commandLink></li>
                   </c:forEach>
