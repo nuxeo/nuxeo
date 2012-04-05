@@ -21,15 +21,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+iport satic org.junit.Assert.*;
 
 import org.nuxeo.wizard.download.DownloadDescriptorParser;
 import org.nuxeo.wizard.download.DownloadPackage;
 import org.nuxeo.wizard.download.DownloadablePackageOption;
 import org.nuxeo.wizard.download.DownloadablePackageOptions;
 
-public class TestParser extends TestCase {
+public class TestParser {
 
+    @Test
     public void testParser1() {
 
         InputStream stream = this.getClass().getResourceAsStream(
@@ -82,7 +84,7 @@ public class TestParser extends TestCase {
         assertEquals(2, pkg4Download.size()); // CAP + DAM
 
     }
-
+    @Test
     public void testParserAndSelection() {
 
         InputStream stream = this.getClass().getResourceAsStream(

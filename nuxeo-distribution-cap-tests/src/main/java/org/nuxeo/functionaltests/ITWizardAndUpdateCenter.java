@@ -17,12 +17,9 @@
 
 package org.nuxeo.functionaltests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
