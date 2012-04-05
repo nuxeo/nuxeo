@@ -190,7 +190,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
 
         diffDisplayBlock = diffDisplayBlocks.get(2);
         checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.note", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "note", 1,
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "note", 2,
                 Arrays.asList("note"));
     }
 

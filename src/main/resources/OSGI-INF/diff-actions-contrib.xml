@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <!-- Current selection actions -->
     <action id="CURRENT_DOCUMENT_SELECTION_DIFF"
       link="#{diffActions.prepareCurrentDocumentSelectionDiff}" label="command.clipboard.diff"
       order="100">
@@ -11,6 +12,15 @@
       <filter-id>canDiffCurrentDocumentSelection</filter-id>
     </action>
 
+    <!-- Worklist actions -->
+    <action id="CURRENT_DEFAULT_SELECTION_DIFF"
+      link="#{diffActions.prepareCurrentDefaultSelectionDiff}" label="command.clipboard.diff"
+      icon="/icons/action_diff.png" order="100">
+      <category>DEFAULT_LIST</category>
+      <filter-id>canDiffCurrentDefaultSelection</filter-id>
+    </action>
+
+    <!-- Version actions -->
     <action id="CURRENT_VERSION_SELECTION_DIFF"
       link="#{diffActions.prepareCurrentVersionSelectionDiff}" label="command.clipboard.diff"
       order="100">
@@ -18,11 +28,9 @@
       <filter-id>canDiffCurrentVersionSelection</filter-id>
     </action>
 
-    <action id="CURRENT_DEFAULT_SELECTION_DIFF"
-      link="#{diffActions.prepareCurrentDefaultSelectionDiff}" label="command.clipboard.diff"
-      icon="/icons/action_diff.png" order="100">
-      <category>DEFAULT_LIST</category>
-      <filter-id>canDiffCurrentDefaultSelection</filter-id>
+    <action id="CURRENT_VERSION_DIFF" link="#{diffActions.prepareCurrentVersionDiff}"
+      label="command.versions.diffCurrent" order="100">
+      <category>VERSION_LIST_ITEM</category>
     </action>
 
   </extension>

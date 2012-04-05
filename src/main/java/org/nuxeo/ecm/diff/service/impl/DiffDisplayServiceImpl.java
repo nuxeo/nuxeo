@@ -92,6 +92,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     protected static final String DIFF_WIDGET_PROPERTY_DISPLAY_ITEM_INDEXES = "displayItemIndexes";
 
+    // TODO: refactor name (not related to widget)
     protected static final String DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD = "index";
 
     protected static final String DIFF_LIST_WIDGET_INDEX_SUBWIDGET_TYPE = "int";
@@ -363,6 +364,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             isDisplayItemIndexes);
 
                     String detailedDiffDisplay = null;
+                    // TODO: better condition (for example, don't need detailed diff on dates)
                     if (PropertyType.isSimpleType(fieldDiff.getPropertyType())) {
                         SimplePropertyDiff simpleFieldDiff = ((SimplePropertyDiff) fieldDiff);
                         String simpleLeftValue = simpleFieldDiff.getLeftValue();
@@ -379,9 +381,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                         leftValue.put(schemaName, leftSchemaMap);
                     }
                     leftSchemaMap.put(fieldName, leftFieldDiffDisplay);
-                    // TODO: better manage content (file)
+                    // TODO: better manage content (file) and note
                     putFilenameDiffDisplay(schemaName, fieldName,
                             leftSchemaMap, leftFieldDiffDisplay);
+                    putMimetypeDiffDisplay(schemaName, fieldName,
+                            leftSchemaMap, leftDoc);
                     // Right
                     Map<String, Serializable> rightSchemaMap = rightValue.get(schemaName);
                     if (rightSchemaMap == null) {
@@ -392,6 +396,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     // TODO: better manage content (file)
                     putFilenameDiffDisplay(schemaName, fieldName,
                             rightSchemaMap, rightFieldDiffDisplay);
+                    putMimetypeDiffDisplay(schemaName, fieldName,
+                            rightSchemaMap, rightDoc);
 
                     // TODO: manage better detailedDiff if needed
                     // Detailed diff
@@ -425,6 +431,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * @param fieldDiffDisplay
      * @param schemaMap
      */
+    // TODO: should not be hardcoded
     protected final void putFilenameDiffDisplay(String schemaName,
             String fieldName, Map<String, Serializable> schemaMap,
             Serializable fieldDiffDisplay) {
@@ -433,6 +440,18 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 && !schemaMap.containsKey("filename")
                 && fieldDiffDisplay instanceof Blob) {
             schemaMap.put("filename", ((Blob) fieldDiffDisplay).getFilename());
+        }
+    }
+
+    // TODO: should not be hardcoded
+    protected final void putMimetypeDiffDisplay(String schemaName,
+            String fieldName, Map<String, Serializable> schemaMap,
+            DocumentModel doc) throws ClientException {
+
+        if ("note".equals(schemaName) && "note".equals(fieldName)
+                && !schemaMap.containsKey("mime_type")) {
+            schemaMap.put("mime_type",
+                    (Serializable) doc.getProperty("note", "mime_type"));
         }
     }
 
@@ -628,6 +647,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         diff_match_patch dmp = new diff_match_patch();
 
         LinkedList<Diff> diffs = dmp.diff_main(leftValue, rightValue);
+        dmp.diff_cleanupSemantic(diffs);
         return dmp.diff_prettyHtml(diffs);
     }
 
@@ -635,11 +655,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             String propertyType, Field field, List<String> complexFieldItemNames)
             throws ClientException {
 
+        boolean isGeneric = false;
         // Look for a specific widget in the "diff" category named with the
         // property name
         WidgetDefinition wDef = getLayoutStore().getWidgetDefinition(
                 DIFF_WIDGET_CATEGORY, propertyName);
         if (wDef == null) {
+            isGeneric = true;
             // Fallback on a generic widget in the "diff" category named with
             // the property type
             wDef = getLayoutStore().getWidgetDefinition(DIFF_WIDGET_CATEGORY,
@@ -684,34 +706,39 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             }
         }
 
-        // Set field definitions
-        // TODO: better manage specific case of content type: filename/content
-        // (file and files)
-        FieldDefinition[] fieldDefinitions;
-        int fieldCount = 1;
-        if (PropertyType.isContentType(propertyType)) {
-            fieldCount = 2;
-        }
-        fieldDefinitions = new FieldDefinition[fieldCount];
+        // TODO: better manage specific case of content type
+        // filename/content (file and files) and note
 
-        String fieldDefinitionFieldName = propertyName;
-        if (field != null) {
-            fieldDefinitionFieldName = field.getName().getLocalName();
-        }
-        fieldDefinitions[0] = new FieldDefinitionImpl(null,
-                fieldDefinitionFieldName);
-        if (PropertyType.isContentType(propertyType)) {
-            fieldDefinitionFieldName = "filename";
-            if (field == null) {
-                fieldDefinitionFieldName = getPropertyName(
-                        getPropertySchema(propertyName),
+        // Set field definitions if generic or specific and not already set in
+        // widget definition
+        if (isGeneric || !isFieldDefinitions(wDef)) {
+
+            FieldDefinition[] fieldDefinitions;
+            int fieldCount = 1;
+            if (PropertyType.isContentType(propertyType)) {
+                fieldCount = 2;
+            }
+            fieldDefinitions = new FieldDefinition[fieldCount];
+
+            String fieldDefinitionFieldName = propertyName;
+            if (field != null) {
+                fieldDefinitionFieldName = field.getName().getLocalName();
+            }
+            fieldDefinitions[0] = new FieldDefinitionImpl(null,
+                    fieldDefinitionFieldName);
+            if (PropertyType.isContentType(propertyType)) {
+                fieldDefinitionFieldName = "filename";
+                if (field == null) {
+                    fieldDefinitionFieldName = getPropertyName(
+                            getPropertySchema(propertyName),
+                            fieldDefinitionFieldName);
+                }
+                fieldDefinitions[1] = new FieldDefinitionImpl(null,
                         fieldDefinitionFieldName);
             }
-            fieldDefinitions[1] = new FieldDefinitionImpl(null,
-                    fieldDefinitionFieldName);
-        }
 
-        wDef.setFieldDefinitions(fieldDefinitions);
+            wDef.setFieldDefinitions(fieldDefinitions);
+        }
 
         return wDef;
     }
@@ -720,6 +747,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
         WidgetDefinition[] subWidgetDefs = wDef.getSubWidgetDefinitions();
         return subWidgetDefs != null && subWidgetDefs.length > 0;
+    }
+
+    protected final boolean isFieldDefinitions(WidgetDefinition wDef) {
+
+        FieldDefinition[] fieldDefs = wDef.getFieldDefinitions();
+        return fieldDefs != null && fieldDefs.length > 0;
     }
 
     protected final WidgetDefinition[] getSubWidgetDefinitions(
