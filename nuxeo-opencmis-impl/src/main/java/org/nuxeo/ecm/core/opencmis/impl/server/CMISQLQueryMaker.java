@@ -36,6 +36,7 @@ import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
@@ -154,6 +155,9 @@ public class CMISQLQueryMaker implements QueryMaker {
     /** All qualifiers used (includes virtual columns) */
     protected Set<String> allQualifiers = new HashSet<String>();
 
+    /** The qualifiers which correspond to versionable types. */
+    protected Set<String> versionableQualifiers = new HashSet<String>();
+
     /** The columns we'll actually request from the database. */
     protected List<SqlColumn> realColumns = new LinkedList<SqlColumn>();
 
@@ -269,6 +273,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         for (SortSpec spec : query.getOrderBys()) {
             recordSelector(spec.getSelector(), ORDER_BY);
         }
+
+        findVersionableQualifiers();
 
         boolean distinct = false; // TODO extension
         addSystemColumns(addSystemColumns, distinct);
@@ -424,7 +430,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             // searchAllVersions filter
 
-            if (searchLatestVersion) {
+            boolean versionable = versionableQualifiers.contains(qual);
+            if (searchLatestVersion && versionable) {
                 // add islatestversion = true
                 Table ver = getTable(
                         database.getTable(model.VERSION_TABLE_NAME), qual);
@@ -560,6 +567,26 @@ public class CMISQLQueryMaker implements QueryMaker {
         return q;
     }
 
+    protected void findVersionableQualifiers() {
+        List<JoinSpec> joins = query.getJoins();
+        for (int njoin = -1; njoin < joins.size(); njoin++) {
+            boolean firstTable = njoin == -1;
+            String alias;
+            if (firstTable) {
+                alias = query.getMainTypeAlias();
+            } else {
+                alias = joins.get(njoin).alias;
+            }
+            String typeQueryName = qualifierToType.get(alias);
+            TypeDefinition td = query.getTypeDefinitionFromQueryName(typeQueryName);
+            boolean versionable = td.getBaseTypeId() == BaseTypeId.CMIS_DOCUMENT;
+            if (versionable) {
+                String qual = canonicalQualifier.get(alias);
+                versionableQualifiers.add(qual);
+            }
+        }
+    }
+
     // add main id to all qualifiers if
     // - we have no DISTINCT (in which case more columns don't matter), or
     // - we have virtual columns, or
@@ -628,7 +655,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             // include hier in fragments
             recordFragment(qual, getTable(hierTable, qual));
             // if only latest version include the version table
-            if (searchLatestVersion) {
+            boolean versionable = versionableQualifiers.contains(qual);
+            if (searchLatestVersion && versionable) {
                 Table ver = database.getTable(Model.VERSION_TABLE_NAME);
                 recordFragment(qual, getTable(ver, qual));
             }
