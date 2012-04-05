@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -29,6 +30,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -64,7 +66,7 @@ import org.browsermob.proxy.ProxyServer;
  */
 public abstract class AbstractTest {
 
-    public static final String NUXEO_URL = "http://localhost:8080/nuxeo";
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll("/$","");
 
     private static final String FIREBUG_XPI = "firebug-1.6.2-fx.xpi";
 
@@ -80,7 +82,7 @@ public abstract class AbstractTest {
 
     private static final int PROXY_PORT = 4444;
 
-    private static final String HAR_FILE = "http-headers.json";
+    private static final String HAR_NAME = "http-headers.json";
 
     protected static RemoteWebDriver driver;
 
@@ -110,16 +112,27 @@ public abstract class AbstractTest {
         profile.setPreference("general.useragent.locale", "en");
         profile.setPreference("intl.accept_languages", "en");
         addFireBug(profile);
+        Proxy proxy = startProxy();
+        if (proxy != null) {
+            // Does not work, but leave code for when it does
+            // Workaround: use 127.0.0.2
+            proxy.setNoProxy("");
+            profile.setProxyPreferences(proxy);
+        }
         dc.setCapability(FirefoxDriver.PROFILE, profile);
-        startProxy(dc);
         driver = new FirefoxDriver(dc);
     }
 
     protected static void initChromeDriver() throws Exception {
         DesiredCapabilities dc = DesiredCapabilities.chrome();
         ChromeOptions options = new ChromeOptions();
+        options.addArguments(Arrays.asList("--ignore-certificate-errors"));
+        Proxy proxy = startProxy();
+        if (proxy != null) {
+            proxy.setNoProxy("");
+            dc.setCapability(CapabilityType.PROXY, proxy);
+        }
         dc.setCapability(ChromeOptions.CAPABILITY, options);
-        startProxy(dc);
         driver = new ChromeDriver(dc);
     }
 
@@ -142,6 +155,7 @@ public abstract class AbstractTest {
         }
 
         removeFireBug();
+
         try {
             stopProxy();
         } catch (Exception e) {
@@ -249,19 +263,34 @@ public abstract class AbstractTest {
         }
     }
 
-    protected static void startProxy(DesiredCapabilities dc) throws Exception {
+    protected static Proxy startProxy() throws Exception {
         if (Boolean.valueOf(System.getProperty("useProxy", "true"))) {
             proxyServer = new ProxyServer(PROXY_PORT);
             proxyServer.start();
+            proxyServer.setCaptureHeaders(true);
+            // Block access to tracking sites
+            proxyServer.blacklistRequests("https?://www\\.nuxeo\\.com/embedded/wizard.*", 410);
+            proxyServer.blacklistRequests("https?://.*\\.mktoresp\\.com/.*", 410);
+            proxyServer.blacklistRequests(".*_mchId.*", 410);
+            proxyServer.blacklistRequests("https?://.*\\.google-analytics\\.com/.*", 410);
             proxyServer.newHar("webdriver-test");
             Proxy proxy = proxyServer.seleniumProxy();
-            dc.setCapability(CapabilityType.PROXY, proxy);
+            return proxy;
+        } else {
+            return null;
         }
     }
 
     protected static void stopProxy() throws Exception {
         if (proxyServer != null) {
-            proxyServer.getHar().writeTo(new File(HAR_FILE));
+            String target = System.getProperty("nuxeo.log.dir");
+            File harFile;
+            if (target == null) {
+                harFile = new File(HAR_NAME);
+            } else {
+                harFile = new File(target, HAR_NAME);
+            }
+            proxyServer.getHar().writeTo(harFile);
             proxyServer.stop();
         }
     }
@@ -458,7 +487,7 @@ public abstract class AbstractTest {
     }
 
     public LoginPage getLoginPage() {
-        return get(NUXEO_URL, LoginPage.class);
+        return get(NUXEO_URL + "/logout", LoginPage.class);
     }
 
     /**
