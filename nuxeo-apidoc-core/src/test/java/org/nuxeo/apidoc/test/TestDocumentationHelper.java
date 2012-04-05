@@ -16,17 +16,22 @@
  */
 package org.nuxeo.apidoc.test;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDocumentationHelper extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.htmlsanitizer");
     }
 
+    @Test
     public void test() throws Exception {
         assertEquals("<p>\nfoo\n</p>\n" //
                 + "<p>\nbar</p>", //

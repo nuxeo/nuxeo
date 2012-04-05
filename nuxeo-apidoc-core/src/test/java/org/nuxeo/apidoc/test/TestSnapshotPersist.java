@@ -21,6 +21,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -38,7 +43,7 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(TestSnapshotPersist.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core");
@@ -135,6 +140,7 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         return sb.toString();
     }
 
+    @Test
     public void testPersist() throws Exception {
 
         DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
@@ -179,7 +185,7 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         assertEquals(rtDump, pDump);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (session!=null) {
             CoreInstance.getInstance().close(session);

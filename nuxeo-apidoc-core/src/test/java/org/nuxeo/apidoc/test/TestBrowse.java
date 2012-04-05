@@ -21,6 +21,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
@@ -36,7 +40,7 @@ public class TestBrowse extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(TestBrowse.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -54,6 +58,7 @@ public class TestBrowse extends NXRuntimeTestCase {
         return Framework.getLocalService(SnapshotManager.class);
     }
 
+    @Test
     public void testBrowse() throws Exception {
 
         DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
@@ -112,6 +117,7 @@ public class TestBrowse extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testIntrospection() throws Exception {
 
         String cid = "org.nuxeo.ecm.core.lifecycle.LifeCycleService";

@@ -20,6 +20,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -32,7 +37,7 @@ public class TestSearcher extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(TestSearcher.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core");
@@ -55,7 +60,7 @@ public class TestSearcher extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (session!=null) {
             CoreInstance.getInstance().close(session);
@@ -67,6 +72,7 @@ public class TestSearcher extends SQLRepositoryTestCase {
         return Framework.getLocalService(SnapshotManager.class);
     }
 
+    @Test
     public void testSearch() throws Exception {
 
         ArtifactSearcher searcher = Framework.getLocalService(ArtifactSearcher.class);

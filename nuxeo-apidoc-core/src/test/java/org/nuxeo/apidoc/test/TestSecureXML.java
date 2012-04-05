@@ -16,12 +16,14 @@
  */
 package org.nuxeo.apidoc.test;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 
-public class TestSecureXML extends TestCase {
+public class TestSecureXML {
 
+    @Test
     public void testSecureXML() throws Exception {
         String xml = "foo <password>p1</password> " //
                 + " <myPassword>p2</myPassword>" //

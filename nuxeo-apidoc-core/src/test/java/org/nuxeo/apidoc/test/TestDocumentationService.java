@@ -19,6 +19,11 @@ package org.nuxeo.apidoc.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -34,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestDocumentationService extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core");
@@ -54,6 +59,7 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         return Framework.getLocalService(SnapshotManager.class);
     }
 
+    @Test
     public void testService() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         assertNotNull(ds);
@@ -159,7 +165,7 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
 
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (session!=null) {
             CoreInstance.getInstance().close(session);
