@@ -24,6 +24,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserRegistrationService {
@@ -121,6 +122,12 @@ public interface UserRegistrationService {
             throws ClientException;
 
     UserRegistrationConfiguration getConfiguration();
+
+    /**
+     * Retrieve registrations for a document givent the username
+     * @since 5.6
+     */
+    DocumentModelList getRegistrationsForUser(String docId, String username) throws ClientException;
 
     /**
      * Return specific configuration for the specified name

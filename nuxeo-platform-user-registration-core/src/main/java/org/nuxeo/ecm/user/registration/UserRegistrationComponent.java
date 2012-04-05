@@ -46,12 +46,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
@@ -744,5 +746,19 @@ public class UserRegistrationComponent extends DefaultComponent implements
     @Override
     public Set<String> getConfigurationsName() {
         return configurations.keySet();
+    }
+
+    @Override
+    public DocumentModelList getRegistrationsForUser(final String docId, final String username) throws ClientException {
+        final DocumentModelList registrationDocs = new DocumentModelListImpl();
+        new UnrestrictedSessionRunner(getTargetRepositoryName()) {
+            @Override
+            public void run() throws ClientException {
+                String query = "SELECT * FROM Document WHERE ecm:mixinType = 'UserRegistration' AND docinfo:documentId = '%s' AND userinfo:login = '%s' AND ecm:isCheckedInVersion = 0";
+                query = String.format(query, docId, username);
+                registrationDocs.addAll(session.query(query));
+            }
+        };
+        return registrationDocs;
     }
 }
