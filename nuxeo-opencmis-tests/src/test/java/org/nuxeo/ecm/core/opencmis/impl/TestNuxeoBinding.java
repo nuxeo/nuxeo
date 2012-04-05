@@ -2179,6 +2179,30 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryAllVersionsFolders() throws Exception {
+        ObjectList res;
+        Boolean searchAllVersions;
+
+        String statement = "SELECT cmis:objectId FROM cmis:folder"
+                + " WHERE cmis:name = 'testfolder2_Title'";
+
+        searchAllVersions = Boolean.TRUE;
+        res = discService.query(repositoryId, statement, searchAllVersions,
+                null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+
+        searchAllVersions = Boolean.FALSE;
+        res = discService.query(repositoryId, statement, searchAllVersions,
+                null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+
+        searchAllVersions = null;
+        res = discService.query(repositoryId, statement, searchAllVersions,
+                null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+    }
+
+    @Test
     public void testVersioning() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
