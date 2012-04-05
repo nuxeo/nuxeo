@@ -24,7 +24,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -45,7 +49,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     protected MemoryDirectory groupDir;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         // PageProvider API
@@ -151,7 +155,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         session.save();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -248,6 +252,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("/icons/file.gif", sugg1.getIconURL());
     }
 
+    @Test
     public void testSearchUserLimit() throws Exception {
         Session userSession = userdir.getSession();
         try {
