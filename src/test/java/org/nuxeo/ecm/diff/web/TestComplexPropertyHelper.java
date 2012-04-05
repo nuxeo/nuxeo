@@ -16,10 +16,10 @@
  */
 package org.nuxeo.ecm.diff.web;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -38,7 +38,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.diff.test:OSGI-INF/test-diff-types-contrib.xml" })
-public class TestComplexPropertyHelper extends TestCase {
+public class TestComplexPropertyHelper {
 
     @Inject
     protected CoreSession session;

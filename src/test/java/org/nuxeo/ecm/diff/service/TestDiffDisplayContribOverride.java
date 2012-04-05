@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
@@ -45,7 +46,7 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.diff:OSGI-INF/diff-display-service.xml",
         "org.nuxeo.diff:OSGI-INF/diff-display-contrib.xml",
         "org.nuxeo.diff.test:OSGI-INF/test-diff-display-contrib.xml" })
-public class TestDiffDisplayContribOverride extends TestCase {
+public class TestDiffDisplayContribOverride {
 
     @Inject
     protected DiffDisplayService diffDisplayService;

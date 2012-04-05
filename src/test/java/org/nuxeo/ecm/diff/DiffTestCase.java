@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.diff;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -34,7 +34,7 @@ import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public class DiffTestCase extends TestCase {
+public class DiffTestCase {
 
     protected XpathEngine xPathEngine = XMLUnit.newXpathEngine();
 

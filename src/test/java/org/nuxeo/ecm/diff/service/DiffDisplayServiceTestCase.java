@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 
@@ -29,7 +29,7 @@ import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public class DiffDisplayServiceTestCase extends TestCase {
+public class DiffDisplayServiceTestCase {
 
     /**
      * Checks a diff display block.
