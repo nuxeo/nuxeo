@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template;
+package org.nuxeo.template.api;
 
 import java.io.Serializable;
 import java.util.Date;

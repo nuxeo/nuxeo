@@ -14,10 +14,10 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.rendition.TemplateBasedRenditionProvider;
-import org.nuxeo.template.service.TemplateProcessorService;
 
 public class BaseTemplateAction implements Serializable {
 

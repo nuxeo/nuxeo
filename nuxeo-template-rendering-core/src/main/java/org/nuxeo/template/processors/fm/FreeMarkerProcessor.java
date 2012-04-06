@@ -9,12 +9,12 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.fm.FMContextBuilder;
 import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
-import org.nuxeo.template.processors.TemplateProcessor;
 
 import freemarker.cache.StringTemplateLoader;
 

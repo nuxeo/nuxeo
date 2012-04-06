@@ -37,9 +37,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.template.InputType;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 import org.nuxeo.template.processors.BidirectionalTemplateProcessor;
 

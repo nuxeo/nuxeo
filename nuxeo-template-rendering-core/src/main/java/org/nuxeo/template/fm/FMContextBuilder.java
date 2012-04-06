@@ -24,10 +24,10 @@ import org.nuxeo.ecm.platform.audit.api.comment.CommentProcessorHelper;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.ContentInputType;
-import org.nuxeo.template.InputType;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.ContentInputType;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 public class FMContextBuilder {
 

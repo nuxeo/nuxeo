@@ -41,15 +41,15 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
-import org.nuxeo.template.InputType;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.fm.FMContextBuilder;
 import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.odt.OOoArchiveModifier;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
-import org.nuxeo.template.processors.TemplateProcessor;
 
 /**
  * {@link TemplateProcessor} for ODT based templates.

@@ -15,10 +15,10 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
-import org.nuxeo.template.processors.TemplateProcessor;
 
 public class XSLTProcessor extends AbstractTemplateProcessor implements
         TemplateProcessor {

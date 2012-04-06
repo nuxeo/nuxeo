@@ -10,9 +10,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.fm.FMContextBuilder;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
 

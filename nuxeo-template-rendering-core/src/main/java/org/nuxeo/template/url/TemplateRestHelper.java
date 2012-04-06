@@ -6,7 +6,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.url.AbstractRenditionRestHelper;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 @Name("templateRestHelper")
 @Scope(ScopeType.PAGE)

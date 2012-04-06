@@ -29,12 +29,12 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.TemplateInput;
 import org.nuxeo.template.XMLSerializer;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.template.processors.TemplateProcessor;
-import org.nuxeo.template.service.TemplateProcessorService;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
  * Base class for shared code bewteen the {@link TemplateBasedDocument} and the

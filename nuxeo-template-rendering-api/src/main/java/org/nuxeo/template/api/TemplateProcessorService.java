@@ -1,4 +1,4 @@
-package org.nuxeo.template.service;
+package org.nuxeo.template.api;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.template.processors.TemplateProcessor;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 public interface TemplateProcessorService {
 

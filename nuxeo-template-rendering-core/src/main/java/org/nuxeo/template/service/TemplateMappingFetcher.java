@@ -11,8 +11,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.template.adapters.source.TemplateSourceDocumentAdapterImpl;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
 

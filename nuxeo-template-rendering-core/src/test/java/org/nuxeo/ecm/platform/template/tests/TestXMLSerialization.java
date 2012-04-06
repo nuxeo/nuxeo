@@ -6,9 +6,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.template.InputType;
-import org.nuxeo.template.TemplateInput;
 import org.nuxeo.template.XMLSerializer;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
 
 public class TestXMLSerialization extends TestCase {
 

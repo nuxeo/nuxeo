@@ -11,8 +11,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.template.service.TemplateProcessorService;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 public class ResourceService extends AbstractResourceService{
     

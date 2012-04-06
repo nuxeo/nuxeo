@@ -6,7 +6,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 public class TemplateMappingRemover extends UnrestrictedSessionRunner {
 

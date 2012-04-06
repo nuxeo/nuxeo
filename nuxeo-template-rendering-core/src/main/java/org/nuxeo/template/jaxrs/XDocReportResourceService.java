@@ -20,7 +20,7 @@ import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.processors.xdocreport.FieldDefinitionGenerator;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.BinaryData;

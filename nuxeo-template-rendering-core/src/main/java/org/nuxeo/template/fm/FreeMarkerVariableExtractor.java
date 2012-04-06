@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.template.TemplateInput;
+import org.nuxeo.template.api.TemplateInput;
 
 /**
  * Helper class used to extract variable names from a FreeMarker template. This

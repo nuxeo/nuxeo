@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template.adapters.source;
+package org.nuxeo.template.api.adapters;
 
 import java.util.List;
 
@@ -24,8 +24,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.TemplateInput;
 
 /**
  * Adapter interface for the {@link DocumentModel} that can provide a template.

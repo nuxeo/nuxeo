@@ -14,8 +14,8 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.template.service.TemplateProcessorService;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 public class TemplateTypeBindingListener implements PostCommitEventListener {
 

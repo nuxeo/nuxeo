@@ -15,7 +15,7 @@
 
   <service>
     <provide
-      interface="org.nuxeo.template.service.TemplateProcessorService" />
+      interface="org.nuxeo.template.api.TemplateProcessorService" />
   </service>
 
   <extension-point name="processor">
@@ -37,7 +37,7 @@
 
     </documentation>
 
-    <object class="org.nuxeo.template.service.TemplateProcessorDescriptor" />
+    <object class="org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor" />
 
   </extension-point>
 

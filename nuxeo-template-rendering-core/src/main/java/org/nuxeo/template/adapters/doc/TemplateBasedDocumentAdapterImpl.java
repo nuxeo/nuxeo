@@ -28,13 +28,14 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.TemplateInput;
 import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.AbstractTemplateDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.template.processors.TemplateProcessor;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.processors.convert.ConvertHelper;
-import org.nuxeo.template.service.TemplateProcessorService;
 
 /**
  * Default implementation of {@link TemplateBasedDocument} adapter. This adapter

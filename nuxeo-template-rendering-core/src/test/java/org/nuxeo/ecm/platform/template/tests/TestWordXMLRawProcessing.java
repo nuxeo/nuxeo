@@ -12,10 +12,10 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.InputType;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.processors.TemplateProcessor;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.docx.WordXMLRawTemplateProcessor;
 
 public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
@@ -30,6 +30,7 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
 
+        deployBundle("org.nuxeo.template.manager.api");
         deployContrib("org.nuxeo.template.manager",
                 "OSGI-INF/core-types-contrib.xml");
         deployContrib("org.nuxeo.template.manager",

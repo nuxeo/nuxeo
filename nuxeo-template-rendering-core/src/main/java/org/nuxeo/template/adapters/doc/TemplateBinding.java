@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.template.TemplateInput;
 import org.nuxeo.template.XMLSerializer;
+import org.nuxeo.template.api.TemplateInput;
 
 public class TemplateBinding {
 

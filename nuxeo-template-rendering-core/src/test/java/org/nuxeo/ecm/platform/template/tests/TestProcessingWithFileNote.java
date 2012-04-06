@@ -16,13 +16,13 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.ContentInputType;
-import org.nuxeo.template.InputType;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.template.api.ContentInputType;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
-import org.nuxeo.template.service.TemplateProcessorService;
 
 public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
 
@@ -48,6 +48,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.convert");
         deployBundle("org.nuxeo.ecm.platform.preview");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
+        deployBundle("org.nuxeo.template.manager.api");
         deployContrib("org.nuxeo.template.manager",
                 "OSGI-INF/core-types-contrib.xml");
         deployContrib("org.nuxeo.template.manager",

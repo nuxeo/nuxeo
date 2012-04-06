@@ -7,8 +7,8 @@ import junit.framework.TestCase;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.template.TemplateInput;
 import org.nuxeo.template.XMLSerializer;
+import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
 

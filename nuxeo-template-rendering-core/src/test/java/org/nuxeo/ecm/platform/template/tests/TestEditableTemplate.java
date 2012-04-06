@@ -10,9 +10,9 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.template.service.TemplateProcessorService;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 public class TestEditableTemplate extends SQLRepositoryTestCase {
 
@@ -26,6 +26,7 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
+        deployBundle("org.nuxeo.template.manager.api");
         deployContrib("org.nuxeo.template.manager",
                 "OSGI-INF/core-types-contrib.xml");
         deployContrib("org.nuxeo.template.manager",

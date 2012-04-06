@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
+    <groupId>org.nuxeo.template.rendering</groupId>
     <artifactId>nuxeo-template-rendering-parent</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
@@ -15,11 +15,15 @@
 
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.features</groupId>
+  <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-core</artifactId>
   <name>Template Rendering service implementation</name>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
@@ -160,7 +164,7 @@
       <artifactId>poi-ooxml</artifactId>
       <scope>compile</scope>
     </dependency>
- 
+
     <!-- Rendition stuffs -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

@@ -1,4 +1,4 @@
-package org.nuxeo.template.service;
+package org.nuxeo.template.api.descriptor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.template.processors.TemplateProcessor;
+import org.nuxeo.template.api.TemplateProcessor;
 
 @XObject("templateProcessor")
 public class TemplateProcessorDescriptor implements Serializable {
@@ -102,5 +102,23 @@ public class TemplateProcessorDescriptor implements Serializable {
         clone.name = name;
 
         return clone;
+    }
+
+    public void merge(TemplateProcessorDescriptor srcTpd) {
+        defaultProcessor = srcTpd.defaultProcessor;
+        if (srcTpd.className != null) {
+            className = srcTpd.className;
+        }
+        if (srcTpd.label != null) {
+            label = srcTpd.label;
+        }
+        if (srcTpd.supportedExtensions != null
+                && srcTpd.supportedExtensions.size() > 0) {
+            supportedExtensions = srcTpd.supportedExtensions;
+        }
+        if (srcTpd.supportedMimeTypes != null
+                && srcTpd.supportedMimeTypes.size() > 0) {
+            supportedMimeTypes = srcTpd.supportedMimeTypes;
+        }
     }
 }

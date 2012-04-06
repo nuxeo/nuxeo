@@ -10,7 +10,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 public class TemplateBasedRenditionProvider implements RenditionProvider {
 

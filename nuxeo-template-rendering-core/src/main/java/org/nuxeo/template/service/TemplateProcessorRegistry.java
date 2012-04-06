@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 public class TemplateProcessorRegistry extends
         ContributionFragmentRegistry<TemplateProcessorDescriptor> {
@@ -33,7 +34,7 @@ public class TemplateProcessorRegistry extends
     @Override
     public void contributionUpdated(String id, TemplateProcessorDescriptor tpd,
             TemplateProcessorDescriptor newTpd) {
-        if (tpd == null || !tpd.enabled) {
+        if (tpd == null || !tpd.isEnabled()) {
             processors.remove(id);
         } else {
             if (tpd.init()) {
@@ -52,22 +53,7 @@ public class TemplateProcessorRegistry extends
     @Override
     public void merge(TemplateProcessorDescriptor srcTpd,
             TemplateProcessorDescriptor descTpd) {
-
-        descTpd.defaultProcessor = srcTpd.defaultProcessor;
-        if (srcTpd.className != null) {
-            descTpd.className = srcTpd.className;
-        }
-        if (srcTpd.label != null) {
-            descTpd.label = srcTpd.label;
-        }
-        if (srcTpd.supportedExtensions != null
-                && srcTpd.supportedExtensions.size() > 0) {
-            descTpd.supportedExtensions = srcTpd.supportedExtensions;
-        }
-        if (srcTpd.supportedMimeTypes != null
-                && srcTpd.supportedMimeTypes.size() > 0) {
-            descTpd.supportedMimeTypes = srcTpd.supportedMimeTypes;
-        }
+        descTpd.merge(srcTpd);
     }
 
 }

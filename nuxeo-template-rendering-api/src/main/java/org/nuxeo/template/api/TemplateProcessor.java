@@ -16,13 +16,12 @@
  *
  */
 
-package org.nuxeo.template.processors;
+package org.nuxeo.template.api;
 
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 /**
  * Interface used to drive rendition of the {@link TemplateBasedDocument}

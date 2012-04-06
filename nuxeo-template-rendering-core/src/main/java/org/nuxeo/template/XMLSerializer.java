@@ -33,6 +33,8 @@ import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.tree.DefaultElement;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
 
 /**
  * {@link TemplateInput} parameters are stored in the {@link DocumentModel} as a

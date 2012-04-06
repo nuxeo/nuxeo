@@ -4,18 +4,19 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.template.processors.TemplateProcessor;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 import org.nuxeo.template.processors.docx.WordXMLRawTemplateProcessor;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
 import org.nuxeo.template.service.TemplateProcessorComponent;
-import org.nuxeo.template.service.TemplateProcessorDescriptor;
-import org.nuxeo.template.service.TemplateProcessorService;
 
 public class TestService extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.template.manager.api");
         deployContrib("org.nuxeo.template.manager",
                 "OSGI-INF/templateprocessor-service.xml");
     }

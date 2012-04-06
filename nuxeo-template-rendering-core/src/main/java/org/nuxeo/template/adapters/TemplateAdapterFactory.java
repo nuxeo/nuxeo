@@ -23,10 +23,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
 import org.nuxeo.template.adapters.source.TemplateSourceDocumentAdapterImpl;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
  * Pluggable {@link DocumentAdapterFactory} used to return the right

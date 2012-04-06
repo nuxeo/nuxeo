@@ -11,8 +11,8 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.XL2TextConverter;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.jxls.JXLSTemplateProcessor;
 
 public class TestJXLSProcessing extends SimpleTemplateDocTestCase {

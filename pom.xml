@@ -7,14 +7,14 @@
     <version>5.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.ecm.platform</groupId>
+  <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-parent</artifactId>
   <name>Nuxeo Template Rendering Parent</name>
   <description>Nuxeo Template Rendering Module</description>
   <packaging>pom</packaging>
 
   <properties>
-    <nuxeo.poll.version>5.6-SNAPSHOT</nuxeo.poll.version>
+    <nuxeo.templates.version>5.6-SNAPSHOT</nuxeo.templates.version>
   </properties>
 
   <modules>
@@ -27,6 +27,21 @@
     <module>nuxeo-template-rendering-web</module>
   </modules>
 
+  <dependencyManagement>
+   <dependencies>
+    <dependency>
+     <groupId>org.nuxeo.template.rendering</groupId>
+     <artifactId>nuxeo-template-rendering-api</artifactId>
+     <version>${nuxeo.templates.version}</version>
+    </dependency>
+    <dependency>
+     <groupId>org.nuxeo.template.rendering</groupId>
+     <artifactId>nuxeo-template-rendering-core</artifactId>
+     <version>${nuxeo.templates.version}</version>
+    </dependency>
+   </dependencies>
+  </dependencyManagement>
+ 
   <repositories>
     <repository>
       <id>public</id>

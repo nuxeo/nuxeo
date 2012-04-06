@@ -3,7 +3,7 @@ package org.nuxeo.template.jaxrs;
 import java.util.ArrayList;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
 

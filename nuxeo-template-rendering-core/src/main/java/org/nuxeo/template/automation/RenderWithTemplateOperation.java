@@ -10,8 +10,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.template.adapters.doc.TemplateBindings;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 /**
  * Operation to wrapp the rendition process

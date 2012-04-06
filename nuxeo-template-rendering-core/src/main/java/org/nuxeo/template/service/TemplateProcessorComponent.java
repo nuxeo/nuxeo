@@ -17,12 +17,14 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
 import org.nuxeo.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
 import org.nuxeo.template.adapters.doc.TemplateBinding;
 import org.nuxeo.template.adapters.doc.TemplateBindings;
-import org.nuxeo.template.adapters.source.TemplateSourceDocument;
-import org.nuxeo.template.processors.TemplateProcessor;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 public class TemplateProcessorComponent extends DefaultComponent implements
         TemplateProcessorService {

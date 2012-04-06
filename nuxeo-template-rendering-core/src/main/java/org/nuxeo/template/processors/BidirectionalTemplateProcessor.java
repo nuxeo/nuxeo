@@ -19,7 +19,8 @@
 package org.nuxeo.template.processors;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.TemplateProcessor;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 /**
  * Interface for {@link TemplateProcessor} that allow reverse mapping. i.e.

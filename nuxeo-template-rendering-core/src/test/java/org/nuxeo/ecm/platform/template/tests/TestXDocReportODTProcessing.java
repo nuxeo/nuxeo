@@ -7,8 +7,8 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.template.TemplateInput;
-import org.nuxeo.template.adapters.doc.TemplateBasedDocument;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
 
