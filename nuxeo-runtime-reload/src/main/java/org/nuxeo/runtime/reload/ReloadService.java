@@ -70,4 +70,9 @@ public interface ReloadService {
      * @since 5.5
      */
     void reload() throws Exception;
+
+    /**
+     * @since 5.6
+     */
+    void flushSeamComponents() throws Exception;
 }

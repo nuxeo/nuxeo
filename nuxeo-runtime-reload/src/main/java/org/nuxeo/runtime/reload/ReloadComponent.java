@@ -214,4 +214,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 new Event(RELOAD_TOPIC, "reloadSeamComponents", this, null));
     }
 
+    @Override
+    public void flushSeamComponents() throws Exception {
+        Framework.getLocalService(EventService.class).sendEvent(
+                new Event(RELOAD_TOPIC, "flushSeamComponents", this, null));
+    }
 }

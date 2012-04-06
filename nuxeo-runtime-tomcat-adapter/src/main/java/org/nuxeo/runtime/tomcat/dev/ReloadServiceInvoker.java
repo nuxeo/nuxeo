@@ -34,8 +34,12 @@ public class ReloadServiceInvoker {
     protected Method undeployBundle;
 
     protected Method flush;
-    
+
     protected Method reload;
+
+    protected Method flushSeam;
+
+    protected Method reloadSeam;
 
     public ReloadServiceInvoker(ClassLoader cl) throws Exception {
         Class<?> frameworkClass = cl.loadClass("org.nuxeo.runtime.api.Framework");
@@ -49,22 +53,39 @@ public class ReloadServiceInvoker {
         undeployBundle = reloadServiceClass.getDeclaredMethod("undeployBundle", new Class<?>[] { String.class });
         flush = reloadServiceClass.getDeclaredMethod("flush", new Class<?>[0]);
         reload = reloadServiceClass.getDeclaredMethod("reload", new Class<?>[0]);
+        flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents", new Class<?>[0]);
+        reloadSeam = reloadServiceClass.getDeclaredMethod("reloadSeamComponents", new Class<?>[0]);
     }
 
-    protected void hotDeployBundles(DevBundle[]bundles) throws Exception {
-        for (DevBundle bundle :bundles) {
+    protected void hotDeployBundles(DevBundle[] bundles) throws Exception {
+        boolean hasSeam = false;
+        for (DevBundle bundle : bundles) {
             if (bundle.devBundleType == DevBundleType.Bundle) {
-                bundle.name = (String)deployBundle.invoke(reloadService, new Object[] { bundle.file() });
+                bundle.name = (String) deployBundle.invoke(reloadService,
+                        new Object[] { bundle.file() });
+            } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
+                hasSeam = true;
             }
+        }
+        if (hasSeam) {
+            reloadSeam.invoke(reloadService);
         }
         reload();
     }
-    
+
     protected void hotUndeployBundles(DevBundle[] bundles) throws Exception {
+        boolean hasSeam = false;
         for (DevBundle bundle : bundles) {
-            if (bundle.devBundleType == DevBundleType.Bundle && bundle.name != null) {
-                undeployBundle.invoke(reloadService, new Object[] { bundle.name });
+            if (bundle.devBundleType.equals(DevBundleType.Bundle)
+                    && bundle.name != null) {
+                undeployBundle.invoke(reloadService,
+                        new Object[] { bundle.name });
+            } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
+                hasSeam = true;
             }
+        }
+        if (hasSeam) {
+            flushSeam.invoke(reloadService);
         }
         flush();
     }
@@ -77,4 +98,7 @@ public class ReloadServiceInvoker {
         reload.invoke(reloadService);
     }
 
+    protected void reloadSeam()throws Exception {
+        reloadSeam.invoke(reloadService);
+    }
 }
