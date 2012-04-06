@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -235,38 +236,37 @@ public class ACPImpl implements ACP {
         String acePerm = ace.getPermission();
 
         // RESTRICTED_READ needs special handling, is not implied by EVERYTHING.
-        if (!permission.equals(SecurityConstants.RESTRICTED_READ)) {
-            if (acePerm.equals(SecurityConstants.EVERYTHING)) {
+        if (!SecurityConstants.RESTRICTED_READ.equals(permission)) {
+            if (SecurityConstants.EVERYTHING.equals(acePerm)) {
                 return true;
             }
         }
-
-        return acePerm.equals(permission);
+        return StringUtils.equals(acePerm, permission);
     }
 
     private static boolean permissionsMatch(String acePerm, String permission) {
         // RESTRICTED_READ needs special handling, is not implied by EVERYTHING.
-        if (acePerm.equals(SecurityConstants.EVERYTHING)) {
-            if (!permission.equals(SecurityConstants.RESTRICTED_READ)) {
+        if (SecurityConstants.EVERYTHING.equals(acePerm)) {
+            if (!SecurityConstants.RESTRICTED_READ.equals(permission)) {
                 return true;
             }
         }
-        return acePerm.equals(permission);
+        return StringUtils.equals(acePerm, permission);
     }
 
     private static boolean principalsMatch(ACE ace, String principal) {
         String acePrincipal = ace.getUsername();
-        if (acePrincipal.equals(SecurityConstants.EVERYONE)) {
+        if (SecurityConstants.EVERYONE.equals(acePrincipal)) {
             return true;
         }
-        return acePrincipal.equals(principal);
+        return StringUtils.equals(acePrincipal, principal);
     }
 
-    private static boolean principalsMatch(String aceUser, String principal) {
-        if (aceUser.equals(SecurityConstants.EVERYONE)) {
+    private static boolean principalsMatch(String acePrincipal, String principal) {
+        if (SecurityConstants.EVERYONE.equals(acePrincipal)) {
             return true;
         }
-        return aceUser.equals(principal);
+        return StringUtils.equals(acePrincipal, principal);
     }
 
     public void addAccessRule(String aclName, ACE ace) {
