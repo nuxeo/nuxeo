@@ -19,11 +19,10 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.SocketTimeoutException;
@@ -42,7 +41,6 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -143,7 +141,7 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
 
-    protected static ConfigurationGenerator configurationGenerator;
+    protected ConfigurationGenerator configurationGenerator;
 
     public final ConfigurationGenerator getConfigurationGenerator() {
         return configurationGenerator;
@@ -285,7 +283,7 @@ public abstract class NuxeoLauncher {
     /**
      * Do not directly call this method without a call to
      * {@link #checkNoRunningServer()}
-     * 
+     *
      * @see #doStart()
      * @throws IOException In case of issue with process.
      * @throws InterruptedException If any thread has interrupted the current
@@ -320,9 +318,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Gets the java options with Nuxeo properties substituted.
-     * 
+     *
      * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
-     * 
+     *
      * @return the java options string.
      */
     protected String getJavaOptsProperty() {
@@ -345,7 +343,7 @@ public abstract class NuxeoLauncher {
      * Check if some server is already running (from another thread) and throw a
      * Runtime exception if it finds one. That method will work where
      * {@link #isRunning()} won't.
-     * 
+     *
      * @throws IllegalThreadStateException Thrown if a server is already
      *             running.
      */
@@ -391,7 +389,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Will wrap, if necessary, the command within a Shell command
-     * 
+     *
      * @param roughCommand Java command which will be run
      * @return wrapped command depending on the OS
      */
@@ -658,7 +656,7 @@ public abstract class NuxeoLauncher {
             }
             launcher.printXMLOutput();
         } else if ("mp-install".equalsIgnoreCase(launcher.command)) {
-            if (configurationGenerator.isInstallInProgress()) {
+            if (launcher.getConfigurationGenerator().isInstallInProgress()) {
                 launcher.executePending(true);
             }
             for (String param : params) {
@@ -795,7 +793,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Call {@link #doStart(boolean)} with false as parameter.
-     * 
+     *
      * @see #doStart(boolean)
      * @return true if the server started successfully
      */
@@ -807,9 +805,9 @@ public abstract class NuxeoLauncher {
      * Whereas {@link #doStart()} considers the server as started when the
      * process is running, {@link #doStartAndWait()} waits for effective start
      * by watching the logs
-     * 
+     *
      * @param logProcessOutput Must process output stream must be logged or not.
-     * 
+     *
      * @return true if the server started successfully
      */
     public boolean doStartAndWait(boolean logProcessOutput) {
@@ -901,7 +899,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Must be called after {@link #getStartupSummary()}
-     * 
+     *
      * @since 5.5
      * @return last detected status of running Nuxeo server
      */
@@ -925,7 +923,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Starts the server in background.
-     * 
+     *
      * @return true if server successfully started
      */
     public boolean doStart(boolean logProcessOutput) {
@@ -1052,15 +1050,17 @@ public abstract class NuxeoLauncher {
     }
 
     protected void performTask(Task task) throws PackageException {
-        ValidationStatus status = task.validate();
-        if (status.hasErrors()) {
+        ValidationStatus validationStatus = task.validate();
+        if (validationStatus.hasErrors()) {
             errorValue = 3;
             throw new PackageException("Failed to validate package "
-                    + task.getPackage().getId() + " -> " + status.getErrors());
+                    + task.getPackage().getId() + " -> "
+                    + validationStatus.getErrors());
         }
-        if (status.hasWarnings()) {
+        if (validationStatus.hasWarnings()) {
             log.warn("Got warnings on package validation "
-                    + task.getPackage().getId() + " -> " + status.getWarnings());
+                    + task.getPackage().getId() + " -> "
+                    + validationStatus.getWarnings());
         }
         task.run(null);
     }
@@ -1383,9 +1383,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stop stream gobblers contained in the given ArrayList
-     * 
+     *
      * @throws InterruptedException
-     * 
+     *
      * @since 5.5
      * @see #logProcessStreams(Process, boolean)
      */
@@ -1457,7 +1457,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stops the server.
-     * 
+     *
      * Will try to call specific class for a clean stop, retry
      * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
      * between each try, then kill the process if still running.
@@ -1567,7 +1567,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Configure the server after checking installation
-     * 
+     *
      * @throws ConfigurationException If an installation error is detected or if
      *             configuration fails
      */
@@ -1591,7 +1591,7 @@ public abstract class NuxeoLauncher {
      * Return process status (running or not) as String, depending on OS
      * capability to manage processes. Set status value following
      * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
-     * 
+     *
      * @see #status
      */
     public String status() {
@@ -1649,22 +1649,20 @@ public abstract class NuxeoLauncher {
     public static NuxeoLauncher createLauncher(CommandLine cmdLine)
             throws ConfigurationException {
         NuxeoLauncher launcher;
-        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator(
-                quiet, debug);
-        if (configurationGenerator.isJBoss) {
-            launcher = new NuxeoJBossLauncher(configurationGenerator);
-        } else if (configurationGenerator.isJetty) {
-            launcher = new NuxeoJettyLauncher(configurationGenerator);
-        } else if (configurationGenerator.isTomcat) {
-            launcher = new NuxeoTomcatLauncher(configurationGenerator);
+        ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
+        if (cg.isJBoss) {
+            launcher = new NuxeoJBossLauncher(cg);
+        } else if (cg.isJetty) {
+            launcher = new NuxeoJettyLauncher(cg);
+        } else if (cg.isTomcat) {
+            launcher = new NuxeoTomcatLauncher(cg);
         } else {
             throw new ConfigurationException("Unknown server!");
         }
         launcher.setArgs(cmdLine);
-        configurationGenerator.init();
-        launcher.statusServletClient = new StatusServletClient(
-                configurationGenerator);
-        launcher.statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(
+        cg.init();
+        launcher.statusServletClient = new StatusServletClient(cg);
+        launcher.statusServletClient.setKey(cg.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_STATUS_KEY));
         return launcher;
     }
@@ -1672,7 +1670,7 @@ public abstract class NuxeoLauncher {
     /**
      * Sets from program arguments the launcher command and additional
      * parameters.
-     * 
+     *
      * @param cmdLine Program arguments; may be used by launcher implementation.
      *            Must not be null or empty.
      */
@@ -1744,7 +1742,7 @@ public abstract class NuxeoLauncher {
         log.error("\n\nJava usage:\n\tjava [-D"
                 + JAVA_OPTS_PROPERTY
                 + "=\"JVM options\"] [-D"
-                + ConfigurationGenerator.NUXEO_HOME
+                + Environment.NUXEO_HOME
                 + "=\"/path/to/nuxeo\"] [-D"
                 + ConfigurationGenerator.NUXEO_CONF
                 + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
@@ -1753,7 +1751,7 @@ public abstract class NuxeoLauncher {
                 + "\tParameters for the server JVM (default are "
                 + JAVA_OPTS_DEFAULT + ").");
         log.error("\t"
-                + ConfigurationGenerator.NUXEO_HOME
+                + Environment.NUXEO_HOME
                 + "\t\tNuxeo server root path (default is parent of called script).");
         log.error("\t"
                 + ConfigurationGenerator.NUXEO_CONF
@@ -1786,7 +1784,7 @@ public abstract class NuxeoLauncher {
      * Work best with current nuxeoProcess. If nuxeoProcess is null or has
      * exited, then will try to get process ID (so, result in that case depends
      * on OS capabilities).
-     * 
+     *
      * @return true if current process is running or if a running PID is found
      */
     public boolean isRunning() {
