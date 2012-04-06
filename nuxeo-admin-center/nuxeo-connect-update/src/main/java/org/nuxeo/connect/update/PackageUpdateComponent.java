@@ -16,7 +16,8 @@
  */
 package org.nuxeo.connect.update;
 
-import org.nuxeo.connect.update.impl.UpdateServiceImpl;
+import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.connect.update.live.UpdateServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -29,7 +30,7 @@ public class PackageUpdateComponent extends DefaultComponent {
 
     protected UpdateServiceImpl svc;
 
-    protected static RuntimeContext ctx;
+    static RuntimeContext ctx;
 
     public static RuntimeContext getContext() {
         return ctx;

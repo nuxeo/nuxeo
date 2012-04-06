@@ -63,6 +63,11 @@
     <!-- scope test -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-connect-standalone</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
     </dependency>
