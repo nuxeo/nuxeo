@@ -3,6 +3,7 @@ package org.nuxeo.ecm.user.registration.webengine;
 import static org.nuxeo.ecm.user.registration.UserRegistrationService.REGISTRATION_DATA_DOC;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -43,7 +44,8 @@ public class UserRegistrationObject extends ModuleRoot {
         UserRegistrationService usr = Framework.getLocalService(UserRegistrationService.class);
         String redirectUrl = ctx.getServerURL() + "/" + BaseURL.getWebAppName();
         try {
-            Map<String, Serializable> registrationData = usr.validateRegistration(requestId);
+            Map<String, Serializable> additionnalInfo = buildAdditionnalInfos();
+            Map<String, Serializable> registrationData = usr.validateRegistration(requestId, additionnalInfo);
             DocumentModel regDoc = (DocumentModel) registrationData.get(REGISTRATION_DATA_DOC);
             String docId = (String) regDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
             if (!StringUtils.isEmpty(docId)) {
@@ -59,6 +61,10 @@ public class UserRegistrationObject extends ModuleRoot {
         }
 
         return redirect(redirectUrl);
+    }
+
+    private Map<String, Serializable> buildAdditionnalInfos() {
+        return new HashMap<String, Serializable>();
     }
 
     protected class DocumentUrlFinder extends UnrestrictedSessionRunner {

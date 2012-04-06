@@ -76,14 +76,14 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
                 DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
                 new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         // Invite second user with test conf
         userInfo.setLogin("testUser2");
         requestId = userRegistrationService.submitRegistrationRequest("test",
                 userInfo, docInfo, new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
 

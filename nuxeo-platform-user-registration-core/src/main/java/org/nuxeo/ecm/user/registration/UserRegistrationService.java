@@ -79,8 +79,8 @@ public interface UserRegistrationService {
      * 
      * @param requestId
      */
-    Map<String, Serializable> validateRegistration(String requestId)
-            throws ClientException, UserRegistrationException;
+    Map<String, Serializable> validateRegistration(String requestId,
+            Map<String, Serializable> additionnalInfo) throws ClientException;
 
     /**
      * Validate a registration request and generate the target User
@@ -125,9 +125,11 @@ public interface UserRegistrationService {
 
     /**
      * Retrieve registrations for a document givent the username
+     * 
      * @since 5.6
      */
-    DocumentModelList getRegistrationsForUser(String docId, String username) throws ClientException;
+    DocumentModelList getRegistrationsForUser(String docId, String username)
+            throws ClientException;
 
     /**
      * Return specific configuration for the specified name

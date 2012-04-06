@@ -8,6 +8,7 @@ import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFA
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -46,9 +47,36 @@ public class TestUserRegistration extends AbstractUserRegistration {
         String requestId = userRegistrationService.submitRegistrationRequest(
                 userInfo, new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         assertEquals(1, userManager.searchUsers("jolivier").size());
+    }
+
+    @Test
+    public void testBasicUserRegistrationWithLoginChanged() throws ClientException {
+        initializeRegistrations();
+
+        UserRegistrationInfo userInfo = new UserRegistrationInfo();
+        String templogin = "templogin";
+        String newUser = "newUser";
+
+        userInfo.setLogin(templogin);
+        userInfo.setFirstName("John");
+        userInfo.setLastName("Olivier");
+        userInfo.setEmail("oolivier@dummy.com");
+
+        assertEquals(0, userManager.searchUsers(templogin).size());
+        assertEquals(0, userManager.searchUsers(newUser).size());
+
+        String requestId = userRegistrationService.submitRegistrationRequest(
+                userInfo, new HashMap<String, Serializable>(),
+                UserRegistrationService.ValidationMethod.NONE, true);
+        Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
+        additionnalInfos.put("userinfo:login", newUser);
+        userRegistrationService.validateRegistration(requestId, additionnalInfos);
+
+        assertEquals(0, userManager.searchUsers(templogin).size());
+        assertEquals(1, userManager.searchUsers(newUser).size());
     }
 
     @Test
@@ -80,7 +108,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
                 DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
                 new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
 

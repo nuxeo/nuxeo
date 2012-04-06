@@ -313,13 +313,17 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
         protected Map<String, Serializable> registrationData = new HashMap<String, Serializable>();
 
-        public Map<String, Serializable> getRegistrationData() {
-            return registrationData;
-        }
+        protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationValidator(String uuid) {
+        public RegistrationValidator(String uuid,
+                Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
             this.uuid = uuid;
+            this.additionnalInfo = additionnalInfo;
+        }
+
+        public Map<String, Serializable> getRegistrationData() {
+            return registrationData;
         }
 
         @Override
@@ -333,6 +337,16 @@ public class UserRegistrationComponent extends DefaultComponent implements
             }
 
             DocumentModel registrationDoc = session.getDocument(idRef);
+
+            // additionnal infos
+            for (String key : additionnalInfo.keySet()) {
+                try {
+                    registrationDoc.setPropertyValue(key,
+                            additionnalInfo.get(key));
+                } catch (PropertyException e) {
+                    // skip silently
+                }
+            }
 
             if (registrationDoc.getLifeCyclePolicy().equals(
                     "registrationRequest")) {
@@ -509,10 +523,11 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     }
 
-    public Map<String, Serializable> validateRegistration(String requestId)
-            throws ClientException, UserRegistrationException {
-
-        RegistrationValidator validator = new RegistrationValidator(requestId);
+    public Map<String, Serializable> validateRegistration(String requestId,
+            Map<String, Serializable> additionnalInfo) throws ClientException,
+            UserRegistrationException {
+        RegistrationValidator validator = new RegistrationValidator(requestId,
+                additionnalInfo);
         validator.runUnrestricted();
         return validator.getRegistrationData();
     }
@@ -521,7 +536,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
             String requestId, Map<String, Serializable> additionnalInfo)
             throws ClientException, UserRegistrationException {
 
-        Map<String, Serializable> registrationInfo = validateRegistration(requestId);
+        Map<String, Serializable> registrationInfo = validateRegistration(
+                requestId, additionnalInfo);
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.putAll(registrationInfo);
@@ -749,7 +765,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModelList getRegistrationsForUser(final String docId, final String username) throws ClientException {
+    public DocumentModelList getRegistrationsForUser(final String docId,
+            final String username) throws ClientException {
         final DocumentModelList registrationDocs = new DocumentModelListImpl();
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
@@ -758,7 +775,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 query = String.format(query, docId, username);
                 registrationDocs.addAll(session.query(query));
             }
-        };
+        }.runUnrestricted();
         return registrationDocs;
     }
 }
