@@ -54,14 +54,14 @@ public class NuxeoSeamFlusher implements EventListener {
             return;
         }
         String id = event.getId();
-        if ("flush".equals(id) || "flushSeamComponents".equals(id)) {
+        if ("flushSeamComponents".equals(id)) {
             SeamHotReloadHelper.flush();
             try {
                 invalidateWebSessions();
             } catch (Exception e) {
                 log.error("Cannot invalidate seam web sessions", e);
             }
-        } else if ("reload".equals(id) || "reloadSeamComponents".equals(id)) {
+        } else if ("reloadSeamComponents".equals(id)) {
             try {
                 if (postSeamReload() == false) {
                     log.error("Cannot post hot-reload seam components on loopback url");
