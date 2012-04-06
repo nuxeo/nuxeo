@@ -32,6 +32,7 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
 import org.artofsolving.jodconverter.office.OfficeManager;
+import org.artofsolving.jodconverter.office.OfficeTask;
 import org.artofsolving.jodconverter.office.OfficeUtils;
 import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -96,6 +97,14 @@ public class OOoManagerComponent extends DefaultComponent implements
         } else {
             log.error("OfficeManager is not started.");
             return null;
+        }
+    }
+
+    public void executeTask(OfficeTask task) {
+        if (isOOoManagerStarted()) {
+            officeManager.execute(task);
+        } else {
+            log.error("OfficeManager is not started.");
         }
     }
 
@@ -179,7 +188,7 @@ public class OOoManagerComponent extends DefaultComponent implements
             String[] unvalidatedPipeNames = pipeNamesProperty.split(",\\s*");
             ArrayList<String> validatedPipeNames = new ArrayList<String>();
             // Basic validation to avoid empty strings
-            for (int i=0; i<unvalidatedPipeNames.length; i++) {
+            for (int i = 0; i < unvalidatedPipeNames.length; i++) {
                 String tmpPipeName = unvalidatedPipeNames[i].trim();
                 if (tmpPipeName.length() > 0) {
                     validatedPipeNames.add(tmpPipeName);
@@ -197,11 +206,12 @@ public class OOoManagerComponent extends DefaultComponent implements
         if (portNumbersProperty != null) {
             String[] portStrings = portNumbersProperty.split(",\\s*");
             ArrayList<Integer> portList = new ArrayList<Integer>();
-            for (int i=0; i<portStrings.length; i++) {
+            for (int i = 0; i < portStrings.length; i++) {
                 try {
                     portList.add(Integer.parseInt(portStrings[i].trim()));
                 } catch (NumberFormatException e) {
-                    log.error("Ignoring malformed port number: "+portStrings[i]);
+                    log.error("Ignoring malformed port number: "
+                            + portStrings[i]);
                 }
             }
             portNumbers = ArrayUtils.toPrimitive(portList.toArray(new Integer[0]));
