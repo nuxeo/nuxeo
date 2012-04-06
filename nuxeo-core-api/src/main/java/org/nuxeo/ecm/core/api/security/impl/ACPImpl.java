@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -240,8 +241,7 @@ public class ACPImpl implements ACP {
                 return true;
             }
         }
-        return (acePerm == null && permission == null)
-                || (acePerm != null && acePerm.equals(permission));
+        return StringUtils.equals(acePerm, permission);
     }
 
     private static boolean permissionsMatch(String acePerm, String permission) {
@@ -251,8 +251,7 @@ public class ACPImpl implements ACP {
                 return true;
             }
         }
-        return (acePerm == null && permission == null)
-                || (acePerm != null && acePerm.equals(permission));
+        return StringUtils.equals(acePerm, permission);
     }
 
     private static boolean principalsMatch(ACE ace, String principal) {
@@ -260,16 +259,14 @@ public class ACPImpl implements ACP {
         if (SecurityConstants.EVERYONE.equals(acePrincipal)) {
             return true;
         }
-        return (acePrincipal == null && principal == null)
-                || (acePrincipal != null && acePrincipal.equals(principal));
+        return StringUtils.equals(acePrincipal, principal);
     }
 
-    private static boolean principalsMatch(String aceUser, String principal) {
-        if (SecurityConstants.EVERYONE.equals(aceUser)) {
+    private static boolean principalsMatch(String acePrincipal, String principal) {
+        if (SecurityConstants.EVERYONE.equals(acePrincipal)) {
             return true;
         }
-        return (aceUser == null && principal == null)
-                || (aceUser != null && aceUser.equals(principal));
+        return StringUtils.equals(acePrincipal, principal);
     }
 
     public void addAccessRule(String aclName, ACE ace) {
