@@ -44,6 +44,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.runtime.deployment.NuxeoStarter;
@@ -166,8 +167,8 @@ public class PackWar {
     }
 
     protected void runTemplatePreprocessor() throws Exception {
-        if (System.getProperty(ConfigurationGenerator.NUXEO_HOME) == null) {
-            System.setProperty(ConfigurationGenerator.NUXEO_HOME,
+        if (System.getProperty(Environment.NUXEO_HOME) == null) {
+            System.setProperty(Environment.NUXEO_HOME,
                     tomcat.getAbsolutePath());
         }
         if (System.getProperty(ConfigurationGenerator.NUXEO_CONF) == null) {

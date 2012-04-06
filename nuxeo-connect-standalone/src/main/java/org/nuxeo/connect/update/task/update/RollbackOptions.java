@@ -14,28 +14,45 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.connect.update;
-
-import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.connect.update.ValidationStatus;
+package org.nuxeo.connect.update.task.update;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class PackageValidationException extends PackageException {
+public class RollbackOptions {
 
-    private static final long serialVersionUID = 1L;
+    protected String pkgId;
 
-    protected ValidationStatus status;
+    protected String key;
 
-    public PackageValidationException(ValidationStatus status) {
-        super("validation exception: " + status);
-        this.status = status;
+    protected String version;
+
+    protected boolean deleteOnExit;
+
+    public RollbackOptions(String pkgId, String key, String version) {
+        this.pkgId = pkgId;
+        this.key = key;
+        this.version = version;
     }
 
-    public ValidationStatus getStatus() {
-        return status;
+    public String getPackageId() {
+        return pkgId;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public boolean isDeleteOnExit() {
+        return deleteOnExit;
+    }
+
+    public void setDeleteOnExit(boolean deleteOnExit) {
+        this.deleteOnExit = deleteOnExit;
+    }
 }

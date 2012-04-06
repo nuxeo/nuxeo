@@ -52,6 +52,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.commons.text.TextTemplate;
 import org.nuxeo.log4j.Log4JHelper;
@@ -66,7 +67,11 @@ public class ConfigurationGenerator {
 
     private static final Log log = LogFactory.getLog(ConfigurationGenerator.class);
 
-    public static final String NUXEO_HOME = "nuxeo.home";
+    /**
+     * @deprecated Since 5.6, use {@link Environment#NUXEO_HOME} instead
+     */
+    @Deprecated
+    public static final String NUXEO_HOME = Environment.NUXEO_HOME;
 
     public static final String NUXEO_CONF = "nuxeo.conf";
 
@@ -209,7 +214,7 @@ public class ConfigurationGenerator {
     public ConfigurationGenerator(boolean quiet, boolean debug) {
         this.quiet = quiet;
         this.debug = debug;
-        String nuxeoHomePath = System.getProperty(NUXEO_HOME);
+        String nuxeoHomePath = System.getProperty(org.nuxeo.common.Environment.NUXEO_HOME);
         String nuxeoConfPath = System.getProperty(NUXEO_CONF);
         if (nuxeoHomePath != null) {
             nuxeoHome = new File(nuxeoHomePath);
@@ -231,9 +236,9 @@ public class ConfigurationGenerator {
                 + NUXEO_DEFAULT_CONF);
 
         // detect server type based on System properties
-        isJBoss = System.getProperty("jboss.home.dir") != null;
-        isJetty = System.getProperty("jetty.home") != null;
-        isTomcat = System.getProperty("tomcat.home") != null;
+        isJBoss = System.getProperty(JBossConfigurator.JBOSS_HOME_DIR) != null;
+        isJetty = System.getProperty(JettyConfigurator.JETTY_HOME) != null;
+        isTomcat = System.getProperty(TomcatConfigurator.TOMCAT_HOME) != null;
         if (!isJBoss && !isJetty && !isTomcat) {
             // fallback on jar detection
             isJBoss = new File(nuxeoHome, "bin/run.jar").exists();
@@ -386,10 +391,10 @@ public class ConfigurationGenerator {
                             PARAM_FORCE_GENERATION, "false"));
 
             // Manage directories set from (or set to) system properties
-            setDirectoryWithProperty(Environment.NUXEO_DATA_DIR);
-            setDirectoryWithProperty(Environment.NUXEO_LOG_DIR);
-            setDirectoryWithProperty(Environment.NUXEO_PID_DIR);
-            setDirectoryWithProperty(Environment.NUXEO_TMP_DIR);
+            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR);
+            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
+            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_PID_DIR);
+            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_TMP_DIR);
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
@@ -1133,7 +1138,8 @@ public class ConfigurationGenerator {
      */
     public ArrayList<String> getLogFiles() {
         File log4jConfFile = serverConfigurator.getLogConfFile();
-        System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
+        System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
+                getLogDir().getPath());
         return Log4JHelper.getFileAppendersFiles(log4jConfFile);
     }
 
@@ -1252,17 +1258,18 @@ public class ConfigurationGenerator {
         String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         List<String> oldTemplatesSplit = Arrays.asList(oldTemplates.split(","));
         if (oldTemplatesSplit.contains(template)) {
-            String newTemplates = "";
+            StringBuffer newTemplates = new StringBuffer();
             boolean firstIem = true;
             for (String templateItem : oldTemplatesSplit) {
                 if (!template.equals(templateItem)) {
-                    newTemplates += (firstIem ? "" : ",") + templateItem;
+                    newTemplates.append((firstIem ? "" : ",") + templateItem);
                     firstIem = false;
                 }
             }
-            newParametersToSave.put(PARAM_TEMPLATES_NAME, newTemplates);
+            newParametersToSave.put(PARAM_TEMPLATES_NAME,
+                    newTemplates.toString());
             saveFilteredConfiguration(newParametersToSave);
-            changeTemplates(newTemplates);
+            changeTemplates(newTemplates.toString());
         }
     }
 

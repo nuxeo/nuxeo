@@ -50,6 +50,11 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     private String contextName = null;
 
+    /**
+     * @since 5.6
+     */
+    public static final String TOMCAT_HOME = "tomcat.home";
+
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }

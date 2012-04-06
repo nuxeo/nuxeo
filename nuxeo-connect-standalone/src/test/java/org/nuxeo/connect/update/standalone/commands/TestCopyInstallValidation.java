@@ -14,28 +14,33 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.connect.update;
+package org.nuxeo.connect.update.standalone.commands;
 
-import org.nuxeo.connect.update.PackageException;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
 import org.nuxeo.connect.update.ValidationStatus;
+import org.nuxeo.connect.update.task.Task;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
-public class PackageValidationException extends PackageException {
+public class TestCopyInstallValidation extends TestCopy {
 
-    private static final long serialVersionUID = 1L;
-
-    protected ValidationStatus status;
-
-    public PackageValidationException(ValidationStatus status) {
-        super("validation exception: " + status);
-        this.status = status;
+    @Test
+    @Override
+    public void testInstallThenUninstall() throws Exception {
+        // create the target file so that the copy command will not validate
+        getTargetFile().createNewFile();
+        super.testInstallThenUninstall();
     }
 
-    public ValidationStatus getStatus() {
-        return status;
+    @Override
+    protected boolean validateInstall(Task task, ValidationStatus status) {
+        if (!status.hasErrors()) {
+            fail("Expected copy command to be invalid");
+        }
+        return false;
     }
 
 }

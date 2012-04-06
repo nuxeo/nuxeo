@@ -51,7 +51,7 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
         super.setUp();
         propertyToGenerate = "<config-property name=\""
                 + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
-                + System.getProperty(Environment.NUXEO_DATA_DIR)
+                + System.getProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR)
                 + File.separator + "h2" + File.separator
                 + "testinclude;AUTO_SERVER=true</config-property>";
         // Windows path

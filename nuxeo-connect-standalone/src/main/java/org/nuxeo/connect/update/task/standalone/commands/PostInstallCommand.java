@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,28 +14,22 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.connect.update;
-
-import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.connect.update.ValidationStatus;
+package org.nuxeo.connect.update.task.standalone.commands;
 
 /**
+ * Base class for flush like commands.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
-public class PackageValidationException extends PackageException {
+public abstract class PostInstallCommand extends AbstractCommand {
 
-    private static final long serialVersionUID = 1L;
-
-    protected ValidationStatus status;
-
-    public PackageValidationException(ValidationStatus status) {
-        super("validation exception: " + status);
-        this.status = status;
+    protected PostInstallCommand(String id) {
+        super(id);
     }
 
-    public ValidationStatus getStatus() {
-        return status;
+    @Override
+    public boolean isPostInstall() {
+        return true;
     }
 
 }

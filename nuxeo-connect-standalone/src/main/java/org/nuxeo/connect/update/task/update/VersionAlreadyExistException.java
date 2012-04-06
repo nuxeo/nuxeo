@@ -14,28 +14,28 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.connect.update;
-
-import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.connect.update.ValidationStatus;
+package org.nuxeo.connect.update.task.update;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class PackageValidationException extends PackageException {
+public class VersionAlreadyExistException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    protected ValidationStatus status;
+    protected final String version;
 
-    public PackageValidationException(ValidationStatus status) {
-        super("validation exception: " + status);
-        this.status = status;
+    /**
+     * @param message
+     */
+    public VersionAlreadyExistException(String version) {
+        super("Version already exists: " + version);
+        this.version = version;
     }
 
-    public ValidationStatus getStatus() {
-        return status;
+    public String getVersion() {
+        return version;
     }
 
 }

@@ -41,17 +41,20 @@ public abstract class PackageDef {
 
     protected boolean upgradeOnly = false;
 
-    public PackageDef(String name, String version) throws Exception {
-        this(name, version, PackageType.ADDON);
-    }
+    private PackageUpdateService service;
 
-    public PackageDef(String name, String version, PackageType type)
+    public PackageDef(String name, String version, PackageUpdateService service)
             throws Exception {
-        this(name, version, type, "dm-" + version);
+        this(name, version, PackageType.ADDON, service);
     }
 
     public PackageDef(String name, String version, PackageType type,
-            String targetVersion) {
+            PackageUpdateService service) throws Exception {
+        this(name, version, type, "dm-" + version, service);
+    }
+
+    public PackageDef(String name, String version, PackageType type,
+            String targetVersion, PackageUpdateService service) {
         builder = new PackageBuilder();
         builder.name(name).version(version).type(type);
         builder.platform(targetVersion);
@@ -60,6 +63,7 @@ public abstract class PackageDef {
         builder.classifier("Open Source");
         builder.vendor("Nuxeo");
         builder.addLicense("My test license. All rights reserved.");
+        this.service = service;
     }
 
     public void setUpgradeOnly(boolean upgradeOnly) {
@@ -72,7 +76,7 @@ public abstract class PackageDef {
 
     public File getPackageFile() throws Exception {
         if (pkgFile == null) {
-            updatePackage(builder);
+            updatePackage();
             XmlWriter writer = new XmlWriter();
             writer.start("install");
             writer.startContent();
@@ -96,7 +100,7 @@ public abstract class PackageDef {
         return pkg;
     }
 
-    public LocalPackage download(PackageUpdateService service) throws Exception {
+    public LocalPackage download() throws Exception {
         if (pkg != null) {
             return pkg;
         }
@@ -104,9 +108,9 @@ public abstract class PackageDef {
         return pkg;
     }
 
-    public void install(PackageUpdateService service) throws Exception {
+    public void install() throws Exception {
         if (pkg == null) {
-            download(service);
+            download();
         }
         Task task = pkg.getInstallTask();
         ValidationStatus status = task.validate();
@@ -120,7 +124,7 @@ public abstract class PackageDef {
         }
     }
 
-    public void uninstall(PackageUpdateService service) throws Exception {
+    public void uninstall() throws Exception {
         if (pkg == null) {
             throw new IllegalStateException("Package was not installed");
         }
@@ -136,8 +140,7 @@ public abstract class PackageDef {
         }
     }
 
-    protected abstract void updatePackage(PackageBuilder builder)
-            throws Exception;
+    protected abstract void updatePackage() throws Exception;
 
     protected abstract void writeInstallCommands(XmlWriter writer)
             throws Exception;

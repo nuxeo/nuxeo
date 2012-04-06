@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
@@ -287,11 +288,7 @@ public class PackageBuilder {
             return file;
         } finally { // close streams
             for (InputStream in : entries.values()) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    // do nothing
-                }
+                IOUtils.closeQuietly(in);
             }
         }
     }

@@ -45,6 +45,11 @@ public class JettyConfigurator extends ServerConfigurator {
      */
     public static final String STARTUP_CLASS = "org.nuxeo.osgi.application.Main";
 
+    /**
+     * @since 5.6
+     */
+    public static final String JETTY_HOME = "jetty.home";
+
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }

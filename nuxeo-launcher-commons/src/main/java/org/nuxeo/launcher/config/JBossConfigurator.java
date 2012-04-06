@@ -47,6 +47,11 @@ public class JBossConfigurator extends ServerConfigurator {
 
     private String configuration = null;
 
+    /**
+     * @since 5.6
+     */
+    public static final String JBOSS_HOME_DIR = "jboss.home.dir";
+
     public String getConfiguration() {
         if (configuration == null) {
             Properties userConfig = generator.getUserConfig();

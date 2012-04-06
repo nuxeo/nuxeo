@@ -183,7 +183,8 @@ public abstract class ServerConfigurator {
         File logFile = getLogConfFile();
         try {
             System.out.println("Try to configure logs with " + logFile);
-            System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
+            System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
+                    getLogDir().getPath());
             DOMConfigurator.configure(logFile.toURI().toURL());
             log.info("Logs successfully configured.");
         } catch (MalformedURLException e) {
@@ -270,13 +271,13 @@ public abstract class ServerConfigurator {
      */
     public void setDirectory(String key, String directory) {
         String absoluteDirectory = setAbsolutePath(key, directory);
-        if (Environment.NUXEO_DATA_DIR.equals(key)) {
+        if (org.nuxeo.common.Environment.NUXEO_DATA_DIR.equals(key)) {
             setDataDir(absoluteDirectory);
-        } else if (Environment.NUXEO_LOG_DIR.equals(key)) {
+        } else if (org.nuxeo.common.Environment.NUXEO_LOG_DIR.equals(key)) {
             setLogDir(absoluteDirectory);
-        } else if (Environment.NUXEO_PID_DIR.equals(key)) {
+        } else if (org.nuxeo.common.Environment.NUXEO_PID_DIR.equals(key)) {
             setPidDir(absoluteDirectory);
-        } else if (Environment.NUXEO_TMP_DIR.equals(key)) {
+        } else if (org.nuxeo.common.Environment.NUXEO_TMP_DIR.equals(key)) {
             setTmpDir(absoluteDirectory);
         } else {
             log.error("Unknown directory key: " + key);
@@ -307,13 +308,13 @@ public abstract class ServerConfigurator {
      * @since 5.4.2
      */
     public File getDirectory(String key) {
-        if (Environment.NUXEO_DATA_DIR.equals(key)) {
+        if (org.nuxeo.common.Environment.NUXEO_DATA_DIR.equals(key)) {
             return getDataDir();
-        } else if (Environment.NUXEO_LOG_DIR.equals(key)) {
+        } else if (org.nuxeo.common.Environment.NUXEO_LOG_DIR.equals(key)) {
             return getLogDir();
-        } else if (Environment.NUXEO_PID_DIR.equals(key)) {
+        } else if (org.nuxeo.common.Environment.NUXEO_PID_DIR.equals(key)) {
             return getPidDir();
-        } else if (Environment.NUXEO_TMP_DIR.equals(key)) {
+        } else if (org.nuxeo.common.Environment.NUXEO_TMP_DIR.equals(key)) {
             return getTmpDir();
         } else {
             log.error("Unknown directory key: " + key);

@@ -38,27 +38,27 @@ import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
-import org.nuxeo.connect.update.standalone.task.commands.Append;
-import org.nuxeo.connect.update.standalone.task.commands.Config;
-import org.nuxeo.connect.update.standalone.task.commands.Copy;
-import org.nuxeo.connect.update.standalone.task.commands.Delete;
-import org.nuxeo.connect.update.standalone.task.commands.DeployPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.DeployConfigPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.FlushPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.FlushCoreCachePlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.FlushJaasCachePlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.InstallPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.LoadJarPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.ParameterizedCopy;
-import org.nuxeo.connect.update.standalone.task.commands.ReloadPropertiesPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.UnAppend;
-import org.nuxeo.connect.update.standalone.task.commands.UndeployPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.UndeployConfigPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.UninstallPlaceholder;
-import org.nuxeo.connect.update.standalone.task.commands.UnloadJarPlaceholder;
-import org.nuxeo.connect.update.standalone.task.update.Rollback;
-import org.nuxeo.connect.update.standalone.task.update.Update;
 import org.nuxeo.connect.update.task.Command;
+import org.nuxeo.connect.update.task.standalone.commands.Append;
+import org.nuxeo.connect.update.task.standalone.commands.Config;
+import org.nuxeo.connect.update.task.standalone.commands.Copy;
+import org.nuxeo.connect.update.task.standalone.commands.Delete;
+import org.nuxeo.connect.update.task.standalone.commands.DeployConfigPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.DeployPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.FlushCoreCachePlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.FlushJaasCachePlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.FlushPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.InstallPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.LoadJarPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.ParameterizedCopy;
+import org.nuxeo.connect.update.task.standalone.commands.ReloadPropertiesPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.UnAppend;
+import org.nuxeo.connect.update.task.standalone.commands.UndeployConfigPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.UndeployPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.UninstallPlaceholder;
+import org.nuxeo.connect.update.task.standalone.commands.UnloadJarPlaceholder;
+import org.nuxeo.connect.update.task.update.Rollback;
+import org.nuxeo.connect.update.task.update.Update;
 import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 
@@ -154,6 +154,11 @@ public class StandaloneUpdateService implements PackageUpdateService {
 
     public void initialize() throws PackageException {
         xmap = createXmap();
+        addCommands();
+        startInstalledPackages();
+    }
+
+    protected void addCommands() {
         addCommand(Copy.ID, Copy.class);
         addCommand(Append.ID, Append.class);
         addCommand(UnAppend.ID, UnAppend.class);
@@ -174,7 +179,6 @@ public class StandaloneUpdateService implements PackageUpdateService {
         addCommand(Config.ID, Config.class);
         addCommand(Update.ID, Update.class);
         addCommand(Rollback.ID, Rollback.class);
-        startInstalledPackages();
     }
 
     public void setPackageState(LocalPackage pkg, int state)
