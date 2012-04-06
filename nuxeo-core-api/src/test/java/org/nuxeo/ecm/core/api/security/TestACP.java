@@ -104,6 +104,18 @@ public class TestACP extends TestCase {
         assertSame(UNKNOWN, acp.getAccess("jack", READ));
     }
 
+    public void testCheckAccessNullACE() {
+        ACL acl1 = new ACLImpl("acl1");
+        acl1.add(new ACE());
+        acl1.add(new ACE(null, EVERYTHING, true));
+        acl1.add(new ACE(EVERYONE, null, true));
+        acp.addACL(acl1);
+
+        assertSame(UNKNOWN, acp.getAccess("joe", READ));
+        assertSame(UNKNOWN, acp.getAccess("joe", RESTRICTED_READ));
+        assertSame(UNKNOWN, acp.getAccess("jack", READ));
+    }
+    
     public void testPermissionsAPI() {
         ACL acl = new ACLImpl("acl1");
 
