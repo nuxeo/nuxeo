@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,11 @@ public class Environment {
     public static final String NUXEO_HOME_DIR = "nuxeo.home.dir";
 
     /**
+     * @since 5.6
+     */
+    public static final String NUXEO_HOME = "nuxeo.home";
+
+    /**
      * @since 5.4.2
      */
     public static final String NUXEO_RUNTIME_HOME = "nuxeo.runtime.home";
@@ -54,6 +60,8 @@ public class Environment {
     public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
 
     public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
+
+    public static final String NUXEO_PID_DIR = "nuxeo.pid.dir";
 
     public static final String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
 
@@ -166,7 +174,7 @@ public class Environment {
     }
 
     private static synchronized void tryInitEnvironment() {
-        String homeDir = System.getProperty("nuxeo.home");
+        String homeDir = System.getProperty(NUXEO_HOME);
         if (homeDir != null) {
             File home = new File(homeDir);
             if (home.isDirectory()) {
@@ -336,16 +344,16 @@ public class Environment {
 
         initServerHome();
         initRuntimeHome();
-        if (dataDir != null && !dataDir.isEmpty()) {
+        if (StringUtils.isNotEmpty(dataDir)) {
             setData(new File(dataDir));
         }
-        if (configDir != null && !configDir.isEmpty()) {
+        if (StringUtils.isNotEmpty(configDir)) {
             setConfig(new File(configDir));
         }
-        if (logDir != null && !logDir.isEmpty()) {
+        if (StringUtils.isNotEmpty(logDir)) {
             setLog(new File(logDir));
         }
-        if (tmpDir != null && !tmpDir.isEmpty()) {
+        if (StringUtils.isNotEmpty(tmpDir)) {
             setTemp(new File(tmpDir));
         }
     }
@@ -383,13 +391,14 @@ public class Environment {
     }
 
     private void initServerHome() {
-        String homeDir = System.getProperty("nuxeo.home",
+        String homeDir = System.getProperty(NUXEO_HOME,
                 System.getProperty(NUXEO_HOME_DIR));
         if (homeDir != null && !homeDir.isEmpty()) {
             serverHome = new File(homeDir);
         } else {
-            logger.warn("Could not get nuxeo.home neither " + NUXEO_HOME_DIR
-                    + " system properties, will use " + home);
+            logger.warn(String.format(
+                    "Could not get %s neither %s system properties, will use %s",
+                    NUXEO_HOME, NUXEO_HOME_DIR, home));
             serverHome = home;
         }
         logger.debug(this);
