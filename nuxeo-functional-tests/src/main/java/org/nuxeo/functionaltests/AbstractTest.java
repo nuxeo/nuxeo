@@ -264,7 +264,7 @@ public abstract class AbstractTest {
     }
 
     protected static Proxy startProxy() throws Exception {
-        if (Boolean.valueOf(System.getProperty("useProxy", "true"))) {
+        if (Boolean.valueOf(System.getProperty("useProxy", "false"))) {
             proxyServer = new ProxyServer(PROXY_PORT);
             proxyServer.start();
             proxyServer.setCaptureHeaders(true);
