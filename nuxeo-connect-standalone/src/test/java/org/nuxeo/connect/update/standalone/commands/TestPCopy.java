@@ -21,7 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,11 +39,9 @@ public class TestPCopy extends AbstractCommandTest {
 
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
-        File props = File.createTempFile("test-commands-", ".properties");
-        props.deleteOnExit();
-        FileUtils.writeFile(props, "test=my ${v}");
-        FileInputStream in = new FileInputStream(props);
-        builder.addEntry("test.properties", in);
+        String content = "test=my ${v}";
+        builder.addEntry("test.properties",
+                new ByteArrayInputStream(content.getBytes()));
     }
 
     @Override
