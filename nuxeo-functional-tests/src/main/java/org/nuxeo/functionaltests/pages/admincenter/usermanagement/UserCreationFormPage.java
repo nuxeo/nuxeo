@@ -64,7 +64,7 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     WebElement groupInput;
 
     @Required
-    @FindBy(id = "createUserView:createUser:button_create")
+    @FindBy(id = "createUserView:createUser:button_save")
     WebElement createButton;
 
     @Required

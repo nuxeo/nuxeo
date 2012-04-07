@@ -26,13 +26,13 @@ import org.openqa.selenium.support.FindBy;
  * @author Sun Seng David TAN <stan@nuxeo.com>
  *
  */
-public class WorkspaceContentTabSubPage extends ContentTabSubPage {
+public class WorkspacesContentTabSubPage extends ContentTabSubPage {
 
     @Required
     @FindBy(linkText = "Create a new workspace")
     WebElement createNewWorkspaceLink;
 
-    public WorkspaceContentTabSubPage(WebDriver driver) {
+    public WorkspacesContentTabSubPage(WebDriver driver) {
         super(driver);
     }
 

@@ -22,7 +22,6 @@ import static junit.framework.Assert.assertNotNull;
 import java.util.List;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -34,7 +33,9 @@ import org.openqa.selenium.support.FindBy;
  * The content tab sub page. Most of the time available for folderish documents
  * and displaying the current document's children.
  */
-public class ContentTabSubPage extends AbstractPage {
+public class ContentTabSubPage extends DocumentBasePage {
+
+    private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
 
     @Required
     @FindBy(id = "document_content")
@@ -42,9 +43,6 @@ public class ContentTabSubPage extends AbstractPage {
 
     @FindBy(linkText = "New")
     WebElement newButton;
-
-    @FindBy(xpath = "//input[@value=\"Delete\"]")
-    WebElement deleteButton;
 
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
@@ -90,11 +88,12 @@ public class ContentTabSubPage extends AbstractPage {
         // get all table item and if the link has the documents title, click
         // (enable) checkbox
 
-        List<WebElement> trelements = documentContentForm.findElements(By.tagName("tr"));
+        List<WebElement> trelements = documentContentForm.findElement(
+                By.tagName("tbody")).findElements(By.tagName("tr"));
         for (WebElement trItem : trelements) {
             try {
                 trItem.findElement(By.linkText(documentTitle));
-                WebElement checkBox = trItem.findElement(By.xpath("//input[@type=\"checkbox\"][@name=\"document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document\"]"));
+                WebElement checkBox = trItem.findElement(By.xpath("td/input[@type=\"checkbox\"]"));
                 checkBox.click();
                 break;
             } catch (NoSuchElementException e) {
@@ -102,7 +101,7 @@ public class ContentTabSubPage extends AbstractPage {
             }
         }
 
-        waitUntilEnabled(deleteButton);
+        WebElement deleteButton = findElementAndWaitUntilEnabledWithTimeout(By.xpath(DELETE_BUTTON_XPATH));
         deleteButton.click();
         driver.switchTo().alert().accept();
 

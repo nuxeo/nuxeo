@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -61,7 +62,8 @@ public class UsersTabSubPage extends UsersGroupsBasePage {
      */
     public boolean isUserFound(String username) {
         try {
-            driver.findElement(By.linkText(username));
+            findElementWithTimeout(By.linkText(username),
+                    AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
         } catch (NoSuchElementException e) {
             return false;
         }
@@ -69,7 +71,7 @@ public class UsersTabSubPage extends UsersGroupsBasePage {
     }
 
     public UserViewTabSubPage viewUser(String username) {
-        driver.findElement(By.linkText(username)).click();
+        findElementWithTimeout(By.linkText(username)).click();
         return asPage(UserViewTabSubPage.class);
     }
 

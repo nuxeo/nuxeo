@@ -59,11 +59,13 @@ public class ITModifyWorskpaceDescription extends AbstractTest {
         DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
         AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
-        if (!accessRightSubTab.hasPermissionForUser("Write", "jsmith")) {
-            accessRightSubTab.addPermissionForUser("jsmith", "Write", true);
+        // Need WriteSecurity (so in practice Manage everything) to edit a Workspace
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything", "jsmith")) {
+            accessRightSubTab.addPermissionForUser("jsmith", "Manage everything", true);
         }
 
-        accessRightSubTab.getHeaderLinks().logout();
+        //accessRightSubTab.getHeaderLinks().logout();
+        logout();
 
         // Starting the test for real
         documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
@@ -71,14 +73,14 @@ public class ITModifyWorskpaceDescription extends AbstractTest {
 
         // create a new workspace in there named workspaceDescriptionModify
         // (current time)
-        WorkspaceFormPage workspaceCreationFormPage = documentBasePage.getWorkspaceContentTab().getWorkspaceCreatePage();
+        WorkspaceFormPage workspaceCreationFormPage = documentBasePage.getWorkspacesContentTab().getWorkspaceCreatePage();
         String workspaceTitle = "workspaceDescriptionModify"
                 + new Date().getTime();
         DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
                 workspaceTitle, "a workspace description");
         String descriptionModified = "Description modified";
         documentBasePage = workspacePage.getEditTab().edit(null,
-                descriptionModified);
+                descriptionModified, null);
 
         assertEquals(descriptionModified,
                 documentBasePage.getCurrentDocumentDescription());
@@ -87,10 +89,11 @@ public class ITModifyWorskpaceDescription extends AbstractTest {
         // cleaning
         documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
                 "Workspaces");
-        documentBasePage = documentBasePage.getContentTab().removeDocument(
+        documentBasePage.getContentTab().removeDocument(
                 workspaceTitle);
         // disconnect
-        documentBasePage.getHeaderLinks().logout();
+        //documentBasePage.getHeaderLinks().logout();
+        logout();
 
     }
 

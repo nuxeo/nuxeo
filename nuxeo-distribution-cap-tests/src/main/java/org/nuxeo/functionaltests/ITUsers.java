@@ -68,16 +68,18 @@ public class ITUsers extends AbstractTest {
         firstname = firstname + "modified";
         usersTab = page.getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.viewUser(username).getEditUserTab().editUser(
-                firstname, null, "newcompany", null, "administrators").backToTheList();
+                firstname, null, "newcompany", null, "Administrators group").backToTheList();
 
         // search user using its new firstname
         usersTab = usersTab.searchUser(firstname);
         assertTrue(usersTab.isUserFound(username));
 
         // try to login with the new user
-        usersTab.getHeaderLinks().logout();
+        //usersTab.getHeaderLinks().logout();
+        logout();
         DocumentBasePage homepage = login(username, password);
-        homepage.getHeaderLinks().logout();
+        //homepage.getHeaderLinks().logout();
+        logout();
 
         // login as admin
         page = login().getAdminCenter().getUsersGroupsHomePage();
@@ -90,10 +92,12 @@ public class ITUsers extends AbstractTest {
                 password);
 
         homepage = tab.exitAdminCenter();
-        homepage.getHeaderLinks().logout();
+        //homepage.getHeaderLinks().logout();
+        logout();
         // try to login with the new password
         homepage = login(username, password);
-        homepage.getHeaderLinks().logout();
+        //homepage.getHeaderLinks().logout();
+        logout();
 
         // login as admin
         page = login().getAdminCenter().getUsersGroupsHomePage();
@@ -107,7 +111,8 @@ public class ITUsers extends AbstractTest {
         usersTab = usersTab.searchUser(username);
         assertFalse(usersTab.isUserFound(username));
 
-        usersTab.getHeaderLinks().logout();
+        //usersTab.getHeaderLinks().logout();
+        logout();
 
         // try to login with a delete user
         LoginPage login = loginInvalid(username, password);

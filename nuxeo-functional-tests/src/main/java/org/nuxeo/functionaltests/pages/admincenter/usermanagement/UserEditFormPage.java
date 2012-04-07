@@ -81,6 +81,7 @@ public class UserEditFormPage extends UsersGroupsBasePage {
             groupInput.sendKeys(group);
             WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//td[text()=\""
                     + group + "\"]"));
+            waitUntilEnabled(ajaxUserListElement);
             ajaxUserListElement.click();
         }
         saveButton.click();
