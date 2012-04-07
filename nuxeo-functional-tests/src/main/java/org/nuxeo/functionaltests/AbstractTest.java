@@ -235,13 +235,13 @@ public abstract class AbstractTest {
             }
         }
         if (xpi == null) {
-            String customM2Repo = System.getProperty("M2_REPO", M2_REPO);
+            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll("/$","");
             // try to guess the location in the M2 repo
             for (String f : clf) {
                 if (f.contains(customM2Repo)) {
                     String m2 = f.substring(0,
                             f.indexOf(customM2Repo) + customM2Repo.length());
-                    xpi = new File(m2 + FIREBUG_M2 + "/" + FIREBUG_XPI);
+                    xpi = new File(m2 + "/" + FIREBUG_M2 + "/" + FIREBUG_XPI);
                     break;
                 }
             }
