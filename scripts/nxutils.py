@@ -240,7 +240,7 @@ class Repository(object):
         'profiles': comma-separated additional Maven profiles to use."""
         skip_tests_param = ""
         if skip_tests:
-            skip_tests_param = "-Dmaven.test.skip=true"
+            skip_tests_param = "-DskipTests=true"
         profiles_param = ""
         if profiles is not None:
             profiles_param = "-P%s" % profiles
