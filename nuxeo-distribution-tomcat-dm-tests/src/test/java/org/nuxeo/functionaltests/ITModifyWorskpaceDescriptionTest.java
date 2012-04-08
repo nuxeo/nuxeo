@@ -65,7 +65,6 @@ public class ITModifyWorskpaceDescriptionTest extends AbstractTest {
             accessRightSubTab.addPermissionForUser("jsmith", "Manage everything", true);
         }
 
-        //accessRightSubTab.getHeaderLinks().logout();
         logout();
 
         // Starting the test for real
@@ -93,7 +92,6 @@ public class ITModifyWorskpaceDescriptionTest extends AbstractTest {
         documentBasePage.getContentTab().removeDocument(
                 workspaceTitle);
         // disconnect
-        //documentBasePage.getHeaderLinks().logout();
         logout();
 
     }

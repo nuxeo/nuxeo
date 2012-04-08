@@ -28,7 +28,9 @@ public class ITLoginLogoutTest extends AbstractTest {
 
     @Test
     public void testLoginLogout() throws UserNotConnectedException {
+        // Login
         login();
+        // Logout
         logout();
     }
 }

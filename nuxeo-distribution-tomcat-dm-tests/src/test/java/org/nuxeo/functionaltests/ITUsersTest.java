@@ -76,10 +76,8 @@ public class ITUsersTest extends AbstractTest {
         assertTrue(usersTab.isUserFound(username));
 
         // try to login with the new user
-        //usersTab.getHeaderLinks().logout();
         logout();
         DocumentBasePage homepage = login(username, password);
-        //homepage.getHeaderLinks().logout();
         logout();
 
         // login as admin
@@ -93,11 +91,9 @@ public class ITUsersTest extends AbstractTest {
                 password);
 
         homepage = tab.exitAdminCenter();
-        //homepage.getHeaderLinks().logout();
         logout();
         // try to login with the new password
         homepage = login(username, password);
-        //homepage.getHeaderLinks().logout();
         logout();
 
         // login as admin
@@ -112,7 +108,6 @@ public class ITUsersTest extends AbstractTest {
         usersTab = usersTab.searchUser(username);
         assertFalse(usersTab.isUserFound(username));
 
-        //usersTab.getHeaderLinks().logout();
         logout();
 
         // try to login with a delete user
