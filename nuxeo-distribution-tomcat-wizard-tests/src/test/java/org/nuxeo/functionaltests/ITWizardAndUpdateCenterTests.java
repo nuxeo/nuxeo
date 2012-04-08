@@ -37,7 +37,7 @@ import org.nuxeo.functionaltests.pages.wizard.WizardPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class ITWizardAndUpdateCenter extends AbstractTest {
+public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.4";
 
@@ -60,8 +60,23 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     public static final String CONNECT_FORM_TITLE = "Enable Nuxeo Connect & Nuxeo Studio for your installation";
 
+    @Test
+    public void testAll() throws Exception {
+
+        runWizardAndRestart();
+
+        installPackageAndRestart();
+
+        verifyPackageInstallation();
+
+        studioPackageInstallAndUninstall();
+
+        verifyPackageUndeployProcessUnderWindows();
+
+    }
+
     protected String getTestPassword() {
-        return "XXX";
+        return System.getProperty("connectPassword");
     }
 
     private static boolean isWindows() {
@@ -470,21 +485,5 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
         // Need to make HeaderLinksSubPage#logout work and use it
         navToUrl("http://localhost:8080/nuxeo/logout");
-    }
-
-
-    @Test
-    public void testAll() throws Exception {
-
-        runWizardAndRestart();
-
-        installPackageAndRestart();
-
-        verifyPackageInstallation();
-
-        studioPackageInstallAndUninstall();
-
-        verifyPackageUndeployProcessUnderWindows();
-
     }
 }

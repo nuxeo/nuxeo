@@ -69,8 +69,6 @@ public abstract class AbstractTest {
     public static final String NUXEO_URL = System.getProperty("nuxeoURL",
             "http://localhost:8080/nuxeo").replaceAll("/$", "");
 
-    public static final String NUXEO_LOGOUT_URL = "http://localhost:8080/nuxeo/logout";
-
     public static final int LOAD_TIMEOUT_SECONDS = 30;
 
     public static final int LOAD_SHORT_TIMEOUT_SECONDS = 2;
@@ -561,7 +559,7 @@ public abstract class AbstractTest {
     }
 
     public LoginPage logout() {
-        return get(NUXEO_LOGOUT_URL, LoginPage.class);
+        return getLoginPage();
     }
 
     /**

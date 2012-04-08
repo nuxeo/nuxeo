@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests;
 
@@ -31,7 +32,7 @@ import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPag
 /**
  * Create a user in Nuxeo DM.
  */
-public class ITUsers extends AbstractTest {
+public class ITUsersTest extends AbstractTest {
 
     @Test
     public void testCreateViewDeleteUser() throws Exception {

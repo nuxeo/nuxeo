@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,22 +12,23 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Thierry Delprat
+ *     Sun Seng David TAN
+ *     Florent Guillaume
+ *     Antoine Taillefer
  */
-
 package org.nuxeo.functionaltests;
 
 import org.junit.Test;
-import org.nuxeo.functionaltests.ITWizardAndUpdateCenter;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 
-public class ITTests extends ITWizardAndUpdateCenter {
+/**
+ * Tests login / logout.
+ */
+public class ITLoginLogoutTest extends AbstractTest {
 
     @Test
-    public void testAll() throws Exception {
-        super.testAll();
-    }
-
-    protected String getTestPassword() {
-        return System.getProperty("connectPassword");
+    public void testLoginLogout() throws UserNotConnectedException {
+        login();
+        logout();
     }
 }

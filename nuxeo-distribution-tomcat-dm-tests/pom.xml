@@ -10,9 +10,9 @@
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
-  <artifactId>nuxeo-distribution-tomcat-tests</artifactId>
-  <name>Nuxeo Tomcat Integration Tests</name>
-  <description>Nuxeo Functional Tests on Tomcat distributions</description>
+  <artifactId>nuxeo-distribution-tomcat-dm-tests</artifactId>
+  <name>Nuxeo Tomcat DM Integration Tests</name>
+  <description>Nuxeo Functional Tests on Tomcat distribution with DM module</description>
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>
@@ -34,7 +34,8 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap-tests</artifactId>
+      <artifactId>nuxeo-functional-tests</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

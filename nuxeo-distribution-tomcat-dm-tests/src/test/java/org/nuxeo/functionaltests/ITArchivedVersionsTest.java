@@ -32,7 +32,7 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 /**
  * Tests the Archived versions screen.
  */
-public class ITArchivedVersions extends AbstractTest {
+public class ITArchivedVersionsTest extends AbstractTest {
 
     private static final String TEST_WORKSPACE_TITLE = "Webdriver test WS";
 

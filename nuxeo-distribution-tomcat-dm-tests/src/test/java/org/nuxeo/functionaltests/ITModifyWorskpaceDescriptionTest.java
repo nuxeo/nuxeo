@@ -14,6 +14,7 @@
  * Contributors:
  *     Sun Seng David TAN
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests;
 
@@ -42,7 +43,7 @@ import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
  * <li>logout</li>
  * </ol>
  */
-public class ITModifyWorskpaceDescription extends AbstractTest {
+public class ITModifyWorskpaceDescriptionTest extends AbstractTest {
 
     @Test
     public void testModifyWsDescription() throws Exception {

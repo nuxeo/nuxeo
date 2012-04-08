@@ -14,6 +14,7 @@
  * Contributors:
  *     Sun Seng David TAN
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests;
 
@@ -31,7 +32,7 @@ import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 /**
  * Test file upload in Nuxeo DM.
  */
-public class ITFileUpload extends AbstractTest {
+public class ITFileUploadTest extends AbstractTest {
 
     @Test
     public void testFileUpload() throws Exception {
