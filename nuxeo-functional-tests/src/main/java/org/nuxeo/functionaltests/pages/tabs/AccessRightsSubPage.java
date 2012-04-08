@@ -96,8 +96,7 @@ public class AccessRightsSubPage extends AbstractPage {
     public AccessRightsSubPage addPermissionForUser(String username,
             String permission, boolean grant) {
         userSelectionSuggestInputText.sendKeys(username);
-        WebElement userSuggestion = findElementAndWaitUntilEnabledWithTimeout(By.xpath("//table[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
-        userSuggestion.click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//table[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
 
         Select selectGrant = new Select(selectGrantElement);
 

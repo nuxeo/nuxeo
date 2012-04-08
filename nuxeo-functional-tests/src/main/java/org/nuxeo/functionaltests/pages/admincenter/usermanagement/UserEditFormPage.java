@@ -80,10 +80,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(emailInput, email);
         if (group != null) {
             groupInput.sendKeys(group);
-            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//td[text()=\""
+            findElementWaitUntilEnabledAndClick(By.xpath("//td[text()=\""
                     + group + "\"]"));
-            waitUntilEnabled(ajaxUserListElement);
-            ajaxUserListElement.click();
         }
         saveButton.click();
         return asPage(UserViewTabSubPage.class);

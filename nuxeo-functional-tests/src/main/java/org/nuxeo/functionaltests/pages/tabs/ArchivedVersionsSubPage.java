@@ -122,7 +122,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
     public void checkCanExecuteActionOnSelectedVersions(String actionId,
             boolean canExecute) {
         try {
-            findElementAndWaitUntilEnabledWithTimeout(
+            findElementAndWaitUntilEnabled(
                     By.xpath("//span[@id=\"" + actionId + "\"]/input"),
                     AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
                     AbstractTest.AJAX_SHORT_TIMEOUT_SECONDS * 1000);
@@ -162,9 +162,8 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      */
     public <T> T executeActionOnSelectedVersions(String actionId,
             boolean isConfirm, Class<T> pageClass, By pageElementToCheck) {
-        WebElement actionButton = findElementAndWaitUntilEnabledWithTimeout(By.xpath("//span[@id=\""
-                + actionId + "\"]/input"));
-        actionButton.click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//span[@id=\"" + actionId
+                + "\"]/input"));
         if (isConfirm) {
             driver.switchTo().alert().accept();
         }

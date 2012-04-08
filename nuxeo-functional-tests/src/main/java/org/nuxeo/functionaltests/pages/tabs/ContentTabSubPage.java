@@ -102,8 +102,7 @@ public class ContentTabSubPage extends DocumentBasePage {
             }
         }
 
-        WebElement deleteButton = findElementAndWaitUntilEnabledWithTimeout(By.xpath(DELETE_BUTTON_XPATH));
-        deleteButton.click();
+        findElementWaitUntilEnabledAndClick(By.xpath(DELETE_BUTTON_XPATH));
         driver.switchTo().alert().accept();
 
         return asPage(DocumentBasePage.class);

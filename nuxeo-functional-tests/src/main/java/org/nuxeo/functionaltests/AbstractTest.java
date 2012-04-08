@@ -507,9 +507,9 @@ public abstract class AbstractTest {
      * @param waitUntilEnabledTimeout the wait until enabled timeout in
      *            milliseconds
      * @return the first matching element on the current page, if found
-     * @throws NotFoundException when element was not found or not enabled
+     * @throws NotFoundException if the element is not found or not enabled
      */
-    public static WebElement findElementAndWaitUntilEnabledWithTimeout(By by,
+    public static WebElement findElementAndWaitUntilEnabled(By by,
             int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
 
@@ -547,12 +547,70 @@ public abstract class AbstractTest {
      *
      * @param by the locating mechanism
      * @return the first matching element on the current page, if found
-     * @throws NotFoundException when element was not found or not enabled
+     * @throws NotFoundException if the element is not found or not enabled
      */
-    public static WebElement findElementAndWaitUntilEnabledWithTimeout(By by)
+    public static WebElement findElementAndWaitUntilEnabled(By by)
             throws NotFoundException {
-        return findElementAndWaitUntilEnabledWithTimeout(by,
-                LOAD_TIMEOUT_SECONDS * 1000, AJAX_TIMEOUT_SECONDS * 1000);
+        return findElementAndWaitUntilEnabled(by, LOAD_TIMEOUT_SECONDS * 1000,
+                AJAX_TIMEOUT_SECONDS * 1000);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     *
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in
+     *            milliseconds
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static void findElementWaitUntilEnabledAndClick(By by,
+            int findElementTimeout, int waitUntilEnabledTimeout)
+            throws NotFoundException {
+
+        // Find the element.
+        WebElement element = findElementAndWaitUntilEnabled(by,
+                findElementTimeout, waitUntilEnabledTimeout);
+
+        // Try to click on the element.
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(findElementTimeout);
+        WebDriverException lastException = null;
+        while (clock.isNowBefore(end)) {
+            try {
+                element.click();
+                return;
+            } catch (StaleElementReferenceException sere) {
+                // Means the element is no longer attached to the DOM
+                // => need to find it again.
+                element = findElementAndWaitUntilEnabled(by,
+                        findElementTimeout, waitUntilEnabledTimeout);
+                lastException = sere;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+        }
+        throw new NotFoundException(String.format(
+                "Couldn't find element '%s' after timeout", by), lastException);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with the
+     * default timeout. Then waits until the element is enabled, with the
+     * default timeout. Then clicks on the element.
+     *
+     * @param by the locating mechanism
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static void findElementWaitUntilEnabledAndClick(By by)
+            throws NotFoundException {
+        findElementWaitUntilEnabledAndClick(by, LOAD_TIMEOUT_SECONDS * 1000,
+                AJAX_TIMEOUT_SECONDS * 1000);
     }
 
     public LoginPage getLoginPage() {
