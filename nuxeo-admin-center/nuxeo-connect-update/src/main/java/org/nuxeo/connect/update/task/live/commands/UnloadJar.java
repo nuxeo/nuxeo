@@ -37,6 +37,10 @@ import org.nuxeo.runtime.reload.ReloadService;
  */
 public class UnloadJar extends UnloadJarPlaceholder {
 
+    public UnloadJar() {
+        super();
+    }
+
     public UnloadJar(File file) {
         super(file);
     }

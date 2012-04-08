@@ -41,6 +41,10 @@ import org.osgi.framework.BundleContext;
  */
 public class Uninstall extends UninstallPlaceholder {
 
+    public Uninstall() {
+        super();
+    }
+
     public Uninstall(File file) {
         super(file);
     }

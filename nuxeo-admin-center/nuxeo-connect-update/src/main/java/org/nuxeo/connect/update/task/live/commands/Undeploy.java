@@ -38,6 +38,10 @@ import org.nuxeo.runtime.reload.ReloadService;
  */
 public class Undeploy extends UndeployPlaceholder {
 
+    public Undeploy() {
+        super();
+    }
+
     public Undeploy(File file) {
         super(file);
     }

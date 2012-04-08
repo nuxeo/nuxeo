@@ -34,6 +34,8 @@ import org.nuxeo.connect.update.task.live.commands.Undeploy;
 import org.nuxeo.connect.update.task.live.commands.UndeployConfig;
 import org.nuxeo.connect.update.task.live.commands.Uninstall;
 import org.nuxeo.connect.update.task.live.commands.UnloadJar;
+import org.nuxeo.connect.update.task.live.LiveInstallTask;
+import org.nuxeo.connect.update.task.live.LiveUninstallTask;
 import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
@@ -71,6 +73,16 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements
         } catch (Throwable t) {
             throw new PackageException("Failed to restart Nuxeo", t);
         }
+    }
+
+    @Override
+    public String getDefaultInstallTaskType() {
+        return LiveInstallTask.class.getName();
+    }
+
+    @Override
+    public String getDefaultUninstallTaskType() {
+        return LiveUninstallTask.class.getName();
     }
 
 }

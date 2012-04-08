@@ -37,6 +37,10 @@ import org.nuxeo.runtime.reload.ReloadService;
  */
 public class LoadJar extends LoadJarPlaceholder {
 
+    public LoadJar() {
+        super();
+    }
+
     public LoadJar(File file) {
         super(file);
     }

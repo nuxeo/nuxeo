@@ -38,6 +38,10 @@ import org.osgi.framework.BundleException;
  */
 public class Install extends InstallPlaceholder {
 
+    public Install() {
+        super();
+    }
+
     public Install(File file) {
         super(file);
     }

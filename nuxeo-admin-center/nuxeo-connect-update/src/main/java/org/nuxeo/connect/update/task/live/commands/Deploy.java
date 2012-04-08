@@ -36,6 +36,10 @@ import org.nuxeo.runtime.reload.ReloadService;
  */
 public class Deploy extends DeployPlaceholder {
 
+    public Deploy() {
+        super();
+    }
+
     public Deploy(File file) {
         super(file);
     }
