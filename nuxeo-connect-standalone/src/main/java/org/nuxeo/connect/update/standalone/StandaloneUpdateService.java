@@ -57,6 +57,8 @@ import org.nuxeo.connect.update.task.standalone.commands.UndeployConfigPlacehold
 import org.nuxeo.connect.update.task.standalone.commands.UndeployPlaceholder;
 import org.nuxeo.connect.update.task.standalone.commands.UninstallPlaceholder;
 import org.nuxeo.connect.update.task.standalone.commands.UnloadJarPlaceholder;
+import org.nuxeo.connect.update.task.standalone.InstallTask;
+import org.nuxeo.connect.update.task.standalone.UninstallTask;
 import org.nuxeo.connect.update.task.update.Rollback;
 import org.nuxeo.connect.update.task.update.Update;
 import org.nuxeo.connect.update.xml.FormsDefinition;
@@ -202,6 +204,16 @@ public class StandaloneUpdateService implements PackageUpdateService {
             }
         }
         return null;
+    }
+
+    @Override
+    public String getDefaultInstallTaskType() {
+        return InstallTask.class.getName();
+    }
+
+    @Override
+    public String getDefaultUninstallTaskType() {
+        return UninstallTask.class.getName();
     }
 
     public void addCommand(String id, Class<? extends Command> cmd) {

@@ -37,8 +37,6 @@ import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.Form;
 import org.nuxeo.connect.update.model.TaskDefinition;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.connect.update.task.standalone.InstallTask;
-import org.nuxeo.connect.update.task.standalone.UninstallTask;
 import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.xml.TaskDefinitionImpl;
@@ -180,20 +178,12 @@ public class LocalPackageImpl implements LocalPackage {
         return true;
     }
 
-    protected String getDefaultInstallTaskType() {
-        return InstallTask.class.getName();
-    }
-
-    protected String getDefaultUninstallTaskType() {
-        return UninstallTask.class.getName();
-    }
-
     public Task getInstallTask() throws PackageException {
         if (def.getInstaller() == null) {
             def.setInstaller(new TaskDefinitionImpl(
-                    getDefaultInstallTaskType(), false));
+                    service.getDefaultInstallTaskType(), false));
         } else if (def.getInstaller().getType() == null) {
-            def.getInstaller().setType(getDefaultInstallTaskType());
+            def.getInstaller().setType(service.getDefaultInstallTaskType());
         }
         return getTask(def.getInstaller());
     }
@@ -201,9 +191,9 @@ public class LocalPackageImpl implements LocalPackage {
     public Task getUninstallTask() throws PackageException {
         if (def.getUninstaller() == null) {
             def.setUninstaller(new TaskDefinitionImpl(
-                    getDefaultUninstallTaskType(), false));
+                    service.getDefaultUninstallTaskType(), false));
         } else if (def.getUninstaller().getType() == null) {
-            def.getUninstaller().setType(getDefaultUninstallTaskType());
+            def.getUninstaller().setType(service.getDefaultUninstallTaskType());
         }
         return getTask(def.getUninstaller());
     }
