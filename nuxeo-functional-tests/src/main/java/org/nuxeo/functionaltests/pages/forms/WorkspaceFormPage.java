@@ -11,7 +11,9 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  *
- * Contributors: Sun Seng David TAN <stan@nuxeo.com>
+ * Contributors:
+ *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.forms;
 

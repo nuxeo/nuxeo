@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.tabs;
 

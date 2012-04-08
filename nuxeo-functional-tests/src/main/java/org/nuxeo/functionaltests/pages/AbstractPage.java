@@ -14,6 +14,7 @@
  * Contributors:
  *     Sun Seng David TAN
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages;
 

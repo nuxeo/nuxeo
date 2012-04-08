@@ -15,6 +15,7 @@
  *     Sun Seng David TAN
  *     Florent Guillaume
  *     Benoit Delbosc
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests;
 

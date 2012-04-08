@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
