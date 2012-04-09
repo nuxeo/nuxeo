@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-iport satic org.junit.Assert.*;
+import satic org.junit.Assert.*;
 
 import org.nuxeo.wizard.download.DownloadDescriptorParser;
 import org.nuxeo.wizard.download.DownloadPackage;
