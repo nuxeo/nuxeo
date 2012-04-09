@@ -19,10 +19,10 @@ package org.nuxeo.ecm.platform.suggestbox.service.registries;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
@@ -39,7 +39,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.suggestbox.core",
         "org.nuxeo.ecm.platform.suggestbox.core.test" })
-public class SuggesterGroupMergeTest extends TestCase {
+public class SuggesterGroupMergeTest {
 
     @Inject
     protected SuggestionService suggestionService;
