@@ -18,11 +18,11 @@
  */
 package org.nuxeo.functionaltests;
 
-import static junit.framework.Assert.assertEquals;
-
 import java.util.Date;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;

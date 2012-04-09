@@ -18,9 +18,9 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
 
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
