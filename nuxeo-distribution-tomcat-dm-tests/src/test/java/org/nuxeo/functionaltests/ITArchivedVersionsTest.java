@@ -24,8 +24,6 @@ import java.util.List;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.ArchivedVersionsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 
@@ -34,13 +32,6 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
  */
 public class ITArchivedVersionsTest extends AbstractTest {
 
-    private static final String TEST_WORKSPACE_TITLE = "Webdriver test WS";
-
-    /**
-     * Tests archived versions.
-     *
-     * @throws Exception the exception
-     */
     @Test
     public void testArchivedVersions() throws Exception {
 
@@ -48,24 +39,52 @@ public class ITArchivedVersionsTest extends AbstractTest {
         DocumentBasePage defaultDomainPage = login();
 
         // Init repository with a File and its archived versions
-        DocumentBasePage docPage = initRepository(defaultDomainPage,
-                TEST_WORKSPACE_TITLE);
+        DocumentBasePage filePage = initRepository(defaultDomainPage);
 
         // Do the tests
-        docPage = testViewVersions(docPage);
-        docPage = testRestoreVersion(docPage);
-        docPage = testDeleteVersions(docPage);
+        filePage = testViewVersions(filePage);
+        filePage = testRestoreVersion(filePage);
+        filePage = testDeleteVersions(filePage);
 
-        // Clean repository: remove docs created by the test
-        cleanRepository(docPage, TEST_WORKSPACE_TITLE);
+        // Clean up repository
+        cleanRepository(filePage);
 
         // Logout
         logout();
     }
 
     /**
+     * Inits the repository with a File document and makes two versions of it.
+     * 
+     * @param currentPage the current page
+     * @return the created File document page
+     * @throws Exception if initializing repository fails
+     */
+    @Override
+    protected DocumentBasePage initRepository(DocumentBasePage currentPage)
+            throws Exception {
+
+        // Create test Workspace
+        DocumentBasePage workspacePage = super.initRepository(currentPage);
+
+        // Create test File
+        FileDocumentBasePage filePage = createFile(workspacePage, "Test file",
+                "Test File description", false, null, null, null);
+
+        // Create version 1.0 of the File
+        filePage.getEditTab().edit("Test file: modif 1", null,
+                EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
+
+        // Create version 2.0 of the File
+        filePage.getEditTab().edit("Test file: modif 2", null,
+                EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
+
+        return filePage;
+    }
+
+    /**
      * Tests view versions.
-     *
+     * 
      * @param docPage the current doc page
      * @return the current doc page
      */
@@ -101,7 +120,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
     /**
      * Tests restore version.
-     *
+     * 
      * @param docPage the current doc page
      * @return the current doc page
      */
@@ -120,7 +139,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
     /**
      * Tests delete versions.
-     *
+     * 
      * @param docPage the current doc page
      * @return the current doc page
      */
@@ -153,63 +172,5 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
         // Go back to doc and return it
         return archivedVersionsPage.goToDocumentByBreadcrumb("Test file: modif 1");
-    }
-
-    // --------------------------------------
-    // TODO: These methods (or part of them)
-    // could be factorized.
-    // --------------------------------------
-
-    /**
-     * Inits the repository with a File document and makes two versions of it.
-     *
-     * @param defaultDomainPage the default domain page
-     * @param testWorkspaceTitle the test workspace title
-     * @return the created doc page
-     */
-    protected DocumentBasePage initRepository(
-            DocumentBasePage defaultDomainPage, String testWorkspaceTitle) {
-
-        // Go to Workspaces
-        DocumentBasePage workspacesPage = defaultDomainPage.getContentTab().goToDocument(
-                "Workspaces");
-
-        // Create a test Workspace
-        WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
-        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
-                testWorkspaceTitle, "My test workspace for my dear WebDriver");
-
-        // Create a File
-        FileCreationFormPage fileCreationFormPage = workspacePage.getContentTab().getDocumentCreatePage(
-                "File", FileCreationFormPage.class);
-        FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(
-                "Test file", "Test File description", null);
-
-        // Create version 1.0 of the File
-        filePage.getEditTab().edit("Test file: modif 1", null,
-                EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
-
-        // Create version 2.0 of the File
-        filePage.getEditTab().edit("Test file: modif 2", null,
-                EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
-
-        return filePage;
-    }
-
-    /**
-     * Cleans the repository.
-     *
-     * @param currentPage the current page
-     * @param testWorkspaceTitle the test workspace title
-     */
-    protected void cleanRepository(DocumentBasePage currentPage,
-            String testWorkspaceTitle) {
-
-        // Go to Workspaces
-        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument(
-                "Workspaces");
-
-        // Delete the test Workspace
-        workspacesPage.getContentTab().removeDocument(testWorkspaceTitle);
     }
 }
