@@ -20,8 +20,11 @@
 package org.nuxeo.functionaltests;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,10 +41,14 @@ import java.util.jar.JarFile;
 import org.browsermob.proxy.ProxyServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
@@ -677,4 +684,133 @@ public abstract class AbstractTest {
         return loginPage;
     }
 
+    /**
+     * Inits the repository with a test Workspace form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @return the created Workspace page
+     * @throws Exception if initializing repository fails
+     */
+    protected DocumentBasePage initRepository(DocumentBasePage currentPage)
+            throws Exception {
+
+        return createWorkspace(currentPage, "Test Workspace",
+                "Test Workspace for my dear Webdriver.");
+    }
+
+    /**
+     * Cleans the repository (delete the test Workspace) from the
+     * {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @throws Exception if cleaning repository fails
+     */
+    protected void cleanRepository(DocumentBasePage currentPage)
+            throws Exception {
+
+        deleteWorkspace(currentPage, "Test Workspace");
+    }
+
+    /**
+     * Creates a Workspace form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param workspaceTitle the workspace title
+     * @param workspaceDescription the workspace description
+     * @return the created Workspace page
+     */
+    protected DocumentBasePage createWorkspace(DocumentBasePage currentPage,
+            String workspaceTitle, String workspaceDescription) {
+
+        // Go to Workspaces
+        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument(
+                "Workspaces");
+
+        // Get Workspace creation form page
+        WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
+
+        // Create Workspace
+        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
+                workspaceTitle, workspaceDescription);
+        return workspacePage;
+    }
+
+    /**
+     * Deletes the Workspace with title {@code workspaceTitle} from the
+     * {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param workspaceTitle the workspace title
+     */
+    protected void deleteWorkspace(DocumentBasePage currentPage,
+            String workspaceTitle) {
+
+        // Go to Workspaces
+        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument(
+                "Workspaces");
+
+        // Delete the Workspace
+        workspacesPage.getContentTab().removeDocument(workspaceTitle);
+    }
+
+    /**
+     * Creates a File form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param fileTitle the file title
+     * @param fileDescription the file description
+     * @param uploadBlob true if a blob needs to be uploaded (temporary file
+     *            created for this purpose)
+     * @param filePrefix the file prefix
+     * @param fileSuffix the file suffix
+     * @param fileContent the file content
+     * @return the created File page
+     * @throws IOException if temporary file creation fails
+     */
+    protected FileDocumentBasePage createFile(DocumentBasePage currentPage,
+            String fileTitle, String fileDescription, boolean uploadBlob,
+            String filePrefix, String fileSuffix, String fileContent)
+            throws IOException {
+
+        // Get File creation form page
+        FileCreationFormPage fileCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
+                "File", FileCreationFormPage.class);
+
+        // Get file to upload path if needed
+        String fileToUploadPath = null;
+        if (uploadBlob) {
+            fileToUploadPath = getTmpFileToUploadPath(filePrefix, fileSuffix,
+                    fileContent);
+        }
+
+        // Create File
+        FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(
+                fileTitle, fileDescription, fileToUploadPath);
+        return filePage;
+    }
+
+    /**
+     * Creates a temporary file and returns its absolute path.
+     *
+     * @param tmpFilePrefix the file prefix
+     * @param fileSuffix the file suffix
+     * @param fileContent the file content
+     * @return the temporary file to upload path
+     * @throws IOException if temporary file creation fails
+     */
+    protected String getTmpFileToUploadPath(String filePrefix,
+            String fileSuffix, String fileContent) throws IOException {
+
+        // Create tmp file, deleted on exit
+        File tmpFile = File.createTempFile(filePrefix, fileSuffix);
+        tmpFile.deleteOnExit();
+        FileUtils.writeFile(tmpFile, fileContent);
+        assertTrue(tmpFile.exists());
+
+        // Check file URI protocol
+        assertEquals("file", tmpFile.toURI().toURL().getProtocol());
+
+        // Return file absolute path
+        return tmpFile.getAbsolutePath();
+    }
 }
