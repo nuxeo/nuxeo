@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 
 /**
@@ -43,7 +42,7 @@ import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
  * <li>logout</li>
  * </ol>
  */
-public class ITModifyWorskpaceDescriptionTest extends AbstractTest {
+public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
     @Test
     public void testModifyWsDescription() throws Exception {
@@ -60,9 +59,12 @@ public class ITModifyWorskpaceDescriptionTest extends AbstractTest {
         DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
         AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
-        // Need WriteSecurity (so in practice Manage everything) to edit a Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything", "jsmith")) {
-            accessRightSubTab.addPermissionForUser("jsmith", "Manage everything", true);
+        // Need WriteSecurity (so in practice Manage everything) to edit a
+        // Workspace
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
+                "jsmith")) {
+            accessRightSubTab.addPermissionForUser("jsmith",
+                    "Manage everything", true);
         }
 
         logout();
@@ -71,27 +73,26 @@ public class ITModifyWorskpaceDescriptionTest extends AbstractTest {
         documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
                 "Workspaces");
 
-        // create a new workspace in there named workspaceDescriptionModify
-        // (current time)
-        WorkspaceFormPage workspaceCreationFormPage = documentBasePage.getWorkspacesContentTab().getWorkspaceCreatePage();
-        String workspaceTitle = "workspaceDescriptionModify"
+        // Create a new workspace named 'WorkspaceDescriptionModify_{current
+        // time}'
+        String workspaceTitle = "WorkspaceDescriptionModify_"
                 + new Date().getTime();
-        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
-                workspaceTitle, "a workspace description");
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
+                workspaceTitle, "A workspace description");
+
+        // Modify Workspace description
         String descriptionModified = "Description modified";
-        documentBasePage = workspacePage.getEditTab().edit(null,
+        workspacePage = workspacePage.getEditTab().edit(null,
                 descriptionModified, null);
 
         assertEquals(descriptionModified,
-                documentBasePage.getCurrentDocumentDescription());
-        assertEquals(workspaceTitle, documentBasePage.getCurrentDocumentTitle());
+                workspacePage.getCurrentDocumentDescription());
+        assertEquals(workspaceTitle, workspacePage.getCurrentDocumentTitle());
 
-        // cleaning
-        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
-                "Workspaces");
-        documentBasePage.getContentTab().removeDocument(
-                workspaceTitle);
-        // disconnect
+        // Clean up repository
+        deleteWorkspace(workspacePage, workspaceTitle);
+
+        // Logout
         logout();
 
     }
