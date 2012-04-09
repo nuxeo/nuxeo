@@ -1,3 +1,8 @@
+package org.nuxeo.ecm.platform.suggestbox.service.registries;
+
+import java.util.List;
+import java.util.ArrayList;
+
 import org.junit.runner.RunWith;
 import org.junit.Test;
 import static org.junit.Assert.*;
