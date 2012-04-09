@@ -16,7 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;

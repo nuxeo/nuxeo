@@ -16,7 +16,7 @@
  */
 package org.nuxeo.functionaltests;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
     /**
      * Inits the repository with a File document and makes two versions of it.
-     * 
+     *
      * @param currentPage the current page
      * @return the created File document page
      * @throws Exception if initializing repository fails
@@ -84,7 +84,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
     /**
      * Tests view versions.
-     * 
+     *
      * @param docPage the current doc page
      * @return the current doc page
      */
@@ -120,7 +120,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
     /**
      * Tests restore version.
-     * 
+     *
      * @param docPage the current doc page
      * @return the current doc page
      */
@@ -139,7 +139,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
     /**
      * Tests delete versions.
-     * 
+     *
      * @param docPage the current doc page
      * @return the current doc page
      */
