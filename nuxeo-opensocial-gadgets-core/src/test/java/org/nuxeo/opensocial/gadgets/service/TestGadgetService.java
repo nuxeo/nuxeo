@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.shindig.gadgets.spec.GadgetSpec;
+import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -37,6 +39,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestGadgetService extends NXRuntimeTestCase {
 
     @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
@@ -56,11 +59,13 @@ public class TestGadgetService extends NXRuntimeTestCase {
     }
 
     @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 
+    @Test
     public void testServiceRegistration() throws Exception {
         GadgetService service = Framework.getService(GadgetService.class);
         assertNotNull(service);
@@ -73,11 +78,13 @@ public class TestGadgetService extends NXRuntimeTestCase {
         assertNull(meteoGadget);
     }
 
+    @Test
     public void testRegisterExternal() throws Exception {
         GadgetServiceImpl service = (GadgetServiceImpl) Framework.getService(GadgetService.class);
         assertNotNull(service);
     }
 
+    @Test
     public void testSpecParsing() throws Exception {
         Framework.getProperties().put(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
 
