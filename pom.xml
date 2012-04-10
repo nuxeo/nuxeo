@@ -75,14 +75,14 @@
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
-        <!-- <module>nuxeo-marketplace-content-browser</module> -->
-        <!-- <module>nuxeo-marketplace-dm</module> -->
-        <!-- <module>nuxeo-distribution-dam</module> -->
-        <!-- <module>nuxeo-marketplace-dam</module> -->
-        <!-- <module>nuxeo-distribution-social-collaboration</module> -->
-        <!-- <module>nuxeo-marketplace-social-collaboration</module> -->
-        <!-- <module>nuxeo-distribution-cmf</module> -->
-        <!-- <module>nuxeo-marketplace-cmf</module> -->
+        <module>nuxeo-marketplace-content-browser</module>
+        <module>nuxeo-marketplace-dm</module>
+        <module>nuxeo-distribution-dam</module>
+        <module>nuxeo-marketplace-dam</module>
+        <module>nuxeo-distribution-social-collaboration</module>
+        <module>nuxeo-marketplace-social-collaboration</module>
+        <module>nuxeo-distribution-cmf</module>
+        <module>nuxeo-marketplace-cmf</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
