@@ -27,6 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
+import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 import org.nuxeo.runtime.api.Framework;
@@ -148,9 +150,16 @@ public class AsyncEventExecutor {
         for (EventListenerDescriptor listener : listeners) {
             EventBundle filtered = new EventBundleImpl();
             for (Event event : bundle) {
-                if (listener.acceptEvent(event.getName())) {
-                    filtered.push(event);
+                if (listener.getEvents() != null
+                        && !listener.acceptEvent(event.getName())) {
+                    continue;
                 }
+                PostCommitEventListener pcl = listener.asPostCommitListener();
+                if (pcl instanceof PostCommitFilteringEventListener
+                        && !((PostCommitFilteringEventListener) pcl).acceptEvent(event)) {
+                    continue;
+                }
+                filtered.push(event);
             }
             if (filtered.isEmpty()) {
                 continue;
