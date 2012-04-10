@@ -508,7 +508,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         boolean admin = false;
         String username = userEntry.getId();
 
-        // XXX why not set groups to anonymous user?
         List<String> virtualGroups = new LinkedList<String>();
         // Add preconfigured groups: useful for LDAP
         if (defaultGroup != null) {
