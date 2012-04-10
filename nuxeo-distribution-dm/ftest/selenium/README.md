@@ -1,13 +1,8 @@
-=================
-Selenium Nuxeo EP
-=================
-
-Running test suites
-===================
+# Running test suites
 
 Tests require firefox 3.6 or higher.
 
-See documentation at https://github.com/nuxeo/tools-nuxeo-ftest
+See [tools-nuxeo-ftest documentation](https://github.com/nuxeo/tools-nuxeo-ftest).
 
 Sample usage:
 
@@ -18,7 +13,6 @@ To run the suites on an already-running Nuxeo instance, use:
 
     mvn org.nuxeo.build:nuxeo-distribution-tools:integration-test -o -Dtarget=run-selenium -Dsuites=suite1,suite-cap
 
-Writing tests
-=============
+# Writing tests
 
-See documentation at http://doc.nuxeo.com/x/eQQz
+See [Selenium tests documentation](http://doc.nuxeo.com/x/eQQz).
