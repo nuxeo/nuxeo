@@ -9,7 +9,7 @@
       value="#{currentDocument.dc.description}" />
     <h:outputText value="#{currentDocument.dc.created}" />
     <br />
-    <h:outputText value="#{currentDocument.dc.creator}" />
+    <a href="#{baseURL}user/#{currentDocument.dc.creator}"> <h:outputText>#{currentDocument.dc.creator}</h:outputText></a>
     <br />
     <h:outputText value="#{messages['label.version']}" />
     <h:outputText value="#{currentDocumentVersionInfo.versionLabel}" />
