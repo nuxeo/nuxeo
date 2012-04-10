@@ -125,6 +125,12 @@
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-functional-tests</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- Run all tests -->
+      <id>all-tests</id>
+      <modules>
         <module>nuxeo-distribution-tomcat-wizard-tests</module>
         <module>nuxeo-distribution-dm/ftest/webdriver</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
