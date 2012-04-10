@@ -39,12 +39,6 @@
                             classifier="resources" />
     </unzip>
 
-    <!-- Social Collaboration properties to append -->
-    <echo file="${maven.project.build.directory}/marketplace/install/distribution.properties">## ${maven.project.artifactId}
-org.nuxeo.distribution.version=${maven.project.version}
-org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
-org.nuxeo.distribution.package=mp</echo>
-
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${maven.project.build.directory}/marketplace" />
     <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
