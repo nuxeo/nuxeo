@@ -22,13 +22,13 @@
   <ui:define name="body">
     <div>
 
-      <h:form id="document_header_layout_form">
+      <h:form id="document_header_layout_form" class="titleBlock">
         <nxl:documentLayout documentMode="header" mode="view"
           value="#{currentDocument}" defaultLayout="document_header"
           includeAnyMode="false" />
       </h:form>
 
-      <div class="printButton">
+      <div class="globalActions">
         <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
       </div>
 

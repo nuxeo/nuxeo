@@ -5,13 +5,13 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
   <h:form>
-    <div class="action_bar">
+    <div class="globalActionBar">
       <nxu:set var="category"
         value="#{nxu:test(empty widgetProperty_category, 'DOCUMENT_UPPER_ACTION', widgetProperty_category)}"
         cache="true">
         <nxu:set var="actions"
           value="#{webActions.getActionsList(category)}" cache="true">
-          <div class="context_actions">
+          <div class="contextActions">
             <c:forEach var="action" begin="0" end="4" step="1"
               items="#{actions}">
               <div>
@@ -21,9 +21,9 @@
             </c:forEach>
             <!-- Display rollover after 5 actions -->
             <c:if test="#{actions.size>5}">
-              <ul>
-                <li>More</li>
-                <ul>
+              <ul class="actionList">
+                <li class="dropDownMenu button dropdown">More
+                <ul class="actionSubList">
                   <c:forEach var="action" begin="5"
                     end="#{actions.size-1}" step="1" items="#{actions}">
                     <li><nxh:commandLink
@@ -40,7 +40,20 @@
                       </nxh:commandLink></li>
                   </c:forEach>
                 </ul>
+                </li>
               </ul>
+              <script type="text/javascript">
+              jQuery(document).ready(function($) {
+                jQuery('.dropDownMenu').click(function(e) {
+                  jQuery(this).find('ul').hide();
+                  jQuery(this).find("ul").show();
+                  e.stopPropagation();
+                });
+                jQuery(document).click(function() {
+                  jQuery('.dropDownMenu').find('ul').hide();
+                });
+              });
+              </script>
             </c:if>
           </div>
         </nxu:set>
