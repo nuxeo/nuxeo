@@ -8,6 +8,7 @@
     <listener name="sql-storage-binary-text" async="true"
       postCommit="true" priority="500"
       class="org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener">
+      <event>event_storage_binaries_doc</event>
     </listener>
   </extension>
 
