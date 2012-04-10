@@ -253,12 +253,24 @@
       <sourceMimeType>text/x-web-markdown</sourceMimeType>
     </converter>
 
-   <converter name="md2pdf">
+    <converter name="md2pdf">
       <conversionSteps>
         <subconverter>md2html</subconverter>
         <subconverter>any2pdf</subconverter>
       </conversionSteps>
-   </converter>
+    </converter>
+
+    <converter name="pages2pdf" class="org.nuxeo.ecm.platform.convert.plugins.Pages2PDFConverter">
+      <destinationMimeType>application/pdf</destinationMimeType>
+      <sourceMimeType>application/vnd.apple.pages</sourceMimeType>
+    </converter>
+
+    <converter name="pages2html">
+      <conversionSteps>
+        <subconverter>pages2pdf</subconverter>
+        <subconverter>pdf2html</subconverter>
+      </conversionSteps>
+    </converter>
 
   </extension>
 
