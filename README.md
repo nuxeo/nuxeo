@@ -69,7 +69,7 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
     * ftest/selenium: Selenium tests for CMF
  * nuxeo-distribution-coreserver: CoreServer EAR
  * nuxeo-distribution-dam: Digital Assets Management EAR
-    * ftest/funkload
+    * ftest/funkload: Funkload tests for DAM
     * ftest/selenium: Selenium tests for DAM
  * nuxeo-distribution-dm: Document Management EAR
     * ftest/cmis: CMIS tests for DM
