@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.webapp.tree;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -29,7 +34,7 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
 
     protected TreeManager treeManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -43,7 +48,7 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
         assertNotNull(treeManager);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         // undeploy bundles
         undeployContrib("org.nuxeo.ecm.webapp.base",
@@ -53,6 +58,7 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testDefaultContribs() {
         String filterName = "navigation";
         assertEquals("tree_children",
@@ -62,6 +68,7 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
         assertNull(treeManager.getSorter(filterName));
     }
 
+    @Test
     public void testOverride() {
         deployContrib(Thread.currentThread().getContextClassLoader().getResource(
                 "test-nxtreemanager-contrib.xml"));

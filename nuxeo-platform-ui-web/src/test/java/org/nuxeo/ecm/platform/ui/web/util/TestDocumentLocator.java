@@ -24,18 +24,20 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
-public class TestDocumentLocator extends TestCase {
+public class TestDocumentLocator {
 
     private static final Log log = LogFactory.getLog(TestDocumentLocator.class);
 
+    @Test
     public void testDocUrlCreation() {
         DocumentRef docRef = new IdRef("xxxx-xxx-xxxxx-xxxxxxxxx-xx");
         RepositoryLocation nullServer = null;
@@ -44,6 +46,7 @@ public class TestDocumentLocator extends TestCase {
         log.info("result: " + result);
     }
 
+    @Test
     public void testDocUrlCreation2() {
         RepositoryLocation rep = new RepositoryLocation("alpha");
         DocumentRef docRef = new IdRef("xxxx-xxx-xxxxx-xxxxxxxxx-xx");
@@ -58,6 +61,7 @@ public class TestDocumentLocator extends TestCase {
         }
     }
 
+    @Test
     public void testDocFullUrlCreation() {
         RepositoryLocation rep = new RepositoryLocation("alpha");
         DocumentRef docRef = new IdRef("xxxx-xxx-xxxxx-xxxxxxxxx-xx");

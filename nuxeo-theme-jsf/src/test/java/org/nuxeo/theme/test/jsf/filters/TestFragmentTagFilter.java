@@ -16,6 +16,10 @@ package org.nuxeo.theme.test.jsf.filters;
 
 import java.net.URL;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
@@ -40,7 +44,7 @@ public class TestFragmentTagFilter extends NXRuntimeTestCase {
 
     EngineType engine;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
@@ -65,6 +69,7 @@ public class TestFragmentTagFilter extends NXRuntimeTestCase {
         filter = new FragmentTag();
     }
 
+    @Test
     public void testFilter1() {
         info.setMarkup("<div>orginal markup</div>");
         info.setDirty(true);
@@ -75,6 +80,7 @@ public class TestFragmentTagFilter extends NXRuntimeTestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter2() {
         info.setMarkup("<div>orginal markup</div>");
         info.setDirty(false);

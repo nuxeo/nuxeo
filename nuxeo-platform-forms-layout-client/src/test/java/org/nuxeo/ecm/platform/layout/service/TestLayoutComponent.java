@@ -22,6 +22,10 @@ package org.nuxeo.ecm.platform.layout.service;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -43,7 +47,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
 
     private WebLayoutManager service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
@@ -55,6 +59,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testLayoutRegistration() {
         LayoutDefinition dublincore = service.getLayoutDefinition("dublincore");
         assertNotNull(dublincore);
@@ -129,6 +134,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("barListItem", list[1]);
     }
 
+    @Test
     public void testComplexLayoutRegistration() {
         LayoutDefinition filesLayout = service.getLayoutDefinition("files");
         assertNotNull(filesLayout);
@@ -167,6 +173,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("filename", fieldDefs[0].getFieldName());
     }
 
+    @Test
     public void testWidgetTypeRegistration() {
         WidgetType type = service.getWidgetType("test");
         assertNotNull(type);
@@ -180,6 +187,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertNull(handler.getProperty("foo"));
     }
 
+    @Test
     public void testLayoutPropertiesRegistration() {
         LayoutDefinition layoutDef = service.getLayoutDefinition("layoutPropertiesTest");
         assertNotNull(layoutDef);
@@ -198,6 +206,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
                 layoutRow.getProperties("any").get("layoutRowPropName"));
     }
 
+    @Test
     public void testLayoutColumnsRegistration() {
         LayoutDefinition layoutDef = service.getLayoutDefinition("layoutColumnsTest");
         assertNotNull(layoutDef);

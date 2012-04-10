@@ -25,6 +25,11 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -55,7 +60,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
     DocumentModel searchDocument;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -99,13 +104,14 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertNotNull(FacesContext.getCurrentInstance());
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         facesContext.relieveCurrent();
         super.tearDown();
     }
 
+    @Test
     public void testSaveContentView() throws Exception {
         assertNull(service.saveContentView(null));
 
@@ -174,6 +180,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertTrue(sortInfos.get(0).getSortAscending());
     }
 
+    @Test
     public void testRestoreContentView() throws Exception {
         assertNull(service.restoreContentView(null));
 
@@ -239,6 +246,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals("column_1", resultColumns.get(0));
     }
 
+    @Test
     public void testSaveJSONContentView() throws Exception {
         assertNull(service.saveContentView(null));
 
@@ -268,6 +276,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 encodedJson);
     }
 
+    @Test
     public void testRestoreJSONContentView() throws Exception {
         assertNull(service.saveContentView(null));
 
@@ -288,6 +297,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         checkContentViewState(state);
     }
 
+    @Test
     public void testSaveContentViewWithSearchDoc() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
@@ -350,6 +360,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertTrue(sortInfos.get(0).getSortAscending());
     }
 
+    @Test
     public void testRestoreContentViewWithSearchDoc() throws Exception {
         ContentViewService service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
@@ -410,6 +421,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals("column_1", resultColumns.get(0));
     }
 
+    @Test
     public void testSaveJSONContentViewWithSearchDoc() throws Exception {
         assertNull(service.saveContentView(null));
 
@@ -440,6 +452,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 encodedJson);
     }
 
+    @Test
     public void testRestoreJSONContentViewWithSearchDoc() throws Exception {
         assertNull(service.saveContentView(null));
         String json = "{"

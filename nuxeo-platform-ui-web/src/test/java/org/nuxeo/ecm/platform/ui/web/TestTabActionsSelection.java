@@ -19,7 +19,10 @@ package org.nuxeo.ecm.platform.ui.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -29,7 +32,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 /**
  * @since 5.4.2
  */
-public class TestTabActionsSelection extends TestCase {
+public class TestTabActionsSelection {
 
     ActionManager actionManager;
 
@@ -65,8 +68,8 @@ public class TestTabActionsSelection extends TestCase {
 
     }
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         List<Action> testActions = new ArrayList<Action>();
         for (TAB_ACTION tabAction : TAB_ACTION.values()) {
             testActions.add(tabAction.getAction());
@@ -74,11 +77,12 @@ public class TestTabActionsSelection extends TestCase {
         actionManager = new MockActionManager(testActions);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         actionManager = null;
     }
 
+    @Test
     public void testSetCurrentTabAction() throws Exception {
         TabActionsSelection sel = new TabActionsSelection();
         sel.setCurrentTabAction(CUSTOM_CATEGORY,
@@ -113,6 +117,7 @@ public class TestTabActionsSelection extends TestCase {
         assertEquals(":TAB_VIEW", sel.getCurrentTabIds());
     }
 
+    @Test
     public void testSetCurrentTabActionWithSubTab() throws Exception {
         TabActionsSelection sel = new TabActionsSelection();
         sel.setCurrentTabAction(CUSTOM_CATEGORY,
@@ -150,6 +155,7 @@ public class TestTabActionsSelection extends TestCase {
                 sel.getCurrentTabIds());
     }
 
+    @Test
     public void testResetCurrentTabActionWithSubTab() throws Exception {
         TabActionsSelection sel = new TabActionsSelection();
         sel.setCurrentTabAction(CUSTOM_CATEGORY,
@@ -168,6 +174,7 @@ public class TestTabActionsSelection extends TestCase {
         assertEquals("", sel.getCurrentTabIds());
     }
 
+    @Test
     public void testSetCurrentTabId() throws Exception {
         TabActionsSelection sel = new TabActionsSelection();
         sel.setCurrentTabId(actionManager, null, CUSTOM_CATEGORY,
@@ -202,6 +209,7 @@ public class TestTabActionsSelection extends TestCase {
         assertEquals(":TAB_VIEW", sel.getCurrentTabIds());
     }
 
+    @Test
     public void testSetCurrentTabIds() throws Exception {
         TabActionsSelection sel = new TabActionsSelection();
         sel.setCurrentTabIds(actionManager, null,
@@ -237,6 +245,7 @@ public class TestTabActionsSelection extends TestCase {
         return sel;
     }
 
+    @Test
     public void testSetCurrentTabIds_resetSubTab() throws Exception {
         TabActionsSelection sel = getTestSelectionToReset();
         sel.setCurrentTabIds(actionManager, null,
@@ -251,6 +260,7 @@ public class TestTabActionsSelection extends TestCase {
                 sel.getCurrentTabIds());
     }
 
+    @Test
     public void testSetCurrentTabIds_resetDefaultTab() throws Exception {
         TabActionsSelection sel = getTestSelectionToReset();
         sel.setCurrentTabIds(actionManager, null, ":");
@@ -264,6 +274,7 @@ public class TestTabActionsSelection extends TestCase {
                 sel.getCurrentTabIds());
     }
 
+    @Test
     public void testSetCurrentTabIds_resetTabWithSubTab() throws Exception {
         TabActionsSelection sel = getTestSelectionToReset();
         sel.setCurrentTabIds(actionManager, null, "custom_category:,:TAB_VIEW");
@@ -275,6 +286,7 @@ public class TestTabActionsSelection extends TestCase {
         assertEquals(":TAB_VIEW", sel.getCurrentTabIds());
     }
 
+    @Test
     public void testSetCurrentTabIds_resetAll() throws Exception {
         TabActionsSelection sel = getTestSelectionToReset();
         sel.setCurrentTabIds(actionManager, null, "*:");
@@ -285,6 +297,7 @@ public class TestTabActionsSelection extends TestCase {
         assertEquals("", sel.getCurrentTabIds());
     }
 
+    @Test
     public void testSetCurrentTabIds_resetAllAndSet() throws Exception {
         TabActionsSelection sel = getTestSelectionToReset();
         sel.setCurrentTabIds(actionManager, null, "*:,:TAB_VIEW");

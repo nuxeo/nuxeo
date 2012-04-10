@@ -22,24 +22,28 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.util.Arrays;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.ui.web.util.beans.PropertiesEditorsInstaller;
 
-import junit.framework.TestCase;
-
-public class TestPropertyEditors extends TestCase {
+public class TestPropertyEditors {
 
     PropertiesEditorsInstaller installer = new PropertiesEditorsInstaller();
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         installer.installEditors();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         installer.uninstallEditors();
     }
 
+    @Test
     public void testCoerceStringArrays() {
         PropertyEditor editor = PropertyEditorManager.findEditor(String[].class);
         assertNotNull(editor);

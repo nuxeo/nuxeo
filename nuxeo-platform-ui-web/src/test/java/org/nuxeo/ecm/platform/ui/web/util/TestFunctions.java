@@ -19,15 +19,17 @@ package org.nuxeo.ecm.platform.ui.web.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
 /**
  * @author arussel
  */
-public class TestFunctions extends TestCase {
+public class TestFunctions {
 
+    @Test
     public void testPrintFileSize() {
         assertEquals("123 kB", Functions.printFormatedFileSize("123456", "SI",
                 true));
@@ -41,6 +43,7 @@ public class TestFunctions extends TestCase {
                 false));
     }
 
+    @Test
     public void testPrintDuration() {
         assertEquals("3 d 2 hr", Functions.printFormattedDuration(266405));
 
@@ -58,6 +61,7 @@ public class TestFunctions extends TestCase {
         assertEquals("0 sec", Functions.printFormattedDuration(null));
     }
 
+    @Test
     public void testPrintDurationi18n() {
         Map<String, String> messages = new HashMap<String, String>();
         messages.put(Functions.I18N_DURATION_PREFIX + "days", "jours");
@@ -88,6 +92,7 @@ public class TestFunctions extends TestCase {
                 messages));
     }
 
+    @Test
     public void testGetFileSize() {
         assertEquals(512, Functions.getFileSize("512"));
         assertEquals(1 * 1000, Functions.getFileSize("1k"));
@@ -101,6 +106,7 @@ public class TestFunctions extends TestCase {
         assertEquals(5 * 1024 * 1024, Functions.getFileSize("128h"));
     }
 
+    @Test
     public void testFileSize() {
         assertEquals("3 GB",
                 Functions.printFormatedFileSize("3145728000", "SI", true));
