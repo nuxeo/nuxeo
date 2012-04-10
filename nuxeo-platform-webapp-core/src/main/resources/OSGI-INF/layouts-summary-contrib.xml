@@ -394,6 +394,31 @@
       </property>
     </widgetType>
 
+    <widgetType name="summary_current_document_states">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>States</title>
+        <description>
+          <p>
+            This widgets displays current document states
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/states_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -440,6 +465,8 @@
     <widget name="summary_current_document_single_tasks"
       type="summary_current_document_single_tasks" />
 
+    <widget name="summary_current_document_states"
+      type="summary_current_document_states" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
