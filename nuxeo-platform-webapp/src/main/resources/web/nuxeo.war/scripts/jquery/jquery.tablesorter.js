@@ -2,6 +2,7 @@
  * 
  * TableSorter 2.0 - Client-side table sorting with ease!
  * Version 2.0.5b
+ * Patched for compat with tablesorter_filter
  * @requires jQuery v1.2.3
  * 
  * Copyright (c) 2007 Christian Bach
@@ -329,25 +330,28 @@
                     r = c.row,
                     n = c.normalized,
                     totalRows = n.length,
-                    checkCell = (n[0].length - 1),
                     tableBody = $(table.tBodies[0]),
                     rows = [];
 
 
-                for (var i = 0; i < totalRows; i++) {
-                    var pos = n[i][checkCell];
+                if (totalRows > 0) {
+                    var checkCell = (n[0].length - 1);
 
-                    rows.push(r[pos]);
+                    for (var i = 0; i < totalRows; i++) {
+                        var pos = n[i][checkCell];
 
-                    if (!table.config.appender) {
+                        rows.push(r[pos]);
 
-                        //var o = ;
-                        var l = r[pos].length;
-                        for (var j = 0; j < l; j++) {
-                            tableBody[0].appendChild(r[pos][j]);
+                        if (!table.config.appender) {
+
+                            //var o = ;
+                            var l = r[pos].length;
+                            for (var j = 0; j < l; j++) {
+                                tableBody[0].appendChild(r[pos][j]);
+                            }
+
+                            // 
                         }
-
-                        // 
                     }
                 }
 
@@ -705,6 +709,8 @@
                     this.config.parsers = buildParserCache(this, $headers);
                     // build the cache for the tbody cells
                     cache = buildCache(this);
+                    // store a copy of the original cache of all rows
+                    this.config.cache = cache;
                     // get the css class names, could be done else where.
                     var sortCSS = [config.cssDesc, config.cssAsc];
                     // fixate columns if the users supplies the fixedWidth option
@@ -787,13 +793,13 @@
                     // apply easy methods that trigger binded events
                     $this.bind("update", function () {
                         var me = this;
-                        setTimeout(function () {
+                        //setTimeout(function () {
                             // rebuild parsers.
                             me.config.parsers = buildParserCache(
                             me, $headers);
                             // rebuild the cache map
                             cache = buildCache(me);
-                        }, 1);
+                        //}, 1);
                     }).bind("updateCell", function (e, cell) {
                         var config = this.config;
                         // get position from the dom.
