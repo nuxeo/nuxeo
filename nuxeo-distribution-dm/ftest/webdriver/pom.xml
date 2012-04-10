@@ -9,10 +9,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.nuxeo.ecm.distribution</groupId>
-  <artifactId>nuxeo-distribution-tomcat-dm-tests</artifactId>
-  <name>Nuxeo Tomcat DM Integration Tests</name>
-  <description>Nuxeo Functional Tests on Tomcat distribution with DM module</description>
+  <artifactId>nuxeo-distribution-dm-webdriver-tests</artifactId>
+  <name>Nuxeo DM WebDriver Tests</name>
+  <description>WebDriver functional tests on Nuxeo DM module</description>
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>
