@@ -13,15 +13,20 @@
  *
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages;
 
+import static org.junit.Assert.assertEquals;
+
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
-import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,6 +40,10 @@ import org.openqa.selenium.support.FindBy;
  */
 public class DocumentBasePage extends AbstractPage {
 
+    @Required
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]")
+    public WebElement tabsBar;
+
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Content\"]")
     public WebElement contentTabLink;
 
@@ -44,17 +53,20 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Edit\"]")
     public WebElement editTabLink;
 
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"History\"]")
+    public WebElement historyTabLink;
+
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Manage\"]")
     public WebElement manageTabLink;
-
-    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
-    public WebElement selectedTab;
 
     @FindBy(className = "currentDocumentDescription")
     public WebElement currentDocumentDescription;
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
     public WebElement currentDocumentTitle;
+
+    @FindBy(xpath = "//form[@id=\"breadcrumbForm\"]")
+    public WebElement breadcrumbForm;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -80,6 +92,11 @@ public class DocumentBasePage extends AbstractPage {
         return asPage(SummaryTabSubPage.class);
     }
 
+    public HistoryTabSubPage getHistoryTab() {
+        clickOnLinkIfNotSelected(historyTabLink);
+        return asPage(HistoryTabSubPage.class);
+    }
+
     public ManageTabSubPage getManageTab() {
         clickOnLinkIfNotSelected(manageTabLink);
         return asPage(ManageTabSubPage.class);
@@ -90,6 +107,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
+        WebElement selectedTab = findElementWithTimeout(By.xpath("/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a"));
         if (!selectedTab.equals(tabLink)) {
             tabLink.click();
         }
@@ -100,9 +118,9 @@ public class DocumentBasePage extends AbstractPage {
      *
      * @return
      */
-    public WorkspaceContentTabSubPage getWorkspaceContentTab() {
+    public WorkspacesContentTabSubPage getWorkspacesContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
-        return asPage(WorkspaceContentTabSubPage.class);
+        return asPage(WorkspacesContentTabSubPage.class);
     }
 
     /**
@@ -119,12 +137,27 @@ public class DocumentBasePage extends AbstractPage {
         }
     }
 
+    /**
+     * Check if the title of the current document page is equal to the
+     * {@code expectedTitle}.
+     *
+     * @param expectedTitle the expected title
+     */
+    public void checkDocTitle(String expectedTitle) {
+        assertEquals(expectedTitle, getCurrentDocumentTitle());
+    }
+
     public String getCurrentDocumentDescription() {
         return currentDocumentDescription.getText();
     }
 
     public String getCurrentDocumentTitle() {
         return currentDocumentTitle.getText();
+    }
+
+    public DocumentBasePage goToDocumentByBreadcrumb(String documentTitle) {
+        breadcrumbForm.findElement(By.linkText(documentTitle)).click();
+        return asPage(DocumentBasePage.class);
     }
 
     /**
@@ -142,7 +175,6 @@ public class DocumentBasePage extends AbstractPage {
                     + " is expected to be connected but isn't");
         }
     }
-
 
     public AdminCenterBasePage getAdminCenter() {
         findElementWithTimeout(By.linkText("Admin Center")).click();

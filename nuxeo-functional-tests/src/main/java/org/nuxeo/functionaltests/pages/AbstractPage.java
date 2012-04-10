@@ -14,6 +14,7 @@
  * Contributors:
  *     Sun Seng David TAN
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages;
 
@@ -128,7 +129,6 @@ public abstract class AbstractPage {
      * timeout.
      *
      * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
      * @param parentElement find from the element
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
@@ -160,8 +160,72 @@ public abstract class AbstractPage {
     }
 
     /**
-     * Waits until the URL is different from the one given in parameter,
-     * with a timeout
+     * Finds the first {@link WebElement} using the given method, with a
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}.
+     *
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in
+     *            milliseconds
+     * @return the first matching element on the current page, if found
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static WebElement findElementAndWaitUntilEnabled(By by,
+            int findElementTimeout, int waitUntilEnabledTimeout)
+            throws NotFoundException {
+        return AbstractTest.findElementAndWaitUntilEnabled(by,
+                findElementTimeout, waitUntilEnabledTimeout);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with the
+     * default timeout. Then waits until the element is enabled, with the
+     * default timeout.
+     *
+     * @param by the locating mechanism
+     * @return the first matching element on the current page, if found
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static WebElement findElementAndWaitUntilEnabled(By by)
+            throws NotFoundException {
+        return AbstractTest.findElementAndWaitUntilEnabled(by);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     *
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in
+     *            milliseconds
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static void findElementWaitUntilEnabledAndClick(By by,
+            int findElementTimeout, int waitUntilEnabledTimeout)
+            throws NotFoundException {
+        AbstractTest.findElementWaitUntilEnabledAndClick(by,
+                findElementTimeout, waitUntilEnabledTimeout);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with the
+     * default timeout. Then waits until the element is enabled, with the
+     * default timeout. Then clicks on the element.
+     *
+     * @param by the locating mechanism
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static void findElementWaitUntilEnabledAndClick(By by)
+            throws NotFoundException {
+        AbstractTest.findElementWaitUntilEnabledAndClick(by);
+    }
+
+    /**
+     * Waits until the URL is different from the one given in parameter, with a
+     * timeout
      *
      * @param url the URL to compare to
      */

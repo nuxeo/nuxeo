@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -34,10 +36,6 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     @Required
     @FindBy(linkText = "View")
     WebElement viewUserTab;
-
-    @Required
-    @FindBy(linkText = "Back to the list")
-    WebElement backToTheListLink;
 
     @FindBy(linkText = "Delete")
     WebElement deleteUserLink;
@@ -71,7 +69,7 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     }
 
     public UsersTabSubPage backToTheList() {
-        backToTheListLink.click();
+        findElementWithTimeout(By.linkText("Back to the list")).click();
         return asPage(UsersTabSubPage.class);
     }
 

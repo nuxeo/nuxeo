@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages;
 
@@ -27,11 +28,14 @@ public class HeaderLinksSubPage extends AbstractPage {
     @Deprecated
     WebElement userAndGroupsLink;
 
-    @FindBy(linkText = "Log out")
-    WebElement logoutLink;
-
     @FindBy(xpath = "//div[@class=\"userMenuActions\"]")
     public WebElement userActions;
+
+    @FindBy(xpath = "//div[@class=\"userMenuActions\"]/ul/li/ul")
+    public WebElement userActionLinks;
+
+    @FindBy(xpath = "//div[@class=\"userMenuActions\"]/ul/li/ul/li/a[text()=\"Log out\"]")
+    WebElement logoutLink;
 
     public HeaderLinksSubPage(WebDriver driver) {
         super(driver);
@@ -40,11 +44,6 @@ public class HeaderLinksSubPage extends AbstractPage {
     public UsersGroupsPage goToUserManagementPage() {
         userAndGroupsLink.click();
         return asPage(UsersGroupsPage.class);
-    }
-
-    public LoginPage logout() {
-        logoutLink.click();
-        return asPage(LoginPage.class);
     }
 
     public String getText() {

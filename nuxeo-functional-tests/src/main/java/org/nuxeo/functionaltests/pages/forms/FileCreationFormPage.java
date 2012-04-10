@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.forms;
 
@@ -34,7 +35,7 @@ public class FileCreationFormPage extends AbstractPage {
     @FindBy(id = "document_create:nxl_heading:nxw_description")
     public WebElement descriptionTextInput;
 
-    @FindBy(id = "document_create:button_create")
+    @FindBy(id = "document_create:create_doc_CREATE_DOCUMENT")
     public WebElement createButton;
 
     @FindBy(id = "document_create:nxl_file:nxw_file:nxw_file_file:upload")
@@ -54,8 +55,10 @@ public class FileCreationFormPage extends AbstractPage {
             String description, String fileToUploadPath) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
-        uploadFileRadioButton.click();
-        fileInput.sendKeys(fileToUploadPath);
+        if (fileToUploadPath != null) {
+            uploadFileRadioButton.click();
+            fileInput.sendKeys(fileToUploadPath);
+        }
         createButton.click();
         return asPage(FileDocumentBasePage.class);
     }

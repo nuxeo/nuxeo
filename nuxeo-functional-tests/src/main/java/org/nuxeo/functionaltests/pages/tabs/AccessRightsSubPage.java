@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -95,8 +96,7 @@ public class AccessRightsSubPage extends AbstractPage {
     public AccessRightsSubPage addPermissionForUser(String username,
             String permission, boolean grant) {
         userSelectionSuggestInputText.sendKeys(username);
-        findElementWithTimeout(
-                By.xpath("//table[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/tbody/tr[1]/td[2]")).click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//table[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
 
         Select selectGrant = new Select(selectGrantElement);
 

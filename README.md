@@ -64,17 +64,24 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
 ## Modules listing
 
  * nuxeo-distribution-cap: Content Application Platform EAR
- * nuxeo-distribution-cap-tests: WebDriver tests for CAP
+ * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
  * nuxeo-distribution-cmf: Case Management EAR
+    * ftest/selenium: Selenium tests for CMF
  * nuxeo-distribution-coreserver: CoreServer EAR
  * nuxeo-distribution-dam: Digital Assets Management EAR
+    * ftest/funkload
+    * ftest/selenium: Selenium tests for DAM
  * nuxeo-distribution-dm: Document Management EAR
+    * ftest/cmis: CMIS tests for DM
+    * ftest/funkload: Funkload tests for DM
+    * ftest/selenium: Selenium tests for DM
+    * ftest/webdriver: WebDriver tests for DM
  * nuxeo-distribution-jboss: JBoss distributions
  * nuxeo-distribution-resources: Resources archives used in other packagings (doc, binaries, templates).
  * nuxeo-distribution-social-collaboration: Social Collaboration EAR
+    * ftest/selenium: Selenium tests for SC
  * nuxeo-distribution-tests: Helper POM with Nuxeo test dependencies
  * nuxeo-distribution-tomcat: Tomcat distributions
- * nuxeo-distribution-tomcat-tests: WebDriver tests for Tomcat
  * nuxeo-functional-tests: Framework for testing nuxeo distributions
  * nuxeo-launcher: Control Panel and launcher
  * nuxeo-marketplace-cmf: Marketplace package of CMF

@@ -14,6 +14,7 @@
  * Contributors:
  *     Sun Seng David TAN
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
@@ -64,7 +65,7 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     WebElement groupInput;
 
     @Required
-    @FindBy(id = "createUserView:createUser:button_create")
+    @FindBy(id = "createUserView:createUser:button_save")
     WebElement createButton;
 
     @Required
@@ -86,8 +87,7 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.sendKeys(password);
         groupInput.sendKeys(group);
-        WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
-        ajaxUserListElement.click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
         createButton.click();
         return asPage(UsersGroupsBasePage.class);
     }

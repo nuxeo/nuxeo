@@ -11,7 +11,9 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  *
- * Contributors: Sun Seng David TAN <stan@nuxeo.com>
+ * Contributors:
+ *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.forms;
 
@@ -38,7 +40,7 @@ public class WorkspaceFormPage extends AbstractPage {
     WebElement descriptionTextInput;
 
     @Required
-    @FindBy(id = "document_create:button_create")
+    @FindBy(id = "document_create:create_doc_CREATE_WORKSPACE")
     WebElement createButton;
 
     public WorkspaceFormPage(WebDriver driver) {

@@ -15,10 +15,13 @@
  *     Sun Seng David TAN
  *     Florent Guillaume
  *     Benoit Delbosc
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,17 +38,24 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import org.browsermob.proxy.ProxyServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -59,14 +69,21 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Clock;
 import org.openqa.selenium.support.ui.SystemClock;
 
-import org.browsermob.proxy.ProxyServer;
-
 /**
  * Base functions for all pages.
  */
 public abstract class AbstractTest {
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll("/$","");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL",
+            "http://localhost:8080/nuxeo").replaceAll("/$", "");
+
+    public static final int LOAD_TIMEOUT_SECONDS = 30;
+
+    public static final int LOAD_SHORT_TIMEOUT_SECONDS = 2;
+
+    public static final int AJAX_TIMEOUT_SECONDS = 10;
+
+    public static final int AJAX_SHORT_TIMEOUT_SECONDS = 2;
 
     private static final String FIREBUG_XPI = "firebug-1.6.2-fx.xpi";
 
@@ -75,10 +92,6 @@ public abstract class AbstractTest {
     private static final String FIREBUG_M2 = "firebug/firebug/1.6.2-fx";
 
     private static final String M2_REPO = "/.m2/repository/";
-
-    private static final int LOAD_TIMEOUT_SECONDS = 30;
-
-    private static final int AJAX_TIMEOUT_SECONDS = 10;
 
     private static final int PROXY_PORT = 4444;
 
@@ -142,9 +155,11 @@ public abstract class AbstractTest {
         // TODO: snapshots only test on failure, prefix using the test name
         if (driver instanceof FirefoxDriver) {
             Thread.sleep(250);
-            ((FirefoxDriver)driver).getScreenshotAs(new ScreenShotFileOutput("screenshot1-lastpage"));
+            ((FirefoxDriver) driver).getScreenshotAs(new ScreenShotFileOutput(
+                    "screenshot1-lastpage"));
             Thread.sleep(250);
-            ((FirefoxDriver)driver).getScreenshotAs(new ScreenShotFileOutput("screenshot2-lastpage"));
+            ((FirefoxDriver) driver).getScreenshotAs(new ScreenShotFileOutput(
+                    "screenshot2-lastpage"));
         } else {
             // Not implemented for other drivers
         }
@@ -235,12 +250,13 @@ public abstract class AbstractTest {
             }
         }
         if (xpi == null) {
-            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll("/$","");
+            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll(
+                    "/$", "");
             // try to guess the location in the M2 repo
             for (String f : clf) {
                 if (f.contains(customM2Repo)) {
-                    String m2 = f.substring(0,
-                            f.indexOf(customM2Repo) + customM2Repo.length());
+                    String m2 = f.substring(0, f.indexOf(customM2Repo)
+                            + customM2Repo.length());
                     xpi = new File(m2 + "/" + FIREBUG_M2 + "/" + FIREBUG_XPI);
                     break;
                 }
@@ -269,10 +285,13 @@ public abstract class AbstractTest {
             proxyServer.start();
             proxyServer.setCaptureHeaders(true);
             // Block access to tracking sites
-            proxyServer.blacklistRequests("https?://www\\.nuxeo\\.com/embedded/wizard.*", 410);
-            proxyServer.blacklistRequests("https?://.*\\.mktoresp\\.com/.*", 410);
+            proxyServer.blacklistRequests(
+                    "https?://www\\.nuxeo\\.com/embedded/wizard.*", 410);
+            proxyServer.blacklistRequests("https?://.*\\.mktoresp\\.com/.*",
+                    410);
             proxyServer.blacklistRequests(".*_mchId.*", 410);
-            proxyServer.blacklistRequests("https?://.*\\.google-analytics\\.com/.*", 410);
+            proxyServer.blacklistRequests(
+                    "https?://.*\\.google-analytics\\.com/.*", 410);
             proxyServer.newHar("webdriver-test");
             Proxy proxy = proxyServer.seleniumProxy();
             return proxy;
@@ -486,8 +505,128 @@ public abstract class AbstractTest {
         waitUntilEnabled(element, AJAX_TIMEOUT_SECONDS * 1000);
     }
 
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}.
+     *
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in
+     *            milliseconds
+     * @return the first matching element on the current page, if found
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static WebElement findElementAndWaitUntilEnabled(By by,
+            int findElementTimeout, int waitUntilEnabledTimeout)
+            throws NotFoundException {
+
+        // Find the element.
+        WebElement element = findElementWithTimeout(by, findElementTimeout);
+
+        // Try to wait until the element is enabled.
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(findElementTimeout);
+        WebDriverException lastException = null;
+        while (clock.isNowBefore(end)) {
+            try {
+                waitUntilEnabled(element, waitUntilEnabledTimeout);
+                return element;
+            } catch (StaleElementReferenceException sere) {
+                // Means the element is no longer attached to the DOM
+                // => need to find it again.
+                element = findElementWithTimeout(by, findElementTimeout);
+                lastException = sere;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        throw new NotFoundException(String.format(
+                "Couldn't find element '%s' after timeout", by), lastException);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with the
+     * default timeout. Then waits until the element is enabled, with the
+     * default timeout.
+     *
+     * @param by the locating mechanism
+     * @return the first matching element on the current page, if found
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static WebElement findElementAndWaitUntilEnabled(By by)
+            throws NotFoundException {
+        return findElementAndWaitUntilEnabled(by, LOAD_TIMEOUT_SECONDS * 1000,
+                AJAX_TIMEOUT_SECONDS * 1000);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     *
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in
+     *            milliseconds
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static void findElementWaitUntilEnabledAndClick(By by,
+            int findElementTimeout, int waitUntilEnabledTimeout)
+            throws NotFoundException {
+
+        // Find the element.
+        WebElement element = findElementAndWaitUntilEnabled(by,
+                findElementTimeout, waitUntilEnabledTimeout);
+
+        // Try to click on the element.
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(findElementTimeout);
+        WebDriverException lastException = null;
+        while (clock.isNowBefore(end)) {
+            try {
+                element.click();
+                return;
+            } catch (StaleElementReferenceException sere) {
+                // Means the element is no longer attached to the DOM
+                // => need to find it again.
+                element = findElementAndWaitUntilEnabled(by,
+                        findElementTimeout, waitUntilEnabledTimeout);
+                lastException = sere;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        throw new NotFoundException(String.format(
+                "Couldn't find element '%s' after timeout", by), lastException);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with the
+     * default timeout. Then waits until the element is enabled, with the
+     * default timeout. Then clicks on the element.
+     *
+     * @param by the locating mechanism
+     * @throws NotFoundException if the element is not found or not enabled
+     */
+    public static void findElementWaitUntilEnabledAndClick(By by)
+            throws NotFoundException {
+        findElementWaitUntilEnabledAndClick(by, LOAD_TIMEOUT_SECONDS * 1000,
+                AJAX_TIMEOUT_SECONDS * 1000);
+    }
+
     public LoginPage getLoginPage() {
         return get(NUXEO_URL + "/logout", LoginPage.class);
+    }
+
+    public LoginPage logout() {
+        return getLoginPage();
     }
 
     /**
@@ -545,4 +684,133 @@ public abstract class AbstractTest {
         return loginPage;
     }
 
+    /**
+     * Inits the repository with a test Workspace form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @return the created Workspace page
+     * @throws Exception if initializing repository fails
+     */
+    protected DocumentBasePage initRepository(DocumentBasePage currentPage)
+            throws Exception {
+
+        return createWorkspace(currentPage, "Test Workspace",
+                "Test Workspace for my dear Webdriver.");
+    }
+
+    /**
+     * Cleans the repository (delete the test Workspace) from the
+     * {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @throws Exception if cleaning repository fails
+     */
+    protected void cleanRepository(DocumentBasePage currentPage)
+            throws Exception {
+
+        deleteWorkspace(currentPage, "Test Workspace");
+    }
+
+    /**
+     * Creates a Workspace form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param workspaceTitle the workspace title
+     * @param workspaceDescription the workspace description
+     * @return the created Workspace page
+     */
+    protected DocumentBasePage createWorkspace(DocumentBasePage currentPage,
+            String workspaceTitle, String workspaceDescription) {
+
+        // Go to Workspaces
+        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument(
+                "Workspaces");
+
+        // Get Workspace creation form page
+        WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
+
+        // Create Workspace
+        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
+                workspaceTitle, workspaceDescription);
+        return workspacePage;
+    }
+
+    /**
+     * Deletes the Workspace with title {@code workspaceTitle} from the
+     * {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param workspaceTitle the workspace title
+     */
+    protected void deleteWorkspace(DocumentBasePage currentPage,
+            String workspaceTitle) {
+
+        // Go to Workspaces
+        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument(
+                "Workspaces");
+
+        // Delete the Workspace
+        workspacesPage.getContentTab().removeDocument(workspaceTitle);
+    }
+
+    /**
+     * Creates a File form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param fileTitle the file title
+     * @param fileDescription the file description
+     * @param uploadBlob true if a blob needs to be uploaded (temporary file
+     *            created for this purpose)
+     * @param filePrefix the file prefix
+     * @param fileSuffix the file suffix
+     * @param fileContent the file content
+     * @return the created File page
+     * @throws IOException if temporary file creation fails
+     */
+    protected FileDocumentBasePage createFile(DocumentBasePage currentPage,
+            String fileTitle, String fileDescription, boolean uploadBlob,
+            String filePrefix, String fileSuffix, String fileContent)
+            throws IOException {
+
+        // Get File creation form page
+        FileCreationFormPage fileCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
+                "File", FileCreationFormPage.class);
+
+        // Get file to upload path if needed
+        String fileToUploadPath = null;
+        if (uploadBlob) {
+            fileToUploadPath = getTmpFileToUploadPath(filePrefix, fileSuffix,
+                    fileContent);
+        }
+
+        // Create File
+        FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(
+                fileTitle, fileDescription, fileToUploadPath);
+        return filePage;
+    }
+
+    /**
+     * Creates a temporary file and returns its absolute path.
+     *
+     * @param tmpFilePrefix the file prefix
+     * @param fileSuffix the file suffix
+     * @param fileContent the file content
+     * @return the temporary file to upload path
+     * @throws IOException if temporary file creation fails
+     */
+    protected String getTmpFileToUploadPath(String filePrefix,
+            String fileSuffix, String fileContent) throws IOException {
+
+        // Create tmp file, deleted on exit
+        File tmpFile = File.createTempFile(filePrefix, fileSuffix);
+        tmpFile.deleteOnExit();
+        FileUtils.writeFile(tmpFile, fileContent);
+        assertTrue(tmpFile.exists());
+
+        // Check file URI protocol
+        assertEquals("file", tmpFile.toURI().toURL().getProtocol());
+
+        // Return file absolute path
+        return tmpFile.getAbsolutePath();
+    }
 }

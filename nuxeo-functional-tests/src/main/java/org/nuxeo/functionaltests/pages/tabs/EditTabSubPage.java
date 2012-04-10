@@ -13,12 +13,14 @@
  *
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,16 +31,20 @@ import org.openqa.selenium.support.FindBy;
  */
 public class EditTabSubPage extends AbstractPage {
 
+    public static final String MAJOR_VERSION_INCREMENT_VALUE = "ACTION_INCREMENT_MAJOR";
+
+    public static final String MINOR_VERSION_INCREMENT_VALUE = "ACTION_INCREMENT_MINOR";
+
     @Required
-    @FindBy(id="document_edit:nxl_heading:nxw_title")
+    @FindBy(id = "document_edit:nxl_heading:nxw_title")
     WebElement titleInputText;
 
     @Required
-    @FindBy(id="document_edit:nxl_heading:nxw_description")
+    @FindBy(id = "document_edit:nxl_heading:nxw_description")
     WebElement descriptionInputText;
 
     @Required
-    @FindBy(xpath="//input[@value=\"Save\"]")
+    @FindBy(id = "document_edit:edit_doc_EDIT_CURRENT_DOCUMENT")
     WebElement save;
 
     public EditTabSubPage(WebDriver driver) {
@@ -52,7 +58,8 @@ public class EditTabSubPage extends AbstractPage {
      * @param description
      * @return
      */
-    public DocumentBasePage edit(String title, String description) {
+    public DocumentBasePage edit(String title, String description,
+            String versionIncrementLabel) {
 
         if (title != null) {
             titleInputText.clear();
@@ -61,6 +68,11 @@ public class EditTabSubPage extends AbstractPage {
         if (description != null) {
             descriptionInputText.clear();
             descriptionInputText.sendKeys(description);
+        }
+        if (versionIncrementLabel != null) {
+            WebElement versionIncrementRadio = driver.findElement(By.xpath("//input[@value=\""
+                    + versionIncrementLabel + "\"]"));
+            versionIncrementRadio.click();
         }
 
         save.click();

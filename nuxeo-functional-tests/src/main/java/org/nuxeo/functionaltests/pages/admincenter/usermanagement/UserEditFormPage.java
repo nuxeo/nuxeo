@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Antoine Taillefer
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
@@ -79,9 +80,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(emailInput, email);
         if (group != null) {
             groupInput.sendKeys(group);
-            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//td[text()=\""
+            findElementWaitUntilEnabledAndClick(By.xpath("//td[text()=\""
                     + group + "\"]"));
-            ajaxUserListElement.click();
         }
         saveButton.click();
         return asPage(UserViewTabSubPage.class);
