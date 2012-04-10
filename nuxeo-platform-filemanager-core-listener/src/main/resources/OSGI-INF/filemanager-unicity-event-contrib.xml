@@ -6,6 +6,8 @@
       Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and check for existing duplicated blobs in the db
      </documentation>
     <listener name="unicityListener" async="true" postCommit="true" class="org.nuxeo.ecm.platform.filemanager.core.listener.AsynchronousUnicityCheckListener" priority="140">
+      <event>documentCreated</event>
+      <event>documentModified</event>
     </listener>
   </extension>
 
