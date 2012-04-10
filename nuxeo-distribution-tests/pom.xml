@@ -80,11 +80,6 @@
       <artifactId>nuxeo-functional-tests</artifactId>
       <scope>compile</scope>
     </dependency>
-    <!-- <dependency> -->
-    <!-- <groupId>org.nuxeo.ecm.distribution</groupId> -->
-    <!-- <artifactId>nuxeo-distribution-cap-tests</artifactId> -->
-    <!-- <scope>compile</scope> -->
-    <!-- </dependency> -->
   </dependencies>
 
 </project>

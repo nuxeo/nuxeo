@@ -74,7 +74,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
         <!-- <module>nuxeo-marketplace-content-browser</module> -->
         <!-- <module>nuxeo-marketplace-dm</module> -->
@@ -93,7 +92,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
@@ -115,7 +113,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
@@ -127,13 +124,16 @@
         <module>nuxeo-marketplace-cmf</module>
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-tomcat</module>
+        <module>nuxeo-functional-tests</module>
+        <module>nuxeo-distribution-tomcat-wizard-tests</module>
+        <module>nuxeo-distribution-tomcat-dm-tests</module>
       </modules>
     </profile>
     <profile>
       <id>itest</id>
       <modules>
-        <module>nuxeo-distribution-cap-tests</module>
-        <module>nuxeo-distribution-tomcat-tests</module>
+        <module>nuxeo-distribution-tomcat-wizard-tests</module>
+        <module>nuxeo-distribution-tomcat-dm-tests</module>
       </modules>
     </profile>
     <profile>
@@ -197,12 +197,6 @@
         <artifactId>nuxeo-distribution-cap</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
