@@ -126,19 +126,24 @@
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-functional-tests</module>
         <module>nuxeo-distribution-tomcat-wizard-tests</module>
-        <module>nuxeo-distribution-tomcat-dm-tests</module>
+        <module>nuxeo-distribution-dm/ftest/webdriver</module>
+        <module>nuxeo-distribution-dm/ftest/selenium</module>
+        <module>nuxeo-distribution-dm/ftest/funkload</module>
+        <module>nuxeo-distribution-dam/ftest/selenium</module>
+        <module>nuxeo-distribution-cmf/ftest/selenium</module>
+        <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
       </modules>
     </profile>
     <profile>
       <id>itest</id>
       <modules>
         <module>nuxeo-distribution-tomcat-wizard-tests</module>
-        <module>nuxeo-distribution-tomcat-dm-tests</module>
       </modules>
     </profile>
     <profile>
       <id>ftest-dm</id>
       <modules>
+        <module>nuxeo-distribution-dm/ftest/webdriver</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
       </modules>
     </profile>
