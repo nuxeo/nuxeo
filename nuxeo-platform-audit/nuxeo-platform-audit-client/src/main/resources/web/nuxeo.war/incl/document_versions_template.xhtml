@@ -4,7 +4,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxh="http://nuxeo.org/nxweb/html">
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  id="document_versions">
 <c:if test="#{nxd:hasPermission(currentDocument, 'ReadVersion')
         and currentDocument.versionable
         and !(currentDocument.version or currentDocument.proxy)}">
@@ -12,7 +13,7 @@
   <h:panelGroup>
 
     <c:if test="#{not empty versionList}">
-      <h:form>
+      <h:form id="document_versions_form">
         <h:dataTable var="versionItemSelection" value="#{versionList}"
           class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
           <h:column>
