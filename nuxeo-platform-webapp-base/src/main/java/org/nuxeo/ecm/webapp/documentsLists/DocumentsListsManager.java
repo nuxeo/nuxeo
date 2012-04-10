@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thierry Delprat
+ *     Antoine Taillefer
  */
-
 package org.nuxeo.ecm.webapp.documentsLists;
 
 import java.util.List;
@@ -31,21 +29,21 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * Managing the DM lists into this component insteed of directly inside the Seam
  * context offers the following advantages:
  * <ul>
- * <li> DM Lists life cycle management can be done transparently, the
+ * <li>DM Lists life cycle management can be done transparently, the
  * DocumentsListsManager can use internal fields or differently scoped variables
  * (Conversation, Process ...)
- * <li> DocumentsListsManager provides (will) an Extension Point mechanisme to
+ * <li>DocumentsListsManager provides (will) an Extension Point mechanisme to
  * register new names lists
- * <li> DocumentsListsManager provides add configurations to each lists
+ * <li>DocumentsListsManager provides add configurations to each lists
  * <ul>
- * <li> List Name
- * <li> List Icone
- * <li> List append behavior
- * <li> Category of the list
- * <li> ...
+ * <li>List Name
+ * <li>List Icone
+ * <li>List append behavior
+ * <li>Category of the list
+ * <li>...
  * </ul>
- * <li> DocumentsListsManager provides helpers features for merging and
- * resetting lists
+ * <li>DocumentsListsManager provides helpers features for merging and resetting
+ * lists
  * </ul>
  *
  * @author tiry
@@ -80,19 +78,23 @@ public interface DocumentsListsManager {
     String CURRENT_DOCUMENT_SECTION_SELECTION = "CURRENT_SELECTION_SECTIONS";
 
     /**
+     * List identifier: Stores the current selection of versions.
+     *
+     * @since 5.6
+     */
+    String CURRENT_VERSION_SELECTION = "CURRENT_SELECTION_VERSIONS";
+
+    /**
      * Creates (declares) a new named list of documents.
      *
-     * @param listName
-     *            Name of the list
+     * @param listName Name of the list
      */
-    void createWorkingList(String listName,
-            DocumentsListDescriptor descriptor);
+    void createWorkingList(String listName, DocumentsListDescriptor descriptor);
 
     /**
      * Returns the list listName.
      *
-     * @param listName
-     *            Name of the list
+     * @param listName Name of the list
      * @return
      */
     List<DocumentModel> getWorkingList(String listName);
@@ -107,8 +109,7 @@ public interface DocumentsListsManager {
     /**
      * Returns the list of document types contained into the list ListName.
      *
-     * @param listName
-     *            Name of the list to retrieve
+     * @param listName Name of the list to retrieve
      * @return the DocumentModel List or null if the ListName is unknown
      */
     List<String> getWorkingListTypes(String listName);
@@ -123,33 +124,26 @@ public interface DocumentsListsManager {
     /**
      * Updates the list listName.
      *
-     * @param listName
-     *            Name of the list to update
-     * @param docList
-     *            the DocumentModel list to store in the list ListName
+     * @param listName Name of the list to update
+     * @param docList the DocumentModel list to store in the list ListName
      */
-    void setWorkingList(String listName,
-            List<DocumentModel> docList);
+    void setWorkingList(String listName, List<DocumentModel> docList);
 
     /**
      * Updates the default list.
      *
-     * @param docList
-     *            the DocumentModel list to store in the default list
+     * @param docList the DocumentModel list to store in the default list
      */
     void setWorkingList(List<DocumentModel> docList);
 
     /**
      * Adds one document to the list listName.
      *
-     * @param listName
-     *            the name of the list to update
-     * @param doc
-     *            the doc to append
+     * @param listName the name of the list to update
+     * @param doc the doc to append
      * @return the updated list of DocumentModels
      */
-    List<DocumentModel> addToWorkingList(String listName,
-            DocumentModel doc);
+    List<DocumentModel> addToWorkingList(String listName, DocumentModel doc);
 
     /**
      * Adds one document to the default list.
@@ -162,10 +156,8 @@ public interface DocumentsListsManager {
     /**
      * Adds a list of DocumentModels to the list ListName.
      *
-     * @param listName
-     *            the name of the list to update
-     * @param docList
-     *            the DocumentModels list to append
+     * @param listName the name of the list to update
+     * @param docList the DocumentModels list to append
      * @return the updated list of DocumentModels
      */
     List<DocumentModel> addToWorkingList(String listName,
@@ -174,13 +166,10 @@ public interface DocumentsListsManager {
     /**
      * Adds a list of DocumentModels to the list ListName.
      *
-     * @param listName
-     *            the name of the list to update
-     * @param docList
-     *            the DocumentModels list to append
-     * @param forceAppend
-     *            force the new elements to be appened even if the list default
-     *            behaviour is reset
+     * @param listName the name of the list to update
+     * @param docList the DocumentModels list to append
+     * @param forceAppend force the new elements to be appened even if the list
+     *            default behaviour is reset
      * @return the updated list of DocumentModels
      */
     List<DocumentModel> addToWorkingList(String listName,
@@ -192,8 +181,7 @@ public interface DocumentsListsManager {
      * @param docList
      * @return the updated list of DocumentModels
      */
-    List<DocumentModel> addToWorkingList(
-            List<DocumentModel> docList);
+    List<DocumentModel> addToWorkingList(List<DocumentModel> docList);
 
     /**
      * Removes one DocumentModel from the list ListName.
@@ -202,9 +190,7 @@ public interface DocumentsListsManager {
      * @param doc
      * @return the updated list of DocumentModels
      */
-    List<DocumentModel> removeFromWorkingList(String listName,
-            DocumentModel doc);
-
+    List<DocumentModel> removeFromWorkingList(String listName, DocumentModel doc);
 
     List<DocumentModel> removeFromWorkingList(String listName,
             List<DocumentModel> lst);
@@ -248,8 +234,7 @@ public interface DocumentsListsManager {
      * @param newDocList
      * @return the updated list of DocumentModels
      */
-    List<DocumentModel> resetWorkingList(
-            List<DocumentModel> newDocList);
+    List<DocumentModel> resetWorkingList(List<DocumentModel> newDocList);
 
     /**
      * Check is list listName is empty.
@@ -269,7 +254,7 @@ public interface DocumentsListsManager {
     /**
      * Method called by Seam event service to reset lists.
      */
-    @Observer(value={ EventNames.DOCUMENT_SELECTION_CHANGED }, create=false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
     void refreshLists(DocumentModel currentDocument);
 
     /**
@@ -291,8 +276,7 @@ public interface DocumentsListsManager {
      * @param categoryName
      * @return the names of the available lists
      */
-    List<String> getWorkingListNamesForCategory(
-            String categoryName);
+    List<String> getWorkingListNamesForCategory(String categoryName);
 
     /**
      * Gets the descriptor (meta-data) of a given list.
@@ -300,8 +284,7 @@ public interface DocumentsListsManager {
      * @param listName
      * @return the Descriptor of the DocumentModel list
      */
-    DocumentsListDescriptor getWorkingListDescriptor(
-            String listName);
+    DocumentsListDescriptor getWorkingListDescriptor(String listName);
 
     /**
      * Gets the descriptor (meta-data) of a default list.

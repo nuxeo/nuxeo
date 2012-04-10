@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.webapp.contentbrowser;
 
@@ -34,13 +35,16 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
@@ -64,6 +68,10 @@ public class DocumentListingActionsBean implements Serializable {
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
+
+    /** @since 5.6 */
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected transient ContentViewActions contentViewActions;
@@ -215,8 +223,8 @@ public class DocumentListingActionsBean implements Serializable {
 
     /**
      * Handle complete table selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect
-     * against browsers' back button errors
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors
      *
      * @throws ClientException if currentDocRef is not a valid document
      */
@@ -279,6 +287,66 @@ public class DocumentListingActionsBean implements Serializable {
             navigationContext.navigateToRef(requestedCurrentDocumentRef);
         }
         processSelectRow(docRef, providerName, listName, selection);
+    }
+
+    /**
+     * Handle version row selection event after having ensured that the
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors.
+     *
+     * @param versionModelSelection the version model selection
+     * @param requestedCurrentDocRef the requested current doc ref
+     * @throws ClientException if currentDocRef is not a valid document
+     *
+     * @since 5.6
+     */
+    public void checkCurrentDocAndProcessVersionSelectRow(
+            PageSelection<VersionModel> versionModelSelection,
+            String requestedCurrentDocRef) throws ClientException {
+
+        DocumentRef requestedCurrentDocumentRef = new IdRef(
+                requestedCurrentDocRef);
+        DocumentRef currentDocumentRef = null;
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument != null) {
+            currentDocumentRef = currentDocument.getRef();
+        }
+        if (!requestedCurrentDocumentRef.equals(currentDocumentRef)) {
+            navigationContext.navigateToRef(requestedCurrentDocumentRef);
+        }
+        processVersionSelectRow(versionModelSelection);
+    }
+
+    /**
+     * Processes the version selection row.
+     *
+     * @param versionModelSelection the version model selection
+     * @throws ClientException the client exception
+     */
+    protected final void processVersionSelectRow(
+            PageSelection<VersionModel> versionModelSelection)
+            throws ClientException {
+
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            throw new ClientException(
+                    "Cannot process version select row since current document is null.");
+        }
+
+        DocumentModel version = documentManager.getDocumentWithVersion(
+                currentDocument.getRef(), versionModelSelection.getData());
+        if (version == null) {
+            throw new ClientException(
+                    "Cannot process version select row since selected version document is null.");
+        }
+
+        if (Boolean.TRUE.equals(versionModelSelection.isSelected())) {
+            documentsListsManager.addToWorkingList(
+                    DocumentsListsManager.CURRENT_VERSION_SELECTION, version);
+        } else {
+            documentsListsManager.removeFromWorkingList(
+                    DocumentsListsManager.CURRENT_VERSION_SELECTION, version);
+        }
     }
 
 }

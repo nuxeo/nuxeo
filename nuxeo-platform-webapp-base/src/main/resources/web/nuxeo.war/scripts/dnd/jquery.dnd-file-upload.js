@@ -197,9 +197,11 @@
 
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
       nbUploadInprogress++;
-      xhr.send(file);
+      
       opts.handler.uploadStarted(uploadIdx, file);
       uploadIdx++;
+
+      xhr.send(file);
 
       if (nbUploadInprogress>=opts.numConcurrentUploads) {
         sendingRequestsInProgress=false;

@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Generic component helper methods.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public final class ComponentUtils {
@@ -85,7 +85,7 @@ public final class ComponentUtils {
      * problem so all possible sub components must be added.
      * <p>
      * By default initiated component are marked as not rendered.
-     *
+     * 
      * @param parent
      * @param child
      * @param facetName facet name to put the child in.
@@ -98,7 +98,7 @@ public final class ComponentUtils {
 
     /**
      * Add a sub component to a UI component, marking is as rendered.
-     *
+     * 
      * @param context
      * @param parent
      * @param child
@@ -193,10 +193,15 @@ public final class ComponentUtils {
                     filename = "file";
                 }
                 HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
-                boolean inline = request.getParameter("inline") != null;
+                String inline = request.getParameter("inline");
+                if (inline == null) {
+                    inline = (String) request.getAttribute("inline");
+                }
+                boolean inlineFlag = (inline == null || "false".equals(inline)) ? false
+                        : true;
                 String userAgent = request.getHeader("User-Agent");
                 String contentDisposition = RFC2231.encodeContentDisposition(
-                        filename, inline, userAgent);
+                        filename, inlineFlag, userAgent);
                 response.setHeader("Content-Disposition", contentDisposition);
 
                 addCacheControlHeaders(request, response);
@@ -221,16 +226,16 @@ public final class ComponentUtils {
         return null;
     }
 
-
-    public static String downloadFile(FacesContext faces,
-            String filename, File file) {
+    public static String downloadFile(FacesContext faces, String filename,
+            File file) {
         FileBlob fileBlob = new FileBlob(file);
         return download(faces, fileBlob, filename);
     }
 
     protected static boolean forceNoCacheOnMSIE() {
         // see NXP-7759
-        return Boolean.parseBoolean(Framework.getProperty(FORCE_NO_CACHE_ON_MSIE, "false"));
+        return Boolean.parseBoolean(Framework.getProperty(
+                FORCE_NO_CACHE_ON_MSIE, "false"));
     }
 
     /*
@@ -297,7 +302,7 @@ public final class ComponentUtils {
      * Gets out of suggestion box as it's a naming container and we can't get
      * components out of it with a relative path => take above first found
      * container.
-     *
+     * 
      * @since 5.3.1
      */
     public static UIComponent getBase(UIComponent anchor) {
@@ -322,7 +327,7 @@ public final class ComponentUtils {
      * <p>
      * Does not throw any exception if the component is not found, returns
      * {@code null} instead.
-     *
+     * 
      * @since 5.4
      */
     @SuppressWarnings("unchecked")
@@ -431,7 +436,7 @@ public final class ComponentUtils {
      * <p>
      * Again this assumes that selected is an ordered sub-list of all
      * </p>
-     *
+     * 
      * @param selected ids of selected items
      * @param all
      * @return
@@ -457,7 +462,7 @@ public final class ComponentUtils {
      * <p>
      * Again this assumes that selected is an ordered sub-list of all
      * </p>
-     *
+     * 
      * @param selected ids of selected items
      * @param all
      * @return
