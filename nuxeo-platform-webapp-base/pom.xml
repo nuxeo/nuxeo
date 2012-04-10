@@ -192,8 +192,6 @@
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
-      <!-- Why not 1.1 defined in root POM? -->
-      <version>1.0.1B</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
