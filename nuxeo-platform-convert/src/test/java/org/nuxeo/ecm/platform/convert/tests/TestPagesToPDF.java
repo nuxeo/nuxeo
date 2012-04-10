@@ -27,6 +27,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
@@ -37,11 +39,15 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestPagesToPDF extends NXRuntimeTestCase {
+
+    private static final Log log = LogFactory.getLog(TestPagesToPDF.class);
 
     protected ConversionService cs;
 
@@ -71,11 +77,9 @@ public class TestPagesToPDF extends NXRuntimeTestCase {
                 "application/vnd.apple.pages", "application/pdf");
         assertEquals("pages2pdf", converterName);
 
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-
         BlobHolder pagesBH = getBlobFromPath("test-docs/hello.pages");
         pagesBH.getBlob().setMimeType("application/vnd.apple.pages");
+
         BlobHolder result = cs.convert(converterName, pagesBH, null);
         assertNotNull(result);
 
@@ -102,6 +106,23 @@ public class TestPagesToPDF extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
+        ConverterCheckResult check = cs.isConverterAvailable(converterName);
+        assertNotNull(check);
+        if (!check.isAvailable()) {
+            log.warn("Skipping PDF2Html tests since commandLine is not installed");
+            log.warn(" converter check output : "
+                    + check.getInstallationMessage());
+            log.warn(" converter check output : " + check.getErrorMessage());
+            return;
+        }
+
+        CommandAvailability ca = cles.getCommandAvailability("pdftohtml");
+
+        if (!ca.isAvailable()) {
+            log.warn("pdftohtml command is not available, skipping test");
+            return;
+        }
+
         BlobHolder pagesBH = getBlobFromPath("test-docs/hello.pages");
         pagesBH.getBlob().setMimeType("application/vnd.apple.pages");
         BlobHolder result = cs.convert(converterName, pagesBH, null);
@@ -126,9 +147,6 @@ public class TestPagesToPDF extends NXRuntimeTestCase {
         String converterName = cs.getConverterName(
                 "application/vnd.apple.pages", "application/pdf");
         assertEquals("pages2pdf", converterName);
-
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-        assertNotNull(cles);
 
         BlobHolder pagesBH = getBlobFromPath("test-docs/hello-without-preview.pages");
         pagesBH.getBlob().setMimeType("application/vnd.apple.pages");
