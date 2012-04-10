@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -45,9 +45,9 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestPagesToPDF extends NXRuntimeTestCase {
+public class TestIWorkToPDF extends NXRuntimeTestCase {
 
-    private static final Log log = LogFactory.getLog(TestPagesToPDF.class);
+    private static final Log log = LogFactory.getLog(TestIWorkToPDF.class);
 
     protected ConversionService cs;
 
@@ -72,13 +72,19 @@ public class TestPagesToPDF extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testPDFConverter() throws Exception {
-        String converterName = cs.getConverterName(
-                "application/vnd.apple.pages", "application/pdf");
-        assertEquals("pages2pdf", converterName);
+    public void testiWorkConverter() throws Exception {
+        testiWorkConverter("test-docs/hello.pages");
+        testiWorkConverter("test-docs/hello.key");
+        testiWorkConverter("test-docs/hello.numbers");
+    }
 
-        BlobHolder pagesBH = getBlobFromPath("test-docs/hello.pages");
-        pagesBH.getBlob().setMimeType("application/vnd.apple.pages");
+    public void testiWorkConverter(String blobPath) throws Exception {
+        String converterName = cs.getConverterName(
+                "application/vnd.apple.iwork", "application/pdf");
+        assertEquals("iwork2pdf", converterName);
+
+        BlobHolder pagesBH = getBlobFromPath(blobPath);
+        pagesBH.getBlob().setMimeType("application/vnd.apple.iwork");
 
         BlobHolder result = cs.convert(converterName, pagesBH, null);
         assertNotNull(result);
@@ -90,7 +96,7 @@ public class TestPagesToPDF extends NXRuntimeTestCase {
         File pdfFile = File.createTempFile("testingPDFConverter", ".pdf");
         try {
             result.getBlob().transferTo(pdfFile);
-            String text = BaseConverterTest.readPdfText(pdfFile);
+            String text = BaseConverterTest.readPdfText(pdfFile).toLowerCase();
             assertTrue(text.contains("hello"));
         } finally {
             pdfFile.delete();
@@ -101,7 +107,7 @@ public class TestPagesToPDF extends NXRuntimeTestCase {
     public void testHTMLConverter() throws Exception {
         String converterName = cs.getConverterName(
                 "application/vnd.apple.pages", "text/html");
-        assertEquals("pages2html", converterName);
+        assertEquals("iwork2html", converterName);
 
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
@@ -146,12 +152,12 @@ public class TestPagesToPDF extends NXRuntimeTestCase {
     public void testPagesWithoutPreviewConverter() throws ClientException {
         String converterName = cs.getConverterName(
                 "application/vnd.apple.pages", "application/pdf");
-        assertEquals("pages2pdf", converterName);
+        assertEquals("iwork2pdf", converterName);
 
         BlobHolder pagesBH = getBlobFromPath("test-docs/hello-without-preview.pages");
         pagesBH.getBlob().setMimeType("application/vnd.apple.pages");
         try {
-            BlobHolder result = cs.convert(converterName, pagesBH, null);
+            cs.convert(converterName, pagesBH, null);
             fail("pdf preview isn't available");
         } catch (ConversionException e) {
             // ok

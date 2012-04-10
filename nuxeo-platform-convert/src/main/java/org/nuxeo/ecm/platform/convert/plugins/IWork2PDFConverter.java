@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2002-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2002-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.utils.ZipUtils;
@@ -32,13 +34,17 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 /**
- * Pages2PDF converter.
+ * iWork2PDF converter.
  *
  * @author ldoguin
  */
-public class Pages2PDFConverter implements Converter {
+public class IWork2PDFConverter implements Converter {
 
-    private static final String PAGES_PREVIEW_FILE = "QuickLook/Preview.pdf";
+    public static final List<String> IWORK_MIME_TYPES = Arrays.asList(new String[] {
+            "application/vnd.apple.pages", "application/vnd.apple.keynote",
+            "application/vnd.apple.numbers", "application/vnd.apple.iwork" });
+
+    private static final String IWORK_PREVIEW_FILE = "QuickLook/Preview.pdf";
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
@@ -47,25 +53,27 @@ public class Pages2PDFConverter implements Converter {
             // retrieve the blob and verify its mimeType
             Blob blob = blobHolder.getBlob();
             String mimeType = blob.getMimeType();
-            if (mimeType == null || !mimeType.equals("application/vnd.apple.pages")) {
-                throw new ConversionException("not a pages file");
+
+            if (mimeType == null
+                    || !IWORK_MIME_TYPES.contains(mimeType)) {
+                throw new ConversionException("not an iWork file");
             }
             // look for the pdf file
-            if (ZipUtils.hasEntry(blob.getStream(), PAGES_PREVIEW_FILE)) {
+            if (ZipUtils.hasEntry(blob.getStream(), IWORK_PREVIEW_FILE)) {
                 // pdf file exist, let's extract it and return it as a
                 // BlobHolder.
                 InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(
-                        blob.getStream(), PAGES_PREVIEW_FILE);
+                        blob.getStream(), IWORK_PREVIEW_FILE);
                 Blob previewBlob = new FileBlob(previewPDFFile);
                 return new SimpleCachableBlobHolder(previewBlob);
             } else {
                 // Pdf file does not exist, conversion cannot be done.
                 throw new ConversionException(
-                        "Pages file does not contain a pdf preview.");
+                        "iWork file does not contain a pdf preview.");
             }
         } catch (Exception e) {
             throw new ConversionException(
-                    "Could not find the pdf preview in the pages file", e);
+                    "Could not find the pdf preview in the iWork file", e);
         }
     }
 
