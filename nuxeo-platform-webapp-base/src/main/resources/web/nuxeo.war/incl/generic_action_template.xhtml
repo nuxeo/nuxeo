@@ -48,7 +48,7 @@ Parameters:
 
     <c:when test="#{action.type == 'link_icon'}">
       <nxh:commandLink action="#{action.getLink()}" id="#{action.id}"
-        onclick="#{action.confirm}">
+        onclick="#{action.confirm}" styleClass="button">
         <h:graphicImage value="#{action.icon}"
           rendered="#{not empty action.icon}"
           title="#{messages[action.label]}"
@@ -60,7 +60,7 @@ Parameters:
     <c:when test="#{action.getType() == 'fancybox'}">
       <a4j:commandLink id="#{action.id}_link" ajaxSingle="true"
         ignoreDupResponses="true" requestDelay="100"
-        onclick="showFancyBox('##{action.id}_box');">
+        onclick="showFancyBox('##{action.id}_box');" styleClass="button">
         <h:graphicImage value="#{action.icon}"
           rendered="#{not empty action.icon}"
           title="#{messages[action.label]}"

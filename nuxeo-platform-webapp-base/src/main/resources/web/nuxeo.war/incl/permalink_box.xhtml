@@ -7,8 +7,16 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
-  <h:outputText value="#{messages['label.permalink']}" />
-  <br />
-  <h:inputText value="#{nxd:documentUrl(currentDocument)}"
-    readonly="true" onclick="javascript:this.focus();this.select();" />
+
+  <h3><h:outputText value="#{messages['label.permalink.title']}" /></h3>
+
+  <div class="content">
+    <p class="popUpDescription">
+      <h:outputText value="#{messages['label.permalink']} #{currentDocument.title}" />
+    </p>
+
+    <h:inputText value="#{nxd:documentUrl(currentDocument)}"
+      readonly="true" onclick="javascript:this.focus();this.select();" />
+  </div>
+
 </div>
