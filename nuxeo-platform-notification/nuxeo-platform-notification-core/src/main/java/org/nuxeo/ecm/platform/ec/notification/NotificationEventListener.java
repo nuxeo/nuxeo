@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
@@ -55,7 +55,8 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-public class NotificationEventListener implements PostCommitEventListener {
+public class NotificationEventListener implements
+        PostCommitFilteringEventListener {
 
     private static final Log log = LogFactory.getLog(NotificationEventListener.class);
 
@@ -65,6 +66,16 @@ public class NotificationEventListener implements PostCommitEventListener {
 
     private EmailHelper emailHelper = new EmailHelper();
 
+    @Override
+    public boolean acceptEvent(Event event) {
+        NotificationService service = NotificationServiceHelper.getNotificationService();
+        if (service == null) {
+            return false;
+        }
+        return service.getNotificationEventNames().contains(event.getName());
+    }
+
+    @Override
     public void handleEvent(EventBundle events) throws ClientException {
 
         NotificationService service = NotificationServiceHelper.getNotificationService();
