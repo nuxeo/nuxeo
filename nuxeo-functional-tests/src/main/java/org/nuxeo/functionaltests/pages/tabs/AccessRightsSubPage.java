@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -34,28 +35,34 @@ import org.openqa.selenium.support.ui.Select;
  */
 public class AccessRightsSubPage extends AbstractPage {
 
+    @Required
     @FindBy(id = "add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest")
     WebElement userSelectionSuggestInputText;
 
+    @Required
     @FindBy(id = "add_rights_form:rights_grant_select")
     WebElement selectGrantElement;
 
+    @Required
     @FindBys({ @FindBy(id = "add_rights_form:rights_grant_select"),
             @FindBy(xpath = "//option[@value='Grant']") })
     WebElement selectGrantOption;
 
+    @Required
     @FindBys({ @FindBy(id = "add_rights_form:rights_grant_select"),
             @FindBy(xpath = "//option[@value='Deny']") })
     WebElement selectDenyOption;
 
+    @Required
     @FindBy(id = "add_rights_form:rights_permission_select")
     WebElement selectPermissionElement;
 
-    @FindBy(id = "validate_rights:document_rights_validate_button")
-    WebElement validateButton;
-
+    @Required
     @FindBy(id = "add_rights_form:rights_add_button")
     WebElement addButton;
+
+    @FindBy(id = "validate_rights:document_rights_validate_button")
+    WebElement validateButton;
 
     public AccessRightsSubPage(WebDriver driver) {
         super(driver);
