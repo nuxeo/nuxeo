@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
@@ -143,12 +144,21 @@ public class AsyncEventExecutor {
                 TimeUnit.SECONDS, mono_queue, threadFactory);
     }
 
-    public void run(List<EventListenerDescriptor> listeners, EventBundle event) {
+    public void run(List<EventListenerDescriptor> listeners, EventBundle bundle) {
         for (EventListenerDescriptor listener : listeners) {
+            EventBundle filtered = new EventBundleImpl();
+            for (Event event : bundle) {
+                if (listener.acceptEvent(event.getName())) {
+                    filtered.push(event);
+                }
+            }
+            if (filtered.isEmpty()) {
+                continue;
+            }
             if (listener.isSingleThreaded()) {
-                mono_executor.execute(new Job(listener, event));
+                mono_executor.execute(new Job(listener, filtered));
             } else {
-                executor.execute(new Job(listener, event));
+                executor.execute(new Job(listener, filtered));
             }
         }
     }

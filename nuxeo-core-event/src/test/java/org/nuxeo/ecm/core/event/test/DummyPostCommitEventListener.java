@@ -22,9 +22,12 @@ public class DummyPostCommitEventListener implements PostCommitEventListener {
 
     public static volatile int handledCount;
 
+    public static volatile int eventCount;
+
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
         handledCount += 1;
+        eventCount += events.size();
     }
 
 }
