@@ -69,14 +69,13 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
         service.fireEvent("test1", customContext);
         assertEquals(0, SCRIPT_CNT);
 
-        // POST Event Listener does not filter events, but receive an all event
-        // bundle with all
+        // this one is filtered out
         service.fireEvent("some-event", customContext);
         assertEquals(0, SCRIPT_CNT);
 
         session.save();
         waitForAsyncExec();
-        assertTrue(3 <= SCRIPT_CNT);
+        assertEquals(2, SCRIPT_CNT);
     }
 
     protected void waitForAsyncExec() {
