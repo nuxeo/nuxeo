@@ -76,6 +76,19 @@
       </filter>
     </action>
 
+    <action id="UserRegistrationValidate"
+            link="${userRegistrationActions.validateUserRegistration}"
+            order="25" label="tab.userregistration.validate">
+      <category>CURRENT_USER_REQUESTS_GLOBAL</category>
+      <category>CURRENT_USER_REQUESTS_LOCAL</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter id="canValidateRegistration">
+        <rule grant="true">
+          <condition>#{userRegistrationActions.canValidate}</condition>
+        </rule>
+      </filter>
+    </action>
+
   </extension>
 
 </component>

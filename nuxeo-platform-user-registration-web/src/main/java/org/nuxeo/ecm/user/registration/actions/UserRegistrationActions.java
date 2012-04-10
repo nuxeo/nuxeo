@@ -207,6 +207,25 @@ public class UserRegistrationActions implements Serializable {
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
+    public boolean getCanValidate() {
+        boolean canDelete = !documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST);
+        for (DocumentModel doc : documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST)) {
+            canDelete &= isDocumentValidable(doc);
+        }
+        return canDelete;
+    }
+
+    protected boolean isDocumentValidable(DocumentModel doc) {
+        try {
+            return "accepted".equals(doc.getCurrentLifeCycleState());
+        } catch (ClientException e) {
+            log.warn("Unable to get lifecycle state for " + doc.getId() + ": "
+                    + e.getMessage());
+            log.debug(e);
+            return false;
+        }
+    }
+
     public boolean getCanDelete() {
         boolean canDelete = !documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST);
         for (DocumentModel doc : documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST)) {
@@ -245,6 +264,31 @@ public class UserRegistrationActions implements Serializable {
         }
     }
 
+    public void validateUserRegistration() {
+        if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
+            try {
+                for (DocumentModel registration : documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST)) {
+                    userRegistrationService.validateRegistration(
+                            registration.getId(),
+                            new HashMap<String, Serializable>());
+                }
+                Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+                facesMessages.add(
+                        INFO,
+                        resourcesAccessor.getMessages().get(
+                                "label.validate.request"));
+                documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
+            } catch (ClientException e) {
+                log.warn("Unable to validate registration: " + e.getMessage());
+                log.info(e);
+                facesMessages.add(
+                        ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "label.unable.validate.request"));
+            }
+        }
+    }
+
     public void reviveUserRegistration() {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
             try {
@@ -256,6 +300,7 @@ public class UserRegistrationActions implements Serializable {
                         INFO,
                         resourcesAccessor.getMessages().get(
                                 "label.revive.request"));
+                documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
             } catch (ClientException e) {
                 log.warn("Unable to revive user: " + e.getMessage());
                 log.info(e);
@@ -278,6 +323,7 @@ public class UserRegistrationActions implements Serializable {
                         INFO,
                         resourcesAccessor.getMessages().get(
                                 "label.delete.request"));
+                documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
             } catch (ClientException e) {
                 log.warn("Unable to delete user request:" + e.getMessage());
                 log.info(e);
@@ -320,7 +366,9 @@ public class UserRegistrationActions implements Serializable {
         try {
             additionalsInfo.put("documentTitle",
                     navigationContext.getCurrentDocument().getTitle());
-            additionalsInfo.put("registration:copyTo", ((NuxeoPrincipal)documentManager.getPrincipal()).getEmail());
+            additionalsInfo.put(
+                    "registration:copyTo",
+                    ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
             additionalsInfo.put("registration:comment", comment);
         } catch (ClientException e) {
             // log it silently as it will break anything

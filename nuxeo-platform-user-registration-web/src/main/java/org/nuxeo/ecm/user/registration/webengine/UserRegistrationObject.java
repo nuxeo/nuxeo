@@ -21,6 +21,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.user.registration.AlreadyProcessedRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
@@ -51,6 +52,8 @@ public class UserRegistrationObject extends ModuleRoot {
             if (!StringUtils.isEmpty(docId)) {
                 redirectUrl = new DocumentUrlFinder(docId).getDocumentUrl();
             }
+        } catch (AlreadyProcessedRegistrationException ape) {
+            log.info("Try to validate an already processed registration");
         } catch (UserRegistrationException ue) {
             log.warn("Unable to validate registration request", ue);
             return getView("ValidationErrorTemplate").arg("exceptionMsg",

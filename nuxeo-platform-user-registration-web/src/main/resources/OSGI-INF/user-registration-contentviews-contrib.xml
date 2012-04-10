@@ -71,6 +71,7 @@
       <events>
         <event>folderishDocumentSelectionChanged</event>
         <event>searchPerformed</event>
+        <event>requestDocumentsChanged</event>
       </events>
       <isSession>false</isSession>
     </documentsList>

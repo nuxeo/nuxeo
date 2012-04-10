@@ -356,7 +356,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 } else {
                     if (registrationDoc.getCurrentLifeCycleState().equals(
                             "validated")) {
-                        throw new UserRegistrationException(
+                        throw new AlreadyProcessedRegistrationException(
                                 "Registration request has already been processed.");
                     } else {
                         throw new UserRegistrationException(
