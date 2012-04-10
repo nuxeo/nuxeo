@@ -10,7 +10,6 @@
   <property name="classifier" value="nuxeo-cap" />
   <property name="wizard.preset" value="nuxeo-cap" />
   <property name="nuxeo.wizard.done" value="false" />
-  <property name="nuxeoURL" value="http://127.0.0.2:8080/nuxeo/" />
 
   <unzip dest="${out.dir}/" overwrite="false">
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
