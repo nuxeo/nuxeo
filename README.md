@@ -64,7 +64,8 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
 ## Modules listing
 
  * nuxeo-distribution-cap: Content Application Platform EAR
- * nuxeo-distribution-cap-tests: WebDriver tests for CAP
+ * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
+ * nuxeo-distribution-tomcat-dm-tests: WebDriver tests for Tomcat DM
  * nuxeo-distribution-cmf: Case Management EAR
  * nuxeo-distribution-coreserver: CoreServer EAR
  * nuxeo-distribution-dam: Digital Assets Management EAR
