@@ -751,11 +751,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
             String userName = (String) registration.getPropertyValue(USERNAME_FIELD);
             session.removeDocument(registration.getRef());
-
-            UserManager userManager = Framework.getLocalService(UserManager.class);
-            if (null != userManager.getUserModel(userName)) {
-                userManager.deleteUser(userName);
-            }
         }
     }
 
