@@ -419,6 +419,30 @@
       </property>
     </widgetType>
 
+    <widgetType name="summary_current_document_contributors">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>States</title>
+        <description>
+          <p>
+            This widgets displays document contributors
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/contributors_widget_template.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -467,6 +491,9 @@
 
     <widget name="summary_current_document_states"
       type="summary_current_document_states" />
+
+    <widget name="summary_current_document_contributors"
+      type="summary_current_document_contributors" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -486,7 +513,7 @@
         <row>
           <widget>summary_current_document_description</widget>
           <widget>summary_current_document_states</widget>
-          <widget>summary_current_document_participants</widget>
+          <widget>summary_current_document_contributors</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_activity</widget>
           <widget>summary_current_document_relations</widget>

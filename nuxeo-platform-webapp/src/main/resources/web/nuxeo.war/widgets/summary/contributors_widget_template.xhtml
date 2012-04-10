@@ -1,0 +1,11 @@
+<div class="description_block" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['label.dublincore.contributors']}" />
+  </h3>
+  <c:forEach var="contributor"
+    items="#{currentDocument.dc.contributors}">
+    <a href="#{baseURL}user/#{contributor}"> <h:outputText>#{contributor}</h:outputText></a>
+  </c:forEach>
+</div>
