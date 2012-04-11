@@ -58,21 +58,36 @@ Parameters:
     </c:when>
 
     <c:when test="#{action.getType() == 'fancybox'}">
-      <a4j:commandLink id="#{action.id}_link" ajaxSingle="true"
-        ignoreDupResponses="true" requestDelay="100"
-        onclick="showFancyBox('##{action.id}_box');" styleClass="button">
-        <h:graphicImage value="#{action.icon}"
-          rendered="#{not empty action.icon}"
-          title="#{messages[action.label]}"
-          alt="#{messages[action.label]}" styleClass="smallIcon" />
-      </a4j:commandLink>
-      <ui:insert name="inside_action" />
-      <div style="display: none;">
-        <div id="#{action.id}_box">
-          <ui:include
-            src="../#{action.properties.fancybox.properties.url}" />
-        </div>
-      </div>
+    <!-- fancybox include property contains resources -->
+    <!-- fancybox iframe property contains method to resolve-->
+      <nxu:set var="include"
+        value="#{action.properties.fancybox.properties.include}">
+        <nxu:set var="iframe"
+          value="#{action.properties.fancybox.properties.iframe}"
+          resolveTwice="true">
+          <a4j:commandLink id="#{action.id}_link" ajaxSingle="true"
+            ignoreDupResponses="true" requestDelay="100"
+            onclick="showFancyBox('##{action.id}_box');" styleClass="button">
+            <h:graphicImage value="#{action.icon}"
+              rendered="#{not empty action.icon}"
+              title="#{messages[action.label]}"
+              alt="#{messages[action.label]}" styleClass="smallIcon" />
+          </a4j:commandLink>
+          <ui:insert name="inside_action" />
+          <div style="display: none;">
+            <div id="#{action.id}_box">
+              <c:choose>
+                <c:when test="#{iframe eq null}">
+                  <ui:include src="../#{include}" />
+                </c:when>
+                <c:otherwise>
+                  <iframe src="#{iframe}" />
+                </c:otherwise>
+              </c:choose>
+            </div>
+          </div>
+        </nxu:set>
+      </nxu:set>
     </c:when>
 
     <!-- Return an icon + text link if type is null -->

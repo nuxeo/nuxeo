@@ -46,7 +46,7 @@
       type="fancybox" icon="/icons/contextual_menu/share.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties name="fancybox">
-        <property name="url">/incl/permalink_box.xhtml</property>
+        <property name="include">incl/permalink_box.xhtml</property>
       </properties>
     </action>
     <action id="downloadAction"
@@ -79,7 +79,7 @@
       <filter-id>not_folder</filter-id>
       <filter-id>not_anonymous</filter-id>
       <properties name="fancybox">
-        <property name="url">#{previewActions.getCurrentDocumentPreviewPopupURL()}
+        <property name="iframe">#{previewActions.getCurrentDocumentPreviewPopupURL()}
         </property>
       </properties>
     </action>
