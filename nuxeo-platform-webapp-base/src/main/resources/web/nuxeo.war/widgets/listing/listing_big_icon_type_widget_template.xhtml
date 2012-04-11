@@ -5,6 +5,10 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+
+<nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
+<nxu:set var="label" value="#{empty typeLabel ? field_2 : messages[typeLabel]}">
+
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field_2}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
@@ -13,7 +17,7 @@
       class="cell popupTarget dropout nxDraggable"
       docRef="#{field_1}">
       <nxu:graphicImage
-        value="#{nxd:bigIconPath(field_0)}" alt="#{field_2}" title="#{field_2}"
+        value="#{nxd:bigIconPath(field_0)}" alt="#{label}" title="#{label}""
         rendered="#{!empty nxd:bigIconPath(field_0)}"
         styleClass="bigIcon" />
     </div>
@@ -23,9 +27,11 @@
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>
     <nxu:graphicImage
-      value="#{nxd:iconPath(field_0)}" alt="#{field_2}" title="#{field_2}"
+      value="#{nxd:iconPath(field_0)}" alt="#{label}" title="#{label}""
       rendered="#{!empty nxd:iconPath(field_0)}"
       styleClass="smallIcon" />
   </nxp:html>
 </c:if>
+
+</nxu:set></nxu:set>
 </f:subview>
