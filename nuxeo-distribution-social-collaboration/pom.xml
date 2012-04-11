@@ -53,6 +53,15 @@
       <groupId>org.nuxeo.activity</groupId>
       <artifactId>nuxeo-activity</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-user-registration-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-user-registration-web</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
