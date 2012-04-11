@@ -26,6 +26,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -42,13 +46,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestHelpers extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-schemas.xml");
     }
 
+    @Test
     public void testValueExpressionHelper() {
         FieldDefinition fieldDef = new FieldDefinitionImpl("dublincore",
                 "title");
@@ -123,6 +128,7 @@ public class TestHelpers extends NXRuntimeTestCase {
         return res;
     }
 
+    @Test
     public void testLayoutAutomaticGeneration() throws Exception {
         SchemaManager sm = Framework.getService(SchemaManager.class);
         Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,
@@ -139,6 +145,7 @@ public class TestHelpers extends NXRuntimeTestCase {
                 FileUtils.read(generatedStream).replaceAll("\r?\n", ""));
     }
 
+    @Test
     public void testLayoutAutomaticGenerationWithLabel() throws Exception {
         SchemaManager sm = Framework.getService(SchemaManager.class);
         Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,

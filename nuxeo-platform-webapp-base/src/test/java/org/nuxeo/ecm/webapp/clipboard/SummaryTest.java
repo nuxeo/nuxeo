@@ -21,6 +21,10 @@ package org.nuxeo.ecm.webapp.clipboard;
 
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -32,7 +36,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         return SummaryEntry.getDateFormat().format(new Date());
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         summary = new SummaryImpl();
@@ -43,6 +47,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         summary.put(new IdRef("0").toString(), rootEntry);
     }
 
+    @Test
     public void testHasChild() {
         assertFalse(summary.hasChild(summary.getSummaryRoot()));
 
@@ -67,6 +72,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         assertTrue(summary.hasChild(childEntry));
     }
 
+    @Test
     public void testGetChildren() {
         // Add new child to root
         SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(),
@@ -88,6 +94,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         assertEquals(2, summary.getChildren(summary.getSummaryRoot()).size());
     }
 
+    @Test
     public void testGetPath() {
         // Add new child to root
         SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(),
@@ -112,6 +119,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         assertEquals("root/child 1", childEntry.getPath());
     }
 
+    @Test
     public void testCompareSummaryEntry() {
         // Add new child to root
         SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(),

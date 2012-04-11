@@ -24,6 +24,11 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
@@ -45,7 +50,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
 
     private ThemeManager themeManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
@@ -60,7 +65,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         themeManager = Manager.getThemeManager();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         // clear relations that have been set through ElementFormatter
         Manager.getRelationStorage().clear();
@@ -68,6 +73,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         themeManager = null;
     }
 
+    @Test
     public void testElement() throws MalformedURLException, NodeException {
 
         URL themeUrl = new URL(

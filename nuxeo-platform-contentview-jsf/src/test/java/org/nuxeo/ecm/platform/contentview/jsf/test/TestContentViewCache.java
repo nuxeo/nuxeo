@@ -23,6 +23,11 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -52,7 +57,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
 
     DocumentModel container2;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -105,7 +110,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         createTestDocuments(container2);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         facesContext.relieveCurrent();
@@ -127,6 +132,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testContentViewCache() throws Exception {
         ContentViewCache cache = new ContentViewCache();
 

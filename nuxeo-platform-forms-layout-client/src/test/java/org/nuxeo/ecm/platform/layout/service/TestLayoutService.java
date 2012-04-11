@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -50,7 +54,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     private WebLayoutManager service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
@@ -60,6 +64,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testWidgetType() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-contrib.xml");
@@ -115,6 +120,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals(wTypeDef, wTypeDefs.get(0));
     }
 
+    @Test
     public void testLayout() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-contrib.xml");
@@ -216,6 +222,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals(caseSensitive, option.getCaseSensitive());
     }
 
+    @Test
     public void testLayoutRowSelection() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-listing-test-contrib.xml");
@@ -272,6 +279,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("title_link", rows[1].getName());
     }
 
+    @Test
     public void testWidgetModeProperties() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-contrib.xml");
@@ -305,6 +313,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals(BuiltinWidgetModes.VIEW, viewProps.get("mode"));
     }
 
+    @Test
     public void testPropertyReference() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-props-contrib.xml");

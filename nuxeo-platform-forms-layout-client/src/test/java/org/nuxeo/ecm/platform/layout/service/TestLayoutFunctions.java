@@ -19,6 +19,10 @@ package org.nuxeo.ecm.platform.layout.service;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.facelets.library.LayoutTagLibrary;
@@ -33,7 +37,7 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
 
     private WebLayoutManager service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
@@ -45,6 +49,7 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Test
     public void testRowSelectionFunctions() {
         // row selection needs to be tested against a layout with all rows
         // selected by default

@@ -160,16 +160,22 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-management</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet.ext.fileupload</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -178,17 +184,14 @@
     <dependency>
       <groupId>com.noelios.restlet</groupId>
       <artifactId>com.noelios.restlet</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>com.noelios.restlet</groupId>
       <artifactId>com.noelios.restlet.ext.servlet</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
-      <version>1.0.1B</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
