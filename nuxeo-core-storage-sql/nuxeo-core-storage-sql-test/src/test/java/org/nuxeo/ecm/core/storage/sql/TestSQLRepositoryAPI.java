@@ -31,6 +31,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.collections.ScopeType;
@@ -1012,7 +1013,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     // TODO: fix this test.
-    public void XXXtestGetDocumentDocumentRefStringArray()
+    @Test
+    @Ignore
+    public void testGetDocumentDocumentRefStringArray()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
 
@@ -1150,11 +1153,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", doc.getType());
     }
 
-    // @Test
-    // public void testGetFilesDocumentRefFilterSorter() {
+    @Test
+    @Ignore
+    public void testGetFilesDocumentRefFilterSorter() {
     // not used at the moment
-    //
-    // }
+    }
 
     @Test
     public void testGetFoldersDocumentRef() throws ClientException {
@@ -1231,10 +1234,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("Folder", doc.getType());
     }
 
-    // @Test
-    // public void testGetFoldersDocumentRefFilterSorter() {
-    // not used at the moment
-    // }
+    @Test
+    @Ignore
+    public void testGetFoldersDocumentRefFilterSorter() {
+        // not used at the moment
+    }
 
     @Test
     public void testGetParentDocument() throws ClientException {
@@ -2434,7 +2438,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     // TODO: fix this test
-    public void XXXtestScalarList() throws Exception {
+    @Test
+    @Ignore
+    public void testScalarList() throws Exception {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -2565,7 +2571,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     // TODO: fix and reenable.
-    public void XXXtestDocumentAdapter() throws Exception {
+    @Test
+    @Ignore
+    public void testDocumentAdapter() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
                 "file", "File");
@@ -2622,7 +2630,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     // TODO: fix and reenable, is this a bug?
-    public void XXXtestRetrieveProxies() throws ClientException {
+    @Test
+    @Ignore
+    public void testRetrieveProxies() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         // Section A

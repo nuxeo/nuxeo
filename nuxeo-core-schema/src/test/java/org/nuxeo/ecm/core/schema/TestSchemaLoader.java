@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -63,8 +64,9 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     // FIXME: this tests makes too string assumptions on how the fields will be
     // ordered when we iterate over them (fails under Java 6)
-    // @Test
-    public void XXXtestXSDReader() throws Exception {
+    @Test
+    @Ignore
+    public void testXSDReader() throws Exception {
         URL url = getResource("schema/schema.xsd");
 
         reader.loadSchema("MySchema", "", url);

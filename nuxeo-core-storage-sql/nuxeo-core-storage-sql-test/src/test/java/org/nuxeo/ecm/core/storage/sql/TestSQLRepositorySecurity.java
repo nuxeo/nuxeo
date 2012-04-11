@@ -34,6 +34,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.NXCore;
@@ -540,7 +541,9 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         return doc.getRef();
     }
 
-    public void xxxtestGetAvailableSecurityPermissions() throws ClientException {
+    @Test
+    @Ignore
+    public void testGetAvailableSecurityPermissions() throws ClientException {
         List<String> permissions = session.getAvailableSecurityPermissions();
 
         // TODO

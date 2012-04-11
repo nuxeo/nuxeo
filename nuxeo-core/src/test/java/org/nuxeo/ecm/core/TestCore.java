@@ -17,6 +17,7 @@ package org.nuxeo.ecm.core;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
@@ -61,8 +62,9 @@ public class TestCore extends NXRuntimeTestCase {
 
     // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
-    // @Test
-    public void xxxtestDocTypes() {
+    @Test
+    @Ignore
+    public void testDocTypes() {
         assertEquals(3, typeManager.getDocumentTypesCount());
 
         // TODO: Iterate on docTypes and check things out
@@ -75,8 +77,9 @@ public class TestCore extends NXRuntimeTestCase {
 
     // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
-    // @Test
-    public void xxxtestSchemaRegistry() {
+    @Test
+    @Ignore
+    public void testSchemaRegistry() {
         Schema[] schemas = typeManager.getSchemas();
         // Default schemas registry is empty
         assertEquals(0, schemas.length);
@@ -84,8 +87,9 @@ public class TestCore extends NXRuntimeTestCase {
 
     // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
-    // @Test
-    public void xxxtestTypeRegistry() {
+    @Test
+    @Ignore
+    public void testTypeRegistry() {
         Type[] types = typeManager.getTypes();
         // Default types registry has 2 types
         // TODO: what is this type and what should we test?

@@ -28,6 +28,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -274,7 +275,9 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     // NXP-2318: i don't get what's supposed to be answered to these questions
-    public void XXXtestArrayOrListProperties() throws Exception {
+    @Test
+    @Ignore
+    public void testArrayOrListProperties() throws Exception {
         Property prop = doc.getProperty("tp:stringArray");
         assertFalse(prop.isContainer());
         assertFalse(prop.isList());
