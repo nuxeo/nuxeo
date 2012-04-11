@@ -177,8 +177,8 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             // TODO TA: This issue seems to have been fixed for the latest
             // Selenium release 2.21
             // See http://code.google.com/p/selenium/issues/detail?id=3544
-            // Once it is released and we upgrade to it, lets try enabling the
-            // confirmation alert again.
+            // Once it is released and we upgrade to it, lets try removing the
+            // Thread.sleep.
         }
         // Wait for page to be loaded after action execution
         findElementWithTimeout(pageElementToCheck);
