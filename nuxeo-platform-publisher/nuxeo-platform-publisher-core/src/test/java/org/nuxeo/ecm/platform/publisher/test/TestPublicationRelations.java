@@ -22,6 +22,11 @@ import java.util.List;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hsqldb.jdbc.jdbcDataSource;
@@ -48,11 +53,15 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
 
     protected DocumentModel doc2Publish;
 
+    public TestPublicationRelations() {
+        super();
+    }
+
     public TestPublicationRelations(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -86,7 +95,7 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         try {
             closeSession();
@@ -140,6 +149,7 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testPublicationRelation() throws Exception {
         createInitialDocs();
 

@@ -16,21 +16,28 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PostCommitOperationEventListener implements
-        PostCommitEventListener {
+        PostCommitFilteringEventListener {
 
-    protected EventHandlerRegistry registry;
-
-    public void handleEvent(EventBundle events) throws ClientException {
-        if (registry == null) {
-            registry = Framework.getLocalService(EventHandlerRegistry.class);
+    @Override
+    public boolean acceptEvent(Event event) {
+        EventHandlerRegistry registry = Framework.getLocalService(EventHandlerRegistry.class);
+        if (!registry.getPostCommitEventNames().contains(event.getName())) {
+            return false;
         }
+        List<EventHandler> handlers = registry.getPostCommitEventHandlers(event.getName());
+        return registry.acceptEvent(event, handlers);
+    }
+
+    @Override
+    public void handleEvent(EventBundle events) throws ClientException {
+        EventHandlerRegistry registry = Framework.getLocalService(EventHandlerRegistry.class);
         boolean processEvents = false;
         for (String name : registry.getPostCommitEventNames()) {
             if (events.containsEventName(name)) {

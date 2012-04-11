@@ -17,13 +17,15 @@ package org.nuxeo.theme.test.webwidgets;
 import java.io.IOException;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.webwidgets.Utils;
 import org.nuxeo.theme.webwidgets.WidgetFieldType;
 
-public class TestUtils extends TestCase {
+public class TestUtils {
 
+    @Test
     public void testExtractBody() {
         assertEquals("text",
                 Utils.extractBody("<html><body>text</body></html>"));
@@ -33,6 +35,7 @@ public class TestUtils extends TestCase {
         assertEquals("no body", Utils.extractBody("no body"));
     }
 
+    @Test
     public void testExtractScripts() {
         assertEquals("", Utils.extractScripts("<html><body>text</body></html>"));
         assertEquals(
@@ -46,6 +49,7 @@ public class TestUtils extends TestCase {
                 Utils.extractScripts("<html><body><script>alert('test');</script></body></html>"));
     }
 
+    @Test
     public void testExtractStyles() {
         assertEquals("", Utils.extractStyles("<html><body>text</body></html>"));
         assertEquals(
@@ -59,6 +63,7 @@ public class TestUtils extends TestCase {
                 Utils.extractStyles("<html><body><style>div {color. red;}</style></body></html>"));
     }
 
+    @Test
     public void testExtractMetadata() {
         assertEquals("Author name", Utils.extractMetadata(
                 "<meta name=\"author\" content=\"Author name\" />", "author"));
@@ -69,6 +74,7 @@ public class TestUtils extends TestCase {
                 "<meta name=\"known\" content=\"Unknown\" />", "unknown"));
     }
 
+    @Test
     public void testExtractIcon() {
         assertEquals(
                 "icon.png",
@@ -78,6 +84,7 @@ public class TestUtils extends TestCase {
                 Utils.extractIcon("<link rel=\"icon\" href=\"icon.png\" type=\"image/png\" />"));
     }
 
+    @Test
     public void testExtractSchema() throws IOException {
         List<WidgetFieldType> fields = Utils.extractSchema(org.nuxeo.theme.Utils.readResourceAsString("test-widget.html"));
         WidgetFieldType field1 = fields.get(0);

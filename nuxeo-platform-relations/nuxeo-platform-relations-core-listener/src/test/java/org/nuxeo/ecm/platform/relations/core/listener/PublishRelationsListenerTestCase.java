@@ -20,6 +20,11 @@ package org.nuxeo.ecm.platform.relations.core.listener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -53,7 +58,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
 
     protected RelationManager relationManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations.api");
@@ -90,7 +95,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         session.save();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -127,6 +132,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
                 originalStatements);
     }
 
+    @Test
     public void testCopyRelationsFromWork() throws Exception {
         // add relations of type comment
         addSomeComments(doc1);
@@ -164,6 +170,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         assertEquals(0, comments.size());
     }
 
+    @Test
     public void testKeepCommentsAndRelationsFromOldProxy() throws Exception {
         // add relations of type comment on the original document
         addSomeComments(doc1);
@@ -205,6 +212,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         assertEquals(2, comments.size());
     }
 
+    @Test
     public void testDeleteRelationsOnOriginalDoc() throws Exception {
         DocumentModel docToDelete = createDocTestDoc("docToDelete");
         // add some real document relations (like those from the Relations tab

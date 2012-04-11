@@ -11,18 +11,15 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Calendar;
 
-import junit.framework.Assert;
-
+import org.junit.runner.RunWith;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -529,14 +526,14 @@ public class OperationChainTest {
 
         session.save();
 
-        Assert.assertNull(doc.getPropertyValue("dc:issued"));
-        Assert.assertEquals(date, src.getPropertyValue("dc:issued"));
+        assertNull(doc.getPropertyValue("dc:issued"));
+        assertEquals(date, src.getPropertyValue("dc:issued"));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         // this chain copy the dc:issue from the parent to the child
         DocumentModel out = (DocumentModel) service.run(ctx, "testDateCopy");
 
-        Assert.assertEquals(date, out.getPropertyValue("dc:issued"));
+        assertEquals(date, out.getPropertyValue("dc:issued"));
     }
 }

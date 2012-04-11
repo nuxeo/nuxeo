@@ -14,20 +14,22 @@
 
 package org.nuxeo.theme.test.editor.filters;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.editor.filters.ElementUid;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.rendering.Filter;
 
-public class TestElementUidFilter extends TestCase {
+public class TestElementUidFilter {
     DummyRenderingInfo info;
 
     Filter filter;
 
     PageElement page;
 
-    @Override
+    @Before
     public void setUp() {
         // create the elements to render
         page = new PageElement();
@@ -36,6 +38,7 @@ public class TestElementUidFilter extends TestCase {
         filter = new ElementUid();
     }
 
+    @Test
     public void testFilter2() {
         // insert the element e
         info.setMarkup("<div>content</div>");
@@ -43,6 +46,7 @@ public class TestElementUidFilter extends TestCase {
         assertEquals("<div id=\"e1\">content</div>", info.getMarkup());
     }
 
+    @Test
     public void testFilter3() {
         // if the element already has a e attribute, override it
         info.setMarkup("<div id=\"e2\">content</div>");
@@ -50,6 +54,7 @@ public class TestElementUidFilter extends TestCase {
         assertEquals("<div id=\"e1\">content</div>", info.getMarkup());
     }
 
+    @Test
     public void testFilter4() {
         // edge-case
         info.setMarkup("<div id=\"e2\" id=\"e3\">content</div>");
@@ -57,6 +62,7 @@ public class TestElementUidFilter extends TestCase {
         assertEquals("<div id=\"e1\">content</div>", info.getMarkup());
     }
 
+    @Test
     public void testFilter5() {
         // make sure that other attributes are preserved
         info.setMarkup("<div class=\"someClass\">content</div>");
@@ -65,6 +71,7 @@ public class TestElementUidFilter extends TestCase {
                 info.getMarkup());
     }
 
+    @Test
     public void testFilter6() {
         // test line breaks
         info.setMarkup("<div>content\n</div>\n");
@@ -72,6 +79,7 @@ public class TestElementUidFilter extends TestCase {
         assertEquals("<div id=\"e1\">content\n</div>\n", info.getMarkup());
     }
 
+    @Test
     public void testFilter7() {
         info.setMarkup("<img src=\"/logo.png\" />");
         filter.process(info, false);

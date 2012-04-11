@@ -27,6 +27,9 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -93,6 +96,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         return entries;
     }
 
+    @Test
     public void testAddLogEntry() {
         LogEntry entry = doCreateEntry("id");
         providerUnderTest.addLogEntry(entry);
@@ -100,6 +104,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertTrue(hasId);
     }
 
+    @Test
     public void testHavingKey() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
@@ -109,6 +114,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(new Long(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
     }
 
+    @Test
     public void testByUUID() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
@@ -121,6 +127,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals("id", fetchedEntry.getDocUUID());
     }
 
+    @Test
     public void testByFilter() throws Exception {
         LogEntry one = doCreateEntryAndPersist("id");
         Thread.sleep(1000);
@@ -140,6 +147,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(one.getId(), entries.get(0).getId());
     }
 
+    @Test
     public void testById() {
         LogEntry one = doCreateEntryAndPersist("id");
         LogEntry fetchedEntry = providerUnderTest.getLogEntryByID(one.getId());
@@ -147,6 +155,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(one.getId(), fetchedEntry.getId());
     }
 
+    @Test
     public void testByNativeQuery() {
         doCreateEntryAndPersist("one");
         doCreateEntryAndPersist("two");
@@ -157,6 +166,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(1, entryCount);
     }
 
+    @Test
     public void testDateRange() throws AuditQueryException {
         Date now = new Date();
         Date nowMinusOneHour = DateRangeParser.parseDateRangeQuery(now, "-1h");
@@ -171,6 +181,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(1, entryCount);
     }
 
+    @Test
     public void testLogsByPage() throws Exception {
         LogEntry one = doCreateEntryAndPersist("one");
         Thread.sleep(1000);
@@ -187,6 +198,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals("three", entries.get(0).getDocUUID());
     }
 
+    @Test
     public void testRemove() {
         LogEntry one = doCreateEntryAndPersist("one");
         LogEntry two = doCreateEntryAndPersist("two");
@@ -195,6 +207,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(3, count);
     }
 
+    @Test
     public void testCountEventsById() {
         LogEntry one = doCreateEntryAndPersist("one");
         String eventId = one.getEventId();
@@ -202,6 +215,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(new Long(1), count);
     }
 
+    @Test
     public void testQuery() {
         LogEntry one = doCreateEntryAndPersist("one");
         LogEntry two = doCreateEntryAndPersist("two");

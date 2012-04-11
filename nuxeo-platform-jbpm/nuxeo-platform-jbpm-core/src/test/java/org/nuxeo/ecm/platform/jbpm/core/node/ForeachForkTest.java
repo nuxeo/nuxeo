@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jbpm.graph.def.Node;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -40,6 +43,7 @@ public class ForeachForkTest extends AbstractProcessDefinitionTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testForeachNode() {
         Node node = pd.getNode("fork each participant");
         assertNotNull(node);

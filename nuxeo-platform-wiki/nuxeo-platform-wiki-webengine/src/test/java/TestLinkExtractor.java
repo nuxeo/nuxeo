@@ -19,15 +19,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.wiki.listener.WikiHelper;
 import org.nuxeo.ecm.wiki.listener.WordExtractor;
 import org.wikimodel.wem.WikiParserException;
 import org.wikimodel.wem.common.CommonWikiParser;
 
-public class TestLinkExtractor extends TestCase{
+public class TestLinkExtractor {
 
+    @Test
     public void testOne() throws WikiParserException{
         InputStream in = TestLinkExtractor.class.getClassLoader().getResourceAsStream("test.txt");
         CommonWikiParser parser = new CommonWikiParser();

@@ -17,6 +17,10 @@
 
 package org.nuxeo.connect.services;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.connect.connector.ConnectConnector;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
 import org.nuxeo.connect.packages.PackageManager;
@@ -26,13 +30,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestServiceBindings extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.connect.client");
         deployBundle("org.nuxeo.connect.client.wrapper");
     }
 
+    @Test
     public void testServicesLookup() {
         ConnectRegistrationService crs = Framework.getLocalService(ConnectRegistrationService.class);
         assertNotNull(crs);

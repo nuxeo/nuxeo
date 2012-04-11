@@ -20,6 +20,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,6 +51,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     private final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
 
+    @Test
     public void testAnnotationsOnVersion() throws Exception {
         DocumentModel docModel = createDocument(
                 session.getRootDocument().getPathAsString(),
@@ -91,6 +95,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     }
 
+    @Test
     public void testAnnotationsOnRestore() throws Exception {
         DocumentModel docModel = createDocument(
                 session.getRootDocument().getPathAsString(),
@@ -135,6 +140,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(1, annotations.size());
     }
 
+    @Test
     public void testAnnotationsOnRestoreWithMultipleVersions() throws Exception {
         DocumentModel docModel = createDocument(
                 session.getRootDocument().getPathAsString(),
@@ -197,6 +203,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(3, annotations.size());
     }
 
+    @Test
     public void testDeleteAnnotationsOnVersions() throws Exception {
         DocumentModel docModel = createDocument(
                 session.getRootDocument().getPathAsString(),

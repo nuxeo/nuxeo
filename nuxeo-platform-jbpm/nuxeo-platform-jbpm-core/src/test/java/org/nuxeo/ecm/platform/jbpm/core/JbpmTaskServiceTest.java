@@ -22,6 +22,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.Comment;
 import org.jbpm.taskmgmt.exe.PooledActor;
@@ -61,7 +66,7 @@ public class JbpmTaskServiceTest extends SQLRepositoryTestCase {
 
     protected NuxeoPrincipal user4;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         // clean up previous test.
         JbpmServiceImpl.contexts.set(null);
@@ -101,7 +106,7 @@ public class JbpmTaskServiceTest extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -109,6 +114,7 @@ public class JbpmTaskServiceTest extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testSingleTaskWithAccept() throws Exception {
         DocumentModel document = getDocument();
         assertNotNull(document);
@@ -244,6 +250,7 @@ public class JbpmTaskServiceTest extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testMultipleTaskWithReject() throws Exception {
         DocumentModel document = getDocument();
         assertNotNull(document);

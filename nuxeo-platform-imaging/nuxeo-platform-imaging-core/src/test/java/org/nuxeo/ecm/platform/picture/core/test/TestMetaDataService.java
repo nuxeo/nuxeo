@@ -21,6 +21,11 @@ package org.nuxeo.ecm.platform.picture.core.test;
 import java.io.File;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -37,7 +42,7 @@ public class TestMetaDataService extends NXRuntimeTestCase {
 
     ImagingService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
@@ -47,7 +52,7 @@ public class TestMetaDataService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
         service = null;
@@ -59,6 +64,7 @@ public class TestMetaDataService extends NXRuntimeTestCase {
         return file;
     }
 
+    @Test
     public void testMetaData() throws Exception {
         Blob blob = new FileBlob(getFileFromPath("images/iptc_sample.jpg"));
         blob.setMimeType("image/jpeg");

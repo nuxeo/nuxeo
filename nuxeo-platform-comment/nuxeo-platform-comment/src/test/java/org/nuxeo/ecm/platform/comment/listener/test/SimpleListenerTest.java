@@ -21,6 +21,11 @@ package org.nuxeo.ecm.platform.comment.listener.test;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
@@ -34,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class SimpleListenerTest extends RepositoryOSGITestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations.api");
@@ -47,7 +52,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         openRepository();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -93,6 +98,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
+    @Test
     public void testDocumentRemovedCommentEventListener() throws Exception {
         DocumentModel doc = doCreateADocWithComments();
         assertNotNull(doc);
@@ -112,6 +118,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         assertEquals(0, nbLinks);
     }
 
+    @Test
     public void testCommentRemovedEventListener() throws Exception {
         DocumentModel doc = doCreateADocWithComments();
         assertNotNull(doc);

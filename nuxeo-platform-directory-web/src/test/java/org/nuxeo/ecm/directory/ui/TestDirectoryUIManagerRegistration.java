@@ -18,6 +18,10 @@ package org.nuxeo.ecm.directory.ui;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
@@ -36,7 +40,7 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
 
     DirectoryUIManager service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -56,6 +60,7 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
         assertNotNull(dirService);
     }
 
+    @Test
     public void testDirectoryUIRegistration() throws Exception {
         List<String> dirs = service.getDirectoryNames();
         assertNotNull(dirs);
@@ -86,6 +91,7 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
         assertEquals(0, constraints.size());
     }
 
+    @Test
     public void testDirectoryUIOverride() throws Exception {
         deployContrib("org.nuxeo.ecm.directory.web.tests",
                 "OSGI-INF/test-directory-ui-override-contrib.xml");

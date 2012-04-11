@@ -22,7 +22,10 @@ package org.nuxeo.ecm.platform.relations.api.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -33,7 +36,7 @@ import org.nuxeo.ecm.platform.relations.api.exceptions.InvalidStatementException
 import org.nuxeo.ecm.platform.relations.api.exceptions.InvalidSubjectException;
 
 @SuppressWarnings({"ResultOfObjectAllocationIgnored"})
-public class TestStatement extends TestCase {
+public class TestStatement {
 
     private Resource subject;
 
@@ -51,9 +54,8 @@ public class TestStatement extends TestCase {
 
     private Map<Resource, Node[]> properties;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         subject = NodeFactory.createResource("http://toto");
         predicate = NodeFactory.createResource("http://says");
         literal = NodeFactory.createLiteral("Hello");
@@ -66,13 +68,13 @@ public class TestStatement extends TestCase {
         properties.put(propertyResource, propertyValues);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
         properties = null;
         propertyValues = null;
     }
 
+    @Test
     public void testCreateStatementNull() {
         Statement st = new StatementImpl();
         assertNotNull(st);
@@ -106,6 +108,7 @@ public class TestStatement extends TestCase {
         assertNull(st.getObject());
     }
 
+    @Test
     public void testCreateStatementLiteral() {
         Statement st = new StatementImpl(subject, predicate, literal);
         assertNotNull(st);
@@ -114,6 +117,7 @@ public class TestStatement extends TestCase {
         assertEquals(st.getObject(), literal);
     }
 
+    @Test
     public void testCreateStatementBlank() {
         Statement st = new StatementImpl(subject, predicate, blank);
         assertNotNull(st);
@@ -122,6 +126,7 @@ public class TestStatement extends TestCase {
         assertEquals(st.getObject(), blank);
     }
 
+    @Test
     public void testCreateStatementResource() {
         Statement st = new StatementImpl(subject, predicate, object);
         assertNotNull(st);
@@ -130,6 +135,7 @@ public class TestStatement extends TestCase {
         assertEquals(st.getObject(), object);
     }
 
+    @Test
     public void testCreateStatementBlankSubject() {
         Statement st = new StatementImpl(blank, predicate, object);
         assertNotNull(st);
@@ -138,6 +144,7 @@ public class TestStatement extends TestCase {
         assertEquals(st.getObject(), object);
     }
 
+    @Test
     public void testCreateStatementInvalidSubjectException() {
         try {
             new StatementImpl(literal, predicate, literal);
@@ -146,6 +153,7 @@ public class TestStatement extends TestCase {
         }
     }
 
+    @Test
     public void testCreateStatementInvalidPredicateException() {
         try {
             new StatementImpl(subject, literal, literal);
@@ -154,6 +162,7 @@ public class TestStatement extends TestCase {
         }
     }
 
+    @Test
     public void testCreateStatementInvalidStatementException() {
         try {
             new StatementImpl(literal, blank, literal);
@@ -163,6 +172,7 @@ public class TestStatement extends TestCase {
     }
 
     @SuppressWarnings({"ObjectEqualsNull"})
+    @Test
     public void testEquals() {
         Statement st1 = new StatementImpl(subject, predicate, literal);
         Statement st2 = new StatementImpl(subject, predicate, literal);
@@ -174,6 +184,7 @@ public class TestStatement extends TestCase {
         assertFalse(st1.equals(null));
     }
 
+    @Test
     public void testGetSetProperties() {
         Statement st = new StatementImpl(subject, predicate, literal);
         assertNotNull(st.getProperties());
@@ -183,6 +194,7 @@ public class TestStatement extends TestCase {
         assertEquals(1, st.getProperties().size());
     }
 
+    @Test
     public void testGetProperty() {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(properties);
@@ -191,6 +203,7 @@ public class TestStatement extends TestCase {
         assertNull(st.getProperty(NodeFactory.createResource("http://foo")));
     }
 
+    @Test
     public void testGetPropertyList() {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(properties);
@@ -199,6 +212,7 @@ public class TestStatement extends TestCase {
         assertNull(st.getProperties(NodeFactory.createResource("http://foo")));
     }
 
+    @Test
     public void testSetProperty() {
         Statement st = new StatementImpl(subject, predicate, literal);
         Node godProperty = NodeFactory.createResource("http://God");
@@ -217,6 +231,7 @@ public class TestStatement extends TestCase {
         }
     }
 
+    @Test
     public void testSetPropertyList() {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(propertyResource, propertyValues);
@@ -226,6 +241,7 @@ public class TestStatement extends TestCase {
         assertEquals(otherValues, st.getProperties(propertyResource));
     }
 
+    @Test
     public void testDeletePropertiesAll() {
         Statement st = new StatementImpl(subject, predicate, literal);
         assertNotNull(st.getProperties());
@@ -238,6 +254,7 @@ public class TestStatement extends TestCase {
         assertEquals(0, st.getProperties().size());
     }
 
+    @Test
     public void testDeleteProperty() {
         Statement st = new StatementImpl(subject, predicate, literal);
         assertNotNull(st.getProperties());
@@ -253,6 +270,7 @@ public class TestStatement extends TestCase {
         assertEquals(properties, st.getProperties());
     }
 
+    @Test
     public void testDeleteProperties() {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(properties);
@@ -273,6 +291,7 @@ public class TestStatement extends TestCase {
         assertEquals(0, st.getProperties().size());
     }
 
+    @Test
     public void testAddProperties() {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(properties);
@@ -291,6 +310,7 @@ public class TestStatement extends TestCase {
         assertEquals(propertyValues, st.getProperties(propertyResource));
     }
 
+    @Test
     public void testAddProperty() {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(properties);
@@ -312,6 +332,7 @@ public class TestStatement extends TestCase {
         }
     }
 
+    @Test
     public void testAddPropertyList() {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(propertyResource, propertyValues);
@@ -325,6 +346,7 @@ public class TestStatement extends TestCase {
         assertEquals(propertyValues, st.getProperties(propertyResource));
     }
 
+    @Test
     public void testClone() throws CloneNotSupportedException {
         StatementImpl st = new StatementImpl(subject, predicate, literal);
         st.setProperties(properties);

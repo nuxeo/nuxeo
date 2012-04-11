@@ -17,6 +17,10 @@
 
 package org.nuxeo.webengine.sites.listeners;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,7 +34,7 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
 
     protected Log log = LogFactory.getLog(TestSiteActionListener.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -41,6 +45,7 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Test
     public void testTestSiteAction() throws ClientException {
         DocumentModel website1 = session.createDocumentModel("WebSite");
         website1.setPathInfo("/", "website");
@@ -61,6 +66,7 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
         assertFalse(website1URL.equals(website2URL));
     }
 
+    @Test
     public void testTestSiteActionWithWebSiteNotInTheSameContainer()
             throws ClientException {
         DocumentModel folder1 = session.createDocumentModel("Folder");

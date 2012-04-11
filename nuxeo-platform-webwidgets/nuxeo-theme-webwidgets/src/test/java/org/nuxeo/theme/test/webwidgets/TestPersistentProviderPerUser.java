@@ -22,6 +22,11 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -54,7 +59,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         }
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.persistence",
@@ -65,7 +70,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         provider = new MockPersistentProvider("user1", false);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         provider.destroy();
         provider.deactivate();
@@ -73,6 +78,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testCreateWidgetUser1() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
@@ -81,6 +87,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertEquals("test widget 2", widget2.getName());
     }
 
+    @Test
     public void testGetWidgetByUid() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
@@ -90,6 +97,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
                 widget2.getUid()).getName());
     }
 
+    @Test
     public void testAddAndGetWidgetsUser1() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
@@ -110,6 +118,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
     }
 
+    @Test
     public void testReorderWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
@@ -143,6 +152,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
     }
 
+    @Test
     public void testRemoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("remove test widget");
         Widget widget2 = provider.createWidget("remove test widget");
@@ -166,6 +176,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertTrue(provider.getWidgets("remove region A").isEmpty());
     }
 
+    @Test
     public void testMoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
@@ -209,6 +220,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertEquals(1, provider.getWidgets("region B").indexOf(widget1));
     }
 
+    @Test
     public void testState() throws ProviderException {
         Widget widget = provider.createWidget("test widget");
         provider.setWidgetState(widget, WidgetState.DEFAULT);
@@ -217,6 +229,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertEquals(WidgetState.SHADED, provider.getWidgetState(widget));
     }
 
+    @Test
     public void testPreferences() throws ProviderException {
         Widget widget = provider.createWidget("test widget");
         Map<String, String> preferences = new HashMap<String, String>();
@@ -230,6 +243,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertEquals("value 3", retrievedPreferences.get("key3"));
     }
 
+    @Test
     public void testWidgetData() throws ProviderException {
         Widget widget = provider.createWidget("test widget");
 

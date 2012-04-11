@@ -19,8 +19,9 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.Test;
 
 import org.nuxeo.ecm.platform.annotations.gwt.client.annotea.GwtTestRDFParser;
 import org.nuxeo.ecm.platform.annotations.gwt.client.annotea.GwtTestStatement;
@@ -36,25 +37,21 @@ import com.google.gwt.junit.tools.GWTTestSuite;
  * @author Alexandre Russel
  *
  */
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    GwtTestRDFParser.class,
+    GwtTestStatement.class,
+    GwtTestOneAnnotation.class,
+    GwtTestCSSClassManager.class,
+    GwtTestImageRangeXPointer.class,
+    GwtTestStringRangeXPointer.class,
+    GwtTestXPathUtil.class
+})
 public class GwtTestSuiteAnnotation extends GWTTestSuite {
-    public static Test suite() {
-        TestSuite suite = new TestSuite();
-        // annotea
-        suite.addTestSuite(GwtTestRDFParser.class);
-        suite.addTestSuite(GwtTestStatement.class);
-        // model
-        suite.addTestSuite(GwtTestOneAnnotation.class);
-        // util
-        suite.addTestSuite(GwtTestCSSClassManager.class);
-        suite.addTestSuite(GwtTestImageRangeXPointer.class);
-        suite.addTestSuite(GwtTestStringRangeXPointer.class);
-        suite.addTestSuite(GwtTestXPathUtil.class);
-        // view
-        // suite.addTestSuite(GwtTestDecoratorVisitor.class);
-        // suite.addTestSuite(GwtTestPortAmsterdamParsing.class);
-        // suite.addTestSuite(GwtTestSimpleParsing.class);
-        // suite.addTestSuite(GwtTestSimpleParsingWithEntities.class);
-        // suite.addTestSuite(GwtTestTextGrabberVisitor.class);
-        return suite;
-    }
 }
+
+    /*GwtTestDecoratorVisitor.class,
+    GwtTestPortAmsterdamParsing.class,
+    GwtTestSimpleParsing.class,
+    GwtTestSimpleParsingWithEntities.class,
+    GwtTestTextGrabberVisitor.class*/

@@ -21,12 +21,13 @@ package org.nuxeo.ecm.platform.annotations.service;
 
 import java.util.Collections;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
-public class URLPatternFilterTest extends TestCase {
+public class URLPatternFilterTest {
 
     private static URLPatternFilter filter1 = new URLPatternFilter(true,
             Collections.singletonList("http://foo.apache.org"),
@@ -36,6 +37,7 @@ public class URLPatternFilterTest extends TestCase {
             Collections.singletonList("http://.*apache.org.*"),
             Collections.singletonList("http://foo.apache.org"));
 
+    @Test
     public void testAllow() {
         assertFalse(filter1.allow("http://nuxeo.com"));
         assertTrue(filter1.allow("http://apache.org"));

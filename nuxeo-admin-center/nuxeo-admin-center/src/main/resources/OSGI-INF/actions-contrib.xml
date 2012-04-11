@@ -66,8 +66,14 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="WorkManagerStatus" link="/incl/usersActivity/workmanager.xhtml"
+      label="Background work" order="30">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
     <action id="ActivityCharts" link="/incl/usersActivity/activityCharts.xhtml"
-      label="tab.useractivity.charts" order="30">
+      label="tab.useractivity.charts" order="40">
       <category>UsersActivity_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
       <filter id="isOpenSocialAvailable">
@@ -75,7 +81,6 @@
           <condition>#{systemInfo.isBundleDeployed("org.nuxeo.opensocial.service")}</condition>
         </rule>
       </filter>
-
     </action>
 
     <action id="ConnectClient" link="view_admin-fragment.xhtml"

@@ -15,12 +15,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,14 +25,15 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import junit.framework.Assert;
 
 import org.codehaus.jackson.JsonNode;
 import org.hamcrest.number.IsCloseTo;
+import org.junit.runner.RunWith;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
@@ -605,7 +600,7 @@ public class RestTest {
         // 3. create a note and exit with error (+rollback)
         try {
             doc = (Document) session.newRequest("exitError").setInput(root).execute();
-            Assert.fail("expected error");
+            fail("expected error");
         } catch (RemoteException t) {
             assertTrue(t.getRemoteStackTrace().contains("termination error"));
         }

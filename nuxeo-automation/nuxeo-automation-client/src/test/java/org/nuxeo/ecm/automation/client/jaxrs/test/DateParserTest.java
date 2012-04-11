@@ -20,7 +20,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.automation.client.model.DateParser;
 
@@ -28,8 +29,9 @@ import org.nuxeo.ecm.automation.client.model.DateParser;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class DateParserTest extends TestCase {
+public class DateParserTest {
 
+    @Test
     public void testEncodingDecodingMs() {
         Calendar cal = Calendar.getInstance();
         for (int i = 0; i < 1000; i++) {
@@ -41,6 +43,7 @@ public class DateParserTest extends TestCase {
         }
     }
 
+    @Test
     public void testEncodingDecoding() {
         Date date = new Date();
         String encoded = DateParser.formatW3CDateTime(date);
@@ -64,6 +67,7 @@ public class DateParserTest extends TestCase {
     /**
      * Test the parser using all the specification accepted formats
      */
+    @Test
     public void testParser1() throws Exception {
         // YYYY-MM-DDThh:mm:ss.sTZD => 1997-07-16T19:20:30.45+02:00
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("GMT+2:00"));
@@ -75,6 +79,7 @@ public class DateParserTest extends TestCase {
         // datetime in milliseconds are the same
     }
 
+    @Test
     public void testParser2() throws Exception {
         // YYYY-MM-DDThh:mm:ss.sTZD => 1997-07-16T19:20:30.45-02:00
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("GMT-2:00"));
@@ -86,6 +91,7 @@ public class DateParserTest extends TestCase {
         // datetime in milliseconds are the same
     }
 
+    @Test
     public void testParser3() throws Exception {
         // YYYY-MM-DDThh:mm:ss.sTZD => 1997-07-16T19:20:30.45Z
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -97,6 +103,7 @@ public class DateParserTest extends TestCase {
         // datetime in milliseconds are the same
     }
 
+    @Test
     public void testParser4() throws Exception {
         // YYYY-MM-DDThh:mm:ssTZD => 1997-07-16T19:20:30Z
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -108,6 +115,7 @@ public class DateParserTest extends TestCase {
         // datetime in milliseconds are the same
     }
 
+    @Test
     public void testParser5() throws Exception {
         // YYYY-MM-DDThh:mmTZD => 1997-07-16T19:20Z
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -119,6 +127,7 @@ public class DateParserTest extends TestCase {
         // datetime in milliseconds are the same
     }
 
+    @Test
     public void testParser6() throws Exception {
         // YYYY-MM-DD => 1997-07-16
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -129,6 +138,7 @@ public class DateParserTest extends TestCase {
         assertEquals(ref.get(Calendar.DATE), cal.get(Calendar.DATE));
     }
 
+    @Test
     public void testParser7() throws Exception {
         // YYYY-MM => 1997-07
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -138,6 +148,7 @@ public class DateParserTest extends TestCase {
         assertEquals(ref.get(Calendar.MONTH), cal.get(Calendar.MONTH));
     }
 
+    @Test
     public void testParser8() throws Exception {
         // YYYY => 1997
         Calendar ref = Calendar.getInstance(TimeZone.getTimeZone("UTC"));

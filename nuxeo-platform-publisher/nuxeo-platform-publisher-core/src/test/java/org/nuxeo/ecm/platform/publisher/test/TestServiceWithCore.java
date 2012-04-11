@@ -22,6 +22,11 @@ import java.util.List;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,11 +55,15 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
     protected DocumentModel doc2Publish;
 
+    public TestServiceWithCore() {
+        super();
+    }
+
     public TestServiceWithCore(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -88,7 +97,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         try {
             closeSession();
@@ -142,6 +151,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         session.save();
     }
 
+    @Test
     public void testCorePublishing() throws Exception {
 
         createInitialDocs();
@@ -244,6 +254,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testCleanUp() throws Exception {
         createInitialDocs();
 
@@ -274,6 +285,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testWrapToPublicationNode() throws Exception {
         createInitialDocs();
 
@@ -302,6 +314,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
                         new DocumentLocationImpl(doc2Publish)).size());
     }
 
+    @Test
     public void testWithRootSections() throws Exception {
         createInitialDocs();
 
@@ -371,6 +384,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Test
     public void testUnpublish() throws Exception {
         publishDocAndReopenSession();
 

@@ -7,6 +7,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
@@ -43,7 +48,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         }
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.persistence");
@@ -62,7 +67,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         createTestEntries();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (session != null) {
             closeSession();
@@ -114,6 +119,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    @Test
     public void testSimpleProvider() throws Exception {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -162,6 +168,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    @Test
     public void testProviderWithParams() throws Exception {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -205,6 +212,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    @Test
     public void testProviderWithWhereClause() throws Exception {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -256,6 +264,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    @Test
     public void testProviderWithWhereClause2() throws Exception {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -304,6 +313,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    @Test
     public void testProviderWithBetweenDates() throws Exception {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -415,6 +425,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    @Test
     public void testDocumentHistoryPageProvider() throws Exception {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);

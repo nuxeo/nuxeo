@@ -26,6 +26,10 @@ import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
+
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -52,7 +56,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
     protected final AnnotationManager manager = new AnnotationManager();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -82,7 +86,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
         assertNotNull(annotation);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (NuxeoContainer.isInstalled()) {
             NuxeoContainer.uninstall();

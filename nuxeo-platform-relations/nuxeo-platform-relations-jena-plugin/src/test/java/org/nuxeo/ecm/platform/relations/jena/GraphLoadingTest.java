@@ -24,6 +24,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -41,7 +45,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
 
     private Graph graph;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -54,6 +58,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         assertNotNull(graph);
     }
 
+    @Test
     public void testGetStatement() {
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);
@@ -72,6 +77,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         assertEquals(2, subjects.size());
     }
 
+    @Test
     public void testGetAllStatementWithURN() {
         InputStream is = getClass().getResourceAsStream(
                 "/post-rdf-with-about.xml");
@@ -84,6 +90,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         assertEquals(12, lists.size());
     }
 
+    @Test
     public void testGetAllStatementWithURL() {
         InputStream is = getClass().getResourceAsStream(
                 "/post-rdf-with-about-with-url.xml");

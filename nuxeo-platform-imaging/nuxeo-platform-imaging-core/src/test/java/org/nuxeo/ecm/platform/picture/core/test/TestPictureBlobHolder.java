@@ -28,6 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,7 +49,7 @@ public class TestPictureBlobHolder extends SQLRepositoryTestCase {
 
     BlobHolderAdapterService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.picture.api");
@@ -54,7 +59,7 @@ public class TestPictureBlobHolder extends SQLRepositoryTestCase {
         assertNotNull(service);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -79,6 +84,7 @@ public class TestPictureBlobHolder extends SQLRepositoryTestCase {
         return views;
     }
 
+    @Test
     public void testBasics() {
         DocumentModel pictureDoc = new DocumentModelImpl(PICTURE_TYPE_NAME);
         pictureDoc.addFacet(PICTURE_FACET);
@@ -98,6 +104,7 @@ public class TestPictureBlobHolder extends SQLRepositoryTestCase {
         assertTrue(pbbh instanceof PictureBookBlobHolder);
     }
 
+    @Test
     public void testBlobHolder() throws Exception {
         DocumentModel picturebook = new DocumentModelImpl("/", "picturebook",
                 PICTUREBOOK_TYPE_NAME);

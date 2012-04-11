@@ -22,6 +22,9 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.net.URI;
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 
@@ -32,6 +35,7 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 public class AnnotationsServiceTest extends AbstractAnnotationTest {
     private static final String HTTP_MYEXEMPLE_COM_NUXEO_ANNOTATIONS = "http://myexemple.com/nuxeo/Annotations/";
 
+    @Test
     public void testAddAnnotation() throws Exception {
         assertNotNull(annotation);
 

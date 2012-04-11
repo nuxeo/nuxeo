@@ -7,10 +7,12 @@
 
     <listener name="commentListener" async="false" postCommit="true"
       class="org.nuxeo.ecm.platform.comment.listener.CommentRemovedEventListener">
+      <event>documentRemoved</event>
     </listener>
 
     <listener name="docRemovedCommentListener" async="true" postCommit="true"
       class="org.nuxeo.ecm.platform.comment.listener.DocumentRemovedCommentEventListener">
+      <event>documentRemoved</event>
     </listener>
 
   </extension>

@@ -17,7 +17,9 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultPublishedDocumentMarshaler;
@@ -32,8 +34,9 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Publishin
  * @author tiry
  *
  */
-public class TestMarshaling extends TestCase {
+public class TestMarshaling {
 
+    @Test
     public void testPublishedDocMarshaling()
             throws PublishingMarshalingException {
         PublishedDocument pubDoc = new BasicPublishedDocument(new IdRef("1"),

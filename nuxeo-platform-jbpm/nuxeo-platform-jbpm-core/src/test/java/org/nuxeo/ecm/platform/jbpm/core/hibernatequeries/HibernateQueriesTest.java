@@ -22,7 +22,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -39,7 +42,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
  * @author arussel
  *
  */
-public class HibernateQueriesTest extends TestCase {
+public class HibernateQueriesTest {
 
     private static final String DEMO = "demo";
 
@@ -61,7 +64,7 @@ public class HibernateQueriesTest extends TestCase {
 
     private Session session;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         URL url = getClass().getResource("/config/test-jbpm-hibernate.cfg.xml");
         assertNotNull(url);
@@ -70,12 +73,13 @@ public class HibernateQueriesTest extends TestCase {
         assertNotNull(session);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         session.close();
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetProcessInstancesForDoc() {
         ProcessDefinition pd = new ProcessDefinition();
         List<ProcessInstance> list = session.getNamedQuery(GET_PI).setParameter(
@@ -114,6 +118,7 @@ public class HibernateQueriesTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetProcessInstancesForInitiator() {
         List<String> initiators = Arrays.asList("bob", "jef");
         ProcessDefinition pd = new ProcessDefinition();
@@ -149,6 +154,7 @@ public class HibernateQueriesTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetTaskInstancesForDoc() {
         ProcessDefinition pd = new ProcessDefinition();
         session.save(pd);

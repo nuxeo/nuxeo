@@ -39,7 +39,17 @@
       <filter-id>versionable</filter-id>
     </action>
     
-    <!-- version actions -->
+    <!-- Version actions -->
+    <action id="VIEW_VERSION" link="#{versionedActions.viewArchivedVersion}"
+      label="command.viewArchivedVersion" order="10">
+      <category>VERSION_LIST_ITEM</category>
+    </action>
+    
+    <action id="RESTORE_VERSION" link="#{versionedActions.restoreToVersion}"
+      label="command.restore" order="20">
+      <category>VERSION_LIST_ITEM</category>
+      <filter-id>canRestoreVersion</filter-id>
+    </action>
     
     <action id="CURRENT_VERSION_SELECTION_DELETE"
       link="#{versionedActions.removeSelectedArchivedVersions}" label="command.removeSelectedArchivedVersions"
@@ -90,6 +100,13 @@
     <filter id="canDeleteCurrentVersionSelection">
       <rule grant="true">
         <condition>#{versionedActions.canRemoveSelectedArchivedVersions}
+        </condition>
+      </rule>
+    </filter>
+    
+    <filter id="canRestoreVersion">
+      <rule grant="true">
+        <condition>#{versionedActions.canRestore}
         </condition>
       </rule>
     </filter>

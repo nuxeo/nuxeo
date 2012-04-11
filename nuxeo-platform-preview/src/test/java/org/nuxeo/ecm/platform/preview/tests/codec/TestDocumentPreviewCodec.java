@@ -22,6 +22,9 @@ package org.nuxeo.ecm.platform.preview.tests.codec;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -30,16 +33,15 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 
-import junit.framework.TestCase;
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
-public class TestDocumentPreviewCodec extends TestCase {
+public class TestDocumentPreviewCodec {
 
     private final DocumentViewCodec documentPreviewCodec = new DocumentPreviewCodec();
 
+    @Test
     public void testGetDocumentView() throws Exception {
         final String uuid = "29942295-8683-4e65-917b-f7e7f98e4ad5";
         final String serverName = "default";
@@ -59,6 +61,7 @@ public class TestDocumentPreviewCodec extends TestCase {
         assertTrue(params.containsValue(propertyPath));
     }
 
+    @Test
     public void testGetUrl() throws Exception {
         final String uuid = "29942295-8683-4e65-917b-f7e7f98e4ad5";
         final String serverName = "default";

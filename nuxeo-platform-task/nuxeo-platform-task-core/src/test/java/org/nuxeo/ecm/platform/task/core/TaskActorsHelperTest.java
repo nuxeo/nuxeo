@@ -19,9 +19,10 @@ package org.nuxeo.ecm.platform.task.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
  * 
  * @author ataillefer
  */
-public class TaskActorsHelperTest extends TestCase {
+public class TaskActorsHelperTest {
 
     /**
      * Test get task actors.

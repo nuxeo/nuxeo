@@ -25,13 +25,15 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.exceptions.InvalidLiteralException;
 
-public class TestNodes extends TestCase {
+public class TestNodes {
 
+    @Test
     public void testValidLiteral() {
         LiteralImpl lit1 = new LiteralImpl("Hello");
         lit1.setType("text");
@@ -49,6 +51,7 @@ public class TestNodes extends TestCase {
         }
     }
 
+    @Test
     public void testEqualsLiteral() {
         LiteralImpl lit1 = new LiteralImpl("Hello");
         assertEquals(lit1, lit1);
@@ -66,6 +69,7 @@ public class TestNodes extends TestCase {
         assertFalse(lit3.equals(lit4));
     }
 
+    @Test
     public void testEqualsBlank() {
         BlankImpl bl1 = new BlankImpl();
         BlankImpl bl2 = new BlankImpl();
@@ -77,6 +81,7 @@ public class TestNodes extends TestCase {
         assertFalse(bl1.equals(bl3));
     }
 
+    @Test
     public void testEqualsResource() {
         Resource res1 = new ResourceImpl("http://namespace/uri");
         Resource res2 = new ResourceImpl("http://namespace/uri");
@@ -86,6 +91,7 @@ public class TestNodes extends TestCase {
         assertFalse(res1.equals(res3));
     }
 
+    @Test
     public void testLiteralSerialization() throws Exception {
         LiteralImpl lit = new LiteralImpl("Hello");
 
@@ -107,6 +113,7 @@ public class TestNodes extends TestCase {
         assertEquals(newLit, lit);
     }
 
+    @Test
     public void testBlankSerialization() throws Exception {
         BlankImpl blank = new BlankImpl("hello");
 
@@ -128,6 +135,7 @@ public class TestNodes extends TestCase {
         assertEquals(newBlank, blank);
     }
 
+    @Test
     public void testResourceSerialization() throws Exception {
         Resource res = new ResourceImpl("http://namespace/uri");
 

@@ -23,6 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
@@ -56,7 +61,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
 
     private NuxeoPrincipal user1;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         // clean up previous test.
         JbpmServiceImpl.contexts.set(null);
@@ -85,13 +90,14 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }
 
+    @Test
     public void testTypeFilter() {
         Map<String, List<String>> typeFilters = service.getTypeFilterConfiguration();
         assertEquals(2, typeFilters.size());
@@ -100,6 +106,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertTrue(typeFilters.get("Note").contains("review_approbation"));
     }
 
+    @Test
     public void testProcessInstanceLifecycle() throws Exception {
         List<String> administratorList = new ArrayList<String>();
         administratorList.add(NuxeoPrincipal.PREFIX + administrator.getName());
@@ -176,6 +183,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertTrue(tis.isEmpty());
     }
 
+    @Test
     public void testMultipleTaskPerDocument() throws Exception {
         DocumentModel dm = getDocument();
         assertNotNull(dm);
@@ -215,6 +223,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertNotNull(transitions);
     }
 
+    @Test
     public void testTaskManagement() throws Exception {
         DocumentModel dm = getDocument();
         TaskInstance ti = new TaskInstance();
@@ -231,6 +240,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertNotNull(lists);
     }
 
+    @Test
     public void testProcessInstancePersistence() throws Exception {
         DocumentModel dm = getDocument();
         // create process instance

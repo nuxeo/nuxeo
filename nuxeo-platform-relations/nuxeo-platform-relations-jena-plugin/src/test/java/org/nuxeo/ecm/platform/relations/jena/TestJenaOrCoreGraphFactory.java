@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.platform.relations.jena;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.relations.CoreGraph;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -33,7 +38,7 @@ public class TestJenaOrCoreGraphFactory extends SQLRepositoryTestCase {
 
     private RelationService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -43,12 +48,13 @@ public class TestJenaOrCoreGraphFactory extends SQLRepositoryTestCase {
         service = (RelationService) Framework.getService(RelationManager.class);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         JenaOrCoreGraphFactory.testJenaGraph = null;
         super.tearDown();
     }
 
+    @Test
     public void testJenaOrCoreGraph() throws Exception {
         // open graph, will be core
         Graph coreGraph = service.getGraphByName("jenaorcoregraph");

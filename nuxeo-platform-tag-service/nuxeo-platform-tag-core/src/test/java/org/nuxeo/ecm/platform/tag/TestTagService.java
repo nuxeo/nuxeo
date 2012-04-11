@@ -26,6 +26,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,7 +50,7 @@ public class TestTagService extends SQLRepositoryTestCase {
 
     protected TagService tagService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.comment");
@@ -57,7 +62,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         tagService = Framework.getLocalService(TagService.class);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -71,6 +76,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testTags() throws Exception {
         DocumentModel fold = session.createDocumentModel("/", "fold", "Folder");
         fold = session.createDocument(fold);
@@ -227,6 +233,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         return list;
     }
 
+    @Test
     public void testUntagOnDelete() throws Exception {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
@@ -253,6 +260,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertEquals(Collections.emptySet(), labels(tags));
     }
 
+    @Test
     public void testUntagOnTrash() throws Exception {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
@@ -279,6 +287,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertEquals(Collections.emptySet(), labels(tags));
     }
 
+    @Test
     public void testCloudNormalization() throws Exception {
         List<Tag> cloud;
         cloud = new ArrayList<Tag>();

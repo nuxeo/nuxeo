@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ProcessInstance;
@@ -35,6 +38,7 @@ import org.nuxeo.ecm.platform.jbpm.test.AbstractProcessDefinitionTest;
 public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testPD() {
         JbpmContext context = null;
         try {

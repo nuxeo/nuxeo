@@ -24,6 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
@@ -52,11 +57,15 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
     protected File rootFolder;
 
+    public TestFSPublishing() {
+        super();
+    }
+
     public TestFSPublishing(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.content.template");
@@ -72,7 +81,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -143,6 +152,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
                 new Path(section2.getAbsolutePath()).append("section22").toString()).mkdirs();
     }
 
+    @Test
     public void testFSPublishing() throws Exception {
         createInitialDocs();
         createFSDirs();
@@ -254,6 +264,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         assertEquals("FSPublicationNode", tree.getNodeType());
     }
 
+    @Test
     public void testWithNonPublishedDocumentXmlFiles() throws Exception {
         createInitialDocs();
         createFSDirs();
@@ -293,6 +304,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testFSIndex() throws Exception {
         createInitialDocs();
         createFSDirs();

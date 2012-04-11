@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.audit.web;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -31,7 +35,7 @@ public class TestRegisterAuditAction extends NXRuntimeTestCase {
 
     ActionService as;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.audit.web.tests",
@@ -41,6 +45,7 @@ public class TestRegisterAuditAction extends NXRuntimeTestCase {
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 
+    @Test
     public void testRegistration() {
         Action act1 = as.getActionRegistry().getAction("TAB_CONTENT_HISTORY");
 

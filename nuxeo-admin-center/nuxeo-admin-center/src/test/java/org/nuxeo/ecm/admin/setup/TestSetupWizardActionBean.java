@@ -52,7 +52,7 @@ public class TestSetupWizardActionBean {
         nuxeoHome = File.createTempFile("nuxeo", null);
         nuxeoHome.delete();
         nuxeoHome.mkdirs();
-        System.setProperty(ConfigurationGenerator.NUXEO_HOME,
+        System.setProperty(Environment.NUXEO_HOME,
                 nuxeoHome.getPath());
 
         // Properties required by ConfigurationGenerator
