@@ -27,6 +27,7 @@ import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.api.Framework;
@@ -50,15 +51,16 @@ public class TestResourcePublisherService extends ManagementTestCase {
         assertEquals(1, registeredNames.size());
     }
 
-//    @Test
-//    public void testRegisterFactory() throws Exception {
-//        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
-//                DummyFactory.class);
-//        publisherService.registerContribution(descriptor, "factories", null);
-//        Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
-//        assertNotNull(registeredNames);
-//        assertEquals(registeredNames.size(), 1);
-//    }
+    @Test
+    @Ignore
+    public void testRegisterFactory() throws Exception {
+        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
+                DummyFactory.class);
+        publisherService.registerContribution(descriptor, "factories", null);
+        Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
+        assertNotNull(registeredNames);
+        assertEquals(registeredNames.size(), 1);
+    }
 
     @Test
     public void testServerLocator() throws Exception {

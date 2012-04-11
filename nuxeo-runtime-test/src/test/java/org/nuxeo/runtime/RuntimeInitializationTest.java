@@ -24,6 +24,7 @@ package org.nuxeo.runtime;
 import java.lang.AssertionError;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -41,7 +42,9 @@ public class RuntimeInitializationTest extends NXRuntimeTestCase {
     }
 
     // Deactivated for now since duplicate contributions are still allowed.
-    public void XXXtestContributionsWithDuplicateComponent() throws Exception {
+    @Test
+    @Ignore
+    public void testContributionsWithDuplicateComponent() throws Exception {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
         boolean success = false;
