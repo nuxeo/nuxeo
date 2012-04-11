@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -214,22 +215,26 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
-    /* @Test
-     * public void testBig() throws Exception { PictureTilingService pts =
-     * Framework.getLocalService(PictureTilingService.class);
-     * assertNotNull(pts); PictureTilingComponent.setDefaultTiler(new
-     * MagickTiler()); File file = new File("/home/tiry/photos/orion.jpg"); Blob
-     * image = new FileBlob(file);
-     *
-     * // 100% long t0 = System.currentTimeMillis(); PictureTiles tiles =
-     * pts.getTilesFromBlob(image, 100, 100, 180); assertNotNull(tiles); long t1
-     * = System.currentTimeMillis();
-     *
-     * System.out.println("Big picture " +
-     * tiles.getOriginalImageInfo().getWidth() + "x" +
-     * tiles.getOriginalImageInfo().getHeight() + " at zoom " +
-     * tiles.getZoomfactor() + " generated in " + (t1-t0) + "ms"); }
-     */
+    @Test
+    @Ignore
+    public void testBig() throws Exception {
+        PictureTilingService pts =
+                Framework.getLocalService(PictureTilingService.class);
+        assertNotNull(pts);
+        PictureTilingComponent.setDefaultTiler(new MagickTiler());
+        File file = new File("/home/tiry/photos/orion.jpg");
+        Blob image = new FileBlob(file);
+
+        long t0 = System.currentTimeMillis();
+        PictureTiles tiles = pts.getTilesFromBlob(image, 100, 100, 180);
+        assertNotNull(tiles);
+        long t1 = System.currentTimeMillis();
+
+        System.out.println("Big picture " +
+            tiles.getOriginalImageInfo().getWidth() + "x" +
+            tiles.getOriginalImageInfo().getHeight() + " at zoom " +
+            tiles.getZoomfactor() + " generated in " + (t1-t0) + "ms");
+    }
 
     protected void benchTiler(PictureTilingService pts, PictureTiler tiler)
             throws Exception {

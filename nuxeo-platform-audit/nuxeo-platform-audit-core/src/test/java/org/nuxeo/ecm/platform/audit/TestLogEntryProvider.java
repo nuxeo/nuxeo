@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
@@ -235,7 +236,9 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(new Long(3L), count);
     }
 
-    public void XXXtestEventIds() {
+    @Test
+    @Ignore
+    public void testEventIds() {
         String eventId = eventId();
         LogEntry one = doCreateEntryAndPersist("one");
         LogEntry two = doCreateEntryAndPersist("two");
