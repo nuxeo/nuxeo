@@ -7,6 +7,8 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
+<nxu:set var="label" value="#{empty typeLabel ? field_2 : messages[typeLabel]}">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxd:titleOrId(field_0)}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
@@ -14,7 +16,7 @@
 
     <nxd:restDocumentLink document="#{field_0}"
       tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}">
-      <span id="title_#{field_1}" title="#{field_2}">
+      <span id="title_#{field_1}" title="#{label}">
         #{nxd:titleOrId(field_0)}
       </span>
     </nxd:restDocumentLink>
@@ -42,4 +44,5 @@
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>#{nxd:titleOrId(field_0)}</nxp:html>
 </c:if>
+</nxu:set></nxu:set>
 </f:subview>
