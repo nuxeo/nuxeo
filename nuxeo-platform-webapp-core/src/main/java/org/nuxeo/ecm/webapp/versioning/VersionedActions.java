@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-20012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,6 +14,7 @@
  * Contributors:
  *     Razvan Caraghin
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 
 package org.nuxeo.ecm.webapp.versioning;
@@ -24,6 +25,7 @@ import org.jboss.seam.annotations.Create;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.platform.query.api.PageSelection;
 
 /**
  * Exposes the actions that can be taken related to versioning and documents.
@@ -36,9 +38,9 @@ public interface VersionedActions {
     /**
      * Factory accessor for currentDocument versionList.
      *
-     * @return list of VersionModel
+     * @return list of {@link PageSelection<VersionModel>}
      */
-    List<VersionModel> getVersionList() throws ClientException;
+    List<PageSelection<VersionModel>> getVersionList() throws ClientException;
 
     /**
      * Retrieves the versions for the current document.
@@ -53,6 +55,17 @@ public interface VersionedActions {
      */
     String restoreToVersion(VersionModel selectedVersion)
             throws ClientException;
+
+    /**
+     * Restores the version which id is returned by
+     * {@link #getSelectedVersionId()}.
+     *
+     * @return the view id
+     * @throws ClientException if cannot fetch the version
+     *
+     * @since 5.6
+     */
+    String restoreToVersion() throws ClientException;
 
     /**
      * Security check to enable or disable the restore button.
@@ -78,7 +91,7 @@ public interface VersionedActions {
      *
      * @return the next page
      */
-    @SuppressWarnings( { "NonBooleanMethodNameMayNotStartWithQuestion" })
+    @SuppressWarnings({ "NonBooleanMethodNameMayNotStartWithQuestion" })
     String checkOut() throws ClientException;
 
     /**
@@ -106,9 +119,21 @@ public interface VersionedActions {
     String viewArchivedVersion(VersionModel selectedVersion)
             throws ClientException;
 
+    /**
+     * Navigates to the version which id is returned by
+     * {@link #getSelectedVersionId()}.
+     *
+     * @return the view id
+     * @throws ClientException if cannot fetch the version
+     *
+     * @since 5.6
+     */
+    String viewArchivedVersion() throws ClientException;
+
     DocumentModel getSourceDocument() throws ClientException;
 
-    DocumentModel getSourceDocument(DocumentModel document) throws ClientException;
+    DocumentModel getSourceDocument(DocumentModel document)
+            throws ClientException;
 
     /**
      * Check if a version can be removed. It won't be possible if a proxy is
@@ -117,10 +142,42 @@ public interface VersionedActions {
     boolean canRemoveArchivedVersion(VersionModel selectedVersion);
 
     /**
+     * Check if the currently selected versions can be removed. It won't be
+     * possible if a proxy is pointing to one of them.
+     *
+     * @return true if can remove selected archived versions
+     * @throws ClientException if at least one of the selected versions cannot
+     *             be retrieved from the repository
+     * @since 5.6
+     */
+    boolean getCanRemoveSelectedArchivedVersions() throws ClientException;
+
+    /**
      * Remove an archived version.
      *
      * @param selectedVersion the version model to remove
      */
     String removeArchivedVersion(VersionModel selectedVersion)
             throws ClientException;
+
+    /**
+     * Remove currently selected archived versions.
+     *
+     * @since 5.6
+     */
+    String removeSelectedArchivedVersions() throws ClientException;
+
+    /**
+     * Gets currently selected version id.
+     *
+     * @since 5.6
+     */
+    String getSelectedVersionId();
+
+    /**
+     * Sets currently selected version id.
+     *
+     * @since 5.6
+     */
+    void setSelectedVersionId(String selectedVersionId);
 }

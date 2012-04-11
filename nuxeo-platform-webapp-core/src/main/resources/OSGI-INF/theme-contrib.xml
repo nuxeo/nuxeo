@@ -53,6 +53,7 @@
       <resource>jquery.js</resource>
       <resource>jquery.fancybox.js</resource>
       <resource>jquery.fancybox.style.css</resource>
+      <resource>jquery.tools.cookie.js</resource>
       <resource>fancybox-popup-utils.js</resource>
       <resource>contextmenu.js</resource>
       <resource>jquery.tools.tooltip.min.js</resource>
@@ -60,6 +61,7 @@
       <resource>jquery.hotkeys.js</resource>
       <resource>sarissa-ie-workaround.js</resource>
       <resource>static-styles.css</resource>
+      <resource>hideableAdminMessage.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -141,6 +143,13 @@
     </resource>
     <resource name="jquery.tools.tooltip.min.js">
       <path>scripts/jquery/jquery.tools.tooltip.min.js</path>
+    </resource>
+    <resource name="hideableAdminMessage.js">
+      <path>scripts/hideableAdminMessage.js</path>
+    </resource>
+    <!-- jquery cookie plugin -->
+    <resource name="jquery.tools.cookie.js">
+      <path>scripts/jquery/cookie.js</path>
     </resource>
     <!-- Fancybox -->
     <resource name="jquery.fancybox.js">

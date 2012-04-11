@@ -17,12 +17,14 @@
 
 package org.nuxeo.ecm.webapp.note;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class TestNoteActions extends TestCase {
+public class TestNoteActions {
 
     protected String simpleNoteWithImageLinks = "<img src=\"http://localhost:8080/nuxeo/nxfile/default/{docId}/files:files/0/file/img.png\" alt=\"\" />"
             + "<p>Another image link</p>"
@@ -36,12 +38,12 @@ public class TestNoteActions extends TestCase {
 
     protected NoteActions noteActions;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         noteActions = new NoteActions();
     }
 
+    @Test
     public void testSimpleNoteWithLink() throws Exception {
         String fromDocId = "live-document-id";
         String note = simpleNoteWithImageLinks.replaceAll("\\{docId\\}",
@@ -56,6 +58,7 @@ public class TestNoteActions extends TestCase {
         assertEquals(expectedTranslatedNote, translatedNote);
     }
 
+    @Test
     public void testSimpleNoteWithoutLink() throws Exception {
         String fromDocId = "live-document-id";
         String note = simpleNoteWithoutImageLinks.replaceAll("\\{docId\\}",

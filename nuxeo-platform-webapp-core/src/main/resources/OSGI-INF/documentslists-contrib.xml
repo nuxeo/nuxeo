@@ -48,6 +48,13 @@
       </events>
       <isSession>false</isSession>
     </documentsList>
+    
+    <documentsList name="CURRENT_SELECTION_VERSIONS">
+      <events>
+        <event>documentSelectionChanged</event>
+      </events>
+      <isSession>false</isSession>
+    </documentsList>
 
   </extension>
 
