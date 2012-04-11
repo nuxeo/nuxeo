@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -16,6 +16,7 @@ package org.nuxeo.ecm.platform.audit.api;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -26,6 +27,13 @@ import org.nuxeo.ecm.core.event.EventBundle;
  * @author tiry
  */
 public interface AuditLogger {
+
+    /**
+     * Returns the list of auditable event names.
+     *
+     * @return list of String representing event names.
+     */
+    Set<String> getAuditableEventNames();
 
     /**
      * Create a new LogEntry instance.
