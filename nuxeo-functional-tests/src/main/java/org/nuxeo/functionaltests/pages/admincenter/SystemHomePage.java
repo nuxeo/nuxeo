@@ -17,9 +17,7 @@
 
 package org.nuxeo.functionaltests.pages.admincenter;
 
-import org.nuxeo.functionaltests.WaitUntil;
 import org.nuxeo.functionaltests.pages.LoginPage;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,7 +28,7 @@ public class SystemHomePage extends AdminCenterBasePage {
 
     public static final String SETUP_SUBTAB = "Setup";
 
-     private static final int RESTART_TIMEOUT_MINUTES = 10;
+    private static final int RESTART_TIMEOUT_MINUTES = 10;
 
     public SystemHomePage(WebDriver driver) {
         super(driver);
@@ -47,7 +45,8 @@ public class SystemHomePage extends AdminCenterBasePage {
             // org.openqa.selenium.WebDriverException:
             // a.document.getElementsByTagName("dialog")[0] is undefined
 
-            // Confirmation alert is disabled during integration tests (hostInfo.xhtml),
+            // Confirmation alert is disabled during integration tests
+            // (hostInfo.xhtml),
             // because sometimes webdriver fails to focus on it.
 
             // new WaitUntil(4000) {
@@ -58,10 +57,17 @@ public class SystemHomePage extends AdminCenterBasePage {
             // return true;
             // }
             // }.waitUntil();
+            //
+            // TODO TA: This issue seems to have been fixed for the latest
+            // Selenium release 2.21
+            // See http://code.google.com/p/selenium/issues/detail?id=3544
+            // Once it is released and we upgrade to it, lets try enabling the
+            // confirmation alert again.
         } else {
             return null;
         }
-        findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
+        findElementWithTimeout(By.id("username"),
+                RESTART_TIMEOUT_MINUTES * 60 * 1000);
         return asPage(LoginPage.class);
     }
 
@@ -69,7 +75,8 @@ public class SystemHomePage extends AdminCenterBasePage {
         if (!SETUP_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(SETUP_SUBTAB);
         }
-        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id + "']/input"));
+        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id
+                + "']/input"));
         if (input != null) {
             input.sendKeys(value);
             return true;
@@ -81,7 +88,8 @@ public class SystemHomePage extends AdminCenterBasePage {
         if (!SETUP_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(SETUP_SUBTAB);
         }
-        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id + "']/input"));
+        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id
+                + "']/input"));
         if (input != null) {
             return input.getAttribute("value");
         }

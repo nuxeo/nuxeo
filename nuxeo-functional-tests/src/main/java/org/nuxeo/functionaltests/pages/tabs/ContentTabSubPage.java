@@ -18,10 +18,11 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import java.util.List;
-
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
@@ -103,7 +104,20 @@ public class ContentTabSubPage extends DocumentBasePage {
         }
 
         findElementWaitUntilEnabledAndClick(By.xpath(DELETE_BUTTON_XPATH));
+        // Trying Thread.sleep on failing alert.accept on some machines:
+        // org.openqa.selenium.WebDriverException:
+        // a.document.getElementsByTagName("dialog")[0] is undefined
+        try {
+            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
+        } catch (InterruptedException ie) {
+            // ignore
+        }
         driver.switchTo().alert().accept();
+        // TODO TA: This issue seems to have been fixed for the latest
+        // Selenium release 2.21
+        // See http://code.google.com/p/selenium/issues/detail?id=3544
+        // Once it is released and we upgrade to it, lets try enabling the
+        // confirmation alert again.
 
         return asPage(DocumentBasePage.class);
     }
