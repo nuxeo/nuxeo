@@ -10,6 +10,8 @@ Template displaying an action depending of its type (@since 5.6).
 
 Parameters:
 - action: the action instance (mandatory)
+- fancybox 'include' property contains resource
+- fancybox 'iframe' property contains method to resolve
 </c:if> <c:choose>
 
     <c:when test="#{action.type == 'button'}">
@@ -58,8 +60,6 @@ Parameters:
     </c:when>
 
     <c:when test="#{action.getType() == 'fancybox'}">
-    <!-- fancybox include property contains resources -->
-    <!-- fancybox iframe property contains method to resolve-->
       <nxu:set var="include"
         value="#{action.properties.fancybox.properties.include}">
         <nxu:set var="iframe"
