@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -31,7 +35,7 @@ public class TestImagingService extends NXRuntimeTestCase {
 
     protected ImagingService imagingService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.picture.core",
@@ -43,6 +47,7 @@ public class TestImagingService extends NXRuntimeTestCase {
         assertNotNull(imagingService);
     }
 
+    @Test
     public void testConfigurationContrib() throws Exception {
         String conversionFormat = imagingService.getConfigurationValue(
                 "conversionFormat", "png");
@@ -50,6 +55,7 @@ public class TestImagingService extends NXRuntimeTestCase {
         assertNotSame("png", conversionFormat);
     }
 
+    @Test
     public void testUnregisteredConfiguration() throws Exception {
         String testConfiguration = imagingService.getConfigurationValue("testConfiguration");
         assertNull(testConfiguration);

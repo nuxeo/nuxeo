@@ -18,6 +18,11 @@ package org.nuxeo.ecm.directory.ui;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Directory;
@@ -40,7 +45,7 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
 
     DirectoryUIManager service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
@@ -66,12 +71,13 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
         assertNotNull(dirService);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 
+    @Test
     public void testDirectoryUIRegistration() throws Exception {
         List<String> dirs = service.getDirectoryNames();
         assertNotNull(dirs);
@@ -105,6 +111,7 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
         assertEquals(0, constraints.size());
     }
 
+    @Test
     public void testDirectoryUIDeleteConstraint() throws Exception {
         Session continentSession = null;
         Session countrySession = null;

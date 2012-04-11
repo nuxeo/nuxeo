@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.relations.api.impl;
 import java.util.Calendar;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.relations.api.Literal;
 
@@ -30,16 +31,18 @@ import org.nuxeo.ecm.platform.relations.api.Literal;
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  *
  */
-public class TestRelationDate extends TestCase {
+public class TestRelationDate {
 
     private final Literal literal = new LiteralImpl("2012-11-23T03:57:01");
 
+    @Test
     public void testDateRoundTrip() {
         Date date = RelationDate.getDate(literal);
         Literal newLit = RelationDate.getLiteralDate(date);
         assertEquals(newLit, literal);
     }
 
+    @Test
     public void testCalendarRoundTrip() {
         Calendar cal = RelationDate.getCalendar(literal);
         Literal newLit = RelationDate.getLiteralDate(cal);
@@ -49,6 +52,7 @@ public class TestRelationDate extends TestCase {
     /** Uses date variant to prove that the calendar one works.
      */
     @SuppressWarnings("deprecation")
+    @Test
     public void testCalendarDate() {
         Date date = new Date(2007, 7, 6, 1, 23, 15);
         Literal newLit = RelationDate.getLiteralDate(date);
@@ -56,6 +60,7 @@ public class TestRelationDate extends TestCase {
         assertEquals(date, cal.getTime());
     }
 
+    @Test
     public void testWrongLiteralCalendar() {
         assertNull(RelationDate.getCalendar(new LiteralImpl("qwqe")));
     }

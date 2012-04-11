@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.annotations.repository;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
@@ -30,12 +34,13 @@ public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
 
     private DefaultNuxeoUriResolver resolver;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         setUpRepository();
     }
 
+    @Test
     public void testGetDocumentRef() throws AnnotationException {
            assertNotNull(uri);
            resolver = new DefaultNuxeoUriResolver();

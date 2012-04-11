@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.mail.service.MailService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -39,7 +43,7 @@ public class TestPropertiesFetcher extends NXRuntimeTestCase {
     private static final String KEY1 = "key1";
     MailService propertiesFetcherService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.webapp.base");
@@ -48,6 +52,7 @@ public class TestPropertiesFetcher extends NXRuntimeTestCase {
         propertiesFetcherService = Framework.getService(MailService.class);
     }
 
+    @Test
     public void testService() throws Exception {
         assertNotNull(propertiesFetcherService);
         PropertiesFetcher fetcher = propertiesFetcherService.getFetcher("testFactory");

@@ -16,7 +16,8 @@ package org.nuxeo.ecm.platform.audit.api.query;
 
 import java.util.Date;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Test date range query.
@@ -24,8 +25,9 @@ import junit.framework.TestCase;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class TestDateRangeQuery extends TestCase {
+public class TestDateRangeQuery {
 
+    @Test
     public void testOneWithMinutesOnly() throws AuditQueryException {
         Date now = new Date();
         Date then = DateRangeParser.parseDateRangeQuery(now, "2m");
@@ -43,6 +45,7 @@ public class TestDateRangeQuery extends TestCase {
         assertEquals(expected, now.getTime() - then.getTime());
     }
 
+    @Test
     public void testOneWithHoursOnly() throws AuditQueryException {
         Date now = new Date();
 
@@ -61,6 +64,7 @@ public class TestDateRangeQuery extends TestCase {
         assertEquals(expected, now.getTime() - then.getTime());
     }
 
+    @Test
     public void testWrongFormat() {
         boolean raises = false;
         Date now = new Date();
@@ -72,6 +76,7 @@ public class TestDateRangeQuery extends TestCase {
         assertTrue(raises);
     }
 
+    @Test
     public void testWrongFormatOrder() {
         boolean raises = false;
         Date now = new Date();
@@ -83,6 +88,7 @@ public class TestDateRangeQuery extends TestCase {
         assertTrue(raises);
     }
 
+    @Test
     public void testMixing() throws AuditQueryException {
         Date now = new Date();
         Date then = DateRangeParser.parseDateRangeQuery(now, " 2m 2h ");

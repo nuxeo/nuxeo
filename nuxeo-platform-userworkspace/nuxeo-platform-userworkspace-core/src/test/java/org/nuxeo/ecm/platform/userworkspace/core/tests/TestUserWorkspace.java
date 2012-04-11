@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.platform.userworkspace.core.tests;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -41,7 +46,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         super("");
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -59,7 +64,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         if (userSession != null) {
@@ -68,6 +73,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testRestrictedAccess() throws Exception {
         userSession = openSessionAs("toto");
         UserWorkspaceService uwm = Framework.getLocalService(UserWorkspaceService.class);
@@ -86,6 +92,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         userSession.save();
     }
 
+    @Test
     public void testMultiDomains() throws Exception {
         ACE ace = new ACE("Everyone", "Read", true);
         ACL acl = new ACLImpl();
@@ -144,6 +151,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         assertTrue(uw.getPathAsString().startsWith("/alternate-domain"));
     }
 
+    @Test
     public void testMultiDomainsCompat() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.userworkspace.core",
                 "OSGI-INF/compatUserWorkspaceImpl.xml");
@@ -206,6 +214,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         assertTrue(uw.getPathAsString().startsWith("/alternate-domain"));
     }
 
+    @Test
     public void testAnotherUserWorkspaceFinder() throws ClientException {
         UserWorkspaceService service = Framework.getLocalService(UserWorkspaceService.class);
         assertNotNull(service);
@@ -237,6 +246,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         assertNull("Document is correctly detached", uw.getSessionId());
     }
 
+    @Test
     public void testUnrestrictedFinderCorrectlyCreateWorkspace()
             throws ClientException {
         UserWorkspaceService service = Framework.getLocalService(UserWorkspaceService.class);

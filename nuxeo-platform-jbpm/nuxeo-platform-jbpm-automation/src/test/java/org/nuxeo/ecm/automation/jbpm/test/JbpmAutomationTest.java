@@ -16,29 +16,24 @@
  */
 package org.nuxeo.ecm.automation.jbpm.test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import junit.framework.Assert;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.jbpm.graph.exe.Comment;
 import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.junit.runner.RunWith;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -108,7 +103,7 @@ public class JbpmAutomationTest {
 
         List<TaskInstance> tasks = jbpmService.getTaskInstances(document,
                 (NuxeoPrincipal) null, null);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskChain");
@@ -119,7 +114,7 @@ public class JbpmAutomationTest {
 
         TaskInstance task = tasks.get(0);
         assertEquals("single test task", task.getName());
-        Assert.assertNull(task.getActorId());
+        assertNull(task.getActorId());
 
         List<String> pooledActorIds = getPooledActorIds(task);
         assertEquals(3, pooledActorIds.size());
@@ -141,8 +136,8 @@ public class JbpmAutomationTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6, 17, 10, 15);
         // FIXME: check why dates are not exactly equal
-        // Assert.assertEquals(calendar.getTime(), task.getDueDate());
-        Assert.assertNull(task.getProcessInstance());
+        // assertEquals(calendar.getTime(), task.getDueDate());
+        assertNull(task.getProcessInstance());
         // task status
         assertTrue(task.isOpen());
         assertFalse(task.isCancelled());
@@ -175,7 +170,7 @@ public class JbpmAutomationTest {
         assertEquals(0, tasks.size());
 
         // check document metadata
-        Assert.assertNull(document.getPropertyValue("dc:description"));
+        assertNull(document.getPropertyValue("dc:description"));
     }
 
     @Test
@@ -207,7 +202,7 @@ public class JbpmAutomationTest {
 
         List<TaskInstance> tasks = jbpmService.getTaskInstances(document,
                 (NuxeoPrincipal) null, null);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskChainWithoutActors");
@@ -224,7 +219,7 @@ public class JbpmAutomationTest {
 
         List<TaskInstance> tasks = jbpmService.getTaskInstances(document,
                 (NuxeoPrincipal) null, null);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSeveralTasksChain");
@@ -244,7 +239,7 @@ public class JbpmAutomationTest {
 
         List<Comment> comments = task1.getComments();
         assertEquals(0, comments.size());
-        Assert.assertNull(task1.getProcessInstance());
+        assertNull(task1.getProcessInstance());
         // task status
         assertTrue(task1.isOpen());
         assertFalse(task1.isCancelled());
@@ -257,7 +252,7 @@ public class JbpmAutomationTest {
                 task1.getVariable(JbpmService.VariableName.documentId.name()));
         assertEquals(SecurityConstants.ADMINISTRATOR,
                 task1.getVariable(JbpmService.VariableName.initiator.name()));
-        Assert.assertNull(task1.getVariable(TaskVariableName.directive.name()));
+        assertNull(task1.getVariable(TaskVariableName.directive.name()));
         assertEquals(
                 "true",
                 task1.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
@@ -289,7 +284,7 @@ public class JbpmAutomationTest {
 
         comments = task2.getComments();
         assertEquals(0, comments.size());
-        Assert.assertNull(task2.getProcessInstance());
+        assertNull(task2.getProcessInstance());
         // task status
         assertTrue(task2.isOpen());
         assertFalse(task2.isCancelled());
@@ -302,7 +297,7 @@ public class JbpmAutomationTest {
                 task2.getVariable(JbpmService.VariableName.documentId.name()));
         assertEquals(SecurityConstants.ADMINISTRATOR,
                 task2.getVariable(JbpmService.VariableName.initiator.name()));
-        Assert.assertNull(task2.getVariable(TaskVariableName.directive.name()));
+        assertNull(task2.getVariable(TaskVariableName.directive.name()));
         assertEquals(
                 "true",
                 task2.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
@@ -312,7 +307,7 @@ public class JbpmAutomationTest {
 
         TaskInstance task3 = tasks.get(1);
         assertEquals("several test tasks", task3.getName());
-        Assert.assertNull(task3.getActorId());
+        assertNull(task3.getActorId());
 
         pooledActorIds = getPooledActorIds(task3);
         assertEquals(1, pooledActorIds.size());
@@ -321,7 +316,7 @@ public class JbpmAutomationTest {
 
         comments = task3.getComments();
         assertEquals(0, comments.size());
-        Assert.assertNull(task3.getProcessInstance());
+        assertNull(task3.getProcessInstance());
         // task status
         assertTrue(task3.isOpen());
         assertFalse(task3.isCancelled());
@@ -334,7 +329,7 @@ public class JbpmAutomationTest {
                 task3.getVariable(JbpmService.VariableName.documentId.name()));
         assertEquals(SecurityConstants.ADMINISTRATOR,
                 task3.getVariable(JbpmService.VariableName.initiator.name()));
-        Assert.assertNull(task3.getVariable(TaskVariableName.directive.name()));
+        assertNull(task3.getVariable(TaskVariableName.directive.name()));
         assertEquals(
                 "true",
                 task3.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
@@ -343,7 +338,7 @@ public class JbpmAutomationTest {
                 task3.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
 
         // check document metadata
-        Assert.assertNull(document.getPropertyValue("dc:description"));
+        assertNull(document.getPropertyValue("dc:description"));
     }
 
     @Test
@@ -353,7 +348,7 @@ public class JbpmAutomationTest {
 
         List<TaskInstance> tasks = jbpmService.getTaskInstances(document,
                 (NuxeoPrincipal) null, null);
-        Assert.assertNotNull(tasks);
+        assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskAndRunOperationChain");
@@ -397,7 +392,7 @@ public class JbpmAutomationTest {
     protected List<String> getPooledActorIds(TaskInstance task) {
         List<PooledActor> pooledActors = new ArrayList<PooledActor>(
                 task.getPooledActors());
-        Assert.assertNotNull(pooledActors);
+        assertNotNull(pooledActors);
         List<String> pooledActorIds = new ArrayList<String>(pooledActors.size());
         for (PooledActor actor : pooledActors) {
             pooledActorIds.add(actor.getActorId());

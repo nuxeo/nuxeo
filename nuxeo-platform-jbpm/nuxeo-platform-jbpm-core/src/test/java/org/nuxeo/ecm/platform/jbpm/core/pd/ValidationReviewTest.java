@@ -19,6 +19,9 @@ package org.nuxeo.ecm.platform.jbpm.core.pd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -38,6 +41,7 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testPD() {
         JbpmContext context = null;
         try {

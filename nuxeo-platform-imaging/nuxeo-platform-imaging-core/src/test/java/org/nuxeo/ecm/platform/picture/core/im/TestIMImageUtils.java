@@ -19,6 +19,10 @@ package org.nuxeo.ecm.platform.picture.core.im;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -29,7 +33,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestIMImageUtils extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
@@ -85,6 +89,7 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testImageMagickCaller_MakeFiles() throws Exception {
         String filename = "images/test.jpg";
         // FileBlob

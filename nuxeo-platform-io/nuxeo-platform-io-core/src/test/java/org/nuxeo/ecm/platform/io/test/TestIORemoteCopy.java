@@ -32,6 +32,10 @@ import javax.naming.InitialContext;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -76,7 +80,7 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
 
     protected IOManager ioService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
 
         System.setProperty("org.nuxeo.runtime.streaming.isServer", "false");
@@ -180,6 +184,7 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         coreSession.save();
     }
 
+    @Test
     public void testCopyDocumentsAndResources() throws Exception {
         createTestDocumentsAndResources("parent", "child");
 

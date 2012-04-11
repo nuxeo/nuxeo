@@ -32,6 +32,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -68,7 +72,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
 
     private QNameResource references;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
@@ -104,6 +108,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
+    @Test
     public void testGetGraph() {
         Model jenaGraph = graph.openGraph().getGraph();
         Map<String, String> map = jenaGraph.getNsPrefixMap();
@@ -112,6 +117,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals("http://purl.org/dc/terms/", map.get("dcterms"));
     }
 
+    @Test
     public void testSetOptions() {
         Map<String, String> options = new HashMap<String, String>();
         options.put("backend", "dummy");
@@ -142,6 +148,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         graph.setOptions(options);
     }
 
+    @Test
     public void testSetNamespaces() {
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("dummy", "http://dummy");
@@ -177,12 +184,14 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals("http://dummy", map.get("dummy"));
     }
 
+    @Test
     public void testAdd() {
         assertSame(0L, graph.size());
         graph.add(statements);
         assertSame(3L, graph.size());
     }
 
+    @Test
     public void testRemove() {
         assertSame(0L, graph.size());
         graph.add(statements);
@@ -194,6 +203,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertSame(2L, graph.size());
     }
 
+    @Test
     public void testGetStatements() {
         List<Statement> stmts = new ArrayList<Statement>();
         assertEquals(stmts, graph.getStatements());
@@ -203,6 +213,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(statements, stmts);
     }
 
+    @Test
     public void testGetStatementsPattern() {
         List<Statement> expected = new ArrayList<Statement>();
         assertEquals(expected, graph.getStatements());
@@ -252,6 +263,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(expected, stmts);
     }
 
+    @Test
     public void testGetSubjects() {
         graph.add(statements);
         List<Node> expected;
@@ -289,6 +301,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(expected, res);
     }
 
+    @Test
     public void testGetPredicates() {
         graph.add(statements);
         List<Node> expected;
@@ -325,6 +338,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(expected, res);
     }
 
+    @Test
     public void testGetObject() {
         graph.add(statements);
         List<Node> expected;
@@ -365,6 +379,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(expected, res);
     }
 
+    @Test
     public void testHasStatement() {
         graph.add(statements);
         assertFalse(graph.hasStatement(null));
@@ -374,6 +389,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertFalse(graph.hasStatement(new StatementImpl(null, null, doc2)));
     }
 
+    @Test
     public void testHasResource() {
         graph.add(statements);
         assertFalse(graph.hasResource(null));
@@ -381,6 +397,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertFalse(graph.hasResource(new ResourceImpl("http://foo")));
     }
 
+    @Test
     public void testSize() {
         assertSame(0L, graph.size());
         List<Statement> stmts = new ArrayList<Statement>();
@@ -391,6 +408,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertSame(4L, graph.size());
     }
 
+    @Test
     public void testClear() {
         assertSame(0L, graph.size());
         graph.add(statements);
@@ -399,6 +417,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertSame(0L, graph.size());
     }
 
+    @Test
     public void testQuery() {
         graph.add(statements);
         String queryString = "SELECT ?subj ?pred ?obj " + "WHERE {"
@@ -420,6 +439,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(variableNames, res.getVariableNames());
     }
 
+    @Test
     public void testRead() throws Exception {
         InputStream in = new FileInputStream(getTestFile());
         assertSame(0L, graph.size());
@@ -434,6 +454,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(statements, this.statements);
     }
 
+    @Test
     public void testReadPath() {
         assertSame(0L, graph.size());
         graph.read(getTestFile(), null, null);
@@ -447,6 +468,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(statements, this.statements);
     }
 
+    @Test
     public void testWrite() throws Exception {
         graph.add(statements);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -457,6 +479,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
                 FileUtils.read(written).replaceAll("\r?\n", ""));
     }
 
+    @Test
     public void testWritePath() throws Exception {
         graph.add(statements);
         File file = File.createTempFile("test", ".rdf");
@@ -472,6 +495,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
 
     // XXX AT: test serialization of the graph because the RelationServiceBean
     // will attempt to keep references to graphs it manages.
+    @Test
     public void testSerialization() throws Exception {
         graph.add(statements);
 

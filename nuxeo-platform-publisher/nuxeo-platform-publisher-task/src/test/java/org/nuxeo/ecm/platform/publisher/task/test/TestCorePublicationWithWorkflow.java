@@ -20,6 +20,11 @@ package org.nuxeo.ecm.platform.publisher.task.test;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -55,7 +60,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
 
     protected HashMap<String,String> factoryParams = new HashMap<String,String>();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         Framework.getProperties().setProperty(
@@ -90,7 +95,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         initializeACP();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -160,6 +165,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         session.save();
     }
 
+    @Test
     public void testRights() throws Exception {
         changeUser("myuser1");
         String defaultTreeName = publisherService.getAvailablePublicationTree().get(
@@ -195,6 +201,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         assertTrue(treeUser2.hasValidationTask(publishedDocument));
     }
 
+    @Test
     public void testApprovePublication() throws Exception {
         changeUser("myuser1");
         String defaultTreeName = publisherService.getAvailablePublicationTree().get(
@@ -246,6 +253,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
                 new DocumentLocationImpl(doc2Publish)).size());
     }
 
+    @Test
     public void testRejectPublication() throws Exception {
         changeUser("myuser1");
         String defaultTreeName = publisherService.getAvailablePublicationTree().get(
@@ -309,6 +317,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         assertFalse(session.exists(proxy.getRef()));
     }
 
+    @Test
     public void testFirstPublicationByValidator() throws Exception {
         changeUser("myuser2");
         String defaultTreeName = publisherService.getAvailablePublicationTree().get(
@@ -335,6 +344,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
                 new DocumentLocationImpl(doc2Publish)).size());
     }
 
+    @Test
     public void testFirstPublicationByNonValidator() throws Exception {
         changeUser("myuser1");
         String defaultTreeName = publisherService.getAvailablePublicationTree().get(
@@ -362,6 +372,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
 
     }
 
+    @Test
     public void testPublishOfAlreadyWaitingToBePublishedDocByNonValidator() throws Exception {
         // my user1 ask for publication
         changeUser("myuser1");
@@ -428,6 +439,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
 
     }
 
+    @Test
     public void testMultiplePublishThenPublishByValidator() throws Exception {
         // my user1 ask for publication
         changeUser("myuser1");

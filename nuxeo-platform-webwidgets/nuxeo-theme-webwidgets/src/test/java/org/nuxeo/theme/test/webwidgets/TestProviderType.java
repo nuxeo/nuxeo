@@ -14,6 +14,11 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.webwidgets.DecorationType;
 import org.nuxeo.theme.webwidgets.Service;
@@ -22,7 +27,7 @@ public class TestProviderType extends NXRuntimeTestCase {
 
     private Service service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
@@ -32,12 +37,13 @@ public class TestProviderType extends NXRuntimeTestCase {
         service = (Service) runtime.getComponent(Service.ID);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         service = null;
         super.tearDown();
     }
 
+    @Test
     public void testGetWindowDecoration() {
         DecorationType decorationType = service.getDecorationType("test");
         assertEquals("<span>%WIDGET_NAME%</span>\n",

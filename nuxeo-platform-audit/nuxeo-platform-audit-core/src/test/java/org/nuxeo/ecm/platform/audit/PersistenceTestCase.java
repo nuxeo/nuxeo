@@ -21,7 +21,9 @@ import java.net.URL;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +35,7 @@ import org.nuxeo.ecm.core.persistence.PersistenceProvider;
  *
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public abstract class PersistenceTestCase extends TestCase {
+public abstract class PersistenceTestCase {
 
     protected static final Log log = LogFactory.getLog(PersistenceTestCase.class);
 
@@ -47,9 +49,8 @@ public abstract class PersistenceTestCase extends TestCase {
     protected void handleAfterSetup(EntityManager entityManager) {
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         URL resource = getClass().getResource("/hibernate-tests.xml");
         HibernateConfiguration config = HibernateConfiguration.load(resource);
         persistenceProvider = new PersistenceProvider(config);
@@ -59,7 +60,7 @@ public abstract class PersistenceTestCase extends TestCase {
         handleAfterSetup(entityManager);
     }
 
-    @Override
+    @After
     public void tearDown() {
         persistenceProvider.releaseEntityManagerWithRollback(entityManager);
     }

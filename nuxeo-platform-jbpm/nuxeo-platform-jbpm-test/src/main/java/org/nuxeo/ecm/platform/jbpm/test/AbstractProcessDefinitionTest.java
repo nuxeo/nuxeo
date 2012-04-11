@@ -25,14 +25,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
 
 import org.jbpm.JbpmConfiguration;
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 
-public abstract class AbstractProcessDefinitionTest extends TestCase {
+public abstract class AbstractProcessDefinitionTest {
 
     protected final List<String> bob_list = Collections.singletonList("bob");
     protected final List<String> trudy_list = Collections.singletonList("trudy");
@@ -43,15 +45,8 @@ public abstract class AbstractProcessDefinitionTest extends TestCase {
 
     protected JbpmContext jbpmContext;
 
-    public AbstractProcessDefinitionTest() {
-    }
-
-    public AbstractProcessDefinitionTest(String name) {
-        super(name);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         InputStream isConf = getClass().getResourceAsStream(
                 getConfigurationResource());
         configuration = JbpmConfiguration.parseInputStream(isConf);
@@ -66,8 +61,8 @@ public abstract class AbstractProcessDefinitionTest extends TestCase {
         assertNotNull(pd);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         jbpmContext.close();
     }
 

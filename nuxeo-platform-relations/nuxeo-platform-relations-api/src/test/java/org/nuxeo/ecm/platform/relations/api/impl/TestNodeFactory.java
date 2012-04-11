@@ -19,13 +19,15 @@
 
 package org.nuxeo.ecm.platform.relations.api.impl;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 
-public class TestNodeFactory extends TestCase {
+public class TestNodeFactory {
 
+    @Test
     public void testCreateLiteral() {
         LiteralImpl lit = NodeFactory.createLiteral("Hello");
         assertNotNull(lit);
@@ -37,6 +39,7 @@ public class TestNodeFactory extends TestCase {
         assertNull(lit.getType());
     }
 
+    @Test
     public void testCreateLiteralWithLanguage() {
         LiteralImpl lit = NodeFactory.createLiteral("Hello", "en");
         assertNotNull(lit);
@@ -48,6 +51,7 @@ public class TestNodeFactory extends TestCase {
         assertNull(lit.getType());
     }
 
+    @Test
     public void testCreateTypedLiteral() {
         LiteralImpl lit = NodeFactory.createTypedLiteral("Hello", "myType");
         assertNotNull(lit);
@@ -59,6 +63,7 @@ public class TestNodeFactory extends TestCase {
         assertEquals("myType", lit.getType());
     }
 
+    @Test
     public void testCreateBlank() {
         BlankImpl blank = NodeFactory.createBlank();
         assertNotNull(blank);
@@ -68,6 +73,7 @@ public class TestNodeFactory extends TestCase {
         assertNull(blank.getId());
     }
 
+    @Test
     public void testCreateBlankWithId() {
         BlankImpl blank = NodeFactory.createBlank("myId");
         assertNotNull(blank);
@@ -77,6 +83,7 @@ public class TestNodeFactory extends TestCase {
         assertEquals("myId", blank.getId());
     }
 
+    @Test
     public void testCreateResource() {
         Resource res = NodeFactory.createResource("http://uri");
         assertNotNull(res);
@@ -86,6 +93,7 @@ public class TestNodeFactory extends TestCase {
         assertEquals("http://uri", res.getUri());
     }
 
+    @Test
     public void testCreateQNameResource() {
         QNameResource res = NodeFactory.createQNameResource("http://dummy/",
                 "uri");

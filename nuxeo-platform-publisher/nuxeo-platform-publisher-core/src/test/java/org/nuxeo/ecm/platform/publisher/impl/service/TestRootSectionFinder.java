@@ -3,6 +3,10 @@ package org.nuxeo.ecm.platform.publisher.impl.service;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -32,12 +36,13 @@ public class TestRootSectionFinder extends SQLRepositoryTestCase {
 
     Set<String> sectionTypes = new HashSet<String>();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
     }
 
+    @Test
     public void testBuildQuery() throws Exception {
         sectionTypes.add("Sections");
         RootSectionsFinderForTest rsf = new RootSectionsFinderForTest(session);

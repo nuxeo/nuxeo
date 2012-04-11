@@ -27,6 +27,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
@@ -45,7 +50,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
     NotificationRegistry notificationRegistry;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -65,6 +70,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         notificationRegistry = notificationService.getNotificationRegistry();
     }
 
+    @Test
     public void testRegistration() {
         List<Notification> notifsForVersion = notificationRegistry.getNotificationsForEvent("version_created");
         List<Notification> notifsForWorkflowStarted = notificationRegistry.getNotificationsForEvent("workflowStarted");
@@ -73,6 +79,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         assertEquals(1, notifsForWorkflowStarted.size());
     }
 
+    @Test
     public void testTemplateOverride() {
         URL newModifTemplate = notificationService.getTemplateURL("modif");
         assertTrue(newModifTemplate.getFile().endsWith("templates/modif_fr.ftl"));
@@ -87,6 +94,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         return names;
     }
 
+    @Test
     public void testAvailableIn() {
         List<Notification> notifs = notificationRegistry.getNotificationsForSubscriptions("section");
         assertEquals(Arrays.asList("Ajout d'un commentaire",
@@ -105,6 +113,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
                 sortedNotificationNames(notifs));
     }
 
+    @Test
     public void testExpandVarsInGeneralSettings() {
         assertEquals("http://testServerPrefix/nuxeo", notificationService.getServerUrlPrefix());
         assertEquals("testSubjectPrefix", notificationService.getEMailSubjectPrefix());

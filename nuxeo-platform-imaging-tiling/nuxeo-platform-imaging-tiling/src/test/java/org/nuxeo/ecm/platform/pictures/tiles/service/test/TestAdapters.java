@@ -26,6 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,7 +41,7 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
 
 public class TestAdapters extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.types.api");
@@ -52,12 +57,13 @@ public class TestAdapters extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testAdapter() throws Exception {
 
         DocumentModel root = session.getRootDocument();
@@ -90,6 +96,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         assertNotNull(tiles2);
     }
 
+    @Test
     public void testAdapterOnPicture() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel picture = session.createDocumentModel(
@@ -108,6 +115,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         assertTilingIsWorkingFor(picture);
     }
 
+    @Test
     public void testAdapterOnPictureWithOriginalJpegView() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel picture = session.createDocumentModel(

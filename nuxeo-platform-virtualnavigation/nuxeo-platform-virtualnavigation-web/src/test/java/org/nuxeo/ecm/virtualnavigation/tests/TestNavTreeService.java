@@ -19,6 +19,10 @@ package org.nuxeo.ecm.virtualnavigation.tests;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.virtualnavigation.action.NavTreeDescriptor;
 import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
 import org.nuxeo.runtime.api.Framework;
@@ -26,7 +30,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestNavTreeService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.platform.virtualnavigation.web",
@@ -35,11 +39,13 @@ public class TestNavTreeService extends NXRuntimeTestCase {
                 "OSGI-INF/navtree-contrib.xml");
     }
 
+    @Test
     public void testServiceLookup() {
         NavTreeService service = Framework.getLocalService(NavTreeService.class);
         assertNotNull(service);
     }
 
+    @Test
     public void testNavTrees() throws Exception {
         NavTreeService service = Framework.getLocalService(NavTreeService.class);
         assertNotNull(service);
@@ -51,6 +57,7 @@ public class TestNavTreeService extends NXRuntimeTestCase {
         assertFalse(descs.get(0).isDirectoryTreeBased());
     }
 
+    @Test
     public void testNavTreesWithDirectories() throws Exception {
 
         deployContrib("org.nuxeo.ecm.webapp.base",

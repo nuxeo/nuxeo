@@ -22,6 +22,10 @@ package org.nuxeo.ecm.platform.audit.job;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -30,7 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestJobHistoryHelper extends NXRuntimeTestCase {
 
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -41,6 +45,7 @@ public class TestJobHistoryHelper extends NXRuntimeTestCase {
         fireFrameworkStarted();
     }
 
+    @Test
     public void testLogger() throws Exception {
 
         StringBuffer query = new StringBuffer("from LogEntry log where ");
@@ -64,6 +69,7 @@ public class TestJobHistoryHelper extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testLoggerHelper() throws Exception {
 
         JobHistoryHelper helper = new JobHistoryHelper("MyExport2");

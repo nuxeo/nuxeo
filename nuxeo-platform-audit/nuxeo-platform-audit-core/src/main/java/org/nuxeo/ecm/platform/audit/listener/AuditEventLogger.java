@@ -22,8 +22,9 @@ package org.nuxeo.ecm.platform.audit.listener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.runtime.api.Framework;
@@ -33,20 +34,22 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author tiry
  */
-public class AuditEventLogger implements PostCommitEventListener {
+public class AuditEventLogger implements PostCommitFilteringEventListener {
 
     private static final Log log = LogFactory.getLog(AuditEventLogger.class);
 
-    protected AuditLogger getAuditLogger() throws ClientException {
-        try {
-            return Framework.getService(AuditLogger.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
+    @Override
+    public boolean acceptEvent(Event event) {
+        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        if (logger == null) {
+            return false;
         }
+        return logger.getAuditableEventNames().contains(event.getName());
     }
 
+    @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        AuditLogger logger = getAuditLogger();
+        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger != null) {
             try {
                 logger.logEvents(events);

@@ -169,6 +169,32 @@ public class EventHandlerRegistry {
         return pclookup().keySet();
     }
 
+    public boolean acceptEvent(Event event, List<EventHandler> handlers) {
+        if (handlers == null || handlers.isEmpty()) {
+            return false;
+        }
+        EventContext ectx = event.getContext();
+        OperationContext ctx;
+        if (ectx instanceof DocumentEventContext) {
+            ctx = new OperationContext(ectx.getCoreSession());
+            ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
+        } else {
+            ctx = new OperationContext();
+        }
+        ctx.put("Event", event);
+        for (EventHandler handler : handlers) {
+            try {
+                if (handler.isEnabled(ctx, ectx)) {
+                    return true;
+                }
+            } catch (Exception e) {
+                log.error("Failed to check event " + event.getName()
+                        + " using chain: " + handler.getChainId(), e);
+            }
+        }
+        return false;
+    }
+
     // TODO: impl remove handlers method? or should refactor runtime to be able
     // to redeploy only using clear() method
 

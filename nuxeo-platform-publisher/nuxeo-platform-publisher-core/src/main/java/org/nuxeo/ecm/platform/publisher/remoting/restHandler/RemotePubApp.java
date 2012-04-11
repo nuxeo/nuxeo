@@ -14,6 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
+
 package org.nuxeo.ecm.platform.publisher.remoting.restHandler;
 
 import java.util.HashSet;

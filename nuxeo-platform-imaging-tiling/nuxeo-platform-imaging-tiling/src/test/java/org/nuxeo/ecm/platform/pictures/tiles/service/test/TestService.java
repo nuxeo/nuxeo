@@ -21,6 +21,10 @@ package org.nuxeo.ecm.platform.pictures.tiles.service.test;
 
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -41,7 +45,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
@@ -54,11 +58,13 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingComponent.endGC();
     }
 
+    @Test
     public void testLookup() {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
     }
 
+    @Test
     public void testTilingSimple() throws ClientException {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -72,12 +78,14 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(tiles.getZoomfactor() == 0);
     }
 
+    @Test
     public void testAdapter() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
                 "OSGI-INF/pictures-tiles-adapter-contrib.xml");
 
     }
 
+    @Test
     public void testTilingSpead() throws ClientException {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -107,6 +115,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testLazy() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -135,6 +144,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testTilingWithShrink() throws ClientException {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -148,6 +158,7 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(tiles.getZoomfactor() == 0);
     }
 
+    @Test
     public void testTilingSimpleMagick() throws ClientException {
 
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
@@ -164,7 +175,8 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(tiles.getZoomfactor() == 0);
     }
 
-    /*public void testTilingBench() throws Exception {
+    /*  @Test
+        public void testTilingBench() throws Exception {
 
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -174,6 +186,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }*/
 
+    @Test
     public void testMagick() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -187,6 +200,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testMagick2() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -200,7 +214,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
-    /*
+    /* @Test
      * public void testBig() throws Exception { PictureTilingService pts =
      * Framework.getLocalService(PictureTilingService.class);
      * assertNotNull(pts); PictureTilingComponent.setDefaultTiler(new
@@ -261,6 +275,7 @@ public class TestService extends NXRuntimeTestCase {
         // System.out.println("speed " + (nb + 0.0) / ((t3 - t0) / 1000));
     }
 
+    @Test
     public void testGC() throws Exception {
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
 
@@ -290,6 +305,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testGC2() throws Exception {
         int reduceSize = 500;
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
@@ -348,6 +364,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testParametersContrib() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
                 "OSGI-INF/pictures-tiles-contrib.xml");
@@ -358,6 +375,7 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals("50000", cacheSize);
     }
 
+    @Test
     public void testBorderTiles() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);

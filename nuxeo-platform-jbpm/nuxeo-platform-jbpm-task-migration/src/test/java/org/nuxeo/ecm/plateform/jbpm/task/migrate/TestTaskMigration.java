@@ -8,6 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,7 +43,7 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
 
     List<String> prefixedActorIds = new ArrayList<String>();
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -82,7 +87,7 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
 
     }
 
-
+    @Test
     public void testTaskMigration() throws Exception {
 
         TaskService taskService = Framework.getService(TaskService.class);
@@ -131,7 +136,7 @@ public class TestTaskMigration extends SQLRepositoryTestCase {
 
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (session!=null) {
             CoreInstance.getInstance().close(session);

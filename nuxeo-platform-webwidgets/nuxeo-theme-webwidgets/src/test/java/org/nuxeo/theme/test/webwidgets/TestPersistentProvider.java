@@ -19,6 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.webwidgets.ProviderException;
 import org.nuxeo.theme.webwidgets.Widget;
@@ -31,7 +36,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
 
     protected PersistentProvider provider;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.persistence",
@@ -42,7 +47,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         provider = new PersistentProvider();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         provider.destroy();
         provider.deactivate();
@@ -50,6 +55,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testCreateWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
@@ -58,6 +64,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals("test widget 2", widget2.getName());
     }
 
+    @Test
     public void testGetWidgetByUid() throws ProviderException {
         String name1 = "test widget";
         String name2 = "test widget 2";
@@ -71,6 +78,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals(widget2, provider.getWidgetByUid(uid2));
     }
 
+    @Test
     public void testAddAndGetWidgets() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
@@ -91,6 +99,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
     }
 
+    @Test
     public void testReorderWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
@@ -124,6 +133,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
     }
 
+    @Test
     public void testRemoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("remove test widget");
         Widget widget2 = provider.createWidget("remove test widget");
@@ -147,6 +157,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertTrue(provider.getWidgets("remove region A").isEmpty());
     }
 
+    @Test
     public void testMoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
@@ -190,6 +201,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals(1, provider.getWidgets("region B").indexOf(widget1));
     }
 
+    @Test
     public void testState() throws ProviderException {
         Widget widget = provider.createWidget("test widget");
         provider.setWidgetState(widget, WidgetState.DEFAULT);
@@ -198,6 +210,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals(WidgetState.SHADED, provider.getWidgetState(widget));
     }
 
+    @Test
     public void testPreferences() throws ProviderException {
         Widget widget = provider.createWidget("test widget");
         Map<String, String> preferences = new HashMap<String, String>();
@@ -211,6 +224,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals("value 3", retrievedPreferences.get("key3"));
     }
 
+    @Test
     public void testWidgetData() throws ProviderException {
         Widget widget = provider.createWidget("test widget");
 
@@ -232,6 +246,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertNull(provider.getWidgetData(widget, dataName));
     }
 
+    @Test
     public void testReorderWidgets() throws ProviderException {
         WidgetEntity widget1 = (WidgetEntity) provider.createWidget("test widget 1");
         WidgetEntity widget2 = (WidgetEntity) provider.createWidget("test widget 2");

@@ -18,6 +18,11 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
 import org.hsqldb.jdbc.jdbcDataSource;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -48,11 +53,15 @@ public class TestServiceRootFinder extends SQLRepositoryTestCase {
 
     protected DocumentModel doc2Publish;
 
+    public TestServiceRootFinder() {
+        super();
+    }
+
     public TestServiceRootFinder(String name) {
         super(name);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -99,7 +108,7 @@ public class TestServiceRootFinder extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         try {
             closeSession();
@@ -194,6 +203,7 @@ public class TestServiceRootFinder extends SQLRepositoryTestCase {
         originalUser.setName(userName);
     }
 
+    @Test
     public void testSectionRootFinder() throws Exception {
         setReadACL(session.getRootDocument().getRef(), "myuser1", true);
 
@@ -300,6 +310,7 @@ public class TestServiceRootFinder extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testSectionRootFinderContrib() throws Exception {
 
         PublisherService service = Framework.getLocalService(PublisherService.class);

@@ -13,11 +13,11 @@ package org.nuxeo.ecm.automation.core.test;
 
 import java.net.URL;
 
-import junit.framework.Assert;
-
+import org.junit.runner.RunWith;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -86,7 +86,7 @@ public class RenderingServiceTest {
         chain.add(FetchContextDocument.ID);
         chain.add(RenderDocument.ID).set("template", "Hello ${This.title}");
         Blob blob = (Blob)service.run(ctx, chain);
-        Assert.assertEquals("Hello Source", blob.getString());
+        assertEquals("Hello Source", blob.getString());
 
         // again but with mvel
         ctx = new OperationContext(session);
@@ -95,7 +95,7 @@ public class RenderingServiceTest {
         chain.add(FetchContextDocument.ID);
         chain.add(RenderDocument.ID).set("template", "Hello ${This.title} ${CurrentUser.name}").set("type", "mvel");
         blob = (Blob)service.run(ctx, chain);
-        Assert.assertEquals("Hello Source Administrator", blob.getString());
+        assertEquals("Hello Source Administrator", blob.getString());
 
         // same test but using a list of docs
         ctx = new OperationContext(session);
@@ -106,18 +106,18 @@ public class RenderingServiceTest {
         chain = new OperationChain("testRenderingMvel2");
         chain.add(RenderDocument.ID).set("template", "${This.title}").set("type", "mvel");
         BlobList blobs = (BlobList)service.run(ctx, chain);
-        Assert.assertEquals(2, blobs.size());
-        Assert.assertEquals("Source", blobs.get(0).getString());
-        Assert.assertEquals("Destination", blobs.get(1).getString());
+        assertEquals(2, blobs.size());
+        assertEquals("Source", blobs.get(0).getString());
+        assertEquals("Destination", blobs.get(1).getString());
 
         ctx = new OperationContext(session);
         ctx.setInput(list);
         chain = new OperationChain("testRenderingFtl2");
         chain.add(RenderDocument.ID).set("template", "${This.title}");
         blobs = (BlobList)service.run(ctx, chain);
-        Assert.assertEquals(2, blobs.size());
-        Assert.assertEquals("Source", blobs.get(0).getString());
-        Assert.assertEquals("Destination", blobs.get(1).getString());
+        assertEquals(2, blobs.size());
+        assertEquals("Source", blobs.get(0).getString());
+        assertEquals("Destination", blobs.get(1).getString());
 
     }
 
@@ -138,7 +138,7 @@ public class RenderingServiceTest {
         Blob blob = (Blob)service.run(ctx, chain);
         String r = blob.getString();
         r = r.replaceAll("\\s+", "");
-        Assert.assertEquals("SourceDestination", r);
+        assertEquals("SourceDestination", r);
 
         ctx = new OperationContext(session);
         ctx.setInput(list);
@@ -147,7 +147,7 @@ public class RenderingServiceTest {
         blob = (Blob)service.run(ctx, chain);
         r = blob.getString();
         r = r.replaceAll("\\s+", "");
-        Assert.assertEquals("SourceDestination", r);
+        assertEquals("SourceDestination", r);
 
     }
 

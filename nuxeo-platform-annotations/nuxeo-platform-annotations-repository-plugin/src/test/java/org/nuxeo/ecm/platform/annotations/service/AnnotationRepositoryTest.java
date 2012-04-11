@@ -25,6 +25,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,12 +60,13 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     private final NuxeoPrincipal user = new UserPrincipal("bob",
             new ArrayList<String>(), false, false);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         setUpRepository();
     }
 
+    @Test
     public void testAnnotateDocuments() throws Exception {
         waitForAsyncExec();
         assertNotNull(session);

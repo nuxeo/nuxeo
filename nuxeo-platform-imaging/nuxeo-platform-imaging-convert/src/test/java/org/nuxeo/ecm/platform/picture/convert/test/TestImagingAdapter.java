@@ -24,6 +24,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -34,7 +39,7 @@ import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 
 public class TestImagingAdapter extends RepositoryOSGITestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.convert.api");
@@ -48,12 +53,13 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         openRepository();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testAdapter() throws Exception {
 
         ArrayList<Map<String, Object>> pictureTemplates = new ArrayList<Map<String, Object>>();
@@ -108,6 +114,7 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         }
     }
 
+    @Test
     public void testBlobReadOnlyOnce() throws Exception {
         DocumentModel doc = coreSession.createDocumentModel("/", "pic",
                 "Picture");

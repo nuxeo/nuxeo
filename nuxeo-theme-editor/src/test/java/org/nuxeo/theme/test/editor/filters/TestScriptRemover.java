@@ -14,20 +14,22 @@
 
 package org.nuxeo.theme.test.editor.filters;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.theme.editor.filters.ScriptRemover;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.rendering.Filter;
 
-public class TestScriptRemover extends TestCase {
+public class TestScriptRemover {
     DummyRenderingInfo info;
 
     Filter filter;
 
     PageElement page;
 
-    @Override
+    @Before
     public void setUp() {
         // create the elements to render
         page = new PageElement();
@@ -36,30 +38,35 @@ public class TestScriptRemover extends TestCase {
         filter = new ScriptRemover();
     }
 
+    @Test
     public void testFilter1() {
         info.setMarkup("<span>before</span><script>content</script><span>after</span>");
         filter.process(info, false);
         assertEquals("<span>before</span><span>after</span>", info.getMarkup());
     }
 
+    @Test
     public void testFilter2() {
         info.setMarkup("<script>content</script>");
         filter.process(info, false);
         assertEquals("", info.getMarkup());
     }
 
+    @Test
     public void testFilter3() {
         info.setMarkup("<script type=\"text/javascript\">content</script>");
         filter.process(info, false);
         assertEquals("", info.getMarkup());
     }
 
+    @Test
     public void testFilter4() {
         info.setMarkup("<script type=\"text/javascript\"><!-- content\n //--></script>");
         filter.process(info, false);
         assertEquals("", info.getMarkup());
     }
 
+    @Test
     public void testFilter5() {
         info.setMarkup("before<script>foo</script>,bar,<script>gee</script>after");
         filter.process(info, false);

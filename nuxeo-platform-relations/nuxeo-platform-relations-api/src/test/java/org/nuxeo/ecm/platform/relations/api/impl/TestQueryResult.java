@@ -24,13 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
 
-public class TestQueryResult extends TestCase {
+public class TestQueryResult {
 
+    @Test
     public void testInit() {
         List<String> variableNames = new ArrayList<String>();
         variableNames.add("subject");

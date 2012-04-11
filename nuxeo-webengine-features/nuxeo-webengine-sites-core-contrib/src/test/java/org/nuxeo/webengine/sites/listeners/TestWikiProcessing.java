@@ -21,6 +21,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -33,6 +36,7 @@ public class TestWikiProcessing extends NXRuntimeTestCase {
 
     protected Log log = LogFactory.getLog(TestWikiProcessing.class);
 
+    @Test
     public void testProcessing() throws Exception {
         InputStream is = new FileInputStream(FileUtils
                 .getResourceFileFromContext("test-data/page1.wiki"));

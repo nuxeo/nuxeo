@@ -25,6 +25,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,7 +43,7 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
 
     protected DocumentModel root;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.picture.api");
@@ -50,7 +55,7 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
         root = getCoreSession().getRootDocument();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -72,6 +77,7 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
         return views;
     }
 
+    @Test
     public void testBlobHolderSet() throws Exception {
         DocumentModel picture = new DocumentModelImpl(root.getPathAsString(),
                 "pic", "Picture");

@@ -17,18 +17,22 @@
 
 package org.nuxeo.connect.version;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestHeaders extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.connect.client");
         deployBundle("org.nuxeo.connect.client.wrapper");
     }
 
+    @Test
     public void testVersion() {
         String buildVersion = NuxeoConnectClient.getBuildVersion();
         System.out.println("Build version=" + buildVersion);

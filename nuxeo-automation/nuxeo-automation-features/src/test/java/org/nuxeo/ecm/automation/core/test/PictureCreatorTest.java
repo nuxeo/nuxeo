@@ -3,10 +3,10 @@ package org.nuxeo.ecm.automation.core.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -110,20 +110,20 @@ public class PictureCreatorTest {
 
         DocumentModel picture  = (DocumentModel) service.run(ctx, chain);
 
-        Assert.assertNotNull(picture);
+        assertNotNull(picture);
 
         MultiviewPicture mvp = picture.getAdapter(MultiviewPicture.class);
 
-        Assert.assertNotNull(mvp);
+        assertNotNull(mvp);
 
-        Assert.assertEquals(5, mvp.getViews().length);
+        assertEquals(5, mvp.getViews().length);
 
         for (int i = 1; i<5; i++) {
             String title = "Title" + i;
             PictureView pv = mvp.getView(title);
             Blob content = (Blob) pv.getContent();
             ImageInfo ii = imagingService.getImageInfo(content);
-            Assert.assertEquals(i*100, ii.getWidth());
+            assertEquals(i*100, ii.getWidth());
         }
     }
 

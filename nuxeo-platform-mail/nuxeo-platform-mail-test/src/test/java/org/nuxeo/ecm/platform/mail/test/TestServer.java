@@ -31,12 +31,15 @@ import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Alexandre Russel
  */
-public class TestServer extends TestCase {
+public class TestServer {
 
     private static final String FACINATING_CONTENT = "facinating content.";
     private static final String TEST_EMAIL_SERVER = "Test email server";
@@ -44,7 +47,7 @@ public class TestServer extends TestCase {
     private Message message;
     private final Properties props = new Properties();
 
-    @Override
+    @Before
     protected void setUp() throws Exception {
         Server.start();
         props.put("mail.store.protocol", "pop3");
@@ -64,11 +67,12 @@ public class TestServer extends TestCase {
         Transport.send(message);
     }
 
-    @Override
+    @After
     protected void tearDown() throws Exception {
         Server.shutdown();
     }
 
+    @Test
     public void testServer() throws Exception {
         Session session = Session.getDefaultInstance(props);
         Thread.sleep(1000);

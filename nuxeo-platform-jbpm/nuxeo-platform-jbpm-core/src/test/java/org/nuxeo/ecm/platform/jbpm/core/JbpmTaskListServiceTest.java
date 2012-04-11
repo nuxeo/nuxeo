@@ -22,6 +22,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,7 +43,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
 
     public static String userWorkspacePath = "/default-domain/UserWorkspaces/Administrator";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
 
         // clean up previous test.
@@ -69,18 +74,20 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }
 
+    @Test
     public void testUserWorkspaceService() throws Exception {
         DocumentModel userWorkspace = getUserWorkspace(session);
         assertNotNull(userWorkspace);
     }
 
+    @Test
     public void testAdapter() throws ClientException {
         DocumentModel doc = session.createDocumentModel("/", "list1",
                 "TaskList");
@@ -108,6 +115,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         assertEquals(list.getTasks().get(0).getDueDate(), date);
     }
 
+    @Test
     public void testAdapterFail() throws ClientException {
         try {
             session.getRootDocument().getAdapter(TaskList.class);
@@ -116,6 +124,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testTaskListService() throws Exception {
 
         // Retrieve the service

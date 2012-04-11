@@ -1,0 +1,153 @@
+<div xmlns:h="http://java.sun.com/jsf/html" xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter_filter.js"></script>
+  <style>
+.tablesorter .header {
+  background-position: center left;
+  background-repeat: no-repeat;
+  padding-left:20px;
+}
+
+.tablesorter .headerSortDown {
+  background-image: url(#{baseURL}icons/sort_down.png);
+}
+
+.tablesorter .headerSortUp {
+  background-image: url(#{baseURL}icons/sort_up.png);
+}
+
+.tablesorter .odd {
+  background-color: #fff;
+}
+
+.tablesorter .even {
+  background-color: #ECF6FF;
+}
+
+.tablesorter {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border:1px solid #ccc;
+}
+
+.tablesorter td, .tablesorter th {
+  padding:5px;
+}
+
+.tablesorter th {
+  background-color: #333;
+  color: white;
+  text-align: left;
+  font-weight: bold;
+}
+  </style>
+
+  <a4j:outputPanel id="workManagerListing">
+
+    <p/>
+    <h:form>
+      <a4j:commandLink value="Refresh" reRender="workManagerListing" styleClass="button" />
+      <a4j:commandLink value="Start test work" reRender="workManagerListing" styleClass="button"
+        action="#{workManagerAdmin.startTestWork}"/>
+    </h:form>
+
+    <c:set var="infos" value="#{workManagerAdmin.workQueuesInfo}" />
+
+    <ui:repeat var="info" value="#{infos}">
+      <h2>Queue <em>#{info.id}</em> (#{info.threads}/#{info.maxThreads})</h2>
+      <f:subview rendered="#{info.running.size > 0}">
+        <p><strong>Running</strong></p>
+        <h:dataTable var="work" value="#{info.running}" styleClass="tablesorter">
+          <h:column>
+            <f:facet name="header">Work</f:facet>
+            #{work.status}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Started</f:facet>
+            <h:outputText value="#{work.startTime}" title="#{work.startTime}">
+              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">Progress</f:facet>
+            <c:choose>
+              <c:when test="#{work.progress.percent != -1}">
+                #{work.progress.percent}%
+              </c:when>
+              <c:otherwise>
+                <c:choose>
+                  <c:when test="#{work.progress.current != -1}">
+                    #{work.progress.current}/#{work.progress.total}
+                  </c:when>
+                  <c:otherwise>
+                    ?
+                  </c:otherwise>
+                </c:choose>
+              </c:otherwise>
+            </c:choose>
+          </h:column>
+        </h:dataTable>
+      </f:subview>
+      <f:subview rendered="#{info.scheduled.size > 0}">
+        <p><strong>Scheduled</strong></p>
+        <h:dataTable var="work" value="#{info.scheduled}" styleClass="tablesorter">
+          <h:column>
+            <f:facet name="header">Work</f:facet>
+            #{work.status}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Scheduled</f:facet>
+            <h:outputText value="#{work.schedulingTime}" title="#{work.schedulingTime}">
+              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
+            </h:outputText>
+          </h:column>
+        </h:dataTable>
+      </f:subview>
+      <f:subview rendered="#{info.completed.size > 0}">
+        <p><strong>Completed</strong></p>
+        <h:dataTable var="work" value="#{info.completed}" styleClass="tablesorter">
+          <h:column>
+            <f:facet name="header">Work</f:facet>
+            #{work.status}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Started</f:facet>
+            <h:outputText value="#{work.startTime}" title="#{work.startTime}">
+              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">Completed</f:facet>
+            <h:outputText value="#{work.completionTime}" title="#{work.completionTime}">
+              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">State</f:facet>
+            #{work.state}
+          </h:column>
+        </h:dataTable>
+        <p/>
+        <h:form>
+          <a4j:commandLink value="Clear" reRender="workManagerListing" styleClass="button"
+            action="#{workManagerAdmin.clearQueueCompletedWork}">
+            <f:param name="queueId" value="#{info.id}" />
+          </a4j:commandLink>
+        </h:form>
+      </f:subview>
+    </ui:repeat>
+
+    <script type="text/javascript">
+      // console.log("FOO");
+      // $(document).ready(function(){
+        jQuery(".tablesorter").tablesorter();
+      // });
+    </script>
+
+  </a4j:outputPanel>
+</div>

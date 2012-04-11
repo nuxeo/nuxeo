@@ -30,6 +30,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameAlreadyBoundException;
 
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
+
 import org.h2.util.IOUtils;
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -60,7 +64,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
 
     protected DocumentViewCodecManager viewCodecManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -114,7 +118,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         try {
             closeSession();
