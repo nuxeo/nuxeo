@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -142,7 +143,10 @@ public class AsyncEventExecutor {
                 String s = event.getName();
                 EventContext ctx = event.getContext();
                 if (ctx instanceof DocumentEventContext) {
-                    s += "/" + ((DocumentEventContext) ctx).getSourceDocument().getRef();
+                    DocumentModel source = ((DocumentEventContext) ctx).getSourceDocument();
+                    if (source != null) {
+                        s += "/" + source.getRef();
+                    }
                 }
                 l.add(s);
             }

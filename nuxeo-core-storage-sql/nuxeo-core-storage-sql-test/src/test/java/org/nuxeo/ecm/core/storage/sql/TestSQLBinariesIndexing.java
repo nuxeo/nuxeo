@@ -12,7 +12,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
@@ -41,51 +40,21 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
 
     protected static CountDownLatch startIndexation;
 
-    protected static final Thread thread = Thread.currentThread();
-
     protected static DocumentModel doc;
 
-    protected Object originalPoolSize;
-
-    protected Object originalMaxPoolSize;
-
-    protected void setEventAsyncPoolSizes() {
-        Properties properties = System.getProperties();
-        originalPoolSize = properties.setProperty(
-                "org.nuxeo.ecm.core.event.async.poolSize", "1");
-        originalMaxPoolSize = properties.setProperty(
-                "org.nuxeo.ecm.core.event.async.maxPoolSize", "1");
-    }
-
-    protected void restoreEventAsyncPoolSizes() {
-        Properties properties = System.getProperties();
-        if (originalPoolSize == null) {
-            properties.remove("org.nuxeo.ecm.core.event.async.poolSize");
-        } else {
-            properties.put("org.nuxeo.ecm.core.event.async.poolSize",
-                    originalPoolSize);
-        }
-        if (originalMaxPoolSize == null) {
-            properties.remove("org.nuxeo.ecm.core.event.async.maxPoolSize");
-        } else {
-            properties.put("org.nuxeo.ecm.core.event.async.maxPoolSize",
-                    originalMaxPoolSize);
-        }
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
-        setEventAsyncPoolSizes();
         startIndexation = new CountDownLatch(1);
         super.setUp();
         populate(session);
         docsAreNotIndexed();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         startIndexation.countDown();
-        restoreEventAsyncPoolSizes();
         super.tearDown();
     }
 
