@@ -68,14 +68,6 @@ public class NXHttpFetcher implements HttpFetcher {
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
-    private static final String SHINDIG_PROXY_PORT = "shindig.proxy.proxyPort";
-
-    private static final String SHINDIG_PROXY_PROXY_HOST = "shindig.proxy.proxyHost";
-
-    private static final String SHINDIG_PROXY_PASSWORD = "shindig.proxy.password";
-
-    private static final String SHINDIG_PROXY_USER = "shindig.proxy.user";
-
     // mutable fields must be volatile
     private volatile int maxObjSize;
 
