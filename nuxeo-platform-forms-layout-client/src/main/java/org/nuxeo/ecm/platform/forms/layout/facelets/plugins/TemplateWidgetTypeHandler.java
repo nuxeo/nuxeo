@@ -87,7 +87,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 tagConfig,
                 widgetTagConfigId,
                 attributes,
-                getNextHandler(ctx, tagConfig, helper, widget,
+                getNextHandler(ctx, tagConfig, helper, widget, subHandlers,
                         widgetTagConfigId, template));
         return new DecorateHandler(config);
     }
@@ -100,7 +100,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx,
             TagConfig tagConfig, FaceletHandlerHelper helper, Widget widget,
-            String widgetTagConfigId, String template) throws WidgetException {
+            FaceletHandler[] subHandlers, String widgetTagConfigId,
+            String template) throws WidgetException {
         FaceletHandler leaf = new LeafFaceletHandler();
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
         if (fieldDefs == null) {
@@ -151,8 +152,16 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             paramHandlers.add(new ParamHandler(config));
         }
 
+        List<FaceletHandler> handlers = new ArrayList<FaceletHandler>();
+        if (subHandlers != null) {
+            for (FaceletHandler handler: subHandlers) {
+                handlers.add(handler);
+            }
+        }
+        handlers.addAll(paramHandlers);
+
         return new CompositeFaceletHandler(
-                paramHandlers.toArray(new ParamHandler[] {}));
+                handlers.toArray(new FaceletHandler[] {}));
     }
 
     protected ParamHandler getFieldParamHandler(FaceletContext ctx,

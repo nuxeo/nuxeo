@@ -73,7 +73,12 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        FaceletHandler leaf = new LeafFaceletHandler();
+        FaceletHandler leaf = null;
+        if (subHandlers != null) {
+            leaf = new CompositeFaceletHandler(subHandlers);
+        } else {
+            leaf = new LeafFaceletHandler();
+        }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentConfig config = TagConfigFactory.createComponentConfig(
                     tagConfig, widget.getTagConfigId(), attributes, leaf,

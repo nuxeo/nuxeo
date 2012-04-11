@@ -106,7 +106,8 @@ public class WidgetTagHandler extends MetaTagHandler {
                 }
             }
             widgetInstance.setValueName(valueName);
-            applyWidgetHandler(ctx, parent, config, widgetInstance, value, true);
+            applyWidgetHandler(ctx, parent, config, widgetInstance, value,
+                    true, nextHandler);
         }
     }
 
@@ -126,7 +127,8 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     public static void applyWidgetHandler(FaceletContext ctx,
             UIComponent parent, TagConfig config, Widget widget,
-            TagAttribute value, boolean fillVariables) throws IOException {
+            TagAttribute value, boolean fillVariables,
+            FaceletHandler nextHandler) throws IOException {
         if (widget == null) {
             return;
         }
@@ -142,7 +144,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         generateWidgetIdsRecursive(helper, widget);
 
         FaceletHandler handler = layoutService.getFaceletHandler(ctx, config,
-                widget);
+                widget, nextHandler);
         if (handler == null) {
             return;
         }

@@ -414,6 +414,11 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
 
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig config, Widget widget) {
+        return getFaceletHandler(ctx, config, widget, null);
+    }
+
+    public FaceletHandler getFaceletHandler(FaceletContext ctx,
+            TagConfig config, Widget widget, FaceletHandler nextHandler) {
         String widgetTypeName = widget.getType();
         WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeName);
         if (handler == null) {
@@ -421,12 +426,17 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         } else {
             FaceletHandler[] subHandlers = null;
             Widget[] subWidgets = widget.getSubWidgets();
+            List<FaceletHandler> subHandlersList = new ArrayList<FaceletHandler>();
+            if (nextHandler != null) {
+                subHandlersList.add(nextHandler);
+            }
             if (subWidgets != null) {
-                List<FaceletHandler> subHandlersList = new ArrayList<FaceletHandler>();
                 for (Widget subWidget : subWidgets) {
                     subHandlersList.add(getFaceletHandler(ctx, config,
-                            subWidget));
+                            subWidget, null));
                 }
+            }
+            if (!subHandlersList.isEmpty()) {
                 subHandlers = subHandlersList.toArray(new FaceletHandler[] {});
             }
             FaceletHandler fHandler = handler.getFaceletHandler(ctx, config,

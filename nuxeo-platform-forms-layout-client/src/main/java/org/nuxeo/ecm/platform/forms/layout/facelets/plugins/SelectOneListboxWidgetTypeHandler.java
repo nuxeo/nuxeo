@@ -31,8 +31,8 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
- * Displays a select one listbox in edit mode, taking into account select options
- * declared on the widget.
+ * Displays a select one listbox in edit mode, taking into account select
+ * options declared on the widget.
  * <p>
  * Only edit mode is implemented for now.
  *
@@ -62,8 +62,14 @@ public class SelectOneListboxWidgetTypeHandler extends
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             FaceletHandler optionsHandler = getOptionsFaceletHandler(helper,
                     widget);
+            FaceletHandler nextHandler = optionsHandler;
+            if (subHandlers != null) {
+                nextHandler = new CompositeFaceletHandler(new FaceletHandler[] {
+                        optionsHandler,
+                        new CompositeFaceletHandler(subHandlers) });
+            }
             ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, optionsHandler,
+                    widgetTagConfigId, attributes, nextHandler,
                     HtmlSelectOneListbox.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(

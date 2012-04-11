@@ -145,9 +145,26 @@ public interface WebLayoutManager extends LayoutManager {
      * @param config the tag config, used to hook the handler in the jsf tree.
      * @param widget the computed widget.
      * @return a facelet handler.
+     * @deprecated since 5.6: use
+     *             {@link #getFaceletHandler(FaceletContext, TagConfig, Widget, FaceletHandler)}
+     *             instead
      */
+    @Deprecated
     FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config,
             Widget widget);
+
+    /**
+     * Returns the facelet handler for given widget.
+     *
+     * @param ctx the facelet context.
+     * @param config the tag config, used to hook the handler in the jsf tree.
+     * @param widget the computed widget.
+     * @param nextHandler the next handler in the execution chain
+     * @return a facelet handler.
+     * @since 5.6
+     */
+    FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config,
+            Widget widget, FaceletHandler nextHandler);
 
     /**
      * Returns a widget computed from given information.
