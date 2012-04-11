@@ -23,13 +23,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TypeTest extends NXRuntimeTestCase {
     TypeService typeService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.types.core.tests",
@@ -39,6 +43,7 @@ public class TypeTest extends NXRuntimeTestCase {
         typeService = (TypeService) runtime.getComponent(TypeService.ID);
     }
 
+    @Test
     public void testTypesExtensionPoint() {
         Collection<Type> types = typeService.getTypeRegistry().getTypes();
         assertEquals(5, types.size());
@@ -91,6 +96,7 @@ public class TypeTest extends NXRuntimeTestCase {
         assertNull(cv);
     }
 
+    @Test
     public void testTypeViews() {
         Type type = typeService.getTypeRegistry().getType("MyDocType");
         assertNotNull(type);
@@ -102,6 +108,7 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals("metadata_view", type.getView("metadata").getValue());
     }
 
+    @Test
     public void testAllowedSubTypes() {
         Type type = typeService.getTypeRegistry().getType("MyDocType");
         Map<String, SubType> allowed = type.getAllowedSubTypes();
@@ -115,6 +122,7 @@ public class TypeTest extends NXRuntimeTestCase {
         assertTrue(hidden.contains("edit"));
     }
 
+    @Test
     public void testDefaultLayoutExtensionPoint() {
         Map<String, String> map = typeService.getTypeWidgetRegistry().getMap();
         assertEquals(2, map.size());
@@ -123,6 +131,7 @@ public class TypeTest extends NXRuntimeTestCase {
         assertNull(map.get("xxx"));
     }
 
+    @Test
     public void testDeploymentOverride() throws Exception {
         Collection<Type> types = typeService.getTypeRegistry().getTypes();
         assertEquals(5, types.size());
@@ -202,6 +211,7 @@ public class TypeTest extends NXRuntimeTestCase {
         assertTrue(cvs[2].getShowInExportView());
     }
 
+    @Test
     public void testLayoutOverride() throws Exception {
         Type type = typeService.getTypeRegistry().getType("DocTypeWithLayout");
         assertEquals("doc type with layout", type.getLabel());
@@ -227,6 +237,7 @@ public class TypeTest extends NXRuntimeTestCase {
                 type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
     }
 
+    @Test
     public void testLayoutOverrideWithAppend() throws Exception {
         Type type = typeService.getTypeRegistry().getType(
                 "DocTypeTestLayoutOverride");

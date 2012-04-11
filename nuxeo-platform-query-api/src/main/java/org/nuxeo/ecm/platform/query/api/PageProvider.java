@@ -37,11 +37,13 @@ import org.nuxeo.ecm.core.api.SortInfo;
  */
 public interface PageProvider<T> extends Serializable {
 
+    public static final String DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP = "nuxeo.pageprovider.default-max-page-size";
+
     /**
      * Constant to express that the total number of result elements is unknown
      * (usually because the query has not been done yet).
      */
-    long UNKNOWN_SIZE = -1;
+    public static final long UNKNOWN_SIZE = -1;
 
     /**
      * Constant to express that the total number of result elements is unknown
@@ -49,12 +51,12 @@ public interface PageProvider<T> extends Serializable {
      *
      * @since 5.5
      */
-    long UNKNOWN_SIZE_AFTER_QUERY = -2;
+    public static final long UNKNOWN_SIZE_AFTER_QUERY = -2;
 
     /**
      * Default maximum page size value.
      */
-    long DEFAULT_MAX_PAGE_SIZE = 100;
+    public static final long DEFAULT_MAX_PAGE_SIZE = 100;
 
     /**
      * Returns the provider identifier
@@ -121,8 +123,8 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Returns the number of result elements if available or a negative value
      * if it is unknown: <code>UNKNOWN_SIZE</code> if it is unknown as query
-     * was not done, and since 5.5, <code>UNKNOWN_SIZE_AFTER_QUERY</code> if
-     * it is still unknown after query was done.
+     * was not done, and since 5.5, <code>UNKNOWN_SIZE_AFTER_QUERY</code> if it
+     * is still unknown after query was done.
      */
     long getResultsCount();
 

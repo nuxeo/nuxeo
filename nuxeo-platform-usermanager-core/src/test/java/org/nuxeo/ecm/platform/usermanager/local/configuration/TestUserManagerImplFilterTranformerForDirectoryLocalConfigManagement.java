@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
@@ -50,7 +54,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
 
     protected UserMultiTenantManagement umtm;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -78,6 +82,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         userManager.multiTenantManagement = umtm;
     }
 
+    @Test
     public void testShouldThrowExceptionIfFilterOrFulltextNull()
             throws ClientException {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -105,6 +110,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         }
     }
 
+    @Test
     public void testShouldReturnAFilterNotChangedIfNoDirectoryLocalConfig()
             throws ClientException {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -137,6 +143,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         assertEquals(2, fulltext.size());
     }
 
+    @Test
     public void testShouldReturnAFilterWithSuffixAdded() throws ClientException {
         DocumentModel fakeDoc = new SimpleDocumentModel();
 

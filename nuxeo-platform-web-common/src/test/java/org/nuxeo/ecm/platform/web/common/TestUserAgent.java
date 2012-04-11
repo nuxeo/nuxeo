@@ -19,13 +19,14 @@ package org.nuxeo.ecm.platform.web.common;
 
 import java.util.List;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 
-import junit.framework.TestCase;
+public class TestUserAgent {
 
-public class TestUserAgent extends TestCase {
-
-
+    @Test
     public void testSupportedBrowsers() throws Exception {
 
         List<String> UAs = FileUtils.readLines(this.getClass().getClassLoader().getResourceAsStream("supportedBrowsers.txt"));

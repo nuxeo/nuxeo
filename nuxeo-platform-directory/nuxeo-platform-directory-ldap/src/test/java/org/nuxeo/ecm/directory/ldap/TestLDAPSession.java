@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -54,6 +57,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     protected static final String GROUP_SCHEMANAME = "group";
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry() throws Exception {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -148,6 +152,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry2() throws ClientException {
         Session session = getLDAPDirectory("groupDirectory").getSession();
         try {
@@ -227,6 +232,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry3() throws ClientException {
         if (!HAS_DYNGROUP_SCHEMA) {
             return;
@@ -302,6 +308,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     // NXP-2730: ldap queries are case-insensitive => test entry retrieval is ok
     // when using other cases (lower or upper)
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
     public void testGetEntryWithIdInDifferentCase() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -329,6 +336,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntryWithLdapTreeRef() throws ClientException {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             return;
@@ -422,6 +430,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testGetEntries() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -442,6 +451,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testCreateEntry() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("userDirectory").getSession();
@@ -514,6 +524,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testCreateEntry2() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("groupDirectory").getSession();
@@ -571,6 +582,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testCreateEntry3() throws Exception {
         Session session = null;
 
@@ -622,6 +634,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testUpdateEntry() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("userDirectory").getSession();
@@ -698,6 +711,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testUpdateEntry2() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("groupDirectory").getSession();
@@ -750,6 +764,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testUpdateEntry3() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER && HAS_DYNGROUP_SCHEMA) {
             Session session = getLDAPDirectory("groupDirectory").getSession();
@@ -814,6 +829,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testUpdateEntry4() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER && HAS_DYNGROUP_SCHEMA) {
             Session userSession = getLDAPDirectory("userDirectory").getSession();
@@ -876,6 +892,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testDeleteEntry() throws ClientException {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // this does not work with the internal server which has
@@ -917,6 +934,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testDeleteEntry2() throws ClientException {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // this does not work with the internal server which has
@@ -942,6 +960,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testRollback() throws ClientException {
         // As a LDAP is not transactional, rollbacking is useless
         // this is just a smoke test
@@ -954,6 +973,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQuery1() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -1007,6 +1027,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQuery2() throws ClientException {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // query does not work at all with internal apache
@@ -1067,6 +1088,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQueryWithNullFilter() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -1090,6 +1112,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQueryOrderBy() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -1114,6 +1137,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testAuthenticate() throws ClientException {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // authenticate does not work at all with internal apache
@@ -1139,6 +1163,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testGetMandatoryAttributes() throws ClientException {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             LDAPSession session = (LDAPSession) getLDAPDirectory(
@@ -1210,6 +1235,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testCreateFromModel() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session dir = getLDAPDirectory("userDirectory").getSession();
@@ -1241,6 +1267,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testHasEntry() throws Exception {
         Session dir = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -1251,6 +1278,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQueryEmptyString() throws Exception {
         Session session = getLDAPDirectory("userDirectory").getSession();
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -1259,12 +1287,14 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         assertNotNull(docs);
     }
 
+    @Test
     public void testProbe() {
         LDAPDirectoriesProbe probe = new LDAPDirectoriesProbe();
         ProbeStatus status = probe.run();
         assertTrue(status.isSuccess());
     }
 
+    @Test
     public void testPseudoNormalizeDn() throws Exception {
         String normalizedDN = LDAPReference.pseudoNormalizeDn("cn=Lamerand\\, Quentin,OU=developper,ou=PEOPLE, dc=nuxeo,dc=com");
         assertEquals("cn=lamerand\\, quentin,ou=developper,ou=people,dc=nuxeo,dc=com", normalizedDN);

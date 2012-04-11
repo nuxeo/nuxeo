@@ -21,6 +21,11 @@ package org.nuxeo.ecm.platform.filemanager;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
 import org.nuxeo.runtime.api.Framework;
@@ -30,7 +35,7 @@ public class TestFileManagerComponent extends NXRuntimeTestCase {
 
     private FileManagerService filemanagerService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -45,7 +50,7 @@ public class TestFileManagerComponent extends NXRuntimeTestCase {
                 FileManagerService.NAME);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         filemanagerService = null;
 
@@ -58,6 +63,7 @@ public class TestFileManagerComponent extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testPlugins() {
         FileImporter testPlu = filemanagerService.getPluginByName("plug");
         List<String> filters = testPlu.getFilters();

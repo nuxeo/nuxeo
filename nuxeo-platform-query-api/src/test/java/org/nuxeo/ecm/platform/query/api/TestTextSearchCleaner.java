@@ -18,6 +18,9 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.io.File;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
@@ -30,6 +33,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestTextSearchCleaner extends NXRuntimeTestCase {
 
+    @Test
     public void testCleaner() throws Exception {
         assertEquals("= '+a'", NXQLQueryBuilder.serializeFullText("a"));
         assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText("a b"));
@@ -54,6 +58,7 @@ public class TestTextSearchCleaner extends NXRuntimeTestCase {
                 NXQLQueryBuilder.sanitizeFulltextInput("some & stuff\\"));
     }
 
+    @Test
     public void testCustomCleaner() throws Exception {
         File config = Environment.getDefault().getConfig();
         config.mkdirs();

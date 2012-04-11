@@ -19,6 +19,11 @@ package org.nuxeo.ecm.platform.oauth.tests;
 
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
 import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
@@ -27,7 +32,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestConsumerService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
@@ -40,17 +45,19 @@ public class TestConsumerService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.oauth.test", "OSGI-INF/directory-test-config.xml");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 
+    @Test
     public void testServiceLookup() throws Exception {
         OAuthConsumerRegistry consumerRegistry = Framework.getLocalService(OAuthConsumerRegistry.class);
         assertNotNull(consumerRegistry);
     }
 
+    @Test
     public void testServiceRW() throws Exception {
 
         OAuthConsumerRegistry consumerRegistry = Framework.getLocalService(OAuthConsumerRegistry.class);

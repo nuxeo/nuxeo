@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.management.core.adapters;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -30,13 +33,14 @@ public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
 
     protected ResourcePublisherService managementService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
         managementService = (ResourcePublisherService) Framework.getService(ResourcePublisher.class);
     }
 
+    @Test
     public void testRegisterFactories() throws Exception {
         doRegisterInventoryFactory();
     }

@@ -24,6 +24,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -46,7 +51,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestGen extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -68,12 +73,13 @@ public class TestGen extends NXRuntimeTestCase {
     /* (non-Javadoc)
      * @see org.nuxeo.runtime.test.NXRuntimeTestCase#tearDown()
      */
-    @Override
+    @After
     public void tearDown() throws Exception {
         NuxeoContainer.uninstallNaming();
         super.tearDown();
     }
 
+    @Test
     public void testUIDGenerator() throws Exception {
         // create Geide doc
         String docTypeName = "GeideDoc";
@@ -90,6 +96,7 @@ public class TestGen extends NXRuntimeTestCase {
         assertEquals(expected, uid);
     }
 
+    @Test
     public void testUIDGenerator2() throws Exception {
         String docTypeName = "GeideDoc";
         DocumentModel gdoc = createDocumentModel(docTypeName);
@@ -107,6 +114,7 @@ public class TestGen extends NXRuntimeTestCase {
         assertEquals(expected, uid);
     }
 
+    @Test
     public void testUIDGenerator3() throws Exception {
         // create Geide doc
         String docTypeName = "GeideDoc";
@@ -131,6 +139,7 @@ public class TestGen extends NXRuntimeTestCase {
     /**
      * Test multiple UID properties set.
      */
+    @Test
     public void testUIDGenerator3_multi() throws Exception {
         // create Geide doc
         String docTypeName = "GeideDoc";

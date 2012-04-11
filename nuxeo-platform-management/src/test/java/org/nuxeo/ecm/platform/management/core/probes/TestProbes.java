@@ -19,6 +19,11 @@ package org.nuxeo.ecm.platform.management.core.probes;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -31,7 +36,7 @@ import org.nuxeo.runtime.management.ResourcePublisher;
  */
 public class TestProbes extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
@@ -42,12 +47,13 @@ public class TestProbes extends SQLRepositoryTestCase {
         fireFrameworkStarted();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testScheduling() throws MalformedObjectNameException {
         ProbeScheduler scheduler = Framework.getLocalService(ProbeScheduler.class);
         assertFalse(scheduler.isEnabled());
@@ -62,6 +68,7 @@ public class TestProbes extends SQLRepositoryTestCase {
         assertTrue(publisher.getResourcesName().contains(new ObjectName("org.nuxeo:name=probeScheduler,type=service")));
     }
 
+    @Test
     public void testPopulateRepository() throws Exception {
        ProbeInfo info = getProbeRunner().getProbeInfo("populateRepository");
        assertNotNull(info);
@@ -69,8 +76,9 @@ public class TestProbes extends SQLRepositoryTestCase {
        assertFalse(info.isInError());
        String result = info.getStatus().getAsString();
        System.out.print("populateRepository Probe result : " + result);
-   }
+    }
 
+    @Test
     public void testQueryRepository() throws Exception {
         ProbeInfo info = getProbeRunner().getProbeInfo("queryRepository");
         assertNotNull(info);

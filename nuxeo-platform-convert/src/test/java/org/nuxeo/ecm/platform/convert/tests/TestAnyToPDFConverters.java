@@ -14,6 +14,7 @@
  * Contributors:
  *     Nuxeo
  *     Florent Guillaume
+ *     Thierry Delprat
  */
 package org.nuxeo.ecm.platform.convert.tests;
 
@@ -41,8 +42,13 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         doTestPDFConverter(srcMT, fileName, true); // PDF/A-1
     }
 
-    protected void doTestPDFConverter(String srcMT, String fileName,
+    protected String doTestPDFConverter(String srcMT, String fileName,
             boolean pdfa) throws Exception {
+        return doTestPDFConverter(srcMT, fileName, pdfa, false);
+    }
+
+    protected String doTestPDFConverter(String srcMT, String fileName,
+            boolean pdfa, boolean updateIndex) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -53,28 +59,34 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : " + check.getInstallationMessage());
+            log.warn("  converter check output : "
+                    + check.getInstallationMessage());
             log.warn("  converter check output : " + check.getErrorMessage());
-            return;
+            return null;
         }
 
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
-        Map<String,Serializable> parameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         if (pdfa) {
             parameters.put(JODBasedConverter.PDFA1_PARAM, Boolean.TRUE);
+        }
+        if (updateIndex) {
+            parameters.put(JODBasedConverter.UPDATE_INDEX_PARAM, Boolean.TRUE);
         }
         BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
         File pdfFile = File.createTempFile("testingPDFConverter", ".pdf");
+        String text = null;
         try {
             result.getBlob().transferTo(pdfFile);
-            String text = readPdfText(pdfFile);
+            text = readPdfText(pdfFile);
             assertTrue(text.contains("Hello"));
             if (pdfa) {
                 assertTrue("Output is not PDF/A", isPDFA(pdfFile));
             }
+            return text;
         } finally {
             pdfFile.delete();
         }
@@ -87,7 +99,8 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : " + check.getInstallationMessage());
+            log.warn("  converter check output : "
+                    + check.getInstallationMessage());
             log.warn("  converter check output : " + check.getErrorMessage());
             return;
         }
@@ -106,9 +119,38 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
                 "hello.odp");
     }
 
+    @Test
+    public void testAnyToTextConverterWithToc() throws Exception {
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConverterCheckResult check = cs.isConverterAvailable("any2pdf");
+        assertNotNull(check);
+        if (!check.isAvailable()) {
+            log.warn("Skipping JOD based converter tests since OOo is not installed");
+            log.warn("  converter check output : "
+                    + check.getInstallationMessage());
+            log.warn("  converter check output : " + check.getErrorMessage());
+            return;
+        }
+
+        // generate without TOC
+        String textContent = doTestPDFConverter(
+                "application/vnd.oasis.opendocument.text", "toc.odt", false,
+                false);
+        // check that there is no TOC generated
+        assertFalse(textContent.contains("..........."));
+
+        // generate with TOC
+        textContent = doTestPDFConverter(
+                "application/vnd.oasis.opendocument.text", "toc.odt", false,
+                true);
+        assertTrue(textContent.contains("..........."));
+
+    }
+
     protected class ConversionThread extends Thread {
 
         boolean exception = false;
+
         boolean terminated = false;
 
         @Override
@@ -117,10 +159,9 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
             try {
                 testAnyToTextConverter();
             } catch (Exception e) {
-                exception=false;
-            }
-            finally {
-                terminated=true;
+                exception = false;
+            } finally {
+                terminated = true;
             }
 
         }

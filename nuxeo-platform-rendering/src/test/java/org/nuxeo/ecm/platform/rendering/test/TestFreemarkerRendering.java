@@ -21,6 +21,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -62,7 +66,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         DefaultServiceProvider.setProvider(provider);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         initSchemaManager();
@@ -86,6 +90,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
+    @Test
     public void testRendering() throws Exception {
         DocumentModelImpl doc1 = new DocumentModelImpl(null, "File", null,
                 new Path("/root/folder/wiki1"), null, null, null, new String[] {

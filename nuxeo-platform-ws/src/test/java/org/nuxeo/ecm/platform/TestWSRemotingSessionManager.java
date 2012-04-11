@@ -22,6 +22,10 @@ package org.nuxeo.ecm.platform;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -40,7 +44,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
 
     WSRemotingSessionManager service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         service = Framework.getService(WSRemotingSessionManager.class);
@@ -55,6 +59,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
                 "login-config.xml");
     }
 
+    @Test
     public void testGetSessionWithNullSid() {
         boolean raises = false;
         try {
@@ -65,6 +70,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         assertTrue(raises);
     }
 
+    @Test
     public void testGetSessionWithInvalidSid() {
         boolean raises = false;
         try {
@@ -75,6 +81,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         assertTrue(raises);
     }
 
+    @Test
     public void testCreateSession() {
         WSRemotingSession session = service.createSession("username",
                 "password", "repository", null, null);
@@ -85,6 +92,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         assertNull(session.getUserManager());
     }
 
+    @Test
     public void testAddDelSession() throws ClientException {
         WSRemotingSession session = service.createSession("username",
                 "password", "repository", null, null);
@@ -101,6 +109,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         assertTrue(raises);
     }
 
+    @Test
     public void testSnapshotProperties() throws ClientException {
         openSession();
         DocumentModel rootDocument = session.getRootDocument();

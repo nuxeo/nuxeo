@@ -26,6 +26,10 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
@@ -42,7 +46,7 @@ public class AspellTester extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(AspellTester.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
@@ -50,6 +54,7 @@ public class AspellTester extends NXRuntimeTestCase {
                 "OSGI-INF/commandline-aspell-test-contribs.xml");
     }
 
+    @Test
     public void testAspellExec() throws Exception {
         CommandLineExecutorService cles = Framework
                 .getLocalService(CommandLineExecutorService.class);

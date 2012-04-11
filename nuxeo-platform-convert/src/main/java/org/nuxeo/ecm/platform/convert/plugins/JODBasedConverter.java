@@ -14,6 +14,7 @@
  * Contributors:
  *     Nuxeo
  *     Florent Guillaume
+ *     Thierry Delprat
  */
 package org.nuxeo.ecm.platform.convert.plugins;
 
@@ -21,7 +22,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.artofsolving.jodconverter.StandardConversionTask;
 import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
@@ -63,10 +64,17 @@ public class JODBasedConverter implements ExternalConverter {
 
     /**
      * Boolean conversion parameter for PDF/A-1.
-     *
+     * 
      * @since 5.6
      */
     public static final String PDFA1_PARAM = "PDF/A-1";
+
+    /**
+     * Boolean parameter to force update of the document TOC
+     * 
+     * @since 5.6
+     */
+    public static final String UPDATE_INDEX_PARAM = StandardConversionTask.UPDATE_DOCUMENT_INDEX;
 
     protected static final Map<DocumentFamily, String> PDF_FILTER_NAMES = new HashMap<DocumentFamily, String>();
     {
@@ -86,7 +94,7 @@ public class JODBasedConverter implements ExternalConverter {
      * Returns the destination format for the given plugin.
      * <p>
      * It takes the actual destination mimetype from the plugin configuration.
-     *
+     * 
      * @param sourceFormat the source format
      * @param pdfa1 true if PDF/A-1 is required
      */
@@ -129,7 +137,7 @@ public class JODBasedConverter implements ExternalConverter {
      * Returns the format for the file passed as a parameter.
      * <p>
      * We will ask the mimetype registry service to sniff its mimetype.
-     *
+     * 
      * @return DocumentFormat for the given file
      */
     private static DocumentFormat getSourceFormat(File file) throws Exception {
@@ -141,7 +149,7 @@ public class JODBasedConverter implements ExternalConverter {
 
     /**
      * Returns the DocumentFormat for the given mimetype.
-     *
+     * 
      * @return DocumentFormat for the given mimetype
      */
     private static DocumentFormat getSourceFormat(String mimetype) {
@@ -162,6 +170,7 @@ public class JODBasedConverter implements ExternalConverter {
             inputBlob = blobHolder.getBlob();
             OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
             documentConverter = oooManagerService.getDocumentConverter();
+
         } catch (Exception e) {
             throw new ConversionException("Error while getting Blob", e);
         }
@@ -242,7 +251,7 @@ public class JODBasedConverter implements ExternalConverter {
                     log.debug("Input File = " + outFile.getAbsolutePath());
                     // Perform the actual conversion.
                     documentConverter.convert(sourceFile, outFile,
-                            destinationFormat);
+                            destinationFormat, parameters);
 
                     files = myTmpDir.listFiles();
                     for (File file : files) {
@@ -263,7 +272,7 @@ public class JODBasedConverter implements ExternalConverter {
 
                     // Perform the actual conversion.
                     documentConverter.convert(sourceFile, outFile,
-                            destinationFormat);
+                            destinationFormat, parameters);
 
                     // load the content in the file since it will be deleted
                     // soon: TODO: find a way to stream it to the streaming

@@ -24,6 +24,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -40,24 +45,26 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestComputedGroupService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 
+    @Test
     public void testLookup() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager", "OSGI-INF/computedgroups-framework.xml");
         ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
         assertNotNull(cgs);
     }
 
+    @Test
     public void testContrib() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "computedgroups-contrib.xml");
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -106,6 +113,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         assertTrue(vGroups.contains("Grp2"));
     }
 
+    @Test
     public void testUserManagerIntegration() throws Exception {
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "computedgroups-contrib.xml");
@@ -176,6 +184,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         assertEquals(2, group.getMemberUsers().size());
     }
 
+    @Test
     public void testCompanyComputer() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "companycomputedgroups-contrib.xml");

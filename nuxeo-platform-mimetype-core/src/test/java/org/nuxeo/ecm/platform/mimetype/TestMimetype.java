@@ -22,7 +22,10 @@ package org.nuxeo.ecm.platform.mimetype;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 
@@ -31,11 +34,11 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
  *
  * @author <a href="ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestMimetype extends TestCase {
+public class TestMimetype {
 
     private MimetypeEntry mimetype;
 
-    @Override
+    @Before
     public void setUp() {
         String normalizedMimetype = "application/pdf";
 
@@ -58,34 +61,40 @@ public class TestMimetype extends TestCase {
                 extensions, iconPath, binary, onlineEditable, oleSupported);
     }
 
-    @Override
+    @After
     public void tearDown() {
         mimetype = null;
     }
 
+    @Test
     public void testBinary() {
         assertTrue(mimetype.isBinary());
     }
 
+    @Test
     public void testOnlineEditable() {
         assertFalse(mimetype.isOnlineEditable());
     }
 
+    @Test
     public void testOleSupported() {
         assertFalse(mimetype.isOleSupported());
     }
 
+    @Test
     public void testExtensions() {
         List<String> extensions = mimetype.getExtensions();
         assertTrue(extensions.contains("pdf"));
         assertTrue(extensions.contains("fake"));
     }
 
+    // @Test
     public void xtestIcon() {
         String iconPath = mimetype.getIconPath();
         assertNotNull(iconPath);
     }
 
+    @Test
     public void testMimetypes() {
         assertEquals("application/pdf", mimetype.getNormalized());
         assertEquals("application", mimetype.getMajor());
@@ -95,6 +104,7 @@ public class TestMimetype extends TestCase {
         assertTrue(mimetypes.contains("app/whatever-pdf"));
     }
 
+    @Test
     public void testNormalized() {
         assertEquals("application/pdf", mimetype.getNormalized());
     }

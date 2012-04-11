@@ -22,14 +22,15 @@ package org.nuxeo.platform.el;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 
 import javax.el.ExpressionFactory;
 
-public class TestExpressionEvaluator extends TestCase {
+public class TestExpressionEvaluator {
 
     public static class SampleBean {
 
@@ -60,6 +61,7 @@ public class TestExpressionEvaluator extends TestCase {
         return sampleMap;
     }
 
+    @Test
     public void testProperty() {
         SampleBean sampleBean = createSampleBean();
         evaluatorUnderTest.bindValue(context, "bean", sampleBean);
@@ -71,6 +73,7 @@ public class TestExpressionEvaluator extends TestCase {
         assertEquals(sampleBean.getSampleValue(), stringValue);
     }
 
+    @Test
     public void testMap() {
         Map<String,SampleBean> sampleMap = createSampleMap();
         evaluatorUnderTest.bindValue(context, "map", sampleMap);
@@ -79,6 +82,7 @@ public class TestExpressionEvaluator extends TestCase {
         assertNotNull(value);
     }
 
+    @Test
     public void testArray() {
         SampleBean[] sampleArray = createSampleArray();
         evaluatorUnderTest.bindValue(context, "array", sampleArray);

@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -41,16 +44,16 @@ import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestMimetypeRegistryService extends TestCase {
+public class TestMimetypeRegistryService {
 
     private MimetypeRegistryService mimetypeRegistry;
 
-    @Override
+    @Before
     public void setUp() {
         mimetypeRegistry = new MimetypeRegistryService();
     }
 
-    @Override
+    @After
     public void tearDown() {
         mimetypeRegistry = null;
     }
@@ -77,6 +80,7 @@ public class TestMimetypeRegistryService extends TestCase {
                 iconPath, binary, onlineEditable, oleSupported);
     }
 
+    @Test
     public void testMimetypeRegistration() {
         MimetypeEntry mimetype = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetype);
@@ -94,6 +98,7 @@ public class TestMimetypeRegistryService extends TestCase {
         assertNull(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()));
     }
 
+    @Test
     public void testGetExtensionsFromMimetype() {
         MimetypeEntry mimetype = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetype);
@@ -105,6 +110,7 @@ public class TestMimetypeRegistryService extends TestCase {
         mimetypeRegistry.unregisterMimetype(mimetype.getNormalized());
     }
 
+    @Test
     public void testGetMimetypeFromFile() throws Exception {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
@@ -118,6 +124,7 @@ public class TestMimetypeRegistryService extends TestCase {
         assertTrue(extensions.contains("doc"));
     }
 
+    @Test
     public void testGetMimetypeFromStream() throws Exception {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
@@ -132,6 +139,7 @@ public class TestMimetypeRegistryService extends TestCase {
         assertTrue(extensions.contains("doc"));
     }
 
+    @Test
     public void testGetMimetypeFromBlob() throws Exception {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
@@ -160,6 +168,7 @@ public class TestMimetypeRegistryService extends TestCase {
         return getBlob("test-data/wordml-sample.xml");
     }
 
+    @Test
     public void testGetMimetypeFromFilnameAndBlobWithDefault() throws Exception {
 
         MimetypeEntry mimetypeEntry = getMimetypeSample();
@@ -215,6 +224,7 @@ public class TestMimetypeRegistryService extends TestCase {
         assertEquals("default/mimetype", mimetype);
     }
 
+    @Test
     public void testGetMimetypeEntryByMimetype() {
 
         MimetypeEntry mimetypeEntry = getMimetypeSample();

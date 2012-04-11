@@ -63,6 +63,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain;
 import org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor;
@@ -353,6 +354,11 @@ public class NuxeoAuthenticationFilter implements Filter {
             ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
 
+        if (bypassAuth((HttpServletRequest)request)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String tokenPage = getRequestedPage(request);
         if (tokenPage.equals(SWITCH_USER_PAGE)) {
             boolean result = switchUser(request, response, chain);
@@ -378,161 +384,178 @@ public class NuxeoAuthenticationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Principal principal = httpRequest.getUserPrincipal();
 
-        if (principal == null) {
-            log.debug("Principal not found inside Request via getUserPrincipal");
-            // need to authenticate !
+        NuxeoAuthenticationPropagator.CleanupCallback propagatedAuthCb = null;
 
-            // retrieve user & password
-            CachableUserIdentificationInfo cachableUserIdent;
-            if (avoidReauthenticate) {
-                log.debug("Try getting authentication from cache");
-                cachableUserIdent = retrieveIdentityFromCache(httpRequest);
-            } else {
-                log.debug("Principal cache is NOT activated");
-            }
+        try {
+            if (principal == null) {
+                log.debug("Principal not found inside Request via getUserPrincipal");
+                // need to authenticate !
 
-            if (cachableUserIdent != null
-                    && cachableUserIdent.getUserInfo() != null
-                    && service.needResetLogin(request)) {
-                HttpSession session = httpRequest.getSession(false);
-                if (session != null) {
-                    session.removeAttribute(USERIDENT_KEY);
+                // retrieve user & password
+                CachableUserIdentificationInfo cachableUserIdent;
+                if (avoidReauthenticate) {
+                    log.debug("Try getting authentication from cache");
+                    cachableUserIdent = retrieveIdentityFromCache(httpRequest);
+                } else {
+                    log.debug("Principal cache is NOT activated");
                 }
-                // first propagate the login because invalidation may require
-                // an authenticated session
-                propagateUserIdentificationInformation(cachableUserIdent);
-                // invalidate Session !
-                service.invalidateSession(request);
-                // TODO perform logout?
-                cachableUserIdent = null;
-            }
 
-            // identity found in cache
-            if (cachableUserIdent != null
-                    && cachableUserIdent.getUserInfo() != null) {
-                log.debug("userIdent found in cache, get the Principal from it without reloggin");
-
-                NuxeoHttpSessionMonitor.instance().updateEntry(httpRequest);
-
-                principal = cachableUserIdent.getPrincipal();
-                log.debug("Principal = " + principal.getName());
-                propagateUserIdentificationInformation(cachableUserIdent);
-
-                String requestedPage = getRequestedPage(httpRequest);
-                if (requestedPage.equals(LOGOUT_PAGE)) {
-                    boolean redirected = handleLogout(request, response,
-                            cachableUserIdent);
+                if (cachableUserIdent != null
+                        && cachableUserIdent.getUserInfo() != null
+                        && service.needResetLogin(request)) {
+                    HttpSession session = httpRequest.getSession(false);
+                    if (session != null) {
+                        session.removeAttribute(USERIDENT_KEY);
+                    }
+                    // first propagate the login because invalidation may
+                    // require
+                    // an authenticated session
+                    propagatedAuthCb = service.propagateUserIdentificationInformation(cachableUserIdent);
+                    // invalidate Session !
+                    try {
+                        service.invalidateSession(request);
+                    } finally {
+                        if (propagatedAuthCb != null) {
+                            propagatedAuthCb.cleanup();
+                            propagatedAuthCb = null;
+                        }
+                    }
+                    // TODO perform logout?
                     cachableUserIdent = null;
-                    principal = null;
-                    if (redirected
-                            && httpRequest.getParameter(FORM_SUBMITTED_MARKER) == null) {
-                        return;
-                    }
-                } else {
-                    targetPageURL = getSavedRequestedURL(httpRequest,
-                            httpResponse);
-                }
-            }
-
-            // identity not found in cache or reseted by logout
-            if (cachableUserIdent == null
-                    || cachableUserIdent.getUserInfo() == null) {
-                UserIdentificationInfo userIdent = handleRetrieveIdentity(
-                        httpRequest, httpResponse);
-                if (userIdent != null
-                        && userIdent.getUserName().equals(getAnonymousId())) {
-                    String forceAuth = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
-                    if (forceAuth != null && forceAuth.equals("true")) {
-                        userIdent = null;
-                    }
-                }
-                if ((userIdent == null || !userIdent.containsValidIdentity())
-                        && !bypassAuth(httpRequest)) {
-
-                    boolean res = handleLoginPrompt(httpRequest, httpResponse);
-                    if (res) {
-                        return;
-                    }
-                } else {
-                    // restore saved Starting page
-                    targetPageURL = getSavedRequestedURL(httpRequest,
-                            httpResponse);
                 }
 
-                if (userIdent != null && userIdent.containsValidIdentity()) {
-                    // do the authentication
-                    cachableUserIdent = new CachableUserIdentificationInfo(
-                            userIdent);
-                    principal = doAuthenticate(cachableUserIdent, httpRequest);
-                    if (principal != null
-                            && principal != DIRECTORY_ERROR_PRINCIPAL) {
-                        // Do the propagation too ????
-                        propagateUserIdentificationInformation(cachableUserIdent);
-                        // setPrincipalToSession(httpRequest, principal);
-                        // check if the current authenticator is a
-                        // LoginResponseHandler
-                        NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
-                        if (plugin instanceof LoginResponseHandler) {
-                            // call the extended error handler
-                            if (((LoginResponseHandler) plugin).onSuccess(
-                                    (HttpServletRequest) request,
-                                    (HttpServletResponse) response)) {
-                                return;
-                            }
+                // identity found in cache
+                if (cachableUserIdent != null
+                        && cachableUserIdent.getUserInfo() != null) {
+                    log.debug("userIdent found in cache, get the Principal from it without reloggin");
+
+                    NuxeoHttpSessionMonitor.instance().updateEntry(httpRequest);
+
+                    principal = cachableUserIdent.getPrincipal();
+                    log.debug("Principal = " + principal.getName());
+                    propagatedAuthCb = service.propagateUserIdentificationInformation(cachableUserIdent);
+
+                    String requestedPage = getRequestedPage(httpRequest);
+                    if (requestedPage.equals(LOGOUT_PAGE)) {
+                        boolean redirected = handleLogout(request, response,
+                                cachableUserIdent);
+                        cachableUserIdent = null;
+                        principal = null;
+                        if (redirected
+                                && httpRequest.getParameter(FORM_SUBMITTED_MARKER) == null) {
+                            return;
                         }
                     } else {
-                        // first check if the current authenticator is a
-                        // LoginResponseHandler
-                        NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
-                        if (plugin instanceof LoginResponseHandler) {
-                            // call the extended error handler
-                            if (((LoginResponseHandler) plugin).onError(
-                                    (HttpServletRequest) request,
-                                    (HttpServletResponse) response)) {
-                                return;
-                            }
-                        } else {
-                            // use the old method
-                            String err = principal == DIRECTORY_ERROR_PRINCIPAL ? ERROR_CONNECTION_FAILED
-                                    : ERROR_AUTHENTICATION_FAILED;
-                            httpRequest.setAttribute(LOGIN_ERROR, err);
-                            boolean res = handleLoginPrompt(httpRequest,
-                                    httpResponse);
-                            if (res) {
-                                return;
-                            }
+                        targetPageURL = getSavedRequestedURL(httpRequest,
+                                httpResponse);
+                    }
+                }
+
+                // identity not found in cache or reseted by logout
+                if (cachableUserIdent == null
+                        || cachableUserIdent.getUserInfo() == null) {
+                    UserIdentificationInfo userIdent = handleRetrieveIdentity(
+                            httpRequest, httpResponse);
+                    if (userIdent != null
+                            && userIdent.getUserName().equals(getAnonymousId())) {
+                        String forceAuth = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
+                        if (forceAuth != null && forceAuth.equals("true")) {
+                            userIdent = null;
                         }
                     }
+                    if ((userIdent == null || !userIdent.containsValidIdentity())
+                            && !bypassAuth(httpRequest)) {
 
+                        boolean res = handleLoginPrompt(httpRequest,
+                                httpResponse);
+                        if (res) {
+                            return;
+                        }
+                    } else {
+                        // restore saved Starting page
+                        targetPageURL = getSavedRequestedURL(httpRequest,
+                                httpResponse);
+                    }
+
+                    if (userIdent != null && userIdent.containsValidIdentity()) {
+                        // do the authentication
+                        cachableUserIdent = new CachableUserIdentificationInfo(
+                                userIdent);
+                        principal = doAuthenticate(cachableUserIdent,
+                                httpRequest);
+                        if (principal != null
+                                && principal != DIRECTORY_ERROR_PRINCIPAL) {
+                            // Do the propagation too ????
+                            propagatedAuthCb = service.propagateUserIdentificationInformation(cachableUserIdent);
+                            // setPrincipalToSession(httpRequest, principal);
+                            // check if the current authenticator is a
+                            // LoginResponseHandler
+                            NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
+                            if (plugin instanceof LoginResponseHandler) {
+                                // call the extended error handler
+                                if (((LoginResponseHandler) plugin).onSuccess(
+                                        (HttpServletRequest) request,
+                                        (HttpServletResponse) response)) {
+                                    return;
+                                }
+                            }
+                        } else {
+                            // first check if the current authenticator is a
+                            // LoginResponseHandler
+                            NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
+                            if (plugin instanceof LoginResponseHandler) {
+                                // call the extended error handler
+                                if (((LoginResponseHandler) plugin).onError(
+                                        (HttpServletRequest) request,
+                                        (HttpServletResponse) response)) {
+                                    return;
+                                }
+                            } else {
+                                // use the old method
+                                String err = principal == DIRECTORY_ERROR_PRINCIPAL ? ERROR_CONNECTION_FAILED
+                                        : ERROR_AUTHENTICATION_FAILED;
+                                httpRequest.setAttribute(LOGIN_ERROR, err);
+                                boolean res = handleLoginPrompt(httpRequest,
+                                        httpResponse);
+                                if (res) {
+                                    return;
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
-        }
 
-        if (principal != null) {
-            if (targetPageURL != null && targetPageURL.length() > 0) {
-                // forward to target page
-                String baseURL = service.getBaseURL(request);
+            if (principal != null) {
+                if (targetPageURL != null && targetPageURL.length() > 0) {
+                    // forward to target page
+                    String baseURL = service.getBaseURL(request);
 
-                // httpRequest.getRequestDispatcher(targetPageURL).forward(new
-                // NuxeoSecuredRequestWrapper(httpRequest, principal),
-                // response);
-                if (XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
-                    // httpResponse.setStatus(200);
-                    return;
+                    // httpRequest.getRequestDispatcher(targetPageURL).forward(new
+                    // NuxeoSecuredRequestWrapper(httpRequest, principal),
+                    // response);
+                    if (XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
+                        // httpResponse.setStatus(200);
+                        return;
+                    } else {
+                        httpResponse.sendRedirect(baseURL + targetPageURL);
+                        return;
+                    }
+
                 } else {
-                    httpResponse.sendRedirect(baseURL + targetPageURL);
-                    return;
+                    // simply continue request
+                    chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest,
+                            principal), response);
                 }
-
             } else {
-                // simply continue request
-                chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest,
-                        principal), response);
+                chain.doFilter(request, response);
             }
-        } else {
-            chain.doFilter(request, response);
+        } finally {
+            if (propagatedAuthCb != null) {
+                propagatedAuthCb.cleanup();
+            }
         }
-
         if (!avoidReauthenticate) {
             // destroy login context
             log.debug("Log out");

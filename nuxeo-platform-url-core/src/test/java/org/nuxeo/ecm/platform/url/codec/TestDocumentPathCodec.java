@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.url.codec;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestDocumentPathCodec extends TestCase {
+public class TestDocumentPathCodec {
 
     private DocumentView getDocumentView(String id, String path, String view) {
         DocumentLocation docLoc = new DocumentLocationImpl("demo",
@@ -46,6 +47,7 @@ public class TestDocumentPathCodec extends TestCase {
         return docView;
     }
 
+    @Test
     public void testGetUrlFromDocumentView() {
         DocumentPathCodec codec = new DocumentPathCodec();
         String docid = "dbefd5a0-35ee-4ed2-a023-6817714f32cf";
@@ -104,6 +106,7 @@ public class TestDocumentPathCodec extends TestCase {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
+    @Test
     public void testGetDocumentViewFromUrl() {
         DocumentPathCodec codec = new DocumentPathCodec();
         String url = "nxpath/demo/path/to/my/doc@view_documents?tabId=TAB_CONTENT";

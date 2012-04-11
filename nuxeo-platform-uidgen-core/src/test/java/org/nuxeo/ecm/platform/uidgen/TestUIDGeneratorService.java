@@ -24,6 +24,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +53,7 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
 
     UIDGeneratorService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -73,12 +78,13 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         NuxeoContainer.uninstallNaming();
         super.tearDown();
     }
 
+    @Test
     public void testUIDGenerator() throws Exception {
         String docTypeName = "GeideDoc";
         // create Geide doc

@@ -30,6 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -59,7 +63,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     static final String SCHEMA_NAME = "myschema";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -99,12 +103,14 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         Framework.getService(SchemaManager.class).registerSchema(sch);
     }
 
+    @Test
     public void testSchemaIntrospection() throws Exception {
         MemoryDirectory md = new MemoryDirectory("adir", SCHEMA_NAME, "i", "pw");
         assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int",
                 "b", "x")), md.schemaSet);
     }
 
+    @Test
     public void testCreate() throws Exception {
         // created in setUp
         assertEquals("1", entry.getProperty(SCHEMA_NAME, "i"));
@@ -123,6 +129,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testCreateFromModel() throws Exception {
         DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME,
                 null, null);
@@ -141,23 +148,27 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testHasEntry() throws Exception {
         assertTrue(dir.hasEntry("1"));
         assertFalse(dir.hasEntry("foo"));
     }
 
+    @Test
     public void testAuthenticate() throws Exception {
         assertTrue(dir.authenticate("1", "secr"));
         assertFalse(dir.authenticate("1", "haha"));
         assertFalse(dir.authenticate("2", "any"));
     }
 
+    @Test
     public void testGetEntry() throws Exception {
         DocumentModel entry = dir.getEntry("1");
         assertEquals("AAA", entry.getProperty(SCHEMA_NAME, "a"));
         assertNull(dir.getEntry("no-such-entry"));
     }
 
+    @Test
     public void testGetEntries() throws Exception {
         Map<String, Object> e2 = new HashMap<String, Object>();
         e2.put("i", "2");
@@ -168,6 +179,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertEquals("2", l.get(1).getId());
     }
 
+    @Test
     public void testUpdateEntry() throws Exception {
         DocumentModel e = dir.getEntry("1");
         assertEquals("BCD", e.getProperty(SCHEMA_NAME, "b"));
@@ -184,6 +196,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         dir.updateEntry(entry); // silently ignore unknown entries
     }
 
+    @Test
     public void testDeleteEntry() throws Exception {
         DocumentModelList l = dir.getEntries();
         assertEquals(1, l.size());
@@ -192,6 +205,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertEquals(0, l.size());
     }
 
+    @Test
     public void testQuery() throws Exception {
         Map<String, Object> e2 = new HashMap<String, Object>();
         e2.put("i", "2");
@@ -258,6 +272,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertEquals(0, entries.size());
     }
 
+    @Test
     public void testQueryFts() throws Exception {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         Set<String> fulltext = new HashSet<String>();
@@ -297,6 +312,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertEquals(1, dir.query(filter, fulltext).size());
     }
 
+    @Test
     public void testGetProjection() throws Exception {
         List<String> list;
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -349,6 +365,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     }
 
     // actually tests AbstractDirectory.orderEntry
+    @Test
     public void testOrderBy() throws Exception {
         Map<String, Object> e2 = new HashMap<String, Object>();
         e2.put("i", "2");

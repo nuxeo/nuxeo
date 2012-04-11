@@ -28,6 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -63,7 +68,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
 
     MultiDirectorySession dir;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         // platform dependencies
@@ -146,7 +151,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         dir = (MultiDirectorySession) multiDir.getSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         memoryDirectoryFactory.unregisterDirectory(memdir1);
         memoryDirectoryFactory.unregisterDirectory(memdir2);
@@ -155,6 +160,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testDirectoryOptionalInvalid() throws Exception {
         MultiDirectory multiDir = (MultiDirectory) directoryService.getDirectory("multiOptionalInvalid");
         MultiDirectorySession dir = (MultiDirectorySession) multiDir.getSession();
@@ -168,6 +174,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testGetEntry() throws Exception {
         DocumentModel entry;
         entry = dir.getEntry("1");
@@ -190,6 +197,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertNull(entry);
     }
 
+    @Test
     public void testGetEntries() throws Exception {
         DocumentModelList l;
         l = dir.getEntries();
@@ -205,6 +213,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertEquals("defaultFooValue", entry.getProperty("schema3", "thefoo"));
     }
 
+    @Test
     public void testCreate() throws Exception {
         Session dir1 = memdir1.getSession();
         Session dir2 = memdir2.getSession();
@@ -243,6 +252,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testAuthenticate() throws Exception {
         // sub dirs
         Session dir1 = memdir1.getSession();
@@ -262,6 +272,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertFalse(dir.authenticate("3", "haha"));
     }
 
+    @Test
     public void testUpdateEntry() throws Exception {
         Session dir1 = memdir1.getSession();
         Session dir2 = memdir2.getSession();
@@ -307,6 +318,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         dir.getEntries();
     }
 
+    @Test
     public void testDeleteEntry() throws Exception {
         Session dir1 = memdir1.getSession();
         Session dir2 = memdir2.getSession();
@@ -330,8 +342,8 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertEquals(1, dir3.getEntries().size());
     }
 
+    @Test
     public void testReadOnlyEntryFromGetEntry() throws Exception {
-
         memdir1.setReadOnly(false);
         memdir2.setReadOnly(true);
         memdir3.setReadOnly(true);
@@ -357,6 +369,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
     }
 
+    @Test
     public void testQuery() throws Exception {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         DocumentModelList entries;
@@ -423,6 +436,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertEquals("bar3", e.getProperty("schema3", "thebar"));
     }
 
+    @Test
     public void testGetProjection() throws Exception {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         List<String> list;
@@ -508,6 +522,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertEquals(Arrays.asList("bar1", "bar3"), list);
     }
 
+    @Test
     public void testCreateFromModel() throws Exception {
         String schema = "schema3";
         DocumentModel entry = BaseSession.createEntryModel(null, schema, null,
@@ -527,6 +542,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testHasEntry() throws Exception {
         assertTrue(dir.hasEntry("1"));
         assertFalse(dir.hasEntry("foo"));

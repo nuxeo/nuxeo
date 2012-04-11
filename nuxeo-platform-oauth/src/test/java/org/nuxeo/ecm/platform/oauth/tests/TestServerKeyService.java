@@ -17,13 +17,17 @@
 
 package org.nuxeo.ecm.platform.oauth.tests;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestServerKeyService extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -34,6 +38,7 @@ public class TestServerKeyService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.oauth");
     }
 
+    @Test
     public void testServiceLookup() throws Exception {
         OAuthServerKeyManager skm = Framework.getLocalService(OAuthServerKeyManager.class);
         assertNotNull( skm);

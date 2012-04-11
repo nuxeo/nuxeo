@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -45,7 +49,7 @@ public class TestPDFToImage extends NXRuntimeTestCase {
 
     protected ConversionService cs;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -64,6 +68,7 @@ public class TestPDFToImage extends NXRuntimeTestCase {
         return new SimpleBlobHolder(new FileBlob(file));
     }
 
+    @Test
     public void testConverter() throws Exception {
 
         String converterName = cs.getConverterName("application/pdf", "image/jpeg");

@@ -21,6 +21,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -47,7 +52,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     private DocumentModel root;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -63,17 +68,19 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         root = session.getRootDocument();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
 
+    @Test
     public void testStorageService() {
         DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
         assertNotNull(service);
     }
 
+    @Test
     public void testCreationDateAndCreator() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-007", "File");
@@ -82,6 +89,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         assertEquals("Administrator", childFile2.getPropertyValue("dc:creator"));
     }
 
+    @Test
     public void testModificationDate() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-008", "File");
@@ -108,6 +116,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     }
 
     // Wait until we can have a real list management
+    @Test
     public void testContributors() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-008", "File");
@@ -147,6 +156,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
                 childFile3.getProperty("dublincore", "creator"));
     }
 
+    @Test
     public void testLastContributor() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-008", "File");
@@ -220,6 +230,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
                 childFile3.getProperty("dublincore", "lastContributor"));
     }
 
+    @Test
     public void testIssuedDate() throws ClientException {
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
                 "Folder");
@@ -238,6 +249,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         assertNotNull(issued);
     }
 
+    @Test
     public void testDisableListener() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-007", "File");
@@ -260,6 +272,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         }
     }
 
+    @Test
     public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
         closeSession();
         session = openSessionAs("Jacky");

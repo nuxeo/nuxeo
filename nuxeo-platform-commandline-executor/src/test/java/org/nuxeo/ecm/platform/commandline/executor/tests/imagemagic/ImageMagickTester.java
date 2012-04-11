@@ -23,6 +23,10 @@ package org.nuxeo.ecm.platform.commandline.executor.tests.imagemagic;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
@@ -36,7 +40,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class ImageMagickTester extends NXRuntimeTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
@@ -44,6 +48,7 @@ public class ImageMagickTester extends NXRuntimeTestCase {
                 "OSGI-INF/commandline-imagemagic-test-contrib.xml");
     }
 
+    @Test
     public void testIdentifyExec() throws Exception {
         CommandLineExecutorService cles = Framework
                 .getLocalService(CommandLineExecutorService.class);

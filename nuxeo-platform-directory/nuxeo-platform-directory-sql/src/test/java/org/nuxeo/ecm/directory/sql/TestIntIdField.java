@@ -20,6 +20,10 @@ package org.nuxeo.ecm.directory.sql;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
@@ -28,13 +32,14 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestIntIdField extends SQLDirectoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.directory.sql.tests", "intIdDirectory-contrib.xml");
     }
 
     @SuppressWarnings("boxing")
+    @Test
     public void testIntIdDirectory() throws Exception {
         DirectoryServiceImpl dirServiceImpl =
             (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);

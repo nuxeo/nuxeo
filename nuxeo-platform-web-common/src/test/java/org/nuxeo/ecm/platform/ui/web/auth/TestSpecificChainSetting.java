@@ -23,6 +23,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -33,7 +37,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
 
     private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -50,6 +54,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         return authService;
     }
 
+    @Test
     public void testStdChain() {
         PluggableAuthenticationService authService = getAuthService();
         assertNotNull(authService);
@@ -68,6 +73,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertTrue(chain.contains("WEBSERVICES_AUTH"));
     }
 
+    @Test
     public void testSpecificChain() {
         List<String> chain;
 

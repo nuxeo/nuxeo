@@ -253,12 +253,27 @@
       <sourceMimeType>text/x-web-markdown</sourceMimeType>
     </converter>
 
-   <converter name="md2pdf">
+    <converter name="md2pdf">
       <conversionSteps>
         <subconverter>md2html</subconverter>
         <subconverter>any2pdf</subconverter>
       </conversionSteps>
-   </converter>
+    </converter>
+
+    <converter name="iwork2pdf" class="org.nuxeo.ecm.platform.convert.plugins.IWork2PDFConverter">
+      <destinationMimeType>application/pdf</destinationMimeType>
+      <sourceMimeType>application/vnd.apple.iwork</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.pages</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.numbers</sourceMimeType>
+      <sourceMimeType>application/vnd.apple.keynote</sourceMimeType>
+    </converter>
+
+    <converter name="iwork2html">
+      <conversionSteps>
+        <subconverter>iwork2pdf</subconverter>
+        <subconverter>pdf2html</subconverter>
+      </conversionSteps>
+    </converter>
 
   </extension>
 

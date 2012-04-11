@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -37,7 +42,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
  */
 public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
@@ -54,7 +59,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -65,6 +70,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testMimeTypeUpdater() throws Exception {
         DocumentModel file = createFileDocument(false);
         Blob blob = (Blob) file.getProperty("file", "content");
@@ -85,6 +91,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testMimeTypeUpdaterWithoutPrefix() throws Exception {
         DocumentModel doc = createWithoutPrefixBlobDocument(false);
         Blob blob = (Blob) doc.getProperty("wihtoutpref", "blob");
@@ -101,6 +108,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testMimeTypeUpdaterWithPrefix() throws Exception {
         DocumentModel doc = createWithPrefixBlobDocument(false);
         Blob blob = (Blob) doc.getProperty("simpleblob", "blob");
@@ -110,6 +118,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         assertEquals("application/pdf", mt);
     }
 
+    @Test
     public void testMimeTypeUpdaterFolderish() throws Exception {
         // Workspace is folderish and contains the file schema
         DocumentModel doc = createWorkspace();

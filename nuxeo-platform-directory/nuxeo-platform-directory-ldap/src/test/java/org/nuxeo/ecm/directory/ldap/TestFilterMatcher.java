@@ -21,13 +21,15 @@ package org.nuxeo.ecm.directory.ldap;
 
 import org.nuxeo.ecm.directory.DirectoryException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
-public class TestFilterMatcher extends TestCase {
+public class TestFilterMatcher {
 
+    @Test
     public void testEmptyFilterMatching() throws DirectoryException {
         LDAPFilterMatcher matcher = new LDAPFilterMatcher();
         assertTrue(matcher.match(null, null));

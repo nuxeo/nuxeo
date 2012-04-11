@@ -22,6 +22,10 @@ package org.nuxeo.ecm.platform.convert.tests;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -42,7 +46,7 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
 
     protected ConversionService cs;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -61,6 +65,7 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
         return new SimpleBlobHolder(new FileBlob(file));
     }
 
+    @Test
     public void testConverter() throws Exception {
         String converterName = cs.getConverterName("application/pdf", "text/html");
         assertEquals("pdf2html", converterName);

@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -93,6 +96,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         return (SQLDirectory) dir;
     }
 
+    @Test
     public void testTableReference() throws Exception {
         Session groupSession = getSession("groupDirectory");
         try {
@@ -166,6 +170,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCreateEntry() throws Exception {
         Session session = getSession();
         assertNotNull(session);
@@ -238,6 +243,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testGetEntry() throws Exception {
         Session session = getSession();
         try {
@@ -270,6 +276,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testGetEntries() throws Exception {
         Session session = getSession();
         try {
@@ -325,6 +332,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testUpdateEntry() throws Exception {
         Session session = getSession();
         try {
@@ -380,6 +388,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testDeleteEntry() throws Exception {
         Session session = getSession();
         try {
@@ -452,6 +461,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testQuery1() throws Exception {
         Session session = getSession();
         try {
@@ -489,6 +499,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQuerySubAny() throws Exception {
         Session session = getSession();
         try {
@@ -506,6 +517,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQuery2() throws Exception {
         Session session = getSession();
         try {
@@ -519,6 +531,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testQueryCaseInsensitive() throws Exception {
         Session session = getSession();
         try {
@@ -534,6 +547,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testGetProjection() throws Exception {
         Session session = getSession();
         try {
@@ -547,6 +561,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testSearch() throws Exception {
         Session session = getSession();
         try {
@@ -583,6 +598,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testIsAuthenticating() throws Exception {
         Session session = getSession();
         try {
@@ -601,6 +617,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testAuthenticate() throws Exception {
         Session session = getSession();
         try {
@@ -623,6 +640,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testCreateFromModel() throws Exception {
         Session session = getSession();
         try {
@@ -649,6 +667,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testHasEntry() throws Exception {
         Session session = getSession();
         try {
@@ -659,6 +678,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testColumnCreation() throws Exception {
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-sql-directories-alteration-config.xml");
@@ -701,6 +721,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    @Test
     public void testSchemaWithPrefix() throws Exception {
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-sql-directories-schema-prefix.xml");

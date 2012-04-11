@@ -14,17 +14,20 @@
 
 package org.nuxeo.ecm.platform.rendering.test;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
 
-public class TestPatternFilter extends TestCase {
+public class TestPatternFilter {
 
+    @Test
     public void test1() {
         PatternFilter filter = new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>");
         assertEquals("<link>MyName</link>", filter.apply("MyName"));
     }
 
+    @Test
     public void test2() {
         PatternFilter filter = new PatternFilter(
                 "NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>");

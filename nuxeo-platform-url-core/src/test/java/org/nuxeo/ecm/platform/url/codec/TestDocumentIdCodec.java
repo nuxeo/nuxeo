@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.url.codec;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -33,8 +34,9 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestDocumentIdCodec extends TestCase {
+public class TestDocumentIdCodec {
 
+    @Test
     public void testGetUrlFromDocumentView() {
         DocumentIdCodec codec = new DocumentIdCodec();
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
@@ -48,6 +50,7 @@ public class TestDocumentIdCodec extends TestCase {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
+    @Test
     public void testGetDocumentViewFromUrl() {
         DocumentIdCodec codec = new DocumentIdCodec();
         String url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/view_documents?tabId=TAB_CONTENT";
@@ -65,6 +68,7 @@ public class TestDocumentIdCodec extends TestCase {
     }
 
     // do the same without view id (optional)
+    @Test
     public void testGetDocumentViewFromUrlNoViewId() {
         DocumentIdCodec codec = new DocumentIdCodec();
         String url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf?tabId=TAB_CONTENT";
@@ -82,6 +86,7 @@ public class TestDocumentIdCodec extends TestCase {
     }
 
     // test urls wit a sub uri do not match
+    @Test
     public void testGetDocumentViewFromUrlWithSubUri() {
         DocumentIdCodec codec = new DocumentIdCodec();
         String url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/view_documents/whatever?tabId=TAB_CONTENT";

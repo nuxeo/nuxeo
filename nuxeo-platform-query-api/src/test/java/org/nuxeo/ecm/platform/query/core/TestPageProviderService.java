@@ -20,6 +20,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -38,13 +43,13 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
 
     private static final String FOO = "foo";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -59,6 +64,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
                 "test-pageprovider-contrib.xml");
     }
 
+    @Test
     public void testRegistration() throws Exception {
         PageProviderService service = Framework.getService(PageProviderService.class);
         assertNotNull(service);
@@ -71,6 +77,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         // TODO: test given provider information
     }
 
+    @Test
     public void testQuery() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);

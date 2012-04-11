@@ -25,6 +25,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -34,7 +38,7 @@ public class TestAction extends NXRuntimeTestCase {
 
     ActionService as;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
@@ -42,6 +46,7 @@ public class TestAction extends NXRuntimeTestCase {
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 
+    @Test
     public void testActionExtensionPoint() {
         Collection<Action> actions = as.getActionRegistry().getActions();
         assertEquals(6, actions.size());
@@ -100,6 +105,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals(filterIds, view.getFilterIds());
     }
 
+    @Test
     public void testFilterExtensionPoint() {
         Collection<ActionFilter> filters = as.getFilterRegistry().getFilters();
         assertEquals(5, filters.size());
@@ -163,6 +169,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("principal.getName()=='gandalf'", rule.conditions[0]);
     }
 
+    @Test
     public void testActionOverride() throws Exception {
         Action viewAction = as.getAction("TAB_VIEW");
         assertNotNull(viewAction);
@@ -211,6 +218,7 @@ public class TestAction extends NXRuntimeTestCase {
     }
 
     // NXP-7287: test override of inner filter
+    @Test
     public void testActionOverrideOfInnerFilter() throws Exception {
         Action previewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
         assertNotNull(previewAction);
@@ -255,6 +263,7 @@ public class TestAction extends NXRuntimeTestCase {
     }
 
     // NXP-7287: test override by inner filter
+    @Test
     public void testActionOverrideByInnerFilter() throws Exception {
         Action previewAction = as.getAction("TAB_WITH_GLOBAL_FILTER");
         assertNotNull(previewAction);
@@ -302,6 +311,7 @@ public class TestAction extends NXRuntimeTestCase {
                 opreviewRules[1].types[0]);
     }
 
+    @Test
     public void testRetrieveActionsByCategory() throws Exception {
         List<Action> viewActions = as.getActions("VIEW_ACTION_LIST",
                 new ActionContext());
@@ -320,6 +330,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("TAB_WITH_GLOBAL_FILTER", viewActions.get(0).getId());
     }
 
+    @Test
     public void testFilter() {
         List<Action> actions = as.getActions("view", new ActionContext());
         assertEquals(1, actions.size());
@@ -327,12 +338,14 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("TAB_VIEW", actAr[0].getId());
     }
 
+    @Test
     public void testDefaultFilter() {
         List<Action> actions = as.getActions("global", new ActionContext());
         assertEquals(1, actions.size());
     }
 
     // test sort of actions with same order value
+    @Test
     public void testActionSort() {
         List<Action> actions;
         Action a1 = new Action("id1", null);
@@ -354,6 +367,7 @@ public class TestAction extends NXRuntimeTestCase {
      *
      * @since 5.6
      */
+    @Test
     public void testActionClone() {
         Action action1 = as.getAction("viewHiddenInfo");
         assertTrue(action1.getAvailable());

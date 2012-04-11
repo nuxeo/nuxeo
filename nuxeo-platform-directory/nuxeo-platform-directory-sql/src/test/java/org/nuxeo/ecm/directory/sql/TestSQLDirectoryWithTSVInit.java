@@ -21,6 +21,10 @@ package org.nuxeo.ecm.directory.sql;
 
 import java.util.Calendar;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 
@@ -30,7 +34,7 @@ import org.nuxeo.ecm.directory.Session;
  */
 public class TestSQLDirectoryWithTSVInit extends SQLDirectoryTestCase {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -44,6 +48,7 @@ public class TestSQLDirectoryWithTSVInit extends SQLDirectoryTestCase {
         return getSession("userDirectory");
     }
 
+    @Test
     public void testGetEntry() throws Exception {
         Session session = getSession();
         try {

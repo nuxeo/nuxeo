@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.actions;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -31,7 +35,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
 
     ActionService as;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
@@ -52,6 +56,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         return as.getFilterRegistry().getFilter(name);
     }
 
+    @Test
     public void testAccessors() {
         ActionFilter filter = new DefaultActionFilter();
         filter.setId("foo");
@@ -60,6 +65,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertEquals("bar", filter.getId());
     }
 
+    @Test
     public void testNull() {
         ActionFilter filter = getFilter("null");
         assertTrue(filterAccept(null, filter));
@@ -67,6 +73,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertTrue(filterAccept(null, filter));
     }
 
+    @Test
     public void testWorkspaceOrSection() {
         ActionFilter filter = getFilter("WorkspaceOrSection");
         doc = new MockDocumentModel("Workspace", new String[0]);
@@ -78,6 +85,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
     }
 
     // test it also works with 2 filters with grant = true
+    @Test
     public void testWorkspaceOrSection2() {
         ActionFilter filter = getFilter("WorkspaceOrSection2");
         doc = new MockDocumentModel("Workspace", new String[0]);
@@ -88,6 +96,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testNotFolderish() {
         ActionFilter filter = getFilter("NotFolderish");
         doc = new MockDocumentModel("Workspace", new String[0]);
@@ -98,6 +107,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testWorkspaceOrSectionFolderish() {
         ActionFilter filter = getFilter("WorkspaceOrSectionFolderish");
         doc = new MockDocumentModel("Workspace", new String[0]);
@@ -108,6 +118,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testWorkspaceOrSectionNotFolderish() {
         ActionFilter filter = getFilter("WorkspaceOrSectionNotFolderish");
         doc = new MockDocumentModel("Workspace", new String[0]);
@@ -118,12 +129,14 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testBadExpression() {
         ActionFilter filter = getFilter("badExpression");
         doc = new MockDocumentModel("Workspace", new String[0]);
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testSF() {
         ActionFilter filter = getFilter("CheckId");
         doc = new MockDocumentModel("Workspace", new String[0]);
@@ -135,12 +148,14 @@ public class TestActionFilter extends NXRuntimeTestCase {
     // denying rule is found and at least one granting rule is found. Check that
     // when no denying rule is found and no granting rule is found, filter is
     // not valid.
+    @Test
     public void testNoDenyingRuleNoGrantingRule() {
         ActionFilter filter = getFilter("NoDenyingRuleNoGrantingRule");
         doc = new MockDocumentModel("NorWorkspaceNorSection", new String[0]);
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testOverrideFilter() {
         ActionFilter filter = getFilter("OverridenFilter");
         doc = new MockDocumentModel("Workspace", new String[0]);
@@ -149,6 +164,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testAppendFilter() {
         ActionFilter filter = getFilter("AppenedFilter");
 
@@ -165,6 +181,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertFalse(filterAccept(doc, filter));
     }
 
+    @Test
     public void testFilterCaching() {
         ActionFilter filter = getFilter("WorkspaceOrSection");
         Action action = new Action();
@@ -178,6 +195,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertNotNull(precomputed);
     }
 
+    @Test
     public void testGroupFilter() {
         ActionFilter filter = getFilter("GroupFilter");
         DefaultActionFilter dFilter = (DefaultActionFilter) filter;

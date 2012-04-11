@@ -20,6 +20,10 @@ package org.nuxeo.ecm.platform.ec.placeful;
 
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -30,7 +34,7 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
 
     PlacefulService placefulService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.persistence");
@@ -39,6 +43,7 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
         placefulService = (PlacefulService) runtime.getComponent(PlacefulService.ID);
     }
 
+    @Test
     public void testRegistration() {
         Map<String, String> registry = placefulService.getAnnotationRegistry();
         assertEquals(1, registry.size());

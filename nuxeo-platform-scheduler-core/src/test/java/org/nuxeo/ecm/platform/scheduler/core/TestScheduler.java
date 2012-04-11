@@ -21,6 +21,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry;
@@ -33,7 +38,7 @@ public class TestScheduler extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(TestScheduler.class);
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
@@ -53,7 +58,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.web.common");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         try {
         undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
@@ -66,6 +71,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         }
     }
 
+    @Test
     public void testScheduleRegistration() throws Exception {
         Whiteboard whiteboard = Whiteboard.getWhiteboard();
         whiteboard.setCount(0);
@@ -86,6 +92,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         assertTrue("count " + count, count >= 1);
     }
 
+    @Test
     public void testScheduleManualRegistration() throws Exception {
         Whiteboard whiteboard = Whiteboard.getWhiteboard();
         whiteboard.setCount(0);
@@ -115,6 +122,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         assertTrue(unregistered);
     }
 
+    @Test
     public void testScheduleManualRegistrationWithParameters() throws Exception {
         Whiteboard whiteboard = Whiteboard.getWhiteboard();
         whiteboard.setCount(0);

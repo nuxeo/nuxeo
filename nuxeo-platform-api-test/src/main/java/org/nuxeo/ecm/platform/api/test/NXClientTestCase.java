@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.api.test;
 import java.io.File;
 import java.net.URL;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,22 +36,20 @@ import org.nuxeo.runtime.util.SimpleRuntime;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
-public abstract class NXClientTestCase extends TestCase {
+public abstract class NXClientTestCase {
 
     protected static RuntimeService runtime;
 
     private static final Log log = LogFactory.getLog(NXClientTestCase.class);
 
-    @Override
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         initializeRT();
     }
 
-    @Override
+    @After
     protected void tearDown() throws Exception {
         shutdownRT();
-        super.tearDown();
     }
 
     /**

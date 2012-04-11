@@ -59,8 +59,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.platform.mimetype.api",
+@Deploy({ "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
