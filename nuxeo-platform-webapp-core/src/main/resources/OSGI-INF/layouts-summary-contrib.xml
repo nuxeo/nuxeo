@@ -533,17 +533,17 @@
       </templates>
       <rows>
         <row>
-          <widget>summary_current_document_description</widget>
           <widget>note_text</widget>
           <widget>summary_current_document_files</widget>
           <widget>summary_current_document_dublincore</widget>
           <widget>summary_current_document_comments</widget>
         </row>
         <row>
-          <widget>summary_current_document_lc_and_version</widget>
-          <widget>summary_current_document_actions</widget>
-          <widget>summary_current_document_custom_actions</widget>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
           <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_activity</widget>
           <widget>summary_current_document_relations</widget>
         </row>
         <row>
