@@ -29,6 +29,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -330,7 +331,9 @@ public class TestUserManager extends NXRuntimeTestCase {
     }
 
     // resource-intensive test, disabled by default
-    public void XXXtestMemoryLeak() throws Exception {
+    @Test
+    @Ignore
+    public void testMemoryLeak() throws Exception {
         deleteTestObjects();
         DocumentModel userModel = getUser("test_usr0");
         userManager.createUser(userModel);
