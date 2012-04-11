@@ -17,13 +17,10 @@
 package org.nuxeo.ecm.platform.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
@@ -33,28 +30,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("typeCompatibility")
 public class TypeCompatibility {
 
-    @XNode("@id")
-    String id;
-
     @XNode("@type")
     String type;
 
     @XNodeList(value = "category", type = ArrayList.class, componentType = String.class)
     private List<String> categories = new ArrayList<String>();
-
-    // WIP
-    // @XNodeMap(value = "category", key = "@type", type = HashMap.class,
-    // componentType = ActionTypeDescriptor.class)
-    // Map<String, ActionTypeDescriptor> properties = new HashMap<String,
-    // ActionTypeDescriptor>();
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getType() {
         return type;

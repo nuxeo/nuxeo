@@ -201,15 +201,15 @@
       Examples:
 
       <code>
-        <typeCompatibility id="iconType" type="link_icon">
+        <typeCompatibility type="link_icon">
           <category>DOCUMENT_UPPER_ACTION</category>
           <category>DOCUMENT_HEADER_ACTIONS_LIST</category>
         </typeCompatibility>
-        <typeCompatibility id="iconTextType" type="link_icon_text">
+        <typeCompatibility type="link_icon_text">
           <category>DEFAULT_LIST</category>
           <category>CLIPBOARD_LIST</category>
         </typeCompatibility>
-        <typeCompatibility id="buttonType" type="button">
+        <typeCompatibility type="button">
           <category>CURRENT_SELECTION_COPY</category>
           <category>CLIPBOARD_PASTE</category>
           <category>CURRENT_SELECTION_ADDTOLIST</category>
@@ -217,11 +217,11 @@
           <category>CREATE_DOCUMENT_FORM</category>
           <category>EDIT_DOCUMENT_FORM</category>
         </typeCompatibility>
-        <typeCompatibility id="linkType" type="link">
+        <typeCompatibility type="link">
           <category>USER_SERVICES</category>
           <category>USER_MENU_ACTIONS</category>
         </typeCompatibility>
-        <typeCompatibility id="bareType" type="bare_link">
+        <typeCompatibility type="bare_link">
           <category>DOCUMENT_HEADER_ACTIONS_LIST_HREF</category>
           <category>USER_MENU_ACTIONS</category>
         </typeCompatibility>
