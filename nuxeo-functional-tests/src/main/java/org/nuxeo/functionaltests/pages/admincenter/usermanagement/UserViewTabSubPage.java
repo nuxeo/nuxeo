@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import static org.junit.Assert.assertEquals;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -54,7 +55,20 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
         deleteUserLink.click();
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete user?", alert.getText());
+        // Trying Thread.sleep on failing alert.accept on some machines:
+        // org.openqa.selenium.WebDriverException:
+        // a.document.getElementsByTagName("dialog")[0] is undefined
+        try {
+            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
+        } catch (InterruptedException ie) {
+            // ignore
+        }
         alert.accept();
+        // TODO TA: This issue seems to have been fixed for the latest
+        // Selenium release 2.21
+        // See http://code.google.com/p/selenium/issues/detail?id=3544
+        // Once it is released and we upgrade to it, lets try enabling the
+        // confirmation alert again.
         return asPage(UsersTabSubPage.class);
     }
 

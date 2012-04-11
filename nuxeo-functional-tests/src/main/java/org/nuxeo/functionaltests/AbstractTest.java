@@ -50,6 +50,7 @@ import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
@@ -590,6 +591,12 @@ public abstract class AbstractTest {
             try {
                 element.click();
                 return;
+            } catch (ElementNotVisibleException enve) {
+                // Means the element is no visible yet
+                // => need to find it again.
+                element = findElementAndWaitUntilEnabled(by,
+                        findElementTimeout, waitUntilEnabledTimeout);
+                lastException = enve;
             } catch (StaleElementReferenceException sere) {
                 // Means the element is no longer attached to the DOM
                 // => need to find it again.

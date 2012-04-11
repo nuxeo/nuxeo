@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -27,6 +28,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class NavigationSubPage extends AbstractPage {
 
+    @Required
     @FindBy(xpath = "//div[@class=\"userClipboardContent\"]/div[@class=\"menu\"]")
     WebElement navigationTree;
 

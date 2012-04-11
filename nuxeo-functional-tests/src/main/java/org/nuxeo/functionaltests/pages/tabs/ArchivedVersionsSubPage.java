@@ -165,7 +165,20 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
         findElementWaitUntilEnabledAndClick(By.xpath("//span[@id=\"" + actionId
                 + "\"]/input"));
         if (isConfirm) {
+            // Trying Thread.sleep on failing alert.accept on some machines:
+            // org.openqa.selenium.WebDriverException:
+            // a.document.getElementsByTagName("dialog")[0] is undefined
+            try {
+                Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
+            } catch (InterruptedException ie) {
+                // ignore
+            }
             driver.switchTo().alert().accept();
+            // TODO TA: This issue seems to have been fixed for the latest
+            // Selenium release 2.21
+            // See http://code.google.com/p/selenium/issues/detail?id=3544
+            // Once it is released and we upgrade to it, lets try enabling the
+            // confirmation alert again.
         }
         // Wait for page to be loaded after action execution
         findElementWithTimeout(pageElementToCheck);
