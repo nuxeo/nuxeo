@@ -12,7 +12,9 @@
 
   <div class="content">
     <p class="popUpDescription">
-      <h:outputText value="#{messages['label.permalink']} #{currentDocument.title}" />
+      <h:outputFormat value="#{messages['label.permalink.description']}">
+        <f:param value="#{currentDocument.title}" />
+      </h:outputFormat>
     </p>
 
     <h:inputText value="#{nxd:documentUrl(currentDocument)}"
