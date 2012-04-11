@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.query.api.PageSelection;
+import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -98,7 +99,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     @In(create = true)
     protected transient DocumentVersioning documentVersioning;
 
-    protected transient List<PageSelection<VersionModel>> versionModelList;
+    protected transient PageSelections<VersionModel> versionModelList;
 
     protected String selectedVersionId;
 
@@ -119,9 +120,9 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     @Override
     @Factory(value = "versionList", scope = EVENT)
-    public List<PageSelection<VersionModel>> getVersionList()
-            throws ClientException {
-        if (versionModelList == null || versionModelList.isEmpty()) {
+    public PageSelections<VersionModel> getVersionList() throws ClientException {
+        if (versionModelList == null || versionModelList.getEntries() == null
+                || versionModelList.getEntries().isEmpty()) {
             retrieveVersions();
         }
         return versionModelList;
@@ -146,11 +147,13 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         } else {
             doc = currentDocument;
         }
-        versionModelList = new ArrayList<PageSelection<VersionModel>>();
+        List<PageSelection<VersionModel>> versionModelSelections = new ArrayList<PageSelection<VersionModel>>();
         for (VersionModel versionModel : documentVersioning.getItemVersioningHistory(doc)) {
-            versionModelList.add(new PageSelection<VersionModel>(versionModel,
-                    isVersionSelected(versionModel)));
+            versionModelSelections.add(new PageSelection<VersionModel>(
+                    versionModel, isVersionSelected(versionModel)));
         }
+        versionModelList = new PageSelections<VersionModel>(
+                versionModelSelections);
     }
 
     /**

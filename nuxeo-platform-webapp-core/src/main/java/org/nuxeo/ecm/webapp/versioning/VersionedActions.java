@@ -19,13 +19,11 @@
 
 package org.nuxeo.ecm.webapp.versioning;
 
-import java.util.List;
-
 import org.jboss.seam.annotations.Create;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.platform.query.api.PageSelection;
+import org.nuxeo.ecm.platform.query.api.PageSelections;
 
 /**
  * Exposes the actions that can be taken related to versioning and documents.
@@ -38,9 +36,9 @@ public interface VersionedActions {
     /**
      * Factory accessor for currentDocument versionList.
      *
-     * @return list of {@link PageSelection<VersionModel>}
+     * @return the selected version list as a {@link PageSelections<VersionModel>}
      */
-    List<PageSelection<VersionModel>> getVersionList() throws ClientException;
+    PageSelections<VersionModel> getVersionList() throws ClientException;
 
     /**
      * Retrieves the versions for the current document.
