@@ -130,6 +130,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         // now stop service
         // this is called by EventServiceComponent.deactivate() in real life
         ((EventServiceImpl) service).shutdown(2 * 1000);
+        ((EventServiceImpl) service).init();
         assertEquals(2, DummyPostCommitEventListener.handledCount);
         Thread.sleep(2 * 1000);
         assertEquals("thread not death", initialThreadCount,

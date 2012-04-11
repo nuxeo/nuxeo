@@ -91,16 +91,16 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
     public EventServiceImpl() {
         txListeners = new ListenerList();
         listenerDescriptors = new EventListenerList();
-        asyncExec = AsyncEventExecutor.create();
+        asyncExec = new AsyncEventExecutor();
+        init();
     }
 
-    public void shutdown() {
-        shutdown(0);
+    public void init() {
+        asyncExec.init();
     }
 
-    public void shutdown(long timeout) {
-        Set<AsyncWaitHook> notTerminated =
-                new HashSet<AsyncWaitHook>();
+    public void shutdown(long timeoutMillis) throws InterruptedException {
+        Set<AsyncWaitHook> notTerminated = new HashSet<AsyncWaitHook>();
         for (AsyncWaitHook hook:asyncWaitHooks) {
             if (hook.shutdown() == false) {
                 notTerminated.add(hook);
@@ -109,7 +109,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         if (!notTerminated.isEmpty()) {
             throw new Error("Asynch services are still running : " + notTerminated);
         }
-        if (asyncExec.shutdown(timeout) == false) {
+        if (asyncExec.shutdown(timeoutMillis) == false) {
             throw new Error("Async executor is still running, timeout expired");
         }
     }
@@ -147,10 +147,15 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         if (!notCompleted.isEmpty()) {
             throw new Error("Async tasks are still running : " + notCompleted);
         }
-        if (!asyncExec.shutdown(timeout)) {
-            throw new Error("Async event listeners thread pool is not terminated");
+        try {
+            if (!asyncExec.waitForCompletion(timeout)) {
+                throw new Error("Async event listeners thread pool is not terminated");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            // TODO change signature
+            throw new RuntimeException(e);
         }
-        asyncExec = AsyncEventExecutor.create();
      }
 
     @Override

@@ -13,137 +13,69 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
+import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * ThreadPoolExecutor of listeners for event bundles.
+ * Executor of async listeners passing them to the WorkManager.
  */
 public class AsyncEventExecutor {
 
     private static final Log log = LogFactory.getLog(AsyncEventExecutor.class);
 
-    public static final int QUEUE_SIZE = Integer.MAX_VALUE;
+    public AsyncEventExecutor() {
+    }
 
-    protected final ThreadPoolExecutor executor;
+    public WorkManager getWorkManager() {
+        return Framework.getLocalService(WorkManager.class);
+    }
 
-    protected final BlockingQueue<Runnable> queue;
-
-    protected final ThreadPoolExecutor mono_executor;
-
-    protected final BlockingQueue<Runnable> mono_queue;
-
-    protected static class ShutdownHandler implements RejectedExecutionHandler {
-
-        protected final RejectedExecutionHandler runningHandler;
-
-        protected ShutdownHandler(RejectedExecutionHandler handler) {
-            runningHandler = handler;
+    public void init() {
+        WorkManager workManager = getWorkManager();
+        if (workManager != null) {
+            workManager.init();
         }
+    }
 
-        @Override
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            if (!executor.isShutdown()) {
-                runningHandler.rejectedExecution(r, executor);
-            } else {
-                r.run();
+    public boolean shutdown(long timeoutMillis) throws InterruptedException {
+        WorkManager workManager = getWorkManager();
+        if (workManager == null) {
+            return true;
+        }
+        return workManager.shutdown(timeoutMillis, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean waitForCompletion(long timeoutMillis)
+            throws InterruptedException {
+        long t0 = System.currentTimeMillis();
+        for (;;) {
+            if (getUnfinishedCount() == 0) {
+                return true;
             }
-        }
-
-        public static void install(ThreadPoolExecutor executor) {
-            RejectedExecutionHandler runningHandler = executor.getRejectedExecutionHandler();
-            RejectedExecutionHandler shutdownHandler = new ShutdownHandler(runningHandler);
-            executor.setRejectedExecutionHandler(shutdownHandler);
-        }
-
-    }
-
-    public static AsyncEventExecutor create() {
-        String val = Framework.getProperty("org.nuxeo.ecm.core.event.async.poolSize");
-        int poolSize = val == null ? 4 : Integer.parseInt(val);
-        val = Framework.getProperty("org.nuxeo.ecm.core.event.async.maxPoolSize");
-        int maxPoolSize = val == null ? 16 : Integer.parseInt(val);
-        val = Framework.getProperty("org.nuxeo.ecm.core.event.async.keepAliveTime");
-        int keepAliveTime = val == null ? 0 : Integer.parseInt(val);
-        val = Framework.getProperty("org.nuxeo.ecm.core.event.async.queueSize");
-        int queueSize = val == null ? QUEUE_SIZE : Integer.parseInt(val);
-        return new AsyncEventExecutor(poolSize, maxPoolSize, keepAliveTime,
-                queueSize);
-    }
-
-    public void shutdown() {
-        shutdown(0);
-    }
-
-    public boolean shutdown(long timeout) {
-        // schedule shutdown
-        ShutdownHandler.install(executor);
-        executor.shutdown();
-        ShutdownHandler.install(mono_executor);
-        mono_executor.shutdown();
-
-        if (timeout <= 0) {
-            return false;
-        }
-
-        // wait for asynch executor termination
-        long ts = System.currentTimeMillis();
-        try {
-            boolean terminated =executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
-            if (!terminated) {
+            if (System.currentTimeMillis() - t0 > timeoutMillis) {
                 return false;
             }
-        } catch (InterruptedException e) {
-           return false;
+            Thread.sleep(100);
         }
-
-        // check remaining time
-        timeout -= System.currentTimeMillis() - ts;
-        if (timeout <= 0) {
-            if (!mono_executor.isTerminated()) {
-                return false;
-            }
-        }
-
-        // wait for mono executor termination
-        try {
-            boolean terminated = mono_executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
-            if (!terminated) {
-                return false;
-            }
-        } catch (InterruptedException e) {
-           return false;
-        }
-
-        return true;
-    }
-
-    public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime,
-            int queueSize) {
-        queue = new LinkedBlockingQueue<Runnable>(queueSize);
-        mono_queue = new LinkedBlockingQueue<Runnable>(queueSize);
-        NamedThreadFactory threadFactory = new NamedThreadFactory("Nuxeo Async Events");
-        executor = new ThreadPoolExecutor(poolSize, maxPoolSize, keepAliveTime,
-                TimeUnit.SECONDS, queue, threadFactory);
-        mono_executor = new ThreadPoolExecutor(1, 1, keepAliveTime,
-                TimeUnit.SECONDS, mono_queue, threadFactory);
     }
 
     public void run(List<EventListenerDescriptor> listeners, EventBundle bundle) {
@@ -164,86 +96,92 @@ public class AsyncEventExecutor {
             if (filtered.isEmpty()) {
                 continue;
             }
-            if (listener.isSingleThreaded()) {
-                mono_executor.execute(new Job(listener, filtered));
-            } else {
-                executor.execute(new Job(listener, filtered));
-            }
+            // listener.isSingleThreaded() // TODO
+            String category = "default";
+            getWorkManager().schedule(new ListenerWork(listener, filtered, category));
         }
     }
 
     public int getUnfinishedCount() {
-        return executor.getQueue().size() + executor.getActiveCount()
-                + mono_executor.getQueue().size() + mono_executor.getActiveCount();
+        WorkManager workManager = getWorkManager();
+        int n = 0;
+        for (String queueId : workManager.getWorkQueueIds()) {
+            n += workManager.getNonCompletedWorkSize(queueId);
+        }
+        return n;
     }
 
     public int getActiveCount() {
-        return executor.getActiveCount() + mono_executor.getActiveCount();
-    }
-
-    public int getMaxPoolSize() {
-        return executor.getMaximumPoolSize();
-    }
-
-    public void setMaxPoolSize(int maxSize) {
-        int coreSize = executor.getCorePoolSize();
-        if (coreSize > maxSize) {
+        WorkManager workManager = getWorkManager();
+        int n = 0;
+        for (String queueId : workManager.getWorkQueueIds()) {
+            n += workManager.getRunningWork(queueId).size();
         }
-        executor.getMaximumPoolSize();
+        return n;
     }
 
+    protected static class ListenerWork extends AbstractWork {
 
-    protected static class Job implements Runnable {
+        protected final String category;
 
-        protected final ReconnectedEventBundle bundle;
+        protected ReconnectedEventBundle bundle;
 
-        protected final EventListenerDescriptor listener;
+        protected EventListenerDescriptor listener;
 
-        public Job(EventListenerDescriptor listener, EventBundle bundle) {
+        public ListenerWork(EventListenerDescriptor listener, EventBundle bundle, String category) {
             this.listener = listener;
-
             if (bundle instanceof ReconnectedEventBundle) {
                 this.bundle = (ReconnectedEventBundle) bundle;
             } else {
                 this.bundle = new ReconnectedEventBundleImpl(bundle,
                         listener.getName());
             }
-        }
-
-        protected EventStats getEventStats() {
-            try {
-                return Framework.getService(EventStats.class);
-            } catch (Exception e) {
-                log.warn("Failed to lookup event stats service", e);
+            this.category = category;
+            List<String> l = new LinkedList<String>();
+            for (Event event : bundle) {
+                String s = event.getName();
+                EventContext ctx = event.getContext();
+                if (ctx instanceof DocumentEventContext) {
+                    s += "/" + ((DocumentEventContext) ctx).getSourceDocument().getRef();
+                }
+                l.add(s);
             }
-            return null;
+            setStatus("Async " + listener.getName() + " " + l);
         }
 
         @Override
-        public void run() {
-            EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
-            long t0 = System.currentTimeMillis();
-            txh.beginNewTransaction(listener.getTransactionTimeout());
-            try {
-                listener.asPostCommitListener().handleEvent(bundle);
-            } catch (Throwable t) {
-                log.error("Failed to execute async event " + bundle.getName()
-                        + " on listener " + listener.getName(), t);
-                txh.setTransactionRollbackOnly();
-            } finally {
-                bundle.disconnect();
-            }
-            txh.commitOrRollbackTransaction();
-            EventStats stats = getEventStats();
-            if (stats != null) {
-                stats.logAsyncExec(listener, System.currentTimeMillis() - t0);
-            }
-            log.debug("Async listener executed, commited tx");
+        public String getCategory() {
+            return category;
         }
 
-        // Thread.currentThread().interrupt();
+        @Override
+        public Collection<DocumentLocation> getDocuments() {
+            // TODO
+            return Collections.emptyList();
+        }
+
+        @Override
+        public void work() throws Exception {
+            listener.asPostCommitListener().handleEvent(bundle);
+        }
+
+        @Override
+        public void cleanUp(boolean ok) {
+            bundle.disconnect();
+            if (!ok) {
+                log.error("Failed to execute async event " + bundle.getName()
+                        + " on listener " + listener.getName());
+            }
+            EventStats stats = Framework.getLocalService(EventStats.class);
+            if (stats != null) {
+                stats.logAsyncExec(listener, System.currentTimeMillis() - startTime);
+            }
+            bundle = null;
+            listener = null;
+        }
     }
 
+    // TODO still used by quota and video
     /**
      * Creates non-daemon threads at normal priority.
      */
