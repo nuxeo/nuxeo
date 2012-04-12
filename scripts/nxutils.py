@@ -189,7 +189,7 @@ class Repository(object):
             retcode = system("git checkout --track -b %s %s/%s" % (version,
                                                         self.alias, version),
                    fallback_branch is None)
-            if fallback_branch is not None:
+            if retcode != 0 and fallback_branch is not None:
                 log("Branch %s not found, fallback on %s" % (version,
                                                              fallback_branch))
                 self.git_update(fallback_branch)
