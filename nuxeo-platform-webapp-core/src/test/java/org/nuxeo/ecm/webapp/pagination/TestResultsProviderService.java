@@ -15,6 +15,10 @@
 
 package org.nuxeo.ecm.webapp.pagination;
 
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -27,7 +31,7 @@ public class TestResultsProviderService extends NXRuntimeTestCase {
 
     private ResultsProviderService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.webapp.base",
@@ -41,10 +45,12 @@ public class TestResultsProviderService extends NXRuntimeTestCase {
     }
 
     // NXP-2161
+    @Test
     public void testModernLookup() throws Exception {
         assertNotNull(Framework.getService(ResultsProviderService.class));
     }
 
+    @Test
     public void testRegistration() throws Exception {
         assertNotNull(service);
         assertEquals("searchActions", service.getFarmNameFor("MY_SEARCH"));
