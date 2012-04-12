@@ -26,6 +26,21 @@
     </filter-mapping>
 
     <filter>
+      <display-name>External Request Filter</display-name>
+      <filter-name>ExternalRequestFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.web.common.external.ExternalRequestFilter
+      </filter-class>
+    </filter>
+    <!-- make it match only login request -->
+    <filter-mapping>
+      <filter-name>ExternalRequestFilter</filter-name>
+      <url-pattern>/login.jsp</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter>
       <display-name>Nuxeo Exception Filter</display-name>
       <filter-name>NuxeoExceptionFilter</filter-name>
       <filter-class>
