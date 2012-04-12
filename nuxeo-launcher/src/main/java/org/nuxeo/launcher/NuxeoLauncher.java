@@ -19,7 +19,6 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -51,7 +50,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -65,13 +63,9 @@ import org.json.JSONException;
 import org.json.XML;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.connect.update.PackageState;
-import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
-import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.connect.StandalonePackageManager;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -195,7 +189,7 @@ public abstract class NuxeoLauncher {
 
     private static boolean jsonOutput = false;
 
-    private static StandaloneUpdateService service = null;
+    private StandalonePackageManager packageManager = null;
 
     /**
      * @since 5.5
@@ -225,28 +219,6 @@ public abstract class NuxeoLauncher {
             guis = new HashMap<String, NuxeoLauncherGUI>();
         }
         guis.put(configurationGenerator.getNuxeoConf().toString(), gui);
-    }
-
-    protected StandaloneUpdateService getUpdateService() throws IOException,
-            PackageException {
-        if (service == null) {
-            Environment env = new Environment(
-                    configurationGenerator.getRuntimeHome());
-            env.init();
-            env.setServerHome(configurationGenerator.getNuxeoHome());
-            env.setData(new File(
-                    configurationGenerator.getUserConfig().getProperty(
-                            Environment.NUXEO_DATA_DIR)));
-            env.setLog(new File(
-                    configurationGenerator.getUserConfig().getProperty(
-                            Environment.NUXEO_LOG_DIR)));
-            env.setTemp(new File(
-                    configurationGenerator.getUserConfig().getProperty(
-                            Environment.NUXEO_TMP_DIR)));
-            service = new StandaloneUpdateService(env);
-            service.initialize();
-        }
-        return service;
     }
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
@@ -283,7 +255,7 @@ public abstract class NuxeoLauncher {
     /**
      * Do not directly call this method without a call to
      * {@link #checkNoRunningServer()}
-     *
+     * 
      * @see #doStart()
      * @throws IOException In case of issue with process.
      * @throws InterruptedException If any thread has interrupted the current
@@ -318,9 +290,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Gets the java options with Nuxeo properties substituted.
-     *
+     * 
      * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
-     *
+     * 
      * @return the java options string.
      */
     protected String getJavaOptsProperty() {
@@ -343,7 +315,7 @@ public abstract class NuxeoLauncher {
      * Check if some server is already running (from another thread) and throw a
      * Runtime exception if it finds one. That method will work where
      * {@link #isRunning()} won't.
-     *
+     * 
      * @throws IllegalThreadStateException Thrown if a server is already
      *             running.
      */
@@ -389,7 +361,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Will wrap, if necessary, the command within a Shell command
-     *
+     * 
      * @param roughCommand Java command which will be run
      * @return wrapped command depending on the OS
      */
@@ -646,37 +618,27 @@ public abstract class NuxeoLauncher {
         } else if ("pack".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pack();
         } else if ("mp-list".equalsIgnoreCase(launcher.command)) {
-            launcher.executePending(false);
-            commandSucceeded = commandSucceeded && (launcher.pkgList() != null);
+            launcher.pkgList();
             launcher.printXMLOutput();
         } else if ("mp-add".equalsIgnoreCase(launcher.command)) {
-            for (String param : params) {
-                commandSucceeded = commandSucceeded
-                        && (launcher.pkgAdd(param) != null);
-            }
+            launcher.checkNoRunningServer();
+            commandSucceeded = commandSucceeded && launcher.pkgAdd(params);
             launcher.printXMLOutput();
         } else if ("mp-install".equalsIgnoreCase(launcher.command)) {
-            if (launcher.getConfigurationGenerator().isInstallInProgress()) {
-                launcher.executePending(true);
-            }
-            for (String param : params) {
-                commandSucceeded = commandSucceeded
-                        && (launcher.pkgInstall(param) != null);
-            }
+            launcher.checkNoRunningServer();
+            commandSucceeded = commandSucceeded && launcher.pkgInstall(params);
             launcher.printXMLOutput();
         } else if ("mp-uninstall".equalsIgnoreCase(launcher.command)) {
-            for (String param : params) {
-                commandSucceeded = commandSucceeded
-                        && (launcher.pkgUninstall(param) != null);
-            }
+            launcher.checkNoRunningServer();
+            commandSucceeded = commandSucceeded
+                    && launcher.pkgUninstall(params);
             launcher.printXMLOutput();
         } else if ("mp-remove".equalsIgnoreCase(launcher.command)) {
-            for (String param : params) {
-                commandSucceeded = commandSucceeded
-                        && (launcher.pkgRemove(param) != null);
-            }
+            launcher.checkNoRunningServer();
+            commandSucceeded = commandSucceeded && launcher.pkgRemove(params);
             launcher.printXMLOutput();
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
+            launcher.checkNoRunningServer();
             commandSucceeded = commandSucceeded && launcher.pkgReset();
             launcher.printXMLOutput();
         } else {
@@ -793,7 +755,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Call {@link #doStart(boolean)} with false as parameter.
-     *
+     * 
      * @see #doStart(boolean)
      * @return true if the server started successfully
      */
@@ -805,9 +767,9 @@ public abstract class NuxeoLauncher {
      * Whereas {@link #doStart()} considers the server as started when the
      * process is running, {@link #doStartAndWait()} waits for effective start
      * by watching the logs
-     *
+     * 
      * @param logProcessOutput Must process output stream must be logged or not.
-     *
+     * 
      * @return true if the server started successfully
      */
     public boolean doStartAndWait(boolean logProcessOutput) {
@@ -899,7 +861,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Must be called after {@link #getStartupSummary()}
-     *
+     * 
      * @since 5.5
      * @return last detected status of running Nuxeo server
      */
@@ -923,7 +885,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Starts the server in background.
-     *
+     * 
      * @return true if server successfully started
      */
     public boolean doStart(boolean logProcessOutput) {
@@ -965,7 +927,8 @@ public abstract class NuxeoLauncher {
 
             log.debug("Check if install in progress...");
             if (configurationGenerator.isInstallInProgress()) {
-                executePending(true);
+                getPackageManager().executePending(
+                        configurationGenerator.getInstallFile(), true);
                 // configuration will be reloaded, keep wizard value
                 System.setProperty(
                         ConfigurationGenerator.PARAM_WIZARD_DONE,
@@ -997,355 +960,6 @@ public abstract class NuxeoLauncher {
             log.error(e.getMessage());
         }
         return serverStarted;
-    }
-
-    private List<LocalPackage> pkgList() {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_LIST;
-        try {
-            StandaloneUpdateService pus = getUpdateService();
-            List<LocalPackage> localPackages = pus.getPackages();
-            if (localPackages.isEmpty()) {
-                log.info("No local package.");
-            } else {
-                log.info("Local packages:");
-                for (LocalPackage localPackage : localPackages) {
-                    cmdInfo.packages.add(new PackageInfo(localPackage));
-                    String packageDescription;
-                    switch (localPackage.getState()) {
-                    case PackageState.DOWNLOADING:
-                        packageDescription = "downloading...";
-                        break;
-                    case PackageState.DOWNLOADED:
-                        packageDescription = "downloaded";
-                        break;
-                    case PackageState.INSTALLING:
-                        packageDescription = "installing...";
-                        break;
-                    case PackageState.INSTALLED:
-                        packageDescription = "installed";
-                        break;
-                    case PackageState.STARTED:
-                        packageDescription = "started";
-                        break;
-                    default:
-                        packageDescription = "unknown";
-                        break;
-                    }
-                    packageDescription += "\t" + localPackage.getName()
-                            + " (id: " + localPackage.getId() + ")";
-                    log.info(packageDescription);
-                }
-            }
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return localPackages;
-        } catch (Exception e) {
-            log.error(e);
-            errorValue = 1;
-            cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
-            return null;
-        }
-    }
-
-    protected void performTask(Task task) throws PackageException {
-        ValidationStatus validationStatus = task.validate();
-        if (validationStatus.hasErrors()) {
-            errorValue = 3;
-            throw new PackageException("Failed to validate package "
-                    + task.getPackage().getId() + " -> "
-                    + validationStatus.getErrors());
-        }
-        if (validationStatus.hasWarnings()) {
-            log.warn("Got warnings on package validation "
-                    + task.getPackage().getId() + " -> "
-                    + validationStatus.getWarnings());
-        }
-        task.run(null);
-    }
-
-    private boolean pkgReset() {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_RESET;
-        try {
-            StandaloneUpdateService pus = getUpdateService();
-            pus.reset();
-            log.info("Packages reset done: All packages were marked as DOWNLOADED");
-            List<LocalPackage> localPackages = pus.getPackages();
-            for (LocalPackage localPackage : localPackages) {
-                cmdInfo.packages.add(new PackageInfo(localPackage));
-            }
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return true;
-        } catch (Exception e) {
-            log.error(e);
-            errorValue = 1;
-            cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
-            return false;
-        }
-    }
-
-    private LocalPackage pkgUninstall(String pkgId) {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_UNINSTALL;
-        cmdInfo.param = pkgId;
-        try {
-            StandaloneUpdateService pus = getUpdateService();
-            LocalPackage pkg = pus.getPackage(pkgId);
-            if (pkg == null) {
-                throw new PackageException("Package not found: " + pkgId);
-            }
-            log.info("Uninstalling " + pkgId);
-            Task uninstallTask = pkg.getUninstallTask();
-            try {
-                performTask(uninstallTask);
-            } catch (PackageException e) {
-                uninstallTask.rollback();
-                throw e;
-            }
-            // Refresh state
-            pkg = pus.getPackage(pkgId);
-            cmdInfo.packages.add(new PackageInfo(pkg));
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return pkg;
-        } catch (Exception e) {
-            log.error("Failed to uninstall package: " + pkgId, e);
-            errorValue = 1;
-            cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
-            return null;
-        }
-    }
-
-    private LocalPackage pkgRemove(String pkgId) {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_REMOVE;
-        cmdInfo.param = pkgId;
-        try {
-            StandaloneUpdateService pus = getUpdateService();
-            LocalPackage pkg = pus.getPackage(pkgId);
-            if (pkg == null) {
-                throw new PackageException("Package not found: " + pkgId);
-            }
-            if ((pkg.getState() == PackageState.STARTED)
-                    || (pkg.getState() == PackageState.INSTALLED)) {
-                pkgUninstall(pkgId);
-                // Refresh state
-                pkg = pus.getPackage(pkgId);
-            }
-            if (pkg.getState() != PackageState.DOWNLOADED) {
-                throw new PackageException(
-                        "Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
-            }
-            log.info("Removing " + pkgId);
-            pus.removePackage(pkgId);
-            PackageInfo pkgInfo = new PackageInfo(pkg);
-            pkgInfo.state = PackageState.REMOTE;
-            cmdInfo.packages.add(pkgInfo);
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return pkg;
-        } catch (Exception e) {
-            log.error("Failed to remove package: " + pkgId, e);
-            errorValue = 1;
-            cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
-            return null;
-        }
-    }
-
-    private LocalPackage pkgAdd(String packageFileName) {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_ADD;
-        cmdInfo.param = packageFileName;
-        try {
-            StandaloneUpdateService pus = getUpdateService();
-            if (packageFileName.startsWith("file:")) {
-                packageFileName = packageFileName.substring(5);
-            }
-            // Validate filename exists relative to current or NUXEO_HOME dir
-            File fileToAdd = new File(packageFileName);
-            if (!fileToAdd.exists()) {
-                fileToAdd = new File(configurationGenerator.getNuxeoHome(),
-                        packageFileName);
-                if (!fileToAdd.exists()) {
-                    throw new FileNotFoundException("Cannot find "
-                            + packageFileName
-                            + " relative to current directory "
-                            + "or to NUXEO_HOME");
-                }
-            }
-            log.info("Adding " + packageFileName);
-            LocalPackage pkg = pus.addPackage(fileToAdd);
-            cmdInfo.packages.add(new PackageInfo(pkg));
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return pkg;
-        } catch (Exception e) {
-            log.error("Failed to add package: " + packageFileName, e);
-            errorValue = 1;
-            cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
-            return null;
-        }
-    }
-
-    private LocalPackage pkgInstall(String pkgId) {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_INSTALL;
-        cmdInfo.param = pkgId;
-        try {
-            StandaloneUpdateService pus = getUpdateService();
-            LocalPackage pkg = pus.getPackage(pkgId);
-            if (pkg == null) {
-                // Assume this is a filename - try to add
-                pkg = pkgAdd(pkgId);
-                // Validate "add" went OK
-                if (pkg == null) {
-                    throw new PackageException("Package not found: " + pkgId);
-                }
-                pkgId = pkg.getId();
-                cmdInfo.param = pkgId;
-            }
-            log.info("Installing " + pkgId);
-            Task installTask = pkg.getInstallTask();
-            try {
-                performTask(installTask);
-            } catch (PackageException e) {
-                installTask.rollback();
-                throw e;
-            }
-            // Refresh state
-            pkg = pus.getPackage(pkgId);
-            cmdInfo.packages.add(new PackageInfo(pkg));
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return pkg;
-        } catch (Exception e) {
-            log.error("Failed to install package: " + pkgId, e);
-            errorValue = 1;
-            cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
-            return null;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private boolean executePending(boolean doExecute) {
-        if (doExecute) {
-            checkNoRunningServer();
-        }
-        File pending = configurationGenerator.getInstallFile();
-        if (!pending.isFile()) {
-            return false;
-        }
-        List<String> lines;
-        try {
-            lines = FileUtils.readLines(pending);
-            for (String line : lines) {
-                line = line.trim();
-                String[] split = line.split("\\s+", 2);
-                if (split.length == 2) {
-                    if (split[0].equals(CommandInfo.CMD_INSTALL)) {
-                        if (doExecute) {
-                            pkgInstall(split[1]);
-                        } else {
-                            if (xmlOutput) {
-                                CommandInfo cmdInfo = new CommandInfo();
-                                cmdInfo.name = CommandInfo.CMD_INSTALL;
-                                cmdInfo.param = split[1];
-                                cmdInfo.pending = true;
-                                cset.commands.add(cmdInfo);
-                            } else {
-                                log.info("Pending action: install " + split[1]);
-                            }
-                        }
-                    } else if (split[0].equals(CommandInfo.CMD_ADD)) {
-                        if (doExecute) {
-                            pkgAdd(split[1]);
-                        } else {
-                            if (xmlOutput) {
-                                CommandInfo cmdInfo = new CommandInfo();
-                                cmdInfo.name = CommandInfo.CMD_ADD;
-                                cmdInfo.param = split[1];
-                                cmdInfo.pending = true;
-                                cset.commands.add(cmdInfo);
-                            } else {
-                                log.info("Pending action: add " + split[1]);
-                            }
-                        }
-                    } else if (split[0].equals(CommandInfo.CMD_UNINSTALL)) {
-                        if (doExecute) {
-                            pkgUninstall(split[1]);
-                        } else {
-                            if (xmlOutput) {
-                                CommandInfo cmdInfo = new CommandInfo();
-                                cmdInfo.name = CommandInfo.CMD_UNINSTALL;
-                                cmdInfo.param = split[1];
-                                cmdInfo.pending = true;
-                                cset.commands.add(cmdInfo);
-                            } else {
-                                log.info("Pending action: uninstall "
-                                        + split[1]);
-                            }
-                        }
-                    } else if (split[0].equals(CommandInfo.CMD_REMOVE)) {
-                        if (doExecute) {
-                            pkgRemove(split[1]);
-                        } else {
-                            if (xmlOutput) {
-                                CommandInfo cmdInfo = new CommandInfo();
-                                cmdInfo.name = CommandInfo.CMD_REMOVE;
-                                cmdInfo.param = split[1];
-                                cmdInfo.pending = true;
-                                cset.commands.add(cmdInfo);
-                            } else {
-                                log.info("Pending action: remove " + split[1]);
-                            }
-                        }
-                    } else {
-                        errorValue = 1;
-                    }
-                } else if (split.length == 1) {
-                    if (line.length() > 0 && !line.startsWith("#")) {
-                        if (doExecute) {
-                            pkgInstall(line);
-                        } else {
-                            if (xmlOutput) {
-                                CommandInfo cmdInfo = new CommandInfo();
-                                cmdInfo.name = CommandInfo.CMD_INSTALL;
-                                cmdInfo.param = line;
-                                cmdInfo.pending = true;
-                                cset.commands.add(cmdInfo);
-                            } else {
-                                log.info("Pending action: install " + line);
-                            }
-                        }
-                    }
-                }
-                if (errorValue != 0) {
-                    log.error("Error processing pending package/command: "
-                            + line);
-                }
-            }
-            if (doExecute) {
-                if (errorValue != 0) {
-                    File bak = new File(pending.getPath() + ".bak");
-                    bak.delete();
-                    pending.renameTo(bak);
-                } else {
-                    pending.delete();
-                }
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-        return errorValue == 0;
-
     }
 
     /**
@@ -1383,9 +997,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stop stream gobblers contained in the given ArrayList
-     *
+     * 
      * @throws InterruptedException
-     *
+     * 
      * @since 5.5
      * @see #logProcessStreams(Process, boolean)
      */
@@ -1457,7 +1071,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stops the server.
-     *
+     * 
      * Will try to call specific class for a clean stop, retry
      * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
      * between each try, then kill the process if still running.
@@ -1567,7 +1181,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Configure the server after checking installation
-     *
+     * 
      * @throws ConfigurationException If an installation error is detected or if
      *             configuration fails
      */
@@ -1591,7 +1205,7 @@ public abstract class NuxeoLauncher {
      * Return process status (running or not) as String, depending on OS
      * capability to manage processes. Set status value following
      * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
-     *
+     * 
      * @see #status
      */
     public String status() {
@@ -1670,7 +1284,7 @@ public abstract class NuxeoLauncher {
     /**
      * Sets from program arguments the launcher command and additional
      * parameters.
-     *
+     * 
      * @param cmdLine Program arguments; may be used by launcher implementation.
      *            Must not be null or empty.
      */
@@ -1784,7 +1398,7 @@ public abstract class NuxeoLauncher {
      * Work best with current nuxeoProcess. If nuxeoProcess is null or has
      * exited, then will try to get process ID (so, result in that case depends
      * on OS capabilities).
-     *
+     * 
      * @return true if current process is running or if a running PID is found
      */
     public boolean isRunning() {
@@ -1836,6 +1450,111 @@ public abstract class NuxeoLauncher {
     public String getURL() {
         return configurationGenerator.getUserConfig().getProperty(
                 PARAM_NUXEO_URL);
+    }
+
+    protected Environment getDistributionEnvironment() {
+        Environment env = new Environment(
+                configurationGenerator.getRuntimeHome());
+        env.init();
+        env.setServerHome(configurationGenerator.getNuxeoHome());
+        env.setData(new File(
+                configurationGenerator.getUserConfig().getProperty(
+                        Environment.NUXEO_DATA_DIR)));
+        env.setLog(new File(configurationGenerator.getUserConfig().getProperty(
+                Environment.NUXEO_LOG_DIR)));
+        env.setTemp(new File(
+                configurationGenerator.getUserConfig().getProperty(
+                        Environment.NUXEO_TMP_DIR)));
+        env.loadProperties(configurationGenerator.getUserConfig());
+        return env;
+    }
+
+    protected StandalonePackageManager getPackageManager() {
+        if (packageManager == null) {
+            packageManager = new StandalonePackageManager(getDistributionEnvironment());
+        }
+        return packageManager;
+    }
+
+    protected void pkgList() {
+        StandalonePackageManager pkgman = getPackageManager();
+        pkgman.listPending(configurationGenerator.getInstallFile());
+        pkgman.pkgList();
+        cset = pkgman.getCommandSet();
+    }
+
+    protected boolean pkgAdd(String[] params) {
+        StandalonePackageManager pkgman = getPackageManager();
+        boolean cmdOK = true;
+        LocalPackage pkg;
+        for (String param : params) {
+            pkg = pkgman.pkgAdd(param);
+            cmdOK = cmdOK && (pkg != null);
+        }
+        cset = pkgman.getCommandSet();
+        if (!cmdOK) {
+            errorValue = 3;
+        }
+        return cmdOK;
+    }
+
+    protected boolean pkgInstall(String[] params) {
+        StandalonePackageManager pkgman = getPackageManager();
+        boolean cmdOK = true;
+        if (configurationGenerator.isInstallInProgress()) {
+            cmdOK = pkgman.executePending(
+                    configurationGenerator.getInstallFile(), true);
+        }
+        LocalPackage pkg;
+        for (String param : params) {
+            pkg = pkgman.pkgInstall(param);
+            cmdOK = cmdOK && (pkg != null);
+        }
+        cset = pkgman.getCommandSet();
+        if (!cmdOK) {
+            errorValue = 3;
+        }
+        return cmdOK;
+    }
+
+    protected boolean pkgUninstall(String[] params) {
+        StandalonePackageManager pkgman = getPackageManager();
+        boolean cmdOK = true;
+        LocalPackage pkg;
+        for (String param : params) {
+            pkg = pkgman.pkgUninstall(param);
+            cmdOK = cmdOK && (pkg != null);
+        }
+        cset = pkgman.getCommandSet();
+        if (!cmdOK) {
+            errorValue = 3;
+        }
+        return cmdOK;
+    }
+
+    protected boolean pkgRemove(String[] params) {
+        StandalonePackageManager pkgman = getPackageManager();
+        boolean cmdOK = true;
+        LocalPackage pkg;
+        for (String param : params) {
+            pkg = pkgman.pkgRemove(param);
+            cmdOK = cmdOK && (pkg != null);
+        }
+        cset = pkgman.getCommandSet();
+        if (!cmdOK) {
+            errorValue = 3;
+        }
+        return cmdOK;
+    }
+
+    protected boolean pkgReset() {
+        StandalonePackageManager pkgman = getPackageManager();
+        boolean cmdOK = pkgman.pkgReset();
+        cset = pkgman.getCommandSet();
+        if (!cmdOK) {
+            errorValue = 3;
+        }
+        return cmdOK;
     }
 
 }
