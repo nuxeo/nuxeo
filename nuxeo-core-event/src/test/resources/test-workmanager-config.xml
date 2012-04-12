@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.work.config.test" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="SleepWork">
+      <maxThreads>2</maxThreads>
+      <category>SleepWork</category>
+    </queue>
+  </extension>
+
+</component>

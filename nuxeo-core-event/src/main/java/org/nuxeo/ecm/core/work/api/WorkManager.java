@@ -39,7 +39,15 @@ public interface WorkManager {
     List<String> getWorkQueueIds();
 
     /**
-     * Gets a work queue descriptor for a given id
+     * Gets the queue id used for a given work category.
+     *
+     * @param category the category
+     * @return the queue id
+     */
+    String getCategoryQueueId(String category);
+
+    /**
+     * Gets the work queue descriptor for a given queue id.
      *
      * @param queueId the queue id
      * @return the work queue descriptor, or {@code null}
@@ -48,14 +56,29 @@ public interface WorkManager {
 
     /**
      * Starts up this {@link WorkManager} and attempts to resume work previously
-     * suspended at {@link #shutdown} time.
+     * suspended and saved at {@link #shutdown} time.
      */
     void init();
 
     /**
-     * Shuts down this {@link WorkManager} and attempts to suspend and persist
-     * any remaining executing work.
+     * Shuts down a work queue and attempts to suspend and save the running and
+     * scheduled work instances.
      *
+     * @param queueId the queue id
+     * @param timeout the time to wait
+     * @param unit the timeout unit
+     * @return {@code true} if shutdown is done, {@code false} if there are
+     *         still some threads executing after the timeout
+     */
+    boolean shutdownQueue(String queueId, long timeout, TimeUnit unit)
+            throws InterruptedException;
+
+    /**
+     * Shuts down this {@link WorkManager} and attempts to suspend and save the
+     * running and scheduled work instances.
+     *
+     * @param timeout the time to wait
+     * @param unit the timeout unit
      * @return {@code true} if shutdown is done, {@code false} if there are
      *         still some threads executing after the timeout
      */
@@ -100,6 +123,29 @@ public interface WorkManager {
      * @return the number of non-completed work instances
      */
     int getNonCompletedWorkSize(String queueId);
+
+    /**
+     * Waits for completion of work in a given queue.
+     *
+     * @param queueId the queue id
+     * @param timeout the time to wait
+     * @param unit the timeout unit
+     * @return {@code true} if all work completed in the queue, or {@code false}
+     *         if there is still some non-completed work after the timeout
+     */
+    boolean awaitCompletion(String queueId, long timeout, TimeUnit unit)
+            throws InterruptedException;
+
+    /**
+     * Waits for completion of all work.
+     *
+     * @param timeout the time to wait
+     * @param unit the timeout unit
+     * @return {@code true} if all work completed, or {@code false} if there is
+     *         still some non-completed work after the timeout
+     */
+    boolean awaitCompletion(long timeout, TimeUnit unit)
+            throws InterruptedException;
 
     /**
      * Clears the list of completed work instances for a given queue.

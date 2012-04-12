@@ -67,16 +67,8 @@ public class AsyncEventExecutor {
 
     public boolean waitForCompletion(long timeoutMillis)
             throws InterruptedException {
-        long t0 = System.currentTimeMillis();
-        for (;;) {
-            if (getUnfinishedCount() == 0) {
-                return true;
-            }
-            if (System.currentTimeMillis() - t0 > timeoutMillis) {
-                return false;
-            }
-            Thread.sleep(100);
-        }
+        WorkManager workManager = getWorkManager();
+        return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     public void run(List<EventListenerDescriptor> listeners, EventBundle bundle) {
@@ -170,11 +162,11 @@ public class AsyncEventExecutor {
         }
 
         @Override
-        public void cleanUp(boolean ok) {
+        public void cleanUp(boolean ok, Exception e) {
             bundle.disconnect();
-            if (!ok) {
+            if (e != null && !(e instanceof InterruptedException)) {
                 log.error("Failed to execute async event " + bundle.getName()
-                        + " on listener " + listener.getName());
+                        + " on listener " + listener.getName(), e);
             }
             EventStats stats = Framework.getLocalService(EventStats.class);
             if (stats != null) {

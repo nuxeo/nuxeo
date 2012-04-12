@@ -41,9 +41,18 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * A base implementation for a {@link Work} instance. Actual implementations
- * should implement the {@link #work()} method, and deal with saved state data
- * when a suspension is required.
+ * A base implementation for a {@link Work} instance, dealing with most of the
+ * details around state change.
+ * <p>
+ * Actual implementations must at a minimum implement the {@link #work()}
+ * method. A method {@link #cleanUp} is available.
+ * <p>
+ * To deal with suspension, the method {@link #suspendFromQueue()} should be
+ * implemented, and {@link #work()} should periodically check for
+ * {@link #isSuspending()}.
+ * <p>
+ * Specific information about the work can be returned by
+ * {@link #getPrincipal()} and {@link #getDocuments()}.
  *
  * @since 5.6
  */
@@ -58,9 +67,9 @@ public abstract class AbstractWork implements Work {
     protected volatile String status;
 
     /**
-     * Monitor held while runningState is conditionally changed.
+     * Monitor held while runningState is changed.
      */
-    protected Object runningStateMonitor = new Object();
+    protected Object stateMonitor = new Object();
 
     protected long schedulingTime;
 
@@ -105,53 +114,55 @@ public abstract class AbstractWork implements Work {
         return status;
     }
 
+    // before this, state is QUEUED or SUSPENDED
+    // after this, state is RUNNING or SUSPENDED
+    @Override
+    public void beforeRun() {
+        startTime = System.currentTimeMillis();
+        setProgress(PROGRESS_0_PC);
+        synchronized (stateMonitor) {
+            if (state == QUEUED) {
+                state = RUNNING;
+            }
+            // else may already be SUSPENDED
+            // cannot be SUSPENDING because we switch to that state
+            // only if state is RUNNING (in suspend())
+        }
+    }
+
     @Override
     public void run() {
-        startTime = System.currentTimeMillis();
-        synchronized (runningStateMonitor) {
-            state = RUNNING;
+        if (state == SUSPENDED) {
+            return;
         }
-        setProgress(PROGRESS_0_PC);
         boolean tx = isTransactional();
-        boolean ok = false;
         if (tx) {
             tx = TransactionHelper.startTransaction();
         }
+        boolean ok = false;
+        Exception err = null;
         try {
-            try {
-                work();
-                ok = true;
-            } finally {
-                cleanUp(ok);
-            }
+            work();
+            ok = true;
         } catch (Exception e) {
-            if (e instanceof InterruptedException) {
-                // restore interrupted status for the thread pool worker
-                Thread.currentThread().interrupt();
-            } else {
-                log.error("Work exception", e);
-            }
+            err = e;
         } finally {
             try {
-                if (tx) {
-                    if (!ok) {
-                        TransactionHelper.setTransactionRollbackOnly();
-                    }
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
+                cleanUp(ok, err);
             } finally {
-                synchronized (runningStateMonitor) {
-                    if (!ok) {
-                        state = FAILED;
-                    } else if (state == RUNNING || state == SUSPENDING) {
-                        state = COMPLETED;
+                try {
+                    if (tx) {
+                        if (!ok) {
+                            TransactionHelper.setTransactionRollbackOnly();
+                        }
+                        TransactionHelper.commitOrRollbackTransaction();
                     }
-                    // else SUSPENDED or FAILED
+                } finally {
+                    if (err instanceof InterruptedException) {
+                        // restore interrupted status for the thread pool worker
+                        Thread.currentThread().interrupt();
+                    }
                 }
-                if (state == COMPLETED) {
-                    setProgress(PROGRESS_100_PC);
-                }
-                completionTime = System.currentTimeMillis();
             }
         }
     }
@@ -164,19 +175,41 @@ public abstract class AbstractWork implements Work {
      * progress.
      * <p>
      * To allow for suspension by the {@link WorkManager}, it should
-     * periodically check if {@link #isSuspending()} is {@code true}, and if
-     * yes, call {@link #suspended()} with saved state data and return early.
+     * periodically call {@link #isSuspending()}, and if true call
+     * {@link #suspended()} with saved state data and return early.
      */
     public abstract void work() throws Exception;
 
+    // before this, state is RUNNING, SUSPENDED or SUSPENDING (and error)
+    // after this, state is COMPLETED, SUSPENDED or FAILED
+    @Override
+    public void afterRun(boolean ok) {
+        synchronized (stateMonitor) {
+            if (!ok) {
+                state = FAILED;
+            } else if (state == RUNNING || state == SUSPENDING) {
+                state = COMPLETED;
+            }
+            // else SUSPENDED
+        }
+        if (state == COMPLETED) {
+            setProgress(PROGRESS_100_PC);
+        }
+        completionTime = System.currentTimeMillis();
+    }
+
     /**
-     * This method is called after {@link #work} is done in a {@code finally}
-     * block.
+     * This method is called after {@link #work} is done in a finally block,
+     * whether work completed normally or was in error or was interrupted.
      *
-     * @param ok {@code true} if there was no exception in the {@link #work}
-     *            method
+     * @param ok {@code true} if the work completed normally
+     * @param e the exception, if available
      */
-    public void cleanUp(boolean ok) {
+    public void cleanUp(boolean ok, Exception e) {
+        if (ok || e instanceof InterruptedException) {
+            return;
+        }
+        log.error("Exception during work: " + this, e);
     }
 
     /**
@@ -187,13 +220,20 @@ public abstract class AbstractWork implements Work {
         return true;
     }
 
+    // after this, state may be
+    // COMPLETED, FAILED
+    // SUSPENDING, SUSPENDED
     @Override
     public boolean suspend() {
-        synchronized (runningStateMonitor) {
+        synchronized (stateMonitor) {
             if (state != COMPLETED && state != FAILED) {
                 if (state != SUSPENDED) {
-                    // QUEUED or RUNNING
-                    state = SUSPENDING;
+                    if (state == QUEUED) {
+                        suspendFromQueue();
+                        state = SUSPENDED;
+                    } else { // RUNNING
+                        state = SUSPENDING;
+                    }
                 }
                 return true;
             }
@@ -202,10 +242,20 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
+     * Called when suspension occurs while the work instance is queued.
+     * <p>
+     * Implementations should call {@link #suspended} with their saved state
+     * data.
+     */
+    protected void suspendFromQueue() {
+    }
+
+    /**
      * Checks if a suspend has been requested for this work instance by the work
      * manager.
-     *
-     * @return
+     * <p>
+     * If yes, {@link #suspended} should be called and the {@link #work} method
+     * should return early.
      */
     protected boolean isSuspending() {
         return state == SUSPENDING;
@@ -217,7 +267,7 @@ public abstract class AbstractWork implements Work {
      */
     protected void suspended(Map<String, Serializable> data) {
         this.data = data;
-        synchronized (runningStateMonitor) {
+        synchronized (stateMonitor) {
             if (state == SUSPENDING) {
                 state = SUSPENDED;
             }
@@ -225,22 +275,25 @@ public abstract class AbstractWork implements Work {
     }
 
     @Override
-    public Map<String, Serializable> getData(long timeout, TimeUnit unit)
+    public boolean awaitTermination(long timeout, TimeUnit unit)
             throws InterruptedException {
-        if (state == QUEUED) {
-            return data;
-        }
+        // TODO use Condition
         long delay = unit.toMillis(timeout);
         long t0 = System.currentTimeMillis();
         for (;;) {
-            if (state == SUSPENDED) {
-                return data;
+            if (state != RUNNING && state != SUSPENDING) {
+                return true;
             }
             if (System.currentTimeMillis() - t0 > delay) {
-                return null;
+                return false;
             }
             Thread.sleep(50);
         }
+    }
+
+    @Override
+    public Map<String, Serializable> getData() {
+        return data;
     }
 
     @Override
@@ -265,7 +318,13 @@ public abstract class AbstractWork implements Work {
 
     @Override
     public String getCategory() {
-        return null;
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getState() + ", "
+                + getProgress() + ", " + getStatus() + ")";
     }
 
     @Override

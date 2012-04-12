@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,7 +25,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -35,10 +35,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.work.WorkManagerImpl.MonitoredThreadPoolExecutor;
-import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -106,33 +106,19 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return workQueueDescriptors.get(queueId);
     }
 
-    // ----- WorkManager -----
-
-    /**
-     * Similar to {@link ThreadPoolExecutor.CallerRunsPolicy} but does the work
-     * in the calling thread only if the executor is being shutdown.
-     */
-    public static class ShutdownPolicy implements RejectedExecutionHandler {
-
-        protected final RejectedExecutionHandler handler;
-
-        public ShutdownPolicy(RejectedExecutionHandler handler) {
-            this.handler = handler;
+    @Override
+    public String getCategoryQueueId(String category) {
+        if (category == null) {
+            category = DEFAULT_CATEGORY;
         }
-
-        @Override
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            if (!executor.isShutdown()) {
-                // normal rejection
-                handler.rejectedExecution(r, executor);
-            } else {
-                // executor is shutdown but a task was added
-                // execute it in the calling thread to not lose it
-                // TODO suspend/persist it instead
-                r.run();
-            }
+        String queueId = workQueueDescriptors.getQueueId(category);
+        if (queueId == null) {
+            queueId = DEFAULT_QUEUE_ID;
         }
+        return queueId;
     }
+
+    // ----- WorkManager -----
 
     /**
      * Creates non-daemon threads at normal priority.
@@ -163,15 +149,28 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     /**
+     * A handler for rejected tasks that suspends them.
+     */
+    public static class SuspendPolicy implements RejectedExecutionHandler {
+
+        public static final SuspendPolicy INSTANCE = new SuspendPolicy();
+
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            ((WorkThreadPoolExecutor) executor).suspendFromQueue(r);
+        }
+    }
+
+    /**
      * A {@link ThreadPoolExecutor} that keeps available the list of scheduled,
-     * running and completed tasks.
+     * running and completed tasks and provides other methods.
      * <p>
      * The methods checking the sizes are sure not to lose tasks in transit
      * between the various queues.
      *
      * @since 5.6
      */
-    public static class MonitoredThreadPoolExecutor extends ThreadPoolExecutor {
+    public static class WorkThreadPoolExecutor extends ThreadPoolExecutor {
 
         protected Object monitor = new Object();
 
@@ -181,14 +180,17 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         protected List<Work> completed;
 
-        public MonitoredThreadPoolExecutor(int corePoolSize,
-                int maximumPoolSize, long keepAliveTime, TimeUnit unit,
+        protected List<Work> suspended;
+
+        public WorkThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
+                long keepAliveTime, TimeUnit unit,
                 BlockingQueue<Runnable> queue, ThreadFactory threadFactory) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queue,
                     threadFactory);
             scheduled = new LinkedList<Work>();
             running = new LinkedList<Work>();
             completed = new LinkedList<Work>();
+            suspended = new LinkedList<Work>();
         }
 
         @Override
@@ -197,6 +199,99 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 scheduled.add((Work) r);
             }
             super.execute(r);
+        }
+
+        @Override
+        protected void beforeExecute(Thread t, Runnable r) {
+            synchronized (monitor) {
+                Work work = (Work) r;
+                scheduled.remove(work);
+                running.add(work);
+                work.beforeRun(); // change state
+            }
+        }
+
+        @Override
+        protected void afterExecute(Runnable r, Throwable t) {
+            synchronized (monitor) {
+                Work work = (Work) r;
+                work.afterRun(t == null); // change state
+                running.remove(work);
+                if (work.getState() == State.SUSPENDED) {
+                    suspended.add(work);
+                } else {
+                    completed.add(work);
+                }
+            }
+        }
+
+        // called during shutdown
+        // with tasks from the queue if new tasks are submitted
+        // or with tasks drained from the queue
+        protected void suspendFromQueue(Runnable r) {
+            Work work = (Work) r;
+            work.suspend();
+            if (work.getState() != State.SUSPENDED) {
+                log.error("Work failed to suspend from queue on shutdown: "
+                        + work);
+                return;
+            }
+            synchronized (monitor) {
+                scheduled.remove(work);
+                suspended.add(work);
+            }
+        }
+
+        /**
+         * Initiates a shutdown of this executor and asks for work instances to
+         * suspend themselves.
+         */
+        public void shutdownAndSuspend() {
+            // mark executor as shutting down
+            setRejectedExecutionHandler(SuspendPolicy.INSTANCE);
+            shutdown();
+            // notify all work instances that they should suspend asap
+            suspend();
+        }
+
+        /**
+         * Blocks until all work instances have completed after a shutdown and
+         * suspend request. Suspended work is saved.
+         *
+         * @param timeout the time to wait
+         * @param unit the timeout unit
+         * @return true if all work stopped or was saved, false if some
+         *         remaining after timeout
+         */
+        public boolean awaitTerminationOrSave(long timeout, TimeUnit unit)
+                throws InterruptedException {
+            boolean terminated = awaitTermination(timeout, unit);
+            if (!terminated) {
+                // drain queue to suspend remaining scheduled work
+                List<Runnable> toSuspend = new ArrayList<Runnable>();
+                getQueue().drainTo(toSuspend);
+                for (Runnable r : toSuspend) {
+                    suspendFromQueue(r);
+                }
+            }
+            // this sync would only block work scheduled after the shutdown
+            List<Work> toSave;
+            synchronized (monitor) {
+                toSave = new ArrayList<Work>(suspended);
+                suspended.clear();
+            }
+            for (Work work : toSave) {
+                if (work.getState() != State.SUSPENDED) {
+                    log.error("Work in suspended queue but not suspended: "
+                            + work);
+                    continue;
+                }
+                @SuppressWarnings("unused")
+                Map<String, Serializable> data = work.getData();
+                // TODO save data
+            }
+            // some work still remaining after timeout
+            return terminated;
         }
 
         /**
@@ -210,38 +305,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 for (Work work : scheduled) {
                     work.suspend();
                 }
-            }
-        }
-
-        public void getData(long timeout, TimeUnit unit)
-                throws InterruptedException {
-            synchronized (monitor) {
-                for (Work work : running) {
-                    work.getData(timeout, unit);
-                    // TODO save
-                }
-                for (Work work : scheduled) {
-                    work.getData(timeout, unit);
-                    // TODO save
-                }
-            }
-        }
-
-        @Override
-        protected void beforeExecute(Thread t, Runnable r) {
-            synchronized (monitor) {
-                scheduled.remove(r);
-                running.add((Work) r);
-            }
-            super.beforeExecute(t, r);
-        }
-
-        @Override
-        protected void afterExecute(Runnable r, Throwable t) {
-            super.afterExecute(r, t);
-            synchronized (monitor) {
-                running.remove(r);
-                completed.add((Work) r);
             }
         }
 
@@ -307,28 +370,32 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 }
             }
         }
-
     }
 
     protected static final int DEFAULT_MAX_POOL_SIZE = 4;
 
-    protected MonitoredThreadPoolExecutor executorXXX;
-
-    protected Map<String, MonitoredThreadPoolExecutor> executors;
+    protected Map<String, WorkThreadPoolExecutor> executors;
 
     @Override
     public void init() {
-        executors = new HashMap<String, MonitoredThreadPoolExecutor>();
+        executors = new HashMap<String, WorkThreadPoolExecutor>();
     }
 
-    protected synchronized MonitoredThreadPoolExecutor getExecutor(
-            String queueId) {
+    protected synchronized boolean hasExecutor(String queueId) {
+        return executors.containsKey(queueId);
+    }
+
+    protected synchronized WorkThreadPoolExecutor removeExecutor(String queueId) {
+        return executors.remove(queueId);
+    }
+
+    protected synchronized WorkThreadPoolExecutor getExecutor(String queueId) {
         WorkQueueDescriptor workQueueDescriptor = workQueueDescriptors.get(queueId);
         if (workQueueDescriptor == null) {
             throw new IllegalArgumentException("No such work queue: " + queueId);
         }
 
-        MonitoredThreadPoolExecutor executor = executors.get(queueId);
+        WorkThreadPoolExecutor executor = executors.get(queueId);
         if (executor == null) {
             ThreadFactory threadFactory = new NamedThreadFactory("Nuxeo-Work-"
                     + queueId + "-");
@@ -337,9 +404,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 maxPoolSize = DEFAULT_MAX_POOL_SIZE;
                 workQueueDescriptor.maxThreads = maxPoolSize;
             }
-            executor = new MonitoredThreadPoolExecutor(maxPoolSize,
-                    maxPoolSize, 0, TimeUnit.SECONDS, newBlockingQueue(),
-                    threadFactory);
+            executor = new WorkThreadPoolExecutor(maxPoolSize, maxPoolSize, 0,
+                    TimeUnit.SECONDS, newBlockingQueue(), threadFactory);
             executors.put(queueId, executor);
         }
         return executor;
@@ -350,47 +416,51 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
+    public boolean shutdownQueue(String queueId, long timeout, TimeUnit unit)
+            throws InterruptedException {
+        WorkThreadPoolExecutor executor = getExecutor(queueId);
+        boolean terminated = shutdownExecutors(Collections.singleton(executor),
+                timeout, unit);
+        removeExecutor(queueId); // start afresh
+        return terminated;
+    }
+
+    @Override
     public synchronized boolean shutdown(long timeout, TimeUnit unit)
             throws InterruptedException {
         if (executors == null) {
             return true;
         }
-        Map<String, MonitoredThreadPoolExecutor> all = new HashMap<String, MonitoredThreadPoolExecutor>(
-                executors);
+        List<WorkThreadPoolExecutor> executorList = new ArrayList<WorkThreadPoolExecutor>(
+                executors.values());
         executors = null;
 
-        // request orderly shutdown
-        for (MonitoredThreadPoolExecutor executor : all.values()) {
-            RejectedExecutionHandler old = executor.getRejectedExecutionHandler();
-            executor.setRejectedExecutionHandler(new ShutdownPolicy(old));
-            executor.shutdown();
+        return shutdownExecutors(executorList, timeout, unit);
+    }
+
+    protected boolean shutdownExecutors(
+            Collection<WorkThreadPoolExecutor> list, long timeout, TimeUnit unit)
+            throws InterruptedException {
+        // mark executors as shutting down
+        for (WorkThreadPoolExecutor executor : list) {
+            executor.shutdownAndSuspend();
         }
 
         long t0 = System.currentTimeMillis();
         long delay = unit.toMillis(timeout);
 
-        // await normal termination of all work
-        List<MonitoredThreadPoolExecutor> todo = new ArrayList<MonitoredThreadPoolExecutor>();
-        for (MonitoredThreadPoolExecutor executor : all.values()) {
-            if (!executor.awaitTermination(remainingMillis(t0, delay),
+        // wait for termination or suspension
+        boolean terminated = true;
+        for (WorkThreadPoolExecutor executor : list) {
+            if (!executor.awaitTerminationOrSave(remainingMillis(t0, delay),
                     TimeUnit.MILLISECONDS)) {
-                todo.add(executor);
+                terminated = false;
+                // hard shutdown for remaining tasks
+                executor.shutdownNow();
             }
         }
-        if (todo.isEmpty()) {
-            return true;
-        }
 
-        // suspend remaining work instances
-        for (MonitoredThreadPoolExecutor executor : todo) {
-            executor.suspend();
-        }
-        for (MonitoredThreadPoolExecutor executor : todo) {
-            executor.getData(remainingMillis(t0, delay),
-                    TimeUnit.MILLISECONDS);
-        }
-
-        return false;
+        return terminated;
     }
 
     protected long remainingMillis(long t0, long delay) {
@@ -403,20 +473,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void schedule(Work work) {
-        MonitoredThreadPoolExecutor executor = getExecutor(getWorkQueueId(work));
+        String queueId = getCategoryQueueId(work.getCategory());
+        WorkThreadPoolExecutor executor = getExecutor(queueId);
         executor.execute(work);
-    }
-
-    protected String getWorkQueueId(Work work) {
-        String category = work.getCategory();
-        if (category == null) {
-            category = DEFAULT_CATEGORY;
-        }
-        String queueId = workQueueDescriptors.getQueueId(category);
-        if (queueId == null) {
-            queueId = DEFAULT_QUEUE_ID;
-        }
-        return queueId;
     }
 
     @Override
@@ -440,13 +499,47 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
+    public boolean awaitCompletion(String queueId, long timeout, TimeUnit unit)
+            throws InterruptedException {
+        return awaitCompletion(Collections.singleton(queueId), timeout, unit);
+    }
+
+    @Override
+    public boolean awaitCompletion(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        return awaitCompletion(getWorkQueueIds(), timeout, unit);
+    }
+
+    protected boolean awaitCompletion(Collection<String> queueIds,
+            long timeout, TimeUnit unit) throws InterruptedException {
+        long t0 = System.currentTimeMillis();
+        long delay = unit.toMillis(timeout);
+        for (;;) {
+            boolean completed = true;
+            for (String queueId : queueIds) {
+                if (getNonCompletedWorkSize(queueId) != 0) {
+                    completed = false;
+                    break;
+                }
+            }
+            if (completed) {
+                return true;
+            }
+            if (System.currentTimeMillis() - t0 > delay) {
+                return false;
+            }
+            Thread.sleep(50);
+        }
+    }
+
+    @Override
     public void clearCompletedWork(String queueId) {
         getExecutor(queueId).clearCompleted();
     }
 
     @Override
     public synchronized void clearCompletedWork(long completionTime) {
-        for (MonitoredThreadPoolExecutor executor : executors.values()) {
+        for (WorkThreadPoolExecutor executor : executors.values()) {
             executor.clearCompleted(completionTime);
         }
     }

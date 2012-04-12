@@ -23,16 +23,107 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.work.AbstractWork;
 
 /**
  * A {@link Work} instance gets executed by a {@link WorkManager}.
  * <p>
  * It's a runnable that can be {@linkplain #suspend() suspended} and can report
  * its status and progress.
+ * <p>
+ * Implementors must take care to implement correctly {@link #beforeRun} and
+ * {@link #afterRun} to change the state.
  *
+ * @see AbstractWork
  * @since 5.6
  */
 public interface Work extends Runnable {
+
+    /**
+     * The running state of a {@link Work} instance.
+     */
+    enum State {
+        /** Work instance is queued but not yet running. */
+        QUEUED,
+        /** Work instance is running. */
+        RUNNING,
+        /** Work instance is running but should suspend work. */
+        SUSPENDING,
+        /** Work instance is suspended in memory and work is stopped. */
+        SUSPENDED,
+        /** Work instance has completed. */
+        COMPLETED,
+        /** Work instance execution failed. */
+        FAILED
+    }
+
+    /**
+     * A progress report about a work instance.
+     * <p>
+     * Progress can be expressed as a percentage, or with an "n out of m" pair.
+     * <ul>
+     * <li>26.2% (percent not indeterminate)</li>
+     * <li>12/345 (current not indeterminate)</li>
+     * <li>?/345 (percent and current indeterminate but total non-zero)</li>
+     * <li>? (percent and current indeterminate and total zero)</li>
+     * </ul>
+     *
+     * @since 5.6
+     */
+    public static class Progress {
+
+        public static long CURRENT_INDETERMINATE = -1;
+
+        public static float PERCENT_INDETERMINATE = -1F;
+
+        public static final Progress PROGRESS_INDETERMINATE = new Progress(
+                PERCENT_INDETERMINATE);
+
+        public static final Progress PROGRESS_0_PC = new Progress(0F);
+
+        public static final Progress PROGRESS_100_PC = new Progress(100F);
+
+        protected final float percent;
+
+        protected final long current;
+
+        protected final long total;
+
+        public Progress(float percent) {
+            this.percent = percent > 100F ? 100F : percent;
+            this.current = CURRENT_INDETERMINATE;
+            this.total = 0;
+        }
+
+        public Progress(long current, long total) {
+            this.percent = PERCENT_INDETERMINATE;
+            this.current = current;
+            this.total = total;
+        }
+
+        public float getPercent() {
+            return percent;
+        }
+
+        public long getCurrent() {
+            return current;
+        }
+
+        public long getTotal() {
+            return total;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName()
+                    + "("
+                    + (percent == PERCENT_INDETERMINATE ? "?"
+                            : Float.valueOf(percent))
+                    + "%, "
+                    + (current == CURRENT_INDETERMINATE ? "?"
+                            : Long.valueOf(current)) + "/" + total + ")";
+        }
+    }
 
     /**
      * Gets the category for this work.
@@ -44,73 +135,25 @@ public interface Work extends Runnable {
     String getCategory();
 
     /**
-     * Gets the principal on behalf of which this work is done.
-     * <p>
-     * This is informative only.
-     *
-     * @return the principal, or {@code null}
+     * Called by the thread pool executor before the work is run. Must set the
+     * proper state (RUNNING if not already SUSPENDED).
      */
-    Principal getPrincipal();
+    void beforeRun();
 
     /**
-     * Gets the documents impacted by the work.
-     * <p>
-     * This is informative only.
-     *
-     * @return the documents
+     * The actual work.
      */
-    Collection<DocumentLocation> getDocuments();
+    @Override
+    void run();
 
     /**
-     * Requests that this work instance suspend its state in memory.
-     * <p>
-     * Does not block. Use {@link #getData} to wait for actual suspension and
-     * get the data.
+     * Called by the thread pool executor after the work is run. Must set the
+     * proper state (COMPLETED, SUSPENDED or FAILED).
      *
-     * @return {@code true} if suspend was started, or {@code false} if the job
-     *         was already completed
+     * @param ok {@code false} if there was an exception during task run and the
+     *            state should be FAILED
      */
-    boolean suspend();
-
-    /**
-     * Gets the state data for this suspended work instance.
-     * <p>
-     * May wait for the instance to actually finish suspending.
-     *
-     * @param timeout how long to wait for the data to be available
-     * @param unit timeout unit
-     * @return the data allowing the work instance to be resumed, or
-     *         {@code null} if no data is available in the given timeout
-     */
-    Map<String, Serializable> getData(long timeout, TimeUnit unit)
-            throws InterruptedException;
-
-    /**
-     * Restores a saved state data for this work instance.
-     *
-     * @param data the saved state data
-     */
-    void setData(Map<String, Serializable> data);
-
-    // resume should be in workmanager
-
-    /**
-     * The running state of a {@link Work} instance.
-     */
-    enum State {
-        /** Work instance is queued but not yet running. */
-        QUEUED,
-        /** Work instance is running. */
-        RUNNING,
-        /** Work instance is in the process of suspending work. */
-        SUSPENDING,
-        /** Work instance is suspended in memory and work is stopped. */
-        SUSPENDED,
-        /** Work instance has completed. */
-        COMPLETED,
-        /** Work instance execution failed. */
-        FAILED
-    };
+    void afterRun(boolean ok);
 
     /**
      * Gets the running state for this work instance.
@@ -159,71 +202,60 @@ public interface Work extends Runnable {
     Progress getProgress();
 
     /**
-     * A progress report about a work instance.
+     * Requests that this work instance suspend its state in memory.
      * <p>
-     * Progress can be expressed as a percentage, or with an "n out of m" pair.
-     * <ul>
-     * <li>26.2% (percent not indeterminate)</li>
-     * <li>12/345 (current not indeterminate)</li>
-     * <li>?/345 (percent and current indeterminate but total non-zero)</li>
-     * <li>? (percent and current indeterminate and total zero)</li>
-     * </ul>
+     * Does not block. Use {@link #awaitTermination} to wait for actual
+     * suspension and then {@link #getData} to get the data.
+     * <p>
+     * A QUEUED work instance must immediately suspend.
      *
-     * @since 5.6
+     * @return {@code true} if suspend was started, or {@code false} if the job
+     *         was already completed
      */
-    public static class Progress {
+    boolean suspend();
 
-        public static long CURRENT_INDETERMINATE = -1;
+    /**
+     * Wait for the work to be completed or suspension finished.
+     *
+     * @param timeout how long to wait
+     * @param unit the timeout unit
+     * @return {@code true} if the work is completed or suspended, or
+     *         {@code false} for a timeout
+     */
+    boolean awaitTermination(long timeout, TimeUnit unit)
+            throws InterruptedException;
 
-        public static float PERCENT_INDETERMINATE = -1F;
+    /**
+     * Gets the state data for this suspended work instance.
+     *
+     * @return the data allowing the work instance to be resumed, or
+     *         {@code null} if no data is available
+     */
+    Map<String, Serializable> getData();
 
-        public static final Progress PROGRESS_INDETERMINATE = new Progress(
-                PERCENT_INDETERMINATE);
+    /**
+     * Restores a saved state data for this work instance.
+     *
+     * @param data the saved state data
+     */
+    void setData(Map<String, Serializable> data);
 
-        public static final Progress PROGRESS_0_PC = new Progress(0F);
+    /**
+     * Gets the principal on behalf of which this work is done.
+     * <p>
+     * This is informative only.
+     *
+     * @return the principal, or {@code null}
+     */
+    Principal getPrincipal();
 
-        public static final Progress PROGRESS_100_PC = new Progress(100F);
-
-        protected final float percent;
-
-        protected final long current;
-
-        protected final long total;
-
-        public Progress(float percent) {
-            this.percent = percent;
-            this.current = CURRENT_INDETERMINATE;
-            this.total = 0;
-        }
-
-        public Progress(long current, long total) {
-            this.percent = PERCENT_INDETERMINATE;
-            this.current = current;
-            this.total = total;
-        }
-
-        public float getPercent() {
-            return percent;
-        }
-
-        public long getCurrent() {
-            return current;
-        }
-
-        public long getTotal() {
-            return total;
-        }
-
-        @Override
-        public String toString() {
-            return getClass().getSimpleName()
-                    + "("
-                    + (percent == PERCENT_INDETERMINATE ? "?"
-                            : Float.valueOf(percent))
-                    + "%, "
-                    + (current == CURRENT_INDETERMINATE ? "?"
-                            : Long.valueOf(current)) + "/" + total + ")";
-        }
-    }
+    /**
+     * Gets the documents impacted by the work.
+     * <p>
+     * This is informative only.
+     *
+     * @return the documents
+     */
+    Collection<DocumentLocation> getDocuments();
 
 }
