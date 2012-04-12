@@ -48,6 +48,11 @@ def main():
         parser.add_option("-a", "--all", action="store_true",
                           dest="with_optionals", default=False,
                           help="Include 'optional' addons (default: %default)")
+        parser.add_option('-f', "--fallback", action="store", type="string",
+                          dest='fallback_branch', default=None,
+                          help="""
+            A branch to fallback on when the wanted branch doesn't exist
+            locally neither remotely (default: %default)""")
 
         (options, args) = parser.parse_args()
         repo = Repository(os.getcwd(), options.remote_alias)
@@ -58,7 +63,7 @@ def main():
         else:
             raise ExitException(1, "'version' must be a single argument. "
                                 "See usage with '-h'.")
-        repo.clone(version, options.with_optionals)
+        repo.clone(version, options.fallback_branch, options.with_optionals)
     except ExitException, e:
         if e.message is not None:
             log("[ERROR] %s" % e.message, sys.stderr)

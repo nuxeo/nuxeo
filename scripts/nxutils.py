@@ -96,11 +96,13 @@ class Repository(object):
                 continue
             self.addons.append(m.group(1))
 
-    def git_pull(self, module, version):
+    def git_pull(self, module, version, fallback_branch=None):
         """Git clone or fetch, then update.
 
         'module': the Git module to run on.
-        'version': the version to checkout."""
+        'version': the version to checkout.
+        'fallback_branch': the branch to fallback on when 'version' is not
+        found locally or remotely."""
         repo_url = self.url_pattern.replace("module", module)
         cwd = os.getcwd()
         log("[%s]" % module)
@@ -110,7 +112,7 @@ class Repository(object):
         else:
             system_with_retries("git clone %s" % (repo_url))
             os.chdir(module)
-        self.git_update(version)
+        self.git_update(version, fallback_branch)
         os.chdir(cwd)
 
     def system_recurse(self, command, with_optionals=False):
@@ -173,17 +175,24 @@ class Repository(object):
         shutil.rmtree(archive_dir)
         os.chdir(cwd)
 
-    def git_update(self, version):
+    def git_update(self, version, fallback_branch=None):
         """Git update using checkout, stash (if needed) and rebase.
 
-        'version': the version to checkout."""
+        'version': the version to checkout.
+        'fallback_branch': the branch to fallback on when 'version' is not
+        found locally or remotely."""
         if version in check_output(["git", "tag"]).split():
             # the version is a tag name
             system("git checkout %s" % version)
         elif version not in check_output(["git", "branch"]).split():
             # create the local branch if missing
-            system("git checkout --track -b %s %s/%s" % (version, self.alias,
-                                                         version))
+            retcode = system("git checkout --track -b %s %s/%s" % (version,
+                                                        self.alias, version),
+                   fallback_branch is None)
+            if fallback_branch is not None:
+                log("Branch %s not found, fallback on %s" % (version,
+                                                             fallback_branch))
+                self.git_update(fallback_branch)
         else:
             # reuse local branch
             system("git checkout %s" % version)
@@ -194,10 +203,12 @@ class Repository(object):
                 system("git stash pop -q")
         log("")
 
-    def clone(self, version=None, with_optionals=False):
+    def clone(self, version=None, fallback_branch=None, with_optionals=False):
         """Clone or update whole Nuxeo repository.
 
         'version': the version to checkout; defaults to current version.
+        'fallback_branch': the branch to fallback on when 'version' is not
+        found locally or remotely.
         If 'with_optionals', also clone/update "optional" addons."""
         cwd = os.getcwd()
         os.chdir(self.basedir)
@@ -205,12 +216,12 @@ class Repository(object):
         system("git fetch %s" % (self.alias))
         if version is None:
             version = self.get_current_version()
-        self.git_update(version)
+        self.git_update(version, fallback_branch)
 
         # Main modules
         self.eval_modules()
         for module in self.modules:
-            self.git_pull(module, version)
+            self.git_pull(module, version, fallback_branch)
 
         # Addons
         os.chdir(os.path.join(self.basedir, "addons"))
@@ -219,7 +230,7 @@ class Repository(object):
             self.url_pattern = self.url_pattern.replace("module",
                                                         "addons/module")
         for addon in self.addons:
-            self.git_pull(addon, version)
+            self.git_pull(addon, version, fallback_branch)
         if not self.is_online:
             self.url_pattern = self.url_pattern.replace("addons/module",
                                                         "module")
