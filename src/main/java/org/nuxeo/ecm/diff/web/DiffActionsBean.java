@@ -205,8 +205,8 @@ public class DiffActionsBean implements Serializable {
                         "Cannot make a diff between selected version and current document since selected version document is null.");
             }
 
-            leftDoc = currentDocument;
-            rightDoc = docVersion;
+            leftDoc = docVersion;
+            rightDoc = currentDocument;
 
             isVersionDiff = true;
 
