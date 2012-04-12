@@ -17,28 +17,35 @@
 
 package org.nuxeo.launcher.info;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "message")
-public class MessageInfo {
+@XmlRootElement(name = "instance")
+public class InstanceInfo {
 
-    public static enum LOG_LEVEL { DEBUG, INFO, WARN, ERROR};
+    public InstanceInfo() {}
 
-    public MessageInfo() {}
+    @XmlElement(name = "NUXEO_CONF")
+    public String NUXEO_CONF;
 
-    @XmlAttribute()
-    public LOG_LEVEL level;
+    @XmlElement(name = "NUXEO_HOME")
+    public String NUXEO_HOME;
 
-    @XmlAttribute()
-    public Date time;
+    @XmlElement(name = "distribution")
+    public DistributionInfo distribution;
 
-    @XmlAttribute()
-    public String message;
+    @XmlElementWrapper(name = "packages")
+    @XmlElement(name = "package")
+    public List<PackageInfo> packages = new ArrayList<PackageInfo>();
+
+    @XmlElement(name = "configuration")
+    public ConfigurationInfo config;
 
 }

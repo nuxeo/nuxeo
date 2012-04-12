@@ -17,28 +17,26 @@
 
 package org.nuxeo.launcher.info;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Date;
-
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "message")
-public class MessageInfo {
+@XmlRootElement(name = "keyval")
+public class KeyValueInfo {
 
-    public static enum LOG_LEVEL { DEBUG, INFO, WARN, ERROR};
+    public KeyValueInfo() {}
 
-    public MessageInfo() {}
-
-    @XmlAttribute()
-    public LOG_LEVEL level;
-
-    @XmlAttribute()
-    public Date time;
+    public KeyValueInfo(String k, String v) {
+        key = k;
+        value = v;
+    }
 
     @XmlAttribute()
-    public String message;
+    public String key;
+
+    @XmlAttribute()
+    public String value;
 
 }

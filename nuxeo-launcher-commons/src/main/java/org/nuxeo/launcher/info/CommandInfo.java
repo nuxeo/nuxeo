@@ -45,6 +45,8 @@ public class CommandInfo {
 
     public static final String CMD_RESET = "reset";
 
+    public CommandInfo() {}
+
     @XmlAttribute()
     public String name;
 

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 @XmlRootElement(name = "commands")
 public class CommandSetInfo {
 
+    public CommandSetInfo() {}
+
     @XmlElement(name = "command")
     public List<CommandInfo> commands = new ArrayList<CommandInfo>();
 
