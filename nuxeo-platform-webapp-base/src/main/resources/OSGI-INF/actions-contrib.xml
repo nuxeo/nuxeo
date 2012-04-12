@@ -58,7 +58,7 @@
     </action>
     <action id="subscribesAllDocNotifications"
       link="#{subscriptionAction.updateAllSubscriptions}"
-      order="4" label="action.user.subscribe" type="link_icon"
+      order="4" label="label.subscriptions.follow" type="link_icon"
       icon="/icons/contextual_menu/subscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasNoSubscription</filter-id>
@@ -66,7 +66,7 @@
     </action>
     <action id="unsubscribesAllDocNotifications"
       link="#{subscriptionAction.updateAllSubscriptions}"
-      order="4" label="action.user.unsubscribe" type="link_icon"
+      order="4" label="label.subscriptions.unfollow" type="link_icon"
       icon="/icons/contextual_menu/unsubscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasSubscriptions</filter-id>
