@@ -36,6 +36,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,6 +48,7 @@ import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Handles the subscriptions page.
@@ -78,6 +81,16 @@ public class SubscriptionsAction extends InputController implements
 
     @In(create = true)
     protected transient NotificationManager notificationManager;
+
+    @In(create = true, required = false)
+    protected transient FacesMessages facesMessages;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
+    public static final String CONFIRM_FOLLOW = "label.subscriptions.follow.confirm";
+
+    public static final String CONFIRM_UNFOLLOW = "label.subscriptions.unfollow.confirm";
 
     /**
      * Gets all the notifications the user may subscribe to.
@@ -156,10 +169,14 @@ public class SubscriptionsAction extends InputController implements
             notificationManager.addSubscriptions(
                     NotificationConstants.USER_PREFIX + principal.getName(),
                     currentDoc, false, principal);
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get(CONFIRM_FOLLOW));
         } else {
             notificationManager.removeSubscriptions(
                     NotificationConstants.USER_PREFIX + principal.getName(),
                     userSubscriptions, currentDoc.getId());
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get(CONFIRM_UNFOLLOW));
         }
         getNotificationsList();
     }
