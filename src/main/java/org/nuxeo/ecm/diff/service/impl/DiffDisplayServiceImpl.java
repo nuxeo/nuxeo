@@ -18,6 +18,7 @@ package org.nuxeo.ecm.diff.service.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -64,8 +65,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Default implementation of the {@link DiffDisplayService}.
@@ -364,11 +363,18 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             isDisplayItemIndexes);
 
                     String detailedDiffDisplay = null;
-                    // TODO: better condition (for example, don't need detailed diff on dates)
+                    // TODO: better condition (for example, don't need detailed
+                    // diff on dates)
                     if (PropertyType.isSimpleType(fieldDiff.getPropertyType())) {
                         SimplePropertyDiff simpleFieldDiff = ((SimplePropertyDiff) fieldDiff);
                         String simpleLeftValue = simpleFieldDiff.getLeftValue();
                         String simpleRightValue = simpleFieldDiff.getRightValue();
+                        if (simpleLeftValue == null && simpleRightValue != null) {
+                            simpleLeftValue = "";
+                        }
+                        if (simpleRightValue == null && simpleLeftValue != null) {
+                            simpleRightValue = "";
+                        }
                         if (simpleLeftValue != null && simpleRightValue != null) {
                             detailedDiffDisplay = getDetailedDiffDisplay(
                                     simpleLeftValue, simpleRightValue);
