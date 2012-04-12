@@ -39,20 +39,18 @@ import time
 def main():
     try:
         usage = "usage: %prog [options] version"
-        parser = optparse.OptionParser(usage=usage, description="""
-            Clone or update Nuxeo source code.""")
+        parser = optparse.OptionParser(usage=usage, description=
+"""clone or update Nuxeo source code.""")
         parser.add_option('-r', action="store", type="string",
-                          dest='remote_alias', default='origin',
-                          help="""
-            The Git alias of remote URL (default: %default)""")
+                          dest='remote_alias', default='origin', help=
+"""the Git alias of remote URL (default: %default)""")
         parser.add_option("-a", "--all", action="store_true",
                           dest="with_optionals", default=False,
-                          help="Include 'optional' addons (default: %default)")
+                          help="include 'optional' addons (default: %default)")
         parser.add_option('-f', "--fallback", action="store", type="string",
-                          dest='fallback_branch', default=None,
-                          help="""
-            A branch to fallback on when the wanted branch doesn't exist
-            locally neither remotely (default: %default)""")
+                          dest='fallback_branch', default=None, help=
+"""a branch to fallback on when the wanted branch doesn't exist locally neither
+remotely (default: %default)""")
 
         (options, args) = parser.parse_args()
         repo = Repository(os.getcwd(), options.remote_alias)
