@@ -24,8 +24,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserChangePasswordFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 
@@ -87,7 +87,7 @@ public class ITUsersTest extends AbstractTest {
         usersTab = page.getUsersTab();
         usersTab = usersTab.searchUser(firstname);
         password = "testmodified";
-        UserChangePasswordFormPage tab = usersTab.viewUser(username).getChangePasswordUserTab().changePassword(
+        UserViewTabSubPage tab = usersTab.viewUser(username).getChangePasswordUserTab().changePassword(
                 password);
 
         homepage = tab.exitAdminCenter();

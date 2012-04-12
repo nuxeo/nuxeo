@@ -45,13 +45,13 @@ public class UserChangePasswordFormPage extends UsersGroupsBasePage {
         super(driver);
     }
 
-    public UserChangePasswordFormPage changePassword(String password) {
+    public UserViewTabSubPage changePassword(String password) {
         firstPasswordInput.clear();
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.clear();
         secondPasswordInput.sendKeys(password);
         saveButton.click();
-        return asPage(UserChangePasswordFormPage.class);
+        return asPage(UserViewTabSubPage.class);
     }
 
 }
