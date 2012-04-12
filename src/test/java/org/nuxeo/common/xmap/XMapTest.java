@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class XMapTest {
 
@@ -40,8 +40,23 @@ public class XMapTest {
         URL url = Thread.currentThread().getContextClassLoader().getResource(
                 "test-xmap.xml");
 
-        Author author = (Author) xmap.load(url);
+        checkAuthor((Author) xmap.load(url));
+    }
 
+    @Test
+    public void testInheritedMapping() throws Exception {
+        XMap xmap = new XMap();
+        xmap.register(InheritedAuthor.class);
+
+        URL url = Thread.currentThread().getContextClassLoader().getResource(
+                "second-test-xmap.xml");
+        InheritedAuthor inheritedAuthor = (InheritedAuthor) xmap.load(url);
+        checkAuthor(inheritedAuthor);
+        assertEquals("dummyContent", inheritedAuthor.notInherited);
+        assertEquals("test1", inheritedAuthor.inheritedId);
+    }
+
+    protected void checkAuthor(Author author) {
         assertEquals("First test 22", author.title);
         assertEquals("bla bla", author.description);
         assertEquals(author, author.name.owner);
@@ -77,5 +92,4 @@ public class XMapTest {
         assertNotNull(author.itemsHashSet);
         assertTrue(author.itemsHashSet.size() == 2);
     }
-
 }

@@ -197,7 +197,11 @@ public class XMap {
     }
 
     private void scan(XAnnotatedObject xob) {
-        Field[] fields = xob.klass.getDeclaredFields();
+        scanClass(xob, xob.klass);
+    }
+
+    private void scanClass(XAnnotatedObject xob, Class<?> aClass) {
+        Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             Annotation anno =  checkMemberAnnotation(field);
             if (anno != null) {
@@ -206,7 +210,7 @@ public class XMap {
             }
         }
 
-        Method[] methods = xob.klass.getDeclaredMethods();
+        Method[] methods = aClass.getDeclaredMethods();
         for (Method method : methods) {
             // we accept only methods with one parameter
             Class<?>[] paramTypes = method.getParameterTypes();
@@ -215,9 +219,14 @@ public class XMap {
             }
             Annotation anno =  checkMemberAnnotation(method);
             if (anno != null) {
-                XAnnotatedMember member = createMethodMember(method, anno, xob.klass);
+                XAnnotatedMember member = createMethodMember(method, anno, aClass);
                 xob.addMember(member);
             }
+        }
+
+        // scan superClass annotations
+        if (aClass.getSuperclass() != null) {
+            scanClass(xob, aClass.getSuperclass());
         }
     }
 
