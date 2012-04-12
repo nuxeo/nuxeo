@@ -5,17 +5,7 @@
     <h:outputText
       value="#{messages['label.content.header.currentLifecycleState']}" />
   </h3>
-  <c:forEach var="state" items="#{currentDocument.lifeCycleStates}">
-    <c:choose>
-      <c:when test="#{state eq currentDocument.currentLifeCycleState}">
-        <h:outputText
-          value="#{messages[currentDocument.currentLifeCycleState]}"
-          styleClass="bold" />
-      </c:when>
-      <c:otherwise>
-        <h:outputText value="#{state}" />
-        <br />
-      </c:otherwise>
-    </c:choose>
-  </c:forEach>
+  <h:outputText
+    value="#{messages[currentDocument.currentLifeCycleState]}"
+    styleClass="bold" />
 </div>
