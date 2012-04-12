@@ -19,6 +19,7 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -29,10 +30,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -70,6 +73,10 @@ import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
 import org.nuxeo.launcher.info.CommandSetInfo;
+import org.nuxeo.launcher.info.ConfigurationInfo;
+import org.nuxeo.launcher.info.DistributionInfo;
+import org.nuxeo.launcher.info.InstanceInfo;
+import org.nuxeo.launcher.info.KeyValueInfo;
 import org.nuxeo.launcher.info.MessageInfo;
 import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.launcher.monitoring.StatusServletClient;
@@ -641,6 +648,8 @@ public abstract class NuxeoLauncher {
             launcher.checkNoRunningServer();
             commandSucceeded = commandSucceeded && launcher.pkgReset();
             launcher.printXMLOutput();
+        } else if ("showconf".equalsIgnoreCase(launcher.command)) {
+            launcher.showConfig();
         } else {
             printLongHelp();
             commandSucceeded = false;
@@ -966,17 +975,29 @@ public abstract class NuxeoLauncher {
      * @since 5.6
      */
     protected void printXMLOutput() {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(
+                    CommandSetInfo.class, CommandInfo.class, PackageInfo.class,
+                    MessageInfo.class);
+            printXMLOutput(jaxbContext, cset);
+        } catch (JAXBException e) {
+            log.error("Output serialization failed: " + e.getMessage());
+            errorValue = 7;
+        }
+    }
+
+    /**
+     * @since 5.6
+     */
+    protected void printXMLOutput(JAXBContext jaxbContext, Object objectToOutput) {
         if (!xmlOutput) {
             return;
         }
         try {
             Writer xml = new StringWriter();
-            JAXBContext jaxbContext = JAXBContext.newInstance(
-                    CommandSetInfo.class, CommandInfo.class, PackageInfo.class,
-                    MessageInfo.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.marshal(cset, xml);
+            marshaller.marshal(objectToOutput, xml);
             if (!jsonOutput) {
                 System.out.println(xml.toString());
             } else {
@@ -991,6 +1012,7 @@ public abstract class NuxeoLauncher {
             }
         } catch (JAXBException e) {
             log.error("Output serialization failed: " + e.getMessage());
+            e.printStackTrace();
             errorValue = 7;
         }
     }
@@ -1557,4 +1579,73 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
+     /**
+     * @since 5.6
+     */
+    protected void printInstanceXMLOutput(InstanceInfo instance) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(
+                InstanceInfo.class,
+                DistributionInfo.class,
+                PackageInfo.class,
+                ConfigurationInfo.class,
+                KeyValueInfo.class);
+            printXMLOutput(jaxbContext, instance);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            log.error("Output serialization failed: " + e.getMessage());
+            errorValue = 7;
+        }
+    }
+
+     /**
+     * @since 5.6
+     */
+    protected void showConfig() {
+        InstanceInfo nxInstance = new InstanceInfo();
+        nxInstance.NUXEO_CONF = configurationGenerator.getNuxeoConf().getPath();
+        nxInstance.NUXEO_HOME = configurationGenerator.getNuxeoHome().getPath();
+        // distribution.properties
+        DistributionInfo nxDistrib;
+        File distFile = new File(configurationGenerator.getConfigDir(), "distribution.properties");
+        if (!distFile.exists()) {
+            // fallback in the file in templates
+            distFile = new File(configurationGenerator.getNuxeoHome(), "templates");
+            distFile = new File(distFile, "common");
+            distFile = new File(distFile, "config");
+            distFile = new File(distFile, "distribution.properties");
+        }
+        try {
+            nxDistrib = new DistributionInfo(distFile);
+        } catch (IOException e) {
+            nxDistrib = new DistributionInfo();
+        }
+        nxInstance.distribution = nxDistrib;
+        // packages
+        List<LocalPackage> pkgs = getPackageManager().pkgList();
+        for (LocalPackage pkg : pkgs) {
+            nxInstance.packages.add(new PackageInfo(pkg));
+        }
+        // nuxeo.conf
+        ConfigurationInfo nxConfig = new ConfigurationInfo();
+        nxConfig.dbtemplate = configurationGenerator.extractDatabaseTemplateName();
+        Properties nxConfProps = new Properties();
+        try {
+            nxConfProps.load(new FileInputStream(configurationGenerator.getNuxeoConf()));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read nuxeo.conf");
+        }
+        Enumeration nxConfEnum = nxConfProps.propertyNames();
+        while (nxConfEnum.hasMoreElements()) {
+            String key = (String) nxConfEnum.nextElement();
+            String value = nxConfProps.getProperty(key);
+            if (key.equals("JAVA_OPTS")) {
+                value = getJavaOptsProperty();
+            }
+            KeyValueInfo kv = new KeyValueInfo(key, value);
+            nxConfig.keyvals.add(kv);
+        }
+        nxInstance.config = nxConfig;
+        printInstanceXMLOutput(nxInstance);
+    }
 }
