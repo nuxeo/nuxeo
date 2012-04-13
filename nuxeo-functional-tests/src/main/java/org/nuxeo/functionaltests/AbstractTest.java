@@ -92,7 +92,7 @@ public abstract class AbstractTest {
 
     private static final String FIREBUG_M2 = "firebug/firebug/1.6.2-fx";
 
-    private static final String M2_REPO = "/.m2/repository/";
+    private static final String M2_REPO = "repository/";
 
     private static final int PROXY_PORT = 4444;
 
