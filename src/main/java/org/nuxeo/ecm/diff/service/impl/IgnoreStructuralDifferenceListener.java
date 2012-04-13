@@ -37,15 +37,13 @@ import org.w3c.dom.Node;
  * <li>Child node list sequence</li>
  * <li>Child node list length</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class IgnoreStructuralDifferenceListener implements DifferenceListener {
 
     private static final String SCHEMA_ELEMENT = "schema";
 
-    // TODO: Be able to contribute this configuration to the
-    // DocumentDiffService.
     /**
      * Difference types to be ignored.
      */

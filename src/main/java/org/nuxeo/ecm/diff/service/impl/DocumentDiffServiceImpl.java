@@ -41,7 +41,7 @@ import org.xml.sax.InputSource;
  * <p>
  * The diff is made by exporting the documents to XML, then using the Diff
  * feature provided by XMLUnit to get the differences between the XML exports.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class DocumentDiffServiceImpl implements DocumentDiffService {
@@ -112,7 +112,6 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      */
     public void configureXMLUnit() {
 
-        // XXX ATA: Be able to contribute this configuration to the service.
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
         XMLUnit.setCompareUnmatched(false);
@@ -123,15 +122,13 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      */
     public void configureDiff(Diff diff) {
 
-        // XXX ATA: Be able to contribute this configuration to the service.
         diff.overrideDifferenceListener(new IgnoreStructuralDifferenceListener());
         diff.overrideElementQualifier(new ElementNameAndAttributeQualifier());
-
     }
 
     /**
      * Exports leftDoc and rightDoc to XML.
-     * 
+     *
      * @param session the session
      * @param leftDoc the left doc
      * @param rightDoc the right doc
@@ -153,7 +150,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
     /**
      * Processes the XML diff using the XMLUnit Diff feature.
-     * 
+     *
      * @param leftDocXMLInputSource the left doc XML input source
      * @param rightDocXMLInputSource the right doc XML input source
      * @return the detailed diff
@@ -182,7 +179,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
     /**
      * Processes the XML diff using the XMLUnit Diff feature.
-     * 
+     *
      * @param leftXML the left xml
      * @param rightXML the right xml
      * @return the detailed diff
@@ -211,7 +208,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
 
     /**
      * Computes the doc diff.
-     * 
+     *
      * @param detailedDiff the detailed diff
      * @return the document diff
      * @throws ClientException the client exception
