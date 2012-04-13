@@ -74,7 +74,6 @@ public abstract class AbstractPage {
     /**
      * Gets the top bar navigation sub page.
      *
-     * @return
      */
     public HeaderLinksSubPage getHeaderLinks() {
         assertNotNull(userServicesForm);
@@ -231,7 +230,7 @@ public abstract class AbstractPage {
      */
     public void waitUntilURLDifferentFrom(String url) {
         final String refurl = url;
-        ExpectedCondition urlchanged = new ExpectedCondition<Boolean>() {
+        ExpectedCondition<Boolean> urlchanged = new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver d) {
                 return !d.getCurrentUrl().equals(refurl);
             }

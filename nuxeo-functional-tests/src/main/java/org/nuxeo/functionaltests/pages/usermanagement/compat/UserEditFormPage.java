@@ -48,9 +48,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
     @FindBy(id = "editUser:nxl_user:nxw_groups_suggest")
     WebElement groupInput;
 
-
     @Required
-    @FindBy(xpath="//form[@id=\"editUser\"]//input[@value=\"Save\"]")
+    @FindBy(xpath = "//form[@id=\"editUser\"]//input[@value=\"Save\"]")
     WebElement saveButton;
 
     public UserEditFormPage(WebDriver driver) {
@@ -66,7 +65,6 @@ public class UserEditFormPage extends UsersGroupsBasePage {
      * @param email
      * @param password
      * @param group
-     * @return
      * @throws NoSuchElementException
      */
     public UserViewTabSubPage editUser(String firstname, String lastname,
