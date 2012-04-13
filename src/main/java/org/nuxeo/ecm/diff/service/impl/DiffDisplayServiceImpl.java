@@ -208,12 +208,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 // If !enabled remove contrib
                 if (!enabled) {
                     diffDisplayContribs.remove(type);
-                } else { // Else override contrib (no merge)
+                }
+                // Else override contrib (no merge)
+                // TODO: implement merge
+                else {
                     diffDisplayContribs.put(type,
                             getDiffBlockRefs(descriptor.getDiffBlocks()));
                 }
-            } else if (enabled) { // No existing diffDisplay contrib for this
-                                  // type and enabled => add contrib
+            }
+            // No existing diffDisplay contrib for this
+            // type and enabled => add contrib
+            else if (enabled) {
                 diffDisplayContribs.put(type,
                         getDiffBlockRefs(descriptor.getDiffBlocks()));
             }
@@ -254,6 +259,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                 items));
                     }
                 }
+                // TODO: implement merge
                 diffBlockContribs.put(
                         diffBlockName,
                         new DiffBlockDefinitionImpl(diffBlockName,
