@@ -111,12 +111,30 @@
       <categories>
         <category>diff</category>
       </categories>
+      <labels>
+        <label mode="any">label.system.path</label>
+      </labels>
+      <translated>true</translated>
     </widget>
 
     <widget name="system:type" type="text">
       <categories>
         <category>diff</category>
       </categories>
+      <labels>
+        <label mode="any">label.system.type</label>
+      </labels>
+      <translated>true</translated>
+    </widget>
+
+    <widget name="system:lifecycle-state" type="text">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.system.lifecycleState</label>
+      </labels>
+      <translated>true</translated>
     </widget>
 
     <widget name="note:note" type="richtext_with_mimetype">

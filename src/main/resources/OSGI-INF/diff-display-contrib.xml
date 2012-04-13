@@ -33,6 +33,14 @@
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffBlock">
 
+    <diffBlock name="system" label="label.diffBlock.system">
+      <fields>
+        <field schema="system" name="path" />
+        <field schema="system" name="type" />
+        <field schema="system" name="lifecycle-state" />
+      </fields>
+    </diffBlock>
+
     <diffBlock name="heading" label="label.diffBlock.heading">
       <fields>
         <field schema="dublincore" name="title" />
@@ -77,12 +85,21 @@
       </fields>
     </diffBlock>
 
-    <!-- <diffBlock name="dublincore"> <properties mode="any"> <property 
-      name="label">label.diffBlock.dublincore</property> </properties> <templates> 
-      <template mode="any">/layouts/layout_default_template.xhtml</template> </templates> 
-      <fields> <field schema="dublincore" name="created" category="truc" /> <field 
-      schema="dublincore" name="modified" /> <field schema="dublincore" name="creator" 
-      /> <field schema="dublincore" name="lastContributor" /> </fields> </diffBlock> -->
+<!--     <diffBlock name="dublincore">
+      <properties mode="any">
+        <property name="label">label.diffBlock.dublincore</property>
+      </properties>
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <fields>
+        <field schema="dublincore" name="created" category="truc" />
+        <field schema="dublincore" name="modified" />
+        <field schema="dublincore" name="creator" />
+        <field schema="dublincore" name="lastContributor" />
+      </fields>
+    </diffBlock> -->
 
   </extension>
 
