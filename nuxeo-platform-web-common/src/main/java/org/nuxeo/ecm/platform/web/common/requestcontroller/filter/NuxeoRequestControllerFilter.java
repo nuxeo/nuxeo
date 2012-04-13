@@ -157,7 +157,9 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (useTx) {
                 txStarted = TransactionHelper.startTransaction();
                 if (txStarted) {
-                    response = new BufferingHttpServletResponse(httpResponse);
+                    if (config.needTransactionBuffered()) {
+                        response = new BufferingHttpServletResponse(httpResponse);
+                    }
                 }
             }
             chain.doFilter(request, response);
@@ -178,7 +180,9 @@ public class NuxeoRequestControllerFilter implements Filter {
                 try {
                     TransactionHelper.commitOrRollbackTransaction();
                 } finally {
-                    ((BufferingHttpServletResponse) response).stopBuffering();
+                    if (config.needTransactionBuffered()) {
+                        ((BufferingHttpServletResponse) response).stopBuffering();
+                    }
                 }
             }
             if (sessionSynched) {
