@@ -126,8 +126,9 @@ public class TestSecurityService extends NXRuntimeTestCase {
         // test how previous permissions where affected by the override
         String[] groups = pp.getPermissionGroups("Read");
         assertNotNull(groups);
-        assertEquals(Arrays.asList("CustomCompoundPerm", "ReadRemove",
-                "ReadWrite"), Arrays.asList(groups));
+        assertEquals(
+                Arrays.asList("CustomCompoundPerm", "ReadRemove", "ReadWrite"),
+                Arrays.asList(groups));
 
         groups = pp.getPermissionGroups("ReadProperties");
         assertNotNull(groups);
@@ -220,6 +221,33 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
                 "Everything"), permStrings(orderedVisiblePermissions));
 
+        // Workspace falls back to default thus is overridden too
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
+        assertNotNull(orderedVisiblePermissions);
+
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+                "Everything"), permStrings(orderedVisiblePermissions));
+    }
+
+    public void testOverridedVisiblePermission3() throws Exception {
+        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
+                "permissions-override3-contrib.xml");
+
+        PermissionProvider pp = service.getPermissionProvider();
+        List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
+        assertNotNull(orderedVisiblePermissions);
+
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+                "Everything"), permStrings(orderedVisiblePermissions));
+
+        // custom settings for the Section type
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
+        assertNotNull(orderedVisiblePermissions);
+
+        assertEquals(
+                Arrays.asList("Write", "ReadRemove", "Everything", "Read"),
+                permStrings(orderedVisiblePermissions));
+        
         // Workspace falls back to default thus is overridden too
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
