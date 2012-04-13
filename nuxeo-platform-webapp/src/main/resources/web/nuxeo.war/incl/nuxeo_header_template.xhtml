@@ -8,11 +8,42 @@
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
   <ui:insert name="header_admin_message">
-  <c:if test="#{adminMessageActivated}">
-    <div style="text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
-      <h:outputText value="#{adminMessage}"/>
+    <div class="header_admin_messages">
+    <c:if test="#{adminMessageActivated}">
+      <div style="text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
+        <h:outputText value="#{adminMessage}"/>
+      </div>
+    </c:if>
+<!--[if lt IE 9]>
+    <script type="text/javascript" 
+    src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+
+    <div id="gcfdiv" class="actionHide" style="display:none; text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
     </div>
-  </c:if>
+
+    <script type="text/javascript">
+    // The conditional ensures that this code will only execute in IE,
+    // Therefore we can use the IE-specific attachEvent without worry
+
+    function onMissing() {
+      var gcfdiv = jQuery('#gcfdiv')
+      var link = jQuery('<a>#{messages['chromeframe.link']}</a>').attr({href: 'http://www.google.com/chromeframe?hl=fr&amp;prefersystemlevel=true'})
+      gcfdiv.html('#{messages['chromeframe.message']}')
+      gcfdiv.append(link);
+
+      gcfdiv.css('display', 'block')
+    }
+
+     jQuery(function() {
+       CFInstall.check({
+         onmissing: onMissing,
+         preventPrompt: true
+       });
+     });
+
+     </script>
+<![endif]-->
+    </div>
   </ui:insert>
 
   <ui:insert name="header_search">

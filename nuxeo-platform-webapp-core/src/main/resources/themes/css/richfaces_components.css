@@ -44,3 +44,6 @@ a.documentTypeLink { color: "link (__FLAVOR__ color)"; font-weight: bold; text-d
 
 #tooltip { position: absolute; display: block }
 #tooltipContent { display: block; padding: .2em 1.1em .3em .6em; margin-left: .5em; background: #FFFFAA; color:"black (__FLAVOR__ color)"; border: 1px solid #333 }
+
+/* Suggestion Box */
+.suggestionBoxResult .rich-sb-cell-padding img { max-height: 16px; max-width: 16px }

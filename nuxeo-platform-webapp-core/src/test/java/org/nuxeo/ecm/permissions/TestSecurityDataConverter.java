@@ -19,19 +19,23 @@
 
 package org.nuxeo.ecm.permissions;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Razvan Caraghin
  *
  */
-public class TestSecurityDataConverter extends TestCase {
+public class TestSecurityDataConverter {
 
 //    SecurityData securityData = null;
 //    SecurityDataConverter converter = null;
 //    SecurityDTO securityDto = null;
 //
+//    @Before
 //    protected void setUp() throws Exception {
 //        super.setUp();
 //
@@ -88,6 +92,7 @@ public class TestSecurityDataConverter extends TestCase {
 //        converter = new SecurityDataConverter();
 //    }
 //
+//    @After
 //    protected void tearDown() throws Exception {
 //        super.tearDown();
 //
@@ -100,6 +105,7 @@ public class TestSecurityDataConverter extends TestCase {
 //     * test the converters
 //     *
 //     */
+    @Test
     public void testConversion(){
 //        securityData = converter.convertSecurityDataByUsers(securityDto);
 //

@@ -224,7 +224,7 @@
     <!--  Actions for the document selection  -->
 
     <action id="CLIPBOARD_PASTE" link="#{clipboardActions.pasteClipboard}"
-      label="command.clipboard.paste" icon="">
+      label="command.clipboard.paste" icon="" order="20">
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canPastFromClipboard">
         <rule grant="true">
@@ -258,7 +258,7 @@
 
     <action id="CURRENT_SELECTION_TRASH" link="#{deleteActions.deleteSelection}"
       label="command.trashDocs" icon="" help="comand.trashDocs.help"
-      confirm="if( !confirmDeleteDocuments() ) return false;">
+      confirm="if( !confirmDeleteDocuments() ) return false;" order="40">
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canDelete">
         <rule grant="true">
@@ -269,14 +269,14 @@
 
     <action id="CURRENT_SELECTION_COPY"
       link="#{clipboardActions.putSelectionInClipboard}"
-      label="command.clipboard.copy" icon="">
+      label="command.clipboard.copy" icon="" order="10">
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
     </action>
 
     <action id="CURRENT_SELECTION_ADDTOLIST"
       link="#{clipboardActions.putSelectionInDefaultWorkList}"
-      label="help.command.clipboard.addworklist" icon="">
+      label="help.command.clipboard.addworklist" icon="" order="30">
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
       <filter id="no_addtolist_for_domains">
