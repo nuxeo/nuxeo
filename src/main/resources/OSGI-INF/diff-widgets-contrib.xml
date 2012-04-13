@@ -200,6 +200,63 @@
       </properties>
     </widget>
 
+    <widget name="dublincore:subjects/item" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.subjects.item</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">/widgets/subjects_item_widget.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:coverage" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">/widgets/coverage_widget.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:contributors/item" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.contributors.item</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">/widgets/contributors_item_widget.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:lastContributor" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.lastContributor</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/single_user_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
   </extension>
 
 </component>
