@@ -70,7 +70,9 @@
                       </ui:include>                      
                     </nxu:set>
                   </nxu:set>
-                  <a href="javascript:Richfaces.showModalPanel('detailedDiff_#{fieldName}');">Detail</a>
+                  <h:outputLink value="javascript:Richfaces.showModalPanel('detailedDiff_#{fieldName}');">
+                    <h:outputText value="#{messages['diff.detailedDiff.link.title']}"/>
+                  </h:outputLink>
                 </nxu:set>
               </c:if>
             </td>
