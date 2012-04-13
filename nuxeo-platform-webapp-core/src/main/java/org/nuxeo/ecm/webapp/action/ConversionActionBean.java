@@ -21,7 +21,7 @@ package org.nuxeo.ecm.webapp.action;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
@@ -57,7 +57,7 @@ public class ConversionActionBean implements ConversionAction {
 
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
-    protected ConverterCheckResult pdfConverterAvailability;
+    protected Map<String, ConverterCheckResult> pdfConverterForTypes;
 
     protected static final String PDF_MIMETYPE = "application/pdf";
 
@@ -100,11 +100,7 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     public void reCheckConverterAvailability() {
-        pdfConverterAvailability = null;
-    }
-
-    public ConverterCheckResult getPdfConverterAvailability() throws Exception {
-        return pdfConverterAvailability;
+        pdfConverterForTypes.clear();
     }
 
     public boolean isExportableToPDF(BlobHolder bh) throws ClientException {
@@ -128,13 +124,23 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     protected boolean isMimeTypeExportableToPDF(String mimetype) {
-        if (pdfConverterAvailability != null) {
-            return pdfConverterAvailability.isAvailable();
-        }
+        // Don't bother searching for NO MIME type.
         if (mimetype == null) {
             return false;
         }
+
+        // Initialize the converter check result map.
+        if (pdfConverterForTypes == null) {
+            pdfConverterForTypes = new HashMap<String, ConverterCheckResult>();
+        }
+
+        // Check if there is any saved ConverterCheckResult for the desired MIME type.
+        if (pdfConverterForTypes.containsValue(mimetype)) {
+            return pdfConverterForTypes.get(mimetype).isAvailable();
+        }
+
         try {
+            ConverterCheckResult pdfConverterAvailability;
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
             Iterator<String> converterNames = conversionService.getConverterNames(
                     mimetype, PDF_MIMETYPE).iterator();
@@ -142,6 +148,13 @@ public class ConversionActionBean implements ConversionAction {
                 pdfConverterName = converterNames.next();
                 pdfConverterAvailability = conversionService.isConverterAvailable(
                         pdfConverterName, true);
+
+                // Save the converter availability for all the mime-types the converter
+                // supports.
+                for (String supMimeType : pdfConverterAvailability.getSupportedInputMimeTypes()) {
+                    pdfConverterForTypes.put(supMimeType, pdfConverterAvailability);
+                }
+
                 if (pdfConverterAvailability.isAvailable()) {
                     return true;
                 }

@@ -33,8 +33,6 @@ public interface ConversionAction {
     @WebRemote
     String generatePdfFile();
 
-    ConverterCheckResult getPdfConverterAvailability() throws Exception;
-
     void reCheckConverterAvailability();
 
 }
