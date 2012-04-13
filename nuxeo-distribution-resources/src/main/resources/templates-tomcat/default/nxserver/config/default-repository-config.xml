@@ -30,6 +30,7 @@
             </index>
           </fulltext>
         </indexing>
+        <usersSeparator key="${nuxeo.db.user.separator.key}" />
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
         <property name="URL">jdbc:h2:${nuxeo.db.name}</property>
         <property name="User">${nuxeo.db.user}</property>

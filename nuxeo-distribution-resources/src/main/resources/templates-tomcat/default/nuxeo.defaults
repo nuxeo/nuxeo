@@ -16,6 +16,8 @@ nuxeo.db.validationQuery=
 nuxeo.db.driver=org.apache.derby.jdbc.EmbeddedDriver
 nuxeo.db.commonds=jdbc/nuxeo
 
+nuxeo.db.user.separator.key=,
+
 org.nuxeo.ecm.instance.name=Nuxeo 5.4
 org.nuxeo.ecm.instance.description=Nuxeo ECM server
 

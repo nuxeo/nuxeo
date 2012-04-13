@@ -30,6 +30,7 @@
             </index>
           </fulltext>
         </indexing>
+        <usersSeparator key="${nuxeo.db.user.separator.key}" />
       </repository>
     </repository>
   </extension>

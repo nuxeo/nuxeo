@@ -27,6 +27,7 @@
             change the datamodel of VCS -->
           </fulltext>
         </indexing>
+        <usersSeparator key="${nuxeo.db.user.separator.key}" />
       </repository>
     </repository>
   </extension>
