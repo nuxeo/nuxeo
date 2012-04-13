@@ -668,6 +668,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             throws ClientException {
 
         boolean isGeneric = false;
+        boolean isCloned = false;
         // Look for a specific widget in the "diff" category named with the
         // property name
         WidgetDefinition wDef = getLayoutStore().getWidgetDefinition(
@@ -686,6 +687,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             }
             // Clone widget definition
             wDef = wDef.clone();
+            isCloned = true;
             // Set widget name
             wDef.setName(propertyName);
 
@@ -699,23 +701,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             wDef.setTranslated(true);
 
             // TODO: set props ?
-        }
-
-        // Set subwidgets if not already set
-        if (!isSubWidgets(wDef)) {
-            if (PropertyType.isListType(propertyType)
-                    || (PropertyType.isComplexType(propertyType) && !PropertyType.isContentType(propertyType))) {
-
-                Field declaringField = field;
-                if (declaringField == null) {
-                    declaringField = ComplexPropertyHelper.getField(
-                            getPropertySchema(propertyName),
-                            getPropertyField(propertyName));
-                }
-                wDef.setSubWidgetDefinitions(getSubWidgetDefinitions(
-                        propertyName, propertyType, declaringField,
-                        complexFieldItemNames, isDisplayItemIndexes(wDef)));
-            }
         }
 
         // TODO: better manage specific case of content type
@@ -749,7 +734,34 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                         fieldDefinitionFieldName);
             }
 
+            // Clone if needed
+            if (!isCloned) {
+                wDef = wDef.clone();
+                isCloned = true;
+            }
             wDef.setFieldDefinitions(fieldDefinitions);
+        }
+
+        // Set subwidgets if not already set
+        if (!isSubWidgets(wDef)) {
+            if (PropertyType.isListType(propertyType)
+                    || (PropertyType.isComplexType(propertyType) && !PropertyType.isContentType(propertyType))) {
+
+                Field declaringField = field;
+                if (declaringField == null) {
+                    declaringField = ComplexPropertyHelper.getField(
+                            getPropertySchema(propertyName),
+                            getPropertyField(propertyName));
+                }
+                // Clone if needed
+                if (!isCloned) {
+                    wDef = wDef.clone();
+                    isCloned = true;
+                }
+                wDef.setSubWidgetDefinitions(getSubWidgetDefinitions(
+                        propertyName, propertyType, declaringField,
+                        complexFieldItemNames, isDisplayItemIndexes(wDef)));
+            }
         }
 
         return wDef;
