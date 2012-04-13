@@ -47,6 +47,9 @@ public class FilterConfigDescriptor implements Serializable {
 
     @XNode("@transactional")
     protected boolean useTx;
+    
+    @XNode("@buffered")
+    protected boolean useTxBuffered = true;
 
     @XNode("@cached")
     protected boolean cached;
@@ -94,6 +97,10 @@ public class FilterConfigDescriptor implements Serializable {
         return useTx;
     }
 
+    public boolean useTxBuffered() {
+        return useTxBuffered;
+    }
+  
     public boolean isGrantRule() {
         return grant;
     }

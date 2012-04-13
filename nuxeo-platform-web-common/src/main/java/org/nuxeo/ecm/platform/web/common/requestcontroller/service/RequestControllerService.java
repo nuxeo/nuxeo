@@ -117,7 +117,7 @@ public class RequestControllerService extends DefaultComponent implements
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
             if (m.matches()) {
-                return new RequestFilterConfigImpl(false, false, false, false,
+                return new RequestFilterConfigImpl(false, false, false, false, false,
                         "");
             }
         }
@@ -128,13 +128,13 @@ public class RequestControllerService extends DefaultComponent implements
             Matcher m = pat.matcher(uri);
             if (m.matches()) {
                 return new RequestFilterConfigImpl(desc.useSync(),
-                        desc.useTx(), desc.isCached(), desc.isPrivate(),
+                        desc.useTx(), desc.useTxBuffered(), desc.isCached(), desc.isPrivate(),
                         desc.getCacheTime());
             }
         }
 
         // return deny by default
-        return new RequestFilterConfigImpl(false, false, false, false, "");
+        return new RequestFilterConfigImpl(false, false, false, false, false, "");
     }
 
 }

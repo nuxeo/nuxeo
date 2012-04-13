@@ -36,6 +36,8 @@ public interface RequestFilterConfig  extends Serializable{
     boolean needSynchronization();
 
     boolean needTransaction();
+    
+    boolean needTransactionBuffered();
 
     boolean isCached();
 
