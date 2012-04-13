@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -108,6 +109,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
      * the async event executor are shut down.
      */
     @Test
+    @Ignore
     public void testAsyncEventExecutorShutdown() throws Exception {
         // send an async event to make sure the async event executor spawned
         // some threads
