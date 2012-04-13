@@ -51,6 +51,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * This Filter is registered as a pre-Filter of NuxeoAuthenticationFilter.
@@ -109,64 +110,98 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+        if (!accept(request)) {
+            chain.doFilter(request, response);
+            return;
+        } 
+        boolean startedTx = false;
+        if (!TransactionHelper.isTransactionActive()) {
+            startedTx = TransactionHelper.startTransaction();
+        }
+        boolean done = false;
+        try {
+            process(request, response, chain);
+            done = true;
+        } finally {
+            if (startedTx) {
+                if (done == false) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
+    }
 
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
+    protected boolean accept(ServletRequest request) {
+        if (!(request instanceof HttpServletRequest)) {
+            return false;
+        }
+        HttpServletRequest httpRequest = (HttpServletRequest)request;
+        String uri = httpRequest.getRequestURI();
+        if (uri.contains("/oauth/")) {
+            return true;
+        }
+        if (isOAuthSignedRequest(httpRequest)) {
+            return true;
+        }
+        return false;
+    }
 
-            String uri = httpRequest.getRequestURI();
+    protected void process(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
 
-            // process OAuth 3 legged calls
-            if (uri.contains("/oauth/")) {
-                String call = uri.split("/oauth/")[1];
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-                if (call.equals("authorize")) {
-                    processAuthorize(httpRequest, httpResponse);
-                } else if (call.equals("request-token")) {
-                    processRequestToken(httpRequest, httpResponse);
-                } else if (call.equals("access-token")) {
-                    processAccessToken(httpRequest, httpResponse);
+        String uri = httpRequest.getRequestURI();
 
-                } else {
-                    httpResponse.sendError(
-                            HttpServletResponse.SC_METHOD_NOT_ALLOWED,
-                            "OAuth call not supported");
+        // process OAuth 3 legged calls
+        if (uri.contains("/oauth/")) {
+            String call = uri.split("/oauth/")[1];
+
+            if (call.equals("authorize")) {
+                processAuthorize(httpRequest, httpResponse);
+            } else if (call.equals("request-token")) {
+                processRequestToken(httpRequest, httpResponse);
+            } else if (call.equals("access-token")) {
+                processAccessToken(httpRequest, httpResponse);
+
+            } else {
+                httpResponse.sendError(
+                        HttpServletResponse.SC_METHOD_NOT_ALLOWED,
+                        "OAuth call not supported");
+            }
+            return;
+        }
+        // Signed request (simple 2 legged OAuth call or signed request
+        // after a 3 legged nego)
+        else if (isOAuthSignedRequest(httpRequest)) {
+
+            LoginContext loginContext = processSignedRequest(httpRequest,
+                    httpResponse);
+            // forward the call if authenticated
+            if (loginContext != null) {
+                Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
+                try {
+                    chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest,
+                            principal), response);
+                } finally {
+                    try {
+                        loginContext.logout();
+                    } catch (LoginException e) {
+                        log.warn("Error when loging out", e);
+                    }
+                }
+            } else {
+                if (!httpResponse.isCommitted()) {
+                    httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 }
                 return;
             }
-            // Signed request (simple 2 legged OAuth call or signed request
-            // after a 3 ledged nego)
-            else if (isOAuthSignedRequest(httpRequest)) {
-
-                LoginContext loginContext = processSignedRequest(httpRequest,
-                        httpResponse);
-                // foward the call if authenticated
-                if (loginContext != null) {
-                    Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
-                    try {
-                        chain.doFilter(new NuxeoSecuredRequestWrapper(
-                                httpRequest, principal), response);
-                    } finally {
-                        try {
-                            loginContext.logout();
-                        } catch (LoginException e) {
-                            log.warn("Error when loging out", e);
-                        }
-                    }
-                } else {
-                    if (!httpResponse.isCommitted()) {
-                        httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    }
-                    return;
-                }
-            }
-            // Non OAuth calls can pass through
-            else {
-                chain.doFilter(request, response);
-            }
-        } else {
-            // NON http calls ???
-            chain.doFilter(request, response);
+        }
+        // Non OAuth calls can pass through
+        else {
+            throw new Error("request is not a outh request");
         }
     }
 
