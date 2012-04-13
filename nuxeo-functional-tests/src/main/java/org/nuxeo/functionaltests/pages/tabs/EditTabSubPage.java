@@ -56,7 +56,6 @@ public class EditTabSubPage extends AbstractPage {
      *
      * @param title
      * @param description
-     * @return
      */
     public DocumentBasePage edit(String title, String description,
             String versionIncrementLabel) {

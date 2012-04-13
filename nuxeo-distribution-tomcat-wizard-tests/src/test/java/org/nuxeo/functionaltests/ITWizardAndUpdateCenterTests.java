@@ -17,11 +17,13 @@
 
 package org.nuxeo.functionaltests;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.ConnectHomePage;
 import org.nuxeo.functionaltests.pages.admincenter.PackageInstallationScreen;
@@ -53,6 +55,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     protected static final String CONNECT_LOGIN = "junit4tester";
 
     protected static final String CONNECT_PROJECT_SELECTOR = "junit4tester";
+
     protected static final String CONNECT_PROJECT_SELECTOR_UUID = "575954be-6027-45b7-8cd1-77a6bcb0832d";
 
     public static final String CONNECT_FORM_TITLE = "Enable Nuxeo Connect & Nuxeo Studio for your installation";
@@ -74,11 +77,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     protected String getTestPassword() {
         return System.getProperty("connectPassword");
-    }
-
-    private static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
     }
 
     public void runWizardAndRestart() throws Exception {
@@ -124,10 +122,11 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertFalse(somePage.hasError());
         proxyPage = somePage.previous(true);
 
-        assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type","authenticated"));
+        assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type",
+                "authenticated"));
         proxyPage.clearInput("nuxeo.http.proxy.login");
         proxyPage.clearInput("nuxeo.http.proxy.password");
-        proxyPage =proxyPage.next();
+        proxyPage = proxyPage.next();
         assertTrue(proxyPage.hasError());
 
         assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "none"));
@@ -171,8 +170,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
         System.out.println(driver.getCurrentUrl());
         assertNotNull(connectPage1);
-        assertEquals(CONNECT_FORM_TITLE,
-                connectPage1.getTitle());
+        assertEquals(CONNECT_FORM_TITLE, connectPage1.getTitle());
 
         // try to validate
         ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
@@ -182,15 +180,15 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
                 connectPage2.getErrorMessage());
 
         // ok, let's try to skip the screen
-        WizardPage connectSkip = connectPage1.navByLink(
-                WizardPage.class, "Or skip and don't register", true);
+        WizardPage connectSkip = connectPage1.navByLink(WizardPage.class,
+                "Or skip and don't register", true);
         assertNotNull(connectSkip);
         assertEquals("You have not registered your instance on Nuxeo Connect.",
                 connectSkip.getTitle2());
 
         // ok, let's register
-        connectWizardPage = connectSkip.navById(WizardPage.class,
-                "btnRetry", true);
+        connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry",
+                true);
         connectPage1 = connectWizardPage.getConnectPage(); // enter iframe again
         assertNotNull(connectPage1);
 
@@ -212,8 +210,9 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(connectProjectPage);
 
         // select the associated project
-        connectProjectPage.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
-        //connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
+        connectProjectPage.selectOption("project",
+                CONNECT_PROJECT_SELECTOR_UUID);
+        // connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
         ConnectWizardPage connectFinish = connectProjectPage.nav(
                 ConnectWizardPage.class, "Continue");
         assertNotNull(connectFinish);
@@ -251,8 +250,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(summary.getRegistration());
 
         // Restart
-        LoginPage loginPage = summary.restart();
-
+        summary.restart();
     }
 
     public void loopOnIframe() throws Exception {
@@ -268,7 +266,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(settingsPage);
 
         assertEquals("General settings", settingsPage.getTitle());
-
 
         // **********************
         // proxy
@@ -298,7 +295,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         WizardPage connectWizardPage = smtpPage.next(WizardPage.class);
 
-        for (int i = 1; i<20; i++) {
+        for (int i = 1; i < 20; i++) {
 
             assertNotNull(connectWizardPage);
             assertFalse(connectWizardPage.hasError());
@@ -308,8 +305,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
             ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
             System.out.println(driver.getCurrentUrl());
             assertNotNull(connectPage1);
-            assertEquals(CONNECT_FORM_TITLE,
-                    connectPage1.getTitle());
+            assertEquals(CONNECT_FORM_TITLE, connectPage1.getTitle());
 
             // try to validate
             ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
@@ -322,7 +318,8 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
             ConnectWizardPage connectSkip = connectPage1.nav(
                     ConnectWizardPage.class, "Skip");
             assertNotNull(connectSkip);
-            assertEquals("You have not registered your instance on Nuxeo Connect.",
+            assertEquals(
+                    "You have not registered your instance on Nuxeo Connect.",
                     connectSkip.getTitle2());
 
             // ok, let's register
@@ -374,7 +371,8 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(packageListing);
         WebElement packageLink = packageListing.getPackageLink(MARKETPLACE_PACKAGE_ID);
         assertNotNull(packageLink);
-        assertTrue(packageLink.getText().trim().toLowerCase().startsWith("restart"));
+        assertTrue(packageLink.getText().trim().toLowerCase().startsWith(
+                "restart"));
 
         updateCenterHome = packageListing.exit();
         assertNotNull(updateCenterHome);
@@ -382,8 +380,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         SystemHomePage systemHome = updateCenterHome.getSystemHomePage();
         assertNotNull(systemHome);
 
-        LoginPage loginPage = systemHome.restart();
-
+        systemHome.restart();
     }
 
     public void verifyPackageInstallation() throws Exception {
@@ -393,7 +390,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(adminHome);
 
         SystemHomePage systemHomePage = adminHome.getSystemHomePage();
-        AdminCenterBasePage distributions = systemHomePage.selectSubTab("Nuxeo distribution");
+        systemHomePage.selectSubTab("Nuxeo distribution");
 
         WebElement bundle = findElementWithTimeout(By.xpath("//td[text()='org.nuxeo.ecm.platform.audit.web.access']"));
         assertNotNull(bundle);
@@ -404,7 +401,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     public void studioPackageInstallAndUninstall() throws Exception {
 
-        //Login
+        // Login
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
         AdminCenterBasePage adminHome = home.getAdminCenter();
         assertNotNull(adminHome);

@@ -321,7 +321,7 @@ public abstract class AbstractTest {
     }
 
     public static <T> T asPage(Class<T> pageClassToProxy) {
-        T page = instantiatePage(driver, pageClassToProxy);
+        T page = instantiatePage(pageClassToProxy);
         PageFactory.initElements(new VariableElementLocatorFactory(driver,
                 AJAX_TIMEOUT_SECONDS), page);
         // check all required WebElements on the page and wait for their
@@ -373,8 +373,7 @@ public abstract class AbstractTest {
     }
 
     // private in PageFactory...
-    protected static <T> T instantiatePage(WebDriver driver,
-            Class<T> pageClassToProxy) {
+    protected static <T> T instantiatePage(Class<T> pageClassToProxy) {
         try {
             try {
                 Constructor<T> constructor = pageClassToProxy.getConstructor(WebDriver.class);
@@ -683,7 +682,6 @@ public abstract class AbstractTest {
      *
      * @param username
      * @param password
-     * @return
      */
     public LoginPage loginInvalid(String username, String password) {
         LoginPage loginPage = getLoginPage().login(username, password,
@@ -692,7 +690,7 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Inits the repository with a test Workspace form the {@code currentPage}.
+     * Init the repository with a test Workspace form the {@code currentPage}.
      *
      * @param currentPage the current page
      * @return the created Workspace page
@@ -702,7 +700,7 @@ public abstract class AbstractTest {
             throws Exception {
 
         return createWorkspace(currentPage, "Test Workspace",
-                "Test Workspace for my dear Webdriver.");
+                "Test Workspace for my dear WebDriver.");
     }
 
     /**

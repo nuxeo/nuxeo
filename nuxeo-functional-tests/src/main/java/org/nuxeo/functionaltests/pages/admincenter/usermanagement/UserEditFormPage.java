@@ -68,7 +68,6 @@ public class UserEditFormPage extends UsersGroupsBasePage {
      * @param email
      * @param password
      * @param group
-     * @return
      * @throws NoSuchElementException
      */
     public UserViewTabSubPage editUser(String firstname, String lastname,

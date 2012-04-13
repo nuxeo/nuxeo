@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -38,11 +37,10 @@ public class VocabulariesPage extends AbstractPage {
     /**
      * Return the list of directories in the select box
      *
-     * @return
      */
     public List<String> getDirectoriesList() {
         Select directoriesListSelect = new Select(directoriesListSelectElement);
-        ArrayList<String> directoryList = new ArrayList();
+        ArrayList<String> directoryList = new ArrayList<String>();
         List<WebElement> list = directoriesListSelect.getOptions();
         for (WebElement webElement : list) {
             directoryList.add(webElement.getText());

@@ -53,7 +53,6 @@ public class UsersGroupsBasePage extends AdminCenterBasePage {
     /**
      * View the Users tab.
      *
-     * @return
      */
     public UsersTabSubPage getUsersTab(boolean force) {
         if (force) {

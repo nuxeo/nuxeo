@@ -45,8 +45,8 @@ public class ScreenShotFileOutput implements OutputType<File> {
     @Override
     public File convertFromBase64Png(String base64Png) {
 
-            byte[] data = BYTES.convertFromBase64Png(base64Png);
-            return convertFromPngBytes(data);
+        byte[] data = BYTES.convertFromBase64Png(base64Png);
+        return convertFromPngBytes(data);
 
     }
 
@@ -58,11 +58,9 @@ public class ScreenShotFileOutput implements OutputType<File> {
 
         try {
             File outputFolder = null;
-            if (location != null) {
-                outputFolder = new File(location);
-                if (!outputFolder.exists() || !outputFolder.isDirectory()) {
-                    outputFolder = null;
-                }
+            outputFolder = new File(location);
+            if (!outputFolder.exists() || !outputFolder.isDirectory()) {
+                outputFolder = null;
             }
 
             File tmpFile = File.createTempFile(screenshotFilePrefix, ".png",

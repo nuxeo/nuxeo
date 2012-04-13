@@ -16,10 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.usermanagement.compat;
 
-import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * Nuxeo User and Groups page.
@@ -29,6 +26,5 @@ public class UsersGroupsPage extends UsersGroupsBasePage {
     public UsersGroupsPage(WebDriver driver) {
         super(driver);
     }
-
 
 }

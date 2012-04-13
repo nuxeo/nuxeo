@@ -75,7 +75,6 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * Click on the content tab and return the subpage of this page.
      *
-     * @return
      */
     public ContentTabSubPage getContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
@@ -116,7 +115,6 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * For workspace type, the content tab is a bit different.
      *
-     * @return
      */
     public WorkspacesContentTabSubPage getWorkspacesContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
@@ -161,7 +159,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     /**
-     * Exception occured a user is expected to be connected but it isn't.
+     * Exception occurred a user is expected to be connected but it isn't.
      *
      */
     public class UserNotConnectedException extends Exception {

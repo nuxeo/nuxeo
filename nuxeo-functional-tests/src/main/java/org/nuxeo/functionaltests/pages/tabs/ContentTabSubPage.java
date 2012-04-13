@@ -54,7 +54,6 @@ public class ContentTabSubPage extends DocumentBasePage {
      * Clicking on one of the child with the title.
      *
      * @param documentTitle
-     * @return
      */
     public DocumentBasePage goToDocument(String documentTitle) {
         documentContentForm.findElement(By.linkText(documentTitle)).click();

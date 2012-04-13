@@ -22,8 +22,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
@@ -77,7 +75,7 @@ public class ITUsersTest extends AbstractTest {
 
         // try to login with the new user
         logout();
-        DocumentBasePage homepage = login(username, password);
+        login(username, password);
         logout();
 
         // login as admin
@@ -90,10 +88,10 @@ public class ITUsersTest extends AbstractTest {
         UserViewTabSubPage tab = usersTab.viewUser(username).getChangePasswordUserTab().changePassword(
                 password);
 
-        homepage = tab.exitAdminCenter();
+        tab.exitAdminCenter();
         logout();
         // try to login with the new password
-        homepage = login(username, password);
+        login(username, password);
         logout();
 
         // login as admin
@@ -111,7 +109,7 @@ public class ITUsersTest extends AbstractTest {
         logout();
 
         // try to login with a delete user
-        LoginPage login = loginInvalid(username, password);
+        loginInvalid(username, password);
     }
 
 }
