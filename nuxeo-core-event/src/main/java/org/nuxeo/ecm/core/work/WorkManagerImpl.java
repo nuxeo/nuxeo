@@ -193,6 +193,32 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             suspended = new LinkedList<Work>();
         }
 
+        /**
+         * Removes any work instances equal to this one from the scheduled queue
+         * and cancels them.
+         *
+         * @param work the work to cancel
+         * @return {@code true} if there was work to cancel
+         */
+        public boolean cancelScheduled(Work work) {
+            boolean removed = false;
+            while (getQueue().remove(work)) {
+                removed = true;
+            }
+            if (removed) {
+                synchronized (monitor) {
+                    for (Iterator<Work> it = scheduled.iterator(); it.hasNext();) {
+                        Work w = it.next();
+                        if (work.equals(w)) {
+                            it.remove();
+                            w.setCanceled();
+                        }
+                    }
+                }
+            }
+            return removed;
+        }
+
         @Override
         public void execute(Runnable r) {
             synchronized (monitor) {
@@ -473,8 +499,19 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void schedule(Work work) {
+        schedule(work, false);
+    }
+
+    @Override
+    public void schedule(Work work, boolean cancelPrevious) {
+        if (work.getState() != State.QUEUED) {
+            throw new IllegalStateException(String.valueOf(work.getState()));
+        }
         String queueId = getCategoryQueueId(work.getCategory());
         WorkThreadPoolExecutor executor = getExecutor(queueId);
+        if (cancelPrevious) {
+            executor.cancelScheduled(work);
+        }
         executor.execute(work);
     }
 

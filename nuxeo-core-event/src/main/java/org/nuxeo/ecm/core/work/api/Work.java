@@ -54,7 +54,9 @@ public interface Work extends Runnable {
         /** Work instance has completed. */
         COMPLETED,
         /** Work instance execution failed. */
-        FAILED
+        FAILED,
+        /** Work instance execution was canceled. */
+        CANCELED
     }
 
     /**
@@ -224,6 +226,12 @@ public interface Work extends Runnable {
      */
     boolean awaitTermination(long timeout, TimeUnit unit)
             throws InterruptedException;
+
+    /**
+     * Sets the state of this queued work instance to {@link State#CANCELED
+     * CANCELED}. Called by the work manager implementation.
+     */
+    void setCanceled();
 
     /**
      * Gets the state data for this suspended work instance.

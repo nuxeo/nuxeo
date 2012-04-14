@@ -292,6 +292,17 @@ public abstract class AbstractWork implements Work {
     }
 
     @Override
+    public void setCanceled() {
+        synchronized (stateMonitor) {
+            if (state == QUEUED) {
+                state = State.CANCELED;
+            } else {
+                throw new IllegalStateException(String.valueOf(state));
+            }
+        }
+    }
+
+    @Override
     public Map<String, Serializable> getData() {
         return data;
     }

@@ -92,6 +92,17 @@ public interface WorkManager {
     void schedule(Work work);
 
     /**
+     * Schedules work for execution at a later time, optionally replacing any
+     * previously scheduled work equals to this one.
+     *
+     * @param cancelPrevious if {@code true}, then any other scheduled work
+     *            equals to this one is removed from schedule and canceled first
+     * @param work the work to execute
+     * @see #schedule(Work)
+     */
+    void schedule(Work work, boolean cancelPrevious);
+
+    /**
      * Gets the list of scheduled work instances for a given queue.
      *
      * @param queueId the queue id

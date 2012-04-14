@@ -163,6 +163,67 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(State.COMPLETED, work.getState());
     }
 
+    protected static class SleepWorkWithEquals extends SleepWork {
+
+        protected final String identity;
+
+        public SleepWorkWithEquals(long durationMillis, boolean debug,
+                String identity) {
+            super(durationMillis, debug);
+            this.identity = identity;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == null || !(other instanceof SleepWorkWithEquals)) {
+                return false;
+            }
+            return identity.equals(((SleepWorkWithEquals) other).identity);
+        }
+
+        @Override
+        public int hashCode() {
+            return identity.hashCode();
+        }
+    }
+
+    @Test
+    public void testWorkManagerScheduleCancelPrevious() throws Exception {
+        int duration = 1000; // 1s
+        SleepWork work1 = new SleepWorkWithEquals(duration, true, "1");
+        SleepWork work2 = new SleepWorkWithEquals(duration, true, "2");
+        SleepWork work3 = new SleepWorkWithEquals(duration, true, "3");
+        service.schedule(work1);
+        service.schedule(work2);
+        service.schedule(work3);
+
+        work1.debugWaitReady();
+        work2.debugWaitReady();
+        assertEquals(State.RUNNING, work1.getState());
+        assertEquals(State.RUNNING, work2.getState());
+        assertEquals(State.QUEUED, work3.getState());
+
+        SleepWork work4 = new SleepWorkWithEquals(duration, true, "3"); // id=3
+        service.schedule(work4, true); // schedule and cancel previous
+        assertEquals(State.CANCELED, work3.getState());
+        assertEquals(State.QUEUED, work4.getState());
+
+        work1.debugStart();
+        work2.debugStart();
+        work4.debugStart();
+        work1.debugFinish(); // early
+        work2.debugFinish(); // early
+        work4.debugFinish(); // early
+
+        boolean completed = service.awaitCompletion(3, TimeUnit.SECONDS);
+        assertTrue(completed);
+
+        assertEquals(State.COMPLETED, work1.getState());
+        assertEquals(State.COMPLETED, work2.getState());
+        assertEquals(State.CANCELED, work3.getState());
+        assertEquals(State.COMPLETED, work4.getState());
+    }
+
     @Test
     public void testWorkManagerWorkCompletion() throws Exception {
         int duration = 2000; // 2s
