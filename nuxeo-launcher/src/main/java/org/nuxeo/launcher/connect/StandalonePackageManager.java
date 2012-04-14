@@ -234,7 +234,7 @@ public class StandalonePackageManager {
             // Validate filename exists relative to current or NUXEO_HOME dir
             File fileToAdd = new File(packageFileName);
             if (!fileToAdd.exists()) {
-                fileToAdd = new File(env.getHome(), packageFileName);
+                fileToAdd = new File(env.getServerHome(), packageFileName);
                 if (!fileToAdd.exists()) {
                     throw new FileNotFoundException("Cannot find "
                             + packageFileName
