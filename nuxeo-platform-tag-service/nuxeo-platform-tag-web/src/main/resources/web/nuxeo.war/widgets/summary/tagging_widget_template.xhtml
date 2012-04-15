@@ -10,6 +10,12 @@
 
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.tagging']}" />
+      <a4j:commandLink id="#{widget.id}_addTagLink" style="float:right"
+        ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
+        reRender="#{widget.id}_taggingPanel">
+        <h:graphicImage id="#{widget.id}_toggle_plus"
+          url="/icons/action_add.gif" />
+      </a4j:commandLink>
     </h3>
 
     <a4j:region id="#{widget.id}_taggingRegion">
@@ -23,42 +29,27 @@
           </ui:include>
         </f:subview>
 
-        <nxu:dataTable id="#{widget.id}_tagsTable"
-          value="#{currentDocumentTags}" var="tag"
+        <c:forEach id="#{widget.id}_tagsTable" var="tag"
+          items="#{currentDocumentTags}"
           rendered="#{not empty currentDocumentTags}">
 
-          <nxu:column>
-            <h:commandLink
-              action="#{tagActions.listDocumentsForTag(tag.label)}">
-              <h:graphicImage id="#{widget.id}_tagIcon"
-                url="/icons/tag_blue.png" />
-            </h:commandLink>
-          </nxu:column>
+          <h:commandLink
+            action="#{tagActions.listDocumentsForTag(tag.label)}">
+            <h:graphicImage url="/icons/tag_blue.png" />
+          </h:commandLink>
 
-          <nxu:column>
-            <h:commandLink value="#{tag.label}"
-              action="#{tagActions.listDocumentsForTag(tag.label)}" />
-          </nxu:column>
+          <h:commandLink value="#{tag.label}"
+            action="#{tagActions.listDocumentsForTag(tag.label)}" />
 
-          <nxu:column>
-            <a4j:commandLink id="#{widget.id}_removeTag"
-              action="#{tagActions.removeTagging(tag.label)}"
-              immediate="true"
-              reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView"
-              rendered="#{tagActions.canModifyTag(tag)}">
-              <h:graphicImage value="/icons/action_delete_mini_over.png" />
-            </a4j:commandLink>
-          </nxu:column>
+          <a4j:commandLink
+            action="#{tagActions.removeTagging(tag.label)}"
+            immediate="true"
+            reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView"
+            rendered="#{tagActions.canModifyTag(tag)}">
+            <h:graphicImage value="/icons/action_delete_mini_over.png" />
+          </a4j:commandLink>
 
-        </nxu:dataTable>
-
-        <a4j:commandLink id="#{widget.id}_addTagLink" ajaxSingle="true"
-          actionListener="#{tagActions.showAddTag}"
-          reRender="#{widget.id}_taggingPanel">
-          <h:graphicImage id="#{widget.id}_toggle_plus"
-            url="/icons/action_add.gif" />
-          <h:outputText value="#{messages['command.tag.add.new.tag']} " />
-        </a4j:commandLink>
+        </c:forEach>
 
         <c:if test="#{tagActions.addTag}">
 
