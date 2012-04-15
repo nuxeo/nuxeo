@@ -507,7 +507,6 @@
         <row>
           <widget>summary_current_document_files</widget>
           <widget>summary_current_document_view</widget>
-          <widget>summary_current_document_dublincore</widget>
           <widget>summary_current_document_comments</widget>
         </row>
         <row>
@@ -535,7 +534,6 @@
         <row>
           <widget>note_text</widget>
           <widget>summary_current_document_files</widget>
-          <widget>summary_current_document_dublincore</widget>
           <widget>summary_current_document_comments</widget>
         </row>
         <row>
