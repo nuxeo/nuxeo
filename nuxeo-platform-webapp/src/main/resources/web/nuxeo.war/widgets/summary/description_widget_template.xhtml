@@ -2,9 +2,6 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
   <c:if test="#{!empty currentDocument.dc.description}">
-    <h3 class="summaryTitle">
-      <h:outputText value="#{messages['label.description']}" />
-    </h3>
     <nxl:widgetType name="textarea" mode="view"
       value="#{currentDocument.dc.description}" />
     <h:outputText value="#{currentDocument.dc.created}" />
