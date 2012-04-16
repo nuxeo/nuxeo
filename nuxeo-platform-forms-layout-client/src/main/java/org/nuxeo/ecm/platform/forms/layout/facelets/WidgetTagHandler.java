@@ -33,6 +33,7 @@ import javax.faces.component.UIComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -42,6 +43,7 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
+import com.sun.facelets.tag.TagException;
 
 /**
  * Widget tag handler.
@@ -60,9 +62,30 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected final TagAttribute widget;
 
-    // NXP-4412: not possible right now to take into account specified mode =>
-    // add back later
-    // protected TagAttribute mode;
+    /**
+     * @since 5.6
+     */
+    protected final TagAttribute name;
+
+    /**
+     * @since 5.6
+     */
+    protected final TagAttribute category;
+
+    /**
+     * @since 5.6
+     */
+    protected final TagAttribute definition;
+
+    /**
+     * @since 5.6
+     */
+    protected final TagAttribute mode;
+
+    /**
+     * @since 5.6
+     */
+    protected final TagAttribute layoutName;
 
     protected final TagAttribute value;
 
@@ -73,9 +96,31 @@ public class WidgetTagHandler extends MetaTagHandler {
     public WidgetTagHandler(TagConfig config) {
         super(config);
         this.config = config;
-        widget = getRequiredAttribute("widget");
+
+        widget = getAttribute("widget");
+        name = getAttribute("name");
+        definition = getAttribute("definition");
+        category = getAttribute("category");
+        mode = getAttribute("mode");
+        layoutName = getAttribute("layoutName");
+
         value = getRequiredAttribute("value");
         vars = tag.getAttributes().getAll();
+
+        // additional checks
+        if (name == null && widget == null && definition == null) {
+            throw new TagException(this.tag,
+                    "At least one of attributes 'name', 'widget' "
+                            + "or 'definition' is required");
+        }
+        if (widget == null && (name != null || definition != null)) {
+            if (mode == null) {
+                throw new TagException(this.tag,
+                        "Attribute 'mode' is required when using attribute"
+                                + " 'name' or 'definition' so that the "
+                                + "widget instance " + "can be resolved");
+            }
+        }
     }
 
     /**
@@ -88,15 +133,56 @@ public class WidgetTagHandler extends MetaTagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
+        // compute value name to set on widget instance in case it's changed
+        // from first computation
+        String valueName = value.getValue();
+        if (ComponentTagUtils.isStrictValueReference(valueName)) {
+            valueName = ComponentTagUtils.getBareValueName(valueName);
+        }
+
         // build handler
-        Widget widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
-        if (widgetInstance != null) {
-            // set value name on widget instance in case it's changed from
-            // first computation
-            String valueName = value.getValue();
-            if (ComponentTagUtils.isStrictValueReference(valueName)) {
-                valueName = ComponentTagUtils.getBareValueName(valueName);
+        Widget widgetInstance = null;
+        if (widget != null) {
+            widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
+            widgetInstance.setValueName(valueName);
+        } else {
+            // resolve widget according to name and mode (and optional
+            // category)
+            WebLayoutManager layoutService;
+            try {
+                layoutService = Framework.getService(WebLayoutManager.class);
+            } catch (Exception e) {
+                throw new FacesException(e);
             }
+            if (layoutService == null) {
+                throw new FacesException("Layout service not found");
+            }
+
+            String modeValue = mode.getValue(ctx);
+            String layoutNameValue = null;
+            if (layoutName != null) {
+                layoutNameValue = layoutName.getValue(ctx);
+            }
+
+            if (name != null) {
+                String nameValue = name.getValue(ctx);
+                String catValue = null;
+                if (category != null) {
+                    catValue = category.getValue(ctx);
+                }
+                widgetInstance = layoutService.getWidget(ctx, nameValue,
+                        catValue, modeValue, valueName, layoutNameValue);
+            } else if (definition != null) {
+                WidgetDefinition widgetDef = (WidgetDefinition) definition.getObject(
+                        ctx, WidgetDefinition.class);
+                if (widgetDef != null) {
+                    widgetInstance = layoutService.getWidget(ctx, widgetDef,
+                            modeValue, valueName, layoutNameValue);
+                }
+            }
+
+        }
+        if (widgetInstance != null) {
             // add additional properties put on tag
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
@@ -105,7 +191,6 @@ public class WidgetTagHandler extends MetaTagHandler {
                     widgetInstance.setProperty(localName, var.getValue());
                 }
             }
-            widgetInstance.setValueName(valueName);
             applyWidgetHandler(ctx, parent, config, widgetInstance, value,
                     true, nextHandler);
         }

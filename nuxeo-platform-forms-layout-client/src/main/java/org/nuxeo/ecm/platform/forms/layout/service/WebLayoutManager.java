@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
@@ -126,7 +127,8 @@ public interface WebLayoutManager extends LayoutManager {
      *            computing.
      * @param layoutDef the layout definition instance.
      * @param mode the mode.
-     * @param valueName the value name to use when computing tag attributes.
+     * @param valueName the value name to use when computing tag attributes
+     *            (useful for fields mapping)
      * @param selectedRows the list of selected rows names
      * @param selectAllRowsByDefault boolean indicating if all rows should be
      *            considered selected by default in case parameter selectedRows
@@ -137,6 +139,45 @@ public interface WebLayoutManager extends LayoutManager {
     Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef,
             String mode, String valueName, List<String> selectedRows,
             boolean selectAllRowsByDefault);
+
+    /**
+     * Returns a widget instance given a name and a category, as it would be
+     * computed when defined within a layout.
+     *
+     * @since 5.6
+     * @param ctx the facelet context this widget will be computed in. If
+     *            context is null, no expressions can be resolved during
+     *            computing.
+     * @param widgetName the widget name
+     * @param widgetCategory the widget category
+     * @param layoutMode the pseudo layout mode
+     * @param valueNale the value name to use when computing tag attributes
+     *            (useful for fields mapping)
+     * @param layoutName the pseudo layout name (if any)
+     * @return the widget instance, or null if widget definition could not be
+     *         resolved.
+     */
+    Widget getWidget(FaceletContext ctx, String widgetName,
+            String widgetCategory, String layoutMode, String valueName,
+            String layoutName);
+
+    /**
+     * Returns a widget instance given a name and a category, as it would be
+     * computed when defined within a layout.
+     *
+     * @since 5.6
+     * @param ctx the facelet context this widget will be computed in. If
+     *            context is null, no expressions can be resolved during
+     *            computing.
+     * @param widgetDef the widget definition
+     * @param layoutMode the pseudo layout mode
+     * @param valueName the value name to use when computing tag attributes
+     *            (useful for fields mapping)
+     * @param layoutName the pseudo layout name (if any)
+     * @return the widget instance, or null if the widget definition is null.
+     */
+    Widget getWidget(FaceletContext ctx, WidgetDefinition widgetDef,
+            String layoutMode, String valueName, String layoutName);
 
     /**
      * Returns the facelet handler for given widget.

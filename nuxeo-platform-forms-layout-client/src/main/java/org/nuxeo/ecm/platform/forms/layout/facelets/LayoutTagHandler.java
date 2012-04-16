@@ -85,6 +85,9 @@ public class LayoutTagHandler extends TagHandler {
      */
     protected final TagAttribute category;
 
+    /**
+     * @since 5.4.2
+     */
     protected final TagAttribute definition;
 
     protected final TagAttribute mode;

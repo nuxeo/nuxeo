@@ -231,13 +231,66 @@
     </description>
     <attribute>
       <name>widget</name>
-      <required>true</required>
+      <required>false</required>
       <type>org.nuxeo.ecm.platform.forms.layout.api.Widget</type>
       <description>
         The widget instance. This instance is often exposed by the layout system
         inside of a layout template, but any widget instance created by
         third-party code can be used as long as its type is registered on the
-        pluggable layout system.
+        pluggable layout system. Attributes 'name' and 'definition' are another
+        alternative to build a widget when the instance is not already
+        created and available: this attribute is required when alternatives
+        are not filled.
+      </description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the widget as registered on the pluggable layout system.
+        Required if the attributes 'widget' and 'definition' are not filled.
+        Available since 5.6.
+      </description>
+    </attribute>
+    <attribute>
+      <name>category</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Category of the widget (optional). Available since 5.6, and used in
+        conjunction with the 'name' attribute.
+      </description>
+    </attribute>
+    <attribute>
+      <name>definition</name>
+      <required>false</required>
+      <type>org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition</type>
+      <description>
+        Widget definition as it would be retrived from the layout store service.
+        This attribute is required if none of the 'widget' or 'name' attributes
+        are filled: it makes it possible to render a widget generated
+        dynamically. Available since 5.6.
+      </description>
+    </attribute>
+    <attribute>
+      <name>mode</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The widget mode. Required if attributes 'name' or 'definition' are used
+        so that the widget instance can be generated for given mode. Available
+        since 5.6.
+      </description>
+    </attribute>
+    <attribute>
+      <name>layoutName</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The layout name. Optional, and only used if attributes 'name' or
+        'definition' are used so that the layout name can be set on generated
+        widget instance. Available since 5.6.
       </description>
     </attribute>
     <attribute>
@@ -252,7 +305,8 @@
     </attribute>
     <example>
       <![CDATA[
-<nxl:widget widget=#{widget} mode="#{myMode}" value="#{myObject}" />
+<nxl:widget widget="#{widget}" value="#{myObject}" /> or
+<nxl:widget name="widgetName" category="" mode="#{myMode}" value="#{myObject}" />
       ]]>
     </example>
   </tag>
@@ -286,11 +340,31 @@
     </description>
     <attribute>
       <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the layout as registered on the pluggable layout system.
+        Required if the attribute 'definition' is not filled. Since 5.6, also
+        accepts a list of layout names, separated by commas.
+      </description>
+    </attribute>
+    <attribute>
+      <name>category</name>
       <required>true</required>
       <type>java.lang.String</type>
       <description>
-        Name of the layout as registered on the pluggable layout system. Since
-        5.6, also a list if layout names, separated by commas.
+        Category of the layout (optional). Available since 5.5.
+      </description>
+    </attribute>
+    <attribute>
+      <name>definition</name>
+      <required>false</required>
+      <type>org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition</type>
+      <description>
+        Layout definition as it would be retrieved from the layout store
+        service. This attribute is required if the name attribute is not
+        filled: it makes it possible to render a layout generated dynamically.
+        Available since 5.4.2.
       </description>
     </attribute>
     <attribute>
@@ -344,7 +418,8 @@
     </attribute>
     <example>
       <![CDATA[
-<nxl:layout name="dublincore" mode="#{myMode}" value="#{myObject}" />
+<nxl:layout name="dublincore" mode="#{myMode}" value="#{myObject}" /> or
+<nxl:layout definition="#{myLayoutDefinition}" mode="#{myMode}" value="#{myObject}" />
       ]]>
     </example>
   </tag>
