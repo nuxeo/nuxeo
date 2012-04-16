@@ -96,8 +96,6 @@
       order="7" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
     </action>
-    <!-- Deactivate Mail -->
-    <action id="sendNotificationEmail" enabled="false"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
