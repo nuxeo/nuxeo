@@ -176,26 +176,6 @@
       <artifactId>nuxeo-platform-types-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-jaxrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-types-core</artifactId>
       <scope>test</scope>
@@ -261,45 +241,7 @@
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.faces</groupId>
-      <artifactId>jsf-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-base</artifactId>
-    </dependency>
-    <!-- <dependency> <groupId>jaxen</groupId> <artifactId>jaxen</artifactId>
-      </dependency> -->
-
-
   </dependencies>
-
-
-  <repositories>
-    <repository>
-      <id>XDocReport Snapshots</id>
-      <url>
-            https://oss.sonatype.org/content/repositories/snapshots/
-          </url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-
 
   <build>
     <plugins>
