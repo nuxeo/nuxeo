@@ -245,6 +245,10 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             return;
         }
         if (!hasPermission(doc, permission)) {
+            log.error("Permission '" + permission + "' is not granted to '"
+                    + getPrincipal().getName() + "' on document "
+                    + doc.getPath() + " (" + doc.getUUID() + " - "
+                    + doc.getType().getName() + ")");
             throw new DocumentSecurityException("Privilege '" + permission
                     + "' is not granted to '" + getPrincipal().getName() + "'");
         }
