@@ -4153,6 +4153,11 @@
           </snapshots>
         </repository>
       </repositories>
+      <distributionManagement>
+        <id>nightly-releases</id>
+        <url>http://maven.in.nuxeo.com/nexus/content/repositories/nightly-releases</url>
+        <uniqueVersion>true</uniqueVersion>
+      </distributionManagement>
     </profile>
     <profile>
       <id>javadoc</id>
