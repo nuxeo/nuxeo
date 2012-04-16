@@ -101,9 +101,11 @@ public class TestRenditionPublication {
         DocumentModel templateDoc = session.createDocumentModel(
                 root.getPathAsString(), "templatedDoc", "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
-        File file = FileUtils.getResourceFileFromContext("data/DocumentsAttributes.odt");
+        // File file =
+        // FileUtils.getResourceFileFromContext("data/DocumentsAttributes.odt");
+        File file = FileUtils.getResourceFileFromContext("data/wsdl-viewer.xsl");
         Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("DocumentsAttributes.odt");
+        fileBlob.setFilename("wsdl-viewer.xsl");
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
 
@@ -121,6 +123,10 @@ public class TestRenditionPublication {
         // create the File
         DocumentModel testDoc = session.createDocumentModel(
                 root.getPathAsString(), "testDoc", "File");
+        file = FileUtils.getResourceFileFromContext("data/nuxeoremoting.wsdl");
+        fileBlob = new FileBlob(file);
+        fileBlob.setFilename("nuxeoremoting.wsdl");
+        testDoc.setProperty("file", "content", fileBlob);
         testDoc.setProperty("dublincore", "title", "MyTestFileDoc");
         testDoc.setProperty("dublincore", "description", "Simple file sample");
 
@@ -146,14 +152,14 @@ public class TestRenditionPublication {
                 null, true);
 
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
-        // no blob, no rendition binding => no rendition at all
-        assertEquals(0, defs.size());
+        // one blob => pdf rendition
+        assertEquals(1, defs.size());
 
         templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(
                 "delivery", true);
         defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
-        // no blob, delivery rendition binding => 1 rendition
-        assertEquals(1, defs.size());
+        // blob, + delivery rendition binding => 2 rendition
+        assertEquals(2, defs.size());
 
     }
 

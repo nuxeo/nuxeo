@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -11,8 +12,11 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
+import static org.junit.Assert.*;
+
 public class TestFMProcessing extends SimpleTemplateDocTestCase {
 
+    @Test
     public void testDocumentsAttributes() throws Exception {
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();

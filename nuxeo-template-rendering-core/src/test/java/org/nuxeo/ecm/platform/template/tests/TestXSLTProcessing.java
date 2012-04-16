@@ -3,14 +3,18 @@ package org.nuxeo.ecm.platform.template.tests;
 import java.io.File;
 import java.io.Serializable;
 
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
+import static org.junit.Assert.*;
+
 public class TestXSLTProcessing extends SimpleTemplateDocTestCase {
 
+    @Test
     public void testDocumentsAttributes() throws Exception {
         TemplateBasedDocument adapter = setupTestDocs();
 

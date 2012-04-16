@@ -1,0 +1,24 @@
+<component name="org.nuxeo.template.service.sandboxContrib">
+
+  <require>org.nuxeo.template.service.defaultContrib</require>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent"
+    point="processor">
+
+    <documentation>Contribute legacy raw XML processor for docx : the only
+      advantage of this implementation is that it supports bi-directional
+      mapping
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+
+    <templateProcessor name="rawWordXML" label="Raw Word XML"
+      default="false"
+      class="org.nuxeo.template.processors.docx.WordXMLRawTemplateProcessor">
+      <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </supportedMimeType>
+      <supportedExtension>docx</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+</component>

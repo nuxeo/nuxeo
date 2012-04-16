@@ -7,11 +7,6 @@
     <version>5.6-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <xdocreport.version>0.9.7-SNAPSHOT</xdocreport.version>
-    <jxls.version>1.0</jxls.version>
-    <jodreport.version>2.4.0</jodreport.version>
-  </properties>
 
 
   <modelVersion>4.0.0</modelVersion>
@@ -85,75 +80,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-api</artifactId>
-    </dependency>
-    <!-- docx report -->
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.converter</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.core</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.document</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.document.ods</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.template</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.opensagres.xdocreport</groupId>
-      <artifactId>fr.opensagres.xdocreport.remoting.resources</artifactId>
-      <version>${xdocreport.version}</version>
-    </dependency>
-    <!-- end docx report -->
-    <!-- JOD -->
-    <dependency>
-      <groupId>net.sf.jodreports</groupId>
-      <artifactId>jodreports</artifactId>
-      <version>${jodreport.version}</version>
-    </dependency>
-    <!-- jxls -->
-    <dependency>
-      <groupId>net.sf.jxls</groupId>
-      <artifactId>jxls-core</artifactId>
-      <version>${jxls.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jxls</groupId>
-      <artifactId>jxls-reader</artifactId>
-      <version>${jxls.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml</artifactId>
-      <scope>compile</scope>
     </dependency>
 
     <!-- Rendition stuffs -->

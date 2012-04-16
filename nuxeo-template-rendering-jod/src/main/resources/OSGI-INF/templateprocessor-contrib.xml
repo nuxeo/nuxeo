@@ -1,0 +1,18 @@
+<component
+  name="org.nuxeo.template.service.jodContrib">
+
+  <require>org.nuxeo.template.service.defaultContrib</require>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>JOD Report based template processor
+    @author Thierry Delprat (td@nuxeo.com)</documentation>
+
+    <templateProcessor name="JODReportProcessor" label="JOD processor" default="false" class="org.nuxeo.template.processors.jod.JODReportTemplateProcessor">
+      <supportedMimeType>application/vnd.oasis.opendocument.text</supportedMimeType>
+      <supportedExtension>odt</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+ </component>

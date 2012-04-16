@@ -3,6 +3,7 @@ package org.nuxeo.ecm.platform.template.tests;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -13,6 +14,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+
+import static org.junit.Assert.*;
 
 public class TestAdapters extends SQLRepositoryTestCase {
 
@@ -41,6 +44,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testAdapters() throws Exception {
 
         // create a template doc

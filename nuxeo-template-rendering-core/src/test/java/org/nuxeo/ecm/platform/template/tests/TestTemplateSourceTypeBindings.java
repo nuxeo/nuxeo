@@ -3,6 +3,7 @@ package org.nuxeo.ecm.platform.template.tests;
 import java.io.File;
 import java.util.Map;
 
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -14,6 +15,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+
+import static org.junit.Assert.*;
 
 public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
@@ -62,6 +65,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         return result;
     }
 
+    @Test
     public void testTypeBindingAndOverride() throws Exception {
 
         // test simple mapping
@@ -112,6 +116,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertFalse(t1.getForcedTypes().contains("Note"));
     }
 
+    @Test
     public void testAutomaticTemplateBinding() throws Exception {
 
         // create a template and a simple mapping
@@ -150,6 +155,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
     }
 
+    @Test
     public void testManualTemplateBinding() throws Exception {
 
         // create a template and no mapping

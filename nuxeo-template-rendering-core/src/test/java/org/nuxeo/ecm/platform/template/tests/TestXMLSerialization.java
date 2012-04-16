@@ -6,12 +6,14 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 
 public class TestXMLSerialization extends TestCase {
 
+    @Test
     public void testXMLSerialization() throws Exception {
 
         List<TemplateInput> params = new ArrayList<TemplateInput>();

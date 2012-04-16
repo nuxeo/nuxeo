@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.api.Framework;
@@ -7,9 +8,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
-import org.nuxeo.template.processors.docx.WordXMLRawTemplateProcessor;
-import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
+import org.nuxeo.template.processors.fm.FreeMarkerProcessor;
+import org.nuxeo.template.processors.xslt.XSLTProcessor;
 import org.nuxeo.template.service.TemplateProcessorComponent;
+
+import static org.junit.Assert.*;
 
 public class TestService extends NXRuntimeTestCase {
 
@@ -21,11 +24,13 @@ public class TestService extends NXRuntimeTestCase {
                 "OSGI-INF/templateprocessor-service.xml");
     }
 
+    @Test
     public void testServiceLookup() {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         assertNotNull(tps);
     }
 
+    @Test
     public void testRegisterMergeUnRegisterContrib() throws Exception {
 
         // test simple registration
@@ -34,13 +39,13 @@ public class TestService extends NXRuntimeTestCase {
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
-        assertNotNull(tps.getProcessor("rawWordXML"));
+        assertNotNull(tps.getProcessor("TestProcessor"));
 
-        TemplateProcessorDescriptor desc = ((TemplateProcessorComponent) tps).getDescriptor("rawWordXML");
+        TemplateProcessorDescriptor desc = ((TemplateProcessorComponent) tps).getDescriptor("TestProcessor");
 
-        assertEquals("rawWordXML", desc.getName());
-        assertEquals("Raw Word XML", desc.getLabel());
-        assertEquals(WordXMLRawTemplateProcessor.class.getSimpleName(),
+        assertEquals("TestProcessor", desc.getName());
+        assertEquals("Test Processor", desc.getLabel());
+        assertEquals(FreeMarkerProcessor.class.getSimpleName(),
                 desc.getProcessor().getClass().getSimpleName());
         assertEquals(false, desc.isDefaultProcessor());
 
@@ -68,11 +73,11 @@ public class TestService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.template.manager.test",
                 "OSGI-INF/templateprocessor-contrib2.xml");
 
-        assertNotNull(tps.getProcessor("rawWordXML"));
-        desc = ((TemplateProcessorComponent) tps).getDescriptor("rawWordXML");
-        assertEquals("rawWordXML", desc.getName());
-        assertEquals("Raw Word XML", desc.getLabel());
-        assertEquals(WordXMLRawTemplateProcessor.class.getSimpleName(),
+        assertNotNull(tps.getProcessor("TestProcessor"));
+        desc = ((TemplateProcessorComponent) tps).getDescriptor("TestProcessor");
+        assertEquals("TestProcessor", desc.getName());
+        assertEquals("Test Processor", desc.getLabel());
+        assertEquals(FreeMarkerProcessor.class.getSimpleName(),
                 desc.getProcessor().getClass().getSimpleName());
         assertEquals(true, desc.isDefaultProcessor()); // Rest the default flag
                                                        // !
@@ -99,6 +104,7 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    @Test
     public void testDefaultContrib() throws Exception {
 
         // test simple registration
@@ -107,26 +113,25 @@ public class TestService extends NXRuntimeTestCase {
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
-        // check that the 3 processors are registred
-        assertNotNull(tps.getProcessor("rawWordXML"));
-        assertNotNull(tps.getProcessor("JODReportProcessor"));
-        assertNotNull(tps.getProcessor("XDocReportProcessor"));
+        // check that the 2 default processors are registred
+        assertNotNull(tps.getProcessor("Freemarker"));
+        assertNotNull(tps.getProcessor("XSLTProcessor"));
 
         Blob fakeBlob = new StringBlob("Empty");
-        fakeBlob.setFilename("bidon.docx");
+        fakeBlob.setFilename("bidon.ftl");
 
         TemplateProcessor processor = tps.findProcessor(fakeBlob);
         assertNotNull(processor);
 
-        assertEquals(XDocReportProcessor.class.getSimpleName(),
+        assertEquals(FreeMarkerProcessor.class.getSimpleName(),
                 processor.getClass().getSimpleName());
 
-        fakeBlob.setFilename("bidon.odt");
+        fakeBlob.setFilename("bidon.xml");
 
         processor = tps.findProcessor(fakeBlob);
         assertNotNull(processor);
 
-        assertEquals(XDocReportProcessor.class.getSimpleName(),
+        assertEquals(XSLTProcessor.class.getSimpleName(),
                 processor.getClass().getSimpleName());
 
     }

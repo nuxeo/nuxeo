@@ -8,7 +8,7 @@
   </parent>
 
   <properties>
-    <xdocreport.version>0.9.7-SNAPSHOT</xdocreport.version>
+    <xdocreport.version>0.9.7</xdocreport.version>
   </properties>
 
 
@@ -18,6 +18,14 @@
   <name>Template Rendering XDocReport plugin </name>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
@@ -235,6 +243,16 @@
           <artifactId>xercesImpl</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

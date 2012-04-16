@@ -23,11 +23,10 @@ import org.nuxeo.template.api.ContentInputType;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
-import org.nuxeo.template.processors.xdocreport.XDocReportBindingResolver;
 
 public abstract class AbstractBindingResolver implements InputBindingResolver {
 
-    protected Log log = LogFactory.getLog(XDocReportBindingResolver.class);
+    protected Log log = LogFactory.getLog(AbstractBindingResolver.class);
 
     protected abstract Object handleLoop(String paramName, Object value);
 
