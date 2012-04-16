@@ -472,7 +472,7 @@ maintenance branch is deleted after release)""")
                           dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive
 mode.""")
-        parser.add_option('-d', '--deploy', action="store",
+        parser.add_option('-d', '--deploy', action="store_true",
                           dest='deploy', default=False,
                           help="""deploy artifacts to nightly repository""")
         (options, args) = parser.parse_args()
