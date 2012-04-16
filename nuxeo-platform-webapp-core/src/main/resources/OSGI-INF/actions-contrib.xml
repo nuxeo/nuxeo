@@ -139,12 +139,6 @@
       </filter>
     </action>
 
-    <action id="sendEmail" link="send_email" order="17"
-      label="action.email.document" icon="/icons/mail.gif">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>not_folder</filter-id>
-    </action>
-
     <action id="print"
       link="#{restHelper.doPrint(themeActions.defaultTheme)}"
       order="100" label="label.print" icon="/icons/printer.gif">
