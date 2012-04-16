@@ -87,7 +87,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 tagConfig,
                 widgetTagConfigId,
                 attributes,
-                getNextHandler(ctx, tagConfig, helper, widget,
+                getNextHandler(ctx, tagConfig, helper, widget, subHandlers,
                         widgetTagConfigId, template));
         return new DecorateHandler(config);
     }
@@ -95,28 +95,32 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
     /**
      * Computes the next handler, adding param handlers.
      * <p>
-     * Makes available the field values in templates using the format field_0,
-     * field_1, etc.
+     * Makes available the field values in templates using the format
+     * "field_0", "field_1", etc. and also the widget properties using the
+     * format "widgetProperty_thePropertyName".
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx,
             TagConfig tagConfig, FaceletHandlerHelper helper, Widget widget,
-            String widgetTagConfigId, String template) throws WidgetException {
+            FaceletHandler[] subHandlers, String widgetTagConfigId,
+            String template) throws WidgetException {
         FaceletHandler leaf = new LeafFaceletHandler();
-        FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
-        if (fieldDefs == null) {
-            return leaf;
-        }
         List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
-        // expose field variables
-        for (int i = 0; i < fieldDefs.length; i++) {
-            if (i == 0) {
+
+        FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
+        if (fieldDefs != null) {
+            // expose field variables
+            for (int i = 0; i < fieldDefs.length; i++) {
+                if (i == 0) {
+                    paramHandlers.add(getFieldParamHandler(ctx, tagConfig,
+                            helper, leaf, widget, widgetTagConfigId,
+                            fieldDefs[i], null));
+                }
                 paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                        leaf, widget, widgetTagConfigId, fieldDefs[i], null));
+                        leaf, widget, widgetTagConfigId, fieldDefs[i],
+                        Integer.valueOf(i)));
             }
-            paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                    leaf, widget, widgetTagConfigId, fieldDefs[i],
-                    Integer.valueOf(i)));
         }
+
         // expose widget properties too
         WebLayoutManager layoutService;
         try {
@@ -151,8 +155,16 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             paramHandlers.add(new ParamHandler(config));
         }
 
+        List<FaceletHandler> handlers = new ArrayList<FaceletHandler>();
+        if (subHandlers != null) {
+            for (FaceletHandler handler : subHandlers) {
+                handlers.add(handler);
+            }
+        }
+        handlers.addAll(paramHandlers);
+
         return new CompositeFaceletHandler(
-                paramHandlers.toArray(new ParamHandler[] {}));
+                handlers.toArray(new FaceletHandler[] {}));
     }
 
     protected ParamHandler getFieldParamHandler(FaceletContext ctx,

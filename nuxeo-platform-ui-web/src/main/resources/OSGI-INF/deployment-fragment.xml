@@ -514,6 +514,15 @@
 
     <component>
       <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIEntry
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIEntry
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
         org.nuxeo.ecm.platform.ui.web.component.seam.UIColumn
       </component-type>
       <component-class>

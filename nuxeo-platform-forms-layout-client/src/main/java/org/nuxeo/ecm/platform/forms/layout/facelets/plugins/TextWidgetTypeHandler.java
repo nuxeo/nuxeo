@@ -63,7 +63,12 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
-        FaceletHandler leaf = new LeafFaceletHandler();
+        FaceletHandler leaf = null;
+        if (subHandlers != null) {
+            leaf = new CompositeFaceletHandler(subHandlers);
+        } else {
+            leaf = new LeafFaceletHandler();
+        }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
             ComponentHandler input = helper.getHtmlComponentHandler(

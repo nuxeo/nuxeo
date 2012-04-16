@@ -73,7 +73,12 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
             attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                     filenameAttr);
         }
-        FaceletHandler leaf = new LeafFaceletHandler();
+        FaceletHandler leaf = null;
+        if (subHandlers != null) {
+            leaf = new CompositeFaceletHandler(subHandlers);
+        } else {
+            leaf = new LeafFaceletHandler();
+        }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,

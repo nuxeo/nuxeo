@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.tag.CompositeFaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
@@ -86,7 +87,12 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     valueAttr);
         }
 
-        FaceletHandler leaf = new LeafFaceletHandler();
+        FaceletHandler leaf = null;
+        if (subHandlers != null) {
+            leaf = new CompositeFaceletHandler(subHandlers);
+        } else {
+            leaf = new LeafFaceletHandler();
+        }
         String widgetTagConfigId = widget.getTagConfigId();
         TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig,
                 widgetTagConfigId, attributes, leaf);

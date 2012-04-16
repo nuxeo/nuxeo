@@ -195,9 +195,10 @@ public class WidgetTypeTagHandler extends TagHandler {
                         Integer.valueOf(widget.getLevel())), widgetVe);
         try {
             WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget,
-                    value, true);
+                    value, true, nextHandler);
         } finally {
             ctx.setVariableMapper(orig);
         }
     }
+
 }

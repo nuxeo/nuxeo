@@ -55,7 +55,12 @@ public class DirectorySelectOneWidgetTypeHandler extends
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
-        FaceletHandler leaf = new LeafFaceletHandler();
+        FaceletHandler leaf = null;
+        if (subHandlers != null) {
+            leaf = new CompositeFaceletHandler(subHandlers);
+        } else {
+            leaf = new LeafFaceletHandler();
+        }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();

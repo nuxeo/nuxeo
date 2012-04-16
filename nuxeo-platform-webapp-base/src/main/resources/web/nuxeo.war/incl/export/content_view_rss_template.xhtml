@@ -51,9 +51,11 @@
 
     <nxr:feed
       title="#{resolvedFeedTitle}"
+      subtitle="#{currentDocument.dc.description}"
+      link="#{nxd:documentUrl(currentDocument)}"
       feedFormat="#{feedFormat}">
       <ui:repeat var="doc" value="#{provider.currentPage}">
-        <r:entry
+        <nxr:entry
           uid="#{nxd:complexDocumentUrl(null, doc, null, null, true)}"
           title="#{doc.dc.title}"
           link="#{nxd:documentUrl(doc)}"

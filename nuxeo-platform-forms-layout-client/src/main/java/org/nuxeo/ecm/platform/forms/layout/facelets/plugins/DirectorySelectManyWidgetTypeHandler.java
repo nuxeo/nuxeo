@@ -67,6 +67,12 @@ public class DirectorySelectManyWidgetTypeHandler extends
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
         FaceletHandler leaf = new LeafFaceletHandler();
+        FaceletHandler nextHandler = null;
+        if (subHandlers != null) {
+            nextHandler = new CompositeFaceletHandler(subHandlers);
+        } else {
+            nextHandler = leaf;
+        }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -81,7 +87,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
         }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+                    widgetTagConfigId, attributes, nextHandler,
                     SelectManyListboxComponent.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
@@ -136,7 +142,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
             TagAttributes columnAttrs = new TagAttributes(new TagAttribute[0]);
 
             ComponentHandler dirEntry = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, dirEntryAttrs, leaf,
+                    widgetTagConfigId, dirEntryAttrs, nextHandler,
                     DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
             ComponentHandler columnEntry = helper.getHtmlComponentHandler(
                     widgetTagConfigId, columnAttrs, dirEntry,
