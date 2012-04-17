@@ -52,7 +52,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeGroupIds>fr.opensagres.xdocreport,net.sf.jodreport,net.sf.jxls</includeGroupIds>
+              <includeGroupIds>fr.opensagres.xdocreport,net.sf.jodreport,net.sf.jxls,org.apache.commons</includeGroupIds>
               <outputDirectory>${project.build.directory}/libs</outputDirectory>
             </configuration>
           </execution>

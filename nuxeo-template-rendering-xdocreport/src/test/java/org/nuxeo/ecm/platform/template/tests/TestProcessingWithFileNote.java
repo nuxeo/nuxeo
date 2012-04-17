@@ -78,9 +78,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         testDoc.setProperty("dublincore", "title", "MyTestNote2");
         testDoc.setProperty("dublincore", "description", "Simple note sample");
 
-        // File mdfile =
-        // FileUtils.getResourceFileFromContext("data/MDSample.md");
-        File mdfile = FileUtils.getResourceFileFromContext("data/debug.md");
+        File mdfile = FileUtils.getResourceFileFromContext("data/MDSample.md");
         Blob mdfileBlob = new FileBlob(mdfile);
 
         testDoc.setPropertyValue("note:note", mdfileBlob.getString());
@@ -126,12 +124,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         List<TemplateInput> params = source.getParams();
         // System.out.println(params);
         assertEquals(1, params.size());
-        // assertEquals(InputType.PictureProperty, params.get(0).getType());
-        // assertEquals(InputType.Include, params.get(1).getType());
 
-        // Set params value
-        // params.get(0).setType(InputType.PictureProperty);
-        // params.get(0).setSource("files:files/0/file");
         params.get(0).setType(InputType.Content);
         params.get(0).setSource(ContentInputType.HtmlPreview.getValue());
 
@@ -146,9 +139,6 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         templateBased = testDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
 
-        // associate to template
-        // templateBased.setTemplate(templateDoc, true);
-
         // render
         testDoc = templateBased.initializeFromTemplate(TEMPLATE_NAME, true);
         Blob blob = templateBased.renderWithTemplate(TEMPLATE_NAME);
@@ -160,11 +150,11 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
                 ZipXmlHelper.OOO_MAIN_FILE);
 
         // verify that note content has been merged in ODT
-        // assertTrue(xmlContent.contains("TemplateBasedDocument"));
-        // assertTrue(xmlContent.contains(testDoc.getTitle()));
+        assertTrue(xmlContent.contains("TemplateBasedDocument"));
+        assertTrue(xmlContent.contains(testDoc.getTitle()));
 
-        File testFile = new File("/tmp/testOOo.odt");
-        blob.transferTo(testFile);
+        // File testFile = new File("/tmp/testOOo.odt");
+        // blob.transferTo(testFile);
 
     }
 

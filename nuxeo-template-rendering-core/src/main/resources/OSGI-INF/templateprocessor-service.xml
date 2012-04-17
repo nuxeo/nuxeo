@@ -6,7 +6,7 @@
     OpenOffice template file).
 
     <p>It support an ExtensionPoint to contribute template
-      processors.
+      processors.</p>
 
     @version 1.0
     @author
@@ -23,15 +23,17 @@
 
     <documentation>
 
+      <p>
       Extension allowing one to register a new TemplateProcessor.
-
-      <p />
+      </p>
+      <p>
 
       A TemplateProcessor is a class associated with a format (mime-type or
       extension) and that can be used to render a DocumentModel via type
       type of template.
 
       For instance :
+      </p>
 
       <code>
         <templateProcessor name="XDocReportProcessor"

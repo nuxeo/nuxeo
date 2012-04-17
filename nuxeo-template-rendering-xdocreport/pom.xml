@@ -8,7 +8,7 @@
   </parent>
 
   <properties>
-    <xdocreport.version>0.9.7</xdocreport.version>
+    <xdocreport.version>0.9.8-SNAPSHOT</xdocreport.version>
   </properties>
 
 

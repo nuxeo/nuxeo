@@ -10,8 +10,10 @@
     <templateProcessor name="XDocReportProcessor" label="XDocReport processor" default="true" class="org.nuxeo.template.processors.xdocreport.XDocReportProcessor">
       <supportedMimeType>application/vnd.oasis.opendocument.text</supportedMimeType>
       <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</supportedMimeType>
+      <supportedMimeType>application/vnd.oasis.opendocument.spreadsheet</supportedMimeType>
       <supportedExtension>odt</supportedExtension>
       <supportedExtension>docx</supportedExtension>
+      <supportedExtension>ods</supportedExtension>
     </templateProcessor>
 
   </extension>
