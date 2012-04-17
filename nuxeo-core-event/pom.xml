@@ -38,6 +38,10 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
+    <dependency>
+      <groupId>opensymphony</groupId>
+      <artifactId>quartz-all</artifactId>
+    </dependency>
     <!--
       TODO this should use maven conditional dependencies. If java 6 we don't
       need it since scripting is part of java 6
