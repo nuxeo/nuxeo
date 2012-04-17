@@ -9,3 +9,5 @@ facelets.REFRESH_PERIOD=-1
 org.nuxeo.ecm.platform.liveedit.autoversioning=none
 
 zip.entry.encoding=ascii
+
+nuxeo.db.user.separator.key=,

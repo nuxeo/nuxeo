@@ -36,6 +36,7 @@
             http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
           -->
         </indexing>
+        <usersSeparator key="${nuxeo.db.user.separator.key}" />
       </repository>
     </repository>
   </extension>

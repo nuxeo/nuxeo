@@ -58,22 +58,22 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Bulk import of members</td>
+	<td>link=Bulk invitation</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//textarea[starts-with(@name,'editSocialWorkspaceGroups')]</td>
-	<td>member1@mail.net&nbsp;&nbsp;member2@mail.net memberToAddByEmailList1@mail.net memberToAddByEmailList2@mail.net nobodyAsUser@mail.net</td>
+	<td>//textarea[1]</td>
+	<td>member1@mail.net;&nbsp;&nbsp;member2@mail.net ;memberToAddByEmailList1@mail.net; memberToAddByEmailList2@mail.net; nobodyAsUser@mail.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//table[@class=&quot;dataInput&quot;]//tr[3]//textarea</td>
+	<td>My Comment ...</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//form[@id=&quot;editSocialWorkspaceGroups&quot;]/input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>4 users imported</td>
+	<td>//p[@class=&quot;buttonsGadget&quot;]//input[@type=&quot;submit&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -107,114 +107,24 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//table[@id=&quot;editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_panel&quot;]/tbody/tr/td[2]/span/span/table/tbody/tr/td[2]</td>
+	<td>verifyTextPresent</td>
+	<td></td>
 	<td>member2</td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//table[@id=&quot;editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_panel&quot;]/tbody/tr/td[2]/span/span[2]/table/tbody/tr/td[2]</td>
+	<td>verifyTextPresent</td>
+	<td></td>
 	<td>memberToAddByEmailList2</td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//table[@id=&quot;editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_panel&quot;]/tbody/tr/td[2]/span/span[3]/table/tbody/tr/td[2]</td>
+	<td>verifyTextPresent</td>
+	<td></td>
 	<td>member1</td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//table[@id=&quot;editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_panel&quot;]/tbody/tr/td[2]/span/span[5]/table/tbody/tr/td[2]</td>
+	<td>verifyTextPresent</td>
+	<td></td>
 	<td>memberToAddByEmailList1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Bulk import of members</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//input[@id='editSocialWorkspaceGroups:nxl_social_workspace_bulk_import:nxw_social_workspace_bulk_import_suggest']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//input[@id='editSocialWorkspaceGroups:nxl_social_workspace_bulk_import:nxw_social_workspace_bulk_import_suggest']</td>
-	<td>AnotherGroup</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='editSocialWorkspaceGroups:nxl_social_workspace_bulk_import:nxw_social_workspace_bulk_import_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//form[@id=&quot;editSocialWorkspaceGroups&quot;]/input[3]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>2 users imported</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=User registration requests</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//table[@class='dataOutput']/thead/tr[1]/th[1]//input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//span[@id=&quot;UserRegistrationValidate&quot;]//input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Membership management</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>memberOfAnotherGroup1</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>memberOfAnotherGroup2</td>
-	<td></td>
 </tr>
 <tr>
 	<td>open</td>
