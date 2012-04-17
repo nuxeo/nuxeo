@@ -19,15 +19,20 @@
 
 package org.nuxeo.ecm.platform.layout.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -35,11 +40,14 @@ import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler;
 import org.nuxeo.runtime.api.Framework;
@@ -408,6 +416,64 @@ public class TestLayoutService extends NXRuntimeTestCase {
                 "datetime", "bar", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
                 "datetime", "bar", "bar"));
-
     }
+
+    @Test
+    public void testWidget() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        Widget widget = service.getWidget(null,
+                "globalTestWidgetWithTestCategory", "testCategory",
+                BuiltinModes.VIEW, null, "pseudoLayout");
+        assertNotNull(widget);
+        assertEquals("globalTestWidgetWithTestCategory", widget.getName());
+        assertEquals("test", widget.getType());
+        assertEquals("pseudoLayout", widget.getLayoutName());
+        FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
+        assertEquals(1, fieldDefs.length);
+        assertEquals("foo", fieldDefs[0].getSchemaName());
+        assertEquals("bar", fieldDefs[0].getFieldName());
+
+        widget = service.getWidget(null, "globalTestWidget", null,
+                BuiltinModes.VIEW, null, "pseudoLayout");
+        assertNotNull(widget);
+        assertEquals("globalTestWidget", widget.getName());
+        assertEquals("test", widget.getType());
+        assertEquals("pseudoLayout", widget.getLayoutName());
+        fieldDefs = widget.getFieldDefinitions();
+        assertEquals(1, fieldDefs.length);
+        assertEquals("foo", fieldDefs[0].getSchemaName());
+        assertEquals("bar", fieldDefs[0].getFieldName());
+
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("myPropName", "myPropValue");
+        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
+        fieldDefinitions.add(new FieldDefinitionImpl("foo", "bar"));
+        WidgetDefinition widgetDef = new WidgetDefinitionImpl(
+                "testDynamicWidget", "test", "my.widget.label",
+                "my.widget.help.label", true, null, fieldDefinitions,
+                properties, null);
+        widget = service.getWidget(null, widgetDef, BuiltinModes.VIEW, null,
+                "pseudoLayout");
+        assertNotNull(widget);
+        assertEquals("testDynamicWidget", widget.getName());
+        assertEquals("test", widget.getType());
+        assertEquals("my.widget.label", widget.getLabel());
+        assertEquals("my.widget.help.label", widget.getHelpLabel());
+        assertTrue(widget.isTranslated());
+        assertEquals("pseudoLayout", widget.getLayoutName());
+        fieldDefs = widget.getFieldDefinitions();
+        assertEquals(1, fieldDefs.length);
+        assertEquals("foo", fieldDefs[0].getSchemaName());
+        assertEquals("bar", fieldDefs[0].getFieldName());
+
+        // exceptions
+        widget = service.getWidget(null, "unknownWidget", null,
+                BuiltinModes.VIEW, null, "pseudoLayout");
+        assertNull(widget);
+        widget = service.getWidget(null, null, BuiltinModes.VIEW, null,
+                "pseudoLayout");
+        assertNull(widget);
+    }
+
 }
