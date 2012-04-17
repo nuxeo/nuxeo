@@ -20,32 +20,37 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.diff.detaileddiff.adapter.base.DetailedDiffConversionType;
 
 /**
- * Interface for the HTML Detailed diff DocumentModel adapter.
+ * Interface for the Detailed diff DocumentModel adapter.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public interface HtmlDetailedDiffAdapter {
+public interface DetailedDiffAdapter {
 
     boolean cachable();
 
-    String getFileDetailedDiffURL(DocumentModel otherDoc);
+    String getFileDetailedDiffURL(DocumentModel otherDoc,
+            DetailedDiffConversionType conversionType);
 
-    String getFileDetailedDiffURL(DocumentModel otherDoc, String xpath);
+    String getFileDetailedDiffURL(DocumentModel otherDoc, String xpath,
+            DetailedDiffConversionType conversionType);
 
-    List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc)
+    List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc,
+            DetailedDiffConversionType conversionType)
             throws DetailedDiffException;
 
-    List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc, String xpath)
+    List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc, String xpath,
+            DetailedDiffConversionType conversionType)
             throws DetailedDiffException;
 
-//    List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc,
-//            boolean postProcess) throws DetailedDiffException;
-//
-//    List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc, String xpath,
-//            boolean postProcess) throws DetailedDiffException;
+    // List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc,
+    // boolean postProcess) throws DetailedDiffException;
+    //
+    // List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc, String xpath,
+    // boolean postProcess) throws DetailedDiffException;
 
     void setAdaptedDocument(DocumentModel doc);
 

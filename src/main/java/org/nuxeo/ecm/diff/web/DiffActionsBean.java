@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
+import org.nuxeo.ecm.diff.detaileddiff.adapter.base.DetailedDiffConversionType;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
@@ -275,12 +276,27 @@ public class DiffActionsBean implements Serializable {
      */
     public String getDetailedDiffFancyBoxURL(String schemaName, String fieldName) {
 
+        return getDetailedDiffFancyBoxURL(schemaName, fieldName, null);
+    }
+
+    /**
+     * Gets the detailed diff fancy box url.
+     *
+     * @param schemaName the schema name
+     * @param fieldName the field name
+     * @param conversionType the conversion type
+     * @return the detailed diff fancy box url
+     */
+    public String getDetailedDiffFancyBoxURL(String schemaName,
+            String fieldName, String conversionType) {
+
         if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(fieldName)) {
             log.error("Cannot get detailed diff fancybox URL with a null schemaName or a null fieldName.");
             return null;
         }
         return DetailedDiffHelper.getDetailedDiffFancyBoxURL(
-                navigationContext.getCurrentDocument(), schemaName, fieldName);
+                navigationContext.getCurrentDocument(), schemaName, fieldName,
+                conversionType);
     }
 
     /**
@@ -288,9 +304,11 @@ public class DiffActionsBean implements Serializable {
      *
      * @param schemaName the schema name
      * @param fieldName the field name
+     * @param conversionTypeParam the conversion type param
      * @return the detailed diff url
      */
-    public String getDetailedDiffURL(String schemaName, String fieldName) {
+    public String getDetailedDiffURL(String schemaName, String fieldName,
+            String conversionTypeParam) {
 
         if (leftDoc == null || rightDoc == null) {
             log.error("Cannot get detailed diff URL with a null leftDoc or a null rightDoc.");
@@ -300,11 +318,14 @@ public class DiffActionsBean implements Serializable {
             log.error("Cannot get detailed diff URL with a null schemaName or a null fieldName.");
             return null;
         }
-        //String xpath = schemaName + ":" + fieldName;
-        String xpath = null;
+        String xpath = schemaName + ":" + fieldName;
+        DetailedDiffConversionType conversionType = null;
+        if (!StringUtils.isEmpty(conversionTypeParam)) {
+            conversionType = DetailedDiffConversionType.valueOf(conversionTypeParam);
+        }
         return DetailedDiffHelper.getDetailedDiffURL(
                 navigationContext.getCurrentDocument().getRepositoryName(),
-                leftDoc, rightDoc, xpath);
+                leftDoc, rightDoc, xpath, conversionType);
     }
 
     /**
@@ -312,11 +333,12 @@ public class DiffActionsBean implements Serializable {
      *
      * @param schemaName the schema name
      * @param fieldName the field name
+     * @param conversionTypeParam the conversion type param
      * @return the detailed diff with blob post processing url
      */
     public String getDetailedDiffWithBlobPostProcessingURL(String schemaName,
-            String fieldName) {
-        return getDetailedDiffURL(schemaName, fieldName)
+            String fieldName, String conversionTypeParam) {
+        return getDetailedDiffURL(schemaName, fieldName, conversionTypeParam)
                 + "?blobPostProcessing=true";
     }
 

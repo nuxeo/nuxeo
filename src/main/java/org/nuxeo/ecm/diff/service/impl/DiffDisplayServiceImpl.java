@@ -17,20 +17,12 @@
 package org.nuxeo.ecm.diff.service.impl;
 
 import java.io.Serializable;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +46,6 @@ import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffDisplayBlockImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
-import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.diff.web.ComplexPropertyHelper;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -70,8 +61,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.outerj.daisy.diff.DaisyDiff;
-import org.xml.sax.InputSource;
 
 /**
  * Default implementation of the {@link DiffDisplayService}.
@@ -375,7 +364,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                     fieldName), fieldDiff, isDisplayAllItems,
                             isDisplayItemIndexes);
 
-                    //String detailedDiffDisplay = null;
+                    // String detailedDiffDisplay = null;
                     // Left
                     Map<String, Serializable> leftSchemaMap = leftValue.get(schemaName);
                     if (leftSchemaMap == null) {
@@ -403,12 +392,15 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
                     // TODO: manage better detailedDiff if needed
                     // Detailed diff
-//                    Map<String, Serializable> detailedDiffSchemaMap = detailedDiffValue.get(schemaName);
-//                    if (detailedDiffSchemaMap == null) {
-//                        detailedDiffSchemaMap = new HashMap<String, Serializable>();
-//                        detailedDiffValue.put(schemaName, detailedDiffSchemaMap);
-//                    }
-//                    detailedDiffSchemaMap.put(fieldName, detailedDiffDisplay);
+                    // Map<String, Serializable> detailedDiffSchemaMap =
+                    // detailedDiffValue.get(schemaName);
+                    // if (detailedDiffSchemaMap == null) {
+                    // detailedDiffSchemaMap = new HashMap<String,
+                    // Serializable>();
+                    // detailedDiffValue.put(schemaName, detailedDiffSchemaMap);
+                    // }
+                    // detailedDiffSchemaMap.put(fieldName,
+                    // detailedDiffDisplay);
 
                 }
             }

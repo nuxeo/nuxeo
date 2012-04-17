@@ -3,15 +3,17 @@
 
   <nxu:set var="schemaName" value="#{param['schemaName']}" cache="true">
   <nxu:set var="fieldName" value="#{param['fieldName']}" cache="true">
+  <nxu:set var="conversionType" value="#{param['conversionType']}" cache="true">
   
   <h2>
     <h:outputText value="#{messages[nxu:concat('label.', nxu:concat(schemaName, nxu:concat('.', fieldName)))]}" />
   </h2>
   
-  <iframe src="#{diffActions.getDetailedDiffURL(schemaName, fieldName)}" id="detailed-diff-frame"
-    frameborder="1" height="600px" width="100%" scrolling="auto">
+  <iframe src="#{diffActions.getDetailedDiffURL(schemaName, fieldName, conversionType)}" id="fancybox-frame"
+    frameborder="1" width="100%" scrolling="auto">
   </iframe>
   
+  </nxu:set>
   </nxu:set>
   </nxu:set>
 
@@ -20,7 +22,7 @@
       var fancyBox = jQuery('#fancybox-content', window.parent.document);
       if (fancyBox.length > 0 &amp;&amp; fancyBox.height() > 0) {
         // we know we are in a fancybox
-        jQuery('#detailed-diff-frame').height(fancyBox.height() - 20);
+        jQuery('#fancybox-frame').height(fancyBox.height() - 20);
       }
     });
   </script>

@@ -21,7 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
 import org.nuxeo.ecm.diff.detaileddiff.adapter.factories.BlobHolderDetailedDiffAdapterFactory;
 import org.nuxeo.ecm.diff.detaileddiff.adapter.factories.FileBasedDetailedDiffAdapterFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -101,7 +102,7 @@ public class DetailedDiffAdapterManagerComponent extends DefaultComponent
         return doc.hasSchema("file") || doc.hasSchema("files");
     }
 
-    public HtmlDetailedDiffAdapter getAdapter(DocumentModel doc) {
+    public DetailedDiffAdapter getAdapter(DocumentModel doc) {
         if (doc == null) {
             return null;
         }
@@ -143,6 +144,17 @@ public class DetailedDiffAdapterManagerComponent extends DefaultComponent
             }
         }
         return null;
+    }
+
+    public HtmlDetailedDiffer getHtmlDetailedDiffer()
+            throws DetailedDiffException {
+        MimeTypeDetailedDiffer htmlDetailedDiffer = detailedDifferFactory.get("text/html");
+        if (htmlDetailedDiffer == null
+                || !(htmlDetailedDiffer instanceof HtmlDetailedDiffer)) {
+            throw new DetailedDiffException(
+                    "No detailed differ of type HtmlDetailedDiffer found for the 'text/html' mime-type. Please check the 'mimeTypeDetailedDiffer' contributions.");
+        }
+        return (HtmlDetailedDiffer) htmlDetailedDiffer;
     }
 
     // public List<BlobPostProcessor> getBlobPostProcessors() {

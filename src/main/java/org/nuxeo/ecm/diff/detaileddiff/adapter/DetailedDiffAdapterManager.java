@@ -15,7 +15,8 @@
 package org.nuxeo.ecm.diff.detaileddiff.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
 
 /**
  * Interface of the service that is responsible for managing
@@ -26,11 +27,13 @@ import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
  */
 public interface DetailedDiffAdapterManager {
 
-    HtmlDetailedDiffAdapter getAdapter(DocumentModel doc);
+    DetailedDiffAdapter getAdapter(DocumentModel doc);
 
     boolean hasAdapter(DocumentModel doc);
 
     MimeTypeDetailedDiffer getDetailedDiffer(String mimeType);
+
+    HtmlDetailedDiffer getHtmlDetailedDiffer() throws DetailedDiffException;
 
     // List<BlobPostProcessor> getBlobPostProcessors();
 

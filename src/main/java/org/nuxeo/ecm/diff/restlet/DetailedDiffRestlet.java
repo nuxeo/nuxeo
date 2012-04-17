@@ -44,8 +44,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
 import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
-import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.detaileddiff.adapter.base.DetailedDiffConversionType;
 import org.nuxeo.ecm.diff.web.DetailedDiffHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
@@ -95,17 +96,26 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
         // TODO: remove?
         xpath = xpath.replace("-", "/");
         // TODO: need to manage subPath?
-        List<String> segments = req.getResourceRef().getSegments();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 7; i < segments.size(); i++) {
-            sb.append(segments.get(i));
-            sb.append("/");
+//        List<String> segments = req.getResourceRef().getSegments();
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 7; i < segments.size(); i++) {
+//            sb.append(segments.get(i));
+//            sb.append("/");
+//        }
+//        String subPath = sb.substring(0, sb.length() - 1);
+
+        // Default conversion type is any2html
+        DetailedDiffConversionType conversionType = DetailedDiffConversionType.any2html;
+        // Check conversion type param
+        String conversionTypeParam = (String) req.getAttributes().get(
+                "conversionType");
+        if (!StringUtils.isEmpty(conversionTypeParam)) {
+            conversionType = DetailedDiffConversionType.valueOf(conversionTypeParam);
         }
-        String subPath = sb.substring(0, sb.length() - 1);
 
         try {
             xpath = URLDecoder.decode(xpath, "UTF-8");
-            subPath = URLDecoder.decode(subPath, "UTF-8");
+            //subPath = URLDecoder.decode(subPath, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error(e);
         }
@@ -140,7 +150,7 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
         List<Blob> detailedDiffBlobs;
         try {
             detailedDiffBlobs = initCachedDetailedDiffBlobs(res, xpath,
-                    blobPostProcessing);
+                    conversionType, blobPostProcessing);
         } catch (Exception e) {
             handleError(res, "Unable to get detailed diff.");
             return;
@@ -154,32 +164,31 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
         response.setHeader("Pragma", "no-cache");
 
         try {
-            if (StringUtils.isEmpty(subPath)) {
+            //if (StringUtils.isEmpty(subPath)) {
                 handleDetailedDiff(res, detailedDiffBlobs.get(0), "text/html");
                 return;
-            } else {
-                for (Blob blob : detailedDiffBlobs) {
-                    if (subPath.equals(blob.getFilename())) {
-                        handleDetailedDiff(res, blob, blob.getMimeType());
-                        return;
-                    }
-
-                }
-            }
+            // } else {
+            // for (Blob blob : detailedDiffBlobs) {
+            // if (subPath.equals(blob.getFilename())) {
+            // handleDetailedDiff(res, blob, blob.getMimeType());
+            // return;
+            // }
+            //
+            // }
+            //           }
         } catch (IOException e) {
             handleError(res, e);
         }
     }
 
     private List<Blob> initCachedDetailedDiffBlobs(Response res, String xpath,
+            DetailedDiffConversionType conversionType,
             boolean blobPostProcessing) throws ClientException {
 
-        HtmlDetailedDiffAdapter detailedDiffAdapter = null; // getFromCache(leftDoc,
-                                                            // rightDoc,
-        // xpath);
+        DetailedDiffAdapter detailedDiffAdapter = null;
 
         if (detailedDiffAdapter == null) {
-            detailedDiffAdapter = leftDoc.getAdapter(HtmlDetailedDiffAdapter.class);
+            detailedDiffAdapter = leftDoc.getAdapter(DetailedDiffAdapter.class);
         }
 
         if (detailedDiffAdapter == null) {
@@ -190,10 +199,11 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
         List<Blob> detailedDiffBlobs = null;
         try {
             if (xpath.equals(DetailedDiffHelper.DETAILED_DIFF_URL_DEFAULT_XPATH)) {
-                detailedDiffBlobs = detailedDiffAdapter.getFileDetailedDiffBlobs(rightDoc);
+                detailedDiffBlobs = detailedDiffAdapter.getFileDetailedDiffBlobs(
+                        rightDoc, conversionType);
             } else {
                 detailedDiffBlobs = detailedDiffAdapter.getFileDetailedDiffBlobs(
-                        rightDoc, xpath);
+                        rightDoc, xpath, conversionType);
             }
         } catch (DetailedDiffException e) {
             detailedDiffInProcessing.remove(leftDoc.getId());

@@ -16,9 +16,9 @@ package org.nuxeo.ecm.diff.detaileddiff.adapter.factories;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
 import org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterFactory;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.base.ConverterBasedHtmlDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.detaileddiff.adapter.base.ConverterBasedDetailedDiffAdapter;
 
 /**
  * Detailed diff adapter factory for all documents that have the file schema.
@@ -29,8 +29,8 @@ import org.nuxeo.ecm.diff.detaileddiff.adapter.base.ConverterBasedHtmlDetailedDi
 public class FileBasedDetailedDiffAdapterFactory implements
         DetailedDiffAdapterFactory {
 
-    public HtmlDetailedDiffAdapter getAdapter(DocumentModel doc) {
-        ConverterBasedHtmlDetailedDiffAdapter adapter = new ConverterBasedHtmlDetailedDiffAdapter();
+    public DetailedDiffAdapter getAdapter(DocumentModel doc) {
+        ConverterBasedDetailedDiffAdapter adapter = new ConverterBasedDetailedDiffAdapter();
         adapter.setAdaptedDocument(doc);
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {

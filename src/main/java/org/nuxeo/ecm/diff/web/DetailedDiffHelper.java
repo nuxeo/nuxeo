@@ -17,9 +17,11 @@
 
 package org.nuxeo.ecm.diff.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.diff.detaileddiff.adapter.base.DetailedDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -38,6 +40,8 @@ public final class DetailedDiffHelper {
 
     private static final String FIELD_URL_PARAM_NAME = "fieldName";
 
+    private static final String CONVERSION_TYPE_URL_PARAM_NAME = "conversionType";
+
     private static final String DETAILED_DIFF_URL_PREFIX = "restAPI/detailedDiff/";
 
     public static final String DETAILED_DIFF_URL_DEFAULT_XPATH = "default";
@@ -54,10 +58,11 @@ public final class DetailedDiffHelper {
      * @param currentDoc the current doc
      * @param schemaName the schema name
      * @param fieldName the field name
+     * @param conversionType the conversion type
      * @return the detailed diff fancy box url
      */
     public static String getDetailedDiffFancyBoxURL(DocumentModel currentDoc,
-            String schemaName, String fieldName) {
+            String schemaName, String fieldName, String conversionType) {
 
         DocumentLocation docLocation = new DocumentLocationImpl(
                 currentDoc.getRepositoryName(), currentDoc.getRef());
@@ -74,6 +79,12 @@ public final class DetailedDiffHelper {
         urlSb.append(FIELD_URL_PARAM_NAME);
         urlSb.append("=");
         urlSb.append(fieldName);
+        if (!StringUtils.isEmpty(conversionType)) {
+            urlSb.append("&");
+            urlSb.append(CONVERSION_TYPE_URL_PARAM_NAME);
+            urlSb.append("=");
+            urlSb.append(conversionType);
+        }
         return VirtualHostHelper.getContextPathProperty() + "/"
                 + RestHelper.addCurrentConversationParameters(urlSb.toString());
     }
@@ -86,10 +97,10 @@ public final class DetailedDiffHelper {
      * @return the detailed diff url
      */
     public static String getDetailedDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc) {
+            DocumentModel rightDoc, DetailedDiffConversionType conversionType) {
 
         return getDetailedDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, DETAILED_DIFF_URL_DEFAULT_XPATH);
+                rightDoc, DETAILED_DIFF_URL_DEFAULT_XPATH, conversionType);
     }
 
     /**
@@ -98,13 +109,15 @@ public final class DetailedDiffHelper {
      * @param leftDoc the left doc
      * @param rightDoc the right doc
      * @param xpath the xpath
+     * @param conversionType the conversion type
      * @return the detailed diff url
      */
     public static String getDetailedDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, String xpath) {
+            DocumentModel rightDoc, String xpath,
+            DetailedDiffConversionType conversionType) {
 
         return getDetailedDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, xpath);
+                rightDoc, xpath, conversionType);
     }
 
     /**
@@ -114,10 +127,12 @@ public final class DetailedDiffHelper {
      * @param leftDoc the left doc
      * @param rightDoc the right doc
      * @param xpath the xpath
+     * @param conversionType the conversion type
      * @return the detailed diff url
      */
     public static String getDetailedDiffURL(String repositoryName,
-            DocumentModel leftDoc, DocumentModel rightDoc, String xpath) {
+            DocumentModel leftDoc, DocumentModel rightDoc, String xpath,
+            DetailedDiffConversionType conversionType) {
 
         if (xpath == null) {
             xpath = DETAILED_DIFF_URL_DEFAULT_XPATH;
@@ -134,6 +149,10 @@ public final class DetailedDiffHelper {
         sb.append("/");
         sb.append(xpath);
         sb.append("/");
+        if (conversionType != null) {
+            sb.append(conversionType.name());
+            sb.append("/");
+        }
 
         return sb.toString();
     }

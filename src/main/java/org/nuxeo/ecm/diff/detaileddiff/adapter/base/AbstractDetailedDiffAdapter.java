@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
 import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
-import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
 import org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterManager;
 import org.nuxeo.ecm.diff.web.DetailedDiffHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -32,8 +32,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Antoine Taillefer
  * @since 5.6
  */
-public abstract class AbstractHtmlDetailedDiffAdapter implements
-        HtmlDetailedDiffAdapter {
+public abstract class AbstractDetailedDiffAdapter implements
+        DetailedDiffAdapter {
 
     // private static final String TITLE_REGEXP = "<title>(.*?)</title>";
     //
@@ -43,13 +43,16 @@ public abstract class AbstractHtmlDetailedDiffAdapter implements
 
     protected DocumentModel adaptedDoc;
 
-    public String getFileDetailedDiffURL(DocumentModel otherDoc) {
-        return DetailedDiffHelper.getDetailedDiffURL(adaptedDoc, otherDoc);
+    public String getFileDetailedDiffURL(DocumentModel otherDoc,
+            DetailedDiffConversionType conversionType) {
+        return DetailedDiffHelper.getDetailedDiffURL(adaptedDoc, otherDoc,
+                conversionType);
     }
 
-    public String getFileDetailedDiffURL(DocumentModel otherDoc, String xpath) {
+    public String getFileDetailedDiffURL(DocumentModel otherDoc, String xpath,
+            DetailedDiffConversionType conversionType) {
         return DetailedDiffHelper.getDetailedDiffURL(adaptedDoc, otherDoc,
-                xpath);
+                xpath, conversionType);
     }
 
     // protected String updateTitleInHtml(String htmlContent)
@@ -87,16 +90,18 @@ public abstract class AbstractHtmlDetailedDiffAdapter implements
     // return sb.toString();
     // }
 
-    public List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc)
+    public List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc,
+            DetailedDiffConversionType conversionType)
             throws DetailedDiffException {
         // return getFileDetailedDiffBlobs(otherDoc, false);
-        return getDetailedDiffBlobs(otherDoc);
+        return getDetailedDiffBlobs(otherDoc, conversionType);
     }
 
     public List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc,
-            String xpath) throws DetailedDiffException {
+            String xpath, DetailedDiffConversionType conversionType)
+            throws DetailedDiffException {
         // return getFileDetailedDiffBlobs(otherDoc, xpath, false);
-        return getDetailedDiffBlobs(otherDoc, xpath);
+        return getDetailedDiffBlobs(otherDoc, xpath, conversionType);
     }
 
     // public List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc,
@@ -109,7 +114,8 @@ public abstract class AbstractHtmlDetailedDiffAdapter implements
     // return blobs;
     // }
 
-    protected abstract List<Blob> getDetailedDiffBlobs(DocumentModel otherDoc)
+    protected abstract List<Blob> getDetailedDiffBlobs(DocumentModel otherDoc,
+            DetailedDiffConversionType conversionType)
             throws DetailedDiffException;
 
     // public List<Blob> getFileDetailedDiffBlobs(DocumentModel otherDoc, String
@@ -123,7 +129,8 @@ public abstract class AbstractHtmlDetailedDiffAdapter implements
     // }
 
     protected abstract List<Blob> getDetailedDiffBlobs(DocumentModel otherDoc,
-            String xpath) throws DetailedDiffException;
+            String xpath, DetailedDiffConversionType conversionType)
+            throws DetailedDiffException;
 
     // protected List<Blob> postProcessBlobs(List<Blob> blobs)
     // throws DetailedDiffException {

@@ -6,7 +6,7 @@
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
     point="adapters">
-    <adapter class="org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter"
+    <adapter class="org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter"
       factory="org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffDocumentModelAdapterFactory" />
   </extension>
 </component>

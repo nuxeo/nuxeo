@@ -15,7 +15,7 @@
 package org.nuxeo.ecm.diff.detaileddiff.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
 
 /**
  * Interface that should be implemented by contributed code to manage custom
@@ -26,6 +26,6 @@ import org.nuxeo.ecm.diff.detaileddiff.HtmlDetailedDiffAdapter;
  */
 public interface DetailedDiffAdapterFactory {
 
-    HtmlDetailedDiffAdapter getAdapter(DocumentModel doc);
+    DetailedDiffAdapter getAdapter(DocumentModel doc);
 
 }
