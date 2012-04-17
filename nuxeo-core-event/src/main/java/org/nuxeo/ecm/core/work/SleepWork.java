@@ -71,12 +71,16 @@ public class SleepWork extends AbstractWork {
         this.durationMillis = durationMillis;
         this.category = category;
         this.debug = debug;
-        setStatus("Sleep " + durationMillis + "ms");
     }
 
     @Override
     public String getCategory() {
         return category;
+    }
+
+    @Override
+    public String getTitle() {
+        return "Sleep " + durationMillis + " ms";
     }
 
     @Override

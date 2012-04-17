@@ -219,6 +219,55 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             return removed;
         }
 
+        /**
+         * Finds a work instance in the scheduled or running queue.
+         *
+         * @param work the work to find
+         * @param state the state defining the queue to look in,
+         *            {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+         *            RUNNING}, {@link State#COMPLETED COMPLETED}, or
+         *            {@code null} for non-completed
+         * @param useEquals if {@code true} then use {@link Work#equals} to find
+         *            the work instance, otherwise use object identity
+         * @param pos a 1-element array to return the position in the internal
+         *            queue
+         * @return the found work instance
+         */
+        public Work find(Work work, State state, boolean useEquals, int[] pos) {
+            List<List<Work>> queues = new LinkedList<List<Work>>();
+            if (state == null) {
+                queues.add(running);
+                queues.add(scheduled);
+            } else if (state == State.RUNNING) {
+                queues.add(running);
+            } else if (state == State.SCHEDULED) {
+                queues.add(scheduled);
+            } else if (state == State.COMPLETED) {
+                queues.add(completed);
+            } else {
+                throw new IllegalArgumentException(String.valueOf(state));
+            }
+            synchronized (monitor) {
+                for (List<Work> queue : queues) {
+                    int i = -1;
+                    for (Work w : queue) {
+                        i++;
+                        boolean found = useEquals ? w.equals(work) : w == work;
+                        if (found) {
+                            if (pos != null) {
+                                pos[0] = i;
+                            }
+                            return w;
+                        }
+                    }
+                }
+            }
+            if (pos != null) {
+                pos[0] = -1;
+            }
+            return null;
+        }
+
         @Override
         public void execute(Runnable r) {
             synchronized (monitor) {
@@ -362,6 +411,19 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
 
         /**
+         * Gets the non-completed tasks. Returns a copy.
+         */
+        public List<Work> getNonCompleted() {
+            synchronized (monitor) {
+                List<Work> list = new ArrayList<Work>(running.size()
+                        + scheduled.size());
+                list.addAll(running);
+                list.addAll(scheduled);
+                return list;
+            }
+        }
+
+        /**
          * Gets the number of non-completed tasks.
          */
         public int getNonCompletedWorkSize() {
@@ -499,35 +561,55 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void schedule(Work work) {
-        schedule(work, false);
+        schedule(work, Scheduling.ENQUEUE);
     }
 
     @Override
-    public void schedule(Work work, boolean cancelPrevious) {
-        if (work.getState() != State.QUEUED) {
+    public void schedule(Work work, Scheduling scheduling) {
+        if (work.getState() != State.SCHEDULED) {
             throw new IllegalStateException(String.valueOf(work.getState()));
         }
         String queueId = getCategoryQueueId(work.getCategory());
         WorkThreadPoolExecutor executor = getExecutor(queueId);
-        if (cancelPrevious) {
+        switch (scheduling) {
+        case ENQUEUE:
+            break;
+        case CANCEL_SCHEDULED:
             executor.cancelScheduled(work);
+            break;
+        case IF_NOT_SCHEDULED:
+        case IF_NOT_RUNNING:
+        case IF_NOT_RUNNING_OR_SCHEDULED:
+            if (executor.find(work, scheduling.state, true, null) != null) {
+                work.setCanceled();
+                return;
+            }
+            break;
         }
         executor.execute(work);
     }
 
     @Override
-    public List<Work> getScheduledWork(String queueId) {
-        return getExecutor(queueId).getScheduled();
+    public Work find(Work work, State state, boolean useEquals, int[] pos) {
+        String queueId = getCategoryQueueId(work.getCategory());
+        return getExecutor(queueId).find(work, state, useEquals, pos);
     }
 
     @Override
-    public List<Work> getRunningWork(String queueId) {
-        return getExecutor(queueId).getRunning();
-    }
-
-    @Override
-    public List<Work> getCompletedWork(String queueId) {
-        return getExecutor(queueId).getCompleted();
+    public List<Work> listWork(String queueId, State state) {
+        if (state == null) {
+            return getExecutor(queueId).getNonCompleted();
+        }
+        switch (state) {
+        case SCHEDULED:
+            return getExecutor(queueId).getScheduled();
+        case RUNNING:
+            return getExecutor(queueId).getRunning();
+        case COMPLETED:
+            return getExecutor(queueId).getCompleted();
+        default:
+            throw new IllegalArgumentException(String.valueOf(state));
+        }
     }
 
     @Override

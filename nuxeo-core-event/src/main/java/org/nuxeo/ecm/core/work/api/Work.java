@@ -43,8 +43,8 @@ public interface Work extends Runnable {
      * The running state of a {@link Work} instance.
      */
     enum State {
-        /** Work instance is queued but not yet running. */
-        QUEUED,
+        /** Work instance is scheduled but not yet running. */
+        SCHEDULED,
         /** Work instance is running. */
         RUNNING,
         /** Work instance is running but should suspend work. */
@@ -53,9 +53,9 @@ public interface Work extends Runnable {
         SUSPENDED,
         /** Work instance has completed. */
         COMPLETED,
-        /** Work instance execution failed. */
+        /** Work instance has failed. */
         FAILED,
-        /** Work instance execution was canceled. */
+        /** Work instance was canceled. */
         CANCELED
     }
 
@@ -115,6 +115,19 @@ public interface Work extends Runnable {
             return total;
         }
 
+        public boolean getIsWithPercent() {
+            return percent != PERCENT_INDETERMINATE;
+        }
+
+        public boolean getIsWithCurrentAndTotal() {
+            return current != CURRENT_INDETERMINATE;
+        }
+
+        public boolean getIsIndeterminate() {
+            return percent == PERCENT_INDETERMINATE
+                    && current == CURRENT_INDETERMINATE;
+        }
+
         @Override
         public String toString() {
             return getClass().getSimpleName()
@@ -163,6 +176,13 @@ public interface Work extends Runnable {
      * @return the running state
      */
     State getState();
+
+    /**
+     * Gets a human-readable name for this work instance.
+     *
+     * @return a human-readable name
+     */
+    String getTitle();
 
     /**
      * Gets a human-readable status for this work instance.

@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.work.api;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.ecm.core.work.api.Work.State;
+
 /**
  * A {@link WorkManager} executes {@link Work} instances asynchronously.
  * <p>
@@ -30,6 +32,47 @@ import java.util.concurrent.TimeUnit;
  * @since 5.6
  */
 public interface WorkManager {
+
+    /**
+     * The scheduling policy to use when adding a work instance using
+     * {@link #schedule(Work, Scheduling)}.
+     */
+    enum Scheduling {
+        /**
+         * Always schedule the work.
+         */
+        ENQUEUE,
+        /**
+         * Any other scheduled work equals to this one is removed from
+         * scheduling and canceled first, before this work is scheduled.
+         */
+        CANCEL_SCHEDULED,
+        /**
+         * If there is a scheduled work equals to this one, then don't schedule
+         * the work.
+         */
+        IF_NOT_SCHEDULED(State.SCHEDULED),
+        /**
+         * If there is a running work equals to this one, then don't schedule
+         * the work.
+         */
+        IF_NOT_RUNNING(State.RUNNING),
+        /**
+         * If there is a running or scheduled work equals to this one, then
+         * don't schedule the work.
+         */
+        IF_NOT_RUNNING_OR_SCHEDULED;
+
+        public final State state;
+
+        private Scheduling() {
+            state = null;
+        }
+
+        private Scheduling(State state) {
+            this.state = state;
+        }
+    }
 
     /**
      * Lists the ids of the existing work queues.
@@ -92,39 +135,52 @@ public interface WorkManager {
     void schedule(Work work);
 
     /**
-     * Schedules work for execution at a later time, optionally replacing any
-     * previously scheduled work equals to this one.
+     * Schedules work for execution at a later time, with a specific
+     * {@linkplain Scheduling scheduling} policy.
      *
-     * @param cancelPrevious if {@code true}, then any other scheduled work
-     *            equals to this one is removed from schedule and canceled first
      * @param work the work to execute
+     * @param scheduling the scheduling policy
      * @see #schedule(Work)
      */
-    void schedule(Work work, boolean cancelPrevious);
+    void schedule(Work work, Scheduling scheduling);
 
     /**
-     * Gets the list of scheduled work instances for a given queue.
+     * Finds a work instance by equality or identity.
+     * <p>
+     * Note that an instance requested as RUNNING could be found SUSPENDING or
+     * SUSPENDED, and an instance requested as COMPLETED could be found FAILED.
+     * <p>
+     * Also, due to the asynchronous nature of work execution, the
+     * {@linkplain Work#getState state} of the work could be different than
+     * what's expected if the work started or finished in the middle of the
+     * call.
      *
-     * @param queueId the queue id
-     * @return the list of scheduled work
+     * @param work the work to find
+     * @param state the state defining the state to look into,
+     *            {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null}
+     *            for non-completed
+     * @param useEquals if {@code true} then use {@link Work#equals} to find the
+     *            work instance, otherwise use object identity
+     * @param pos a 1-element array to return the position in the internal queue
+     * @return the found work instance, or {@code null} if not found
      */
-    List<Work> getScheduledWork(String queueId);
+    Work find(Work work, State state, boolean useEquals, int[] pos);
 
     /**
-     * Gets the list of currently running work instances for a given queue.
+     * Lists the work instances in a given queue in a defined state.
+     * <p>
+     * Note that an instance requested as RUNNING could be found SUSPENDING or
+     * SUSPENDED, and an instance requested as COMPLETED could be found FAILED.
      *
      * @param queueId the queue id
-     * @return the list of running work
+     * @param state the state defining the state to look into,
+     *            {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null}
+     *            for non-completed
+     * @return the list of work instances in the given state
      */
-    List<Work> getRunningWork(String queueId);
-
-    /**
-     * Gets the list of completed work instances for a given queue.
-     *
-     * @param queueId the queue id
-     * @return the list of completed work
-     */
-    List<Work> getCompletedWork(String queueId);
+    List<Work> listWork(String queueId, State state);
 
     /**
      * Gets the size of the non-completed work (scheduled + running) for a give

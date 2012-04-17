@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -89,9 +90,7 @@ public class AsyncEventExecutor {
             if (filtered.isEmpty()) {
                 continue;
             }
-            // listener.isSingleThreaded() // TODO
-            String category = "default";
-            getWorkManager().schedule(new ListenerWork(listener, filtered, category));
+            getWorkManager().schedule(new ListenerWork(listener, filtered));
         }
     }
 
@@ -108,20 +107,20 @@ public class AsyncEventExecutor {
         WorkManager workManager = getWorkManager();
         int n = 0;
         for (String queueId : workManager.getWorkQueueIds()) {
-            n += workManager.getRunningWork(queueId).size();
+            n += workManager.listWork(queueId, State.RUNNING).size();
         }
         return n;
     }
 
     protected static class ListenerWork extends AbstractWork {
 
-        protected final String category;
+        protected final String title;
 
         protected ReconnectedEventBundle bundle;
 
         protected EventListenerDescriptor listener;
 
-        public ListenerWork(EventListenerDescriptor listener, EventBundle bundle, String category) {
+        public ListenerWork(EventListenerDescriptor listener, EventBundle bundle) {
             this.listener = listener;
             if (bundle instanceof ReconnectedEventBundle) {
                 this.bundle = (ReconnectedEventBundle) bundle;
@@ -129,7 +128,6 @@ public class AsyncEventExecutor {
                 this.bundle = new ReconnectedEventBundleImpl(bundle,
                         listener.getName());
             }
-            this.category = category;
             List<String> l = new LinkedList<String>();
             for (Event event : bundle) {
                 String s = event.getName();
@@ -142,12 +140,17 @@ public class AsyncEventExecutor {
                 }
                 l.add(s);
             }
-            setStatus("Async " + listener.getName() + " " + l);
+            title = "Listener " + listener.getName() + " " + l;
         }
 
         @Override
         public String getCategory() {
-            return category;
+            return listener.getName();
+        }
+
+        @Override
+        public String getTitle() {
+            return title;
         }
 
         @Override

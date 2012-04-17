@@ -21,8 +21,8 @@ import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_100_PC;
 import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_INDETERMINATE;
 import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
 import static org.nuxeo.ecm.core.work.api.Work.State.FAILED;
-import static org.nuxeo.ecm.core.work.api.Work.State.QUEUED;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
+import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDED;
 import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDING;
 
@@ -80,7 +80,7 @@ public abstract class AbstractWork implements Work {
     protected volatile Map<String, Serializable> data;
 
     public AbstractWork() {
-        state = QUEUED;
+        state = SCHEDULED;
         progress = PROGRESS_INDETERMINATE;
         schedulingTime = System.currentTimeMillis();
     }
@@ -121,7 +121,7 @@ public abstract class AbstractWork implements Work {
         startTime = System.currentTimeMillis();
         setProgress(PROGRESS_0_PC);
         synchronized (stateMonitor) {
-            if (state == QUEUED) {
+            if (state == SCHEDULED) {
                 state = RUNNING;
             }
             // else may already be SUSPENDED
@@ -146,6 +146,11 @@ public abstract class AbstractWork implements Work {
             ok = true;
         } catch (Exception e) {
             err = e;
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                throw new RuntimeException(e);
+            }
         } finally {
             try {
                 cleanUp(ok, err);
@@ -228,7 +233,7 @@ public abstract class AbstractWork implements Work {
         synchronized (stateMonitor) {
             if (state != COMPLETED && state != FAILED) {
                 if (state != SUSPENDED) {
-                    if (state == QUEUED) {
+                    if (state == SCHEDULED) {
                         suspendFromQueue();
                         state = SUSPENDED;
                     } else { // RUNNING
@@ -294,7 +299,7 @@ public abstract class AbstractWork implements Work {
     @Override
     public void setCanceled() {
         synchronized (stateMonitor) {
-            if (state == QUEUED) {
+            if (state == SCHEDULED) {
                 state = State.CANCELED;
             } else {
                 throw new IllegalStateException(String.valueOf(state));

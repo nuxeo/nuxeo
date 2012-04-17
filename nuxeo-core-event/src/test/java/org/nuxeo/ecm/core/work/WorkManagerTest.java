@@ -19,6 +19,11 @@ package org.nuxeo.ecm.core.work;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.work.api.Work.State.CANCELED;
+import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
+import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
+import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
+import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDED;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -28,8 +33,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.work.api.Work.Progress;
-import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -54,9 +59,9 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         service = Framework.getLocalService(WorkManager.class);
         assertNotNull(service);
         service.clearCompletedWork(0);
-        assertEquals(0, service.getCompletedWork(QUEUE).size());
-        assertEquals(0, service.getRunningWork(QUEUE).size());
-        assertEquals(0, service.getScheduledWork(QUEUE).size());
+        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(0, service.listWork(QUEUE, RUNNING).size());
+        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
     }
 
     @Override
@@ -72,10 +77,11 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     public void testWorkSuspendFromQueue() throws Exception {
         long duration = 5000; // 5s
         SleepWork work = new SleepWork(duration);
+        assertEquals("Sleep 5000 ms", work.getTitle());
         assertEquals(CATEGORY, work.getCategory());
-        assertEquals(State.QUEUED, work.getState());
+        assertEquals(SCHEDULED, work.getState());
         work.suspend();
-        assertEquals(State.SUSPENDED, work.getState());
+        assertEquals(SUSPENDED, work.getState());
         Map<String, Serializable> data = work.getData();
         assertNotNull(data);
         long remaining = ((Long) data.get(SleepWork.STATE_DURATION)).longValue();
@@ -86,7 +92,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     public void testWorkSuspendFromThread() throws Exception {
         long duration = 5000; // 5s
         SleepWork work = new SleepWork(duration, true);
-        assertEquals(State.QUEUED, work.getState());
+        assertEquals(SCHEDULED, work.getState());
 
         // start work in thread
         Thread t = new Thread(work);
@@ -94,7 +100,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         try {
             work.beforeRun();
             work.debugWaitReady();
-            assertEquals(State.RUNNING, work.getState());
+            assertEquals(RUNNING, work.getState());
             work.debugStart();
 
             Thread.sleep(50);
@@ -104,7 +110,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
             work.suspend();
             boolean terminated = work.awaitTermination(1, TimeUnit.SECONDS);
             assertTrue(terminated);
-            assertEquals(State.SUSPENDED, work.getState());
+            assertEquals(SUSPENDED, work.getState());
 
             work.debugFinish();
         } finally {
@@ -131,14 +137,14 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     public void testWorkManagerWork() throws Exception {
         int duration = 2000; // 2s
         SleepWork work = new SleepWork(duration, true);
-        assertEquals(State.QUEUED, work.getState());
+        assertEquals(SCHEDULED, work.getState());
         service.schedule(work);
 
         work.debugWaitReady();
-        assertEquals(State.RUNNING, work.getState());
-        assertEquals(0, service.getCompletedWork(QUEUE).size());
-        assertEquals(1, service.getRunningWork(QUEUE).size());
-        assertEquals(0, service.getScheduledWork(QUEUE).size());
+        assertEquals(RUNNING, work.getState());
+        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(1, service.listWork(QUEUE, RUNNING).size());
+        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
         assertEquals("Starting sleep work", work.getStatus());
         assertEquals(Progress.PROGRESS_0_PC, work.getProgress());
         work.debugStart();
@@ -149,18 +155,18 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         }
 
         work.debugWaitDone();
-        assertEquals(0, service.getCompletedWork(QUEUE).size());
-        assertEquals(1, service.getRunningWork(QUEUE).size());
-        assertEquals(0, service.getScheduledWork(QUEUE).size());
+        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(1, service.listWork(QUEUE, RUNNING).size());
+        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
         assertEquals("Completed sleep work", work.getStatus());
         assertEquals(Progress.PROGRESS_100_PC, work.getProgress());
         work.debugFinish();
 
         Thread.sleep(1000);
-        assertEquals(1, service.getCompletedWork(QUEUE).size());
-        assertEquals(0, service.getRunningWork(QUEUE).size());
-        assertEquals(0, service.getScheduledWork(QUEUE).size());
-        assertEquals(State.COMPLETED, work.getState());
+        assertEquals(1, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(0, service.listWork(QUEUE, RUNNING).size());
+        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
+        assertEquals(COMPLETED, work.getState());
     }
 
     protected static class SleepWorkWithEquals extends SleepWork {
@@ -188,7 +194,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testWorkManagerScheduleCancelPrevious() throws Exception {
+    public void testWorkManagerScheduling() throws Exception {
         int duration = 1000; // 1s
         SleepWork work1 = new SleepWorkWithEquals(duration, true, "1");
         SleepWork work2 = new SleepWorkWithEquals(duration, true, "2");
@@ -199,29 +205,49 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
         work1.debugWaitReady();
         work2.debugWaitReady();
-        assertEquals(State.RUNNING, work1.getState());
-        assertEquals(State.RUNNING, work2.getState());
-        assertEquals(State.QUEUED, work3.getState());
+        assertEquals(RUNNING, work1.getState());
+        assertEquals(RUNNING, work2.getState());
+        assertEquals(SCHEDULED, work3.getState());
+        assertTrue(work1 == service.find(work1, RUNNING, false, null));
+        assertTrue(work2 == service.find(work2, RUNNING, false, null));
+        assertTrue(work3 == service.find(work3, SCHEDULED, false, null));
+        assertTrue(work1 == service.find(work1, null, false, null));
+        assertTrue(work2 == service.find(work2, null, false, null));
+        assertTrue(work3 == service.find(work3, null, false, null));
 
         SleepWork work4 = new SleepWorkWithEquals(duration, true, "3"); // id=3
-        service.schedule(work4, true); // schedule and cancel previous
-        assertEquals(State.CANCELED, work3.getState());
-        assertEquals(State.QUEUED, work4.getState());
+        service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
+        assertEquals(CANCELED, work4.getState());
+
+        SleepWork work5 = new SleepWorkWithEquals(duration, true, "1"); // id=1
+        service.schedule(work5, Scheduling.IF_NOT_RUNNING);
+        assertEquals(CANCELED, work5.getState());
+
+        SleepWork work6 = new SleepWorkWithEquals(duration, true, "1"); // id=1
+        service.schedule(work6, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        assertEquals(CANCELED, work6.getState());
+
+        SleepWork work7 = new SleepWorkWithEquals(duration, true, "3"); // id=3
+        service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
+        assertEquals(CANCELED, work3.getState());
+        assertEquals(SCHEDULED, work7.getState());
 
         work1.debugStart();
         work2.debugStart();
-        work4.debugStart();
+        work7.debugStart();
         work1.debugFinish(); // early
         work2.debugFinish(); // early
-        work4.debugFinish(); // early
+        work7.debugFinish(); // early
 
         boolean completed = service.awaitCompletion(3, TimeUnit.SECONDS);
         assertTrue(completed);
 
-        assertEquals(State.COMPLETED, work1.getState());
-        assertEquals(State.COMPLETED, work2.getState());
-        assertEquals(State.CANCELED, work3.getState());
-        assertEquals(State.COMPLETED, work4.getState());
+        assertEquals(COMPLETED, work1.getState());
+        assertEquals(COMPLETED, work2.getState());
+        assertEquals(COMPLETED, work7.getState());
+        assertTrue(work1 == service.find(work1, COMPLETED, false, null));
+        assertTrue(work2 == service.find(work2, COMPLETED, false, null));
+        assertTrue(work7 == service.find(work7, COMPLETED, false, null));
     }
 
     @Test
@@ -236,9 +262,9 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
         work1.debugWaitReady();
         work2.debugWaitReady();
-        assertEquals(State.RUNNING, work1.getState());
-        assertEquals(State.RUNNING, work2.getState());
-        assertEquals(State.QUEUED, work3.getState());
+        assertEquals(RUNNING, work1.getState());
+        assertEquals(RUNNING, work2.getState());
+        assertEquals(SCHEDULED, work3.getState());
         work1.debugStart();
         work2.debugStart();
         work3.debugStart();
@@ -250,9 +276,9 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertTrue(completed);
 
         // check work state
-        assertEquals(State.COMPLETED, work1.getState());
-        assertEquals(State.COMPLETED, work2.getState());
-        assertEquals(State.COMPLETED, work3.getState());
+        assertEquals(COMPLETED, work1.getState());
+        assertEquals(COMPLETED, work2.getState());
+        assertEquals(COMPLETED, work3.getState());
     }
 
     @Test
@@ -267,9 +293,9 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
         work1.debugWaitReady();
         work2.debugWaitReady();
-        assertEquals(State.RUNNING, work1.getState());
-        assertEquals(State.RUNNING, work2.getState());
-        assertEquals(State.QUEUED, work3.getState());
+        assertEquals(RUNNING, work1.getState());
+        assertEquals(RUNNING, work2.getState());
+        assertEquals(SCHEDULED, work3.getState());
         work1.debugStart();
         work2.debugStart();
         work1.debugFinish(); // early
@@ -284,9 +310,9 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertTrue(terminated);
 
         // check work state
-        assertEquals(State.SUSPENDED, work1.getState());
-        assertEquals(State.SUSPENDED, work2.getState());
-        assertEquals(State.SUSPENDED, work3.getState());
+        assertEquals(SUSPENDED, work1.getState());
+        assertEquals(SUSPENDED, work2.getState());
+        assertEquals(SUSPENDED, work3.getState());
         Map<String, Serializable> data1 = work1.getData();
         Map<String, Serializable> data2 = work2.getData();
         Map<String, Serializable> data3 = work3.getData();
