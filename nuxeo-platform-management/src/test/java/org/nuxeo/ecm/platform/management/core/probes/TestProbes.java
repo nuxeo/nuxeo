@@ -41,7 +41,6 @@ public class TestProbes extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.core.management");
-        deployBundle("org.nuxeo.ecm.platform.scheduler.core");
         deployBundle("org.nuxeo.ecm.platform.management");
         openSession();
         fireFrameworkStarted();
