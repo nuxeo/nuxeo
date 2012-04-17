@@ -1,24 +1,135 @@
 
 # Overview
 
-## What is this plugin for ?
+## Introduction
 
-This Nuxeo Platform plugin provides a way to associate a Nuxeo Document with a Template.
+This set of plugins provides a way to associate a Nuxeo Document with a Template.
 
-The Template is a Word XML or OpenOffice document (stored also in a Nuxeo Document).
+The Template can be of several kind (MS Word XML, OpenOffice text, OpenOffice Calc, MS Excel, Freemarker, XSLT ...)
+This Template is stored as a Nuxeo Document and then associated to an other Document.
 
-The Template is used to render the Document.
+A given Document can be associated to 0, 1 or several Templates.
 
-For exemple you can define in your template a field that will be replaced by the dc:title of the document.
+The Templates are used to render the associated document.
+Depending on the Template type, a different Template Processor will be used and the resulting rendering can be :
 
-Each format (WordML / OpenOffice) has his own logic for defining merge fields.
+ - an HTML document
+ - an XML document
+ - an OpenOffice document
+ - an MS Office document
 
-In the case of OpenOffice document, you can actually generate the full document since it uses JODReports 
-(that use Freemarker to render an ODT file).
+Each template processor has his own logic for rendering a Document from a Template :
+
+ - raw processing (FreeMarker or XSLT)
+ - merge fields replacement (MS Office / OpenOffice)
+
+## Sample use cases 
+
+### Office templating
+
+This is the most direct use case.
+
+**The Template**
+
+The template is an MS Word/Excel or OpenOffice Write/Calc file.
+
+This file can be your company model (with your logo, colors ...), but can also contains merge-fields that will be replaced by the target document data :
+
+ - title
+ - version
+ - author
+ - history
+ - picture
+ - ...
+
+**The associated document**
+
+The associated document can be any Document that can contain a file.
+On first association or at creation time, the main file of the document will be replaced by the template one : it is initialized from the template file.
+
+This means you can continue edit it's content, but this file is dynamic and you can render it to get the final file with all meta-data and presentation stuffs up to date (title, description, author, history ...).
+
+### Web rendering
+
+**The Template**
+
+The Template can for example a FreeMarker template.
+It can reference any attribute of the target Document, but also history in order to provide a HTML view of it.
+
+**The associated document**
+
+The associated document can be any Document type and the Freemarker template will be used to provide an HTML view on it 
+
+### Composition
+
+**The Template**
+
+The template can be a corporate template with logo, table of content, picture and content in MS Word or OpenOffice format.
+The template contains simple merge fields (like in Office templating), but also a *content* field.
+
+**The associated Document**
+
+The associated document can be anything that can be HTML rendered (Note, WebPage, Office document ...).
+
+The rendering will replace the merge fields but also merge the HTML content of the document inside the content field of the template.
+
+This can be used to :
+
+ - render an Html / Markdown note inside an Office Template 
+   (i.e. adding a coverpage, a TOC, page numberring ...)
+
+ - fill a mail or form template with formated text
+
+## Templates and Renditions
+
+Template can be used to provide a Rendition.
+This means that for example, when you publish a document, you can in fact publish the redering of the document using a template.
+
+# Artifact info
 
 ## History
 
 This plugin is based on the DocX prototype done a long time ago here : http://hg.nuxeo.org/sandbox/nuxeo-platform-docx-templates/
+
+The initial rewrite is available here : https://github.com/tiry/nuxeo-platform-rendering-templates
+
+## Sub modules
+
+The project is splitted in several sub modules :
+
+**nuxeo-template-rendering-api**
+
+API module containing all interfaces.
+
+**nuxeo-template-rendering-core**
+
+Component, extension points and service implementation.
+This modules only contains template processors for FreeMarker and XSLT.
+
+**nuxeo-template-rendering-web**
+
+Contribute UI level extensions : Layouts, Widgets, Views, Url bindings ...
+
+**nuxeo-template-rendering-xdocreport**
+
+Contribute the OpenOffice / DocX processor based on XDocReport.
+This is by far the most powerfull processor.
+
+See : http://code.google.com/p/xdocreport/
+
+**nuxeo-template-rendering-jxls**
+
+Contribute a template processor for XLS files based on JXLS project.
+See : http://jxls.sourceforge.net/
+
+**nuxeo-template-rendering-jod**
+
+Contribute JOD Report based template processor for ODT files.
+This renderer is historical and replaced by xdocreport that is more powerful.
+
+**nuxeo-template-rendering-sandbox**
+
+Misc code and extensions that are currently experimental.
 
 ## Building
 
@@ -33,136 +144,5 @@ You first need to deploy the plugin inside your Nuxeo server.
 You also need to copy the additional libs (there is no Marketplace package for now)
 
         cp target/libs/*  nxserver/lib/
-
-## Templating format
-
-The main templating engine is now <A href="http://code.google.com/p/xdocreport/">XDocReport</A> using Freemarker engine.
-
-## Task list
-
- See the <A href="https://jira.nuxeo.com/browse/NXP-8201">Jira tickets</A>
 	
-# Quick User guide
-
-## Template Document
-
-The first step is to create a Template Document.
-
-This document will hold :
-
- - the template itself (docx or odt for now)
-
- - the parameters of the template
-
- - the options for template binding
-
-### Template Parameters
-
-The template file itself uses Freemarker and can contain variable or Freemarker directives.
-
-The default rendering context contains :
-
- - doc and document : both refering to the DocumentModel the template is rendered against
-
- - user : the current username
-
- - principal : the current user principal
-
- - auditEntries : the Audit entries associated to the DocumentModel the template is rendered against
-
-But of course you can introduce new variables in your template.
-For example you can use ${mydescription} in the template file.
-
-When creating a Template Document, the system will automatically try to extract all the variable names used in the template and ask you to provide a binding.
-
-Each variable can be :
-
- - a String literal
-
- - a Date literal
-
- - a Boolean literal
-
- - a Document Property : a xpath that will be used to extract a property on the target Document
-
- - a Picture Document Property : same as Document property, but it must point to a Blob that will be used to replace a Picture inside the template file
-
-### Template Binding options
-
-When creating or editing a Template Document, in addition of the template file parameters, you will be able to define options.
-
-Here is a quick description of these options :
-
-#### Applicable Document Types
-
-Because your template can have parameters bound to xpath that are specific to a Document Type, you can define that your template is only available for some document types.
-
-#### Automatic association
-
-You can manually associate a Template Document to any Document in the Content Repository.
-If you want that association to be automatic, you can select the Document Types that should benefit from this association.
-
-Typically, if I create a Template Document that is designed for Note and want it to be by default automatically associated to any Note I create, you will select Note doc type in Automatic Association.
-
-#### Template Engine
-
-The templating feature is pluggable so that we can easily add new template processors.
-Current implementation comes with 3 built-in processors :
-
- - XDocReport processor (ODT and DocX)
-
- - JODReport processor (legacy code for ODT)
-
- - raw XML processor for WordXML
-
-When creating a Template Document you can select the target processor or keep the default value (automatic) to let the system choose the best processor depending on your template file mime-type.
-For now the default will always be XDocReport, but in the future it may change if for example we add raw freemarker or itext support for managing other template types than ODT and DocX).
-
-## Using Template Documents on an other Document
-
-The idea is to use a Template Document to render an other Document.
-
-### TemplateBasedDocument
-
-As example we provide a sample DocumentType that is called TemplateBasedDocument that is basically a File associated to a template.
-
- - you select the Template associated
-
- - you can render the template and have the resulting file stored in the file schema.
-
-But this is probably not the main use case.
-
-### Dynamic binding
-
-You dynamically bind a template to an existing Document.
-For that on each Document that is not already bound to a Template you will have a new Action on the top right corner: it will allow you to select a Template and associate it to the current Document.
-Technicall, we add a facet to the current Document.
-
-NB : Using the automatic association in the Template Document is a way to avoid this manual operation.
-
-### Using the template bound Document
-
-Once your Document is associated to a template (manually or automatically) you will have :
-
- - a new render action on the top right corner
-
- - a new Associated Template tab
-
-#### Rendering 
-
-It will render the template against the current Document and return you the resulting file.
-
-#### Associated Template tab
-
-This tab provides :
-
- - a link to the associated Template Document
-
- - a summary of the template parameters (that you may be able to edit depending on the configuration)
-
- - a "render to file" action : same as rendering but stores the result as attachement of the current document
-
- - a "update template parameters" action : will resync the document with the Template Document parameters (useful if you edited the Template Document since the initial association)
-
-
 
