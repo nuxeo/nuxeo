@@ -17,13 +17,6 @@
       <filter-id>popup_view_preview</filter-id>
     </action>
 
-    <action id="showFancyBoxPreview"
-      link="javascript:showFancyBox('#{previewActions.currentDocumentPreviewPopupURL}');"
-      label="label.document.preview" icon="/icons/preview.png">
-      <category>DOCUMENT_HEADER_ACTIONS_LIST_HREF</category>
-      <filter-id>view_preview</filter-id>
-    </action>
-
     <action id="showFancyBoxPreviewPopup" link="javascript:doPreviewPopup" order="130"
       enabled="true" label="label.document.preview" icon="/icons/preview.png">
       <category>POPUP</category>
