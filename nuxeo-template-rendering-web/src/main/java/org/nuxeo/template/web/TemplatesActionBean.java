@@ -188,7 +188,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
     }
 
     public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
-        return Framework.getLocalService(TemplateProcessorService.class).getRegistredTemplateProcessors();
+        return Framework.getLocalService(TemplateProcessorService.class).getRegisteredTemplateProcessors();
     }
 
     public List<String> getTemplateAndVersionsUUIDs() throws ClientException {

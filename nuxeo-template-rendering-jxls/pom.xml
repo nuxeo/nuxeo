@@ -15,7 +15,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-jxls</artifactId>
-  <name>Template Rendering service JXLS plugin</name>
+  <name>Template Rendering JXLS plugin</name>
 
   <dependencies>
     <dependency>

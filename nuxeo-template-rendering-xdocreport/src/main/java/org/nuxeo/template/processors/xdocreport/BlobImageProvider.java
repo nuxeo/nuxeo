@@ -8,6 +8,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import fr.opensagres.xdocreport.core.document.ImageFormat;
 import fr.opensagres.xdocreport.document.images.AbstractInputStreamImageProvider;
 
+/**
+ * XDocReport wrapper for a Picture stored in a Nuxeo Blob
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class BlobImageProvider extends AbstractInputStreamImageProvider {
 
     protected final Blob blob;
@@ -16,7 +22,7 @@ public class BlobImageProvider extends AbstractInputStreamImageProvider {
 
     public BlobImageProvider(Blob blob) {
         super(false);
-        this.blob=blob;
+        this.blob = blob;
         this.imageFormat = ImageFormat.getFormatByResourceName(blob.getFilename());
     }
 

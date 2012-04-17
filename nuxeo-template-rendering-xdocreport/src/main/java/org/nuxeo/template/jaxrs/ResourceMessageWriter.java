@@ -12,6 +12,11 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
 
+/**
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class ResourceMessageWriter implements MessageBodyWriter<Resource> {
 
     @Override
@@ -29,9 +34,8 @@ public class ResourceMessageWriter implements MessageBodyWriter<Resource> {
     @Override
     public void writeTo(Resource res, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream out) throws IOException,
-            WebApplicationException {
+            MultivaluedMap<String, Object> httpHeaders, OutputStream out)
+            throws IOException, WebApplicationException {
 
         try {
             JSONHelper.writeResource(res, out);
@@ -39,7 +43,7 @@ public class ResourceMessageWriter implements MessageBodyWriter<Resource> {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
     }
 
 }

@@ -15,7 +15,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-jod</artifactId>
-  <name>Template Rendering service JODReport plugin</name>
+  <name>Template Rendering JODReport plugin</name>
 
   <dependencies>
     <dependency>

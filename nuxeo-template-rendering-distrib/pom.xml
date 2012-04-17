@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-distrib</artifactId>
-  <name>Template Rendering Service distribution</name>
+  <name>Template Rendering distribution</name>
 
   <dependencies>
     <dependency>

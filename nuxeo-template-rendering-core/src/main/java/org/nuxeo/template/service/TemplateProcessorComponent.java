@@ -26,6 +26,13 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
+/**
+ * Runtime Component used to handle Extension Points and expose the
+ * {@link TemplateProcessorService} interface
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class TemplateProcessorComponent extends DefaultComponent implements
         TemplateProcessorService {
 
@@ -225,7 +232,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return result;
     }
 
-    public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
+    public Collection<TemplateProcessorDescriptor> getRegisteredTemplateProcessors() {
         return processorRegistry.getRegistredProcessors();
     }
 

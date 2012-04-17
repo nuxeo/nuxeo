@@ -8,6 +8,11 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+/**
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 @WebObject(type = "templateRoot")
 @Path("/templates")
 public class RootResource extends ModuleRoot {

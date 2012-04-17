@@ -11,12 +11,17 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
-public abstract class AbstractResourceService  extends DefaultObject {
+/**
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
+public abstract class AbstractResourceService extends DefaultObject {
 
     protected static Log log = LogFactory.getLog(AbstractResourceService.class);
-            
+
     protected CoreSession session;
-    
+
     public AbstractResourceService(CoreSession session) {
         this.session = session;
     }
@@ -24,7 +29,7 @@ public abstract class AbstractResourceService  extends DefaultObject {
     protected CoreSession getCoreSession() {
         return session;
     }
-    
+
     protected List<TemplateSourceDocument> getTemplates() {
         try {
             CoreSession session = getCoreSession();
@@ -34,22 +39,20 @@ public abstract class AbstractResourceService  extends DefaultObject {
             log.error("Error while getting templates", e);
             return new ArrayList<TemplateSourceDocument>();
         }
-                
-        /*StringBuffer sb = new StringBuffer();
-        
-        sb.append("[");
-        for (TemplateSourceDocument t : templates) {
-            sb.append("{");
-            sb.append("\"label\":" + "\"" + t.getLabel() + "\",");
-            sb.append("\"name\":" + "\"" + t.getName() + "\",");
-            sb.append("\"id\":" + "\"" + t.getId() + "\"");
-            sb.append("},");
-        }
-        
-        String result = sb.toString();
-        result = result.substring(0, result.length()-2) + "]";
-        
-        return result;*/        
+
+        /*
+         * StringBuffer sb = new StringBuffer();
+         * 
+         * sb.append("["); for (TemplateSourceDocument t : templates) {
+         * sb.append("{"); sb.append("\"label\":" + "\"" + t.getLabel() +
+         * "\","); sb.append("\"name\":" + "\"" + t.getName() + "\",");
+         * sb.append("\"id\":" + "\"" + t.getId() + "\""); sb.append("},"); }
+         * 
+         * String result = sb.toString(); result = result.substring(0,
+         * result.length()-2) + "]";
+         * 
+         * return result;
+         */
     }
 
 }

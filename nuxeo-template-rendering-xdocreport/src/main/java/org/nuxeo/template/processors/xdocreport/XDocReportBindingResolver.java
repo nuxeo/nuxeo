@@ -8,6 +8,11 @@ import fr.opensagres.xdocreport.document.images.IImageProvider;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 import freemarker.template.TemplateModelException;
 
+/**
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class XDocReportBindingResolver extends AbstractBindingResolver {
 
     protected final FieldsMetadata metadata;

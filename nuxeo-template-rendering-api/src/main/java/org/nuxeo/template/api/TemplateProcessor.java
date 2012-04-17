@@ -31,9 +31,25 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
  */
 public interface TemplateProcessor {
 
+    /**
+     * Perform rendering of the named template against the
+     * {@link TemplateBasedDocument}
+     * 
+     * @param templateDocument
+     * @param templateName
+     * @return
+     * @throws Exception
+     */
     public Blob renderTemplate(TemplateBasedDocument templateDocument,
             String templateName) throws Exception;
 
+    /**
+     * Extract parameters from the Template file.
+     * 
+     * @param blob
+     * @return List of parameters for this template
+     * @throws Exception
+     */
     public List<TemplateInput> getInitialParametersDefinition(Blob blob)
             throws Exception;
 }

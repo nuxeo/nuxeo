@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-sandbox</artifactId>
-  <name>Template Rendering service Sandbox plugins</name>
+  <name>Template Rendering Sandbox plugins</name>
 
   <dependencies>
     <dependency>

@@ -7,6 +7,11 @@ import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 import fr.opensagres.xdocreport.remoting.resources.services.rest.Providers;
 
+/**
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class JAXRSRemotingApplication extends WebEngineModule {
 
     @Override

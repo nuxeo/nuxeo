@@ -1,21 +1,22 @@
-<component
-  name="org.nuxeo.template.service.TemplateProcessorComponent">
+<component name="org.nuxeo.template.service.TemplateProcessorComponent">
 
   <documentation>
-    Template processor service that is used to configure DocumentModel rendering via template (ex: merge DocumentModel with a MSWord or OpenOffice template file).
+    Template processor service that is used to configure DocumentModel
+    rendering via template (ex: merge DocumentModel with a MSWord or
+    OpenOffice template file).
 
-    <p>It support several ExtensionPoints to contribute template processors and Document Types bindings</p>
+    <p>It support an ExtensionPoint to contribute template
+      processors.
 
     @version 1.0
-    @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+    @author
+    <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
   </documentation>
 
-  <implementation
-    class="org.nuxeo.template.service.TemplateProcessorComponent" />
+  <implementation class="org.nuxeo.template.service.TemplateProcessorComponent" />
 
   <service>
-    <provide
-      interface="org.nuxeo.template.api.TemplateProcessorService" />
+    <provide interface="org.nuxeo.template.api.TemplateProcessorService" />
   </service>
 
   <extension-point name="processor">
@@ -26,19 +27,29 @@
 
       <p />
 
-      A TemplateProcessor is a class associated with a format (mime-type or extension) and that can be used to render a DocumentModel via type type of template.
+      A TemplateProcessor is a class associated with a format (mime-type or
+      extension) and that can be used to render a DocumentModel via type
+      type of template.
 
       For instance :
 
       <code>
-
+        <templateProcessor name="XDocReportProcessor"
+          label="XDocReport processor" default="true"
+          class="org.nuxeo.template.processors.xdocreport.XDocReportProcessor">
+          <supportedMimeType>application/vnd.oasis.opendocument.text</supportedMimeType>
+          <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</supportedMimeType>
+          <supportedExtension>odt</supportedExtension>
+          <supportedExtension>docx</supportedExtension>
+        </templateProcessor>
 
       </code>
 
     </documentation>
 
-    <object class="org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor" />
+    <object
+      class="org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor" />
 
   </extension-point>
 
- </component>
+</component>

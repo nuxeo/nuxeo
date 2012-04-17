@@ -7,6 +7,11 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
 
+/**
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class ResourceWrapper {
 
     public static Resource wrap(TemplateSourceDocument srcDocument) {

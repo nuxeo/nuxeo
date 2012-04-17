@@ -28,6 +28,12 @@ import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 
+/**
+ * XDocReport based {@link TemplateProcessor}
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class XDocReportProcessor extends AbstractTemplateProcessor implements
         TemplateProcessor {
 

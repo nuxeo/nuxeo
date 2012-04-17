@@ -13,10 +13,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.fm.FMContextBuilder;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
+/**
+ * JXLS {@link TemplateProcessor}
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
 
     public static final String TEMPLATE_TYPE = "JXLS";
