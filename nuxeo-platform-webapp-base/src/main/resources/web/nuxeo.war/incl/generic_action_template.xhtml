@@ -69,7 +69,7 @@ Parameters:
             <c:when test="#{iframe eq null}">
               <a4j:commandLink id="#{action.id}_link" ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
-                onclick="showFancyBox('##{action.id}_box');"
+                onclick="showFancyBox('##{action.id}_box');#{action.properties.fancybox.properties.onclick}"
                 styleClass="button">
                 <h:graphicImage value="#{action.icon}"
                   rendered="#{not empty action.icon}"

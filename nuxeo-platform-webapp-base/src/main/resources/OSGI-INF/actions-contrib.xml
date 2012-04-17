@@ -47,6 +47,7 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties name="fancybox">
         <property name="include">incl/permalink_box.xhtml</property>
+        <property name="onclick">jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();</property>
       </properties>
     </action>
     <action id="downloadAction"
