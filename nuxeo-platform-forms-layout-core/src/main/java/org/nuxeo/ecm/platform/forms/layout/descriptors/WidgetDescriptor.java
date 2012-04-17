@@ -37,8 +37,10 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetReferenceImpl;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -82,6 +84,12 @@ public class WidgetDescriptor {
 
     @XNodeList(value = "subWidgets/widget", type = WidgetDescriptor[].class, componentType = WidgetDescriptor.class)
     WidgetDescriptor[] subWidgets = new WidgetDescriptor[0];
+
+    /**
+     * @since 5.6
+     */
+    @XNodeList(value = "subWidgetRefs/widget", type = WidgetReferenceDescriptor[].class, componentType = WidgetReferenceDescriptor.class)
+    WidgetReferenceDescriptor[] subWidgetRefs = new WidgetReferenceDescriptor[0];
 
     // set in method to mix single and multiple options
     WidgetSelectOption[] selectOptions = new WidgetSelectOption[0];
@@ -208,6 +216,19 @@ public class WidgetDescriptor {
         return csubWidgets;
     }
 
+    public WidgetReference[] getSubWidgetReferences() {
+        WidgetReference[] csubWidgets = null;
+        if (subWidgetRefs != null) {
+            csubWidgets = new WidgetReference[subWidgetRefs.length];
+            for (int i = 0; i < subWidgetRefs.length; i++) {
+                csubWidgets[i] = new WidgetReferenceImpl(
+                        subWidgetRefs[i].getCategory(),
+                        subWidgetRefs[i].getName());
+            }
+        }
+        return csubWidgets;
+    }
+
     public static Map<String, Serializable> getProperties(
             Map<String, PropertiesDescriptor> map, String mode) {
         if (map == null) {
@@ -304,6 +325,7 @@ public class WidgetDescriptor {
         }
         FieldDefinition[] cfieldDefinitions = getFieldDefinitions();
         WidgetDefinition[] csubWidgets = getSubWidgetDefinitions();
+        WidgetReference[] csubwidgetRefs = getSubWidgetReferences();
         WidgetSelectOption[] cselectOptions = null;
         if (selectOptions != null) {
             cselectOptions = new WidgetSelectOption[selectOptions.length];
@@ -331,6 +353,7 @@ public class WidgetDescriptor {
                 getProperties(), getWidgetModeProperties(), csubWidgets,
                 cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
+        clone.setSubWidgetReferences(csubwidgetRefs);
         return clone;
     }
 

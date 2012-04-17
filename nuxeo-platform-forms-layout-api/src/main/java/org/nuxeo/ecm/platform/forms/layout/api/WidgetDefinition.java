@@ -176,6 +176,18 @@ public interface WidgetDefinition extends Serializable {
     void setSubWidgetDefinitions(WidgetDefinition[] subWidgets);
 
     /**
+     * Returns sub widget definitions references.
+     *
+     * @since 5.6
+     */
+    WidgetReference[] getSubWidgetReferences();
+
+    /**
+     * @since 5.6
+     */
+    void setSubWidgetReferences(WidgetReference[] subWidgets);
+
+    /**
      * Returns the select options for this widget.
      *
      * @since 5.4.2

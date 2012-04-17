@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
 /**
@@ -59,6 +60,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     protected Map<String, Map<String, Serializable>> widgetModeProperties;
 
     protected WidgetDefinition[] subWidgets;
+
+    protected WidgetReference[] subWidgetReferences;
 
     protected WidgetSelectOption[] selectOptions;
 
@@ -308,6 +311,14 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         this.subWidgets = subWidgets;
     }
 
+    public WidgetReference[] getSubWidgetReferences() {
+        return subWidgetReferences;
+    }
+
+    public void setSubWidgetReferences(WidgetReference[] subWidgetReferences) {
+        this.subWidgetReferences = subWidgetReferences;
+    }
+
     @Override
     public String getType() {
         return type;
@@ -439,6 +450,13 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
                 csubWidgets[i] = subWidgets[i].clone();
             }
         }
+        WidgetReference[] csubWidgetRefs = null;
+        if (subWidgetReferences != null) {
+            csubWidgetRefs = new WidgetReference[subWidgetReferences.length];
+            for (int i = 0; i < subWidgets.length; i++) {
+                csubWidgetRefs[i] = subWidgetReferences[i].clone();
+            }
+        }
         WidgetSelectOption[] cselectOptions = null;
         if (selectOptions != null) {
             cselectOptions = new WidgetSelectOption[selectOptions.length];
@@ -465,6 +483,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
                 chelpLabels, translated, cmodes, cfieldDefinitions, cprops,
                 cwidgetProps, csubWidgets, cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
+        clone.setSubWidgetReferences(csubWidgetRefs);
         return clone;
     }
 

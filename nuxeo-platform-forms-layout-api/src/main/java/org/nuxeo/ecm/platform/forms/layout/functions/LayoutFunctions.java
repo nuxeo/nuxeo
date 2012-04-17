@@ -172,8 +172,8 @@ public class LayoutFunctions {
             for (WidgetReference widget : widgets) {
                 if (widget != null) {
                     builder.append(
-                            widget.getName() + "(" + widget.getCategory()
-                                    + ")").append(",");
+                            widget.getName() + "(" + widget.getCategory() + ")").append(
+                            ",");
                 }
             }
         }
@@ -225,6 +225,18 @@ public class LayoutFunctions {
             for (WidgetDefinition widget : subWidgets) {
                 if (widget != null) {
                     builder.append(computeWidgetDefinitionId(widget)).append(
+                            ",");
+                }
+            }
+        }
+        builder.append(";");
+
+        WidgetReference[] subWidgetRefs = widgetDef.getSubWidgetReferences();
+        if (subWidgetRefs != null) {
+            for (WidgetReference widget : subWidgetRefs) {
+                if (widget != null) {
+                    builder.append(
+                            widget.getName() + "(" + widget.getCategory() + ")").append(
                             ",");
                 }
             }
