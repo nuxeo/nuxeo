@@ -275,10 +275,24 @@ public class DialectPostgreSQL extends Dialect {
         return translateFulltext(ft, "|", "&", "& !", "");
     }
 
-    // SELECT ..., TS_RANK_CD(fulltext, nxquery, 32) as nxscore
-    // FROM ... LEFT JOIN fulltext ON fulltext.id = hierarchy.id
-    // , TO_TSQUERY('french', ?) as nxquery
-    // WHERE ... AND fulltext @@ nxquery
+    // OLD having problems in pre-9.2 (NXP-9228)
+    // SELECT ...,
+    // TS_RANK_CD(NX_TO_TSVECTOR(fulltext), nxquery, 32) as nxscore
+    // FROM ...
+    // LEFT JOIN fulltext ON fulltext.id = hierarchy.id,
+    // TO_TSQUERY('french', ?) nxquery
+    // WHERE ...
+    // AND nxquery @@ NX_TO_TSVECTOR(fulltext)
+    // ORDER BY nxscore DESC
+
+    // NEW
+    // SELECT ...,
+    // TS_RANK_CD(NX_TO_TSVECTOR(fulltext), TO_TSQUERY('french', ?), 32) as
+    // nxscore
+    // FROM ...
+    // LEFT JOIN fulltext ON fulltext.id = hierarchy.id
+    // WHERE ...
+    // AND TO_TSQUERY('french', ?) @@ NX_TO_TSVECTOR(fulltext)
     // ORDER BY nxscore DESC
     @Override
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
@@ -290,7 +304,6 @@ public class DialectPostgreSQL extends Dialect {
         Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY
                 + indexSuffix);
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
-        String queryAlias = "_nxquery" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         info.joins = new ArrayList<Join>();
         if (nthMatch == 1) {
@@ -298,16 +311,13 @@ public class DialectPostgreSQL extends Dialect {
             info.joins.add(new Join(Join.INNER, ft.getQuotedName(), null, null,
                     ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
         }
-        info.joins.add(new Join(
-                Join.IMPLICIT, //
-                String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
-                queryAlias, // alias
-                fulltextQuery, // param
-                null, null));
-        info.whereExpr = String.format("(%s @@ %s)", queryAlias,
+        String tsquery = String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer);
+        info.whereExpr = String.format("(%s @@ %s)", tsquery,
                 ftColumn.getFullQuotedName());
+        info.whereExprParam = fulltextQuery;
         info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)",
-                ftColumn.getFullQuotedName(), queryAlias);
+                ftColumn.getFullQuotedName(), tsquery);
+        info.scoreExprParam = fulltextQuery;
         info.scoreAlias = "_nxscore" + nthSuffix;
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
