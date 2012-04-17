@@ -23,14 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.work.SleepWork;
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -44,8 +43,6 @@ import org.nuxeo.runtime.api.Framework;
 public class WorkManagerAdminBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(WorkManagerAdminBean.class);
 
     @RequestParameter("queueId")
     protected String queueId;
@@ -61,9 +58,11 @@ public class WorkManagerAdminBean implements Serializable {
         Collections.sort(workQueueIds);
         for (String queueId : workQueueIds) {
             WorkQueueDescriptor descr = workManager.getWorkQueueDescriptor(queueId);
-            List<Work> running = workManager.getRunningWork(queueId);
-            List<Work> scheduled = workManager.getScheduledWork(queueId);
-            List<Work> completed = workManager.getCompletedWork(queueId);
+            List<Work> running = workManager.listWork(queueId, State.RUNNING);
+            List<Work> scheduled = workManager.listWork(queueId,
+                    State.SCHEDULED);
+            List<Work> completed = workManager.listWork(queueId,
+                    State.COMPLETED);
             Map<String, Object> map = new HashMap<String, Object>();
             info.add(map);
             map.put("id", queueId);
@@ -74,6 +73,10 @@ public class WorkManagerAdminBean implements Serializable {
             map.put("completed", completed);
         }
         return info;
+    }
+
+    public long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
     }
 
     public String clearQueueCompletedWork() {

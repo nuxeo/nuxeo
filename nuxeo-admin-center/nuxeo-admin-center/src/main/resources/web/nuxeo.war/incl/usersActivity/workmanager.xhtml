@@ -57,40 +57,44 @@
     </h:form>
 
     <c:set var="infos" value="#{workManagerAdmin.workQueuesInfo}" />
+    <c:set var="currentTimeMillis" value="#{workManagerAdmin.currentTimeMillis}" />
 
     <ui:repeat var="info" value="#{infos}">
-      <h2>Queue <em>#{info.id}</em> (#{info.threads}/#{info.maxThreads})</h2>
+      <h2 class="workManagerQueueTitle">Queue <em>#{info.id}</em> (#{info.threads}/#{info.maxThreads})</h2>
+      <div class="workManagerQueueInfo">
       <f:subview rendered="#{info.running.size > 0}">
         <p><strong>Running</strong></p>
         <h:dataTable var="work" value="#{info.running}" styleClass="tablesorter">
           <h:column>
             <f:facet name="header">Work</f:facet>
-            #{work.status}
+            #{work.title}
           </h:column>
           <h:column>
             <f:facet name="header">Started</f:facet>
             <h:outputText value="#{work.startTime}" title="#{work.startTime}">
-              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
           <h:column>
-            <f:facet name="header">Progress</f:facet>
-            <c:choose>
-              <c:when test="#{work.progress.percent != -1}">
-                #{work.progress.percent}%
-              </c:when>
-              <c:otherwise>
-                <c:choose>
-                  <c:when test="#{work.progress.current != -1}">
-                    #{work.progress.current}/#{work.progress.total}
-                  </c:when>
-                  <c:otherwise>
-                    ?
-                  </c:otherwise>
-                </c:choose>
-              </c:otherwise>
-            </c:choose>
+            <f:facet name="header">Duration (ms)</f:facet>
+            #{currentTimeMillis - work.startTime}
           </h:column>
+          <h:column>
+            <f:facet name="header">Status</f:facet>
+            #{work.status}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Progress</f:facet>
+            <h:outputText rendered="#{work.progress.isWithPercent}"
+                value="#{work.progress.percent}%" />
+            <h:outputText
+              rendered="#{work.progress.isWithCurrentAndTotal}"
+              value="#{work.progress.current}/#{work.progress.total}" />
+            <h:outputText rendered="#{work.progress.isIndeterminate}"
+              value="..." />
+            </h:column>
         </h:dataTable>
       </f:subview>
       <f:subview rendered="#{info.scheduled.size > 0}">
@@ -98,54 +102,72 @@
         <h:dataTable var="work" value="#{info.scheduled}" styleClass="tablesorter">
           <h:column>
             <f:facet name="header">Work</f:facet>
-            #{work.status}
+            #{work.title}
           </h:column>
           <h:column>
             <f:facet name="header">Scheduled</f:facet>
             <h:outputText value="#{work.schedulingTime}" title="#{work.schedulingTime}">
-              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
         </h:dataTable>
       </f:subview>
       <f:subview rendered="#{info.completed.size > 0}">
         <p><strong>Completed</strong></p>
-        <h:dataTable var="work" value="#{info.completed}" styleClass="tablesorter">
-          <h:column>
-            <f:facet name="header">Work</f:facet>
-            #{work.status}
-          </h:column>
-          <h:column>
-            <f:facet name="header">Started</f:facet>
-            <h:outputText value="#{work.startTime}" title="#{work.startTime}">
-              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
-            </h:outputText>
-          </h:column>
-          <h:column>
-            <f:facet name="header">Completed</f:facet>
-            <h:outputText value="#{work.completionTime}" title="#{work.completionTime}">
-              <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"/>
-            </h:outputText>
-          </h:column>
-          <h:column>
-            <f:facet name="header">State</f:facet>
-            #{work.state}
-          </h:column>
-        </h:dataTable>
-        <p/>
         <h:form>
           <a4j:commandLink value="Clear" reRender="workManagerListing" styleClass="button"
             action="#{workManagerAdmin.clearQueueCompletedWork}">
             <f:param name="queueId" value="#{info.id}" />
           </a4j:commandLink>
         </h:form>
+        <p/>
+        <h:dataTable var="work" value="#{info.completed}" styleClass="tablesorter">
+          <h:column>
+            <f:facet name="header">Work</f:facet>
+            #{work.title}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Started</f:facet>
+            <h:outputText value="#{work.startTime}" title="#{work.startTime}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">Completed</f:facet>
+            <h:outputText value="#{work.completionTime}" title="#{work.completionTime}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">Duration (ms)</f:facet>
+            #{work.completionTime - work.startTime}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Status</f:facet>
+            #{work.status}
+          </h:column>
+          <h:column>
+            <f:facet name="header">State</f:facet>
+            #{work.state}
+          </h:column>
+        </h:dataTable>
       </f:subview>
+      </div>
     </ui:repeat>
 
     <script type="text/javascript">
       // console.log("FOO");
       // $(document).ready(function(){
         jQuery(".tablesorter").tablesorter();
+        jQuery(".workManagerQueueTitle").click(function() {
+          $(this).next(".workManagerQueueInfo").toggle();
+        });
       // });
     </script>
 
