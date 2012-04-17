@@ -11,6 +11,10 @@
       <to-view-id>/view_doc_diff.xhtml</to-view-id>
       <redirect />
     </navigation-case>
+    <navigation-case>
+      <from-outcome>detailed_diff_fancybox</from-outcome>
+      <to-view-id>/detailed_diff_fancybox.xhtml</to-view-id>
+    </navigation-case>
 
   </extension>
 

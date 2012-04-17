@@ -106,18 +106,16 @@
             </div>
           </div>
         </c:forEach>
-        
         <div>
           <h:commandButton value="#{messages['document.diff.refresh']}"
             action="#{diffActions.refresh()}"
             styleClass="button" />
         </div>
-        
         <script>
           jQuery(document).ready(function() {
             jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
           });
-        </script>        
+        </script>
       </c:if>
       
     </h:form>

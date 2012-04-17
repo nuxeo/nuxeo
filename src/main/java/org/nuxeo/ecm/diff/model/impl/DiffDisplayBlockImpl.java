@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 
 /**
  * Handles...
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class DiffDisplayBlockImpl implements DiffDisplayBlock {
@@ -38,6 +38,7 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
 
     protected Map<String, Map<String, Serializable>> rightValue;
 
+    // TODO: remove?
     protected Map<String, Map<String, Serializable>> detailedDiffValue;
 
     protected LayoutDefinition layoutDefinition;
@@ -66,8 +67,7 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
         return leftValue;
     }
 
-    public void setLeftValue(
-            Map<String, Map<String, Serializable>> leftValue) {
+    public void setLeftValue(Map<String, Map<String, Serializable>> leftValue) {
         this.leftValue = leftValue;
     }
 

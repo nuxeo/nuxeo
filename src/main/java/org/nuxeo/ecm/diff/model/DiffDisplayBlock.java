@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 
 /**
  * Diff block definition interface.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
@@ -35,6 +35,7 @@ public interface DiffDisplayBlock extends Serializable {
 
     Map<String, Map<String, Serializable>> getRightValue();
 
+    // TODO: remove?
     Map<String, Map<String, Serializable>> getDetailedDiffValue();
 
     LayoutDefinition getLayoutDefinition();
@@ -47,6 +48,7 @@ public interface DiffDisplayBlock extends Serializable {
 
     void setRightValue(Map<String, Map<String, Serializable>> rightValue);
 
+    // TODO: remove?
     void setDetailedDiffValue(
             Map<String, Map<String, Serializable>> detailedDiffValue);
 

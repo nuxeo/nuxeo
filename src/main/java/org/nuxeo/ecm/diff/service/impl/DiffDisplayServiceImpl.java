@@ -17,13 +17,20 @@
 package org.nuxeo.ecm.diff.service.impl;
 
 import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,8 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.QName;
-import org.nuxeo.ecm.diff.differs.diff_match_patch;
-import org.nuxeo.ecm.diff.differs.diff_match_patch.Diff;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
@@ -65,6 +70,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.outerj.daisy.diff.DaisyDiff;
+import org.xml.sax.InputSource;
 
 /**
  * Default implementation of the {@link DiffDisplayService}.
@@ -325,7 +332,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         Map<String, Map<String, Serializable>> rightValue = new HashMap<String, Map<String, Serializable>>();
         Map<String, Map<String, Serializable>> detailedDiffValue = new HashMap<String, Map<String, Serializable>>();
 
-        // TODO: manage detailedDiff when needed
+        // TODO: remove detailedDiff?
 
         List<LayoutRowDefinition> layoutRowDefinitions = new ArrayList<LayoutRowDefinition>();
         List<WidgetDefinition> widgetDefinitions = new ArrayList<WidgetDefinition>();
@@ -368,24 +375,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                     fieldName), fieldDiff, isDisplayAllItems,
                             isDisplayItemIndexes);
 
-                    String detailedDiffDisplay = null;
-                    // TODO: better condition (for example, don't need detailed
-                    // diff on dates)
-                    if (PropertyType.isSimpleType(fieldDiff.getPropertyType())) {
-                        SimplePropertyDiff simpleFieldDiff = ((SimplePropertyDiff) fieldDiff);
-                        String simpleLeftValue = simpleFieldDiff.getLeftValue();
-                        String simpleRightValue = simpleFieldDiff.getRightValue();
-                        if (simpleLeftValue == null && simpleRightValue != null) {
-                            simpleLeftValue = "";
-                        }
-                        if (simpleRightValue == null && simpleLeftValue != null) {
-                            simpleRightValue = "";
-                        }
-                        if (simpleLeftValue != null && simpleRightValue != null) {
-                            detailedDiffDisplay = getDetailedDiffDisplay(
-                                    simpleLeftValue, simpleRightValue);
-                        }
-                    }
+                    //String detailedDiffDisplay = null;
                     // Left
                     Map<String, Serializable> leftSchemaMap = leftValue.get(schemaName);
                     if (leftSchemaMap == null) {
@@ -413,12 +403,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
                     // TODO: manage better detailedDiff if needed
                     // Detailed diff
-                    Map<String, Serializable> detailedDiffSchemaMap = detailedDiffValue.get(schemaName);
-                    if (detailedDiffSchemaMap == null) {
-                        detailedDiffSchemaMap = new HashMap<String, Serializable>();
-                        detailedDiffValue.put(schemaName, detailedDiffSchemaMap);
-                    }
-                    detailedDiffSchemaMap.put(fieldName, detailedDiffDisplay);
+//                    Map<String, Serializable> detailedDiffSchemaMap = detailedDiffValue.get(schemaName);
+//                    if (detailedDiffSchemaMap == null) {
+//                        detailedDiffSchemaMap = new HashMap<String, Serializable>();
+//                        detailedDiffValue.put(schemaName, detailedDiffSchemaMap);
+//                    }
+//                    detailedDiffSchemaMap.put(fieldName, detailedDiffDisplay);
 
                 }
             }
@@ -653,16 +643,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected final String getDetailedDiffDisplay(String leftValue,
-            String rightValue) {
-
-        diff_match_patch dmp = new diff_match_patch();
-
-        LinkedList<Diff> diffs = dmp.diff_main(leftValue, rightValue);
-        dmp.diff_cleanupSemantic(diffs);
-        return dmp.diff_prettyHtml(diffs);
-    }
-
     protected final WidgetDefinition getWidgetDefinition(String propertyName,
             String propertyType, Field field, List<String> complexFieldItemNames)
             throws ClientException {
@@ -867,7 +847,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return subWidgetDefs;
     }
 
-    @SuppressWarnings("unchecked")
     protected final WidgetDefinition getIndexSubwidgetDefinition() {
 
         FieldDefinition[] fieldDefinitions = { new FieldDefinitionImpl(null,

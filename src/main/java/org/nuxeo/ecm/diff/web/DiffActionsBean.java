@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 20012 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 20012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
- *
+ *     Antoine Taillefer
  */
 
 package org.nuxeo.ecm.diff.web;
@@ -25,6 +24,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -56,6 +58,8 @@ public class DiffActionsBean implements Serializable {
     private static final long serialVersionUID = -5507491210664361778L;
 
     private static final String DOC_DIFF_VIEW = "view_doc_diff";
+
+    private static final Log log = LogFactory.getLog(DiffActionsBean.class);
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -260,6 +264,60 @@ public class DiffActionsBean implements Serializable {
                 leftDoc, rightDoc);
         return getDiffDisplayService().getDiffDisplayBlocks(docDiff, leftDoc,
                 rightDoc);
+    }
+
+    /**
+     * Gets the detailed diff fancy box url.
+     *
+     * @param schemaName the schema name
+     * @param fieldName the field name
+     * @return the detailed diff fancy box url
+     */
+    public String getDetailedDiffFancyBoxURL(String schemaName, String fieldName) {
+
+        if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(fieldName)) {
+            log.error("Cannot get detailed diff fancybox URL with a null schemaName or a null fieldName.");
+            return null;
+        }
+        return DetailedDiffHelper.getDetailedDiffFancyBoxURL(
+                navigationContext.getCurrentDocument(), schemaName, fieldName);
+    }
+
+    /**
+     * Gets the detailed diff url.
+     *
+     * @param schemaName the schema name
+     * @param fieldName the field name
+     * @return the detailed diff url
+     */
+    public String getDetailedDiffURL(String schemaName, String fieldName) {
+
+        if (leftDoc == null || rightDoc == null) {
+            log.error("Cannot get detailed diff URL with a null leftDoc or a null rightDoc.");
+            return null;
+        }
+        if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(fieldName)) {
+            log.error("Cannot get detailed diff URL with a null schemaName or a null fieldName.");
+            return null;
+        }
+        //String xpath = schemaName + ":" + fieldName;
+        String xpath = null;
+        return DetailedDiffHelper.getDetailedDiffURL(
+                navigationContext.getCurrentDocument().getRepositoryName(),
+                leftDoc, rightDoc, xpath);
+    }
+
+    /**
+     * Gets the detailed diff with blob post processing url.
+     *
+     * @param schemaName the schema name
+     * @param fieldName the field name
+     * @return the detailed diff with blob post processing url
+     */
+    public String getDetailedDiffWithBlobPostProcessingURL(String schemaName,
+            String fieldName) {
+        return getDetailedDiffURL(schemaName, fieldName)
+                + "?blobPostProcessing=true";
     }
 
     /**

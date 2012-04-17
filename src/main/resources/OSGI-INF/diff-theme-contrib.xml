@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <!-- Application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+      <view id="/detailed_diff_fancybox.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+    </application>
+
+  </extension>
+
+</component>

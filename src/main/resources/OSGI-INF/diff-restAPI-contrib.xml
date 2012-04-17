@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.restAPI.contrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
+    point="restlets">
+
+    <documentation>
+      GET
+      /nuxeo/restAPI/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}?subPath={subPath}
+    </documentation>
+
+    <restletPlugin name="detailedDiff"
+      class="org.nuxeo.ecm.diff.restlet.DetailedDiffRestlet" enabled="true"
+      useSeam="true">
+      <urlPatterns>
+        <urlPattern>/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{subPath}
+        </urlPattern>
+        <urlPattern>/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/
+        </urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+  </extension>
+
+</component>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.adapter.DetailedDiffAdapterManagerComponent">
+  <implementation
+    class="org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterManagerComponent" />
+
+  <documentation>
+    @author Antoine Taillefer (ataillefer@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterManager" />
+  </service>
+
+  <extension-point name="adapterFactory">
+    <documentation>
+    @author Antoine Taillefer (ataillefer@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterFactoryDescriptor" />
+  </extension-point>
+
+  <extension-point name="mimeTypeDetailedDiffer">
+    <documentation>
+      Allows to contribute default implementation of detailed diff according to the mime type.
+    </documentation>
+    <object class="org.nuxeo.ecm.diff.detaileddiff.adapter.MimeTypeDetailedDifferDescriptor"/>
+  </extension-point>
+
+  <!--
+  <extension-point name="blobPostProcessor">
+    <documentation>
+      Allows to contribute post processor to preview blobs after they got retrieved.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessorDescriptor"/>
+  </extension-point>
+  -->
+
+</component>

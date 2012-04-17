@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.adapter.contrib">
+  <extension
+    target="org.nuxeo.ecm.diff.adapter.DetailedDiffAdapterManagerComponent"
+    point="adapterFactory">
+
+    <documentation>
+      Default builtin detailed diff adapters
+    </documentation>
+
+    <!-- <detailedDiffAdapter name="noteDetailedDiffAdapter" enabled="false"> 
+      <typeName>Note</typeName> <class>org.nuxeo.ecm.diff.adapter.factories.NoteDetailedDiffAdapter</class> 
+      </detailedDiffAdapter> -->
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.diff.adapter.DetailedDiffAdapterManagerComponent"
+    point="mimeTypeDetailedDiffer">
+    <detailedDiffer class="org.nuxeo.ecm.diff.detaileddiff.adapter.HtmlDetailedDiffer">
+      <pattern>text/html</pattern>
+    </detailedDiffer>
+    <detailedDiffer class="org.nuxeo.ecm.diff.detaileddiff.adapter.PlainTextDetailedDiffer">
+      <pattern>text/plain</pattern>
+    </detailedDiffer>
+  </extension>
+</component>
