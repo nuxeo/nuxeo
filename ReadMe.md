@@ -131,18 +131,33 @@ This renderer is historical and replaced by xdocreport that is more powerful.
 
 Misc code and extensions that are currently experimental.
 
+**nuxeo-template-rendering-distrib**
+
+Distribution module.
+
 ## Building
 
 	mvn clean install
 
 ## Deploying
 
-You first need to deploy the plugin inside your Nuxeo server.
+You need :
 
-	cp target/nuxeo-platform-rendering-templates-X.Y.Z.jar into nxserver/bundles or nxserver/plugins
+ - to install needed bundles
+ - to install needed third paarty libs
 
-You also need to copy the additional libs (there is no Marketplace package for now)
+A simple way to do that is to use nuxeo-template-rendering-distrib.
+
+ 	mvn clean install
+
+This will create in target directory 2 sub dirs with the needed jars :
+
+	cp target/bundles/* into nxserver/bundles or nxserver/plugins
 
         cp target/libs/*  nxserver/lib/
+
+NB : By default, only XDocReport and JXLS plugins are included, but you can change the pom dependencies to alter that.
+
+
 	
 
