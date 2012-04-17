@@ -351,7 +351,7 @@ class Release(object):
         sources_archive_name = "nuxeo-%s-sources.zip" % version
         self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
 
-    def prepare(self):
+    def prepare(self, dodeploy):
         """ Prepare the release: build, change versions, tag and package source
         and distributions."""
         cwd = os.getcwd()
@@ -388,7 +388,11 @@ class Release(object):
 
         # Build and package
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        self.repo.mvn("clean install", skip_tests=True,
+        if dodeploy == True:
+            self.repo.mvn("clean deploy", skip_tests=True,
+                        profiles="release,-qa,nightly")
+        else:
+            self.repo.mvn("clean install", skip_tests=True,
                         profiles="release,-qa")
         self.package_all()
         # TODO NXP-8571 package sources
@@ -470,6 +474,9 @@ maintenance branch is deleted after release)""")
                           dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive
 mode.""")
+        parser.add_option('-d', '--deploy', action="store_true",
+                          dest='deploy', default=False,
+                          help="""deploy artifacts to nightly repository""")
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
@@ -503,7 +510,7 @@ mode.""")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "prepare":
-            release.prepare()
+            release.prepare(options.deploy)
         elif command == "perform":
             release.perform()
         elif command == "package":
