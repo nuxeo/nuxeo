@@ -232,7 +232,7 @@ public class NuxeoLauncherGUI {
         try {
             message = ResourceBundle.getBundle("i18n/messages").getString(key);
         } catch (MissingResourceException e) {
-            log.info(getMessage("missing.translation") + key);
+            log.debug(getMessage("missing.translation") + key);
             message = ResourceBundle.getBundle("i18n/messages", Locale.ENGLISH).getString(
                     key);
         }
