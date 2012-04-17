@@ -26,14 +26,14 @@
                   reRender="version_ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </h:column>
-  
+
             <h:column>
               <f:facet name="header">
                 <h:outputText value="#{messages['label.version']}" />
               </f:facet>
               <h:outputText value="#{versionItemSelection.data.description}" />
             </h:column>
-  
+
             <h:column>
               <f:facet name="header">
                 <h:outputText value="#{messages['label.action']}" />
@@ -41,7 +41,7 @@
               <ui:insert name="document_versions_buttons" />
             </h:column>
           </h:dataTable>
-    
+
           <a4j:outputPanel id="version_ajax_selection_buttons">
             <div id="version_selection_buttons">
               <table>
@@ -80,13 +80,14 @@
           </a4j:outputPanel>
         </h:form>
       </c:if>
-    </nxu:set>
 
-    <c:if test="#{empty selectedVersionList}">
-      <p>
-        <h:outputText value="#{messages['label.noversion']}" />
-      </p>
-    </c:if>
+      <c:if test="#{empty selectedVersionList}">
+        <p>
+          <h:outputText value="#{messages['label.noversion']}" />
+        </p>
+      </c:if>
+
+    </nxu:set>
 
   </h:panelGroup>
 
