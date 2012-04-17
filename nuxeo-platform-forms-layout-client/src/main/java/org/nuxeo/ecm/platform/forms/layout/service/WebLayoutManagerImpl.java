@@ -115,7 +115,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             registerDisabledPropertyRef(((DisabledPropertyRefDescriptor) contribution));
         } else {
             log.error(String.format(
-                    "Unknown extension point %s, can't register !",
+                    "Unknown extension point '%s', can't register !",
                     extensionPoint));
         }
     }
@@ -133,7 +133,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             unregisterDisabledPropertyRef(((DisabledPropertyRefDescriptor) contribution));
         } else {
             log.error(String.format(
-                    "Unknown extension point %s, can't unregister !",
+                    "Unknown extension point '%s', can't unregister !",
                     extensionPoint));
         }
     }
@@ -205,7 +205,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         } else if (value == null || value instanceof String) {
             return Boolean.valueOf((String) value);
         } else {
-            log.error("Could not get boolean value for " + value);
+            log.error(String.format("Could not get boolean value for '%s'",
+                    value));
             return Boolean.FALSE;
         }
     }
@@ -219,7 +220,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         if (value == null || value instanceof String) {
             return (String) value;
         } else {
-            log.error("Could not get string value for " + value);
+            log.error(String.format("Could not get string value for '%s'",
+                    value));
             return null;
         }
     }
@@ -241,7 +243,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 widgetName);
         WidgetDefinition wDef = lookupWidget(null, widgetRef);
         if (wDef != null) {
-            return getWidget(ctx, layoutName, wDef, layoutMode, valueName, 0);
+            return getWidget(ctx, layoutName, null, wDef, layoutMode,
+                    valueName, 0);
         }
         return null;
     }
@@ -250,7 +253,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     public Widget getWidget(FaceletContext ctx, WidgetDefinition wDef,
             String layoutMode, String valueName, String layoutName) {
         if (wDef != null) {
-            return getWidget(ctx, layoutName, wDef, layoutMode, valueName, 0);
+            return getWidget(ctx, layoutName, null, wDef, layoutMode,
+                    valueName, 0);
         }
         return null;
     }
@@ -264,8 +268,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
      * Sub widgets are also computed recursively.
      */
     protected Widget getWidget(FaceletContext context, String layoutName,
-            WidgetDefinition wDef, String layoutMode, String valueName,
-            int level) {
+            LayoutDefinition layoutDef, WidgetDefinition wDef,
+            String layoutMode, String valueName, int level) {
         VariableMapper orig = null;
         // avoid variable mapper changes if context is null for tests
         if (context != null) {
@@ -288,11 +292,33 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             return null;
         }
         List<Widget> subWidgets = new ArrayList<Widget>();
-        for (WidgetDefinition swDef : wDef.getSubWidgetDefinitions()) {
-            Widget subWidget = getWidget(context, layoutName, swDef, wMode,
-                    valueName, level + 1);
-            if (subWidget != null) {
-                subWidgets.add(subWidget);
+        WidgetDefinition[] swDefs = wDef.getSubWidgetDefinitions();
+        if (swDefs != null) {
+            for (WidgetDefinition swDef : swDefs) {
+                Widget subWidget = getWidget(context, layoutName, layoutDef,
+                        swDef, wMode, valueName, level + 1);
+                if (subWidget != null) {
+                    subWidgets.add(subWidget);
+                }
+            }
+        }
+
+        WidgetReference[] swRefs = wDef.getSubWidgetReferences();
+        if (swRefs != null) {
+            for (WidgetReference swRef : swRefs) {
+                WidgetDefinition swDef = lookupWidget(layoutDef, swRef);
+                if (swDef == null) {
+                    log.error(String.format(
+                            "Widget '%s' not found in layout %s",
+                            swRef.getName(), layoutName));
+                } else {
+                    Widget subWidget = getWidget(context, layoutName,
+                            layoutDef, swDef, wMode, valueName, level + 1);
+
+                    if (subWidget != null) {
+                        subWidgets.add(subWidget);
+                    }
+                }
             }
         }
 
@@ -385,13 +411,14 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 }
                 WidgetDefinition wDef = lookupWidget(layoutDef, widgetRef);
                 if (wDef == null) {
-                    log.error(String.format("Widget %s not found in layout %s",
-                            widgetName, layoutName));
+                    log.error(String.format(
+                            "Widget '%s' not found in layout %s", widgetName,
+                            layoutName));
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, layoutName, wDef, mode,
-                        valueName, 0);
+                Widget widget = getWidget(ctx, layoutName, layoutDef, wDef,
+                        mode, valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }
@@ -454,7 +481,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         String widgetTypeName = widget.getType();
         WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeName);
         if (handler == null) {
-            log.error("No widget handler found for type " + widgetTypeName);
+            log.error(String.format("No widget handler found for type '%s'",
+                    widgetTypeName));
         } else {
             FaceletHandler[] subHandlers = null;
             Widget[] subWidgets = widget.getSubWidgets();
@@ -500,7 +528,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 required = getBooleanValue(ctx, (String) requiredProp).booleanValue();
             } else {
                 log.error(String.format(
-                        "Invalid property \"%s\" on widget: %s",
+                        "Invalid property '%s' on widget: '%s'",
                         WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
             }
         }

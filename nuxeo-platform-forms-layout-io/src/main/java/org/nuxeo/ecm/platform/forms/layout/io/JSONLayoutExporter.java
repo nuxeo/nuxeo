@@ -385,36 +385,32 @@ public class JSONLayoutExporter {
                 }
             }
         }
+
         if (!rows.isEmpty()) {
             json.element("rows", rows);
         }
         LayoutStore webLayoutManager = Framework.getLocalService(LayoutStore.class);
         JSONArray widgets = new JSONArray();
         for (WidgetReference widgetRef : widgetsToExport) {
-            String widgetName = widgetRef.getName();
-            WidgetDefinition widgetDef = layoutDef.getWidgetDefinition(widgetName);
-            if (widgetDef == null) {
-                String cat = widgetRef.getCategory();
-                if (cat == null) {
-                    cat = category;
-                }
-                widgetDef = webLayoutManager.getWidgetDefinition(cat,
-                        widgetName);
-            }
-            if (widgetDef == null) {
-                log.error(String.format(
-                        "No definition found for widget '%s' in layout '%s' "
-                                + "=> cannot export", widgetName,
-                        layoutDef.getName()));
-                continue;
-            }
-            if (widgetConverters != null) {
-                for (WidgetDefinitionConverter conv : widgetConverters) {
-                    widgetDef = conv.getWidgetDefinition(widgetDef, ctx);
-                }
-            }
+            WidgetDefinition widgetDef = exportWidgetReference(widgetRef,
+                    category, layoutDef, ctx, webLayoutManager,
+                    widgetConverters);
             if (widgetDef != null) {
                 widgets.add(exportToJson(widgetDef, ctx, widgetConverters));
+
+                // also export local subwidgets references
+                WidgetReference[] subwidgetRefs = widgetDef.getSubWidgetReferences();
+                if (subwidgetRefs != null) {
+                    for (WidgetReference subwidgetRef : subwidgetRefs) {
+                        WidgetDefinition subwidgetDef = exportWidgetReference(
+                                subwidgetRef, category, layoutDef, ctx,
+                                webLayoutManager, widgetConverters);
+                        if (subwidgetDef != null) {
+                            widgets.add(exportToJson(subwidgetDef, ctx,
+                                    widgetConverters));
+                        }
+                    }
+                }
             }
         }
         if (!widgets.isEmpty()) {
@@ -427,6 +423,35 @@ public class JSONLayoutExporter {
         }
 
         return json;
+    }
+
+    protected static WidgetDefinition exportWidgetReference(
+            WidgetReference widgetRef, String category,
+            LayoutDefinition layoutDef, LayoutConversionContext ctx,
+            LayoutStore webLayoutManager,
+            List<WidgetDefinitionConverter> widgetConverters) {
+        String widgetName = widgetRef.getName();
+        WidgetDefinition widgetDef = layoutDef.getWidgetDefinition(widgetName);
+        if (widgetDef == null) {
+            String cat = widgetRef.getCategory();
+            if (cat == null) {
+                cat = category;
+            }
+            widgetDef = webLayoutManager.getWidgetDefinition(cat, widgetName);
+        }
+        if (widgetDef == null) {
+            log.error(String.format(
+                    "No definition found for widget '%s' in layout '%s' "
+                            + "=> cannot export", widgetName,
+                    layoutDef.getName()));
+        } else {
+            if (widgetConverters != null) {
+                for (WidgetDefinitionConverter conv : widgetConverters) {
+                    widgetDef = conv.getWidgetDefinition(widgetDef, ctx);
+                }
+            }
+        }
+        return widgetDef;
     }
 
     public static LayoutDefinition importLayoutDefinition(JSONObject layoutDef) {
@@ -473,7 +498,7 @@ public class JSONLayoutExporter {
         WidgetReference[] defWidgets = layoutRowDef.getWidgetReferences();
         if (defWidgets != null) {
             for (WidgetReference widget : defWidgets) {
-                widgets.add(widget.getName());
+                widgets.add(exportToJson(widget));
             }
         }
         if (!widgets.isEmpty()) {
@@ -491,10 +516,14 @@ public class JSONLayoutExporter {
         JSONArray jwidgets = layoutRowDef.optJSONArray("widgets");
         if (jwidgets != null) {
             for (Object item : jwidgets) {
-                widgets.add(new WidgetReferenceImpl((String) item));
+                if (item instanceof String) {
+                    // BBB
+                    widgets.add(new WidgetReferenceImpl((String) item));
+                } else {
+                    widgets.add(importWidgetReference((JSONObject) item));
+                }
             }
         }
-
         return new LayoutRowDefinitionImpl(name, properties, widgets, false,
                 true);
     }
@@ -546,6 +575,17 @@ public class JSONLayoutExporter {
         }
         if (!subWidgets.isEmpty()) {
             json.element("subWidgets", subWidgets);
+        }
+
+        JSONArray subWidgetRefs = new JSONArray();
+        WidgetReference[] subWidgetRefDefs = widgetDef.getSubWidgetReferences();
+        if (subWidgetRefDefs != null) {
+            for (WidgetReference ref : subWidgetRefDefs) {
+                subWidgetRefs.add(exportToJson(ref));
+            }
+        }
+        if (!subWidgetRefs.isEmpty()) {
+            json.element("subWidgetRefs", subWidgetRefs);
         }
 
         JSONObject props = exportPropsByModeToJson(widgetDef.getProperties());
@@ -600,6 +640,14 @@ public class JSONLayoutExporter {
             }
         }
 
+        List<WidgetReference> subWidgetRefs = new ArrayList<WidgetReference>();
+        JSONArray jsubwidgetRefs = widgetDef.optJSONArray("subWidgetRefs");
+        if (jsubwidgetRefs != null) {
+            for (Object item : jsubwidgetRefs) {
+                subWidgetRefs.add(importWidgetReference((JSONObject) item));
+            }
+        }
+
         Map<String, Map<String, Serializable>> properties = importPropsByMode(widgetDef.optJSONObject("properties"));
         Map<String, Map<String, Serializable>> widgetModeProperties = importPropsByMode(widgetDef.optJSONObject("propertiesByWidgetMode"));
 
@@ -621,6 +669,7 @@ public class JSONLayoutExporter {
                 subWidgets.toArray(new WidgetDefinition[] {}),
                 selectOptions.toArray(new WidgetSelectOption[] {}));
         res.setRenderingInfos(renderingInfos);
+        res.setSubWidgetReferences(subWidgetRefs.toArray(new WidgetReference[] {}));
 
         return res;
     }
@@ -637,6 +686,20 @@ public class JSONLayoutExporter {
         // ignore property name: it can be deduced from schema and field name
         FieldDefinition res = new FieldDefinitionImpl(fieldDef.optString(
                 "schemaName", null), fieldDef.getString("fieldName"));
+        return res;
+    }
+
+    public static JSONObject exportToJson(WidgetReference widgetRef) {
+        JSONObject json = new JSONObject();
+        json.element("name", widgetRef.getName());
+        json.element("category", widgetRef.getCategory());
+        return json;
+    }
+
+    public static WidgetReference importWidgetReference(JSONObject widgetRef) {
+        WidgetReference res = new WidgetReferenceImpl(
+                widgetRef.optString("category"), widgetRef.optString("name",
+                        null));
         return res;
     }
 

@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.platform.layout.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,11 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -37,6 +43,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
@@ -109,9 +116,16 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetTypeImport() throws Exception {
+        checkWidgetTypeImport("widgettype-export.json", true);
+        // check compat for old format
+        checkWidgetTypeImport("widgettype-old-export.json", false);
+    }
+
+    protected void checkWidgetTypeImport(String filename,
+            boolean checkSubWidgetRefs) throws Exception {
         JSONObject json = null;
         InputStream in = new FileInputStream(
-                FileUtils.getResourcePathFromContext("widgettype-export.json"));
+                FileUtils.getResourcePathFromContext(filename));
         try {
             byte[] bytes = FileUtils.readBytes(in);
             if (bytes.length != 0) {
@@ -248,7 +262,12 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(0, editLayout.getTemplates().size());
         assertEquals(0, editLayout.getProperties().size());
         LayoutRowDefinition[] editRows = editLayout.getRows();
-        assertEquals(2, editRows.length);
+        if (checkSubWidgetRefs) {
+            assertEquals(4, editRows.length);
+        } else {
+            assertEquals(2, editRows.length);
+        }
+
         LayoutRowDefinition editRow = editRows[0];
         assertNull(editRow.getName());
         assertEquals(0, editRow.getProperties().size());
@@ -339,6 +358,110 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         checkCommonSelectOption(options[4], null, null, "bar2", "foo2", null,
                 null);
         assertEquals(0, selectionWidget.getSubWidgetDefinitions().length);
+
+        if (!checkSubWidgetRefs) {
+            return;
+        }
+
+        // check widgets with subwidgets refs in new export
+        editRow = editRows[2];
+        assertNull(editRow.getName());
+        assertEquals(0, editRow.getProperties().size());
+        editRowWidgets = editRow.getWidgets();
+        assertEquals(1, editRowWidgets.length);
+        assertEquals("subwidgets", editRowWidgets[0]);
+
+        WidgetDefinition withSubwidgets = editLayout.getWidgetDefinition("subwidgets");
+        assertNotNull(withSubwidgets);
+        assertEquals("subwidgets", withSubwidgets.getName());
+        assertEquals(1, withSubwidgets.getLabels().size());
+        assertEquals("Selection", withSubwidgets.getLabel(BuiltinModes.ANY));
+        assertEquals("test", withSubwidgets.getType());
+        assertEquals(1, withSubwidgets.getFieldDefinitions().length);
+        assertEquals("foo2",
+                withSubwidgets.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar2",
+                withSubwidgets.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo2:bar2",
+                withSubwidgets.getFieldDefinitions()[0].getPropertyName());
+        assertEquals(0, withSubwidgets.getHelpLabels().size());
+        assertEquals(0, withSubwidgets.getModes().size());
+        assertEquals(0, withSubwidgets.getProperties().size());
+        assertEquals(0, withSubwidgets.getWidgetModeProperties().size());
+        assertNotNull(withSubwidgets.getSelectOptions());
+        assertEquals(0, withSubwidgets.getSelectOptions().length);
+        assertEquals(1, withSubwidgets.getSubWidgetDefinitions().length);
+        assertEquals(0, withSubwidgets.getSubWidgetReferences().length);
+
+        WidgetDefinition subWidgetDef = withSubwidgets.getSubWidgetDefinitions()[0];
+        assertEquals("subwidget", subWidgetDef.getName());
+        assertEquals("text", subWidgetDef.getType());
+        assertEquals(1, subWidgetDef.getLabels().size());
+        assertEquals("subwidget label", subWidgetDef.getLabel(BuiltinModes.ANY));
+        assertEquals(1, subWidgetDef.getFieldDefinitions().length);
+        assertEquals("foo",
+                subWidgetDef.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar",
+                subWidgetDef.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo:bar",
+                subWidgetDef.getFieldDefinitions()[0].getPropertyName());
+        assertEquals(0, subWidgetDef.getHelpLabels().size());
+        assertEquals(0, subWidgetDef.getModes().size());
+        assertEquals(0, subWidgetDef.getProperties().size());
+        assertEquals(0, subWidgetDef.getWidgetModeProperties().size());
+        assertNotNull(subWidgetDef.getSelectOptions());
+        assertEquals(0, subWidgetDef.getSelectOptions().length);
+        assertEquals(0, subWidgetDef.getSubWidgetDefinitions().length);
+        assertEquals(0, subWidgetDef.getSubWidgetReferences().length);
+
+        editRow = editRows[3];
+        assertNull(editRow.getName());
+        assertEquals(0, editRow.getProperties().size());
+        editRowWidgets = editRow.getWidgets();
+        assertEquals(1, editRowWidgets.length);
+        assertEquals("subwidgetRefs", editRowWidgets[0]);
+
+        WidgetDefinition withSubwidgetRefs = editLayout.getWidgetDefinition("subwidgetRefs");
+        assertNotNull(withSubwidgetRefs);
+        assertEquals("subwidgetRefs", withSubwidgetRefs.getName());
+        assertEquals(1, withSubwidgetRefs.getLabels().size());
+        assertEquals("Selection", withSubwidgetRefs.getLabel(BuiltinModes.ANY));
+        assertEquals("test", withSubwidgetRefs.getType());
+        assertEquals(0, withSubwidgetRefs.getFieldDefinitions().length);
+        assertEquals(0, withSubwidgetRefs.getHelpLabels().size());
+        assertEquals(0, withSubwidgetRefs.getModes().size());
+        assertEquals(0, withSubwidgetRefs.getProperties().size());
+        assertEquals(0, withSubwidgetRefs.getWidgetModeProperties().size());
+        assertNotNull(withSubwidgetRefs.getSelectOptions());
+        assertEquals(0, withSubwidgetRefs.getSelectOptions().length);
+        assertEquals(0, withSubwidgetRefs.getSubWidgetDefinitions().length);
+        assertEquals(1, withSubwidgetRefs.getSubWidgetReferences().length);
+
+        WidgetReference subWidgetRef = withSubwidgetRefs.getSubWidgetReferences()[0];
+        assertEquals("localSubWidget", subWidgetRef.getName());
+        assertTrue(StringUtils.isBlank(subWidgetRef.getCategory()));
+
+        WidgetDefinition subWidgetRefDef = editLayout.getWidgetDefinition("localSubWidget");
+        assertNotNull(subWidgetRefDef);
+        assertEquals("localSubWidget", subWidgetRefDef.getName());
+        assertEquals("foo3",
+                subWidgetRefDef.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar3",
+                subWidgetRefDef.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo3:bar3",
+                subWidgetRefDef.getFieldDefinitions()[0].getPropertyName());
+        assertEquals(0, subWidgetRefDef.getLabels().size());
+        assertNull(subWidgetRefDef.getLabel(BuiltinModes.ANY));
+        assertEquals("test", subWidgetRefDef.getType());
+        assertEquals(1, subWidgetRefDef.getFieldDefinitions().length);
+        assertEquals(0, subWidgetRefDef.getHelpLabels().size());
+        assertEquals(0, subWidgetRefDef.getModes().size());
+        assertEquals(0, subWidgetRefDef.getProperties().size());
+        assertEquals(0, subWidgetRefDef.getWidgetModeProperties().size());
+        assertNotNull(subWidgetRefDef.getSelectOptions());
+        assertEquals(0, subWidgetRefDef.getSelectOptions().length);
+        assertEquals(0, subWidgetRefDef.getSubWidgetDefinitions().length);
+        assertEquals(0, subWidgetRefDef.getSubWidgetReferences().length);
     }
 
     protected void checkCommonSelectOption(WidgetSelectOption option,

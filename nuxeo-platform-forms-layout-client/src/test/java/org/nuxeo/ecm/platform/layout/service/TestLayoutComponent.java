@@ -19,18 +19,22 @@
 
 package org.nuxeo.ecm.platform.layout.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -132,6 +136,34 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals(2, list.length);
         assertEquals("fooListItem", list[0]);
         assertEquals("barListItem", list[1]);
+    }
+
+    @Test
+    public void testLayoutSubWidgetsRegistration() {
+        LayoutDefinition testLayout = service.getLayoutDefinition("testLayout");
+        assertNotNull(testLayout);
+        assertEquals("testLayout", testLayout.getName());
+        assertEquals(7, testLayout.getRows().length);
+
+        WidgetDefinition withSubWidgets = testLayout.getWidgetDefinition("testWidgetWithSubWidgets");
+        assertNotNull(withSubWidgets);
+        WidgetDefinition[] subDefs = withSubWidgets.getSubWidgetDefinitions();
+        assertEquals(1, subDefs.length);
+        WidgetDefinition subDef = subDefs[0];
+        assertEquals("text", subDef.getType());
+        assertEquals("subwidget label", subDef.getLabel(BuiltinModes.ANY));
+        WidgetReference[] subRefs = withSubWidgets.getSubWidgetReferences();
+        assertEquals(0, subRefs.length);
+
+        WidgetDefinition withSubWidgetRefs = testLayout.getWidgetDefinition("testWidgetWithSubWidgetRefs");
+        subDefs = withSubWidgetRefs.getSubWidgetDefinitions();
+        assertEquals(0, subDefs.length);
+        subRefs = withSubWidgetRefs.getSubWidgetReferences();
+        assertEquals(2, subRefs.length);
+        assertNull(subRefs[0].getCategory());
+        assertEquals("globalSubWidget", subRefs[0].getName());
+        assertNull(subRefs[1].getCategory());
+        assertEquals("testLocalSubwidget", subRefs[1].getName());
     }
 
     @Test

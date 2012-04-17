@@ -120,6 +120,12 @@
       </selectOptions>
     </widget>
 
+    <widget name="globalSubWidget" type="test">
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -142,6 +148,12 @@
         <row>
           <widget>widgetWithSelectOptions</widget>
         </row>
+        <row>
+          <widget>testWidgetWithSubWidgets</widget>
+        </row>
+        <row>
+          <widget>testWidgetWithSubWidgetRefs</widget>
+        </row>
       </rows>
       <widget name="testWidget" type="test">
         <labels>
@@ -161,6 +173,29 @@
         </properties>
       </widget>
       <widget name="testWidgetWithoutLabel" type="test">
+        <fields>
+          <field schema="foo">bar</field>
+        </fields>
+      </widget>
+      <widget name="testWidgetWithSubWidgets" type="test">
+        <subWidgets>
+          <widget name="subwidget" type="text">
+            <labels>
+              <label mode="any">subwidget label</label>
+            </labels>
+            <fields>
+              <field schema="foo">bar</field>
+            </fields>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="testWidgetWithSubWidgetRefs" type="test">
+        <subWidgetRefs>
+          <widget>globalSubWidget</widget>
+          <widget>testLocalSubwidget</widget>
+        </subWidgetRefs>
+      </widget>
+      <widget name="testLocalSubwidget" type="test">
         <fields>
           <field schema="foo">bar</field>
         </fields>

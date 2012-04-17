@@ -95,6 +95,12 @@
                 <row>
                   <widget>selection_property</widget>
                 </row>
+                <row>
+                  <widget>subwidgets</widget>
+                </row>
+                <row>
+                  <widget>subwidgetRefs</widget>
+                </row>
               </rows>
               <widget name="rendered_property" type="text">
                 <labels>
@@ -136,6 +142,37 @@
                     itemRendered="true" ordering="label" caseSensitive="true" />
                   <option itemLabel="foo2" itemValue="bar2" />
                 </selectOptions>
+              </widget>
+              <widget name="subwidgets" type="test">
+                <labels>
+                  <label mode="any">Selection</label>
+                </labels>
+                <fields>
+                  <field schema="foo2">bar2</field>
+                </fields>
+                <subWidgets>
+                  <widget name="subwidget" type="text">
+                    <labels>
+                      <label mode="any">subwidget label</label>
+                    </labels>
+                    <fields>
+                      <field schema="foo">bar</field>
+                    </fields>
+                  </widget>
+                </subWidgets>
+              </widget>
+              <widget name="subwidgetRefs" type="test">
+                <labels>
+                  <label mode="any">Selection</label>
+                </labels>
+                <subWidgetRefs>
+                  <widget>localSubWidget</widget>
+                </subWidgetRefs>
+              </widget>
+              <widget name="localSubWidget" type="test">
+                <fields>
+                  <field schema="foo3">bar3</field>
+                </fields>
               </widget>
             </layout>
           </layouts>

@@ -142,7 +142,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         // test rows
         assertEquals(1, layout.getColumns());
         LayoutRow[] rows = layout.getRows();
-        assertEquals(5, rows.length);
+        assertEquals(7, rows.length);
         LayoutRow row = rows[0];
 
         // test widgets
@@ -207,6 +207,33 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertFalse(options[4] instanceof WidgetSelectOptions);
         checkCommonSelectOption(options[4], null, null, "bar2", "foo2", null,
                 null);
+
+        // test widget with subwidgets
+        widget = rows[5].getWidgets()[0];
+        assertNotNull(widget);
+        assertEquals("testWidgetWithSubWidgets", widget.getName());
+        assertEquals("test", widget.getType());
+        Widget[] subWidgets = widget.getSubWidgets();
+        assertNotNull(subWidgets);
+        assertEquals(1, subWidgets.length);
+        Widget subWidget = subWidgets[0];
+        assertEquals("subwidget", subWidget.getName());
+        assertEquals("text", subWidget.getType());
+
+        // test widget with subbwidget refs
+        widget = rows[6].getWidgets()[0];
+        assertNotNull(widget);
+        assertEquals("testWidgetWithSubWidgetRefs", widget.getName());
+        assertEquals("test", widget.getType());
+        subWidgets = widget.getSubWidgets();
+        assertNotNull(subWidgets);
+        assertEquals(2, subWidgets.length);
+        subWidget = subWidgets[0];
+        assertEquals("globalSubWidget", subWidget.getName());
+        assertEquals("test", subWidget.getType());
+        subWidget = subWidgets[1];
+        assertEquals("testLocalSubwidget", subWidget.getName());
+        assertEquals("test", subWidget.getType());
     }
 
     protected void checkCommonSelectOption(WidgetSelectOption option,

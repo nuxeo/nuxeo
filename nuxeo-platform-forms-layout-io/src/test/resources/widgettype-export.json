@@ -48,7 +48,10 @@
     ],
     "properties": {"layouts":     {
       "any": [      {
-        "rows": [{"widgets": ["required_property"]}],
+        "rows": [{"widgets": [        {
+          "name": "required_property",
+          "category": "widgetTypeConfiguration"
+        }]}],
         "widgets": [        {
           "name": "required_property",
           "type": "text",
@@ -73,8 +76,10 @@
       }],
       "edit": [      {
         "rows":         [
-          {"widgets": ["rendered_property"]},
-          {"widgets": ["selection_property"]}
+          {"widgets": [{"name": "rendered_property"}]},
+          {"widgets": [{"name": "selection_property"}]},
+          {"widgets": [{"name": "subwidgets"}]},
+          {"widgets": [{"name": "subwidgetRefs"}]}
         ],
         "widgets":         [
                     {
@@ -149,6 +154,45 @@
                 "itemValue": "bar2"
               }
             ]
+          },
+                    {
+            "name": "subwidgets",
+            "type": "test",
+            "labels": {"any": "Selection"},
+            "translated": true,
+            "fields": [            {
+              "fieldName": "bar2",
+              "schemaName": "foo2",
+              "propertyName": "foo2:bar2"
+            }],
+            "subWidgets": [            {
+              "name": "subwidget",
+              "type": "text",
+              "labels": {"any": "subwidget label"},
+              "translated": true,
+              "fields": [              {
+                "fieldName": "bar",
+                "schemaName": "foo",
+                "propertyName": "foo:bar"
+              }]
+            }]
+          },
+                    {
+            "name": "subwidgetRefs",
+            "type": "test",
+            "labels": {"any": "Selection"},
+            "translated": true,
+            "subWidgetRefs": [{"name": "localSubWidget"}]
+          },
+                    {
+            "name": "localSubWidget",
+            "type": "test",
+            "translated": true,
+            "fields": [            {
+              "fieldName": "bar3",
+              "schemaName": "foo3",
+              "propertyName": "foo3:bar3"
+            }]
           }
         ]
       }]
