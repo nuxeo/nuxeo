@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -229,8 +230,9 @@ public class TestDetector {
     }
 
     // TODO: fix and reactivate
-    // @Test
-    public void XXXtestSnifferPPTDirectGuess() {
+    @Test
+    @Ignore
+    public void testSnifferPPTDirectGuess() {
         File pptFile = getFileFromTestResource("test-data/hello.ppt");
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
 
@@ -240,8 +242,9 @@ public class TestDetector {
     }
 
     // TODO: fix and reactivate
-    // @Test
-    public void XXXtestSnifferPPTByByteArray() throws IOException {
+    @Test
+    @Ignore
+    public void testSnifferPPTByByteArray() throws IOException {
         File pptFile = getFileFromTestResource("test-data/hello.ppt");
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
 

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -418,7 +419,9 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     // with an existing id, as long as parent id is different - e.g full id is
     // the (parent id, id) tuple. But this constraint does not appear the
     // directory configuration, so drop it for now.
-    public void XXXtestDeleteEntryExtended() throws Exception {
+    @Test
+    @Ignore
+    public void testDeleteEntryExtended() throws Exception {
         Session session = getSession();
         try {
             // create a second entry with user_1 as key but with
