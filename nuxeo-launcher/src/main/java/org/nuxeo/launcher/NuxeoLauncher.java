@@ -662,7 +662,7 @@ public abstract class NuxeoLauncher {
             commandSucceeded = commandSucceeded && launcher.pkgReset();
             launcher.printXMLOutput();
         } else if ("showconf".equalsIgnoreCase(launcher.command)) {
-            launcher.showConfig();
+            commandSucceeded = commandSucceeded && launcher.showConfig();
         } else {
             printLongHelp();
             commandSucceeded = false;
@@ -1419,6 +1419,7 @@ public abstract class NuxeoLauncher {
         log.error("\tstartbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
         log.error("\trestartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
         log.error("\tpack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
+        log.error("\tshowconf\t\tDisplay the instance configuration.");
         log.error("\tmp-list\t\t\tList marketplace packages.");
         log.error("\tmp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
         log.error("\tmp-install\t\tRun marketplace package installation. "
@@ -1613,7 +1614,7 @@ public abstract class NuxeoLauncher {
     /**
      * @since 5.6
      */
-    protected void showConfig() {
+    protected boolean showConfig() {
         InstanceInfo nxInstance = new InstanceInfo();
         log.info("***** Nuxeo instance configuration *****");
         nxInstance.NUXEO_CONF = configurationGenerator.getNuxeoConf().getPath();
@@ -1630,23 +1631,11 @@ public abstract class NuxeoLauncher {
             log.info("Instance CLID: " + nxInstance.clid);
         } catch (NoCLID e) {
             // leave nxInstance.clid unset
-        } catch (Exception e1) {
-            File clid = new File(configurationGenerator.getDataDir(),
-                    "instance.clid");
-            if (clid.exists()) {
-                try {
-                    String[] parts = FileUtils.readFileToString(clid).trim().split(
-                            "\n");
-                    if (parts.length < 2) {
-                        // instance.clid is in the wrong format - leave unset
-                    } else {
-                        nxInstance.clid = parts[0] + "--" + parts[1];
-                        log.info("Instance CLID: " + nxInstance.clid);
-                    }
-                } catch (IOException e2) {
-                    log.warn("Could not read instance.clid", e2);
-                }
-            }
+        } catch (Exception e) {
+            // something went wrong in the NuxeoConnectClient initialization
+            errorValue = 4;
+            log.error("Could not initialize NuxeoConnectClient", e);
+            return false;
         }
         // distribution.properties
         DistributionInfo nxDistrib;
@@ -1775,5 +1764,6 @@ public abstract class NuxeoLauncher {
         nxInstance.config = nxConfig;
         log.info("****************************************");
         printInstanceXMLOutput(nxInstance);
+        return true;
     }
 }
