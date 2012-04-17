@@ -84,12 +84,4 @@ public interface VideoService {
      */
     VideoConversionStatus getProgressStatus(VideoConversionId id);
 
-    /**
-     * Clear the status of the video conversion identified by the given
-     * {@code id}.
-     *
-     * @param id unique identifier of the video conversion
-     */
-    void clearProgressStatus(VideoConversionId id);
-
 }

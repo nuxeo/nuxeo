@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Thomas Roger <troger@nuxeo.com>
+ *     Thomas Roger
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.video.service;
 
 import java.io.Serializable;
@@ -24,22 +24,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.AsyncWaitHook;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
@@ -50,12 +49,9 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import com.google.common.collect.MapMaker;
-
 /**
  * Default implementation of {@link VideoService}.
  *
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
 public class VideoServiceImpl extends DefaultComponent implements VideoService {
@@ -70,50 +66,22 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     protected AutomaticVideoConversionContributionHandler automaticVideoConversions;
 
-    protected VideoConversionExecutor conversionExecutor;
-
-    protected AsyncWaitHook asyncWaitHook;
-
-    protected final Map<VideoConversionId, String> states = new MapMaker().concurrencyLevel(
-            10).expiration(1, TimeUnit.DAYS).makeMap();
-
     @Override
     public void activate(ComponentContext context) throws Exception {
         videoConversions = new VideoConversionContributionHandler();
         automaticVideoConversions = new AutomaticVideoConversionContributionHandler();
-        conversionExecutor = new VideoConversionExecutor();
-        asyncWaitHook = new AsyncWaitHook() {
-
-            @Override
-            public boolean shutdown() {
-                try {
-                    return conversionExecutor.shutdownNow();
-                } finally {
-                    conversionExecutor = null;
-                }
-            }
-
-            @Override
-            public boolean waitForAsyncCompletion() {
-                try {
-                    return conversionExecutor.shutdown();
-                } finally {
-                    conversionExecutor = new VideoConversionExecutor();
-                }
-            }
-        };
-        ((EventServiceImpl) Framework.getLocalService(EventService.class)).registerForAsyncWait(asyncWaitHook);
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        ((EventServiceImpl) Framework.getLocalService(EventService.class)).unregisterForAsyncWait(asyncWaitHook);
-        conversionExecutor.shutdown();
-
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        if (workManager != null) {
+            workManager.shutdownQueue(
+                    workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION),
+                    10, TimeUnit.SECONDS);
+        }
         videoConversions = null;
         automaticVideoConversions = null;
-        conversionExecutor = null;
-        asyncWaitHook = null;
     }
 
     @Override
@@ -145,16 +113,14 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void launchConversion(DocumentModel doc, String conversionName) {
-        DocumentLocation docLoc = new DocumentLocationImpl(
-                doc.getRepositoryName(), doc.getRef());
-        VideoConversionId id = new VideoConversionId(docLoc, conversionName);
-        if (states.containsKey(id)) {
-            return;
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        if (workManager == null) {
+            throw new RuntimeException("No WorkManager available");
         }
-        states.put(id, VideoConversionStatus.STATUS_CONVERSION_QUEUED);
-        VideoConversionTask task = new VideoConversionTask(doc, conversionName,
-                this);
-        conversionExecutor.execute(task);
+        VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(
+                doc), conversionName);
+        VideoConversionWork work = new VideoConversionWork(id);
+        workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
     }
 
     @Override
@@ -181,11 +147,6 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
                         "'%s' is not a registered video conversion.",
                         conversionName));
             }
-
-            if (id != null) {
-                states.put(id, VideoConversionStatus.STATUS_CONVERSION_PENDING);
-            }
-
             BlobHolder blobHolder = new SimpleBlobHolder(
                     originalVideo.getBlob());
             VideoConversion conversion = videoConversions.registry.get(conversionName);
@@ -205,33 +166,22 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public VideoConversionStatus getProgressStatus(VideoConversionId id) {
-        String status = states.get(id);
-        if (status == null) {
-            // early return
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        Work work = new VideoConversionWork(id);
+        int[] pos = new int[1];
+        work = workManager.find(work, null, true, pos);
+        if (work == null) {
             return null;
+        } else if (work.getState() == State.SCHEDULED) {
+            String queueId = workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION);
+            int queueSize = workManager.listWork(queueId, State.SCHEDULED).size();
+            return new VideoConversionStatus(
+                    VideoConversionStatus.STATUS_CONVERSION_QUEUED, pos[0] + 1,
+                    queueSize);
+        } else { // RUNNING
+            return new VideoConversionStatus(
+                    VideoConversionStatus.STATUS_CONVERSION_PENDING, 0, 0);
         }
-        @SuppressWarnings("rawtypes")
-        Queue q = null;
-        if (VideoConversionStatus.STATUS_CONVERSION_QUEUED.equals(status)) {
-            q = conversionExecutor.queue;
-        }
-        int posInQueue = 0;
-        int queueSize = 0;
-        if (q != null) {
-            Object[] queuedItems = q.toArray();
-            queueSize = queuedItems.length;
-            for (int i = 0; i < queueSize; i++) {
-                if (((VideoConversionTask) queuedItems[i]).getId().equals(id)) {
-                    posInQueue = i + 1;
-                    break;
-                }
-            }
-        }
-        return new VideoConversionStatus(status, posInQueue, queueSize);
     }
 
-    @Override
-    public void clearProgressStatus(VideoConversionId id) {
-        states.remove(id);
-    }
 }
