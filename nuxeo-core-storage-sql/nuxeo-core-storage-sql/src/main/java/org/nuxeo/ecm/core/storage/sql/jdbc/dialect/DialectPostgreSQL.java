@@ -496,11 +496,25 @@ public class DialectPostgreSQL extends Dialect {
         }
     }
 
-    // SELECT ..., TS_RANK_CD(fulltext, nxquery, 32) as nxscore
-    // FROM ... LEFT JOIN fulltext ON fulltext.id = hierarchy.id
-    // , TO_TSQUERY('french', ?) as nxquery
+    // OLD having problems in pre-9.2 (NXP-9228)
+    // SELECT ...,
+    // TS_RANK_CD(NX_TO_TSVECTOR(fulltext), nxquery, 32) as nxscore
+    // FROM ...
+    // LEFT JOIN fulltext ON fulltext.id = hierarchy.id,
+    // TO_TSQUERY('french', ?) nxquery
     // WHERE ...
-    // AND NX_TO_TSVECTOR(fulltext) @@ nxquery
+    // AND nxquery @@ NX_TO_TSVECTOR(fulltext)
+    // AND fulltext LIKE '% foo bar %' -- when phrase search
+    // ORDER BY nxscore DESC
+
+    // NEW
+    // SELECT ...,
+    // TS_RANK_CD(NX_TO_TSVECTOR(fulltext), TO_TSQUERY('french', ?), 32) as
+    // nxscore
+    // FROM ...
+    // LEFT JOIN fulltext ON fulltext.id = hierarchy.id
+    // WHERE ...
+    // AND TO_TSQUERY('french', ?) @@ NX_TO_TSVECTOR(fulltext)
     // AND fulltext LIKE '% foo bar %' -- when phrase search
     // ORDER BY nxscore DESC
     @Override
@@ -514,7 +528,6 @@ public class DialectPostgreSQL extends Dialect {
                 + indexSuffix);
         String ftColumnName = ftColumn.getFullQuotedName();
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
-        String queryAlias = "_nxquery" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         info.joins = new ArrayList<Join>();
         if (nthMatch == 1) {
@@ -533,25 +546,22 @@ public class DialectPostgreSQL extends Dialect {
         } else {
             like = null;
         }
-        info.joins.add(new Join(
-                Join.IMPLICIT, //
-                String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
-                queryAlias, // alias
-                fulltextQuery, // param
-                null, null));
+        String tsquery = String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer);
         String tsvector;
         if (compatibilityFulltextTable) {
             tsvector = ftColumnName;
         } else {
             tsvector = String.format("NX_TO_TSVECTOR(%s)", ftColumnName);
         }
-        String where = String.format("(%s @@ %s)", queryAlias, tsvector);
+        String where = String.format("(%s @@ %s)", tsquery, tsvector);
         if (like != null) {
             where += " AND (" + like + ")";
         }
         info.whereExpr = where;
+        info.whereExprParam = fulltextQuery;
         info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)", tsvector,
-                queryAlias);
+                tsquery);
+        info.scoreExprParam = fulltextQuery;
         info.scoreAlias = "_nxscore" + nthSuffix;
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
