@@ -45,8 +45,8 @@ public class UserRegistrationObject extends ModuleRoot {
         UserRegistrationService usr = Framework.getLocalService(UserRegistrationService.class);
         String redirectUrl = ctx.getServerURL() + "/" + BaseURL.getWebAppName();
         try {
-            Map<String, Serializable> additionnalInfo = buildAdditionnalInfos();
-            Map<String, Serializable> registrationData = usr.validateRegistration(requestId, additionnalInfo);
+            Map<String, Serializable> additionalInfo = buildAdditionalInfos();
+            Map<String, Serializable> registrationData = usr.validateRegistration(requestId, additionalInfo);
             DocumentModel regDoc = (DocumentModel) registrationData.get(REGISTRATION_DATA_DOC);
             String docId = (String) regDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
             if (!StringUtils.isEmpty(docId)) {
@@ -66,7 +66,7 @@ public class UserRegistrationObject extends ModuleRoot {
         return redirect(redirectUrl);
     }
 
-    private Map<String, Serializable> buildAdditionnalInfos() {
+    protected Map<String, Serializable> buildAdditionalInfos() {
         return new HashMap<String, Serializable>();
     }
 
