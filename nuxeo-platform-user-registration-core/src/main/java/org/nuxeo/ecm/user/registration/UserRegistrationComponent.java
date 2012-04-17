@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -497,8 +498,13 @@ public class UserRegistrationComponent extends DefaultComponent implements
         byPassAdminValidation |= registrationRules.allowDirectValidationForExistingUser()
                 && registrationRules.allowDirectValidationForNonExistingUser();
         if (byPassAdminValidation) {
-            additionnalInfo.put("validationBaseURL", BaseURL.getBaseURL()
-                    + getConfiguration(configurationName).getValidationRelUrl());
+            // Build validationBaseUrl with nuxeo.url property as request is not
+            // accessible.
+            if (!additionnalInfo.containsKey("validationBaseUrl")) {
+                Path path = new Path(Framework.getProperty("nuxeo.url"));
+                path.append(getConfiguration(configurationName).getValidationRelUrl());
+                additionnalInfo.put("validationBaseURL", path.toString());
+            }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
         return registrationUuid;
