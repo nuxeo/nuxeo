@@ -55,7 +55,7 @@ public class StandalonePackageManager {
         this.env = env;
     }
 
-    protected StandaloneUpdateService getUpdateService() throws IOException,
+    public StandaloneUpdateService getUpdateService() throws IOException,
             PackageException {
         if (service == null) {
             service = new StandaloneUpdateService(env);

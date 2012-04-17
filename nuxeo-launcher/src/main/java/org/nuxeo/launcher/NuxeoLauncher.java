@@ -69,10 +69,15 @@ import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.json.JSONException;
 import org.json.XML;
 import org.nuxeo.common.Environment;
+import org.nuxeo.connect.CallbackHolder;
+import org.nuxeo.connect.NuxeoConnectClient;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.connect.StandaloneCallbackHolder;
 import org.nuxeo.launcher.connect.StandalonePackageManager;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
@@ -1616,16 +1621,31 @@ public abstract class NuxeoLauncher {
         nxInstance.NUXEO_HOME = configurationGenerator.getNuxeoHome().getPath();
         log.info("NUXEO_HOME: " + nxInstance.NUXEO_HOME);
         // CLID
-        // TODO: should use LogicalInstanceIdentifier
-        // when a callbackHolder has been implemented for the launcher
-        File clid = new File(configurationGenerator.getDataDir(),
-                "instance.clid");
-        if (clid.exists()) {
-            try {
-                nxInstance.clid = FileUtils.readFileToString(clid).trim();
-                log.info("Instance CLID: " + nxInstance.clid);
-            } catch (IOException e) {
-                log.warn("Could not read instance.clid", e);
+        try {
+            CallbackHolder cbHolder = new StandaloneCallbackHolder(
+                    getDistributionEnvironment(),
+                    getPackageManager().getUpdateService());
+            NuxeoConnectClient.setCallBackHolder(cbHolder);
+            nxInstance.clid = LogicalInstanceIdentifier.instance().getCLID();
+            log.info("Instance CLID: " + nxInstance.clid);
+        } catch (NoCLID e) {
+            // leave nxInstance.clid unset
+        } catch (Exception e1) {
+            File clid = new File(configurationGenerator.getDataDir(),
+                    "instance.clid");
+            if (clid.exists()) {
+                try {
+                    String[] parts = FileUtils.readFileToString(clid).trim().split(
+                            "\n");
+                    if (parts.length < 2) {
+                        // instance.clid is in the wrong format - leave unset
+                    } else {
+                        nxInstance.clid = parts[0] + "--" + parts[1];
+                        log.info("Instance CLID: " + nxInstance.clid);
+                    }
+                } catch (IOException e2) {
+                    log.warn("Could not read instance.clid", e2);
+                }
             }
         }
         // distribution.properties
