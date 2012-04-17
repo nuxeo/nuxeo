@@ -29,8 +29,6 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -50,8 +48,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * @since 5.6
  */
 public class HtmlDetailedDiffer implements MimeTypeDetailedDiffer {
-
-    private static final Log log = LogFactory.getLog(HtmlDetailedDiffer.class);
 
     public List<Blob> getDetailedDiff(Blob leftBlob, Blob rightBlob,
             DocumentModel leftDoc, DocumentModel rightDoc)
@@ -77,68 +73,23 @@ public class HtmlDetailedDiffer implements MimeTypeDetailedDiffer {
             String prefix = "diff";
 
             HtmlCleaner cleaner = new HtmlCleaner();
-//            NekoHtmlParser parser = new NekoHtmlParser();
-//            XslFilter cleanupXslFilter = new XslFilter();
-
-            // TODO: needed ?
-            // StringBuilder htmlLeftBlobSb = new StringBuilder();
-            // htmlLeftBlobSb.append("<html><head></head><body>");
-            // // htmlLeftValueSb.append("<pre>");
-            // htmlLeftBlobSb.append(((StringBlob) leftBlob).getString());
-            // // htmlLeftValueSb.append("</pre>");
-            // htmlLeftBlobSb.append("</body></html>");
-
-            // StringBuilder htmlRightValueSb = new StringBuilder();
-            // htmlRightValueSb.append("<html><head></head><body>");
-            // // htmlRightValueSb.append("<pre>");
-            // htmlRightValueSb.append(((StringBlob) rightBlob).getString());
-            // // htmlRightValueSb.append("</pre>");
-            // htmlRightValueSb.append("</body></html>");
-
-            // TODO: check if could not use blob.getStream directly?
-            // InputSource leftIS = new InputSource(new StringReader(
-            // htmlLeftBlobSb.toString()));
-            // InputSource rightIS = new InputSource(new StringReader(
-            // htmlRightValueSb.toString()));
-
-            log.warn("-------------------  LEFT BLOB ----------------------------");
-            log.warn(((StringBlob) leftBlob).getString());
-            log.warn("-----------------------------------------------------------");
-
-            log.warn("-------------------  RIGHT BLOB ----------------------------");
-            log.warn(((StringBlob) rightBlob).getString());
-            log.warn("-----------------------------------------------------------");
 
             InputSource leftIS = new InputSource(leftBlob.getStream());
             InputSource rightIS = new InputSource(rightBlob.getStream());
 
             DomTreeBuilder leftHandler = new DomTreeBuilder();
             cleaner.cleanAndParse(leftIS, leftHandler);
-//            ContentHandler cleanupFilter = cleanupXslFilter.xsl(leftHandler,
-//                    "xslfilter/cleanup.xsl");
-//            parser.parse(leftIS, cleanupFilter);
-//            XMLReader xr1 = XMLReaderFactory.createXMLReader();
-//            xr1.setContentHandler(leftHandler);
-//            xr1.parse(leftIS);
             TextNodeComparator leftComparator = new TextNodeComparator(
                     leftHandler, locale);
 
             DomTreeBuilder rightHandler = new DomTreeBuilder();
             cleaner.cleanAndParse(rightIS, rightHandler);
-            // cleanupFilter = cleanupXslFilter.xsl(rightHandler,
-            // "xslfilter/cleanup.xsl");
-            // parser.parse(rightIS, cleanupFilter);
-            // XMLReader xr2 = XMLReaderFactory.createXMLReader();
-            // xr2.setContentHandler(rightHandler);
-            // xr2.parse(rightIS);
             TextNodeComparator rightComparator = new TextNodeComparator(
                     rightHandler, locale);
 
             postProcess.startDocument();
             postProcess.startElement("", "diffreport", "diffreport",
                     new AttributesImpl());
-            // String[] css = new String[] {};
-            // doCSS(css, postProcess);
             postProcess.startElement("", "diff", "diff", new AttributesImpl());
             HtmlSaxDiffOutput output = new HtmlSaxDiffOutput(postProcess,
                     prefix);
@@ -149,9 +100,6 @@ public class HtmlDetailedDiffer implements MimeTypeDetailedDiffer {
             postProcess.endElement("", "diff", "diff");
             postProcess.endElement("", "diffreport", "diffreport");
             postProcess.endDocument();
-
-            // DaisyDiff.diffHTML(leftIS, rightIS, transformHandler, null,
-            // Locale.FRENCH);
 
             Blob mainBlob = new StringBlob(sw.toString());
             sw.close();
@@ -166,23 +114,4 @@ public class HtmlDetailedDiffer implements MimeTypeDetailedDiffer {
             throw new DetailedDiffException(e);
         }
     }
-
-    // protected final void doCSS(String[] css, ContentHandler handler) throws
-    // SAXException {
-    // handler.startElement("", "css", "css",
-    // new AttributesImpl());
-    // for(String cssLink : css){
-    // AttributesImpl attr = new AttributesImpl();
-    // attr.addAttribute("", "href", "href", "CDATA", cssLink);
-    // attr.addAttribute("", "type", "type", "CDATA", "text/css");
-    // attr.addAttribute("", "rel", "rel", "CDATA", "stylesheet");
-    // handler.startElement("", "link", "link",
-    // attr);
-    // handler.endElement("", "link", "link");
-    // }
-    //
-    // handler.endElement("", "css", "css");
-    //
-    // }
-
 }
