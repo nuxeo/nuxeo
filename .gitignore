@@ -5,4 +5,4 @@ bin
 .settings
 build.properties
 deploy.sh
-TODO.txt
+TODO*
