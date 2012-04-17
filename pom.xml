@@ -4143,8 +4143,8 @@
       </build>
       <repositories>
         <repository>
-          <id>nightly-releases</id>
-          <url>http://maven.in.nuxeo.com/nexus/content/repositories/nightly-releases</url>
+          <id>nightly-staging</id>
+          <url>http://maven.in.nuxeo.com/nexus/content/repositories/nightly-staging</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -4155,8 +4155,8 @@
       </repositories>
       <distributionManagement>
         <repository>
-          <id>nightly-releases</id>
-          <url>http://maven.in.nuxeo.com/nexus/content/repositories/nightly-releases</url>
+          <id>nightly-staging</id>
+          <url>http://maven.in.nuxeo.com/nexus/content/repositories/nightly-staging</url>
           <uniqueVersion>true</uniqueVersion>
         </repository>
       </distributionManagement>
