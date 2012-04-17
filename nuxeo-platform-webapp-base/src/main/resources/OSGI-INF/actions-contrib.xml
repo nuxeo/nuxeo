@@ -62,8 +62,8 @@
       order="4" label="label.subscriptions.follow" type="link_icon"
       icon="/icons/contextual_menu/subscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>hasNoSubscription</filter-id>
-      <filter-id>canSubscribed</filter-id>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
     </action>
     <action id="unsubscribesAllDocNotifications"
       link="#{subscriptionAction.updateAllSubscriptions}"
@@ -71,7 +71,7 @@
       icon="/icons/contextual_menu/unsubscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasSubscriptions</filter-id>
-      <filter-id>canSubscribed</filter-id>
+      <filter-id>canSubscribe</filter-id>
     </action>
     <action id="showFancyBoxPreview" order="5" type="fancybox"
       label="label.document.preview" icon="/icons/contextual_menu/preview.png">
@@ -114,13 +114,13 @@
       </rule>
     </filter>
 
-    <filter id="hasNoSubscription">
+    <filter id="hasNoSubscriptions">
       <rule grant="true">
         <condition>#{subscriptionAction.getSelectedNotifications().size() == 0}</condition>
       </rule>
     </filter>
 
-    <filter id="canSubscribed">
+    <filter id="canSubscribe">
       <rule grant="false">
         <type>Domain</type>
         <type>WorkspaceRoot</type>
