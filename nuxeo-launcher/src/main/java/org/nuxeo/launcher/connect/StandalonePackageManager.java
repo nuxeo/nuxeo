@@ -68,12 +68,21 @@ public class StandalonePackageManager {
         return cset;
     }
 
+    public List<LocalPackage> getPkgList() {
+        try {
+            StandaloneUpdateService pus = getUpdateService();
+            return pus.getPackages();
+        } catch (Exception e) {
+            log.error("Could not read package list");
+            return null;
+        }
+    }
+
     public List<LocalPackage> pkgList() {
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_LIST;
         try {
-            StandaloneUpdateService pus = getUpdateService();
-            List<LocalPackage> localPackages = pus.getPackages();
+            List<LocalPackage> localPackages = getPkgList();
             if (localPackages.isEmpty()) {
                 log.info("No local package.");
             } else {

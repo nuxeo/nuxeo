@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -43,6 +44,8 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -53,6 +56,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -66,6 +70,7 @@ import org.json.JSONException;
 import org.json.XML;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.StandalonePackageManager;
@@ -82,6 +87,9 @@ import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.launcher.monitoring.StatusServletClient;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * @author jcarsique
@@ -1493,7 +1501,8 @@ public abstract class NuxeoLauncher {
 
     protected StandalonePackageManager getPackageManager() {
         if (packageManager == null) {
-            packageManager = new StandalonePackageManager(getDistributionEnvironment());
+            packageManager = new StandalonePackageManager(
+                    getDistributionEnvironment());
         }
         return packageManager;
     }
@@ -1579,17 +1588,15 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-     /**
+    /**
      * @since 5.6
      */
     protected void printInstanceXMLOutput(InstanceInfo instance) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(
-                InstanceInfo.class,
-                DistributionInfo.class,
-                PackageInfo.class,
-                ConfigurationInfo.class,
-                KeyValueInfo.class);
+                    InstanceInfo.class, DistributionInfo.class,
+                    PackageInfo.class, ConfigurationInfo.class,
+                    KeyValueInfo.class);
             printXMLOutput(jaxbContext, instance);
         } catch (JAXBException e) {
             e.printStackTrace();
@@ -1598,19 +1605,37 @@ public abstract class NuxeoLauncher {
         }
     }
 
-     /**
+    /**
      * @since 5.6
      */
     protected void showConfig() {
         InstanceInfo nxInstance = new InstanceInfo();
+        log.info("***** Nuxeo instance configuration *****");
         nxInstance.NUXEO_CONF = configurationGenerator.getNuxeoConf().getPath();
+        log.info("NUXEO_CONF: " + nxInstance.NUXEO_CONF);
         nxInstance.NUXEO_HOME = configurationGenerator.getNuxeoHome().getPath();
+        log.info("NUXEO_HOME: " + nxInstance.NUXEO_HOME);
+        // CLID
+        // TODO: should use LogicalInstanceIdentifier
+        // when a callbackHolder has been implemented for the launcher
+        File clid = new File(configurationGenerator.getDataDir(),
+                "instance.clid");
+        if (clid.exists()) {
+            try {
+                nxInstance.clid = FileUtils.readFileToString(clid).trim();
+                log.info("Instance CLID: " + nxInstance.clid);
+            } catch (IOException e) {
+                log.warn("Could not read instance.clid", e);
+            }
+        }
         // distribution.properties
         DistributionInfo nxDistrib;
-        File distFile = new File(configurationGenerator.getConfigDir(), "distribution.properties");
+        File distFile = new File(configurationGenerator.getConfigDir(),
+                "distribution.properties");
         if (!distFile.exists()) {
             // fallback in the file in templates
-            distFile = new File(configurationGenerator.getNuxeoHome(), "templates");
+            distFile = new File(configurationGenerator.getNuxeoHome(),
+                    "templates");
             distFile = new File(distFile, "common");
             distFile = new File(distFile, "config");
             distFile = new File(distFile, "distribution.properties");
@@ -1621,20 +1646,97 @@ public abstract class NuxeoLauncher {
             nxDistrib = new DistributionInfo();
         }
         nxInstance.distribution = nxDistrib;
+        log.info("** Distribution");
+        log.info("- name: " + nxDistrib.name);
+        log.info("- server: " + nxDistrib.server);
+        log.info("- version: " + nxDistrib.version);
+        log.info("- date: " + nxDistrib.date);
+        log.info("- packaging: " + nxDistrib.packaging);
         // packages
-        List<LocalPackage> pkgs = getPackageManager().pkgList();
+        List<LocalPackage> pkgs = getPackageManager().getPkgList();
+        log.info("** Packages:");
+        List<String> pkgTemplates = new ArrayList<String>();
         for (LocalPackage pkg : pkgs) {
             nxInstance.packages.add(new PackageInfo(pkg));
+            String packageDescription;
+            switch (pkg.getState()) {
+            case PackageState.DOWNLOADING:
+                packageDescription = "downloading";
+                break;
+            case PackageState.DOWNLOADED:
+                packageDescription = "downloaded";
+                break;
+            case PackageState.INSTALLING:
+                packageDescription = "installing";
+                break;
+            case PackageState.INSTALLED:
+                packageDescription = "installed";
+                break;
+            case PackageState.STARTED:
+                packageDescription = "started";
+                break;
+            default:
+                packageDescription = "unknown";
+                break;
+            }
+            log.info("- " + pkg.getName() + " (version: "
+                    + pkg.getVersion().toString() + " - id: " + pkg.getId()
+                    + " - state: " + packageDescription + ")");
+            // store template(s) added by this package
+            try {
+                File installFile = pkg.getInstallFile();
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document dom = db.parse(installFile);
+                NodeList nodes = dom.getDocumentElement().getElementsByTagName(
+                        "config");
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Element node = (Element) nodes.item(i);
+                    if (node.hasAttribute("addtemplate")) {
+                        pkgTemplates.add(node.getAttribute("addtemplate"));
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Could not parse install file for " + pkg.getName(), e);
+            }
         }
         // nuxeo.conf
         ConfigurationInfo nxConfig = new ConfigurationInfo();
         nxConfig.dbtemplate = configurationGenerator.extractDatabaseTemplateName();
+        log.info("** Templates:");
+        log.info("Database template: " + nxConfig.dbtemplate);
+        String userTemplates = configurationGenerator.getUserTemplates();
+        StringTokenizer st = new StringTokenizer(userTemplates, ",");
+        while (st.hasMoreTokens()) {
+            String template = st.nextToken();
+            if (template.equals(nxConfig.dbtemplate)) {
+                continue;
+            }
+            if (pkgTemplates.contains(template)) {
+                nxConfig.pkgtemplates.add(template);
+                log.info("Package template: " + template);
+            } else {
+                File testBase = new File(configurationGenerator.getNuxeoHome(),
+                        ConfigurationGenerator.TEMPLATES + File.separator
+                                + template);
+                if (testBase.exists()) {
+                    nxConfig.basetemplates.add(template);
+                    log.info("Base template: " + template);
+                } else {
+                    nxConfig.usertemplates.add(template);
+                    log.info("User template: " + template);
+                }
+            }
+        }
         Properties nxConfProps = new Properties();
         try {
-            nxConfProps.load(new FileInputStream(configurationGenerator.getNuxeoConf()));
+            nxConfProps.load(new FileInputStream(
+                    configurationGenerator.getNuxeoConf()));
         } catch (IOException e) {
             throw new IllegalStateException("Could not read nuxeo.conf");
         }
+        log.info("** Settings from nuxeo.conf:");
+        @SuppressWarnings("rawtypes")
         Enumeration nxConfEnum = nxConfProps.propertyNames();
         while (nxConfEnum.hasMoreElements()) {
             String key = (String) nxConfEnum.nextElement();
@@ -1644,8 +1746,14 @@ public abstract class NuxeoLauncher {
             }
             KeyValueInfo kv = new KeyValueInfo(key, value);
             nxConfig.keyvals.add(kv);
+            if (!key.contains("password")) {
+                log.info(key + "=" + value);
+            } else {
+                log.info(key + "=********");
+            }
         }
         nxInstance.config = nxConfig;
+        log.info("****************************************");
         printInstanceXMLOutput(nxInstance);
     }
 }
