@@ -43,20 +43,6 @@ public abstract class AbstractHtmlDetailedDiffAdapter implements
 
     protected DocumentModel adaptedDoc;
 
-    protected static DetailedDiffAdapterManager detailedDiffManager;
-
-    protected DetailedDiffAdapterManager getDetailedDiffManager()
-            throws DetailedDiffException {
-        if (detailedDiffManager == null) {
-            try {
-                detailedDiffManager = Framework.getService(DetailedDiffAdapterManager.class);
-            } catch (Exception e) {
-                throw new DetailedDiffException(e);
-            }
-        }
-        return detailedDiffManager;
-    }
-
     public String getFileDetailedDiffURL(DocumentModel otherDoc) {
         return DetailedDiffHelper.getDetailedDiffURL(adaptedDoc, otherDoc);
     }
@@ -154,6 +140,28 @@ public abstract class AbstractHtmlDetailedDiffAdapter implements
 
     public void setAdaptedDocument(DocumentModel doc) {
         this.adaptedDoc = doc;
+    }
+
+    /**
+     * Gets the detailed diff adapter manager.
+     *
+     * @return the detailed diff adapter manager
+     * @throws DetailedDiffException the detailed diff exception
+     */
+    protected final DetailedDiffAdapterManager getDetailedDiffAdapterManager()
+            throws DetailedDiffException {
+
+        DetailedDiffAdapterManager detailedDiffAdapterManager;
+        try {
+            detailedDiffAdapterManager = Framework.getService(DetailedDiffAdapterManager.class);
+        } catch (Exception e) {
+            throw new DetailedDiffException(e);
+        }
+        if (detailedDiffAdapterManager == null) {
+            throw new DetailedDiffException(
+                    "DetailedDiffAdapterManager service is null.");
+        }
+        return detailedDiffAdapterManager;
     }
 
 }

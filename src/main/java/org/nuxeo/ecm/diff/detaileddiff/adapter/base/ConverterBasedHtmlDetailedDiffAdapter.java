@@ -14,7 +14,6 @@
  */
 package org.nuxeo.ecm.diff.detaileddiff.adapter.base;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +26,9 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterManager;
 import org.nuxeo.ecm.diff.detaileddiff.adapter.MimeTypeDetailedDiffer;
-import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
-import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
@@ -46,68 +43,9 @@ public class ConverterBasedHtmlDetailedDiffAdapter extends
 
     private static final Log log = LogFactory.getLog(ConverterBasedHtmlDetailedDiffAdapter.class);
 
-    protected static DetailedDiffAdapterManager detailedDiffManager;
-
-    protected static ConversionService cs;
-
     protected String defaultFieldXPath;
 
     protected MimetypeRegistry mimeTypeService;
-
-    public static ConversionService getConversionService() throws Exception {
-        if (cs == null) {
-            cs = Framework.getService(ConversionService.class);
-        }
-        return cs;
-    }
-
-    @Override
-    protected DetailedDiffAdapterManager getDetailedDiffManager()
-            throws DetailedDiffException {
-        if (detailedDiffManager == null) {
-            try {
-                detailedDiffManager = Framework.getService(DetailedDiffAdapterManager.class);
-            } catch (Exception e) {
-                throw new DetailedDiffException(e);
-            }
-        }
-        return detailedDiffManager;
-    }
-
-    protected static String getMimeType(Blob blob) {
-        if (blob == null) {
-            return null;
-        }
-
-        String srcMT = blob.getMimeType();
-        if (srcMT == null || srcMT.startsWith("application/octet-stream")) {
-            // call MT Service
-            try {
-                MimetypeRegistry mtr = Framework.getService(MimetypeRegistry.class);
-                srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(
-                        blob.getFilename(), blob, "application/octet-stream");
-                log.debug("mime type service returned " + srcMT);
-            } catch (Exception e) {
-                log.warn("error while calling Mimetype service", e);
-            }
-        }
-        return srcMT;
-    }
-
-    /*
-     * protected static boolean canHaveHtmlPreview(Blob blob) throws Exception {
-     * if (blob == null) { return false; } String srcMT = getMimeType(blob);
-     * return getTransformService().getPluginByMimeTypes(srcMT, "text/html") !=
-     * null; }
-     */
-
-    protected String getDefaultDetailedDiffFieldXPath() {
-        return defaultFieldXPath;
-    }
-
-    public void setDefaultDetailedDiffFieldXPath(String xPath) {
-        defaultFieldXPath = xPath;
-    }
 
     @Override
     public List<Blob> getDetailedDiffBlobs(DocumentModel otherDoc)
@@ -151,7 +89,7 @@ public class ConverterBasedHtmlDetailedDiffAdapter extends
         // For now lets take the first one.
         String srcMT = getMimeType(blob2DetailedDiff);
         log.debug("Source type for HTML detailed diff =" + srcMT);
-        MimeTypeDetailedDiffer mtDetailedDiffer = getDetailedDiffManager().getDetailedDiffer(
+        MimeTypeDetailedDiffer mtDetailedDiffer = getDetailedDiffAdapterManager().getDetailedDiffer(
                 srcMT);
         if (mtDetailedDiffer != null) {
             blobResults = mtDetailedDiffer.getDetailedDiff(blob2DetailedDiff,
@@ -183,14 +121,49 @@ public class ConverterBasedHtmlDetailedDiffAdapter extends
         // setMimeType(result);
         // return result.getBlobs();
         // } catch (ConverterNotAvailable e) {
-        // throw new PreviewException(e.getMessage(), e);
+        // throw new DetailedDiffException(e.getMessage(), e);
         // } catch (ConversionException e) {
-        // throw new PreviewException("Error during conversion", e);
+        // throw new DetailedDiffException("Error during conversion", e);
         // } catch (Exception e) {
-        // throw new PreviewException("Unexpected Error", e);
+        // throw new DetailedDiffException("Unexpected Error", e);
         // }
         return null;
+    }
 
+    public void cleanup() {
+        // Nothing to do here
+    }
+
+    public boolean cachable() {
+        return true;
+    }
+
+    public void setDefaultDetailedDiffFieldXPath(String xPath) {
+        defaultFieldXPath = xPath;
+    }
+
+    protected String getMimeType(Blob blob) {
+        if (blob == null) {
+            return null;
+        }
+
+        String srcMT = blob.getMimeType();
+        if (srcMT == null || srcMT.startsWith("application/octet-stream")) {
+            // call MT Service
+            try {
+                MimetypeRegistry mtr = Framework.getService(MimetypeRegistry.class);
+                srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(
+                        blob.getFilename(), blob, "application/octet-stream");
+                log.debug("mime type service returned " + srcMT);
+            } catch (Exception e) {
+                log.warn("error while calling Mimetype service", e);
+            }
+        }
+        return srcMT;
+    }
+
+    protected String getDefaultDetailedDiffFieldXPath() {
+        return defaultFieldXPath;
     }
 
     protected void setMimeType(BlobHolder result) throws ClientException {
@@ -203,35 +176,25 @@ public class ConverterBasedHtmlDetailedDiffAdapter extends
         }
     }
 
-    public String getMimeType(File file) throws ConversionException {
+    /**
+     * Gets the conversion service.
+     *
+     * @return the conversion service
+     * @throws ClientException the client exception
+     */
+    protected final ConversionService getConversionService()
+            throws ClientException {
+
+        ConversionService conversionService;
         try {
-            return getMimeTypeService().getMimetypeFromFile(file);
-        } catch (ConversionException e) {
-            throw new ConversionException("Could not get MimeTypeRegistry");
-        } catch (MimetypeNotFoundException e) {
-            return "application/octet-stream";
-        } catch (MimetypeDetectionException e) {
-            return "application/octet-stream";
+            conversionService = Framework.getService(ConversionService.class);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
         }
-    }
-
-    public MimetypeRegistry getMimeTypeService() throws ConversionException {
-        if (mimeTypeService == null) {
-            try {
-                mimeTypeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                throw new ConversionException("Could not get MimeTypeRegistry");
-            }
+        if (conversionService == null) {
+            throw new ClientException("ConversionService service is null.");
         }
-        return mimeTypeService;
-    }
-
-    public void cleanup() {
-
-    }
-
-    public boolean cachable() {
-        return true;
+        return conversionService;
     }
 
 }
