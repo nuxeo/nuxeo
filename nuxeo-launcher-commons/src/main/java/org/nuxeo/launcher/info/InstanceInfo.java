@@ -30,13 +30,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "instance")
 public class InstanceInfo {
 
-    public InstanceInfo() {}
+    public InstanceInfo() {
+    }
 
     @XmlElement(name = "NUXEO_CONF")
     public String NUXEO_CONF;
 
     @XmlElement(name = "NUXEO_HOME")
     public String NUXEO_HOME;
+
+    @XmlElement(name = "clid")
+    public String clid;
 
     @XmlElement(name = "distribution")
     public DistributionInfo distribution;

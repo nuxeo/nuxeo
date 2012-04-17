@@ -75,7 +75,7 @@ public class ConfigurationGenerator {
 
     public static final String NUXEO_CONF = "nuxeo.conf";
 
-    protected static final String TEMPLATES = "templates";
+    public static final String TEMPLATES = "templates";
 
     protected static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
 
@@ -559,7 +559,7 @@ public class ConfigurationGenerator {
         }
     }
 
-    private String getUserTemplates() {
+    public String getUserTemplates() {
         String userTemplatesList = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         if (userTemplatesList == null) {
             // backward compliance: manage parameter for a single

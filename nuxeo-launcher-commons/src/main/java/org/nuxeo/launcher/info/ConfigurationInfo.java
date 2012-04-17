@@ -30,10 +30,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "configuration")
 public class ConfigurationInfo {
 
-    public ConfigurationInfo() {}
+    public ConfigurationInfo() {
+    }
 
     @XmlElement(name = "dbtemplate")
     public String dbtemplate = "default";
+
+    @XmlElementWrapper(name = "basetemplates")
+    @XmlElement(name = "template")
+    public List<String> basetemplates = new ArrayList<String>();
 
     @XmlElementWrapper(name = "pkgtemplates")
     @XmlElement(name = "template")
