@@ -116,7 +116,8 @@ public class DefaultRegistrationUserFactory implements RegistrationUserFactory {
         DocumentModel document = session.getDocument(new IdRef(docId));
         if (!document.getACP().getAccess(login, permission).toBoolean()) {
             ACE ace = new ACE(login, permission, true);
-            document.getACP().getOrCreateACL(ACL_NAME).add(ace);
+            // Always append ACL to the first place to be after the block rights inheritance ACE.
+            document.getACP().getOrCreateACL(ACL_NAME).add(0, ace);
 
             session.setACP(document.getRef(), document.getACP(), true);
         } else {
