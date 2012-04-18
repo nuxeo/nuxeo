@@ -45,7 +45,7 @@ public class ResultsProviderService extends DefaultComponent {
         if (log.isWarnEnabled()) {
             log.warn(String.format(
                     "Result providers are deprecated as of Nuxeo 5.4 and "
-                            + "will be removed for Nuxeo 5.6: the result provider "
+                            + "will be removed for Nuxeo 6.0: the result provider "
                             + "'%s' should be upgraded to use content views",
                     descriptorName));
         }
@@ -75,7 +75,7 @@ public class ResultsProviderService extends DefaultComponent {
         if (log.isWarnEnabled()) {
             log.warn(String.format(
                     "Result providers are deprecated as of Nuxeo 5.4 and "
-                            + "will be removed for Nuxeo 5.6: the result provider "
+                            + "will be removed for Nuxeo 6.0: the result provider "
                             + "'%s' should be upgraded to use content views",
                     name));
         }
@@ -97,7 +97,7 @@ public class ResultsProviderService extends DefaultComponent {
         if (log.isWarnEnabled()) {
             log.warn(String.format(
                     "Result providers are deprecated as of Nuxeo 5.4 and "
-                            + "will be removed for Nuxeo 5.6: the result provider "
+                            + "will be removed for Nuxeo 6.0: the result provider "
                             + "'%s' should be upgraded to use content views",
                     providerName));
         }
