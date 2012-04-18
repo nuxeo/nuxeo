@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.webapp.seam.action.defaultChains">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+
+    <chain id="downloadFilesZip">
+      <operation id="Context.FetchDocument" />
+      <operation id="Blob.GetAll" />
+      <operation id="Blob.CreateZip">
+        <param type="string" name="filename">attachments.zip
+        </param>
+      </operation>
+      <operation id="Seam.DownloadFile" />
+    </chain>
+
+  </extension>
+
+</component>
