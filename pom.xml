@@ -136,6 +136,7 @@
     <eclipseVersion>${project.version}</eclipseVersion>
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>5.5.0-HF07-SNAPSHOT</nuxeo.platform.version>
+    <seam.version>2.1.0.SP1</seam.version>
   </properties>
 
   <dependencyManagement>
@@ -1809,7 +1810,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
         <exclusions>
           <exclusion>
             <groupId>javax.el</groupId>
@@ -1820,12 +1821,12 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-ui</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
         <exclusions>
           <exclusion>
             <groupId>com.google.code.guice</groupId>
@@ -1836,17 +1837,17 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-mail</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-pdf</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-rss</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.yarfraw</groupId>
@@ -1866,12 +1867,12 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-excel</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-debug</artifactId>
-        <version>2.1.0.SP1</version>
+        <version>${seam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.el</groupId>
