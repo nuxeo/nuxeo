@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.base.DetailedDiffConversionType;
+import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
@@ -268,77 +268,77 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Gets the detailed diff fancy box url.
+     * Gets the content diff fancy box url.
      *
      * @param schemaName the schema name
      * @param fieldName the field name
-     * @return the detailed diff fancy box url
+     * @return the content diff fancy box url
      */
-    public String getDetailedDiffFancyBoxURL(String schemaName, String fieldName) {
+    public String getContentDiffFancyBoxURL(String schemaName, String fieldName) {
 
-        return getDetailedDiffFancyBoxURL(schemaName, fieldName, null);
+        return getContentDiffFancyBoxURL(schemaName, fieldName, null);
     }
 
     /**
-     * Gets the detailed diff fancy box url.
+     * Gets the content diff fancy box url.
      *
      * @param schemaName the schema name
      * @param fieldName the field name
      * @param conversionType the conversion type
-     * @return the detailed diff fancy box url
+     * @return the content diff fancy box url
      */
-    public String getDetailedDiffFancyBoxURL(String schemaName,
+    public String getContentDiffFancyBoxURL(String schemaName,
             String fieldName, String conversionType) {
 
         if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(fieldName)) {
-            log.error("Cannot get detailed diff fancybox URL with a null schemaName or a null fieldName.");
+            log.error("Cannot get content diff fancybox URL with a null schemaName or a null fieldName.");
             return null;
         }
-        return DetailedDiffHelper.getDetailedDiffFancyBoxURL(
+        return ContentDiffHelper.getContentDiffFancyBoxURL(
                 navigationContext.getCurrentDocument(), schemaName, fieldName,
                 conversionType);
     }
 
     /**
-     * Gets the detailed diff url.
+     * Gets the content diff url.
      *
      * @param schemaName the schema name
      * @param fieldName the field name
      * @param conversionTypeParam the conversion type param
-     * @return the detailed diff url
+     * @return the content diff url
      */
-    public String getDetailedDiffURL(String schemaName, String fieldName,
+    public String getContentDiffURL(String schemaName, String fieldName,
             String conversionTypeParam) {
 
         if (leftDoc == null || rightDoc == null) {
-            log.error("Cannot get detailed diff URL with a null leftDoc or a null rightDoc.");
+            log.error("Cannot get content diff URL with a null leftDoc or a null rightDoc.");
             return null;
         }
         if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(fieldName)) {
-            log.error("Cannot get detailed diff URL with a null schemaName or a null fieldName.");
+            log.error("Cannot get content diff URL with a null schemaName or a null fieldName.");
             return null;
         }
         String xpath = schemaName + ":" + fieldName;
-        DetailedDiffConversionType conversionType = null;
+        ContentDiffConversionType conversionType = null;
         if (!StringUtils.isEmpty(conversionTypeParam)) {
-            conversionType = DetailedDiffConversionType.valueOf(conversionTypeParam);
+            conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
         }
-        return DetailedDiffHelper.getDetailedDiffURL(
+        return ContentDiffHelper.getContentDiffURL(
                 navigationContext.getCurrentDocument().getRepositoryName(),
                 leftDoc, rightDoc, xpath, conversionType);
     }
 
     /**
-     * Gets the detailed diff with blob post processing url.
+     * Gets the content diff with blob post processing url.
      *
      * @param schemaName the schema name
      * @param fieldName the field name
      * @param conversionTypeParam the conversion type param
-     * @return the detailed diff with blob post processing url
+     * @return the content diff with blob post processing url
      */
-    public String getDetailedDiffWithBlobPostProcessingURL(String schemaName,
+    public String getContentDiffWithBlobPostProcessingURL(String schemaName,
             String fieldName, String conversionTypeParam) {
-        return getDetailedDiffURL(schemaName, fieldName, conversionTypeParam)
+        return getContentDiffURL(schemaName, fieldName, conversionTypeParam)
                 + "?blobPostProcessing=true";
     }
 

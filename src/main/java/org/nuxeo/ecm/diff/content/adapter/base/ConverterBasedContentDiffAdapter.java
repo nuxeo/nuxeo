@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter.base;
+package org.nuxeo.ecm.diff.content.adapter.base;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,39 +29,39 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.HtmlDetailedDiffer;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.MimeTypeDetailedDiffer;
+import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer;
+import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base class for detailed diff based on "on the fly html or text transformers.
+ * Base class for content diff based on "on the fly html or text transformers.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class ConverterBasedDetailedDiffAdapter extends
-        AbstractDetailedDiffAdapter {
+public class ConverterBasedContentDiffAdapter extends
+        AbstractContentDiffAdapter {
 
-    private static final Log log = LogFactory.getLog(ConverterBasedDetailedDiffAdapter.class);
+    private static final Log log = LogFactory.getLog(ConverterBasedContentDiffAdapter.class);
 
     protected String defaultFieldXPath;
 
     protected MimetypeRegistry mimeTypeService;
 
     @Override
-    public List<Blob> getDetailedDiffBlobs(DocumentModel otherDoc,
-            DetailedDiffConversionType conversionType)
-            throws DetailedDiffException {
-        return getDetailedDiffBlobs(otherDoc,
-                getDefaultDetailedDiffFieldXPath(), conversionType);
+    public List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
+            ContentDiffConversionType conversionType)
+            throws ContentDiffException {
+        return getContentDiffBlobs(otherDoc, getDefaultContentDiffFieldXPath(),
+                conversionType);
     }
 
     @Override
-    public List<Blob> getDetailedDiffBlobs(DocumentModel otherDoc,
-            String xpath, DetailedDiffConversionType conversionType)
-            throws DetailedDiffException {
+    public List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
+            ContentDiffConversionType conversionType)
+            throws ContentDiffException {
 
         Blob adaptedDocBlob = null;
         Blob otherDocBlob = null;
@@ -77,55 +77,55 @@ public class ConverterBasedDetailedDiffAdapter extends
                 otherDocBlobHolder = getBlobHolder(otherDoc, xpath);
             }
             if (adaptedDocBlobHolder == null || otherDocBlobHolder == null) {
-                throw new DetailedDiffException(
-                        "Can not make a detailed diff of documents without a blob");
+                throw new ContentDiffException(
+                        "Can not make a content diff of documents without a blob");
             }
 
             adaptedDocBlob = adaptedDocBlobHolder.getBlob();
             otherDocBlob = otherDocBlobHolder.getBlob();
             if (adaptedDocBlob == null || otherDocBlob == null) {
-                throw new DetailedDiffException(
-                        "Can not make a detailed diff of documents without a blob");
+                throw new ContentDiffException(
+                        "Can not make a content diff of documents without a blob");
             }
         } catch (ClientException e) {
-            throw new DetailedDiffException("Error while getting blobs", e);
+            throw new ContentDiffException("Error while getting blobs", e);
         }
 
         List<Blob> blobResults = new ArrayList<Blob>();
 
         String adaptedDocMimeType = getMimeType(adaptedDocBlob);
         String otherDocMimeType = getMimeType(otherDocBlob);
-        log.debug("Mime type of adapted doc for HTML detailed diff = "
+        log.debug("Mime type of adapted doc for HTML content diff = "
                 + adaptedDocMimeType);
-        log.debug("Mime type of other doc for HTML detailed diff = "
+        log.debug("Mime type of other doc for HTML content diff = "
                 + otherDocMimeType);
 
-        // TODO: if conversionType == "text/plain", use TextDetailedDiffer?
+        // TODO: if conversionType == "text/plain", use TextContentDiffer?
 
         // Check doc mime types, if a common mime type is found, look for the
-        // associated detailed differ.
+        // associated content differ.
         if (adaptedDocMimeType != null && otherDocMimeType != null
                 && adaptedDocMimeType.equals(otherDocMimeType)) {
-            MimeTypeDetailedDiffer mtDetailedDiffer = getDetailedDiffAdapterManager().getDetailedDiffer(
+            MimeTypeContentDiffer mtContentDiffer = getContentDiffAdapterManager().getContentDiffer(
                     adaptedDocMimeType);
-            if (mtDetailedDiffer != null) {
-                blobResults = mtDetailedDiffer.getDetailedDiff(adaptedDocBlob,
+            if (mtContentDiffer != null) {
+                blobResults = mtContentDiffer.getContentDiff(adaptedDocBlob,
                         otherDocBlob, adaptedDoc, otherDoc);
                 return blobResults;
             }
         }
 
-        // Docs have a different mime type or no detailed differ found for the
+        // Docs have a different mime type or no content differ found for the
         // common mime type.
-        // Fall back on a Html conversion + HtmlDetailedDiffer.
+        // Fall back on a Html conversion + HtmlContentDiffer.
         String destMimeType = conversionType.getValue();
         Blob adaptedDocHtmlConvertedBlob = getHtmlConvertedBlob(
                 adaptedDocMimeType, destMimeType, adaptedDocBlobHolder);
         Blob otherDocHtmlConvertedBlob = getHtmlConvertedBlob(otherDocMimeType,
                 destMimeType, otherDocBlobHolder);
 
-        HtmlDetailedDiffer htmlDetailedDiffer = getDetailedDiffAdapterManager().getHtmlDetailedDiffer();
-        blobResults = htmlDetailedDiffer.getDetailedDiff(
+        HtmlContentDiffer htmlContentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
+        blobResults = htmlContentDiffer.getContentDiff(
                 adaptedDocHtmlConvertedBlob, otherDocHtmlConvertedBlob,
                 adaptedDoc, otherDoc);
         return blobResults;
@@ -139,7 +139,7 @@ public class ConverterBasedDetailedDiffAdapter extends
         return true;
     }
 
-    public void setDefaultDetailedDiffFieldXPath(String xPath) {
+    public void setDefaultContentDiffFieldXPath(String xPath) {
         defaultFieldXPath = xPath;
     }
 
@@ -194,13 +194,13 @@ public class ConverterBasedDetailedDiffAdapter extends
         }
     }
 
-    protected String getDefaultDetailedDiffFieldXPath() {
+    protected String getDefaultContentDiffFieldXPath() {
         return defaultFieldXPath;
     }
 
     protected Blob getHtmlConvertedBlob(String srcMimeType,
             String destMimeType, BlobHolder blobHolder)
-            throws DetailedDiffException {
+            throws ContentDiffException {
 
         // TODO: manage converter name with a parameter (any2html / office2html
         // / ...)
@@ -209,7 +209,7 @@ public class ConverterBasedDetailedDiffAdapter extends
             converterName = getConversionService().getConverterName(
                     srcMimeType, destMimeType);
         } catch (Exception e) {
-            throw new DetailedDiffException("Unable to get converter", e);
+            throw new ContentDiffException("Unable to get converter", e);
         }
 
         if (converterName == null) {
@@ -229,11 +229,11 @@ public class ConverterBasedDetailedDiffAdapter extends
             setMimeType(convertedBlobHolder);
             return convertedBlobHolder.getBlob();
         } catch (ConverterNotAvailable e) {
-            throw new DetailedDiffException(e.getMessage(), e);
+            throw new ContentDiffException(e.getMessage(), e);
         } catch (ConversionException e) {
-            throw new DetailedDiffException("Error during conversion", e);
+            throw new ContentDiffException("Error during conversion", e);
         } catch (Exception e) {
-            throw new DetailedDiffException("Unexpected Error", e);
+            throw new ContentDiffException("Unexpected Error", e);
         }
     }
 

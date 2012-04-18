@@ -12,20 +12,20 @@
  * Lesser General Public License for more details.
  *
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter;
+package org.nuxeo.ecm.diff.content.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
+import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 
 /**
  * Interface that should be implemented by contributed code to manage custom
- * detailed diff adapters.
+ * content diff adapters.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public interface DetailedDiffAdapterFactory {
+public interface ContentDiffAdapterFactory {
 
-    DetailedDiffAdapter getAdapter(DocumentModel doc);
+    ContentDiffAdapter getAdapter(DocumentModel doc);
 
 }

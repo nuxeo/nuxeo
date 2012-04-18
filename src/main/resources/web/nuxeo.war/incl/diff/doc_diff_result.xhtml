@@ -22,13 +22,13 @@
     #diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover {color: #000000;}
     
     .docDiffResult .foldableBox .boxBody {padding: 0.5em;}
-    .docDiffResult .dataInput, .detailedDiffPanel .dataInput {width: 100%;}
+    .docDiffResult .dataInput, .contentDiffPanel .dataInput {width: 100%;}
     
-    .docDiffResult .dataInput td, .detailedDiffPanel .dataInput td {padding: 0.4em 0.3em;}
-    .docDiffResult .dataInput td.labelColumn, .detailedDiffPanel .dataInput td.labelColumn {width: 16%; padding-right: 20px; text-align: left;}
+    .docDiffResult .dataInput td, .contentDiffPanel .dataInput td {padding: 0.4em 0.3em;}
+    .docDiffResult .dataInput td.labelColumn, .contentDiffPanel .dataInput td.labelColumn {width: 16%; padding-right: 20px; text-align: left;}
     .docDiffResult .dataInput td.fieldColumn {width: 34%;}
-    .docDiffResult .dataInput td.detailedDiffColumn {width: 16%;}
-    .detailedDiffPanel .dataInput td.fieldColumn {width: 84%;}
+    .docDiffResult .dataInput td.contentDiffColumn {width: 16%;}
+    .contentDiffPanel .dataInput td.fieldColumn {width: 84%;}
     
         
     /*.docDiffResult .dataInput .diffDisplayTable {width: 100%;}*/
@@ -38,8 +38,8 @@
     
     /*.rich-mp-content-table {min-width: 400px;}*/
     
-    .detailedDiffPanel .dr-mpnl-pnl-b {font-size: inherit;}
-    .detailedDiffPanel del {text-decoration: line-through;}
+    .contentDiffPanel .dr-mpnl-pnl-b {font-size: inherit;}
+    .contentDiffPanel del {text-decoration: line-through;}
     
   </style>
   
@@ -73,7 +73,7 @@
                 <ui:param name="doc" value="#{rightDoc}" />
               </ui:include>
             </td>
-            <td class="detailedDiffColumn">
+            <td class="contentDiffColumn">
               <c:if test="#{diffActions.versionDiff}">
                 <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT_HISTORY"
                   subTab="TAB_VERSIONS" styleClass="docLink">

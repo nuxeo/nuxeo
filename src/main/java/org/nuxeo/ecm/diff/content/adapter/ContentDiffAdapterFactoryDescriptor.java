@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter;
+package org.nuxeo.ecm.diff.content.adapter;
 
 import java.io.Serializable;
 
@@ -20,13 +20,13 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor for contributed Detailed diff Adapter factories.
+ * Descriptor for contributed content diff Adapter factories.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-@XObject(value = "detailedDiffAdapter")
-public class DetailedDiffAdapterFactoryDescriptor implements Serializable {
+@XObject(value = "contentDiffAdapter")
+public class ContentDiffAdapterFactoryDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,9 +70,9 @@ public class DetailedDiffAdapterFactoryDescriptor implements Serializable {
         this.typeName = typeName;
     }
 
-    public DetailedDiffAdapterFactory getNewInstance()
+    public ContentDiffAdapterFactory getNewInstance()
             throws InstantiationException, IllegalAccessException {
-        return (DetailedDiffAdapterFactory) adapterClass.newInstance();
+        return (ContentDiffAdapterFactory) adapterClass.newInstance();
     }
 
 }

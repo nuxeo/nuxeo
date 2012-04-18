@@ -12,8 +12,8 @@
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>detailed_diff_fancybox</from-outcome>
-      <to-view-id>/detailed_diff_fancybox.xhtml</to-view-id>
+      <from-outcome>content_diff_fancybox</from-outcome>
+      <to-view-id>/content_diff_fancybox.xhtml</to-view-id>
     </navigation-case>
 
   </extension>

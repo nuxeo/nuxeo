@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.diff.detaileddiff.adapter;
+package org.nuxeo.ecm.diff.content.adapter;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
+import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.outerj.daisy.diff.HtmlCleaner;
 import org.outerj.daisy.diff.XslFilter;
 import org.outerj.daisy.diff.html.HTMLDiffer;
@@ -47,11 +47,11 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class HtmlDetailedDiffer implements MimeTypeDetailedDiffer {
+public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
-    public List<Blob> getDetailedDiff(Blob leftBlob, Blob rightBlob,
+    public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
             DocumentModel leftDoc, DocumentModel rightDoc)
-            throws DetailedDiffException {
+            throws ContentDiffException {
 
         try {
             // TODO: check StringBlob, throw exception if not
@@ -104,14 +104,14 @@ public class HtmlDetailedDiffer implements MimeTypeDetailedDiffer {
             Blob mainBlob = new StringBlob(sw.toString());
             sw.close();
 
-            mainBlob.setFilename("detailedDiff.html");
+            mainBlob.setFilename("contentDiff.html");
             mainBlob.setMimeType("text/html");
 
             blobResults.add(mainBlob);
             return blobResults;
 
         } catch (Exception e) {
-            throw new DetailedDiffException(e);
+            throw new ContentDiffException(e);
         }
     }
 }

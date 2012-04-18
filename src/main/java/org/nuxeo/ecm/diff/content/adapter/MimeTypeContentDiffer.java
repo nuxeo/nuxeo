@@ -17,38 +17,22 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.diff.detaileddiff.adapter;
+package org.nuxeo.ecm.diff.content.adapter;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import java.util.List;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.diff.content.ContentDiffException;
 
 /**
  * @author Antoine Taillefer
  * @since 5.6
  */
-@XObject("detailedDiffer")
-public class MimeTypeDetailedDifferDescriptor {
+public interface MimeTypeContentDiffer {
 
-    @XNode("pattern")
-    private String pattern;
-
-    @XNode("@class")
-    private Class<? extends MimeTypeDetailedDiffer> klass;
-
-    public String getPattern() {
-        return pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
-
-    public Class<? extends MimeTypeDetailedDiffer> getKlass() {
-        return klass;
-    }
-
-    public void setKlass(Class<? extends MimeTypeDetailedDiffer> klass) {
-        this.klass = klass;
-    }
+    List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
+            DocumentModel leftDoc, DocumentModel rightDoc)
+            throws ContentDiffException;
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-20012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,30 +14,29 @@
  * Contributors:
  *     Antoine Taillefer
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter.base;
+package org.nuxeo.ecm.diff.content;
+
+import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Handles...
+ * Content diff exception.
  *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @author Antoine Taillefer
  * @since 5.6
  */
-public enum DetailedDiffConversionType {
+public class ContentDiffException extends ClientException {
 
-    any2html("text/html"), any2text("text/plain");
+    private static final long serialVersionUID = 1515522281717216692L;
 
-    final String value;
-
-    DetailedDiffConversionType(String value) {
-        this.value = value;
+    public ContentDiffException(Throwable cause) {
+        super(cause);
     }
 
-    public String getValue() {
-        return value;
+    public ContentDiffException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public String toString() {
-        return value;
+    public ContentDiffException(String message) {
+        super(message);
     }
 }

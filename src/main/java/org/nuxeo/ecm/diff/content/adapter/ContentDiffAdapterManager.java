@@ -12,29 +12,27 @@
  * Lesser General Public License for more details.
  *
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter;
+package org.nuxeo.ecm.diff.content.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
+import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
+import org.nuxeo.ecm.diff.content.ContentDiffException;
 
 /**
  * Interface of the service that is responsible for managing
- * DetailedDiffAdapters.
+ * ContentDiffAdapters.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public interface DetailedDiffAdapterManager {
+public interface ContentDiffAdapterManager {
 
-    DetailedDiffAdapter getAdapter(DocumentModel doc);
+    ContentDiffAdapter getAdapter(DocumentModel doc);
 
     boolean hasAdapter(DocumentModel doc);
 
-    MimeTypeDetailedDiffer getDetailedDiffer(String mimeType);
+    MimeTypeContentDiffer getContentDiffer(String mimeType);
 
-    HtmlDetailedDiffer getHtmlDetailedDiffer() throws DetailedDiffException;
-
-    // List<BlobPostProcessor> getBlobPostProcessors();
+    HtmlContentDiffer getHtmlContentDiffer() throws ContentDiffException;
 
 }

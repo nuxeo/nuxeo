@@ -12,25 +12,25 @@
  * Lesser General Public License for more details.
  *
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter.factories;
+package org.nuxeo.ecm.diff.content.adapter.factories;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterFactory;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.base.ConverterBasedDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
+import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterFactory;
+import org.nuxeo.ecm.diff.content.adapter.base.ConverterBasedContentDiffAdapter;
 
 /**
- * Detailed diff adapter factory for all documents that have a blob holder
+ * Content diff adapter factory for all documents that have a blob holder
  * adapter.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class BlobHolderDetailedDiffAdapterFactory implements
-        DetailedDiffAdapterFactory {
+public class BlobHolderContentDiffAdapterFactory implements
+        ContentDiffAdapterFactory {
 
-    public DetailedDiffAdapter getAdapter(DocumentModel doc) {
-        ConverterBasedDetailedDiffAdapter adapter = new ConverterBasedDetailedDiffAdapter();
+    public ContentDiffAdapter getAdapter(DocumentModel doc) {
+        ConverterBasedContentDiffAdapter adapter = new ConverterBasedContentDiffAdapter();
         adapter.setAdaptedDocument(doc);
         return adapter;
     }

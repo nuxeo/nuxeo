@@ -9,7 +9,7 @@
 
     <application root="${org.nuxeo.ecm.contextPath}"
       template-engine="jsf-facelets">
-      <view id="/detailed_diff_fancybox.xhtml">
+      <view id="/content_diff_fancybox.xhtml">
         <theme>galaxy/popup</theme>
       </view>
     </application>

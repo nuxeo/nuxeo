@@ -263,7 +263,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         expectedValue.put("dublincore", expectedFields);
         assertEquals(expectedValue, diffDisplayBlock.getRightValue());
 
-        // TODO: check detailedDiff
+        // TODO: check contentDiff
 
         // Check layout definition
         LayoutDefinition layoutDef = diffDisplayBlock.getLayoutDefinition();

@@ -319,9 +319,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
         Map<String, Map<String, Serializable>> leftValue = new HashMap<String, Map<String, Serializable>>();
         Map<String, Map<String, Serializable>> rightValue = new HashMap<String, Map<String, Serializable>>();
-        Map<String, Map<String, Serializable>> detailedDiffValue = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Map<String, Serializable>> contentDiffValue = new HashMap<String, Map<String, Serializable>>();
 
-        // TODO: remove detailedDiff?
+        // TODO: remove contentDiff?
 
         List<LayoutRowDefinition> layoutRowDefinitions = new ArrayList<LayoutRowDefinition>();
         List<WidgetDefinition> widgetDefinitions = new ArrayList<WidgetDefinition>();
@@ -364,7 +364,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                     fieldName), fieldDiff, isDisplayAllItems,
                             isDisplayItemIndexes);
 
-                    // String detailedDiffDisplay = null;
+                    // String contentDiffDisplay = null;
                     // Left
                     Map<String, Serializable> leftSchemaMap = leftValue.get(schemaName);
                     if (leftSchemaMap == null) {
@@ -390,17 +390,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     putMimetypeDiffDisplay(schemaName, fieldName,
                             rightSchemaMap, rightDoc);
 
-                    // TODO: manage better detailedDiff if needed
-                    // Detailed diff
-                    // Map<String, Serializable> detailedDiffSchemaMap =
-                    // detailedDiffValue.get(schemaName);
-                    // if (detailedDiffSchemaMap == null) {
-                    // detailedDiffSchemaMap = new HashMap<String,
+                    // TODO: manage better contentDiff if needed
+                    // Content diff
+                    // Map<String, Serializable> contentDiffSchemaMap =
+                    // contentDiffValue.get(schemaName);
+                    // if (contentDiffSchemaMap == null) {
+                    // contentDiffSchemaMap = new HashMap<String,
                     // Serializable>();
-                    // detailedDiffValue.put(schemaName, detailedDiffSchemaMap);
+                    // contentDiffValue.put(schemaName, contentDiffSchemaMap);
                     // }
-                    // detailedDiffSchemaMap.put(fieldName,
-                    // detailedDiffDisplay);
+                    // contentDiffSchemaMap.put(fieldName,
+                    // contentDiffDisplay);
 
                 }
             }
@@ -414,7 +414,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         // Build diff display block
         DiffDisplayBlock diffDisplayBlock = new DiffDisplayBlockImpl(
                 diffBlockDefinition.getLabel(), leftValue, rightValue,
-                detailedDiffValue, layoutDefinition);
+                contentDiffValue, layoutDefinition);
 
         return diffDisplayBlock;
     }

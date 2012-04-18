@@ -12,33 +12,33 @@
  * Lesser General Public License for more details.
  *
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter.factories;
+package org.nuxeo.ecm.diff.content.adapter.factories;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterFactory;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.base.ConverterBasedDetailedDiffAdapter;
+import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
+import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterFactory;
+import org.nuxeo.ecm.diff.content.adapter.base.ConverterBasedContentDiffAdapter;
 
 /**
- * Detailed diff adapter factory for all documents that have the file schema.
+ * Content diff adapter factory for all documents that have the file schema.
  *
  * @author Antoine taillefer
  * @since 5.6
  */
-public class FileBasedDetailedDiffAdapterFactory implements
-        DetailedDiffAdapterFactory {
+public class FileBasedContentDiffAdapterFactory implements
+        ContentDiffAdapterFactory {
 
-    public DetailedDiffAdapter getAdapter(DocumentModel doc) {
-        ConverterBasedDetailedDiffAdapter adapter = new ConverterBasedDetailedDiffAdapter();
+    public ContentDiffAdapter getAdapter(DocumentModel doc) {
+        ConverterBasedContentDiffAdapter adapter = new ConverterBasedContentDiffAdapter();
         adapter.setAdaptedDocument(doc);
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             if (doc.hasSchema("file")) {
-                adapter.setDefaultDetailedDiffFieldXPath("file:content");
+                adapter.setDefaultContentDiffFieldXPath("file:content");
             } else {
                 // Has "files" schema, set xpath to first blob as default
-                adapter.setDefaultDetailedDiffFieldXPath("files:files/0/file");
+                adapter.setDefaultContentDiffFieldXPath("files:files/0/file");
             }
         }
         return adapter;

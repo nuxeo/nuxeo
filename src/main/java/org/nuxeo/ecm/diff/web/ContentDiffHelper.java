@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.base.DetailedDiffConversionType;
+import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -30,11 +30,11 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper for detailed diff.
+ * Helper for content diff.
  */
-public final class DetailedDiffHelper {
+public final class ContentDiffHelper {
 
-    private static final String DETAILED_DIFF_FANCYBOX_VIEW = "detailed_diff_fancybox";
+    private static final String CONTENT_DIFF_FANCYBOX_VIEW = "content_diff_fancybox";
 
     private static final String SCHEMA_URL_PARAM_NAME = "schemaName";
 
@@ -42,32 +42,32 @@ public final class DetailedDiffHelper {
 
     private static final String CONVERSION_TYPE_URL_PARAM_NAME = "conversionType";
 
-    private static final String DETAILED_DIFF_URL_PREFIX = "restAPI/detailedDiff/";
+    private static final String CONTENT_DIFF_URL_PREFIX = "restAPI/contentDiff/";
 
-    public static final String DETAILED_DIFF_URL_DEFAULT_XPATH = "default";
+    public static final String CONTENT_DIFF_URL_DEFAULT_XPATH = "default";
 
     /**
      * Final class constructor.
      */
-    private DetailedDiffHelper() {
+    private ContentDiffHelper() {
     }
 
     /**
-     * Gets the detailed diff fancy box url.
+     * Gets the content diff fancy box url.
      *
      * @param currentDoc the current doc
      * @param schemaName the schema name
      * @param fieldName the field name
      * @param conversionType the conversion type
-     * @return the detailed diff fancy box url
+     * @return the content diff fancy box url
      */
-    public static String getDetailedDiffFancyBoxURL(DocumentModel currentDoc,
+    public static String getContentDiffFancyBoxURL(DocumentModel currentDoc,
             String schemaName, String fieldName, String conversionType) {
 
         DocumentLocation docLocation = new DocumentLocationImpl(
                 currentDoc.getRepositoryName(), currentDoc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation,
-                DETAILED_DIFF_FANCYBOX_VIEW);
+                CONTENT_DIFF_FANCYBOX_VIEW);
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
         StringBuilder urlSb = new StringBuilder(
                 urlPolicyService.getUrlFromDocumentView(docView, null));
@@ -90,57 +90,57 @@ public final class DetailedDiffHelper {
     }
 
     /**
-     * Gets the detailed diff url.
+     * Gets the content diff url.
      *
      * @param leftDoc the left doc
      * @param rightDoc the right doc
-     * @return the detailed diff url
+     * @return the content diff url
      */
-    public static String getDetailedDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, DetailedDiffConversionType conversionType) {
+    public static String getContentDiffURL(DocumentModel leftDoc,
+            DocumentModel rightDoc, ContentDiffConversionType conversionType) {
 
-        return getDetailedDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, DETAILED_DIFF_URL_DEFAULT_XPATH, conversionType);
+        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
+                rightDoc, CONTENT_DIFF_URL_DEFAULT_XPATH, conversionType);
     }
 
     /**
-     * Gets the detailed diff url.
+     * Gets the content diff url.
      *
      * @param leftDoc the left doc
      * @param rightDoc the right doc
      * @param xpath the xpath
      * @param conversionType the conversion type
-     * @return the detailed diff url
+     * @return the content diff url
      */
-    public static String getDetailedDiffURL(DocumentModel leftDoc,
+    public static String getContentDiffURL(DocumentModel leftDoc,
             DocumentModel rightDoc, String xpath,
-            DetailedDiffConversionType conversionType) {
+            ContentDiffConversionType conversionType) {
 
-        return getDetailedDiffURL(leftDoc.getRepositoryName(), leftDoc,
+        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
                 rightDoc, xpath, conversionType);
     }
 
     /**
-     * Gets the detailed diff url.
+     * Gets the content diff url.
      *
      * @param repositoryName the repository name
      * @param leftDoc the left doc
      * @param rightDoc the right doc
      * @param xpath the xpath
      * @param conversionType the conversion type
-     * @return the detailed diff url
+     * @return the content diff url
      */
-    public static String getDetailedDiffURL(String repositoryName,
+    public static String getContentDiffURL(String repositoryName,
             DocumentModel leftDoc, DocumentModel rightDoc, String xpath,
-            DetailedDiffConversionType conversionType) {
+            ContentDiffConversionType conversionType) {
 
         if (xpath == null) {
-            xpath = DETAILED_DIFF_URL_DEFAULT_XPATH;
+            xpath = CONTENT_DIFF_URL_DEFAULT_XPATH;
         }
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append(DETAILED_DIFF_URL_PREFIX);
+        sb.append(CONTENT_DIFF_URL_PREFIX);
         sb.append(repositoryName);
         sb.append("/");
         sb.append(leftDoc.getId());

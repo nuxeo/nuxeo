@@ -44,10 +44,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffAdapter;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
-import org.nuxeo.ecm.diff.detaileddiff.adapter.base.DetailedDiffConversionType;
-import org.nuxeo.ecm.diff.web.DetailedDiffHelper;
+import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
+import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
+import org.nuxeo.ecm.diff.web.ContentDiffHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -57,17 +57,17 @@ import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 
 /**
- * Restlet to retrieve the detailed diff of a given property between two
+ * Restlet to retrieve the content diff of a given property between two
  * documents.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-@Name("detailedDiffRestlet")
+@Name("contentDiffRestlet")
 @Scope(ScopeType.EVENT)
-public class DetailedDiffRestlet extends BaseNuxeoRestlet {
+public class ContentDiffRestlet extends BaseNuxeoRestlet {
 
-    private static final Log log = LogFactory.getLog(DetailedDiffRestlet.class);
+    private static final Log log = LogFactory.getLog(ContentDiffRestlet.class);
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -81,7 +81,7 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
 
     protected DocumentModel rightDoc;
 
-    protected static final List<String> detailedDiffInProcessing = Collections.synchronizedList(new ArrayList<String>());
+    protected static final List<String> contentDiffInProcessing = Collections.synchronizedList(new ArrayList<String>());
 
     @Override
     public void handle(Request req, Response res) {
@@ -105,12 +105,12 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
 //        String subPath = sb.substring(0, sb.length() - 1);
 
         // Default conversion type is any2html
-        DetailedDiffConversionType conversionType = DetailedDiffConversionType.any2html;
+        ContentDiffConversionType conversionType = ContentDiffConversionType.any2html;
         // Check conversion type param
         String conversionTypeParam = (String) req.getAttributes().get(
                 "conversionType");
         if (!StringUtils.isEmpty(conversionTypeParam)) {
-            conversionType = DetailedDiffConversionType.valueOf(conversionTypeParam);
+            conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
         }
 
         try {
@@ -147,16 +147,16 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
             return;
         }
 
-        List<Blob> detailedDiffBlobs;
+        List<Blob> contentDiffBlobs;
         try {
-            detailedDiffBlobs = initCachedDetailedDiffBlobs(res, xpath,
+            contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
                     conversionType, blobPostProcessing);
         } catch (Exception e) {
-            handleError(res, "Unable to get detailed diff.");
+            handleError(res, "Unable to get content diff.");
             return;
         }
-        if (CollectionUtils.isEmpty(detailedDiffBlobs)) {
-            // Response was already handled by initCachedDetailedDiffBlobs
+        if (CollectionUtils.isEmpty(contentDiffBlobs)) {
+            // Response was already handled by initCachedContentDiffBlobs
             return;
         }
         HttpServletResponse response = getHttpResponse(res);
@@ -165,12 +165,12 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
 
         try {
             //if (StringUtils.isEmpty(subPath)) {
-                handleDetailedDiff(res, detailedDiffBlobs.get(0), "text/html");
+                handleContentDiff(res, contentDiffBlobs.get(0), "text/html");
                 return;
             // } else {
-            // for (Blob blob : detailedDiffBlobs) {
+            // for (Blob blob : contentDiffBlobs) {
             // if (subPath.equals(blob.getFilename())) {
-            // handleDetailedDiff(res, blob, blob.getMimeType());
+            // handleContentDiff(res, blob, blob.getMimeType());
             // return;
             // }
             //
@@ -181,51 +181,51 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
         }
     }
 
-    private List<Blob> initCachedDetailedDiffBlobs(Response res, String xpath,
-            DetailedDiffConversionType conversionType,
+    private List<Blob> initCachedContentDiffBlobs(Response res, String xpath,
+            ContentDiffConversionType conversionType,
             boolean blobPostProcessing) throws ClientException {
 
-        DetailedDiffAdapter detailedDiffAdapter = null;
+        ContentDiffAdapter contentDiffAdapter = null;
 
-        if (detailedDiffAdapter == null) {
-            detailedDiffAdapter = leftDoc.getAdapter(DetailedDiffAdapter.class);
+        if (contentDiffAdapter == null) {
+            contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
         }
 
-        if (detailedDiffAdapter == null) {
-            handleNoDetailedDiff(res, xpath, null);
+        if (contentDiffAdapter == null) {
+            handleNoContentDiff(res, xpath, null);
             return null;
         }
 
-        List<Blob> detailedDiffBlobs = null;
+        List<Blob> contentDiffBlobs = null;
         try {
-            if (xpath.equals(DetailedDiffHelper.DETAILED_DIFF_URL_DEFAULT_XPATH)) {
-                detailedDiffBlobs = detailedDiffAdapter.getFileDetailedDiffBlobs(
+            if (xpath.equals(ContentDiffHelper.CONTENT_DIFF_URL_DEFAULT_XPATH)) {
+                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
                         rightDoc, conversionType);
             } else {
-                detailedDiffBlobs = detailedDiffAdapter.getFileDetailedDiffBlobs(
+                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
                         rightDoc, xpath, conversionType);
             }
-        } catch (DetailedDiffException e) {
-            detailedDiffInProcessing.remove(leftDoc.getId());
-            handleNoDetailedDiff(res, xpath, e);
+        } catch (ContentDiffException e) {
+            contentDiffInProcessing.remove(leftDoc.getId());
+            handleNoContentDiff(res, xpath, e);
             return null;
         }
 
-        if (CollectionUtils.isEmpty(detailedDiffBlobs)) {
-            handleNoDetailedDiff(res, xpath, null);
+        if (CollectionUtils.isEmpty(contentDiffBlobs)) {
+            handleNoContentDiff(res, xpath, null);
             return null;
         }
-        return detailedDiffBlobs;
+        return contentDiffBlobs;
     }
 
-    protected void handleNoDetailedDiff(Response res, String xpath, Exception e) {
+    protected void handleNoContentDiff(Response res, String xpath, Exception e) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<html><body><center><h1>");
         if (e == null) {
-            sb.append("No detailed diff is available for these documents</h1>");
+            sb.append("No content diff is available for these documents</h1>");
         } else {
-            sb.append("Detailed diff can not be generated for these documents</h1>");
+            sb.append("Content diff can not be generated for these documents</h1>");
             sb.append("<pre>Blob path: ");
             sb.append(xpath);
             sb.append("</pre>");
@@ -235,7 +235,7 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
         }
 
         sb.append("</center></body></html>");
-        log.error("Could not build detailed diff for missing blob at " + xpath,
+        log.error("Could not build content diff for missing blob at " + xpath,
                 e);
 
         res.setEntity(sb.toString(), MediaType.TEXT_HTML);
@@ -244,12 +244,12 @@ public class DetailedDiffRestlet extends BaseNuxeoRestlet {
         response.setHeader("Content-Disposition", "inline");
     }
 
-    protected void handleDetailedDiff(Response res, Blob detailedDiffBlob,
+    protected void handleContentDiff(Response res, Blob contentDiffBlob,
             String mimeType) throws IOException {
         final File tempfile = File.createTempFile(
-                "nuxeo-detailedDiffRestlet-tmp", "");
+                "nuxeo-contentDiffRestlet-tmp", "");
         tempfile.deleteOnExit();
-        detailedDiffBlob.transferTo(tempfile);
+        contentDiffBlob.transferTo(tempfile);
         res.setEntity(new OutputRepresentation(null) {
             @Override
             public void write(OutputStream outputStream) throws IOException {

@@ -54,7 +54,7 @@ public class DiffDisplayServiceTestCase {
         assertNotNull(value);
         assertEquals(schemaCount, value.size());
 
-        // TODO: manage detailedDiff
+        // TODO: manage contentDiff
 
         return true;
     }
@@ -88,7 +88,7 @@ public class DiffDisplayServiceTestCase {
             assertTrue(fields.containsKey(fieldName));
         }
 
-        // TODO: manage detailedDiff
+        // TODO: manage contentDiff
 
         return true;
     }

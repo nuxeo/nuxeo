@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.diff.adapter.DetailedDiffAdapterManagerComponent">
+<component name="org.nuxeo.ecm.diff.adapter.ContentDiffAdapterManagerComponent">
   <implementation
-    class="org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterManagerComponent" />
+    class="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent" />
 
   <documentation>
     @author Antoine Taillefer (ataillefer@nuxeo.com)
@@ -9,7 +9,7 @@
 
   <service>
     <provide
-      interface="org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterManager" />
+      interface="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManager" />
   </service>
 
   <extension-point name="adapterFactory">
@@ -17,14 +17,14 @@
     @author Antoine Taillefer (ataillefer@nuxeo.com)
     </documentation>
     <object
-      class="org.nuxeo.ecm.diff.detaileddiff.adapter.DetailedDiffAdapterFactoryDescriptor" />
+      class="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterFactoryDescriptor" />
   </extension-point>
 
-  <extension-point name="mimeTypeDetailedDiffer">
+  <extension-point name="mimeTypeContentDiffer">
     <documentation>
-      Allows to contribute default implementation of detailed diff according to the mime type.
+      Allows to contribute default implementation of content diff according to the mime type.
     </documentation>
-    <object class="org.nuxeo.ecm.diff.detaileddiff.adapter.MimeTypeDetailedDifferDescriptor"/>
+    <object class="org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDifferDescriptor"/>
   </extension-point>
 
   <!--

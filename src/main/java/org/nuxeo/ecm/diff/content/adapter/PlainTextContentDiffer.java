@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.diff.detaileddiff.adapter;
+package org.nuxeo.ecm.diff.content.adapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,15 +27,15 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.diff.detaileddiff.DetailedDiffException;
+import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.diff.differs.diff_match_patch;
 import org.nuxeo.ecm.diff.differs.diff_match_patch.Diff;
 
-public class PlainTextDetailedDiffer implements MimeTypeDetailedDiffer {
+public class PlainTextContentDiffer implements MimeTypeContentDiffer {
 
-    public List<Blob> getDetailedDiff(Blob leftBlob, Blob rightBlob,
+    public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
             DocumentModel leftDoc, DocumentModel rightDoc)
-            throws DetailedDiffException {
+            throws ContentDiffException {
 
         // TODO: test XML entities (&, ', "", ...)
 
@@ -50,14 +50,14 @@ public class PlainTextDetailedDiffer implements MimeTypeDetailedDiffer {
             diffs = dmp.diff_main(((StringBlob) leftBlob).getString(),
                     ((StringBlob) rightBlob).getString());
         } catch (IOException ioe) {
-            throw new DetailedDiffException(
+            throw new ContentDiffException(
                     "Error while processing plain text diff.", ioe);
         }
         dmp.diff_cleanupSemantic(diffs);
         String prettyHtmlDiff = dmp.diff_prettyHtml(diffs);
 
         Blob mainBlob = new StringBlob(prettyHtmlDiff.toString());
-        mainBlob.setFilename("detailedDiff.txt");
+        mainBlob.setFilename("contentDiff.txt");
         mainBlob.setMimeType("text/plain");
 
         blobResults.add(mainBlob);

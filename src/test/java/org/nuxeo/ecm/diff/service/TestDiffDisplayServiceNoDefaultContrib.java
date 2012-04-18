@@ -151,7 +151,7 @@ public class TestDiffDisplayServiceNoDefaultContrib extends
             return false;
         }
 
-        // TODO: manage detailedDiff
+        // TODO: manage contentDiff
 
         return true;
     }
@@ -184,7 +184,7 @@ public class TestDiffDisplayServiceNoDefaultContrib extends
             }
         }
 
-        // TODO: manage detailedDiff
+        // TODO: manage contentDiff
 
         return true;
     }

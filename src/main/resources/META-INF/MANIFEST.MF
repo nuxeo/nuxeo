@@ -15,6 +15,6 @@ Nuxeo-Component: OSGI-INF/document-xml-export-service.xml,
  OSGI-INF/diff-widgets-contrib.xml,
  OSGI-INF/diff-theme-contrib.xml,
  OSGI-INF/diff-restAPI-contrib.xml,
- OSGI-INF/detailed-diff-document-adapter-contrib.xml,
- OSGI-INF/detailed-diff-adapter-framework.xml,
- OSGI-INF/detailed-diff-adapter-contrib.xml
+ OSGI-INF/content-diff-document-adapter-contrib.xml,
+ OSGI-INF/content-diff-adapter-framework.xml,
+ OSGI-INF/content-diff-adapter-contrib.xml

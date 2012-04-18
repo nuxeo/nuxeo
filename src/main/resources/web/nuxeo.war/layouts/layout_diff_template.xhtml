@@ -57,21 +57,21 @@
                 <nxl:widget widget="#{widget}" value="#{rightValue}" />
               </nxu:set>
             </td>
-            <td class="detailedDiffColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
+            <td class="contentDiffColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
               <nxu:set var="fieldFullName" value="#{widget.fieldDefinitions[0].fieldName}" cache="true">
                 <nxu:set var="indexOfColon" value="#{fn:indexOf(fieldFullName, ':')}" cache="true">
                   <nxu:set var="schemaName" value="#{fn:substring(fieldFullName, 0, indexOfColon)}" cache="true">
                     <nxu:set var="fieldName" value="#{fn:substring(fieldFullName, indexOfColon + 1, fieldFullName.length())}" cache="true">
                       <div>
-                        <h:outputLink id="openDetailedDiffFancyBox_#{schemaName}_#{fieldName}_any2html"
-                          value="javascript:showFancyBox('#{diffActions.getDetailedDiffFancyBoxURL(schemaName, fieldName)}', '90%', '90%', 'no');">
-                          <h:outputText value="#{messages['diff.detailedDiff.keepLayout.link.title']}"/>
+                        <h:outputLink id="openContentDiffFancyBox_#{schemaName}_#{fieldName}_any2html"
+                          value="javascript:showFancyBox('#{diffActions.getContentDiffFancyBoxURL(schemaName, fieldName)}', '90%', '90%', 'no');">
+                          <h:outputText value="#{messages['diff.content.keepLayout.link.title']}"/>
                         </h:outputLink>
                       </div>
                       <div>
-                        <h:outputLink id="openDetailedDiffFancyBox_#{schemaName}_#{fieldName}_any2text"
-                          value="javascript:showFancyBox('#{diffActions.getDetailedDiffFancyBoxURL(schemaName, fieldName, 'any2text')}', '90%', '90%', 'no');">
-                          <h:outputText value="#{messages['diff.detailedDiff.noLayout.link.title']}"/>
+                        <h:outputLink id="openContentDiffFancyBox_#{schemaName}_#{fieldName}_any2text"
+                          value="javascript:showFancyBox('#{diffActions.getContentDiffFancyBoxURL(schemaName, fieldName, 'any2text')}', '90%', '90%', 'no');">
+                          <h:outputText value="#{messages['diff.content.noLayout.link.title']}"/>
                         </h:outputLink>
                       </div>
                     </nxu:set>

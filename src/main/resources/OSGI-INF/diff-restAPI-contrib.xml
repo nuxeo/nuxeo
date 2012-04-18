@@ -8,25 +8,25 @@
     <!--
     <documentation>
       GET
-      /nuxeo/restAPI/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}?subPath={subPath}
+      /nuxeo/restAPI/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}?subPath={subPath}
     </documentation>
     -->
     <documentation>
       GET
-      /nuxeo/restAPI/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{conversionType}
+      /nuxeo/restAPI/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{conversionType}
     </documentation>
 
-    <restletPlugin name="detailedDiff"
-      class="org.nuxeo.ecm.diff.restlet.DetailedDiffRestlet" enabled="true"
+    <restletPlugin name="contentDiff"
+      class="org.nuxeo.ecm.diff.restlet.ContentDiffRestlet" enabled="true"
       useSeam="true">
       <urlPatterns>
-        <urlPattern>/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/
+        <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/
         </urlPattern>
         <!--
-        <urlPattern>/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{subPath}
+        <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{subPath}
         </urlPattern>
         -->
-        <urlPattern>/detailedDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{conversionType}
+        <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{conversionType}
         </urlPattern>
       </urlPatterns>
     </restletPlugin>

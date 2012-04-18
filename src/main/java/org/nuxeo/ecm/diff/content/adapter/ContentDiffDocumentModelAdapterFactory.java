@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
-package org.nuxeo.ecm.diff.detaileddiff.adapter;
+package org.nuxeo.ecm.diff.content.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
@@ -21,27 +21,27 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Factory for the DocumentModelAdapter service.
  * <p>
- * Delegates the calls to a service dedicated to Detailed diff Adapter that
- * finds the right adapter implementation according to document type and to
- * registered custom adapters.
+ * Delegates the calls to a service dedicated to content diff Adapter that finds
+ * the right adapter implementation according to document type and to registered
+ * custom adapters.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class DetailedDiffDocumentModelAdapterFactory implements
+public class ContentDiffDocumentModelAdapterFactory implements
         DocumentAdapterFactory {
 
-    protected static DetailedDiffAdapterManager ddaManager;
+    protected static ContentDiffAdapterManager contentDiffAdapterManager;
 
-    protected DetailedDiffAdapterManager getDetailedDiffAdapterManager() {
-        if (ddaManager == null) {
-            ddaManager = Framework.getLocalService(DetailedDiffAdapterManager.class);
+    protected ContentDiffAdapterManager getContentDiffAdapterManager() {
+        if (contentDiffAdapterManager == null) {
+            contentDiffAdapterManager = Framework.getLocalService(ContentDiffAdapterManager.class);
         }
-        return ddaManager;
+        return contentDiffAdapterManager;
     }
 
-    public Object getAdapter(DocumentModel doc, Class itf) {
-        return getDetailedDiffAdapterManager().getAdapter(doc);
+    public Object getAdapter(DocumentModel doc, Class<?> itf) {
+        return getContentDiffAdapterManager().getAdapter(doc);
     }
 
 }

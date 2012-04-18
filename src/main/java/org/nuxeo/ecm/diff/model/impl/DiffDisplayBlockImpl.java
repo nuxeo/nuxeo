@@ -39,19 +39,19 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
     protected Map<String, Map<String, Serializable>> rightValue;
 
     // TODO: remove?
-    protected Map<String, Map<String, Serializable>> detailedDiffValue;
+    protected Map<String, Map<String, Serializable>> contentDiffValue;
 
     protected LayoutDefinition layoutDefinition;
 
     public DiffDisplayBlockImpl(String label,
             Map<String, Map<String, Serializable>> leftValue,
             Map<String, Map<String, Serializable>> rightValue,
-            Map<String, Map<String, Serializable>> detailedDiffValue,
+            Map<String, Map<String, Serializable>> contentDiffValue,
             LayoutDefinition layoutDefinition) {
         this.label = label;
         this.leftValue = leftValue;
         this.rightValue = rightValue;
-        this.detailedDiffValue = detailedDiffValue;
+        this.contentDiffValue = contentDiffValue;
         this.layoutDefinition = layoutDefinition;
     }
 
@@ -79,13 +79,13 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
         this.rightValue = rightValue;
     }
 
-    public Map<String, Map<String, Serializable>> getDetailedDiffValue() {
-        return detailedDiffValue;
+    public Map<String, Map<String, Serializable>> getContentDiffValue() {
+        return contentDiffValue;
     }
 
-    public void setDetailedDiffValue(
-            Map<String, Map<String, Serializable>> detailedDiffValue) {
-        this.detailedDiffValue = detailedDiffValue;
+    public void setContentDiffValue(
+            Map<String, Map<String, Serializable>> contentDiffValue) {
+        this.contentDiffValue = contentDiffValue;
     }
 
     public LayoutDefinition getLayoutDefinition() {
@@ -97,7 +97,7 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
     }
 
     public boolean isEmpty() {
-        return MapUtils.isEmpty(this.detailedDiffValue)
+        return MapUtils.isEmpty(this.contentDiffValue)
                 && (MapUtils.isEmpty(this.leftValue) || MapUtils.isEmpty(this.rightValue));
     }
 }
