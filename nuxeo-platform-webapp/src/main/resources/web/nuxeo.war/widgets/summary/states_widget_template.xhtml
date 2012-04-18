@@ -8,4 +8,6 @@
   <h:outputText
     value="#{messages[currentDocument.currentLifeCycleState]}"
     styleClass="bold" />
+  <h:outputText value="#{messages[label.document.lock]}"
+    styleClass="bold" rendered="#{currentDocument.locked}" />
 </div>
