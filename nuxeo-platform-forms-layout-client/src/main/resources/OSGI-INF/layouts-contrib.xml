@@ -1974,6 +1974,156 @@
       </property>
     </widgetType>
 
+    <widgetType name="container">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Container</title>
+        <description>
+          <p>
+            The container widget displays its subwidgets with display options
+            to control the rendering of global div container as well as each
+            container of sub items, using the widget label as header.
+          </p>
+          <p>
+            If the widget is marked as handling labels (marker available on all
+            widgets since 5.6), the header will be displayed. Otherwise it will
+            never bee displayed.
+          </p>
+        </description>
+        <categories>
+          <category>decoration</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+        <properties>
+          <layouts mode="any">
+            <layout name="container_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">subwidgets_display</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">subwidgets_hideSubLabels</widget>
+                </row>
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>subHeaderStyleClass</widget>
+                </row>
+                <row>
+                  <widget>subStyleClass</widget>
+                </row>
+                <row>
+                  <widget>showIfEmpty</widget>
+                </row>
+              </rows>
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the widget label will be
+                    displayed in a header of a box, containing the sub widgets
+                    rendering. This box is foldable in javascript. Ignored if
+                    the widget is not marked as handling labels as the header
+                    will not be displayed in this case. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+              </widget>
+              <widget name="showIfEmpty" type="checkbox">
+                <labels>
+                  <label mode="any">Show if empty</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the widget label will be
+                    displayed even if there are no subwidgets. Defaults to
+                    false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showIfEmpty</field>
+                </fields>
+              </widget>
+              <widget name="headerStyleClass" type="text">
+                <labels>
+                  <label mode="any">Header style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the header, displaying this
+                    widget label.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>headerStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the global container div.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="subHeaderStyleClass" type="text">
+                <labels>
+                  <label mode="any">Sub Header style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the sub header, displaying
+                    this sub widget label.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subHeaderStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="subStyleClass" type="text">
+                <labels>
+                  <label mode="any">Sub style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the container of each sub
+                    widget.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subStyleClass</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/container_widget_template.xhtml</property>
+    </widgetType>
+
     <widgetType name="checkbox">
       <configuration>
         <title>Checkbox</title>
