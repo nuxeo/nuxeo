@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,9 +45,12 @@ public class ActionRegistry implements Serializable {
 
     private final Map<String, List<String>> categories;
 
+    private List<TypeCompatibility> typeCategoryRelations;
+
     public ActionRegistry() {
         actions = new HashMap<String, Action>();
         categories = new HashMap<String, List<String>>();
+        typeCategoryRelations = new ArrayList<TypeCompatibility>();
     }
 
     public synchronized void addAction(Action action) {
@@ -106,6 +110,16 @@ public class ActionRegistry implements Serializable {
             for (String id : ids) {
                 Action action = actions.get(id);
                 if (action != null && action.isEnabled()) {
+                    // UI type action compat check
+                    if (action.getType() == null) {
+                        for (TypeCompatibility compat : typeCategoryRelations) {
+                            for (String categoryCompat : compat.getCategories()) {
+                                if (StringUtils.equals(categoryCompat, category)) {
+                                    action.setType(compat.getType());
+                                }
+                            }
+                        }
+                    }
                     // return only enabled actions
                     result.add(getClonedAction(action));
                 }
@@ -138,6 +152,15 @@ public class ActionRegistry implements Serializable {
             Collections.sort(sortedActions);
         }
         return sortedActions;
+    }
+
+    public List<TypeCompatibility> getTypeCategoryRelations() {
+        return typeCategoryRelations;
+    }
+
+    public void setTypeCategoryRelations(
+            List<TypeCompatibility> typeCategoryRelations) {
+        this.typeCategoryRelations = typeCategoryRelations;
     }
 
 }

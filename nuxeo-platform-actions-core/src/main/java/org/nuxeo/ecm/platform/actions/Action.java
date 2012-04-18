@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -21,10 +21,13 @@ package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -66,6 +69,12 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     @XNode("@immediate")
     protected boolean immediate = false;
+
+    @XNode("@type")
+    protected String type = null;
+
+    @XNodeMap(value = "properties", key = "@name", type = HashMap.class, componentType = ActionPropertiesDescriptor.class)
+    Map<String, ActionPropertiesDescriptor> properties = new HashMap<String, ActionPropertiesDescriptor>();
 
     private boolean available = true;
 
@@ -265,6 +274,22 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     @Override
     public Action clone() throws CloneNotSupportedException {
         return (Action) super.clone();
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Map<String, ActionPropertiesDescriptor> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, ActionPropertiesDescriptor> properties) {
+        this.properties = properties;
     }
 
 }
