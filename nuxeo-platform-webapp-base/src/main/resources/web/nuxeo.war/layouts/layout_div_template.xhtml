@@ -5,15 +5,16 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  id="#{layout.id}"
-  styleClass="#{layoutProperty_styleClass}">
+  id="#{layout.id}">
 
-  <nxl:layoutRow>
-    <div class="#{layoutRow.properties['styleClass']}">
-      <nxl:layoutRowWidget>
-        <nxl:widget widget="#{widget}" value="#{value}" />
-      </nxl:layoutRowWidget>
-    </div>
-  </nxl:layoutRow>
+  <div class="#{layoutProperty_styleClass}">
+    <nxl:layoutRow>
+      <div class="#{layoutRow.properties['styleClass']}">
+        <nxl:layoutRowWidget>
+          <nxl:widget widget="#{widget}" value="#{value}" />
+        </nxl:layoutRowWidget>
+      </div>
+    </nxl:layoutRow>
+  </div>
 
 </f:subview>
