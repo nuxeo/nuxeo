@@ -22,6 +22,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.template.api.TemplateInput;
 
@@ -57,6 +58,16 @@ public interface TemplateBasedDocument {
      * @throws Exception
      */
     public TemplateSourceDocument getSourceTemplate(String templateName)
+            throws Exception;
+
+    /**
+     * Retrieve the Template {@link DocumentRef} for a given template name
+     * 
+     * @param templateName name of the template
+     * @return the associated template {@link DocumentRef}
+     * @throws Exception
+     */
+    public DocumentRef getSourceTemplateDocRef(String templateName)
             throws Exception;
 
     /**

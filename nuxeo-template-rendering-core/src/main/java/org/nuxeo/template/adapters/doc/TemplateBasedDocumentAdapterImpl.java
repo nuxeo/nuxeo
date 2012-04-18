@@ -24,6 +24,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
@@ -123,6 +124,21 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
      * getSourceTemplateDoc(TemplateBindings.DEFAULT_BINDING); }
      */
 
+    @Override
+    public DocumentRef getSourceTemplateDocRef(String templateName)
+            throws Exception {
+        TemplateBinding binding = null;
+        if (templateName == null) {
+            binding = bindings.get();
+        } else {
+            binding = bindings.get(templateName);
+        }
+        if (binding == null) {
+            return null;
+        }
+        return new IdRef(binding.getTemplateId());
+    }
+
     public DocumentModel getSourceTemplateDoc(String templateName)
             throws Exception {
         TemplateBinding binding = null;
@@ -134,7 +150,10 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         if (binding == null) {
             return null;
         }
-        IdRef tRef = new IdRef(binding.getTemplateId());
+        DocumentRef tRef = getSourceTemplateDocRef(templateName);
+        if (tRef == null) {
+            return null;
+        }
         return getSession().getDocument(tRef);
     }
 

@@ -25,6 +25,7 @@
     <module>nuxeo-template-rendering-jod</module>
     <module>nuxeo-template-rendering-sandbox</module>
     <module>nuxeo-template-rendering-web</module>
+    <module>nuxeo-template-rendering-samples</module>
     <module>nuxeo-template-rendering-distrib</module>
   </modules>
 
