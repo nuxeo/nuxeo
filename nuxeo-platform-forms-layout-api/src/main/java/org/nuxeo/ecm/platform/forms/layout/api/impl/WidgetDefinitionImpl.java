@@ -51,6 +51,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     protected boolean translated = false;
 
+    protected boolean handlingLabels = false;
+
     protected Map<String, String> modes;
 
     protected FieldDefinition[] fieldDefinitions;
@@ -337,6 +339,14 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         this.translated = translated;
     }
 
+    public boolean isHandlingLabels() {
+        return handlingLabels;
+    }
+
+    public void setHandlingLabels(boolean handlingLabels) {
+        this.handlingLabels = handlingLabels;
+    }
+
     public static Map<String, Serializable> getProperties(
             Map<String, Map<String, Serializable>> properties, String mode) {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
@@ -484,6 +494,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
                 cwidgetProps, csubWidgets, cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubWidgetRefs);
+        clone.setHandlingLabels(handlingLabels);
         return clone;
     }
 

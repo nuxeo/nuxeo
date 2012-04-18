@@ -73,8 +73,18 @@ public class WidgetDescriptor {
     @XNodeMap(value = "helpLabels/label", key = "@mode", type = HashMap.class, componentType = String.class)
     Map<String, String> helpLabels = new HashMap<String, String>();
 
+    /**
+     * Defaults to true, contrary to {@link WidgetDefinition} interface, but
+     * kept as is for compatibility.
+     */
     @XNode("translated")
     boolean translated = true;
+
+    /**
+     * @since 5.6
+     */
+    @XNode("handlingLabels")
+    boolean handlingLabels = false;
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
@@ -354,6 +364,7 @@ public class WidgetDescriptor {
                 cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubwidgetRefs);
+        clone.setHandlingLabels(handlingLabels);
         return clone;
     }
 

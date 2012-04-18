@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
-import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
 /**
@@ -64,6 +64,8 @@ public class WidgetImpl implements Widget {
     protected String label;
 
     protected boolean translated = false;
+
+    protected boolean handlingLabels = false;
 
     protected int level = 0;
 
@@ -108,6 +110,7 @@ public class WidgetImpl implements Widget {
                 selectOptions, null);
     }
 
+    // BBB
     public WidgetImpl(String layoutName, String name, String mode, String type,
             String valueName, FieldDefinition[] fields, String label,
             String helpLabel, boolean translated,
@@ -122,9 +125,24 @@ public class WidgetImpl implements Widget {
     /**
      * @since 5.5
      */
+    // BBB
     public WidgetImpl(String layoutName, String name, String mode, String type,
             String valueName, FieldDefinition[] fields, String label,
             String helpLabel, boolean translated,
+            Map<String, Serializable> properties, boolean required,
+            Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions,
+            String definitionId, List<RenderingInfo> renderingInfos) {
+        this(layoutName, name, mode, type, valueName, fields, label, helpLabel,
+                translated, false, properties, required, subWidgets, level,
+                selectOptions, definitionId, renderingInfos);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public WidgetImpl(String layoutName, String name, String mode, String type,
+            String valueName, FieldDefinition[] fields, String label,
+            String helpLabel, boolean translated, boolean handlingLabels,
             Map<String, Serializable> properties, boolean required,
             Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions,
             String definitionId, List<RenderingInfo> renderingInfos) {
@@ -137,6 +155,7 @@ public class WidgetImpl implements Widget {
         this.label = label;
         this.helpLabel = helpLabel;
         this.translated = translated;
+        this.handlingLabels = handlingLabels;
         this.properties = properties;
         this.required = required;
         this.subWidgets = subWidgets;
@@ -196,6 +215,10 @@ public class WidgetImpl implements Widget {
 
     public boolean isTranslated() {
         return translated;
+    }
+
+    public boolean isHandlingLabels() {
+        return handlingLabels;
     }
 
     public Map<String, Serializable> getProperties() {
@@ -274,6 +297,8 @@ public class WidgetImpl implements Widget {
         buf.append(helpLabel);
         buf.append(", translated=");
         buf.append(translated);
+        buf.append(", handlingLabels=");
+        buf.append(handlingLabels);
         buf.append(", required=");
         buf.append(required);
         buf.append(", properties=");

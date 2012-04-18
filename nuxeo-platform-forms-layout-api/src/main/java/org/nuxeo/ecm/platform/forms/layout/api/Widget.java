@@ -100,8 +100,21 @@ public interface Widget extends Serializable {
 
     /**
      * Returns true if all labels are messages that need to be translated.
+     * <p>
+     * Defaults to false.
      */
     boolean isTranslated();
+
+    /**
+     * Returns true if the widget is handling his own labels display (usual
+     * label and help label). This can be checked by the layout template to
+     * render the widget using both label and widget usual places.
+     * <p>
+     * Defaults to false.
+     *
+     * @since 5.6
+     */
+    boolean isHandlingLabels();
 
     /**
      * Get properties to use in this mode.

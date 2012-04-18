@@ -19,13 +19,16 @@
 
 package org.nuxeo.ecm.platform.layout.core.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -94,6 +97,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertEquals("", title.getLabel(BuiltinModes.EDIT));
         assertEquals("help text", title.getHelpLabel(BuiltinModes.EDIT));
         assertTrue(title.isTranslated());
+        assertTrue(title.isHandlingLabels());
         FieldDefinition[] fieldDefs = title.getFieldDefinitions();
         assertEquals(1, fieldDefs.length);
         assertNull(fieldDefs[0].getSchemaName());

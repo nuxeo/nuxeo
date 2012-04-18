@@ -194,6 +194,7 @@
           <label mode="edit">help text</label>
         </helpLabels>
         <translated>true</translated>
+        <handlingLabels>true</handlingLabels>
         <fields>
           <field>dc:title</field>
         </fields>
