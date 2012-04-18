@@ -639,8 +639,8 @@ public class LDAPReference extends AbstractReference {
 
                                 // check onelevel scope constraints
                                 if ("onelevel".equals(ldapUrl.getScope())) {
-                                    int targetDnSize = targetDn.split(",").length;
-                                    int urlDnSize = candidateDN.split(",").length;
+                                    int targetDnSize = new LdapName(targetDn).size();
+                                    int urlDnSize = new LdapName(candidateDN).size();
                                     if (targetDnSize - urlDnSize > 1) {
                                         // target is not a direct child of the DN of the
                                         // LDAP URL
@@ -794,9 +794,10 @@ public class LDAPReference extends AbstractReference {
                         if (targetSession.rdnMatchesIdField()) {
                             // optim: do not fetch the entry to get its true id but
                             // guess it by reading the targetDn
-                            final int beginIndex = targetDn.indexOf('=') + 1;
-                            final int endIndex = targetDn.indexOf(',');
-                            id = targetDn.substring(beginIndex, endIndex).trim();
+                            LdapName name = new LdapName(targetDn);
+                            String rdn = name.get(name.size() - 1);
+                            int pos = rdn.indexOf("=");
+                            id = rdn.substring(pos + 1);
                         } else {
                             id = getIdForDn(targetSession, targetDn);
                             if (id == null) {

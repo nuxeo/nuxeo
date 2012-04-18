@@ -23,12 +23,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
+import javax.naming.*;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -169,7 +170,8 @@ public class LDAPTreeReference extends AbstractReference {
         LDAPDirectory targetDir = getTargetLDAPDirectory();
         LDAPSession targetSession = (LDAPSession) targetDir.getSession();
         try {
-            SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId, true);
+            SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId,
+                    true);
             if (targetLdapEntry == null) {
                 // no parent accessible => return empty list
                 return EMPTY_STRING_LIST;
@@ -198,8 +200,9 @@ public class LDAPTreeReference extends AbstractReference {
                 log.debug(String.format(
                         "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
                                 + " filter='%s' args='%s' scope='%s' [%s]",
-                        targetId, parentDn, filterExpr, StringUtils.join(
-                                filterArgs, ", "), sctls.getSearchScope(), this));
+                        targetId, parentDn, filterExpr,
+                        StringUtils.join(filterArgs, ", "),
+                        sctls.getSearchScope(), this));
             }
             NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                     parentDn, filterExpr, filterArgs, sctls);
@@ -238,7 +241,8 @@ public class LDAPTreeReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#getTargetIdsForSource(String)
      */
-    // TODO: optimize reusing the same ldap session (see LdapReference optim method)
+    // TODO: optimize reusing the same ldap session (see LdapReference optim
+    // method)
     public List<String> getTargetIdsForSource(String sourceId)
             throws DirectoryException {
         Set<String> targetIds = new TreeSet<String>();
@@ -249,7 +253,8 @@ public class LDAPTreeReference extends AbstractReference {
         LDAPDirectory sourceDir = getSourceLDAPDirectory();
         LDAPSession sourceSession = (LDAPSession) sourceDir.getSession();
         try {
-            SearchResult sourceLdapEntry = sourceSession.getLdapEntry(sourceId, true);
+            SearchResult sourceLdapEntry = sourceSession.getLdapEntry(sourceId,
+                    true);
             if (sourceLdapEntry == null) {
                 throw new DirectoryException(sourceId + " does not exist in "
                         + sourceDirectoryName);
@@ -278,8 +283,9 @@ public class LDAPTreeReference extends AbstractReference {
                 log.debug(String.format(
                         "LDAPReference.getTargetIdsForSource(%s): LDAP search search base='%s'"
                                 + " filter='%s' args='%s' scope='%s' [%s]",
-                        sourceId, sourceDn, filterExpr, StringUtils.join(
-                                filterArgs, ", "), sctls.getSearchScope(), this));
+                        sourceId, sourceDn, filterExpr,
+                        StringUtils.join(filterArgs, ", "),
+                        sctls.getSearchScope(), this));
             }
             NamingEnumeration<SearchResult> results = targetSession.dirContext.search(
                     sourceDn, filterExpr, filterArgs, sctls);
@@ -300,8 +306,7 @@ public class LDAPTreeReference extends AbstractReference {
                         }
                     }
                 }
-            }
-            finally {
+            } finally {
                 results.close();
             }
         } catch (NamingException e) {
@@ -321,18 +326,30 @@ public class LDAPTreeReference extends AbstractReference {
      * @param dn the raw unnormalized dn
      * @return lowercase version without whitespace after commas
      */
-    protected static String pseudoNormalizeDn(String dn) {
-        // this method does not respect the LDAP DN RFCs
-        // but this is enough to compare our base dns in getLdapTargetIds
-        dn = dn.replaceAll(", ", ",");
-        return dn.toLowerCase();
+    protected static String pseudoNormalizeDn(String dn) throws InvalidNameException {
+        LdapName ldapName = new LdapName(dn);
+        List<String> rdns = new ArrayList<String>();
+        for (Rdn rdn : ldapName.getRdns()) {
+            String value = rdn.getValue().toString().toLowerCase().replaceAll(",", "\\\\,");
+            String rdnStr = rdn.getType().toLowerCase() + "=" + value;
+            rdns.add(0, rdnStr);
+        }
+        return StringUtils.join(rdns, ',');
     }
 
     protected String getParentDn(String dn) {
+        LdapName ldapName;
+        String parentDn;
+
         if (dn != null) {
-            int index = dn.indexOf(",");
-            if (index != -1) {
-                return dn.substring(index + 1);
+            try {
+                ldapName = new LdapName(dn);
+                ldapName.remove(ldapName.size() - 1);
+                parentDn = ldapName.toString();
+                return parentDn;
+
+            } catch (InvalidNameException ex) {
+                return null;
             }
         }
         return null;
