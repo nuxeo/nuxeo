@@ -73,11 +73,10 @@ public abstract class AbstractDocumentModelWriter extends
 
     protected int unsavedDocuments = 0;
 
-    private final Map<DocumentLocation, DocumentLocation> translationMap
-            = new HashMap<DocumentLocation, DocumentLocation>();
+    private final Map<DocumentLocation, DocumentLocation> translationMap = new HashMap<DocumentLocation, DocumentLocation>();
 
     /**
-     *
+     * 
      * @param session the session to the repository where to write
      * @param parentPath where to write the tree. this document will be used as
      *            the parent of all top level documents passed as input. Note
@@ -125,7 +124,7 @@ public abstract class AbstractDocumentModelWriter extends
      * Creates a new document given its path.
      * <p>
      * The parent of this document is assumed to exist.
-     *
+     * 
      * @param xdoc the document containing
      * @param toPath the path of the doc to create
      */
@@ -151,6 +150,8 @@ public abstract class AbstractDocumentModelWriter extends
                     VersioningService.SKIP_VERSIONING, true);
         }
 
+        loadFacetsInfo(doc, xdoc.getDocument());
+
         doc = session.createDocument(doc);
 
         // load into the document the system properties, document needs to exist
@@ -170,6 +171,8 @@ public abstract class AbstractDocumentModelWriter extends
         // load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
+        loadFacetsInfo(doc, xdoc.getDocument());
+
         doc = session.saveDocument(doc);
 
         unsavedDocuments += 1;
@@ -187,10 +190,31 @@ public abstract class AbstractDocumentModelWriter extends
     }
 
     @SuppressWarnings("unchecked")
+    protected boolean loadFacetsInfo(DocumentModel docModel, Document doc)
+            throws ClientException {
+        boolean added = false;
+        Element system = doc.getRootElement().element(
+                ExportConstants.SYSTEM_TAG);
+
+        Iterator<Element> facets = system.elementIterator(ExportConstants.FACET_TAG);
+        while (facets.hasNext()) {
+            Element element = facets.next();
+            String facet = element.getTextTrim();
+            if (!docModel.hasFacet(facet)) {
+                docModel.addFacet(facet);
+                added = true;
+            }
+        }
+
+        return added;
+    }
+
+    @SuppressWarnings("unchecked")
     protected void loadSystemInfo(DocumentModel docModel, Document doc)
             throws ClientException {
         Element system = doc.getRootElement().element(
                 ExportConstants.SYSTEM_TAG);
+
         Element accessControl = system.element(ExportConstants.ACCESS_CONTROL_TAG);
         if (accessControl == null) {
             return;
@@ -315,8 +339,8 @@ public abstract class AbstractDocumentModelWriter extends
                 while (it.hasNext()) {
                     Element el = it.next();
                     String name = el.getName();
-                    Object value = getElementData(xdoc, el, ctype.getField(
-                            el.getName()).getType());
+                    Object value = getElementData(xdoc, el,
+                            ctype.getField(el.getName()).getType());
                     map.put(name, value);
                 }
                 return map;

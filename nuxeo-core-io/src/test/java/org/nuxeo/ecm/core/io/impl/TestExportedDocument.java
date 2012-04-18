@@ -42,30 +42,33 @@ public class TestExportedDocument extends NXRuntimeTestCase {
     public void testExportedDocument() throws Exception {
 
         final DocumentModel model = jmcontext.mock(DocumentModel.class);
-        jmcontext.checking(new Expectations() {{
-            atLeast(1).of (model).getId();
-            will(returnValue("My id"));
-            atLeast(1).of (model).getType();
-            will(returnValue("My type"));
-            atLeast(1).of (model).getRef();
-            will(returnValue(new IdRef("My id")));
-            atLeast(1).of (model).getName();
-            will(returnValue(null));
-            atLeast(1).of (model).getCurrentLifeCycleState();
-            will(returnValue(null));
-            atLeast(1).of (model).getLifeCyclePolicy();
-            will(returnValue(null));
-            atLeast(1).of (model).getACP();
-            will(returnValue(null));
-            atLeast(1).of (model).getSchemas();
-            will(returnValue(new String[0]));
-            atLeast(1).of (model).getRepositoryName();
-            will(returnValue(null));
-            atLeast(1).of (model).getPath();
-            will(returnValue(new Path("my-path")));
-            atLeast(1).of (model).getPathAsString();
-            will(returnValue("/my/path/"));
-        }});
+        jmcontext.checking(new Expectations() {
+            {
+                atLeast(1).of(model).getId();
+                will(returnValue("My id"));
+                atLeast(1).of(model).getType();
+                will(returnValue("My type"));
+                atLeast(1).of(model).getRef();
+                will(returnValue(new IdRef("My id")));
+                atLeast(1).of(model).getName();
+                will(returnValue(null));
+                atLeast(1).of(model).getCurrentLifeCycleState();
+                will(returnValue(null));
+                atLeast(1).of(model).getLifeCyclePolicy();
+                will(returnValue(null));
+                atLeast(1).of(model).getACP();
+                will(returnValue(null));
+                atLeast(1).of(model).getSchemas();
+                will(returnValue(new String[0]));
+                atLeast(1).of(model).getRepositoryName();
+                will(returnValue(null));
+                atLeast(1).of(model).getPath();
+                will(returnValue(new Path("my-path")));
+                atLeast(1).of(model).getPathAsString();
+                will(returnValue("/my/path/"));
+                atLeast(1).of(model).getFacets();
+            }
+        });
 
         ExportedDocument exportedDoc = new ExportedDocumentImpl(model);
 

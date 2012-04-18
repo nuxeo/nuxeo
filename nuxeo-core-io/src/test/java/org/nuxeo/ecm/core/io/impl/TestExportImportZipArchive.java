@@ -80,6 +80,9 @@ public class TestExportImportZipArchive extends SQLRepositoryTestCase {
 
         docToExport = session.createDocument(docToExport);
 
+        docToExport.addFacet("HiddenInNavigation");
+        docToExport = session.saveDocument(docToExport);
+
         session.save();
     }
 
@@ -145,6 +148,7 @@ public class TestExportImportZipArchive extends SQLRepositoryTestCase {
         DocumentModel importedDocument = children.get(0);
         Blob blob = (Blob) importedDocument.getProperty("file", "content");
         assertEquals("dummyBlob.txt", blob.getFilename());
+        assertTrue(importedDocument.hasFacet("HiddenInNavigation"));
     }
 
 }

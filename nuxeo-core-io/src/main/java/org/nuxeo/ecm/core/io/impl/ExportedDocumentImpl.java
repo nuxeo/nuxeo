@@ -251,6 +251,10 @@ public class ExportedDocumentImpl implements ExportedDocument {
             log.error(e, e);
         } // end of lifecycle
 
+        // facets
+        for (String facet : doc.getFacets()) {
+            systemElement.addElement(ExportConstants.FACET_TAG).addText(facet);
+        }
         // write security
         Element acpElement = systemElement.addElement(ExportConstants.ACCESS_CONTROL_TAG);
         ACP acp = doc.getACP();
