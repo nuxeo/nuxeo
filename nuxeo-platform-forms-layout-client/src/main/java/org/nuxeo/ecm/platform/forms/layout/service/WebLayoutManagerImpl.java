@@ -327,8 +327,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         Widget widget = new WidgetImpl(layoutName, wDef.getName(), wMode,
                 wDef.getType(), valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
-                wDef.isTranslated(), wDef.getProperties(layoutMode, wMode),
-                required, subWidgets.toArray(new Widget[] {}), level,
+                wDef.isTranslated(), wDef.isHandlingLabels(),
+                wDef.getProperties(layoutMode, wMode), required,
+                subWidgets.toArray(new Widget[] {}), level,
                 wDef.getSelectOptions(),
                 LayoutFunctions.computeWidgetDefinitionId(wDef),
                 wDef.getRenderingInfos(layoutMode));

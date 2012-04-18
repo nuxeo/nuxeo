@@ -152,6 +152,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("testWidget", widget.getName());
         assertEquals("test", widget.getType());
+        assertTrue(widget.isTranslated());
+        assertTrue(widget.isHandlingLabels());
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
         assertEquals(1, fieldDefs.length);
         assertEquals("foo", fieldDefs[0].getSchemaName());

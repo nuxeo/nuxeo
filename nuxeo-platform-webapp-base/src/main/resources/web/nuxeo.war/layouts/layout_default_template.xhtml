@@ -4,8 +4,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  id="#{layout.id}">
+  id="#{layout.id}"
+  styleClass="#{layoutProperty_styleClass}">
 
   <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
 
@@ -13,47 +13,37 @@
     <tbody>
 
       <nxl:layoutRow>
-        <tr>
+        <tr class="#{layoutRow.properties['styleClass']}">
           <nxl:layoutRowWidget>
-            <c:choose>
-              <c:when test="#{widget.translated}">
-                <td class="labelColumn">
-                  <c:if test="#{empty widget.helpLabel}">
-                    <h:outputText value="#{messages[widget.label]}"
-                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                  </c:if>
-                  <c:if test="#{!empty widget.helpLabel}">
-                    <div class="widgetHelpLabel">
-                      <h:outputText value="#{messages[widget.label]}"
+            <nxu:set var="fieldColspan"
+              value="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1) + nxu:test(widget.handlingLabels, 1, 0)}">
+              <c:if test="#{not widget.handlingLabels}">
+                <nxu:set var="widgetLabel"
+                  value="#{nxu:test(widget.translated, messages[widget.label], widget.label)}">
+                <nxu:set var="widgetHelpLabel"
+                  value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}">
+                  <td class="labelColumn">
+                    <c:if test="#{empty widget.helpLabel}">
+                      <h:outputText value="#{widgetLabel}"
                         styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                    </div>
-                    <div class="tooltip">
-                      #{messages[widget.helpLabel]}
-                    </div>
-                  </c:if>
-                </td>
-              </c:when>
-              <c:otherwise>
-                <td class="labelColumn">
-                  <c:if test="#{empty widget.helpLabel}">
-                    <h:outputText value="#{widget.label}"
-                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                  </c:if>
-                  <c:if test="#{!empty widget.helpLabel}">
-                    <div class="widgetHelpLabel">
-                      <h:outputText value="#{widget.label}"
-                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                    </div>
-                    <div class="tooltip">
-                      #{widget.helpLabel}
-                    </div>
-                  </c:if>
-                </td>
-              </c:otherwise>
-            </c:choose>
-            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
-              <nxl:widget widget="#{widget}" value="#{value}" />
-            </td>
+                    </c:if>
+                    <c:if test="#{!empty widget.helpLabel}">
+                      <div class="widgetHelpLabel">
+                        <h:outputText value="#{widgetLabel}"
+                          styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                      </div>
+                      <div class="tooltip">
+                        #{widgetHelpLabel}
+                      </div>
+                    </c:if>
+                  </td>
+                </nxu:set>
+                </nxu:set>
+              </c:if>
+              <td class="fieldColumn" colspan="#{fieldColspan}">
+                <nxl:widget widget="#{widget}" value="#{value}" />
+              </td>
+            </nxu:set>
           </nxl:layoutRowWidget>
         </tr>
       </nxl:layoutRow>

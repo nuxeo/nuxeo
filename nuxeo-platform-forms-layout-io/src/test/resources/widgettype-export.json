@@ -57,6 +57,7 @@
           "type": "text",
           "labels": {"any": "Required"},
           "translated": true,
+          "handlingLabels": false,
           "fields": [          {
             "fieldName": "bar",
             "schemaName": "foo",
@@ -87,6 +88,7 @@
             "type": "text",
             "labels": {"any": "Rendered"},
             "translated": true,
+            "handlingLabels": false,
             "widgetModes": {"any": "view"},
             "fields": [            {
               "fieldName": "bar",
@@ -98,6 +100,7 @@
               "type": "text",
               "labels": {"any": "subwidget label"},
               "translated": true,
+              "handlingLabels": false,
               "fields": [              {
                 "fieldName": "bar",
                 "schemaName": "foo",
@@ -110,6 +113,7 @@
             "type": "selectOneListbox",
             "labels": {"any": "Selection"},
             "translated": true,
+            "handlingLabels": false,
             "fields": [            {
               "fieldName": "bar2",
               "schemaName": "foo2",
@@ -160,6 +164,7 @@
             "type": "test",
             "labels": {"any": "Selection"},
             "translated": true,
+            "handlingLabels": false,
             "fields": [            {
               "fieldName": "bar2",
               "schemaName": "foo2",
@@ -170,6 +175,7 @@
               "type": "text",
               "labels": {"any": "subwidget label"},
               "translated": true,
+              "handlingLabels": false,
               "fields": [              {
                 "fieldName": "bar",
                 "schemaName": "foo",
@@ -182,12 +188,14 @@
             "type": "test",
             "labels": {"any": "Selection"},
             "translated": true,
+            "handlingLabels": false,
             "subWidgetRefs": [{"name": "localSubWidget"}]
           },
                     {
             "name": "localSubWidget",
             "type": "test",
             "translated": true,
+            "handlingLabels": false,
             "fields": [            {
               "fieldName": "bar3",
               "schemaName": "foo3",

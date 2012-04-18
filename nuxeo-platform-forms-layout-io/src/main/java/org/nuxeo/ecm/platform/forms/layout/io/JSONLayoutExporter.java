@@ -550,6 +550,7 @@ public class JSONLayoutExporter {
             json.element("helpLabels", helpLabels);
         }
         json.element("translated", widgetDef.isTranslated());
+        json.element("handlingLabels", widgetDef.isHandlingLabels());
         JSONObject widgetModes = exportStringPropsToJson(widgetDef.getModes());
         if (!widgetModes.isEmpty()) {
             json.element("widgetModes", widgetModes);
@@ -622,6 +623,7 @@ public class JSONLayoutExporter {
         Map<String, String> labels = importStringProps(widgetDef.optJSONObject("labels"));
         Map<String, String> helpLabels = importStringProps(widgetDef.optJSONObject("helpLabels"));
         boolean translated = widgetDef.optBoolean("translated", false);
+        boolean handlingLabels = widgetDef.optBoolean("handlingLabels", false);
         Map<String, String> modes = importStringProps(widgetDef.optJSONObject("widgetModes"));
 
         List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
@@ -670,7 +672,7 @@ public class JSONLayoutExporter {
                 selectOptions.toArray(new WidgetSelectOption[] {}));
         res.setRenderingInfos(renderingInfos);
         res.setSubWidgetReferences(subWidgetRefs.toArray(new WidgetReference[] {}));
-
+        res.setHandlingLabels(handlingLabels);
         return res;
     }
 

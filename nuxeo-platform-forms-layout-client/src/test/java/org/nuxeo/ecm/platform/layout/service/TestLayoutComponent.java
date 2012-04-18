@@ -100,6 +100,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("", title.getLabel(BuiltinModes.EDIT));
         assertEquals("help text", title.getHelpLabel(BuiltinModes.EDIT));
         assertTrue(title.isTranslated());
+        assertTrue(title.isHandlingLabels());
         FieldDefinition[] fieldDefs = title.getFieldDefinitions();
         assertEquals(1, fieldDefs.length);
         assertNull(fieldDefs[0].getSchemaName());

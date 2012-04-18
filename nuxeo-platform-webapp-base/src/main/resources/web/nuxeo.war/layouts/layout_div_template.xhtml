@@ -5,10 +5,11 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  id="#{layout.id}">
+  id="#{layout.id}"
+  styleClass="#{layoutProperty_styleClass}">
 
   <nxl:layoutRow>
-    <div>
+    <div class="#{layoutRow.properties['styleClass']}">
       <nxl:layoutRowWidget>
         <nxl:widget widget="#{widget}" value="#{value}" />
       </nxl:layoutRowWidget>
