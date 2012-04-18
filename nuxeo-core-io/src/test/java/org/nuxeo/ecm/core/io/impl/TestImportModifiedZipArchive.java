@@ -164,4 +164,38 @@ public class TestImportModifiedZipArchive extends SQLRepositoryTestCase {
 
     }
 
+    @Test
+    public void testImportContentTemplateArchive() throws Exception {
+
+        File archive = FileUtils.getResourceFileFromContext("export.zip");
+
+        // import
+        DocumentReader reader = new NuxeoArchiveReader(archive);
+        DocumentWriter writer = new DocumentModelWriter(session, "/");
+
+        DocumentPipe pipe = new DocumentPipeImpl(10);
+        pipe.setReader(reader);
+        pipe.setWriter(writer);
+        pipe.run();
+
+        session.save();
+        // check result
+
+        StringBuffer sb = new StringBuffer();
+        DocumentModelList docs = session.query("select * from Document order by ecm:path");
+        for (DocumentModel doc : docs) {
+            sb.append(doc.getPathAsString() + " - " + doc.getType() + " -- "
+                    + doc.getTitle());
+            sb.append("\n");
+        }
+
+        String dump = sb.toString();
+        assertTrue(dump.contains("testZipImport - Folder"));
+        assertTrue(dump.contains("hello file - File"));
+        assertTrue(dump.contains("HelloNote - Note"));
+        assertTrue(dump.contains("SubFolder - Folder"));
+        assertTrue(dump.contains("SubNote - Note"));
+
+    }
+
 }

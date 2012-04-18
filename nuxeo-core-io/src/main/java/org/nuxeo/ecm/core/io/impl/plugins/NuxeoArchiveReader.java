@@ -200,30 +200,32 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
             }
         }
 
-        int childrenCount = 0;
+        // find the direct children entry that are part of the same document
+        // since archive is modifiable we can not rely on the Extra bits thing
+        List<String> childEntries = new ArrayList<String>();
         int depth = new Path(idxname).removeTrailingSeparator().segmentCount();
         for (String path : zipIndex) {
             if (path.startsWith(idxname)) {
                 int subdepth = new Path(path).removeTrailingSeparator().segmentCount();
                 if (subdepth != depth + 1
                         || zipFile.getEntry(path).isDirectory()) {
-                    break;
+                    continue;
                 }
-                childrenCount++;
+                childEntries.add(path);
             } else {
                 break;
             }
         }
 
-        int count = childrenCount;
-        if (count == 0) {
+        if (childEntries.size() == 0) {
             return read(); // empty dir -> try next directory
         }
         String name = entry.getName();
         ExportedDocument xdoc = new ExportedDocumentImpl();
         xdoc.setPath(new Path(name).removeTrailingSeparator());
-        for (int i = 0; i < count; i++) {
-            idxname = zipIndex.remove(0);
+        for (String childEntryName : childEntries) {
+            int i = zipIndex.indexOf(childEntryName);
+            idxname = zipIndex.remove(i);
             entry = zipFile.getEntry(idxname);
             name = entry.getName();
             if (name.endsWith(ExportConstants.DOCUMENT_FILE)) {
