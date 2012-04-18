@@ -142,6 +142,10 @@ public abstract class AbstractDocumentModelWriter extends
         String lifeCycleState = system.element(
                 ExportConstants.LIFECYCLE_STATE_TAG).getText();
         doc.putContextData("initialLifecycleState", lifeCycleState);
+
+        // loadFacets before schemas so that additional schemas are not skipped
+        loadFacetsInfo(doc, xdoc.getDocument());
+
         // then load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
@@ -149,8 +153,6 @@ public abstract class AbstractDocumentModelWriter extends
             doc.putContextData(ScopeType.REQUEST,
                     VersioningService.SKIP_VERSIONING, true);
         }
-
-        loadFacetsInfo(doc, xdoc.getDocument());
 
         doc = session.createDocument(doc);
 
