@@ -62,14 +62,18 @@
                 <nxu:set var="indexOfColon" value="#{fn:indexOf(fieldFullName, ':')}" cache="true">
                   <nxu:set var="schemaName" value="#{fn:substring(fieldFullName, 0, indexOfColon)}" cache="true">
                     <nxu:set var="fieldName" value="#{fn:substring(fieldFullName, indexOfColon + 1, fieldFullName.length())}" cache="true">
-                      <h:outputLink id="openDetailedDiffFancyBox_#{schemaName}_#{fieldName}_any2html"
-                        value="javascript:showFancyBox('#{diffActions.getDetailedDiffFancyBoxURL(schemaName, fieldName)}', '90%', '90%', 'no');">
-                        <h:outputText value="#{messages['diff.detailedDiff.link.title']}"/>
-                      </h:outputLink>
-                      <h:outputLink id="openDetailedDiffFancyBox_#{schemaName}_#{fieldName}_any2text"
-                        value="javascript:showFancyBox('#{diffActions.getDetailedDiffFancyBoxURL(schemaName, fieldName, 'any2text')}', '90%', '90%', 'no');">
-                        <h:outputText value="#{messages['diff.detailedDiff.link.title']}"/>
-                      </h:outputLink>
+                      <div>
+                        <h:outputLink id="openDetailedDiffFancyBox_#{schemaName}_#{fieldName}_any2html"
+                          value="javascript:showFancyBox('#{diffActions.getDetailedDiffFancyBoxURL(schemaName, fieldName)}', '90%', '90%', 'no');">
+                          <h:outputText value="#{messages['diff.detailedDiff.keepLayout.link.title']}"/>
+                        </h:outputLink>
+                      </div>
+                      <div>
+                        <h:outputLink id="openDetailedDiffFancyBox_#{schemaName}_#{fieldName}_any2text"
+                          value="javascript:showFancyBox('#{diffActions.getDetailedDiffFancyBoxURL(schemaName, fieldName, 'any2text')}', '90%', '90%', 'no');">
+                          <h:outputText value="#{messages['diff.detailedDiff.noLayout.link.title']}"/>
+                        </h:outputLink>
+                      </div>
                     </nxu:set>
                   </nxu:set>
                 </nxu:set>                  

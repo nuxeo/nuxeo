@@ -100,6 +100,8 @@ public class ConverterBasedDetailedDiffAdapter extends
         log.debug("Mime type of other doc for HTML detailed diff = "
                 + otherDocMimeType);
 
+        // TODO: if conversionType == "text/plain", use TextDetailedDiffer?
+
         // Check doc mime types, if a common mime type is found, look for the
         // associated detailed differ.
         if (adaptedDocMimeType != null && otherDocMimeType != null
@@ -143,13 +145,19 @@ public class ConverterBasedDetailedDiffAdapter extends
 
     protected BlobHolder getBlobHolder(DocumentModel doc, String xPath)
             throws ClientException {
-        // TODO: manage other property types than Blob / String
+        // TODO: manage other property types than Blob / String?
         Serializable prop = doc.getPropertyValue(xPath);
         if (prop instanceof Blob) {
             return new DocumentBlobHolder(doc, xPath);
         }
         if (prop instanceof String) {
-            return new DocumentStringBlobHolder(doc, xPath);
+            // TODO: use HTML guesser to find out mime type
+            // (and don't use html for text notes)
+            String mimeType = "text/plain";
+            if ("note:note".equals(xPath)) {
+                mimeType = (String) doc.getPropertyValue("note:mime_type");
+            }
+            return new DocumentStringBlobHolder(doc, xPath, mimeType);
         }
         throw new ClientException(String.format(
                 "Cannot get BlobHolder for doc '%s' and xpath '%s'.",
@@ -194,6 +202,8 @@ public class ConverterBasedDetailedDiffAdapter extends
             String destMimeType, BlobHolder blobHolder)
             throws DetailedDiffException {
 
+        // TODO: manage converter name with a parameter (any2html / office2html
+        // / ...)
         String converterName = null;
         try {
             converterName = getConversionService().getConverterName(
@@ -205,6 +215,11 @@ public class ConverterBasedDetailedDiffAdapter extends
         if (converterName == null) {
             log.debug("No dedicated converter found, using generic one: any2html.");
             converterName = "any2html";
+        }
+
+        // TODO: remove hack!
+        if ("any2html".equals(converterName)) {
+            converterName = "office2html";
         }
 
         BlobHolder convertedBlobHolder;
