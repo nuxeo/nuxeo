@@ -51,12 +51,11 @@
     <event name="registrationValidated"/>
   </extension>
 
-  <!--
   <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="openUrl">
     <openUrl name="RegisterUser_validate">
       <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/validate/.*</grantPattern>
     </openUrl>
-  </extension>-->
+  </extension>
 </component>
