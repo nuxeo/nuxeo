@@ -73,6 +73,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         UserRegistrationService {
 
     protected static Log log = LogFactory.getLog(UserRegistrationService.class);
+    public static final String NUXEO_URL_KEY = "nuxeo.url";
 
     protected String repoName = null;
 
@@ -498,10 +499,10 @@ public class UserRegistrationComponent extends DefaultComponent implements
         byPassAdminValidation |= registrationRules.allowDirectValidationForExistingUser()
                 && registrationRules.allowDirectValidationForNonExistingUser();
         if (byPassAdminValidation) {
-            // Build validationBaseUrl with nuxeo.url property as request is not
-            // accessible.
+            // Build validationBaseUrl with nuxeo.url property as request is not accessible.
             if (!additionnalInfo.containsKey("validationBaseUrl")) {
-                Path path = new Path(Framework.getProperty("nuxeo.url"));
+                String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
+                Path path = new Path(StringUtils.isBlank(baseUrl) ? "/" : baseUrl);
                 path.append(getConfiguration(configurationName).getValidationRelUrl());
                 additionnalInfo.put("validationBaseURL", path.toString());
             }

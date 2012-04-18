@@ -17,11 +17,15 @@
 package org.nuxeo.ecm.user.registration;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("configuration")
 public class UserRegistrationConfiguration {
+
+    private static Log log = LogFactory.getLog(UserRegistrationConfiguration.class);
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default_registration";
 
@@ -120,6 +124,10 @@ public class UserRegistrationConfiguration {
     }
 
     public String getValidationRelUrl() {
+        if (StringUtils.isBlank(validationRelUrl)) {
+            log.info("Configuration " + name + " has empty validation url");
+            return "";
+        }
         return validationRelUrl;
     }
 
