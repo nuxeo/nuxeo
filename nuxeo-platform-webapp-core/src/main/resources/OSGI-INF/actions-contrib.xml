@@ -552,17 +552,6 @@
 
     <!-- end of actions on document create and edit pages -->
 
-    <!-- actions on document summary page -->
-
-    <action id="addCurrentDocumentToWorklist"
-      link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
-      order="0" label="help.command.clipboard.addworklist"
-      icon="/icons/action_add.gif" immediate="true">
-      <category>DOCUMENT_SUMMARY_CUSTOM_ACTIONS</category>
-    </action>
-
-    <!-- end of actions on document summary page -->
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
