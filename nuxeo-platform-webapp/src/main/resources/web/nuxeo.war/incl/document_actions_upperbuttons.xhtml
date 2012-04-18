@@ -29,8 +29,7 @@
                     <li><nxh:commandLink
                         action="#{action.getLink()}"
                         immediate="#{action.immediate}"
-                        onclick="#{action.confirm}"
-                        id="contextRollOver_#{action.id}">
+                        onclick="#{action.confirm}">
                         <h:graphicImage value="#{action.icon}"
                           rendered="#{not empty action.icon}"
                           title="#{messages[action.label]}"
