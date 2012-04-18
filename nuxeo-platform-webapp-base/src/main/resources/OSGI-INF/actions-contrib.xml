@@ -60,7 +60,7 @@
       order="3" label="label.document.download" type="link_icon"
       icon="/icons/contextual_menu/download.png">
       <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>documentHasBlobAttached</filter-id>
+      <filter-id>documentHasBlobs</filter-id>
     </action>
 
     <action id="subscribesAllDocNotifications"
@@ -137,6 +137,15 @@
         <type>WorkspaceRoot</type>
       </rule>
     </filter>
+
+    <filter id="documentHasBlobs">
+      <rule grant="true">
+        <condition>
+          #{popupHelper.isDocumentHasBlobs(document)}
+        </condition>
+      </rule>
+    </filter>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
