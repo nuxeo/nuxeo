@@ -23,10 +23,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,7 +38,15 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * Text template processing.
@@ -43,13 +55,15 @@ import org.apache.commons.io.IOUtils;
  * '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map} (deprecated) or a
  * {@link Properties}.
  * <p>
- * Method {@link #setParsingExtensions(String)} allow to set list of files being
- * processed when using {@link #processDirectory(File, File)} or #pro, others
- * are simply copied.
- *
+ * Method {@link #setTextParsingExtensions(String)} allow to set list of files
+ * being processed when using {@link #processDirectory(File, File)} or #pro,
+ * others are simply copied.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TextTemplate {
+
+    private static final Log log = LogFactory.getLog(TextTemplate.class);
 
     private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
 
@@ -57,7 +71,13 @@ public class TextTemplate {
 
     private boolean trim = false;
 
-    private List<String> extensions;
+    private List<String> plainTextExtensions;
+
+    private List<String> freemarkerExtensions = new ArrayList<String>();
+
+    private Configuration freemarkerConfiguration = null;
+
+    private Map<String, Object> freemarkerVars = null;
 
     private boolean extensionsContainsDot = false;
 
@@ -113,7 +133,7 @@ public class TextTemplate {
         return vars;
     }
 
-    public String process(CharSequence text) {
+    public String processText(CharSequence text) {
         Matcher m = PATTERN.matcher(text);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
@@ -127,7 +147,7 @@ public class TextTemplate {
                 // process again the value if it still contains variable
                 // to replace
                 String oldValue = value;
-                while (!(value = process(oldValue)).equals(oldValue)) {
+                while (!(value = processText(oldValue)).equals(oldValue)) {
                     oldValue = value;
                 }
 
@@ -140,24 +160,84 @@ public class TextTemplate {
         return sb.toString();
     }
 
-    public String process(InputStream in) throws IOException {
+    public String processText(InputStream in) throws IOException {
         String text = IOUtils.toString(in, "UTF-8");
-        return process(text);
+        return processText(text);
     }
 
-    public void process(InputStream in, OutputStream out) throws IOException {
-        process(in, out, true);
+    public void processText(InputStream is, OutputStream os) throws IOException {
+        String text = IOUtils.toString(is, "UTF-8");
+        text = processText(text);
+        os.write(text.getBytes("UTF-8"));
+    }
+
+    @SuppressWarnings("unchecked")
+    public void initFreeMarker() {
+        // Initialize Freemarker
+        freemarkerConfiguration = new Configuration();
+        freemarkerConfiguration.setObjectWrapper(new DefaultObjectWrapper());
+        // Initialize data model
+        freemarkerVars = new HashMap<String, Object>();
+        Properties kv = getVariables();
+        @SuppressWarnings("rawtypes")
+        Enumeration kvEnum = kv.propertyNames();
+        Map<String, Object> currentMap;
+        String currentString;
+        while (kvEnum.hasMoreElements()) {
+            String key = (String) kvEnum.nextElement();
+            String value = kv.getProperty(key);
+            String[] keyparts = key.split("\\.");
+            currentMap = freemarkerVars;
+            currentString = "";
+            boolean setKeyVal = true;
+            for (int i = 0; i < (keyparts.length - 1); i++) {
+                currentString = currentString
+                        + (currentString.equals("") ? "" : ".") + keyparts[i];
+                if (!currentMap.containsKey(keyparts[i])) {
+                    Map<String, Object> nextMap = new HashMap<String, Object>();
+                    currentMap.put(keyparts[i], nextMap);
+                    currentMap = nextMap;
+                } else {
+                    if (currentMap.get(keyparts[i]) instanceof Map<?, ?>) {
+                        currentMap = (Map<String, Object>) currentMap.get(keyparts[i]);
+                    } else {
+                        // silently ignore known conflicts in java properties
+                        if (!key.startsWith("java.vendor")) {
+                            log.warn("Freemarker templates: " + currentString
+                                    + " is already defined - " + key
+                                    + " will not be available in Freemarker.");
+                        }
+                        setKeyVal = false;
+                        break;
+                    }
+                }
+            }
+            if (setKeyVal) {
+                currentMap.put(keyparts[keyparts.length - 1], value);
+            }
+        }
+    }
+
+    public void processFreemarker(File in, File out) throws IOException,
+            TemplateException {
+        if (freemarkerConfiguration == null) {
+            initFreeMarker();
+        }
+        freemarkerConfiguration.setDirectoryForTemplateLoading(in.getParentFile());
+        Template nxtpl = freemarkerConfiguration.getTemplate(in.getName());
+        Writer outWriter = new FileWriter(out);
+        nxtpl.process(freemarkerVars, outWriter);
     }
 
     /**
      * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
      * each file from "in" directory to "out" directory.
-     *
+     * 
      * @param in Directory to read files from
      * @param out Directory to write files to
      */
     public void processDirectory(File in, File out)
-            throws FileNotFoundException, IOException {
+            throws FileNotFoundException, IOException, TemplateException {
         if (in.isFile()) {
             if (out.isDirectory()) {
                 out = new File(out, in.getName());
@@ -166,19 +246,35 @@ public class TextTemplate {
                 out.getParentFile().mkdirs();
             }
 
-            boolean processText = false;
+            boolean processAsText = false;
+            boolean processAsFreemarker = false;
+            String freemarkerExtension = null;
             if (!extensionsContainsDot) {
                 int extIndex = in.getName().lastIndexOf('.');
                 String extension = extIndex == -1 ? ""
                         : in.getName().substring(extIndex + 1).toLowerCase();
-                processText = extensions == null
-                        || extensions.contains(extension);
+                processAsText = plainTextExtensions == null
+                        || plainTextExtensions.contains(extension);
+                if (freemarkerExtensions.contains(extension)) {
+                    processAsFreemarker = true;
+                    freemarkerExtension = extension;
+                }
+                
             } else {
                 // Check for each extension if it matches end of filename
                 String filename = in.getName().toLowerCase();
-                for (String ext : extensions) {
+                for (String ext : plainTextExtensions) {
                     if (filename.endsWith(ext)) {
-                        processText = true;
+                        processAsText = true;
+                        processAsFreemarker = false;
+                        freemarkerExtension = ext;
+                        break;
+                    }
+                }
+                for (String ext : freemarkerExtensions) {
+                    if (filename.endsWith(ext)) {
+                        processAsText = false;
+                        processAsFreemarker = true;
                         break;
                     }
                 }
@@ -187,9 +283,19 @@ public class TextTemplate {
             FileInputStream is = null;
             FileOutputStream os = null;
             try {
-                os = new FileOutputStream(out);
-                is = new FileInputStream(in);
-                process(is, os, processText);
+                if (processAsText) {
+                    os = new FileOutputStream(out);
+                    is = new FileInputStream(in);
+                    processText(is, os);
+                } else if (processAsFreemarker) {
+                    out = new File(out.getCanonicalPath().replaceAll(
+                            Pattern.quote(freemarkerExtension) + "$", ""));
+                    processFreemarker(in, out);
+                } else {
+                    os = new FileOutputStream(out);
+                    is = new FileInputStream(in);
+                    IOUtils.copy(is, os);
+                }
             } finally {
                 if (is != null) {
                     is.close();
@@ -214,31 +320,30 @@ public class TextTemplate {
     }
 
     /**
-     * @param processText if true, text is processed for parameters replacement
-     */
-    public void process(InputStream is, OutputStream os, boolean processText)
-            throws IOException {
-        if (processText) {
-            String text = IOUtils.toString(is, "UTF-8");
-            text = process(text);
-            os.write(text.getBytes("UTF-8"));
-        } else {
-            IOUtils.copy(is, os);
-        }
-    }
-
-    /**
      * @param extensionsList comma-separated list of files extensions to parse
      */
-    public void setParsingExtensions(String extensionsList) {
+    public void setTextParsingExtensions(String extensionsList) {
         StringTokenizer st = new StringTokenizer(extensionsList, ",");
-        extensions = new ArrayList<String>();
+        plainTextExtensions = new ArrayList<String>();
         while (st.hasMoreTokens()) {
             String extension = st.nextToken();
-            extensions.add(extension);
+            plainTextExtensions.add(extension);
             if (!extensionsContainsDot && extension.contains(".")) {
                 extensionsContainsDot = true;
             }
         }
     }
+
+    public void setFreemarkerParsingExtensions(String extensionsList) {
+        StringTokenizer st = new StringTokenizer(extensionsList, ",");
+        freemarkerExtensions = new ArrayList<String>();
+        while (st.hasMoreTokens()) {
+            String extension = st.nextToken();
+            freemarkerExtensions.add(extension);
+            if (!extensionsContainsDot && extension.contains(".")) {
+                extensionsContainsDot = true;
+            }
+        }
+    }
+
 }

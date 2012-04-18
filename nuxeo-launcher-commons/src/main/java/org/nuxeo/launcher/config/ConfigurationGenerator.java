@@ -57,6 +57,8 @@ import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.commons.text.TextTemplate;
 import org.nuxeo.log4j.Log4JHelper;
 
+import freemarker.template.TemplateException;
+
 /**
  * Builder for server configuration and datasource files from templates and
  * properties.
@@ -98,6 +100,8 @@ public class ConfigurationGenerator {
     public static final String PARAM_TEMPLATES_NODB = "nuxeo.nodbtemplates";
 
     public static final String PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
+    
+    public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.templates.freemarker.extensions";
 
     /**
      * Absolute or relative PATH to the included templates (comma separated
@@ -203,7 +207,6 @@ public class ConfigurationGenerator {
 
     private boolean quiet = false;
 
-    @SuppressWarnings("unused")
     private boolean debug = false;
 
     /**
@@ -589,6 +592,8 @@ public class ConfigurationGenerator {
         } catch (IOException e) {
             throw new ConfigurationException("Configuration failure: "
                     + e.getMessage(), e);
+        } catch (TemplateException e) {
+            throw new ConfigurationException("Could not process Freemarker template: " + e.getMessage(), e);
         }
     }
 
@@ -1330,7 +1335,7 @@ public class ConfigurationGenerator {
         Properties props = new Properties();
         props.put("user", dbUser);
         props.put("password", dbPassword);
-        Connection con = driver.connect(tt.process(connectionUrl), props);
+        Connection con = driver.connect(tt.processText(connectionUrl), props);
         con.close();
     }
 

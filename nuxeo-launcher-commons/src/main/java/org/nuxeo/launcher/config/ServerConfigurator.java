@@ -36,6 +36,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nuxeo.launcher.commons.text.TextTemplate;
 
+import freemarker.template.TemplateException;
+
 /**
  * @author jcarsique
  */
@@ -81,7 +83,7 @@ public abstract class ServerConfigurator {
      * @param config Properties with configuration parameters for template
      *            replacement
      */
-    protected void parseAndCopy(Properties config) throws IOException {
+    protected void parseAndCopy(Properties config) throws IOException, TemplateException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
         final FilenameFilter filter = new FilenameFilter() {
             @Override
@@ -91,9 +93,13 @@ public abstract class ServerConfigurator {
         };
         final TextTemplate templateParser = new TextTemplate(config);
         templateParser.setTrim(true);
-        templateParser.setParsingExtensions(config.getProperty(
+        templateParser.setTextParsingExtensions(config.getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS,
                 "xml,properties,nx"));
+        templateParser.setFreemarkerParsingExtensions(config.getProperty(
+                ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS,
+                "nxftl"));
+
 
         // add included templates directories
         for (File includedTemplate : generator.getIncludedTemplates()) {
