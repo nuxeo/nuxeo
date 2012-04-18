@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
@@ -288,6 +289,22 @@ public class PopupHelper implements Serializable {
             return blob != null;
         } else {
             return false;
+        }
+    }
+
+    public boolean isDocumentHasBlobs(DocumentModel documentModel)
+            throws ClientException {
+        if (documentModel.hasSchema("file")) {
+            Blob blob = (Blob) documentModel.getProperty("file", "content");
+            return blob != null;
+        } else {
+            if (documentModel.hasSchema("files")) {
+                List<Blob> blobList = (List<Blob>) documentModel.getProperty(
+                        "files", "files");
+                return (!ArrayUtils.isEmpty(blobList.toArray()));
+            } else {
+                return false;
+            }
         }
     }
 
