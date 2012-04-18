@@ -266,17 +266,17 @@ body {
 
           <div class="login">
             <% if (maintenanceMode) { %>
-          <div class="maintenanceModeMessage">
-            <div class="warnMessage">
-              <fmt:message bundle="${messages}" key="label.maintenancemode.active" /><br/>
-              <fmt:message bundle="${messages}" key="label.maintenancemode.adminLoginOnly" />
-            </div>
-            <div class="infoMessage">
-              <fmt:message bundle="${messages}" key="label.maintenancemode.message" /> : <br/>
-              <%=maintenanceMessage%>
-            </div>
-            </div>
-          <%} %>
+              <div class="maintenanceModeMessage">
+                <div class="warnMessage">
+                  <fmt:message bundle="${messages}" key="label.maintenancemode.active" /><br/>
+                  <fmt:message bundle="${messages}" key="label.maintenancemode.adminLoginOnly" />
+                </div>
+              <div class="infoMessage">
+                <fmt:message bundle="${messages}" key="label.maintenancemode.message" /> : <br/>
+                <%=maintenanceMessage%>
+              </div>
+              </div>
+            <%} %>
             <table>
              <tr>
                 <td class="login_label">
@@ -401,8 +401,9 @@ body {
                     </div>
                   </c:if>
                 </td>
-            </tr>
-          </table>
+              </tr>
+            </table>
+          </div>
         </form>
       </td>
       <td class="news_container" align="right" valign="center">
