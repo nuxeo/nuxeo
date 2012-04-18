@@ -46,6 +46,8 @@ public class ConverterBasedContentDiffAdapter extends
 
     private static final Log log = LogFactory.getLog(ConverterBasedContentDiffAdapter.class);
 
+    protected static final String DEFAULT_CONVERTER_NAME = "any2text";
+
     protected String defaultFieldXPath;
 
     protected MimetypeRegistry mimeTypeService;
@@ -118,11 +120,11 @@ public class ConverterBasedContentDiffAdapter extends
         // Docs have a different mime type or no content differ found for the
         // common mime type.
         // Fall back on a Html conversion + HtmlContentDiffer.
-        String destMimeType = conversionType.getValue();
+        String converterName = conversionType.getValue();
         Blob adaptedDocHtmlConvertedBlob = getHtmlConvertedBlob(
-                adaptedDocMimeType, destMimeType, adaptedDocBlobHolder);
-        Blob otherDocHtmlConvertedBlob = getHtmlConvertedBlob(otherDocMimeType,
-                destMimeType, otherDocBlobHolder);
+                adaptedDocBlobHolder, converterName);
+        Blob otherDocHtmlConvertedBlob = getHtmlConvertedBlob(
+                otherDocBlobHolder, converterName);
 
         HtmlContentDiffer htmlContentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
         blobResults = htmlContentDiffer.getContentDiff(
@@ -198,28 +200,14 @@ public class ConverterBasedContentDiffAdapter extends
         return defaultFieldXPath;
     }
 
-    protected Blob getHtmlConvertedBlob(String srcMimeType,
-            String destMimeType, BlobHolder blobHolder)
-            throws ContentDiffException {
-
-        // TODO: manage converter name with a parameter (any2html / office2html
-        // / ...)
-        String converterName = null;
-        try {
-            converterName = getConversionService().getConverterName(
-                    srcMimeType, destMimeType);
-        } catch (Exception e) {
-            throw new ContentDiffException("Unable to get converter", e);
-        }
+    protected Blob getHtmlConvertedBlob(BlobHolder blobHolder,
+            String converterName) throws ContentDiffException {
 
         if (converterName == null) {
-            log.debug("No dedicated converter found, using generic one: any2html.");
-            converterName = "any2html";
-        }
-
-        // TODO: remove hack!
-        if ("any2html".equals(converterName)) {
-            converterName = "office2html";
+            log.debug(String.format(
+                    "No converter parameter, using generic one: '%s'.",
+                    DEFAULT_CONVERTER_NAME));
+            converterName = DEFAULT_CONVERTER_NAME;
         }
 
         BlobHolder convertedBlobHolder;

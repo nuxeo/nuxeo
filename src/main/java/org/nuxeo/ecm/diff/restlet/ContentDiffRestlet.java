@@ -105,7 +105,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
 //        String subPath = sb.substring(0, sb.length() - 1);
 
         // Default conversion type is any2html
-        ContentDiffConversionType conversionType = ContentDiffConversionType.any2html;
+        ContentDiffConversionType conversionType = ContentDiffConversionType.html;
         // Check conversion type param
         String conversionTypeParam = (String) req.getAttributes().get(
                 "conversionType");

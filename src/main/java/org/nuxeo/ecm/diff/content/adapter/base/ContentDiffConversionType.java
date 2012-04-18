@@ -24,7 +24,7 @@ package org.nuxeo.ecm.diff.content.adapter.base;
  */
 public enum ContentDiffConversionType {
 
-    any2html("text/html"), any2text("text/plain");
+    html("contentDiffHtmlConverter"), text("contentDiffTextConverter");
 
     final String value;
 
