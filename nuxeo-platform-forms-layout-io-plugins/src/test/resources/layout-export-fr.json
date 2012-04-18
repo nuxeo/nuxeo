@@ -2,19 +2,19 @@
   "name": "dublincore",
   "templates": {"any": "/layouts/layout_default_template.xhtml"},
   "rows":   [
-    {"widgets": ["nature"]},
-    {"widgets": ["subjects"]},
-    {"widgets": ["rights"]},
-    {"widgets": ["source"]},
-    {"widgets": ["coverage"]},
-    {"widgets": ["created"]},
-    {"widgets": ["modified"]},
-    {"widgets": ["format"]},
-    {"widgets": ["language"]},
-    {"widgets": ["expired"]},
-    {"widgets": ["author"]},
-    {"widgets": ["contributors"]},
-    {"widgets": ["lastContributor"]}
+    {"widgets": [{"name": "nature"}]},
+    {"widgets": [{"name": "subjects"}]},
+    {"widgets": [{"name": "rights"}]},
+    {"widgets": [{"name": "source"}]},
+    {"widgets": [{"name": "coverage"}]},
+    {"widgets": [{"name": "created"}]},
+    {"widgets": [{"name": "modified"}]},
+    {"widgets": [{"name": "format"}]},
+    {"widgets": [{"name": "language"}]},
+    {"widgets": [{"name": "expired"}]},
+    {"widgets": [{"name": "author"}]},
+    {"widgets": [{"name": "contributors"}]},
+    {"widgets": [{"name": "lastContributor"}]}
   ],
   "widgets":   [
         {
