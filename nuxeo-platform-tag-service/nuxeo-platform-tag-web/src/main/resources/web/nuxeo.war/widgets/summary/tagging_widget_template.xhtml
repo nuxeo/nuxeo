@@ -33,21 +33,20 @@
           items="#{currentDocumentTags}"
           rendered="#{not empty currentDocumentTags}">
 
-          <h:commandLink
-            action="#{tagActions.listDocumentsForTag(tag.label)}">
-            <h:graphicImage url="/icons/tag_blue.png" />
-          </h:commandLink>
+          <span class="tag tagLink">
 
-          <h:commandLink value="#{tag.label}"
-            action="#{tagActions.listDocumentsForTag(tag.label)}" />
+            <h:commandLink value="#{tag.label}"
+              action="#{tagActions.listDocumentsForTag(tag.label)}" />
 
-          <a4j:commandLink
-            action="#{tagActions.removeTagging(tag.label)}"
-            immediate="true"
-            reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView"
-            rendered="#{tagActions.canModifyTag(tag)}">
-            <h:graphicImage value="/icons/action_delete_mini_over.png" />
-          </a4j:commandLink>
+            <a4j:commandLink
+              action="#{tagActions.removeTagging(tag.label)}"
+              immediate="true"
+              reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView"
+              rendered="#{tagActions.canModifyTag(tag)}">
+              <h:graphicImage value="/icons/action_tag_delete.png" />
+            </a4j:commandLink>
+
+          </span>
 
         </c:forEach>
 
@@ -86,9 +85,9 @@
               </a4j:support>
               <h:column>
                 <f:subview>
-                  <h:graphicImage value="/icons/tag_blue.png"
-                    alt="(tag)" />
-                  <h:outputText value="${sugtag.label}" />
+                  <span class="tag tagLink">
+                    <h:outputText value="${sugtag.label}" />
+                  </span>
                 </f:subview>
               </h:column>
             </rich:suggestionbox>
