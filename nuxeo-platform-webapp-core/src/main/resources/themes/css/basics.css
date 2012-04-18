@@ -38,6 +38,13 @@ h5, h6 { color: "title.minor (__FLAVOR__ color)"; font-size: .8em; margin: .2em 
 .floatL { float: left }
 .clear { clear:both }
 
+.displayN { display: none }
+.displayI { display:  inline }
+.displayIB { display:  inline-block }
+.displayB { display: block }
+.visibilityH { visibility: hidden }
+.visibilityV { visibility: visible }
+
 .left { float: left } /* used in relationship, to be replaced by floatL*/
 .right { float: right } /* used in relationship, to be replaced by floatR*/
 

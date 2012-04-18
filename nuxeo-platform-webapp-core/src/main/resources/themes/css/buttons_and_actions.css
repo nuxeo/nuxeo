@@ -133,3 +133,10 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .ctxMenuItemHoverStyle { cursor: pointer; background-color: "color.major.medium (__FLAVOR__ background)" }
 .ctxMenuItemStyle a, .ctxMenuItemHoverStyle a { display: block; text-decoration: none }
 .ctxMenuImg { vertical-align: middle; padding: 0em .4em 0.1em 0 }
+
+/* =Labels and tags */
+.tag { background: "color.major.stronger (__FLAVOR__ background)"; border-radius: 3px; color: #fff; display: block; margin: .2em; padding: 0 .3em;}
+.tagLink { display: inline-block }
+.tagLink a { color: #fff; display: inline-block; opacity: 0.8; padding: 0 0 0 .2em; text-decoration: none }
+.tagLink a:hover { opacity: 1 }
+.tagLink img { border-left: 1px dotted rgba(255,255,255,0.4); display: inline; margin: 0 -0.1em -0.3em .2em }
