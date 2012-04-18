@@ -36,20 +36,25 @@
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
     </action>
+
     <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}" order="1"
       label="command.unlock" type="link_icon" icon="/icons/contextual_menu/locked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
     </action>
+
     <action id="permalinkAction" order="2" label="label.permalink"
       type="fancybox" icon="/icons/contextual_menu/share.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties name="fancybox">
-        <property name="include">incl/permalink_box.xhtml</property>
-        <property name="onclick">jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();</property>
+        <property name="include">/incl/permalink_box.xhtml</property>
+        <property name="onclick">
+          jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
+        </property>
       </properties>
     </action>
+
     <action id="downloadAction"
       link="#{operationActionBean.doOperation('downloadFilesZip')}"
       order="3" label="label.document.download" type="link_icon"
@@ -57,6 +62,7 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>documentHasBlobAttached</filter-id>
     </action>
+
     <action id="subscribesAllDocNotifications"
       link="#{subscriptionAction.updateAllSubscriptions}"
       order="4" label="label.subscriptions.follow" type="link_icon"
@@ -65,6 +71,7 @@
       <filter-id>hasNoSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
     </action>
+
     <action id="unsubscribesAllDocNotifications"
       link="#{subscriptionAction.updateAllSubscriptions}"
       order="4" label="label.subscriptions.unfollow" type="link_icon"
@@ -73,6 +80,7 @@
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
     </action>
+
     <action id="showFancyBoxPreview" order="5" type="fancybox"
       label="label.document.preview" icon="/icons/contextual_menu/preview.png">
       <category>DOCUMENT_UPPER_ACTION</category>
@@ -80,10 +88,12 @@
       <filter-id>not_folder</filter-id>
       <filter-id>not_anonymous</filter-id>
       <properties name="fancybox">
-        <property name="iframe">#{previewActions.getCurrentDocumentPreviewPopupURL()}
+        <property name="iframe">
+          #{previewActions.getCurrentDocumentPreviewPopupURL()}
         </property>
       </properties>
     </action>
+
     <action id="addCurrentDocumentToWorklist"
       link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
       order="6" label="help.command.clipboard.addworklist" type="link_icon"
@@ -92,6 +102,7 @@
       <filter-id>not_folder</filter-id>
       <filter-id>not_anonymous</filter-id>
     </action>
+
     <action id="print"
       link="#{restHelper.doPrint(themeActions.defaultTheme)}"
       order="7" label="label.print" icon="/icons/printer.gif">
