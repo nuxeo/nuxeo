@@ -49,7 +49,11 @@ public abstract class PathPattern {
     }
 
     public void setNext(PathPattern next) {
-        this.next = next;
+        if (this.next != null) {
+            this.next.setNext(next);
+        } else {
+            this.next = next;
+        }
     }
 
     public PathPattern getNext() {
