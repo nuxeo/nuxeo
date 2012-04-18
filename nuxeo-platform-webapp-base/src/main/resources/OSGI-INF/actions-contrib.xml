@@ -30,21 +30,21 @@
     </action>
 
     <!-- Contextual tools buttons contrib NXP-9039 -->
-    <action id="documentLock" link="#{lockActions.lockCurrentDocument}" order="1"
+    <action id="documentLock" link="#{lockActions.lockCurrentDocument}" order="10"
       label="command.lock" type="link_icon" icon="/icons/contextual_menu/unlocked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
     </action>
 
-    <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}" order="1"
+    <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}" order="10"
       label="command.unlock" type="link_icon" icon="/icons/contextual_menu/locked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
     </action>
 
-    <action id="permalinkAction" order="2" label="label.permalink"
+    <action id="permalinkAction" order="20" label="label.permalink"
       type="fancybox" icon="/icons/contextual_menu/share.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties name="fancybox">
@@ -57,7 +57,7 @@
 
     <action id="downloadAction"
       link="#{operationActionBean.doOperation('downloadFilesZip')}"
-      order="3" label="label.document.download" type="link_icon"
+      order="30" label="label.document.download" type="link_icon"
       icon="/icons/contextual_menu/download.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>documentHasBlobs</filter-id>
@@ -65,7 +65,7 @@
 
     <action id="subscribesAllDocNotifications"
       link="#{subscriptionAction.updateAllSubscriptions}"
-      order="4" label="label.subscriptions.follow" type="link_icon"
+      order="40" label="label.subscriptions.follow" type="link_icon"
       icon="/icons/contextual_menu/subscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasNoSubscriptions</filter-id>
@@ -74,14 +74,14 @@
 
     <action id="unsubscribesAllDocNotifications"
       link="#{subscriptionAction.updateAllSubscriptions}"
-      order="4" label="label.subscriptions.unfollow" type="link_icon"
+      order="40" label="label.subscriptions.unfollow" type="link_icon"
       icon="/icons/contextual_menu/unsubscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
     </action>
 
-    <action id="showFancyBoxPreview" order="5" type="fancybox"
+    <action id="showFancyBoxPreview" order="50" type="fancybox"
       label="label.document.preview" icon="/icons/contextual_menu/preview.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>view_preview</filter-id>
@@ -96,7 +96,7 @@
 
     <action id="addCurrentDocumentToWorklist"
       link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
-      order="6" label="help.command.clipboard.addworklist" type="link_icon"
+      order="60" label="help.command.clipboard.addworklist" type="link_icon"
       icon="/icons/action_add.gif" immediate="true">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
@@ -105,7 +105,7 @@
 
     <action id="print"
       link="#{restHelper.doPrint(themeActions.defaultTheme)}"
-      order="7" label="label.print" icon="/icons/printer.gif">
+      order="70" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
     </action>
   </extension>
