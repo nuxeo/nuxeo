@@ -17,7 +17,7 @@
     </documentation>
 
     <action id="TAB_MY_SUBSCRIPTIONS" link="/incl/tabs/document_subscriptions.xhtml"
-        order="70" enabled="true" label="action.subscriptions.tab" icon="/icons/file.gif">
+        order="70" enabled="false" label="action.subscriptions.tab" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>general_documents</filter-id>
       <filter-id>not_anonymous</filter-id>
@@ -28,15 +28,6 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>general_documents</filter-id>
       <filter-id>manage_subscriptions</filter-id>
-    </action>
-
-    <action id="sendEmail" enabled="false"/>
-
-    <action id="sendNotificationEmail" link="send_notification_email" enabled="true"
-        order="17" label="action.email.document" icon="/icons/mail.gif">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>not_folder</filter-id>
-      <filter-id>not_anonymous</filter-id>
     </action>
 
   </extension>

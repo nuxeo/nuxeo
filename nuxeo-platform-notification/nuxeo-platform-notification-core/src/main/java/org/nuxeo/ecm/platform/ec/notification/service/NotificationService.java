@@ -302,6 +302,35 @@ public class NotificationService extends DefaultComponent implements
         }
     }
 
+    public void addSubscriptions(String username,
+            DocumentModel doc, Boolean sendConfirmationEmail,
+            NuxeoPrincipal principal) throws ClientException {
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        for (Notification notification : getNotificationRegistry().getNotifications()) {
+            UserSubscription subscription = new UserSubscription(notification.getName(),
+                    username, doc.getId());
+            serviceBean.setAnnotation(subscription);
+        }
+        // send event for email if necessary
+        if (sendConfirmationEmail) {
+            raiseConfirmationEvent(principal, doc, username,
+                    "All Notifications");
+        }
+    }
+
+    public void removeSubscriptions(String username,
+            List<String> notifications, String docId) throws ClientException {
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        for (String notification : notifications) {
+            Map<String, Object> paramMap = new HashMap<String, Object>();
+            paramMap.put("userId", username);
+            paramMap.put("docId", docId);
+            paramMap.put("notification", notification);
+            serviceBean.removeAnnotationListByParamMap(paramMap,
+                    SUBSCRIPTION_NAME);
+        }
+    }
+
     protected EventProducer producer;
 
     protected void doFireEvent(Event event) throws ClientException {
@@ -531,4 +560,5 @@ public class NotificationService extends DefaultComponent implements
     public Collection<NotificationListenerHook> getListenerHooks(){
         return hookListeners.values();
     }
+
 }

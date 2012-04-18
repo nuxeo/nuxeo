@@ -31,6 +31,7 @@ import org.nuxeo.ecm.automation.core.operations.blob.BlobToFile;
 import org.nuxeo.ecm.automation.core.operations.blob.BlobToPDF;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
+import org.nuxeo.ecm.automation.core.operations.blob.GetAllDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
@@ -160,6 +161,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(MultiPublishDocument.class);
         service.putOperation(GetDocumentBlob.class);
         service.putOperation(GetDocumentBlobs.class);
+        service.putOperation(GetAllDocumentBlobs.class);
         service.putOperation(SetDocumentBlob.class);
         service.putOperation(PostBlob.class);
         service.putOperation(BlobToPDF.class);
