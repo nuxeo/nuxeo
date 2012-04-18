@@ -333,6 +333,11 @@
     </widget>
 
     <widget name="header_description" type="textarea">
+      <widgetModes>
+        <mode value="any">
+          #{currentDocument.folder==false?'hidden':mode}
+        </mode>
+      </widgetModes>
       <fields>
         <field>dc:description</field>
       </fields>
