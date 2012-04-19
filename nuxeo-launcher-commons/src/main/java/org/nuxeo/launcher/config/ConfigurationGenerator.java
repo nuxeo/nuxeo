@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,9 +100,11 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_TEMPLATES_NODB = "nuxeo.nodbtemplates";
 
-    public static final String PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
+    public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
 
-    public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.templates.freemarker.extensions";
+    public static final String PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.plaintext-parsing-extensions";
+
+    public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.freemarker-parsing-extensions";
 
     /**
      * Absolute or relative PATH to the included templates (comma separated
@@ -209,6 +212,15 @@ public class ConfigurationGenerator {
 
     @SuppressWarnings("unused")
     private boolean debug = false;
+
+    private static Map<String, String> parametersMigration;
+    static {
+        Map<String, String> tempPM = new HashMap<String, String>();
+        tempPM.put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
+                PARAM_TEMPLATES_PARSING_EXTENSIONS);
+        tempPM.put("nuxeo.db.user.separator.key", "nuxeo.db.user-separator-key");
+        parametersMigration = tempPM;
+    }
 
     /**
      * @param quiet Suppress info level messages from the console output
@@ -393,6 +405,23 @@ public class ConfigurationGenerator {
             forceGeneration = onceGeneration
                     || Boolean.parseBoolean(userConfig.getProperty(
                             PARAM_FORCE_GENERATION, "false"));
+
+            // Check for deprecated parameters
+            @SuppressWarnings("rawtypes")
+            Enumeration userEnum = userConfig.propertyNames();
+            while (userEnum.hasMoreElements()) {
+                String key = (String) userEnum.nextElement();
+                if (parametersMigration.containsKey(key)) {
+                    String value = userConfig.getProperty(key);
+                    userConfig.setProperty(parametersMigration.get(key), value);
+                    // Don't remove the deprecated key yet - more
+                    // warnings but old things should keep working
+                    //userConfig.remove(key);
+                    log.warn("Parameter " + key
+                            + " is deprecated - please use "
+                            + parametersMigration.get(key) + " instead");
+                }
+            }
 
             // Manage directories set from (or set to) system properties
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR);
@@ -636,6 +665,23 @@ public class ConfigurationGenerator {
                     defaultConfig.load(new FileInputStream(chosenTemplateConf));
                     String templateInfo = "Include template: "
                             + chosenTemplate.getPath();
+                    // Check for deprecated parameters
+                    @SuppressWarnings("rawtypes")
+                    Enumeration userEnum = defaultConfig.propertyNames();
+                    while (userEnum.hasMoreElements()) {
+                        String key = (String) userEnum.nextElement();
+                        if (parametersMigration.containsKey(key)) {
+                            String value = defaultConfig.getProperty(key);
+                            defaultConfig.setProperty(
+                                    parametersMigration.get(key), value);
+                            // Don't remove the deprecated key yet - more
+                            // warnings but old things should keep working
+                            // defaultConfig.remove(key);
+                            log.warn("Parameter " + key
+                                    + " is deprecated - please use "
+                                    + parametersMigration.get(key) + " instead");
+                        }
+                    }
                     if (quiet) {
                         log.debug(templateInfo);
                     } else {
