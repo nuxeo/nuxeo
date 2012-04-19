@@ -26,6 +26,7 @@ import java.net.URLDecoder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
 
@@ -56,12 +57,16 @@ public abstract class AbstractConfigurationTest {
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
         System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
                 nuxeoHome, nuxeoConf.getName()).getPath());
-        System.setProperty(Environment.NUXEO_HOME,
-                nuxeoHome.getPath());
+        System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
         System.setProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR,
                 new File(nuxeoHome, "data").getPath());
         System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
                 new File(nuxeoHome, "log").getPath());
+    }
+
+    @After
+    public void tearDown() {
+        FileUtils.deleteQuietly(nuxeoHome);
     }
 
 }

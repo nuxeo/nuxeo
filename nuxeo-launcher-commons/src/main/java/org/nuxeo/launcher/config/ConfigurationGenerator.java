@@ -389,7 +389,10 @@ public class ConfigurationGenerator {
         try {
             // Load default configuration
             defaultConfig = new Properties();
-            defaultConfig.load(new FileInputStream(nuxeoDefaultConf));
+            FileInputStream nuxeoDefaultConfIS = new FileInputStream(
+                    nuxeoDefaultConf);
+            defaultConfig.load(nuxeoDefaultConfIS);
+            nuxeoDefaultConfIS.close();
             userConfig = new Properties(defaultConfig);
 
             // Add useful system properties
@@ -400,7 +403,9 @@ public class ConfigurationGenerator {
                 replaceBackslashes();
             }
             // Load user configuration
-            userConfig.load(new FileInputStream(nuxeoConf));
+            FileInputStream nuxeoConfIS = new FileInputStream(nuxeoConf);
+            userConfig.load(nuxeoConfIS);
+            nuxeoConfIS.close();
             onceGeneration = "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
             forceGeneration = onceGeneration
                     || Boolean.parseBoolean(userConfig.getProperty(
@@ -416,7 +421,7 @@ public class ConfigurationGenerator {
                     userConfig.setProperty(parametersMigration.get(key), value);
                     // Don't remove the deprecated key yet - more
                     // warnings but old things should keep working
-                    //userConfig.remove(key);
+                    // userConfig.remove(key);
                     log.warn("Parameter " + key
                             + " is deprecated - please use "
                             + parametersMigration.get(key) + " instead");
@@ -655,14 +660,20 @@ public class ConfigurationGenerator {
                         NUXEO_DEFAULT_CONF);
                 if (chosenTemplateConf.exists()) {
                     Properties subTemplateConf = new Properties();
-                    subTemplateConf.load(new FileInputStream(chosenTemplateConf));
+                    FileInputStream chosenTemplateConfIS = new FileInputStream(
+                            chosenTemplateConf);
+                    subTemplateConf.load(chosenTemplateConfIS);
+                    chosenTemplateConfIS.close();
                     String subTemplatesList = subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES);
                     if (subTemplatesList != null
                             && subTemplatesList.length() > 0) {
                         includeTemplates(subTemplatesList);
                     }
                     // Load configuration from chosen templates
-                    defaultConfig.load(new FileInputStream(chosenTemplateConf));
+                    chosenTemplateConfIS = new FileInputStream(
+                            chosenTemplateConf);
+                    defaultConfig.load(chosenTemplateConfIS);
+                    chosenTemplateConfIS.close();
                     String templateInfo = "Include template: "
                             + chosenTemplate.getPath();
                     // Check for deprecated parameters

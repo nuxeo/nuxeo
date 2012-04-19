@@ -228,6 +228,7 @@ public class TextTemplate {
         Template nxtpl = freemarkerConfiguration.getTemplate(in.getName());
         Writer outWriter = new FileWriter(out);
         nxtpl.process(freemarkerVars, outWriter);
+        outWriter.close();
     }
 
     /**

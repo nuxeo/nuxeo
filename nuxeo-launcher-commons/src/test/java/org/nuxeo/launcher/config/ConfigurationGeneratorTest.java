@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -153,5 +154,21 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                 "true",
                 configGenerator.getUserConfig().getProperty(
                         ConfigurationGenerator.PARAM_WIZARD_DONE));
+    }
+
+    @Test
+    public void testFreemarkerTemplate() throws ConfigurationException,
+            IOException {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        configGenerator.addTemplate("fmtest");
+        configGenerator.setProperty("test.freemarker.key", "true");
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        configGenerator.run();
+        File outfile = new File(nuxeoHome, "testfm");
+        assertTrue(outfile.exists());
+        String fileContents = FileUtils.readFileToString(outfile).trim();
+        assertEquals(fileContents, "Success");
     }
 }

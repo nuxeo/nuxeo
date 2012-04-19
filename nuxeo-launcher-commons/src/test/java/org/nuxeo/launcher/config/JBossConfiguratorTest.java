@@ -36,7 +36,7 @@ import org.junit.Test;
 
 /**
  * @author jcarsique
- *
+ * 
  */
 public class JBossConfiguratorTest extends AbstractConfigurationTest {
 
@@ -216,7 +216,8 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
                 newWindowsConf.getPath());
         configGenerator = new ConfigurationGenerator();
         configGenerator.replaceBackslashes();
-        BufferedReader br = new BufferedReader(new FileReader(newWindowsConf));
+        FileReader newWindowsConfReader = new FileReader(newWindowsConf);
+        BufferedReader br = new BufferedReader(newWindowsConfReader);
         String generatedProperty;
         try {
             generatedProperty = br.readLine();
@@ -226,6 +227,8 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
             generatedProperty = br.readLine();
         } finally {
             IOUtils.closeQuietly(br);
+            IOUtils.closeQuietly(newWindowsConfReader);
+            FileUtils.deleteQuietly(newWindowsConf);
         }
         propertyToGenerate = "some.parameter=d\\u00e9connexion-${nuxeo.log.dir}";
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
